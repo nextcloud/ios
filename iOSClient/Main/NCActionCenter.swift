@@ -49,6 +49,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     let database = NCManageDatabase.shared
+    let global = NCGlobal.shared
 
     // MARK: - Download
 
@@ -236,12 +237,23 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     hud.show()
                     NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: account, requestHandler: { request in
                         downloadRequest = request
-                    }, taskHandler: { _ in
+                        self.database.setMetadataSession(ocId: metadata.ocId,
+                                                         status: self.global.metadataStatusDownloading)
+                    }, taskHandler: { task in
+                        self.database.setMetadataSession(ocId: metadata.ocId,
+                                                         sessionTaskIdentifier: task.taskIdentifier,
+                                                         status: self.global.metadataStatusDownloading)
                     }, progressHandler: { progress in
                         hud.progress(progress.fractionCompleted)
-                    }) { accountDownload, _, _, _, _, _, error in
+                    }) { accountDownload, etag, _, _, _, _, error in
                         hud.dismiss()
-                        if account == accountDownload && error == .success {
+                        self.database.setMetadataSession(ocId: metadata.ocId,
+                                                         session: "",
+                                                         sessionTaskIdentifier: 0,
+                                                         sessionError: "",
+                                                         status: self.global.metadataStatusNormal,
+                                                         etag: etag)
+                        if account == accountDownload, error == .success {
                             self.database.addLocalFile(metadata: metadata)
                             NCViewer().view(viewController: viewController, metadata: metadata)
                         }
@@ -622,7 +634,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         var listViewController = [NCSelect]()
         var copyItems: [tableMetadata] = []
         for item in items {
-            if let fileNameError = FileNameValidator.shared.checkFileName(item.fileNameView, account: controller?.account) {
+            if let fileNameError = FileNameValidator.checkFileName(item.fileNameView, account: controller?.account) {
                 controller?.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
                 return
             }

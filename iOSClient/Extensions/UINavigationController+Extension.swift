@@ -45,12 +45,11 @@ extension UINavigationController {
     }
 
     func setGroupAppearance() {
-
         navigationBar.tintColor = NCBrandColor.shared.iconImageColor
 
         let standardAppearance = UINavigationBarAppearance()
-        standardAppearance.configureWithDefaultBackground()
 
+        standardAppearance.configureWithDefaultBackground()
         standardAppearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.textColor]
         standardAppearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.textColor]
         standardAppearance.backgroundColor = .systemGray6
@@ -62,6 +61,8 @@ extension UINavigationController {
         scrollEdgeAppearance.backgroundColor = .systemGroupedBackground
         scrollEdgeAppearance.shadowColor = .clear
         scrollEdgeAppearance.shadowImage = UIImage()
+
         navigationBar.scrollEdgeAppearance = scrollEdgeAppearance
+        navigationBar.tintColor = NCBrandColor.shared.iconImageColor
     }
 }

@@ -59,6 +59,7 @@ class NCShareLinkCell: UITableViewCell {
         copyButton.setImage(UIImage(resource: .Share.internalLink).withTintColor(commonIconTint), for: .normal)
         copyButton.imageView?.contentMode = .scaleAspectFit
         menuButton.accessibilityLabel = NSLocalizedString("_more_", comment: "")
+        menuButton.accessibilityIdentifier = "showShareLinkDetails"
 
         if isInternalLink {
             labelTitle.text = NSLocalizedString("_share_internal_link_", comment: "")
@@ -73,6 +74,7 @@ class NCShareLinkCell: UITableViewCell {
             } else {
                 menuImageName = "plus"
                 menuButton.accessibilityLabel = NSLocalizedString("_add_", comment: "")
+                menuButton.accessibilityIdentifier = "addShareLink"
             }
 
             imageItem.image = UIImage(resource: .Share.linkCircleFill)

@@ -29,14 +29,11 @@ let userAgent: String = {
     return "Mozilla/5.0 (iOS) IONOS HiDrive Next/\(appVersion)"
 }()
 
-@objc class NCBrandOptions: NSObject {
-    @objc static let shared: NCBrandOptions = {
-        let instance = NCBrandOptionsIONOS()
-        return instance
-    }()
+final class NCBrandOptions: @unchecked Sendable {
+    static let shared = NCBrandOptionsIONOS()
 
     var brand: String = "Nextcloud"
-    var textCopyrightNextcloudiOS: String = "Nextcloud Hydrogen for iOS %@ © 2024"
+    var textCopyrightNextcloudiOS: String = "Nextcloud Hydrogen for iOS %@ © 2025"
     var textCopyrightNextcloudServer: String = "Nextcloud Server %@"
     var loginBaseUrl: String = "https://cloud.nextcloud.com"
     var pushNotificationServerProxy: String = "https://push-notifications.nextcloud.com"
@@ -56,10 +53,10 @@ let userAgent: String = {
     var capabilitiesGroupApps: String = "group.com.nextcloud.apps"
 
     // BRAND ONLY
-    @objc public var use_AppConfig: Bool = false                                                // Don't touch me !!
+    var use_AppConfig: Bool = false                                                         // Don't touch me !!
 
     // Use server theming color
-    @objc public var use_themingColor: Bool = true
+    var use_themingColor: Bool = true
 
     var disable_intro: Bool = false
     var disable_request_login_url: Bool = false
@@ -73,7 +70,6 @@ let userAgent: String = {
     var doNotAskPasscodeAtStartup: Bool = false
     var disable_source_code_in_settings: Bool = false
     var enforce_passcode_lock = false
-    var use_in_app_browser_for_login = false
 
     // (name: "Name 1", url: "https://cloud.nextcloud.com"),(name: "Name 2", url: "https://cloud.nextcloud.com")
     var enforce_servers: [(name: String, url: String)] = []
@@ -95,7 +91,7 @@ let userAgent: String = {
         case activity, sharing
     }
 
-    override init() {
+    init() {
         // wrapper AppConfig
         if let configurationManaged = UserDefaults.standard.dictionary(forKey: "com.apple.configuration.managed"), use_AppConfig {
             if let str = configurationManaged[NCGlobal.shared.configuration_brand] as? String {
@@ -123,6 +119,10 @@ let userAgent: String = {
                 enforce_passcode_lock = (str as NSString).boolValue
             }
         }
+
+#if DEBUG
+        pushNotificationServerProxy = "https://c0004.customerpush.nextcloud.com"
+#endif
     }
 
     @objc func getUserAgent() -> String {
@@ -130,11 +130,8 @@ let userAgent: String = {
     }
 }
 
-class NCBrandColor: NSObject {
-    static let shared: NCBrandColor = {
-        let instance = NCBrandColorIONOS()
-        return instance
-    }()
+final class NCBrandColor: @unchecked Sendable {
+    static let shared = NCBrandColorIONOS()
 
     /// This is rewrited from customet theme, default is Nextcloud color
     ///
@@ -179,7 +176,7 @@ class NCBrandColor: NSObject {
         }
     }
 
-    override init() { }
+    init() { }
 
     /**
      Generate colors from the official nextcloud color.

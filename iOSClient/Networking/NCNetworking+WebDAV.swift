@@ -95,6 +95,20 @@ extension NCNetworking {
             let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
             let metadata = self.database.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
 
+            // Remove all known download limits from shares related to the given file.
+            // This avoids obsolete download limit objects to stay around.
+            // Afterwards create new download limits, should any such be returned for the known shares.
+
+            let shares = self.database.getTableShares(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+
+            for share in shares {
+                self.database.deleteDownloadLimit(byAccount: metadata.account, shareToken: share.token)
+
+                if let receivedDownloadLimit = file.downloadLimits.first(where: { $0.token == share.token }) {
+                    self.database.createDownloadLimit(account: metadata.account, count: receivedDownloadLimit.count, limit: receivedDownloadLimit.limit, token: receivedDownloadLimit.token)
+                }
+            }
+
             completion(account, metadata, error)
         }
     }
@@ -312,6 +326,46 @@ extension NCNetworking {
         return result
     }
 
+    func createFolder(assets: [PHAsset],
+                      useSubFolder: Bool,
+                      session: NCSession.Session) async -> (Bool) {
+        let serverUrlFileName = self.database.getAccountAutoUploadDirectory(session: session) + "/" + self.database.getAccountAutoUploadFileName()
+
+        var result = await createFolder(serverUrlFileName: serverUrlFileName, account: session.account)
+
+        if (result.error == .success || result.error.errorCode == 405), useSubFolder {
+            let autoUploadPath = self.database.getAccountAutoUploadPath(session: session)
+            let autoUploadSubfolderGranularity = self.database.getAccountAutoUploadSubfolderGranularity()
+            let folders = Set(assets.map { utilityFileSystem.createGranularityPath(asset: $0) }).sorted()
+
+            for folder in folders {
+                let componentsDate = folder.split(separator: "/")
+                let year = componentsDate[0]
+                let serverUrlYear = autoUploadPath
+
+                result = await createFolder(serverUrlFileName: serverUrlYear + "/" + String(year), account: session.account)
+
+                if (result.error == .success || result.error.errorCode == 405), autoUploadSubfolderGranularity >= self.global.subfolderGranularityMonthly {
+                    let month = componentsDate[1]
+                    let serverUrlMonth = autoUploadPath + "/" + year
+
+                    result = await createFolder(serverUrlFileName: serverUrlMonth + "/" + String(month), account: session.account)
+
+                    if (result.error == .success || result.error.errorCode == 405), autoUploadSubfolderGranularity == self.global.subfolderGranularityDaily {
+                        let day = componentsDate[2]
+                        let serverUrlDay = autoUploadPath + "/" + year + "/" + month
+
+                        result = await createFolder(serverUrlFileName: serverUrlDay + "/" + String(day), account: session.account)
+                    }
+                }
+
+                if result.error != .success && result.error.errorCode != 405 { break }
+            }
+        }
+
+        return (result.error == .success || result.error.errorCode == 405)
+    }
+
     // MARK: - Delete
 
     func tapHudDelete() {
@@ -335,21 +389,21 @@ extension NCNetworking {
             self.database.deleteVideo(metadata: metadata)
             self.database.deleteLocalFileOcId(metadata.ocId)
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-            #if !EXTENSION
+#if !EXTENSION
             NCImageCache.shared.removeImageCache(ocIdPlusEtag: metadata.ocId + metadata.etag)
-            #endif
+#endif
         }
 
         self.tapHudStopDelete = false
 
         if metadata.directory {
-            #if !EXTENSION
+#if !EXTENSION
             if let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
                 await MainActor.run {
                     ncHud.initHudRing(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDelete)
                 }
             }
-            #endif
+#endif
             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
             let metadatas = self.database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, serverUrl))
             let total = Float(metadatas.count)
@@ -359,9 +413,9 @@ extension NCNetworking {
                 ncHud.progress(num: num, total: total)
                 if tapHudStopDelete { break }
             }
-            #if !EXTENSION
+#if !EXTENSION
             ncHud.dismiss()
-            #endif
+#endif
         } else {
             deleteLocalFile(metadata: metadata)
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl, "clearDataSource": true])

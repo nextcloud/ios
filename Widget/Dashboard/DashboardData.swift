@@ -131,7 +131,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     // NETWORKING
     let password = NCKeychain().getPassword(account: activeTableAccount.account)
 
-    NextcloudKit.shared.setup(delegate: NCNetworking.shared)
+    NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup, delegate: NCNetworking.shared)
     NextcloudKit.shared.appendSession(account: activeTableAccount.account,
                                       urlBase: activeTableAccount.urlBase,
                                       user: activeTableAccount.user,
@@ -146,16 +146,11 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
 
     // LOG
     let levelLog = NCKeychain().logLevel
-    let isSimulatorOrTestFlight = utility.isSimulatorOrTestFlight()
     let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
 
     NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
     NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
-    if isSimulatorOrTestFlight {
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start \(NCBrandOptions.shared.brand) dashboard widget session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
-    } else {
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start \(NCBrandOptions.shared.brand) dashboard widget session with level \(levelLog) " + versionNextcloudiOS)
-    }
+    NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start \(NCBrandOptions.shared.brand) dashboard widget session with level \(levelLog) " + versionNextcloudiOS)
 
     let (tableDashboard, tableButton) = NCManageDatabase.shared.getDashboardWidget(account: activeTableAccount.account, id: id)
     let existsButton = (tableButton?.isEmpty ?? true) ? false : true

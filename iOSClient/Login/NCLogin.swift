@@ -60,8 +60,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     var pollTimer: DispatchSourceTimer?
 
-    var ncLoginPollModel = NCLoginPollModel()
-
     var loginFlowInProgress = false
 
     // MARK: - View Life Cycle
@@ -404,7 +402,9 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
             documentProviderMenu.delegate = self
             self.present(documentProviderMenu, animated: true, completion: nil)
         }))
-        present(alertNoCertFound, animated: true)
+        DispatchQueue.main.async {
+            self.present(alertNoCertFound, animated: true)
+        }
     }
 
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
@@ -418,7 +418,9 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
         alertEnterPassword.addTextField { textField in
             textField.isSecureTextEntry = true
         }
-        present(alertEnterPassword, animated: true)
+        DispatchQueue.main.async {
+            self.present(alertEnterPassword, animated: true)
+        }
     }
 
     func onIncorrectPassword() {
@@ -426,7 +428,9 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
         NCNetworking.shared.p12Password = nil
         let alertWrongPassword = UIAlertController(title: NSLocalizedString("_client_cert_wrong_password_", comment: ""), message: "", preferredStyle: .alert)
         alertWrongPassword.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default))
-        present(alertWrongPassword, animated: true)
+        DispatchQueue.main.async {
+            self.present(alertWrongPassword, animated: true)
+        }
     }
 
     func poll(loginFlowV2Token: String, loginFlowV2Endpoint: String, loginFlowV2Login: String) {
@@ -439,10 +443,10 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
         timer.setEventHandler(handler: {
             DispatchQueue.main.async {
                 let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
-                NextcloudKit.shared.getLoginFlowV2Poll(token: loginFlowV2Token, endpoint: loginFlowV2Endpoint) { [self] server, loginName, appPassword, _, error in
+                let loginOptions = NKRequestOptions(customUserAgent: userAgent)
+                NextcloudKit.shared.getLoginFlowV2Poll(token: loginFlowV2Token, endpoint: loginFlowV2Endpoint, options: loginOptions) { [self] server, loginName, appPassword, _, error in
                     if error == .success, let urlBase = server, let user = loginName, let appPassword {
                         loginFlowInProgress = true
-                        ncLoginPollModel.isLoading = true
 
                         NCAccount().createAccount(urlBase: urlBase, user: user, password: appPassword, controller: controller) { account, error in
 

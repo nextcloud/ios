@@ -28,7 +28,7 @@ import LRUCache
 import NextcloudKit
 import RealmSwift
 
-class NCImageCache: NSObject {
+final class NCImageCache: @unchecked Sendable {
     static let shared = NCImageCache()
 
     private let utility = NCUtility()
@@ -45,9 +45,7 @@ class NCImageCache: NSObject {
     public var isLoadingCache: Bool = false
     var isDidEnterBackground: Bool = false
 
-    override init() {
-        super.init()
-
+    init() {
         NotificationCenter.default.addObserver(forName: LRUCacheMemoryWarningNotification, object: nil, queue: nil) { _ in
             self.cache.removeAllValues()
             self.cache = LRUCache<String, UIImage>(countLimit: self.countLimit)
@@ -84,7 +82,7 @@ class NCImageCache: NSObject {
                     self.isLoadingCache = true
 
                     /// MEDIA
-                    if let metadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: self.getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: false, showOnlyVideos: false), sortedByKeyPath: "date", freeze: true)?.prefix(self.countLimit) {
+                    if let metadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: self.getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: false, showOnlyVideos: false), sortedByKeyPath: "datePhotosOriginal", freeze: true)?.prefix(self.countLimit) {
                         autoreleasepool {
                             self.cache.removeAllValues()
 

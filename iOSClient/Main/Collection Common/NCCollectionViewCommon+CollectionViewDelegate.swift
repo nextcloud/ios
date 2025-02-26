@@ -89,7 +89,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                         if error == .success || afError?.isExplicitlyCancelledError ?? false {
                             hud.dismiss()
                         } else {
-                            hud.error(text: error.description)
+                            hud.error(text: error.errorDescription)
                         }
                     }
                 } else if !metadata.url.isEmpty {

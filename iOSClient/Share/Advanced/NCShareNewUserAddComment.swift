@@ -23,7 +23,7 @@
 import UIKit
 import NextcloudKit
 
-class NCShareNewUserAddComment: UIViewController, NCShareDetail {
+class NCShareNewUserAddComment: UIViewController, NCShareNavigationTitleSetting {
 
     @IBOutlet weak var headerContainerView: UIView!
     @IBOutlet weak var sharingLabel: UILabel!
@@ -32,7 +32,7 @@ class NCShareNewUserAddComment: UIViewController, NCShareDetail {
     let contentInsets: CGFloat = 16
     var onDismiss: (() -> Void)?
 
-    public var share: NCTableShareable!
+    public var share: Shareable!
     public var metadata: tableMetadata!
 
     override func viewDidLoad() {

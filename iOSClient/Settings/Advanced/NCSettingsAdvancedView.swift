@@ -251,6 +251,7 @@ struct NCSettingsAdvancedView: View {
             }).applyGlobalFormSectionStyle()
         }
         .navigationBarTitle(NSLocalizedString("_advanced_", comment: ""))
+        .navigationBarTitleDisplayMode(.inline)
         .defaultViewModifier(model)
         .applyGlobalFormStyle()
     }

@@ -28,6 +28,7 @@ import UIKit
 import NextcloudKit
 
 class NCMenuAction {
+    let accessibilityIdentifier: String?
     let title: String
     let boldTitle: Bool
     let details: String?
@@ -43,7 +44,9 @@ class NCMenuAction {
     var order: Int = 0
 	var isHeader = false
 
-	init(title: String, boldTitle: Bool = false, destructive: Bool = false, details: String? = nil, icon: UIImage, isHeader: Bool = false, order: Int = 0, action: ((_ menuAction: NCMenuAction) -> Void)?) {
+
+    init(title: String, boldTitle: Bool = false, destructive: Bool = false, details: String? = nil, icon: UIImage, order: Int = 0, accessibilityIdentifier: String? = nil, action: ((_ menuAction: NCMenuAction) -> Void)?) {
+        self.accessibilityIdentifier = accessibilityIdentifier
         self.title = title
         self.boldTitle = boldTitle
         self.destructive = destructive
@@ -55,7 +58,8 @@ class NCMenuAction {
         self.order = order
     }
 
-    init(title: String, boldTitle: Bool = false, destructive: Bool = false, details: String? = nil, icon: UIImage, onTitle: String? = nil, onIcon: UIImage? = nil, selected: Bool, on: Bool, order: Int = 0, action: ((_ menuAction: NCMenuAction) -> Void)?) {
+    init(title: String, boldTitle: Bool = false, destructive: Bool = false, details: String? = nil, icon: UIImage, onTitle: String? = nil, onIcon: UIImage? = nil, selected: Bool, on: Bool, order: Int = 0, accessibilityIdentifier: String? = nil, action: ((_ menuAction: NCMenuAction) -> Void)?) {
+        self.accessibilityIdentifier = accessibilityIdentifier
         self.title = title
         self.boldTitle = boldTitle
         self.destructive = destructive
@@ -204,7 +208,7 @@ extension NCMenuAction {
                 for metadata in selectedMetadatas {
                     if let sceneIdentifier = metadata.sceneIdentifier,
                        let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier),
-                       let checkError = FileNameValidator.shared.checkFileName(metadata.fileNameView, account: controller.account) {
+                       let checkError = FileNameValidator.checkFileName(metadata.fileNameView, account: controller.account) {
 
                         fileNameError = checkError
                         break

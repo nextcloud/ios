@@ -41,6 +41,28 @@ class NCShareNetworking: NSObject {
         super.init()
     }
 
+    private func readDownloadLimit(account: String, token: String) async throws -> NKDownloadLimit? {
+        return try await withCheckedThrowingContinuation { continuation in
+            NextcloudKit.shared.getDownloadLimit(account: account, token: token) { limit, error in
+                if error != .success {
+                    continuation.resume(throwing: error.error)
+                    return
+                } else {
+                    continuation.resume(returning: limit)
+                }
+            }
+        }
+    }
+
+    func readDownloadLimits(account: String, tokens: [String]) async throws {
+        for token in tokens {
+            self.database.deleteDownloadLimit(byAccount: account, shareToken: token)
+            if let downloadLimit = try await readDownloadLimit(account: account, token: token) {
+                self.database.createDownloadLimit(account: account, count: downloadLimit.count, limit: downloadLimit.limit, token: token)
+            }
+        }
+    }
+
     func readShare(showLoadingIndicator: Bool) {
         if showLoadingIndicator {
             NCActivityIndicator.shared.start(backgroundView: view)
@@ -53,6 +75,7 @@ class NCShareNetworking: NSObject {
                 self.database.deleteTableShare(account: account, path: "/" + filenamePath)
                 let home = self.utilityFileSystem.getHomeServer(session: self.session)
                 self.database.addShare(account: self.metadata.account, home: home, shares: shares)
+
                 NextcloudKit.shared.getGroupfolders(account: account) { account, results, _, error in
                     if showLoadingIndicator {
                         NCActivityIndicator.shared.stop()
@@ -60,7 +83,11 @@ class NCShareNetworking: NSObject {
                     if error == .success, let groupfolders = results {
                         self.database.addGroupfolders(account: account, groupfolders: groupfolders)
                     }
-                    self.delegate?.readShareCompleted()
+
+                    Task {
+                        try await self.readDownloadLimits(account: account, tokens: shares.map(\.token))
+                        self.delegate?.readShareCompleted()
+                    }
                 }
             } else {
                 if showLoadingIndicator {
@@ -72,29 +99,33 @@ class NCShareNetworking: NSObject {
         }
     }
 
-    func createShare(option: NCTableShareable) {
+    func createShare(_ template: Shareable, downloadLimit: DownloadLimitViewModel) {
         // NOTE: Permissions don't work for creating with file drop!
         // https://github.com/nextcloud/server/issues/17504
-
-        // NOTE: Can't save label and expirationDate in the same request.
-        // Library update needed:
-        // https://github.com/nextcloud/ios-communication-library/pull/104
 
         NCActivityIndicator.shared.start(backgroundView: view)
         let filenamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
 
-        NextcloudKit.shared.createShare(path: filenamePath, shareType: option.shareType, shareWith: option.shareWith, password: option.password, note: option.note, permissions: option.permissions, attributes: option.attributes, account: metadata.account) { _, share, _, error in
+        NextcloudKit.shared.createShare(path: filenamePath, shareType: template.shareType, shareWith: template.shareWith, password: template.password, note: template.note, permissions: template.permissions, attributes: template.attributes, account: metadata.account) { _, share, _, error in
             NCActivityIndicator.shared.stop()
+
             if error == .success, let share = share {
-                option.idShare = share.idShare
+                template.idShare = share.idShare
                 let home = self.utilityFileSystem.getHomeServer(session: self.session)
                 self.database.addShare(account: self.metadata.account, home: home, shares: [share])
-                if option.hasChanges(comparedTo: share) {
-                    self.updateShare(option: option)
+
+                if template.hasChanges(comparedTo: share) {
+                    self.updateShare(template, downloadLimit: downloadLimit)
+                    // Download limit update should happen implicitly on share update.
+                } else {
+                    if case let .limited(limit, count) = downloadLimit {
+                        self.setShareDownloadLimit(limit, token: share.token)
+                    }
                 }
             } else {
                 self.showAlert(with: error)
             }
+
             self.delegate?.shareCompleted()
         }
     }
@@ -103,6 +134,7 @@ class NCShareNetworking: NSObject {
         NCActivityIndicator.shared.start(backgroundView: view)
         NextcloudKit.shared.deleteShare(idShare: idShare, account: metadata.account) { account, _, error in
             NCActivityIndicator.shared.stop()
+
             if error == .success {
                 self.database.deleteTableShare(account: account, idShare: idShare)
                 self.delegate?.unShareCompleted()
@@ -112,14 +144,21 @@ class NCShareNetworking: NSObject {
         }
     }
 
-    func updateShare(option: NCTableShareable) {
+    func updateShare(_ option: Shareable, downloadLimit: DownloadLimitViewModel) {
         NCActivityIndicator.shared.start(backgroundView: view)
-        NextcloudKit.shared.updateShare(idShare: option.idShare, password: option.password, expireDate: option.expDateString, permissions: option.permissions, note: option.note, label: option.label, hideDownload: option.hideDownload, attributes: option.attributes, account: metadata.account) { _, share, _, error in
+        NextcloudKit.shared.updateShare(idShare: option.idShare, password: option.password, expireDate: option.formattedDateString, permissions: option.permissions, note: option.note, label: option.label, hideDownload: option.hideDownload, attributes: option.attributes, account: metadata.account) { _, share, _, error in
             NCActivityIndicator.shared.stop()
+
             if error == .success, let share = share {
                 let home = self.utilityFileSystem.getHomeServer(session: self.session)
                 self.database.addShare(account: self.metadata.account, home: home, shares: [share])
                 self.delegate?.readShareCompleted()
+
+                if case let .limited(limit, count) = downloadLimit {
+                    self.setShareDownloadLimit(limit, token: share.token)
+                } else {
+                    self.removeShareDownloadLimit(token: share.token)
+                }
             } else {
                 self.showAlert(with: error)
                 self.delegate?.updateShareWithError(idShare: option.idShare)
@@ -131,6 +170,7 @@ class NCShareNetworking: NSObject {
         NCActivityIndicator.shared.start(backgroundView: view)
         NextcloudKit.shared.searchSharees(search: searchString, account: metadata.account) { _, sharees, _, error in
             NCActivityIndicator.shared.stop()
+
             if error == .success {
                 self.delegate?.getSharees(sharees: sharees)
             } else {
@@ -139,39 +179,43 @@ class NCShareNetworking: NSObject {
             }
         }
     }
-    
-    private func showAlert(with error: NKError) {
-        if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled { return }
+
+    // MARK: - Download Limit
+
+    ///
+    /// Remove the download limit on the share, if existent.
+    ///
+    func removeShareDownloadLimit(token: String) {
+        NCActivityIndicator.shared.start(backgroundView: view)
         
-        let title = "_error_"
-        
-        switch error.errorCode {
-        case Int(CFNetworkErrors.cfurlErrorNotConnectedToInternet.rawValue):
-            NCContentPresenter().showError(error: error)
-        default:
-            var responseMessage = ""
-            if let data = error.responseData {
-                do {
-                    if let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: Any],
-                       let message = json["message"] as? String {
-                        responseMessage = "\n\n" + message
-                    }
-                } catch {
-                    print("Something went wrong")
-                }
+        NextcloudKit.shared.removeShareDownloadLimit(account: metadata.account, token: token) { error in
+            NCActivityIndicator.shared.stop()
+
+            if error == .success {
+                self.delegate?.downloadLimitRemoved(by: token)
+            } else {
+                NCContentPresenter().showError(error: error)
             }
-            if error.errorDescription.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { return }
-            let description = NSLocalizedString(error.errorDescription, comment: "")
-            self.delegate?.showOKAlert(title: NSLocalizedString(title, comment: ""), message: description + responseMessage)
         }
     }
-}
 
-protocol NCShareNetworkingDelegate: AnyObject {
-    func readShareCompleted()
-    func shareCompleted()
-    func unShareCompleted()
-    func updateShareWithError(idShare: Int)
-    func getSharees(sharees: [NKSharee]?)
-    func showOKAlert(title: String?, message: String?)
+    ///
+    /// Set the download limit for the share.
+    ///
+    /// - Parameter limit: The new download limit to set.
+    ///
+    func setShareDownloadLimit(_ limit: Int, token: String) {
+        NCActivityIndicator.shared.start(backgroundView: view)
+
+        NextcloudKit.shared.setShareDownloadLimit(account: metadata.account, token: token, limit: limit) { error in
+            NCActivityIndicator.shared.stop()
+
+            if error == .success {
+                self.delegate?.downloadLimitSet(to: limit, by: token)
+            } else {
+                self.delegate?.downloadLimitRemoved(by: token)
+                NCContentPresenter().showError(error: error)
+            }
+        }
+    }
 }

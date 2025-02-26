@@ -189,6 +189,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneDidEnterBackground(_ scene: UIScene) {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene did enter in background")
+        database.backupTableAccountToFile()
         let session = SceneManager.shared.getSession(scene: scene)
         guard let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
             return
@@ -435,7 +436,7 @@ extension SceneDelegate: NCAccountRequestDelegate {
 
 // MARK: - Scene Manager
 
-class SceneManager {
+final class SceneManager: @unchecked Sendable {
     static let shared = SceneManager()
     private var sceneController: [NCMainTabBarController: UIScene] = [:]
 

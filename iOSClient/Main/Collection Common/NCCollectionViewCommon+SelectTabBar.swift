@@ -127,6 +127,10 @@ extension NCCollectionViewCommon: HiDriveCollectionViewCommonSelectToolbarDelega
         isEditMode = editMode
         fileSelect.removeAll()
 
+        navigationItem.hidesBackButton = editMode
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = !editMode
+        searchController(enabled: !editMode)
+
         if editMode {
             navigationItem.leftBarButtonItems = nil
         } else {
@@ -134,9 +138,6 @@ extension NCCollectionViewCommon: HiDriveCollectionViewCommonSelectToolbarDelega
         }
         (self.navigationController as? HiDriveMainNavigationController)?.setNavigationRightItems()
 
-        navigationController?.interactivePopGestureRecognizer?.isEnabled = !editMode
-        navigationItem.hidesBackButton = editMode
-        searchController(enabled: !editMode)
         self.collectionView.reloadData()
     }
     

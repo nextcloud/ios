@@ -80,6 +80,7 @@ struct NCDisplayView: View {
             .pickerStyle(.menu)
         }
         .navigationBarTitle(NSLocalizedString("_display_", comment: ""))
+        .navigationBarTitleDisplayMode(.inline)
         .defaultViewModifier(model)
         .padding(.top, 0)
     }

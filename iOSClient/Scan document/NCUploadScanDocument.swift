@@ -379,7 +379,7 @@ struct UploadScanDocumentView: View {
                                 .onChange(of: fileName) { _ in
                                     let controller = (UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController)
 
-                                    if let fileNameError = FileNameValidator.shared.checkFileName(fileName, account: controller?.account) {
+                                    if let fileNameError = FileNameValidator.checkFileName(fileName, account: controller?.account) {
                                         footer = fileNameError.errorDescription
                                     } else {
                                         footer = ""

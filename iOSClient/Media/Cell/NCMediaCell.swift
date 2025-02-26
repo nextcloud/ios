@@ -31,7 +31,7 @@ class NCMediaCell: UICollectionViewCell {
     @IBOutlet weak var imageStatus: UIImageView!
 
     var ocId: String = ""
-    var date: Date?
+    var datePhotosOriginal: Date?
 
     override func awakeFromNib() {
         super.awakeFromNib()
