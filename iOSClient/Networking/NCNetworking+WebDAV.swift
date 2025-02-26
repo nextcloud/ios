@@ -261,6 +261,7 @@ extension NCNetworking {
 
     func createFolder(assets: [PHAsset],
                       useSubFolder: Bool,
+                      selector: String,
                       session: NCSession.Session) {
         let serverUrl = self.database.getAccountAutoUploadDirectory(session: session)
         let fileName = self.database.getAccountAutoUploadFileName()
@@ -276,6 +277,7 @@ extension NCNetworking {
                                                                              sceneIdentifier: nil)
 
         metadataForCreateFolder.status = NCGlobal.shared.metadataStatusWaitCreateFolder
+        metadataForCreateFolder.sessionSelector = selector
         metadataForCreateFolder.sessionDate = Date()
         NCManageDatabase.shared.addMetadata(metadataForCreateFolder)
 
@@ -300,6 +302,7 @@ extension NCNetworking {
                                                                                      sceneIdentifier: nil)
 
                 metadataForCreateFolder.status = NCGlobal.shared.metadataStatusWaitCreateFolder
+                metadataForCreateFolder.sessionSelector = selector
                 metadataForCreateFolder.sessionDate = Date()
                 NCManageDatabase.shared.addMetadata(metadataForCreateFolder)
 
@@ -318,6 +321,7 @@ extension NCNetworking {
                                                                                          sceneIdentifier: nil)
 
                     metadataForCreateFolder.status = NCGlobal.shared.metadataStatusWaitCreateFolder
+                    metadataForCreateFolder.sessionSelector = selector
                     metadataForCreateFolder.sessionDate = Date()
                     NCManageDatabase.shared.addMetadata(metadataForCreateFolder)
 
@@ -336,9 +340,9 @@ extension NCNetworking {
                                                                                              sceneIdentifier: nil)
 
                         metadataForCreateFolder.status = NCGlobal.shared.metadataStatusWaitCreateFolder
+                        metadataForCreateFolder.sessionSelector = selector
                         metadataForCreateFolder.sessionDate = Date()
                         NCManageDatabase.shared.addMetadata(metadataForCreateFolder)
-
                     }
                 }
             }
