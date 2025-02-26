@@ -132,16 +132,6 @@ extension NCNetworking {
         })
     }
 
-    /*
-    func createFolder(metadata: tableMetadata) async -> NKError {
-        await withUnsafeContinuation({ continuation in
-            self.createFolder(fileName: metadata.fileName, serverUrl: metadata.serverUrl, overwrite: true, withPush: false, metadata: metadata, sceneIdentifier: nil, session: NCSession.shared.getSession(account: metadata.account)) { error in
-                continuation.resume(returning: error)
-            }
-        })
-    }
-    */
-
     func setFavorite(fileName: String, favorite: Bool, account: String) async -> NKError {
         await withUnsafeContinuation({ continuation in
             NextcloudKit.shared.setFavorite(fileName: fileName, favorite: favorite, account: account) { _, _, error in
