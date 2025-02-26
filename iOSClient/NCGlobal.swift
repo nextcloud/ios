@@ -277,7 +277,6 @@ final class NCGlobal: Sendable {
     let metadataStatusFileDown                  = [-1, -2, -3]
     let metadataStatusHideInView                = [1, 2, 3, 11]
     let metadataStatusHideInFileExtension       = [1, 2, 3, 10, 11]
-
     let metadataStatusWaitWebDav                = [10, 11, 12, 13, 14, 15]
 
     // Auto upload subfolder granularity
