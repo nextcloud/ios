@@ -97,15 +97,8 @@ class NCAutoUpload: NSObject {
             var num: Float = 0
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload, new \(assets.count) assets found [" + log + "]")
-            // Create the folder for auto upload & if request the subfolders
-            self.hud.setText(text: NSLocalizedString("_creating_dir_progress_", comment: ""))
-            if !NCNetworking.shared.createFolder(assets: assets, useSubFolder: tableAccount.autoUploadCreateSubfolder, withPush: false, hud: self.hud, session: session) {
-                if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
-                    let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_createsubfolders_upload_")
-                    NCContentPresenter().showError(error: error, priority: .max)
-                }
-                return completion(0)
-            }
+
+            NCNetworking.shared.createFolder(assets: assets, useSubFolder: tableAccount.autoUploadCreateSubfolder, session: session)
 
             self.hud.setText(text: NSLocalizedString("_creating_db_photo_progress", comment: ""))
             self.hud.progress(0.0)

@@ -262,78 +262,27 @@ extension NCNetworking {
         }
     }
 
-    func createFolder(assets: [PHAsset]?,
-                      useSubFolder: Bool,
-                      withPush: Bool,
-                      sceneIdentifier: String? = nil,
-                      hud: NCHud? = nil,
-                      session: NCSession.Session) -> Bool {
-        let autoUploadPath = self.database.getAccountAutoUploadPath(session: session)
-        let serverUrlBase = self.database.getAccountAutoUploadDirectory(session: session)
-        let fileNameBase = self.database.getAccountAutoUploadFileName()
-        let autoUploadSubfolderGranularity = self.database.getAccountAutoUploadSubfolderGranularity()
-
-        func createFolder(fileName: String, serverUrl: String) -> Bool {
-            var result: Bool = false
-            let semaphore = DispatchSemaphore(value: 0)
-            self.createFolder(fileName: fileName, serverUrl: serverUrl, overwrite: true, withPush: withPush, metadata: nil, sceneIdentifier: sceneIdentifier, session: session) { error in
-                if error == .success { result = true }
-                semaphore.signal()
-            }
-            semaphore.wait()
-            return result
-        }
-
-        func createNameSubFolder() -> [String] {
-            var datesSubFolder: [String] = []
-            if let assets {
-                for asset in assets {
-                    datesSubFolder.append(utilityFileSystem.createGranularityPath(asset: asset))
-                }
-            } else {
-                datesSubFolder.append(utilityFileSystem.createGranularityPath())
-            }
-
-            return Array(Set(datesSubFolder)).sorted()
-        }
-
-        var result = createFolder(fileName: fileNameBase, serverUrl: serverUrlBase)
-
-        if useSubFolder && result {
-            let folders = createNameSubFolder()
-            var num: Float = 0
-            for dateSubFolder in folders {
-                let subfolderArray = dateSubFolder.split(separator: "/")
-                let year = subfolderArray[0]
-                let serverUrlYear = autoUploadPath
-                result = createFolder(fileName: String(year), serverUrl: serverUrlYear)  // Year always present independently of preference value
-                if result && autoUploadSubfolderGranularity >= self.global.subfolderGranularityMonthly {
-                    let month = subfolderArray[1]
-                    let serverUrlMonth = autoUploadPath + "/" + year
-                    result = createFolder(fileName: String(month), serverUrl: serverUrlMonth)
-                    if result && autoUploadSubfolderGranularity == self.global.subfolderGranularityDaily {
-                        let day = subfolderArray[2]
-                        let serverUrlDay = autoUploadPath + "/" + year + "/" + month
-                        result = createFolder(fileName: String(day), serverUrl: serverUrlDay)
-                    }
-                }
-                if !result { break }
-                num += 1
-                hud?.progress(num: num, total: Float(folders.count))
-            }
-        }
-
-        return result
-    }
-
     func createFolder(assets: [PHAsset],
                       useSubFolder: Bool,
-                      session: NCSession.Session) async -> (Bool) {
-        let serverUrlFileName = self.database.getAccountAutoUploadDirectory(session: session) + "/" + self.database.getAccountAutoUploadFileName()
+                      session: NCSession.Session) {
+        let serverUrl = self.database.getAccountAutoUploadDirectory(session: session)
+        let fileName = self.database.getAccountAutoUploadFileName()
 
-        var result = await createFolder(serverUrlFileName: serverUrlFileName, account: session.account)
+        let metadataForCreateFolder = NCManageDatabase.shared.createMetadata(fileName: fileName,
+                                                                             fileNameView: fileName,
+                                                                             ocId: NSUUID().uuidString,
+                                                                             serverUrl: serverUrl,
+                                                                             url: "",
+                                                                             contentType: "httpd/unix-directory",
+                                                                             directory: true,
+                                                                             session: session,
+                                                                             sceneIdentifier: nil)
 
-        if (result.error == .success || result.error.errorCode == 405), useSubFolder {
+        metadataForCreateFolder.status = NCGlobal.shared.metadataStatusWaitCreateFolder
+        metadataForCreateFolder.sessionDate = Date()
+        NCManageDatabase.shared.addMetadata(metadataForCreateFolder)
+
+        if useSubFolder {
             let autoUploadPath = self.database.getAccountAutoUploadPath(session: session)
             let autoUploadSubfolderGranularity = self.database.getAccountAutoUploadSubfolderGranularity()
             let folders = Set(assets.map { utilityFileSystem.createGranularityPath(asset: $0) }).sorted()
@@ -343,27 +292,60 @@ extension NCNetworking {
                 let year = componentsDate[0]
                 let serverUrlYear = autoUploadPath
 
-                result = await createFolder(serverUrlFileName: serverUrlYear + "/" + String(year), account: session.account)
+                let metadataForCreateFolder = NCManageDatabase.shared.createMetadata(fileName: String(year),
+                                                                                     fileNameView: String(year),
+                                                                                     ocId: NSUUID().uuidString,
+                                                                                     serverUrl: serverUrlYear,
+                                                                                     url: "",
+                                                                                     contentType: "httpd/unix-directory",
+                                                                                     directory: true,
+                                                                                     session: session,
+                                                                                     sceneIdentifier: nil)
 
-                if (result.error == .success || result.error.errorCode == 405), autoUploadSubfolderGranularity >= self.global.subfolderGranularityMonthly {
+                metadataForCreateFolder.status = NCGlobal.shared.metadataStatusWaitCreateFolder
+                metadataForCreateFolder.sessionDate = Date()
+                NCManageDatabase.shared.addMetadata(metadataForCreateFolder)
+
+                if autoUploadSubfolderGranularity >= self.global.subfolderGranularityMonthly {
                     let month = componentsDate[1]
                     let serverUrlMonth = autoUploadPath + "/" + year
 
-                    result = await createFolder(serverUrlFileName: serverUrlMonth + "/" + String(month), account: session.account)
+                    let metadataForCreateFolder = NCManageDatabase.shared.createMetadata(fileName: String(month),
+                                                                                         fileNameView: String(month),
+                                                                                         ocId: NSUUID().uuidString,
+                                                                                         serverUrl: serverUrlMonth,
+                                                                                         url: "",
+                                                                                         contentType: "httpd/unix-directory",
+                                                                                         directory: true,
+                                                                                         session: session,
+                                                                                         sceneIdentifier: nil)
 
-                    if (result.error == .success || result.error.errorCode == 405), autoUploadSubfolderGranularity == self.global.subfolderGranularityDaily {
+                    metadataForCreateFolder.status = NCGlobal.shared.metadataStatusWaitCreateFolder
+                    metadataForCreateFolder.sessionDate = Date()
+                    NCManageDatabase.shared.addMetadata(metadataForCreateFolder)
+
+                    if autoUploadSubfolderGranularity == self.global.subfolderGranularityDaily {
                         let day = componentsDate[2]
                         let serverUrlDay = autoUploadPath + "/" + year + "/" + month
 
-                        result = await createFolder(serverUrlFileName: serverUrlDay + "/" + String(day), account: session.account)
+                        let metadataForCreateFolder = NCManageDatabase.shared.createMetadata(fileName: String(day),
+                                                                                             fileNameView: String(day),
+                                                                                             ocId: NSUUID().uuidString,
+                                                                                             serverUrl: serverUrlDay,
+                                                                                             url: "",
+                                                                                             contentType: "httpd/unix-directory",
+                                                                                             directory: true,
+                                                                                             session: session,
+                                                                                             sceneIdentifier: nil)
+
+                        metadataForCreateFolder.status = NCGlobal.shared.metadataStatusWaitCreateFolder
+                        metadataForCreateFolder.sessionDate = Date()
+                        NCManageDatabase.shared.addMetadata(metadataForCreateFolder)
+
                     }
                 }
-
-                if result.error != .success && result.error.errorCode != 405 { break }
             }
         }
-
-        return (result.error == .success || result.error.errorCode == 405)
     }
 
     // MARK: - Delete
