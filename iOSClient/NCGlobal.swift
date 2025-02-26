@@ -277,8 +277,6 @@ final class NCGlobal: Sendable {
     let metadataStatusFileDown                  = [-1, -2, -3]
     let metadataStatusHideInView                = [1, 2, 3, 11]
     let metadataStatusHideInFileExtension       = [1, 2, 3, 10, 11]
-    // let metadataStatusObserveNetworkingProcess  = [-1, 1, 10, 11, 12, 13, 14, 15]
-    // let metadataStatusObserveTrasfers           = [-2, 2, 10, 11, 12, 13, 14, 15]
 
     let metadataStatusWaitWebDav                = [10, 11, 12, 13, 14, 15]
 

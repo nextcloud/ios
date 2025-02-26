@@ -41,7 +41,6 @@ class NCNetworkingProcess {
 
     private init() {
         self.startTimer()
-        // self.startObserveTableMetadata()
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayerIsPlaying), object: nil, queue: nil) { _ in
 
@@ -53,40 +52,6 @@ class NCNetworkingProcess {
             self.enableControllingScreenAwake = true
         }
     }
-
-    /*
-    private func startObserveTableMetadata() {
-        do {
-            let realm = try Realm()
-            let results = realm.objects(tableMetadata.self).filter(NSPredicate(format: "status IN %@", global.metadataStatusObserveNetworkingProcess))
-            notificationToken = results.observe { [weak self] (changes: RealmCollectionChange) in
-                switch changes {
-                case .initial:
-                    print("Initial")
-                case .update(_, _, let insertions, let modifications):
-                    if insertions.count > 0 || modifications.count > 0 {
-                        guard let self else { return }
-                        self.startTimer()
-                        self.lockQueue.async {
-                            guard !self.hasRun, self.networking.isOnline else { return }
-                            self.hasRun = true
-
-                            Task { [weak self] in
-                                guard let self else { return }
-                                await self.start()
-                                self.hasRun = false
-                            }
-                        }
-                    }
-                case .error(let error):
-                    print("Error: \(error.localizedDescription)")
-                }
-            }
-        } catch let error {
-            print("Error: \(error.localizedDescription)")
-        }
-    }
-    */
 
     private func startTimer() {
         self.timerProcess?.invalidate()
@@ -469,7 +434,6 @@ class NCNetworkingProcess {
 
     func startProcess() {
         startTimer()
-        // startObserveTableMetadata()
     }
 
     func stopProcess() {
