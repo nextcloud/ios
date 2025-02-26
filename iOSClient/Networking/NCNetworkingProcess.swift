@@ -312,7 +312,7 @@ class NCNetworkingProcess {
         ///
         if let metadatasWaitCreateFolder = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCreateFolder), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitCreateFolder.isEmpty {
             for metadata in metadatasWaitCreateFolder {
-                let error = await networking.createFolder(metadata: metadata)
+                let error = await networking.createFolder(fileName: metadata.fileName, serverUrl: metadata.serverUrl, overwrite: true, withPush: false, metadata: metadata, sceneIdentifier: nil, session: NCSession.shared.getSession(account: metadata.account))
 
                 if error != .success {
                     if metadata.sessionError.isEmpty {
