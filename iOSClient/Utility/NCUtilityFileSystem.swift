@@ -615,37 +615,46 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     }
 
     func cleanUp(directory: String, days: TimeInterval) {
-        if days == 0 { return}
-        let minimumDate = Date().addingTimeInterval(-days * 24 * 60 * 60)
-        let url = URL(fileURLWithPath: directory)
-        var offlineDir: [String] = []
+        DispatchQueue.global().async {
+            if days == 0 { return}
+            let minimumDate = Date().addingTimeInterval(-days * 24 * 60 * 60)
+            let url = URL(fileURLWithPath: directory)
+            var offlineDir: [String] = []
 
-        if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "offline == true"), sorted: "serverUrl", ascending: true) {
-            for directory: tableDirectory in directories {
-                offlineDir.append(getDirectoryProviderStorageOcId(directory.ocId))
+            if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "offline == true"), sorted: "serverUrl", ascending: true) {
+                for directory: tableDirectory in directories {
+                    offlineDir.append(self.getDirectoryProviderStorageOcId(directory.ocId))
+                }
             }
-        }
-        let resultsLocalFile = NCManageDatabase.shared.getResultsTableLocalFile(predicate: NSPredicate(format: "offline == false"), sorted: "lastOpeningDate", ascending: true)
+            let resultsLocalFile = NCManageDatabase.shared.getResultsTableLocalFile(predicate: NSPredicate(format: "offline == false"), sorted: "lastOpeningDate", ascending: true)
 
-        let manager = FileManager.default
-        if let enumerator = manager.enumerator(at: url, includingPropertiesForKeys: [.isRegularFileKey], options: []) {
-            for case let fileURL as URL in enumerator {
-                if let attributes = try? manager.attributesOfItem(atPath: fileURL.path) {
-                    if attributes[.size] as? Double == 0 { continue }
-                    if attributes[.type] as? FileAttributeType == FileAttributeType.typeDirectory { continue }
-                    if fileURL.pathExtension == "ico" { continue }
-                    // check directory offline
-                    let filter = offlineDir.filter({ fileURL.path.hasPrefix($0)})
-                    if !filter.isEmpty { continue }
-                    // -----------------------
-                    let folderURL = fileURL.deletingLastPathComponent()
-                    let ocId = folderURL.lastPathComponent
-                    if let result = resultsLocalFile?.filter({ $0.ocId == ocId }).first, (result.lastOpeningDate as Date) < minimumDate {
-                        do {
-                            try manager.removeItem(atPath: fileURL.path)
-                        } catch { }
-                        manager.createFile(atPath: fileURL.path, contents: nil, attributes: nil)
-                        NCManageDatabase.shared.deleteLocalFileOcId(ocId)
+            let manager = FileManager.default
+            if let enumerator = manager.enumerator(at: url, includingPropertiesForKeys: [.isRegularFileKey], options: []) {
+                for case let fileURL as URL in enumerator {
+                    if let attributes = try? manager.attributesOfItem(atPath: fileURL.path) {
+                        if attributes[.size] as? Double == 0 { continue }
+                        if attributes[.type] as? FileAttributeType == FileAttributeType.typeDirectory { continue }
+                        // check directory offline
+                        let filter = offlineDir.filter({ fileURL.path.hasPrefix($0)})
+                        if !filter.isEmpty { continue }
+                        // -----------------------
+                        if let modificationDate = attributes[.modificationDate] as? Date,
+                           modificationDate < minimumDate {
+                            let fileName = fileURL.lastPathComponent
+                            if fileName.hasSuffix(NCGlobal.shared.previewExt256) || fileName.hasSuffix(NCGlobal.shared.previewExt512) || fileName.hasSuffix(NCGlobal.shared.previewExt1024) {
+                                try? manager.removeItem(atPath: fileURL.path)
+                            }
+                        }
+                        // -----------------------
+                        let folderURL = fileURL.deletingLastPathComponent()
+                        let ocId = folderURL.lastPathComponent
+                        if let result = resultsLocalFile?.filter({ $0.ocId == ocId }).first, (result.lastOpeningDate as Date) < minimumDate {
+                            do {
+                                try manager.removeItem(atPath: fileURL.path)
+                            } catch { }
+                            manager.createFile(atPath: fileURL.path, contents: nil, attributes: nil)
+                            NCManageDatabase.shared.deleteLocalFileOcId(ocId)
+                        }
                     }
                 }
             }
