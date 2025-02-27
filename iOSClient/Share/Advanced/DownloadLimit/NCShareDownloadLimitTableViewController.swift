@@ -41,7 +41,7 @@ class NCShareDownloadLimitTableViewController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        if case let .limited(limit, count) = downloadLimit {
+        if case let .limited(limit, _) = downloadLimit {
             limitSwitch.isOn = true
             limitTextField.text = "\(limit)"
         } else {
