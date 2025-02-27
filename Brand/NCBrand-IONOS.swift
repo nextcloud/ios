@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-@objc class NCBrandOptionsIONOS: NCBrandOptions {
+class NCBrandOptionsIONOS: NCBrandOptions, @unchecked Sendable {
     
     override init() {
         super.init()
@@ -40,7 +40,7 @@ extension NCBrandOptions {
     }
 }
 
-class NCBrandColorIONOS: NCBrandColor {
+class NCBrandColorIONOS: NCBrandColor, @unchecked Sendable {
     
     static let ionosBrand = UIColor(red: 20.0 / 255.0, green: 116.0 / 255.0, blue: 196.0 / 255.0, alpha: 1.0) // BLUE IONOS : #1474C4
 	

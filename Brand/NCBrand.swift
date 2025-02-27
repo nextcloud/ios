@@ -29,7 +29,7 @@ let userAgent: String = {
     return "Mozilla/5.0 (iOS) IONOS HiDrive Next/\(appVersion)"
 }()
 
-final class NCBrandOptions: @unchecked Sendable {
+class NCBrandOptions: @unchecked Sendable {
     static let shared = NCBrandOptionsIONOS()
 
     var brand: String = "Nextcloud"
@@ -130,7 +130,7 @@ final class NCBrandOptions: @unchecked Sendable {
     }
 }
 
-final class NCBrandColor: @unchecked Sendable {
+class NCBrandColor: @unchecked Sendable {
     static let shared = NCBrandColorIONOS()
 
     /// This is rewrited from customet theme, default is Nextcloud color

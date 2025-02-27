@@ -45,7 +45,7 @@ class NCMenuAction {
 	var isHeader = false
 
 
-    init(title: String, boldTitle: Bool = false, destructive: Bool = false, details: String? = nil, icon: UIImage, order: Int = 0, accessibilityIdentifier: String? = nil, action: ((_ menuAction: NCMenuAction) -> Void)?) {
+    init(title: String, boldTitle: Bool = false, destructive: Bool = false, details: String? = nil, icon: UIImage, isHeader: Bool = false, order: Int = 0, accessibilityIdentifier: String? = nil, action: ((_ menuAction: NCMenuAction) -> Void)?) {
         self.accessibilityIdentifier = accessibilityIdentifier
         self.title = title
         self.boldTitle = boldTitle

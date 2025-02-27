@@ -93,7 +93,7 @@ class NCShareNetworking: NSObject {
                 if showLoadingIndicator {
                     NCActivityIndicator.shared.stop()
                 }
-                self.showAlert(with: error)
+                NCContentPresenter().showError(error: error)
                 self.delegate?.readShareCompleted()
             }
         }
@@ -123,7 +123,7 @@ class NCShareNetworking: NSObject {
                     }
                 }
             } else {
-                self.showAlert(with: error)
+                NCContentPresenter().showError(error: error)
             }
 
             self.delegate?.shareCompleted()
@@ -139,7 +139,7 @@ class NCShareNetworking: NSObject {
                 self.database.deleteTableShare(account: account, idShare: idShare)
                 self.delegate?.unShareCompleted()
             } else {
-                self.showAlert(with: error)
+                NCContentPresenter().showError(error: error)
             }
         }
     }
@@ -160,7 +160,7 @@ class NCShareNetworking: NSObject {
                     self.removeShareDownloadLimit(token: share.token)
                 }
             } else {
-                self.showAlert(with: error)
+                NCContentPresenter().showError(error: error)
                 self.delegate?.updateShareWithError(idShare: option.idShare)
             }
         }
@@ -174,7 +174,7 @@ class NCShareNetworking: NSObject {
             if error == .success {
                 self.delegate?.getSharees(sharees: sharees)
             } else {
-                self.showAlert(with: error)
+                NCContentPresenter().showError(error: error)
                 self.delegate?.getSharees(sharees: nil)
             }
         }

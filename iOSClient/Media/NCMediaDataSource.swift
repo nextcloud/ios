@@ -113,10 +113,6 @@ extension NCMedia {
                 greaterDateAny = greaterDate
             }
 
-            DispatchQueue.main.async {
-                self.activityIndicator.startAnimating()
-            }
-
             NextcloudKit.shared.searchMedia(path: tableAccount.mediaPath,
                                             lessDate: lessDateAny,
                                             greaterDate: greaterDateAny,
