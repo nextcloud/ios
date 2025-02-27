@@ -43,12 +43,10 @@ class NCNetworkingProcess {
         self.startTimer()
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayerIsPlaying), object: nil, queue: nil) { _ in
-
             self.enableControllingScreenAwake = false
         }
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayerStoppedPlaying), object: nil, queue: nil) { _ in
-
             self.enableControllingScreenAwake = true
         }
     }

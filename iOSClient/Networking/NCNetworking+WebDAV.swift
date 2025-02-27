@@ -265,7 +265,7 @@ extension NCNetworking {
                       session: NCSession.Session) {
         var foldersCreated: [String] = []
 
-        func createMetadataFolder(fileName: String, serverUrl: String) {
+        func createMetadata(fileName: String, serverUrl: String) {
             guard !foldersCreated.contains(serverUrl + "/" + fileName) else {
                 return
             }
@@ -287,7 +287,7 @@ extension NCNetworking {
             foldersCreated.append(serverUrl + "/" + fileName)
         }
 
-        createMetadataFolder(fileName: self.database.getAccountAutoUploadFileName(), serverUrl: self.database.getAccountAutoUploadDirectory(session: session))
+        createMetadata(fileName: self.database.getAccountAutoUploadFileName(), serverUrl: self.database.getAccountAutoUploadDirectory(session: session))
 
         if useSubFolder {
             let autoUploadPath = self.database.getAccountAutoUploadPath(session: session)
@@ -299,19 +299,19 @@ extension NCNetworking {
                 let year = componentsDate[0]
                 let serverUrlYear = autoUploadPath
 
-                createMetadataFolder(fileName: String(year), serverUrl: serverUrlYear)
+                createMetadata(fileName: String(year), serverUrl: serverUrlYear)
 
                 if autoUploadSubfolderGranularity >= self.global.subfolderGranularityMonthly {
                     let month = componentsDate[1]
                     let serverUrlMonth = autoUploadPath + "/" + year
 
-                    createMetadataFolder(fileName: String(month), serverUrl: serverUrlMonth)
+                    createMetadata(fileName: String(month), serverUrl: serverUrlMonth)
 
                     if autoUploadSubfolderGranularity == self.global.subfolderGranularityDaily {
                         let day = componentsDate[2]
                         let serverUrlDay = autoUploadPath + "/" + year + "/" + month
 
-                        createMetadataFolder(fileName: String(day), serverUrl: serverUrlDay)
+                        createMetadata(fileName: String(day), serverUrl: serverUrlDay)
                     }
                 }
             }
