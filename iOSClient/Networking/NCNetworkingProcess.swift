@@ -281,8 +281,8 @@ class NCNetworkingProcess {
             for metadata in metadatasWaitCreateFolder {
                 /// For Auto Upload check if the folder exists
                 if metadata.sessionSelector == global.selectorUploadAutoUpload || metadata.sessionSelector == global.selectorUploadAutoUploadAll {
-                    let results = await networking.readFileOrFolder(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, depth: "0", account: metadata.account)
-                    if results.error == .success {
+                    let results = await networking.fileExists(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, account: metadata.account)
+                    if let exists = results.exists, exists {
                         self.database.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", metadata.account, metadata.fileName, metadata.serverUrl))
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl])
                         continue

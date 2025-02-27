@@ -128,10 +128,12 @@ extension NCNetworking {
     func fileExists(serverUrlFileName: String,
                     account: String,
                     completion: @escaping (_ account: String, _ exists: Bool?, _ file: NKFile?, _ error: NKError) -> Void) {
-        let options = NKRequestOptions(timeout: 10, createProperties: [], queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+        let options = NKRequestOptions(timeout: 10, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+        let requestBody = NKDataFileXML(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).getRequestBodyFileExists().data(using: .utf8)
 
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName,
                                              depth: "0",
+                                             requestBody: requestBody,
                                              account: account,
                                              options: options) { account, files, _, error in
             if error == .success, let file = files?.first {
@@ -837,23 +839,14 @@ class NCOperationFileExists: ConcurrentOperation, @unchecked Sendable {
     override func start() {
         guard !isCancelled else { return self.finish() }
 
-        let options = NKRequestOptions(timeout: 10,
-                                       createProperties: [],
-                                       removeProperties: [],
-                                       queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-
-        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName,
-                                             depth: "0",
-                                             requestBody: nil,
-                                             account: account,
-                                             options: options) { _, _, _, error in
-            self.finish()
-
+        NCNetworking.shared.fileExists(serverUrlFileName: serverUrlFileName, account: account) { _, _, _, error in
             if error == .success {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterFileExists, userInfo: ["ocId": self.ocId, "fileExists": true])
             } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterFileExists, userInfo: ["ocId": self.ocId, "fileExists": false])
             }
+
+            self.finish()
         }
     }
 }
