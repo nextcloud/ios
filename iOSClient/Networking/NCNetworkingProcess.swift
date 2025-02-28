@@ -41,48 +41,13 @@ class NCNetworkingProcess {
 
     private init() {
         self.startTimer()
-        self.startObserveTableMetadata()
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayerIsPlaying), object: nil, queue: nil) { _ in
-
             self.enableControllingScreenAwake = false
         }
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayerStoppedPlaying), object: nil, queue: nil) { _ in
-
             self.enableControllingScreenAwake = true
-        }
-    }
-
-    private func startObserveTableMetadata() {
-        do {
-            let realm = try Realm()
-            let results = realm.objects(tableMetadata.self).filter(NSPredicate(format: "status IN %@", global.metadataStatusObserveNetworkingProcess))
-            notificationToken = results.observe { [weak self] (changes: RealmCollectionChange) in
-                switch changes {
-                case .initial:
-                    print("Initial")
-                case .update(_, _, let insertions, let modifications):
-                    if insertions.count > 0 || modifications.count > 0 {
-                        guard let self else { return }
-                        self.startTimer()
-                        self.lockQueue.async {
-                            guard !self.hasRun, self.networking.isOnline else { return }
-                            self.hasRun = true
-
-                            Task { [weak self] in
-                                guard let self else { return }
-                                await self.start()
-                                self.hasRun = false
-                            }
-                        }
-                    }
-                case .error(let error):
-                    print("Error: \(error.localizedDescription)")
-                }
-            }
-        } catch let error {
-            print("Error: \(error.localizedDescription)")
         }
     }
 
@@ -158,12 +123,14 @@ class NCNetworkingProcess {
         var counterDownloading = metadatasDownloading.count
         var counterUploading = metadatasUploading.count
 
+        database.realmRefresh()
+
         /// ------------------------ WEBDAV
         ///
         let metadatas = database.getMetadatas(predicate: NSPredicate(format: "status IN %@", global.metadataStatusWaitWebDav))
         if !metadatas.isEmpty {
-            let stop = await metadataStatusWaitWebDav()
-            if stop {
+            let error = await metadataStatusWaitWebDav()
+            if error {
                 return (counterDownloading, counterUploading)
             }
         }
@@ -306,21 +273,30 @@ class NCNetworkingProcess {
     }
 
     private func metadataStatusWaitWebDav() async -> Bool {
-        var returnValue: Bool = false
+        var returnError: Bool = false
 
         /// ------------------------ CREATE FOLDER
         ///
         if let metadatasWaitCreateFolder = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCreateFolder), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitCreateFolder.isEmpty {
             for metadata in metadatasWaitCreateFolder {
-                let error = await networking.createFolder(metadata: metadata)
+                /// For Auto Upload check if the folder exists
+                if metadata.sessionSelector == global.selectorUploadAutoUpload || metadata.sessionSelector == global.selectorUploadAutoUploadAll {
+                    let results = await networking.fileExists(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, account: metadata.account)
+                    if let exists = results.exists, exists {
+                        self.database.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", metadata.account, metadata.fileName, metadata.serverUrl))
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl])
+                        continue
+                    }
+                }
 
+                let error = await networking.createFolder(fileName: metadata.fileName, serverUrl: metadata.serverUrl, overwrite: true, withPush: false, metadata: metadata, sceneIdentifier: nil, session: NCSession.shared.getSession(account: metadata.account))
                 if error != .success {
                     if metadata.sessionError.isEmpty {
                         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
                         let message = String(format: NSLocalizedString("_create_folder_error_", comment: ""), serverUrlFileName)
                         NCContentPresenter().messageNotification(message, error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
                     }
-                    returnValue = true
+                    returnError = true
                 }
             }
         }
@@ -449,14 +425,13 @@ class NCNetworkingProcess {
             }
         }
 
-        return returnValue
+        return returnError
     }
 
     // MARK: - Public
 
     func startProcess() {
         startTimer()
-        startObserveTableMetadata()
     }
 
     func stopProcess() {
