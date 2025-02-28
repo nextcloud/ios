@@ -177,16 +177,20 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
         headerView.heightAnchor.constraint(equalTo: container.heightAnchor).isActive = true
         headerView.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
     }
-    
-    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return UITableViewHeaderFooterView()
+
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if section == 0 {
+            return NSLocalizedString("_permissions_", comment: "")
+        } else if section == 1 {
+            return NSLocalizedString("_advanced_", comment: "")
+        } else { return nil }
     }
     
     override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
         guard let headerView = view as? UITableViewHeaderFooterView else { return }
         
         var contentConfiguration = UIListContentConfiguration.plainHeader()
-        contentConfiguration.text = titleForHeader(in: section)
+        contentConfiguration.text = self.tableView(tableView, titleForHeaderInSection: section)
         contentConfiguration.textProperties.color = UIColor(resource: .Share.Advanced.sectionTitle)
         headerView.contentConfiguration = contentConfiguration
         
@@ -228,7 +232,6 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
         }
         
         if let cell = cell as? NCShareDateCell { cell.onReload = tableView.reloadData }
-        
         return cell
     }
 
@@ -287,14 +290,6 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
             }
             self.present(alertController, animated: true)
         }
-    }
-    
-    private func titleForHeader(in section: Int) -> String? {
-        if section == 0 {
-            return NSLocalizedString("_permissions_", comment: "")
-        } else if section == 1 {
-            return NSLocalizedString("_advanced_", comment: "")
-        } else { return nil }
     }
 }
 

@@ -64,7 +64,7 @@ class NCShareLinkCell: UITableViewCell {
         if isInternalLink {
             labelTitle.text = NSLocalizedString("_share_internal_link_", comment: "")
             descriptionLabel.text = NSLocalizedString("_share_internal_link_des_", comment: "")
-            setImageItemForInternalLink()
+            imageItem.image = UIImage(resource: .Share.squareAndArrowUpCircleFill)
         } else {
             labelTitle.text = NSLocalizedString("_share_link_", comment: "")
             if let tableShare = tableShare {
@@ -83,11 +83,6 @@ class NCShareLinkCell: UITableViewCell {
 
         labelTitle.textColor = NCBrandColor.shared.textColor
     }
-    
-    private func setImageItemForInternalLink() {
-        imageItem.contentMode = .scaleAspectFit
-        imageItem.image = UIImage(resource: .Share.squareAndArrowUpCircleFill)
-    }
 
     @IBAction func touchUpCopy(_ sender: Any) {
         delegate?.tapCopy(with: tableShare, sender: sender)
@@ -95,13 +90,6 @@ class NCShareLinkCell: UITableViewCell {
 
     @IBAction func touchUpMenu(_ sender: Any) {
         delegate?.tapMenu(with: tableShare, sender: sender)
-    }
-    
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        if (traitCollection.userInterfaceStyle != previousTraitCollection?.userInterfaceStyle) && isInternalLink {
-            setImageItemForInternalLink()
-        }
     }
 }
 
