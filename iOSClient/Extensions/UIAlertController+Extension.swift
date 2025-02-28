@@ -62,10 +62,9 @@ extension UIAlertController {
                 }
             } else {
 #if EXTENSION
-                NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, overwrite: false, withPush: true, sceneIdentifier: sceneIdentifier, session: session) { error in
-                    if let completion {
-                        DispatchQueue.main.async { completion(error) }
-                    }
+                Task {
+                    let error = await NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, overwrite: false, withPush: true, sceneIdentifier: sceneIdentifier, session: session)
+                    completion?(error)
                 }
 #else
                 let metadataForCreateFolder = NCManageDatabase.shared.createMetadata(fileName: fileNameFolder,
