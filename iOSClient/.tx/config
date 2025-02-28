@@ -8,6 +8,13 @@ source_lang = en
 type        = STRINGS
 lang_map    = hu_HU: hu, es_DO: es-DO, es_419: es-419, cs_CZ: cs-CZ, es_EC: es-EC, es_GT: es-GT, es_PY: es-PY, es_SV: es-SV, pt_BR: pt-BR, fi_FI: fi-FI, nb_NO: nb-NO, es_UY: es-UY, es_MX: es-MX, sk_SK: sk-SK, pt_PT: pt-PT, en_GB: en-GB, ka_GE: ka-GE, es_HN: es-HN, zh_CN: zh-Hans, es_AR: es-AR, es_NI: es-NI, es_PE: es-PE, ja_JP: ja-JP, es_CL: es-CL, es_PR: es-PR, zh_TW: zh-Hant-TW, es_CO: es-CO, es_CR: es-CR, es_PA: es-PA
 
+[o:nextcloud:p:nextcloud:r:ios-plurals]
+file_filter = Supporting Files/<lang>.lproj/Localizable.stringsdict
+source_file = Supporting Files/en.lproj/Localizable.stringsdict
+source_lang = en
+type        = STRINGSDICT
+lang_map    = hu_HU: hu, es_DO: es-DO, es_419: es-419, cs_CZ: cs-CZ, es_EC: es-EC, es_GT: es-GT, es_PY: es-PY, es_SV: es-SV, pt_BR: pt-BR, fi_FI: fi-FI, nb_NO: nb-NO, es_UY: es-UY, es_MX: es-MX, sk_SK: sk-SK, pt_PT: pt-PT, en_GB: en-GB, ka_GE: ka-GE, es_HN: es-HN, zh_CN: zh-Hans, es_AR: es-AR, es_NI: es-NI, es_PE: es-PE, ja_JP: ja-JP, es_CL: es-CL, es_PR: es-PR, zh_TW: zh-Hant-TW, es_CO: es-CO, es_CR: es-CR, es_PA: es-PA
+
 [o:nextcloud:p:nextcloud:r:ios-info]
 file_filter = Supporting Files/<lang>.lproj/InfoPlist.strings
 source_file = Supporting Files/en.lproj/InfoPlist.strings
