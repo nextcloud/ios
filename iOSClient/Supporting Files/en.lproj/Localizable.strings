@@ -147,6 +147,7 @@
 "_wait_file_preparation_" = "Please wait, preparing file upload…";
 "_wait_file_encryption_"  = "Please wait, encrypting file…";
 "_passcode_counter_fail_" = "Too many failed attempts, please wait before reattempting.";
+"_passcode_counter_fail_" = "Too many failed attempts, please wait before reattempting.";
 "_seconds_"               = "seconds";
 "_change_lock_passcode_"  = "Change passcode";
 "_lock_cannot_disable_mdm_" = "Disabling the passcode lock is not permitted by your configuration profile.";
@@ -205,9 +206,9 @@
 "_settings_"                    = "Settings";
 "_enter_password_"              = "Enter password …";
 "_lock_"                        = "Lock";
-"_lock_active_"                 = "Lock: On";
-"_lock_not_active_"             = "Lock: Off";
-"_lock_protection_no_screen_"        = "Do not ask at startup";
+"_lock_active_"                 = "Passcode Lock: On";
+"_lock_not_active_"             = "Passcode Lock: Off";
+"_lock_protection_no_screen_"        = "Do not ask for passcode on startup";
 "_enable_touch_face_id_"        = "Enable Touch/Face ID";
 "_wifi_only_"                   = "Only use Wi-Fi connection";
 "_settings_autoupload_"         = "Auto upload";
@@ -227,7 +228,7 @@
 "_advanced_"                    = "Advanced";
 "_permissions_"                 = "Permissions";
 "_disable_files_app_"           = "Disable Files App integration";
-"_disable_files_app_footer_"    = "Do not permit the access of files via the iOS Files application.";
+"_disable_files_app_footer_"    = "Enabling this option will not permit Nextcloud files from being accessed inside the iOS Files app.";
 "_time_remaining_"              = "%@ remaining";
 "_autoupload_"                      = "Auto upload photos/videos";
 "_autoupload_select_folder_"        = "Select the \"Auto upload\" folder";
@@ -243,17 +244,18 @@
 "_autoupload_create_subfolder_footer_"  = "Store in subfolders based on year, month or daily.";
 "_autoupload_subfolder_granularity_"    = "Subfolder Granularity";
 "_filenamemask_"                        = "Change filename mask";
-"_filenamemask_footer_"                 = "By default, when a file is uploaded, it automatically gets the following format: yy-mm-dd hh-mm-ss plus a 4-digit counter. If you do not like this format, you can change it here except for the final 4-digit counter, which cannot be omitted.";
+"_filenamemask_footer_" = "By default, when a file is uploaded, it automatically gets the following format: %@ plus a 4-digit counter. If you do not like this format, you can change it here except for the final 4-digit counter, which cannot be omitted.";
+"_filenamemask_format_" = "yy-mm-dd hh-mm-ss";
 "_autoupload_current_folder_"           = "Currently selected folder";
 "_show_hidden_files_"           = "Show hidden files";
-"_format_compatibility_"        = "Most Compatible";
-"_format_compatibility_footer_" = "\"Most compatible\" will save photos as JPEG, if possible.";
+"_format_compatibility_"        = "Most compatible photos format";
+"_format_compatibility_footer_" = "Enabling this option will save photos as JPEG instead of HEIC. We recommend to keep this on, as some services can't display HEIC photos.";
 "_privacy_"                     = "Privacy";
-"_privacy_footer_"              = "This app uses a service for the analysis of a crash. Your personal information is not sent with the report. If you want disable it, please change the setting \"Disable crash reporter\" to ON.";
+"_privacy_footer_"              = "This app uses a service for analyzing crashes. Your personal information is not sent with the report. If you would like to stop sending crash reports, enable this option.";
 "_crashservice_title_"          = "Disable crash reporter";
 "_crashservice_alert_"          = "This option requires a restart of the app to take effect.";
 "_upload_mov_livephoto_"        = "Live Photo";
-"_upload_mov_livephoto_footer_" = "\"Live Photo\" will save the selected photo in \"Live Photo\" format, if possible.";
+"_upload_mov_livephoto_footer_" = "Enabling this option will save photos as Live Photos, if possible.";
 "_capabilities_"                = "Capabilities";
 "_capabilities_footer_"         = "Display the packages used by the app if they are installed and available on the server.";
 "_diagnostics_"                 = "Diagnostics";
@@ -280,11 +282,11 @@
 "_no_lens_information_"                     = "No lens information";
 "_today_"                                   = "Today";
 "_yesterday_"                               = "Yesterday";
-"_access_background_app_refresh_denied_"    = "\"Background App Refresh\" is denied. Please enable it in \"Settings\" otherwise, new photos or videos will not be detected when the application is in the background";
+"_access_background_app_refresh_denied_"    = "\"Background App Refresh\" is disabled. Please enable it in \"Settings\", otherwise new photos or videos will not be detected when the application is in the background.";
 "_tutorial_photo_view_"                     = "No photos or videos uploaded yet";
 "_error_createsubfolders_upload_"           = "Error creating subfolders";
-"_remove_photo_CameraRoll_"                 = "Remove from camera roll";
-"_remove_photo_CameraRoll_desc_"            = "\"Remove from camera roll\" after uploads, a confirmation message will be displayed to delete the uploaded photos or videos from the camera roll. The deleted photos or videos will still be available in the iOS Photos Trash for 30 days.";
+"_remove_photo_CameraRoll_"                 = "Remove from Camera Roll on upload";
+"_remove_photo_CameraRoll_desc_"            = "When this option is enabled, a confirmation message will be displayed after photos are uploaded to delete them from the Camera Roll. The deleted photos will still be available inside Trash in the iOS Photos app for 30 days.";
 "_never_"                       = "never";
 "_less_a_minute_"               = "less than a minute ago";
 "_a_minute_ago_"                = "a minute ago";
@@ -387,6 +389,9 @@
 "_share_internal_link_des_"     = "Only works for users with access to this file/folder.";
 "_share_reshare_disabled_"      = "You are not allowed to reshare this file/folder.";
 "_share_reshare_restricted_"    = "Note: You only have limited permission to reshare this file/folder.";
+"_share_internal_link_des_"     = "Only works for users with access to this file/folder.";
+"_share_reshare_disabled_"      = "You are not allowed to reshare this file/folder.";
+"_share_reshare_restricted_"    = "Note: You only have limited permission to reshare this file/folder.";
 
 "_no_transfer_"                     = "No transfers yet";
 "_no_transfer_sub_"                 = "Uploads and downloads from this device will show up here";
@@ -418,6 +423,7 @@
 "_e2e_server_disabled_"             = "End-to-end encryption app disabled on server";
 "_e2e_settings_view_passphrase_"    = "All 12 words together make a very strong password, letting only you view and make use of your encrypted files. Please write it down and keep it somewhere safe.";
 "_e2e_settings_read_passphrase_"    = "Read passphrase";
+"_e2e_settings_lock_not_active_"    = "Lock not active. Go to \"Settings\" and activate it.";
 "_e2e_settings_lock_not_active_"    = "Lock not active. Go to \"Settings\" and activate it.";
 "_e2e_settings_the_passphrase_is_"  = "The passphrase is:";
 "_e2e_passphrase_request_title_"    = "Request passphrase";
@@ -532,6 +538,7 @@
 "_calendar_contacts_footer_"    = "After downloading the profile you can install it from Settings.";
 "_modify_image_desc_"       = "Tap on a file to modify or rename.";
 "_message_disable_livephoto_" = "This image is a Live Photo, changing it will lose the Live Photo effect.";
+"_message_disable_livephoto_" = "This image is a Live Photo, changing it will lose the Live Photo effect.";
 "_enable_livephoto_"        = "Enable Live Photo";
 "_disable_livephoto_"       = "Disable Live Photo";
 "_undo_modify_"             = "Undo modifying";
@@ -545,7 +552,7 @@
 "_download_video_"          = "Download video";
 "_reset_wrong_passcode_"    = "Reset application";
 "_reset_wrong_passcode_option_" = "Reset application after failed attempts";
-"_reset_wrong_passcode_desc_" = "Use \"Reset application\" to remove all accounts and local data after %d failed code entry attempts.";
+"_reset_wrong_passcode_desc_" = "Enabling this option will remove all accounts and local data after %d failed passcode entry attempts.";
 "_deviceOwnerAuthentication_" = "The biometric sensor has been temporarily disabled due to multiple failed attempts. Enter the device passcode to re-enable the sensor.";
 "_virus_detect_"            = "Virus detected. Upload cannot be completed!";
 "_select_photos_"           = "Select photos";
@@ -565,9 +572,9 @@
 "_users_footer_"            = "Every time the app is reactivated, the account will be requested.";
 "_while_charging_"          = "While charging";
 "_keep_screen_awake_"       = "Keep screen awake\nwhile transferring files";
-"_error_not_found_"         = "The requested resource could not be found";
-"_error_conflict_"          = "The request could not be completed due to a conflict with the current state of the resource";
-"_error_precondition_"      = "The server does not meet one of the preconditions of the requester";
+"_error_not_found_"         = "The requested resource could not be found.";
+"_error_conflict_"          = "The request could not be completed due to a conflict with the current state of the resource.";
+"_error_precondition_"      = "The server does not meet one of the preconditions that the requester.";
 
 //Video
 "_user_"                    = "User";
