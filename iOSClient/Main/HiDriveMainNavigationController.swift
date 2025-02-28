@@ -88,22 +88,15 @@ class HiDriveMainNavigationController: UINavigationController, UINavigationContr
         }
         
         guard collectionViewCommon.layoutKey != NCGlobal.shared.layoutViewTransfers else { return }
-        let tabBar = self.tabBarController?.tabBar
-        let isTabBarHidden = tabBar?.isHidden ?? true
-        let isTabBarSelectHidden = collectionViewCommon.tabBarSelect.isHidden()
         
         if collectionViewCommon.isEditMode {
-            collectionViewCommon.tabBarSelect.update(fileSelect: collectionViewCommon.fileSelect,
+            collectionViewCommon.tabBarSelect?.update(fileSelect: collectionViewCommon.fileSelect,
                                                      metadatas: collectionViewCommon.getSelectedMetadatas(),
                                                      userId: session.userId)
-            collectionViewCommon.tabBarSelect.show()
+            collectionViewCommon.tabBarSelect?.show()
         } else {
-            collectionViewCommon.tabBarSelect.hide()
+            collectionViewCommon.tabBarSelect?.hide()
             collectionViewCommon.navigationItem.rightBarButtonItems = isCurrentScreenInMainTabBar() ? [createAccountButton()] : []
-        }
-        // fix, if the tabbar was hidden before the update, set it in hidden
-        if isTabBarHidden, isTabBarSelectHidden {
-            tabBar?.isHidden = true
         }
     }
     

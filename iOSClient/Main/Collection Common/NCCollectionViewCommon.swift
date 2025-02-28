@@ -85,7 +85,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 		}
 	}
     var literalSearch: String?
-    var tabBarSelect: HiDriveCollectionViewCommonSelectToolbar!
+    var tabBarSelect: HiDriveCollectionViewCommonSelectToolbar?
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
 
@@ -324,7 +324,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedLivePhoto(_:)), name: NSNotification.Name(rawValue: global.notificationCenterUploadedLivePhoto), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadCancelFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterUploadCancelFile), object: nil)
         
-        tabBarSelect.controller = controller
+        tabBarSelect?.controller = controller
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -392,7 +392,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        tabBarSelect.onViewWillLayoutSubviews()
+        tabBarSelect?.onViewWillLayoutSubviews()
     }
 
     // MARK: - NotificationCenter
