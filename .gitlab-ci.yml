@@ -20,9 +20,6 @@ stages:
   - xcodebuild -version
   - date
 
-.install_carthage_dependencies: &install_carthage_dependencies
-  - carthage update --use-xcframeworks --platform iOS
-
 .download_google_info_plist: &download_google_info_plist
   - curl 
     --fail 
@@ -85,7 +82,6 @@ stages:
 build_develop_feature:
   <<: *build_general_params
   script:
-    - *install_carthage_dependencies
     - *download_google_info_plist
     - *build_general_script
   only:
@@ -97,7 +93,6 @@ build_beta:
   <<: *build_general_params
   when: manual
   script:
-    - *install_carthage_dependencies
     - *download_google_info_plist_beta
     - *build_general_script_beta
   only:
@@ -109,7 +104,6 @@ build_simulator:
   <<: *build_general_params
   when: manual
   script:
-    - *install_carthage_dependencies
     - *download_google_info_plist
     - *build_simulator_general_script
     - zip -r ./${scheme}.zip ./BuildForSimulator/Build/Products/Debug-iphonesimulator/${scheme}.app
