@@ -197,6 +197,9 @@ class NCNetworkingE2EEUpload: NSObject {
             metadata.date = (resultsSendFile.date as? NSDate) ?? NSDate()
             metadata.etag = resultsSendFile.etag ?? ""
             metadata.ocId = ocId
+            if let fileId = self.utility.ocIdToFileId(ocId: ocId) {
+                metadata.fileId = fileId
+            }
             metadata.chunk = 0
 
             metadata.session = ""
@@ -217,6 +220,12 @@ class NCNetworkingE2EEUpload: NSObject {
                                                                    "fileName": metadata.fileName,
                                                                    "error": resultsSendFile.error],
                                                         second: 0.5)
+
+            // LIVE PHOTO
+            if metadata.isLivePhoto,
+               NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable {
+                NCNetworking.shared.createLivePhoto(metadata: metadata)
+            }
         } else {
             self.database.setMetadataSession(ocId: metadata.ocId,
                                              sessionTaskIdentifier: 0,
