@@ -12,14 +12,18 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
+			<key>zero</key>
+			<string>%d تنزيلات متبقية مسموح بها</string>
 			<key>one</key>
-			<string>%d zostávajúce umožnené sťahovanie</string>
+			<string>%d تنزيلات متبقية مسموح بها</string>
+			<key>two</key>
+			<string>%d تنزيلات متبقية مسموح بها</string>
 			<key>few</key>
-			<string>%d zostávajúce umožnené sťahovania</string>
+			<string>%d تنزيلات متبقية مسموح بها</string>
 			<key>many</key>
-			<string>%d zostávajúcich umožnených sťahovaní</string>
+			<string>%d تنزيلات متبقية مسموح بها</string>
 			<key>other</key>
-			<string>%d zostávajúcich umožnených sťahovaní</string>
+			<string>%d تنزيلات متبقية مسموح بها</string>
 		</dict>
 	</dict>
 </dict>

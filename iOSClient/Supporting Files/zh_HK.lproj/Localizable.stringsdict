@@ -12,14 +12,8 @@
 			<string>NSStringPluralRuleType</string>
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
-			<key>one</key>
-			<string>%d zostávajúce umožnené sťahovanie</string>
-			<key>few</key>
-			<string>%d zostávajúce umožnené sťahovania</string>
-			<key>many</key>
-			<string>%d zostávajúcich umožnených sťahovaní</string>
 			<key>other</key>
-			<string>%d zostávajúcich umožnených sťahovaní</string>
+			<string>剩餘 %d 次下載</string>
 		</dict>
 	</dict>
 </dict>

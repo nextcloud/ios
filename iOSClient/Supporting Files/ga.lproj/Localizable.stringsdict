@@ -13,13 +13,15 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d zostávajúce umožnené sťahovanie</string>
+			<string>%d íosluchtú fágtha ceadaithe</string>
+			<key>two</key>
+			<string>%d íosluchtú fágtha ceadaithe</string>
 			<key>few</key>
-			<string>%d zostávajúce umožnené sťahovania</string>
+			<string>%d íosluchtú fágtha ceadaithe</string>
 			<key>many</key>
-			<string>%d zostávajúcich umožnených sťahovaní</string>
+			<string>%d íosluchtú fágtha ceadaithe</string>
 			<key>other</key>
-			<string>%d zostávajúcich umožnených sťahovaní</string>
+			<string>%d íosluchtú fágtha ceadaithe</string>
 		</dict>
 	</dict>
 </dict>
