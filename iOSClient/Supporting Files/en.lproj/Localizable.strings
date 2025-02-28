@@ -452,6 +452,13 @@
 "_create_new_spreadsheet_"          = "Create new spreadsheet";
 "_create_new_presentation_"         = "Create new presentation";
 "_go_online_"                       = "Go online to see the document";
+"_intro_1_title_"                   = "Keep your data secure and under your control";
+"_intro_2_title_"                   = "Secure collaboration & file exchange";
+"_intro_3_title_"                   = "Easy-to-use web mail, calendaring & contacts";
+"_intro_4_title_"                   = "Screen sharing, online meetings & web conferences";
+"_log_in_"                          = "Log in";
+"_sign_up_"                         = "Sign up with provider";
+"_host_your_own_server"             = "Host your own server";
 "_ssl_certificate_untrusted_"           = "The certificate for this server is invalid.";
 "_ssl_certificate_changed_"             = "The certificate for this server seems to have changed.";
 "_file_already_exists_"                 = "Could not complete the operation, a file with the same name exists.";
