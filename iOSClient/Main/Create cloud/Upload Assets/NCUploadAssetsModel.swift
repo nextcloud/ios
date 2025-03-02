@@ -234,7 +234,8 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
             metadataForUpload.sessionDate = Date()
             metadataForUpload.nativeFormat = previewStore.nativeFormat
 
-            if let previewStore = self.previewStore.first(where: { $0.id == asset.localIdentifier }), let data = previewStore.data {
+            if let previewStore = self.previewStore.first(where: { $0.id == asset.localIdentifier }),
+                let data = previewStore.data {
                 if metadataForUpload.contentType == "image/heic" {
                     let fileNameNoExtension = (fileName as NSString).deletingPathExtension
                     metadataForUpload.contentType = "image/jpeg"
