@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>_remaining_share_downloads_</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@downloads@</string>
+		<key>downloads</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>zero</key>
+			<string>%d تنزيلات متبقية مسموح بها</string>
+			<key>one</key>
+			<string>%d تنزيلات متبقية مسموح بها</string>
+			<key>two</key>
+			<string>%d تنزيلات متبقية مسموح بها</string>
+			<key>few</key>
+			<string>%d تنزيلات متبقية مسموح بها</string>
+			<key>many</key>
+			<string>%d تنزيلات متبقية مسموح بها</string>
+			<key>other</key>
+			<string>%d تنزيلات متبقية مسموح بها</string>
+		</dict>
+	</dict>
+</dict>
+</plist>
