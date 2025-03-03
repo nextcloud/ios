@@ -144,9 +144,9 @@ class NCAutoUpload: NSObject {
 
                 // MOST COMPATIBLE SEARCH --> HEIC --> JPG
                 var fileNameSearchMetadata = fileName
-                let ext = (fileNameSearchMetadata as NSString).pathExtension.uppercased()
+                let ext = (fileNameSearchMetadata as NSString).pathExtension.lowercased()
 
-                if ext == "HEIC", NCKeychain().formatCompatibility {
+                if ext == "heic", NCKeychain().formatCompatibility {
                     fileNameSearchMetadata = (fileNameSearchMetadata as NSString).deletingPathExtension + ".jpg"
                 }
 
