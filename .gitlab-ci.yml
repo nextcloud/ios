@@ -14,7 +14,6 @@ stages:
 
 .mac_general_scripts: &mac_general_scripts
   - security unlock-keychain -p $PASSWORD_BUILDE ~/Library/Keychains/login.keychain-db
-  - brew install carthage
   - brew install jq
   - fastlane -v
   - xcodebuild -version
