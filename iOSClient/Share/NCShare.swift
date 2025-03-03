@@ -308,6 +308,12 @@ extension NCShare: NCShareNetworkingDelegate {
     func downloadLimitSet(to limit: Int, by token: String) {
         database.createDownloadLimit(account: metadata.account, count: 0, limit: limit, token: token)
     }
+    
+    func showOKAlert(title: String?, message: String?) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+        return present(alertController, animated: true)
+    }
 }
 
 // MARK: - UITableViewDelegate
