@@ -46,7 +46,7 @@ struct NCAutoUploadView: View {
                 Text(NSLocalizedString("_autoupload_notice_", comment: ""))
             })
             /// If `autoUpload` state will be true, we will animate out the whole `autoUploadOnView` section
-            if model.autoUpload {
+            if true {
                 autoUploadOnView
                     .transition(.slide)
                     .animation(.easeInOut, value: model.autoUpload)
@@ -69,6 +69,9 @@ struct NCAutoUploadView: View {
         .sheet(isPresented: $showSelectAlbums) {
             SelectAlbumView(model: albumModel)
         }
+        .onChange(of: model.autoUploadTimespan) { newValue in
+            model.handleAutoUploadTimespanChange(newValue: newValue)
+        }
         .tint(.primary)
     }
 
@@ -88,7 +91,6 @@ struct NCAutoUploadView: View {
                         Text(NSLocalizedString("_destination_", comment: ""))
                         Text(model.returnPath())
                             .frame(maxWidth: .infinity, alignment: .trailing)
-                            .foregroundStyle(.secondary)
                     }
                 })
             })
@@ -107,9 +109,20 @@ struct NCAutoUploadView: View {
                             Text("\(NSLocalizedString("_upload_from_", comment: "")):")
                             Text(NSLocalizedString(model.createAlbumTitle(autoUploadAlbumIds: albumModel.autoUploadAlbumIds), comment: ""))
                                 .frame(maxWidth: .infinity, alignment: .trailing)
-                                .foregroundStyle(.secondary)
                         }
                     })
+                }
+
+                Picker("Back up...", selection: $model.autoUploadTimespan) {
+                    ForEach(AutoUploadTimespan.allCases) { when in
+                        Text(NSLocalizedString(when.rawValue, comment: ""))
+                            .tag(when)
+                    }
+                }
+                .pickerStyle(.menu)
+            }, footer: {
+                if model.autoUploadTimespan == .newPhotosOnly, let date = model.autoUploadDate {
+                    Text("New photos since \(NCUtility().longDate(date))")
                 }
             })
 
@@ -118,6 +131,7 @@ struct NCAutoUploadView: View {
                 Toggle(NSLocalizedString("_autoupload_photos_", comment: ""), isOn: $model.autoUploadImage)
                     .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                     .onChange(of: model.autoUploadImage) { newValue in
+                        if !newValue { model.autoUploadVideo = true }
                         model.handleAutoUploadImageChange(newValue: newValue)
                     }
                 Toggle(NSLocalizedString("_wifi_only_", comment: ""), isOn: $model.autoUploadWWAnPhoto)
@@ -131,6 +145,7 @@ struct NCAutoUploadView: View {
                 Toggle(NSLocalizedString("_autoupload_videos_", comment: ""), isOn: $model.autoUploadVideo)
                     .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                     .onChange(of: model.autoUploadVideo) { newValue in
+                        if !newValue { model.autoUploadImage = true }
                         model.handleAutoUploadVideoChange(newValue: newValue)
                     }
                 Toggle(NSLocalizedString("_wifi_only_", comment: ""), isOn: $model.autoUploadWWAnVideo)
@@ -139,14 +154,7 @@ struct NCAutoUploadView: View {
                         model.handleAutoUploadWWAnVideoChange(newValue: newValue)
                     }
             })
-            /// Only upload favorites if desired
-            Section(content: {
-                Toggle(NSLocalizedString("_autoupload_favorites_", comment: ""), isOn: $model.autoUploadFavoritesOnly)
-                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                    .onChange(of: model.autoUploadFavoritesOnly) { newValue in
-                        model.handleAutoUploadFavoritesOnlyChange(newValue: newValue)
-                    }
-            })
+
             /// Auto Upload create subfolder
             Section(content: {
                 Toggle(NSLocalizedString("_autoupload_create_subfolder_", comment: ""), isOn: $model.autoUploadCreateSubfolder)

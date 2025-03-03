@@ -39,9 +39,9 @@ class tableAccount: Object {
     @objc dynamic var autoUploadFull: Bool = false
     @objc dynamic var autoUploadImage: Bool = false
     @objc dynamic var autoUploadVideo: Bool = false
-    @objc dynamic var autoUploadFavoritesOnly: Bool = false
     @objc dynamic var autoUploadWWAnPhoto: Bool = false
     @objc dynamic var autoUploadWWAnVideo: Bool = false
+    @objc dynamic var autoUploadDate: Date?
     @objc dynamic var backend = ""
     @objc dynamic var backendCapabilitiesSetDisplayName: Bool = false
     @objc dynamic var backendCapabilitiesSetPassword: Bool = false
@@ -80,7 +80,7 @@ class tableAccount: Object {
     }
 
     func tableAccountToCodable() -> tableAccountCodable {
-        return tableAccountCodable(account: self.account, active: self.active, alias: self.alias, autoUpload: self.autoUpload, autoUploadCreateSubfolder: self.autoUploadCreateSubfolder, autoUploadSubfolderGranularity: self.autoUploadSubfolderGranularity, autoUploadDirectory: self.autoUploadDirectory, autoUploadFileName: self.autoUploadFileName, autoUploadFull: self.autoUploadFull, autoUploadImage: self.autoUploadImage, autoUploadVideo: self.autoUploadVideo, autoUploadFavoritesOnly: self.autoUploadFavoritesOnly, autoUploadWWAnPhoto: self.autoUploadWWAnPhoto, autoUploadWWAnVideo: self.autoUploadWWAnVideo, user: self.user, userId: self.userId, urlBase: self.urlBase)
+        return tableAccountCodable(account: self.account, active: self.active, alias: self.alias, autoUpload: self.autoUpload, autoUploadCreateSubfolder: self.autoUploadCreateSubfolder, autoUploadSubfolderGranularity: self.autoUploadSubfolderGranularity, autoUploadDirectory: self.autoUploadDirectory, autoUploadFileName: self.autoUploadFileName, autoUploadFull: self.autoUploadFull, autoUploadImage: self.autoUploadImage, autoUploadVideo: self.autoUploadVideo, autoUploadWWAnPhoto: self.autoUploadWWAnPhoto, autoUploadWWAnVideo: self.autoUploadWWAnVideo, user: self.user, userId: self.userId, urlBase: self.urlBase)
     }
 
     convenience init(codableObject: tableAccountCodable) {
@@ -97,7 +97,6 @@ class tableAccount: Object {
         self.autoUploadFull = codableObject.autoUploadFull
         self.autoUploadImage = codableObject.autoUploadImage
         self.autoUploadVideo = codableObject.autoUploadVideo
-        self.autoUploadFavoritesOnly = codableObject.autoUploadFavoritesOnly
         self.autoUploadWWAnPhoto = codableObject.autoUploadWWAnPhoto
         self.autoUploadWWAnVideo = codableObject.autoUploadWWAnVideo
 
@@ -120,7 +119,6 @@ struct tableAccountCodable: Codable {
     var autoUploadFull: Bool
     var autoUploadImage: Bool
     var autoUploadVideo: Bool
-    var autoUploadFavoritesOnly: Bool
     var autoUploadWWAnPhoto: Bool
     var autoUploadWWAnVideo: Bool
 
@@ -345,6 +343,18 @@ extension NCManageDatabase {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
         return NCGlobal.shared.subfolderGranularityMonthly
+    }
+
+    func getAccountAutoUploadFromFromDate() -> Date? {
+        do {
+            let realm = try Realm()
+            guard let result = realm.objects(tableAccount.self).filter("active == true").first else { return .distantPast }
+            return result.autoUploadDate
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
+        }
+
+        return nil
     }
 
     @discardableResult

@@ -24,6 +24,9 @@
 import UIKit
 
 extension NCUtility {
+    func longDate(_ date: Date) -> String {
+        return DateFormatter.localizedString(from: date, dateStyle: .long, timeStyle: .none)
+    }
 
     func getTitleFromDate(_ date: Date) -> String {
 
