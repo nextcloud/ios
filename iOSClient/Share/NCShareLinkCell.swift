@@ -43,7 +43,7 @@ class NCShareLinkCell: UITableViewCell {
     }
 
     func setupCellUI() {
-        var menuImageName = "ellipsis"
+        var menuImageName: String? = nil
         let commonIconTint = UIColor(resource: .Share.commonIconTint)
 
         menuButton.isHidden = isInternalLink
@@ -78,7 +78,11 @@ class NCShareLinkCell: UITableViewCell {
             }
 
             imageItem.image = UIImage(resource: .Share.linkCircleFill)
-            menuButton.setImage(NCUtility().loadImage(named: menuImageName, colors: [commonIconTint]), for: .normal)
+            if let menuImageName {
+                menuButton.setImage(NCUtility().loadImage(named: menuImageName, colors: [commonIconTint]), for: .normal)
+            } else {
+                menuButton.setImage(UIImage(resource: .Share.threeDots).withTintColor(commonIconTint), for: .normal)
+            }
         }
 
         labelTitle.textColor = NCBrandColor.shared.textColor
