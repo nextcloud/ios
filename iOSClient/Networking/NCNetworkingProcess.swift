@@ -85,7 +85,6 @@ class NCNetworkingProcess {
                     /// Remove Photo CameraRoll
                     ///
                     if NCKeychain().removePhotoCameraRoll,
-                       UIApplication.shared.applicationState == .active,
                        let localIdentifiers = self.database.getAssetLocalIdentifiersUploaded(),
                        !localIdentifiers.isEmpty {
                         PHPhotoLibrary.shared().performChanges({
