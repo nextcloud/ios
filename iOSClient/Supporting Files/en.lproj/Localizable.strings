@@ -678,6 +678,8 @@
 "_please_rename_file_" = "Please rename the file or folder.";
 "hidden_file_name_warning" = "Name will result in a hidden file.";
 
+"_camera_roll_" = "Camera roll";
+"_destination_" = "Destination";
 "_select_autoupload_albums_" = "Select albums";
 "_upload_from_" = "Upload from";
 "_multiple_albums_" = "Multiple albums";
