@@ -39,12 +39,14 @@
 "_yes_"                     = "Yes";
 "_select_"                  = "Select";
 "_select_all_"              = "Select all";
+"_upload_"                  = "Upload";
 "_home_"                    = "Files";
 "_files_"                   = "Files";
 "_ok_"                      = "OK";
 "_done_"                    = "Done";
 "_clear_"                   = "Clear";
 "_selected_"                = "Selected";
+"_no_active_account_"       = "No account found";
 "_info_"                    = "Info";
 "_warning_"                 = "Warning";
 "_video_"                   = "Video";
@@ -119,8 +121,7 @@
 "_locked_by_"                       = "Locked by %@";
 "_file_locked_no_override_"         = "This file is locked. It cannot be overridden.";
 "_lock_no_permissions_selected_"    = "Not allowed for some selected files or folders.";
-
-/* Delete file and put it into the trash */
+"_remove_file_"             = "Remove file";
 "_delete_file_"             = "Delete file";
 "_delete_folder_"           = "Delete folder";
 "_size_"                    = "Size";
@@ -281,6 +282,8 @@
 "_no_lens_information_"                     = "No lens information";
 "_today_"                                   = "Today";
 "_yesterday_"                               = "Yesterday";
+"_access_photo_not_enabled_"                = "Access to Photos not enabled";
+"_access_photo_not_enabled_msg_"            = "Please go to \"Settings\" and turn on \"Photo Access\"";
 "_access_background_app_refresh_denied_"    = "\"Background App Refresh\" is denied. Please enable it in \"Settings\" otherwise, new photos or videos will not be detected when the application is in the background";
 "_tutorial_photo_view_"                     = "No photos or videos uploaded yet";
 "_error_createsubfolders_upload_"           = "Error creating subfolders";
@@ -302,6 +305,7 @@
 "_name_"                        = "Name";
 "_date_"                        = "Date";
 "_size_"                        = "Size";
+"_delete_selected_files_"       = "Delete files";
 "_remove_favorites_"            = "Remove from favorites";
 "_add_favorites_"               = "Add to favorites";
 "_share_"                       = "Share";
@@ -313,6 +317,7 @@
 "_no_file_pull_down_"           = "Upload a file or pull down to refresh";
 "_limited_dimension_"           = "Maximum size reached";
 "_save_selected_files_"         = "Save to photo gallery";
+"_file_not_saved_cameraroll_"   = "Error: File not saved in photo album";
 "_file_saved_cameraroll_"       = "File saved in photo album";
 "_directory_on_top_no_"         = "Folders on top";
 "_show_description_"            = "Show description";
@@ -337,6 +342,7 @@
 "_cancel_all_task_"             = "Cancel all transfers";
 "_status_wait_download_"        = "Waiting for download";
 "_status_downloading_"          = "Downloading";
+"_status_wait_upload_"          = "Waiting to upload";
 "_status_wait_create_folder_"   = "Waiting to create the folder";
 "_status_wait_delete_"          = "Waiting to delete";
 "_status_wait_rename_"          = "Waiting to rename";
@@ -349,6 +355,11 @@
 "_media_viewimage_show_"        = "Show only images";
 "_media_viewvideo_show_"        = "Show only video";
 "_media_show_all_"              = "Show both";
+"_good_morning_"                = "Good morning";
+"_good_day_"                    = "Good day";
+"_good_afternoon_"              = "Good afternoon";
+"_good_evening_"                = "Good evening";
+"_good_night_"                  = "Good night";
 "_servers_"                     = "Servers";
 "_select_server_"               = "Please select a server...";
 
@@ -427,6 +438,7 @@
 "_e2e_settings_remove_message_"     = "Confirm removal of encryption along with the passphrase.";
 "_e2e_set_folder_encrypted_"        = "Encrypt";
 "_e2e_remove_folder_encrypted_"     = "Decrypt";
+"_e2e_goto_settings_for_enable_"    = "This is an encrypted directory, go to \"Settings\" and enable end-to-end encryption";
 "_e2e_error_"                       = "An internal end-to-end encryption error occurred.";
 "_e2e_in_upload_"                   = "Upload in progress, please wait for all files to be transferred.";
 "_scans_document_"                  = "Scan document";
@@ -453,6 +465,14 @@
 "_create_new_spreadsheet_"          = "Create new spreadsheet";
 "_create_new_presentation_"         = "Create new presentation";
 "_go_online_"                       = "Go online to see the document";
+"_intro_1_title_"                   = "Keep your data secure and under your control";
+"_intro_2_title_"                   = "Secure collaboration & file exchange";
+"_intro_3_title_"                   = "Easy-to-use web mail, calendaring & contacts";
+"_intro_4_title_"                   = "Screen sharing, online meetings & web conferences";
+"_log_in_"                          = "Log in";
+"_sign_up_"                         = "Sign up with provider";
+"_host_your_own_server"             = "Host your own server";
+"_invalid_url_"                         = "Invalid server URL";
 "_ssl_certificate_untrusted_"           = "The certificate for this server is invalid.";
 "_ssl_certificate_changed_"             = "The certificate for this server seems to have changed.";
 "_file_already_exists_"                 = "Could not complete the operation, a file with the same name exists.";
@@ -516,6 +536,12 @@
 "_ok_copy_passphrase_"      = "OK and copy passphrase";
 "_select_color_"            = "Select the color";
 "_change_color_"            = "Change color";
+"_description_dashboardwidget_" = "Having the Dashboard always at your fingertips has never been easier.";
+"_description_fileswidget_" = "View your recent files and use the toolbar to speed up your operations.";
+"_description_toolbarwidget_"   = "A toolbar to speed up your operations.";
+"_title_lockscreenwidget_"  = "Status";
+"_description_lockscreenwidget_"    = "Keep an eye on available space and recent activity";
+
 "_keep_running_"            = "Keep the app running for a better user experience.";
 "_apps_nextcloud_detect_"   = "Detected %@ apps";
 "_add_existing_account_"    = "Other %@ Apps has been detected, do you want to add an existing account?";
@@ -569,6 +595,15 @@
 "_error_not_found_"         = "The requested resource could not be found";
 "_error_conflict_"          = "The request could not be completed due to a conflict with the current state of the resource";
 "_error_precondition_"      = "The server does not meet one of the preconditions of the requester";
+"_downloading_"             = "Downloading";
+"_additional_options_"      = "Additional options";
+"_unauthorizedFilesPasscode_" = "Files app cannot be used with an activated passcode";
+"_disableFilesApp_"         = "Files app cannot be used because it is disabled";
+"_widget_available_nc25_"   = "Widget only available starting with server version 25";
+"_no_items_"                = "No items";
+"_check_back_later_"        = "Check back later";
+"_no_data_available_"       = "No data available";
+"_recent_activity_"         = "Recent activity";
 
 //Video
 "_user_"                    = "User";

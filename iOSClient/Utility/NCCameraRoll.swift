@@ -136,18 +136,16 @@ class NCCameraRoll: NSObject {
             return callCompletionWithError()
         }
 
-        let extensionAsset = asset.originalFilename.pathExtension.uppercased()
+        let extensionAsset = asset.originalFilename.pathExtension.lowercased()
         let creationDate = asset.creationDate ?? Date()
         let modificationDate = asset.modificationDate ?? Date()
 
-        if asset.mediaType == PHAssetMediaType.image && (extensionAsset == "HEIC" || extensionAsset == "DNG") && !metadata.nativeFormat {
+        if asset.mediaType == PHAssetMediaType.image && (extensionAsset == "heic" || extensionAsset == "dng") && !metadata.nativeFormat {
             let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".jpg"
             metadata.contentType = "image/jpeg"
             fileNamePath = NSTemporaryDirectory() + fileName
             metadata.fileNameView = fileName
-            if !metadata.isDirectoryE2EE {
-                metadata.fileName = fileName
-            }
+            metadata.fileName = fileName
             compatibilityFormat = true
         } else {
             fileNamePath = NSTemporaryDirectory() + metadata.fileNameView

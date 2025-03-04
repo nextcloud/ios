@@ -89,7 +89,8 @@ class NCFilesNavigationController: NCMainNavigationController {
 
     func updateRightBarButtonItems() {
         guard let collectionViewCommon,
-              !collectionViewCommon.isEditMode
+              !collectionViewCommon.isEditMode,
+              UIApplication.shared.applicationState == .active
         else {
             return
         }
