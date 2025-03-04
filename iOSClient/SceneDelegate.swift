@@ -156,7 +156,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             */
         }
 
-        ///
+        WidgetCenter.shared.reloadAllTimelines()
+        
         let session = SceneManager.shared.getSession(scene: scene)
         guard !session.account.isEmpty else { return }
 
