@@ -6,6 +6,19 @@
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@downloads@</string>
+		<key>downloads</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>преостаје %d дозвољено преузимање</string>
+			<key>few</key>
+			<string>преостаје %d дозвољена преузимања</string>
+			<key>other</key>
+			<string>преостаје %d дозвољених преузимања</string>
+		</dict>
 	</dict>
 </dict>
 </plist>
