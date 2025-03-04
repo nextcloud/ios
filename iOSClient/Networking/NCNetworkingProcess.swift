@@ -33,7 +33,6 @@ class NCNetworkingProcess {
     private let database = NCManageDatabase.shared
     private let global = NCGlobal.shared
     private let networking = NCNetworking.shared
-    private var notificationToken: NotificationToken?
     private var hasRun: Bool = false
     private let lockQueue = DispatchQueue(label: "com.nextcloud.networkingprocess.lockqueue")
     private var timerProcess: Timer?
@@ -54,6 +53,9 @@ class NCNetworkingProcess {
     private func startTimer() {
         self.timerProcess?.invalidate()
         self.timerProcess = Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: { _ in
+            guard UIApplication.shared.applicationState == .active else {
+                return
+            }
 
             self.lockQueue.async {
                 guard !self.hasRun,
@@ -83,7 +85,6 @@ class NCNetworkingProcess {
                     /// Remove Photo CameraRoll
                     ///
                     if NCKeychain().removePhotoCameraRoll,
-                       UIApplication.shared.applicationState == .active,
                        let localIdentifiers = self.database.getAssetLocalIdentifiersUploaded(),
                        !localIdentifiers.isEmpty {
                         PHPhotoLibrary.shared().performChanges({
@@ -429,17 +430,6 @@ class NCNetworkingProcess {
     }
 
     // MARK: - Public
-
-    func startProcess() {
-        startTimer()
-    }
-
-    func stopProcess() {
-        timerProcess?.invalidate()
-        timerProcess = nil
-        notificationToken?.invalidate()
-        notificationToken = nil
-    }
 
     func refreshProcessingTask() async -> (counterDownloading: Int, counterUploading: Int) {
         await withCheckedContinuation { continuation in
