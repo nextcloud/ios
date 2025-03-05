@@ -138,6 +138,7 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         timerAutoScroll?.invalidate()
+        timerAutoScroll = nil
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
