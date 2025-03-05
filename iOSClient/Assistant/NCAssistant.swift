@@ -208,13 +208,15 @@ struct TaskItem: View {
 
     var body: some View {
         NavigationLink(destination: NCAssistantTaskDetail(task: task)) {
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 8) {
                 Text(task.input?.input ?? "")
                     .lineLimit(1)
 
-                Text(task.output?.output ?? "")
-                    .lineLimit(1)
-                    .foregroundStyle(.secondary)
+                if let output = task.output?.output, !output.isEmpty {
+                    Text(output)
+                        .lineLimit(1)
+                        .foregroundStyle(.secondary)
+                }
 
                 HStack {
                     Label(
@@ -229,7 +231,6 @@ struct TaskItem: View {
                                 .font(Font.system(.body).weight(.light))
                         }
                     )
-                    .padding(.top, 1)
                     .labelStyle(CustomLabelStyle())
                 }
             }

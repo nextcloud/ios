@@ -17,7 +17,9 @@ struct StatusInfo: View {
         HStack {
             Label(
                 title: {
-                    Text("\(task.statusDate) (\(showStatusText ? NSLocalizedString(task.statusInfo.stringKey, comment: "") : ""))")
+                    let text = (showStatusText && task.statusInfo.stringKey != "_assistant_task_completed_") ? "(\(NSLocalizedString(task.statusInfo.stringKey, comment: "")))" : ""
+
+                    Text("\(task.statusDate) \(text)")
                         .font(.callout)
                         .foregroundStyle(.secondary)
                 },
