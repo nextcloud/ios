@@ -43,7 +43,7 @@ class NCShareLinkCell: UITableViewCell {
     }
 
     func setupCellUI() {
-        var menuImageName: String? = nil
+        var menuImageResource: ImageResource = .Share.threeDots
         let commonIconTint = UIColor(resource: .Share.commonIconTint)
 
         menuButton.isHidden = isInternalLink
@@ -72,17 +72,13 @@ class NCShareLinkCell: UITableViewCell {
                     labelTitle.text? += " (\(tableShare.label))"
                 }
             } else {
-                menuImageName = "plus"
+                menuImageResource = .Share.plus
                 menuButton.accessibilityLabel = NSLocalizedString("_add_", comment: "")
                 menuButton.accessibilityIdentifier = "addShareLink"
             }
 
             imageItem.image = UIImage(resource: .Share.linkCircleFill)
-            if let menuImageName {
-                menuButton.setImage(NCUtility().loadImage(named: menuImageName, colors: [commonIconTint]), for: .normal)
-            } else {
-                menuButton.setImage(UIImage(resource: .Share.threeDots).withTintColor(commonIconTint), for: .normal)
-            }
+            menuButton.setImage(UIImage(resource: menuImageResource).withTintColor(commonIconTint), for: .normal)
         }
 
         labelTitle.textColor = NCBrandColor.shared.textColor
