@@ -38,7 +38,6 @@ class NCMainTabBarController: UITabBarController {
     var documentPickerViewController: NCDocumentPickerViewController?
     let navigationCollectionViewCommon = ThreadSafeArray<NavigationCollectionViewCommon>()
     private var previousIndex: Int?
-    private var timerProcess: Timer?
     private let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup)
     private var unauthorizedAccountInProgress: Bool = false
     private var unavailableAccountInProgress: Bool = false

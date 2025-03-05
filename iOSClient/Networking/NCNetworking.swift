@@ -149,6 +149,15 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 
     func request<Value>(_ request: DataRequest, didParseResponse response: AFDataResponse<Value>) {
 #if !EXTENSION
+        // REQUEST
+        switch response.result {
+        case .success(let value):
+            break
+        case .failure(let error):
+            print("Request error: \(error.localizedDescription)")
+        }
+
+        // RESPONSE
         if let statusCode = response.response?.statusCode {
 
             //
