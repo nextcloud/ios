@@ -102,8 +102,8 @@ class NCMainTabBarController: UITabBarController {
 
     private func userDefaultsDidChange() {
         let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup)
-        let unauthorizedArray = groupDefaults?.array(forKey: "Unauthorized") as? [String] ?? []
-        var unavailableArray = groupDefaults?.array(forKey: "Unavailable") as? [String] ?? []
+        let unauthorizedArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized) as? [String] ?? []
+        var unavailableArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable) as? [String] ?? []
         let session = NCSession.shared.getSession(account: self.account)
 
         if unauthorizedArray.contains(account) {
@@ -123,7 +123,7 @@ class NCMainTabBarController: UITabBarController {
                 let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: self.account, options: options)
                 if results.error == .success {
                     unavailableArray.removeAll { $0 == results.account }
-                    groupDefaults?.set(unavailableArray, forKey: "Unavailable")
+                    groupDefaults?.set(unavailableArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable)
                 } else {
                     NCContentPresenter().showWarning(error: results.error, priority: .max)
                 }

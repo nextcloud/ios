@@ -41,14 +41,18 @@ class NCAccount: NSObject {
         /// Remove account in groupDefaults
         ///
         if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) {
-            var unauthorizedArray = groupDefaults.array(forKey: "Unauthorized") as? [String] ?? []
-            var unavailableArray = groupDefaults.array(forKey: "Unavailable") as? [String] ?? []
+            var unauthorizedArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized) as? [String] ?? []
+            var unavailableArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable) as? [String] ?? []
+            var tosArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
 
             unauthorizedArray.removeAll { $0 == account }
-            groupDefaults.set(unauthorizedArray, forKey: "Unauthorized")
+            groupDefaults.set(unauthorizedArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized)
 
             unavailableArray.removeAll { $0 == account }
-            groupDefaults.set(unavailableArray, forKey: "Unavailable")
+            groupDefaults.set(unavailableArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable)
+
+            tosArray.removeAll { $0 == account }
+            groupDefaults.set(tosArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS)
 
             groupDefaults.synchronize()
         }

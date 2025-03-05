@@ -486,10 +486,10 @@ extension NCNetworking {
                     } else {
                         if error.errorCode == 401,
                            let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) {
-                            var unauthorizedArray = groupDefaults.array(forKey: "Unauthorized") as? [String] ?? []
+                            var unauthorizedArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized) as? [String] ?? []
                             if !unauthorizedArray.contains(metadata.account) {
                                 unauthorizedArray.append(metadata.account)
-                                groupDefaults.set(unauthorizedArray, forKey: "Unauthorized")
+                                groupDefaults.set(unauthorizedArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized)
                             }
                         }
 
