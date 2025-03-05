@@ -45,8 +45,8 @@ extension NCNetworking {
                 completion(afError, error)
             }
         } else {
-            downloadFileInBackground(metadata: metadata, start: start, completion: { afError, error in
-                completion(afError, error)
+            downloadFileInBackground(metadata: metadata, start: start, completion: { error in
+                completion(nil, error)
             })
         }
     }
@@ -132,14 +132,15 @@ extension NCNetworking {
                                           start: @escaping () -> Void = { },
                                           requestHandler: @escaping (_ request: DownloadRequest) -> Void = { _ in },
                                           progressHandler: @escaping (_ progress: Progress) -> Void = { _ in },
-                                          completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void = { _, _ in }) {
+                                          completion: @escaping (_ error: NKError) -> Void) {
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
         start()
 
-        if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account) {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Download file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
+        let (task, error) = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account)
+
+        if let task, error == .success {
             database.setMetadataSession(ocId: metadata.ocId,
                                         sessionTaskIdentifier: task.taskIdentifier,
                                         status: self.global.metadataStatusDownloading)
@@ -150,7 +151,6 @@ extension NCNetworking {
                                                                    "session": metadata.session,
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account])
-            completion(nil, NKError())
         } else {
             database.setMetadataSession(ocId: metadata.ocId,
                                         session: "",
@@ -158,8 +158,9 @@ extension NCNetworking {
                                         sessionError: "",
                                         selector: "",
                                         status: self.global.metadataStatusNormal)
-            completion(nil, NKError(errorCode: self.global.errorResourceNotFound, errorDescription: "task null"))
         }
+
+        completion(error)
     }
 
     func downloadingFinish(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
