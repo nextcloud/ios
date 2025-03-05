@@ -149,17 +149,59 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 
     func request<Value>(_ request: DataRequest, didParseResponse response: AFDataResponse<Value>) {
 #if !EXTENSION
-        if let statusCode = response.response?.statusCode,
-           statusCode == NCGlobal.shared.errorForbidden,
-           let account = request.request?.allHTTPHeaderFields?["X-NC-Account"] as? String,
-           let controller = SceneManager.shared.getControllers().first(where: { $0.account == account }) {
-            NextcloudKit.shared.getTermsOfService(account: account) { _, tos, _, error in
-                if error == .success, let tos {
-                    let termOfServiceModel = NCTermOfServiceModel(controller: controller, tos: tos)
-                    let termOfServiceView = NCTermOfServiceModelView(model: termOfServiceModel)
-                    let termOfServiceController = UIHostingController(rootView: termOfServiceView)
-                    controller.present(termOfServiceController, animated: true, completion: nil)
+        if let statusCode = response.response?.statusCode {
+
+            //
+            // Unauthorized, append the account in groupDefaults unauthorized array
+            //
+            if statusCode == 401,
+               let headerValue = request.request?.allHTTPHeaderFields?["X-NC-CheckUnauthorized"],
+               headerValue.lowercased() == "true",
+               let account = request.request?.allHTTPHeaderFields?["X-NC-Account"] as? String,
+               let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier) {
+
+                var unauthorizedArray = groupDefaults.array(forKey: "Unauthorized") as? [String] ?? []
+                if !unauthorizedArray.contains(account) {
+                    unauthorizedArray.append(account)
+                    groupDefaults.set(unauthorizedArray, forKey: "Unauthorized")
                 }
+
+            //
+            // Unavailable, append the account in groupDefaults unavailable array
+            //
+            } else if statusCode == 503,
+                      let account = request.request?.allHTTPHeaderFields?["X-NC-Account"] as? String,
+                      let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier) {
+
+                var unavailableArray = groupDefaults.array(forKey: "Unavailable") as? [String] ?? []
+                if !unavailableArray.contains(account) {
+                    unavailableArray.append(account)
+                    groupDefaults.set(unavailableArray, forKey: "Unavailable")
+                }
+
+            //
+            // ToS, append the account in groupDefaults unavailable array
+            //
+            } else if statusCode == 403,
+                      let account = request.request?.allHTTPHeaderFields?["X-NC-Account"] as? String,
+                      let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier),
+                      let controller = SceneManager.shared.getControllers().first(where: { $0.account == account }) {
+                NextcloudKit.shared.getTermsOfService(account: account) { _, tos, _, error in
+                    if error == .success, let tos {
+                        var tosArray = groupDefaults.array(forKey: "ToS") as? [String] ?? []
+
+                        if !tosArray.contains(account) {
+                            tosArray.append(account)
+                            groupDefaults.set(tosArray, forKey: "ToS")
+                        }
+
+                        let termOfServiceModel = NCTermOfServiceModel(controller: controller, tos: tos)
+                        let termOfServiceView = NCTermOfServiceModelView(model: termOfServiceModel)
+                        let termOfServiceController = UIHostingController(rootView: termOfServiceView)
+                        controller.present(termOfServiceController, animated: true, completion: nil)
+                    }
+                }
+
             }
         }
 #endif
