@@ -154,28 +154,6 @@ class NCShare: UIViewController, NCSharePagingContent {
         sharedWithYouByImage.addGestureRecognizer(shareAction)
         let shareLabelAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile))
         sharedWithYouByLabel.addGestureRecognizer(shareLabelAction)
-
-        let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: metadata.ownerId)
-        let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)
-
-        if results.image == nil {
-            let etag = self.database.getTableAvatar(fileName: fileName)?.etag
-
-            NextcloudKit.shared.downloadAvatar(
-                user: metadata.ownerId,
-                fileNameLocalPath: utilityFileSystem.directoryUserData + "/" + fileName,
-                sizeImage: NCGlobal.shared.avatarSize,
-                avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
-                etag: etag,
-                account: metadata.account) { _, imageAvatar, _, etag, _, error in
-                    if error == .success, let etag = etag, let imageAvatar = imageAvatar {
-                        self.database.addAvatar(fileName: fileName, etag: etag)
-                        self.sharedWithYouByImage.image = imageAvatar
-                    } else if error.errorCode == NCGlobal.shared.errorNotModified, let imageAvatar = self.database.setAvatarLoaded(fileName: fileName) {
-                        self.sharedWithYouByImage.image = imageAvatar
-                    }
-                }
-        }
     }
 
     // MARK: - Notification Center

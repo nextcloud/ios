@@ -173,26 +173,5 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
         }
 
         imageItem.image = utility.loadUserImage(for: sharee.shareWith, displayName: nil, urlBase: session.urlBase)
-
-        let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: sharee.shareWith)
-        let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)
-
-        if results.image == nil {
-            let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
-
-            NextcloudKit.shared.downloadAvatar(
-                user: sharee.shareWith,
-                fileNameLocalPath: NCUtilityFileSystem().directoryUserData + "/" + fileName,
-                sizeImage: NCGlobal.shared.avatarSize,
-                avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
-                etag: etag, account: session.account) { _, imageAvatar, _, etag, _, error in
-                    if error == .success, let etag = etag, let imageAvatar = imageAvatar {
-                        NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
-                        self.imageItem.image = imageAvatar
-                    } else if error.errorCode == NCGlobal.shared.errorNotModified, let imageAvatar = NCManageDatabase.shared.setAvatarLoaded(fileName: fileName) {
-                        self.imageItem.image = imageAvatar
-                    }
-                }
-        }
     }
 }
