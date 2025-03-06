@@ -30,6 +30,7 @@ import DropDown
 import NextcloudKit
 import MarqueeLabel
 import ContactsUI
+import SwiftUI
 
 class NCShare: UIViewController, NCSharePagingContent {
     @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
@@ -37,11 +38,12 @@ class NCShare: UIViewController, NCSharePagingContent {
     @IBOutlet weak var sharedWithYouByImage: UIImageView!
     @IBOutlet weak var sharedWithYouByLabel: UILabel!
     @IBOutlet weak var searchFieldTopConstraint: NSLayoutConstraint!
-    @IBOutlet weak var searchField: UISearchBar!
-    var textField: UIView? { searchField }
+    
+    @IBOutlet weak var searchPlaceholder: UIView!
+    private var shareSearchHost: ShareSearchFieldHost?
+    var textField: UIView? { shareSearchHost?.view }
 
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var btnContact: UIButton!
 
     weak var appDelegate = UIApplication.shared.delegate as? AppDelegate
 
@@ -73,13 +75,24 @@ class NCShare: UIViewController, NCSharePagingContent {
 
         view.backgroundColor = NCBrandColor.shared.appBackgroundColor
         
-        btnContact.imageView?.contentMode = .scaleAspectFit
-
         viewContainerConstraint.constant = height
         searchFieldTopConstraint.constant = 0
 
-        searchField.placeholder = NSLocalizedString("_shareLinksearch_placeholder_", comment: "")
-        searchField.autocorrectionType = .no
+        shareSearchHost = ShareSearchFieldHost(onSearchTextChanged: { [weak self] text in
+            self?.searchTextDidChange(text)
+        }, onContactButtonTap: { [weak self] in
+            self?.selectContactClicked()
+        })
+        shareSearchHost?.placeholder = NSLocalizedString("_shareLinksearch_placeholder_", comment: "")
+        if let shareSearchHost {
+            searchPlaceholder.addSubview(shareSearchHost.view)
+            shareSearchHost.view.translatesAutoresizingMaskIntoConstraints = false
+            searchPlaceholder.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([searchPlaceholder.leadingAnchor.constraint(equalTo: shareSearchHost.view.leadingAnchor),
+                                         searchPlaceholder.trailingAnchor.constraint(equalTo: shareSearchHost.view.trailingAnchor),
+                                         searchPlaceholder.topAnchor.constraint(equalTo: shareSearchHost.view.topAnchor),
+                                         searchPlaceholder.bottomAnchor.constraint(equalTo: shareSearchHost.view.bottomAnchor)])
+        }
 
         tableView.dataSource = self
         tableView.delegate = self
@@ -98,8 +111,7 @@ class NCShare: UIViewController, NCSharePagingContent {
             if capabilities.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 ||
                 (capabilities.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 && direcrory?.e2eEncrypted ?? false) {
                 searchFieldTopConstraint.constant = -50
-                searchField.alpha = 0
-                btnContact.alpha = 0
+                textField?.alpha = 0
             }
         } else {
             checkSharedWithYou()
@@ -112,9 +124,6 @@ class NCShare: UIViewController, NCSharePagingContent {
             let isVisible = (self.navigationController?.topViewController as? NCSharePaging)?.page == .sharing
             networking?.readShare(showLoadingIndicator: isVisible)
         }
-
-        searchField.searchTextField.font = .systemFont(ofSize: 14)
-        searchField.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -139,9 +148,11 @@ class NCShare: UIViewController, NCSharePagingContent {
         guard !metadata.ownerId.isEmpty, metadata.ownerId != session.userId else { return }
 
         if !canReshare {
-            searchField.isUserInteractionEnabled = false
-            searchField.alpha = 0.5
-            searchField.placeholder = NSLocalizedString("_share_reshare_disabled_", comment: "")
+            if let shareSearchHost {
+                shareSearchHost.view.isUserInteractionEnabled = false
+                shareSearchHost.view.alpha = 0.5
+                shareSearchHost.placeholder = NSLocalizedString("_share_reshare_disabled_", comment: "")
+            }
         }
 
         searchFieldTopConstraint.constant = 45
@@ -192,7 +203,7 @@ class NCShare: UIViewController, NCSharePagingContent {
         self.present(UIAlertController.password(titleKey: "_enforce_password_protection_", completion: completion), animated: true)
     }
 
-    @IBAction func selectContactClicked(_ sender: Any) {
+    private func selectContactClicked() {
         let cnPicker = CNContactPickerViewController()
         cnPicker.delegate = self
         cnPicker.displayedPropertyKeys = [CNContactEmailAddressesKey]
@@ -250,10 +261,12 @@ extension NCShare: NCShareNetworkingDelegate {
             dropDown.dataSource.append(label)
         }
 
-        dropDown.anchorView = searchField
-        dropDown.bottomOffset = CGPoint(x: 10, y: searchField.bounds.height)
-        dropDown.width = searchField.bounds.width - 20
-        dropDown.direction = .bottom
+        if let shareSearchHost {
+            dropDown.anchorView = shareSearchHost.view
+            dropDown.bottomOffset = CGPoint(x: 10, y: shareSearchHost.view.bounds.height)
+            dropDown.width = shareSearchHost.view.bounds.width - 20
+            dropDown.direction = .bottom
+        }
 
         dropDown.cellNib = UINib(nibName: "NCSearchUserDropDownCell", bundle: nil)
         dropDown.customCellConfiguration = { (index: Index, _, cell: DropDownCell) in
@@ -385,7 +398,7 @@ extension NCShare: CNContactPickerDelegate {
         if  contact.emailAddresses.count > 1 {
             showEmailList(arrEmail: contact.emailAddresses.map({$0.value as String}))
         } else if let email = contact.emailAddresses.first?.value as? String {
-            searchField?.text = email
+            shareSearchHost?.text = email
             networking?.getSharees(searchString: email)
         }
     }
@@ -400,7 +413,7 @@ extension NCShare: CNContactPickerDelegate {
                     selected: false,
                     on: false,
                     action: { _ in
-                        self.searchField?.text = email
+                        self.shareSearchHost?.text = email
                         self.networking?.getSharees(searchString: email)
                     }
                 )
@@ -412,10 +425,10 @@ extension NCShare: CNContactPickerDelegate {
     }
 }
 
-// MARK: - UISearchBarDelegate
+// MARK: - Search
 
-extension NCShare: UISearchBarDelegate {
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+extension NCShare {
+    func searchTextDidChange(_ searchText: String) {
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(searchSharees), object: nil)
 
         if searchText.isEmpty {
@@ -433,7 +446,7 @@ extension NCShare: UISearchBarDelegate {
             let emailPred = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
             return emailPred.evaluate(with: email)
         }
-        guard let searchString = searchField.text, !searchString.isEmpty else { return }
+        guard let searchString = shareSearchHost?.text, !searchString.isEmpty else { return }
         if searchString.contains("@"), !isValidEmail(searchString) { return }
         networking?.getSharees(searchString: searchString)
     }
