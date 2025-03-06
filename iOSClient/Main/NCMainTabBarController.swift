@@ -122,8 +122,8 @@ class NCMainTabBarController: UITabBarController {
     private func checkUserDelaultError() {
         guard !checkUserDelaultErrorInProgress else { return }
 
-        let unauthorizedArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized) as? [String] ?? []
         var unavailableArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable) as? [String] ?? []
+        let unauthorizedArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized) as? [String] ?? []
         let tosArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
 
         /// Unavailable
@@ -140,8 +140,6 @@ class NCMainTabBarController: UITabBarController {
 
                     if serverInfo.maintenance {
                         NCContentPresenter().showInfo(title: "_warning_", description: "_maintenance_mode_")
-                    } else {
-                        NCContentPresenter().showInfo(title: "_warning_", description: "_account_disabled_")
                     }
                 case .failure:
                     break
