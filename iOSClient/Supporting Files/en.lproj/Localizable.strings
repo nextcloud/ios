@@ -603,6 +603,8 @@
 "_check_back_later_"        = "Check back later";
 "_no_data_available_"       = "No data available";
 "_recent_activity_"         = "Recent activity";
+"_maintenance_mode_"        = "The server is currently in maintenance mode, which may take a while.";
+"_account_disabled_"        = "Account disabled";
 
 //Video
 "_user_"                    = "User";

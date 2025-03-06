@@ -164,21 +164,21 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
             return
         }
 
-        /// Unauthorized
-        if errorCode == 401 {
-            var array = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized) as? [String] ?? []
-
-            if !array.contains(account) {
-                array.append(account)
-                groupDefaults.set(array, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized)
-            }
         /// Unavailable
-        } else if errorCode == 503 {
+        if errorCode == 503 {
             var array = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable) as? [String] ?? []
 
             if !array.contains(account) {
                 array.append(account)
                 groupDefaults.set(array, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable)
+            }
+        /// Unauthorized
+        } else if errorCode == 401 {
+            var array = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized) as? [String] ?? []
+
+            if !array.contains(account) {
+                array.append(account)
+                groupDefaults.set(array, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized)
             }
         /// ToS
         } else if errorCode == 403 {

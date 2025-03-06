@@ -126,29 +126,35 @@ class NCMainTabBarController: UITabBarController {
         var unavailableArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable) as? [String] ?? []
         let tosArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
 
+        /// Unavailable
+        if unavailableArray.contains(account) {
+            checkUserDelaultErrorInProgress = true
+            let serverUrl = NCSession.shared.getSession(account: account).urlBase
+            let account = self.account
+            NextcloudKit.shared.getServerStatus(serverUrl: serverUrl) { _, serverInfoResult in
+                switch serverInfoResult {
+                case .success(let serverInfo):
+
+                    unavailableArray.removeAll { $0 == account }
+                    self.groupDefaults?.set(unavailableArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable)
+
+                    if serverInfo.maintenance {
+                        NCContentPresenter().showInfo(title: "_warning_", description: "_maintenance_mode_")
+                    } else {
+                        NCContentPresenter().showInfo(title: "_warning_", description: "_account_disabled_")
+                    }
+                case .failure:
+                    break
+                }
+                self.checkUserDelaultErrorInProgress = false
+            }
         /// Unauthorized
-        if unauthorizedArray.contains(account) {
+        } else if unauthorizedArray.contains(account) {
             checkUserDelaultErrorInProgress = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self.checkRemoteUser {
                     self.checkUserDelaultErrorInProgress = false
                 }
-            }
-        /// Unavailable
-        } else if unavailableArray.contains(account) {
-            checkUserDelaultErrorInProgress = true
-            Task {
-                let session = NCSession.shared.getSession(account: self.account)
-                let serverUrlFileName = NCUtilityFileSystem().getHomeServer(session: session)
-                let options = NKRequestOptions(checkInterceptor: false)
-                let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: self.account, options: options)
-                if results.error == .success {
-                    unavailableArray.removeAll { $0 == results.account }
-                    groupDefaults?.set(unavailableArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable)
-                } else {
-                    NCContentPresenter().showWarning(error: results.error, priority: .max)
-                }
-                checkUserDelaultErrorInProgress = false
             }
         /// ToS
         } else if tosArray.contains(account) {
