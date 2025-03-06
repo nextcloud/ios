@@ -13,8 +13,8 @@ extension NCNetworking {
               let controller = SceneManager.shared.getControllers().first(where: { $0.account == account }) else {
             return
         }
-
         let options = NKRequestOptions(checkInterceptor: false)
+
         NextcloudKit.shared.getTermsOfService(account: account, options: options) { _, tos, _, error in
             var tosArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
 
@@ -30,8 +30,16 @@ extension NCNetworking {
                 controller.present(termOfServiceController, animated: true, completion: nil)
             } else {
                 tosArray.removeAll { $0 == account }
-                groupDefaults.set(tosArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized)
+                groupDefaults.set(tosArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS)
             }
+        }
+    }
+
+    func signTermsOfService(account: String, termId: Int, completion: @escaping (NKError) -> Void) {
+        let options = NKRequestOptions(checkInterceptor: false)
+
+        NextcloudKit.shared.signTermsOfService(termId: "\(termId)", account: account, options: options) { _, _, error in
+            completion(error)
         }
     }
 }

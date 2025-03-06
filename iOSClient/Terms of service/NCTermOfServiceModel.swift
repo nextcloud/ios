@@ -56,7 +56,7 @@ class NCTermOfServiceModel: ObservableObject {
             return
         }
 
-        NextcloudKit.shared.signTermsOfService(termId: "\(termId)", account: controller.account) { _, _, error in
+        NCNetworking.shared.signTermsOfService(account: controller.account, termId: termId) { error in
             if error == .success {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterGetServerData)
                 self.dismissView = true

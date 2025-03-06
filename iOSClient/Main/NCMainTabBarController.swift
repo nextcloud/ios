@@ -39,8 +39,7 @@ class NCMainTabBarController: UITabBarController {
     let navigationCollectionViewCommon = ThreadSafeArray<NavigationCollectionViewCommon>()
     private var previousIndex: Int?
     private let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup)
-    private var unauthorizedAccountInProgress: Bool = false
-    private var unavailableAccountInProgress: Bool = false
+    private var checkUserDelaultErrorInProgress: Bool = false
     private var timerProcess: Timer?
 
     override func viewDidLoad() {
@@ -56,7 +55,7 @@ class NCMainTabBarController: UITabBarController {
                 return
             }
 
-            self.userDefaultsDidChange()
+            self.checkUserDelaultError()
         })
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil, queue: .main) { [weak self] notification in
@@ -71,6 +70,7 @@ class NCMainTabBarController: UITabBarController {
             }
         }
 
+        /*
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { [weak self] _ in
             self?.userDefaultsDidChange()
         }
@@ -78,6 +78,7 @@ class NCMainTabBarController: UITabBarController {
         NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: nil, queue: nil) { [weak self] _ in
             self?.userDefaultsDidChange()
         }
+        */
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -108,7 +109,10 @@ class NCMainTabBarController: UITabBarController {
         return serverUrl
     }
 
-    private func userDefaultsDidChange() {
+    private func checkUserDelaultError() {
+        guard !checkUserDelaultErrorInProgress else { return }
+        checkUserDelaultErrorInProgress = true
+
         let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup)
         let unauthorizedArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized) as? [String] ?? []
         var unavailableArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable) as? [String] ?? []
@@ -116,16 +120,12 @@ class NCMainTabBarController: UITabBarController {
         let session = NCSession.shared.getSession(account: self.account)
 
         if unauthorizedArray.contains(account) {
-            guard !unauthorizedAccountInProgress else { return }
-            unauthorizedAccountInProgress = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self.checkRemoteUser {
-                    self.unauthorizedAccountInProgress = false
+                    self.checkUserDelaultErrorInProgress = false
                 }
             }
         } else if unavailableArray.contains(self.account) {
-            guard !unavailableAccountInProgress else { return }
-            unavailableAccountInProgress = true
             Task {
                 let serverUrlFileName = NCUtilityFileSystem().getHomeServer(session: session)
                 let options = NKRequestOptions(checkInterceptor: false)
@@ -136,7 +136,7 @@ class NCMainTabBarController: UITabBarController {
                 } else {
                     NCContentPresenter().showWarning(error: results.error, priority: .max)
                 }
-                unavailableAccountInProgress = false
+                checkUserDelaultErrorInProgress = false
             }
         } else if tosArray.contains(self.account) {
             NCNetworking.shared.termsOfService(account: self.account)
