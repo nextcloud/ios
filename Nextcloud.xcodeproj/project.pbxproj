@@ -98,6 +98,11 @@
 		F314F1142A30E2DE00BC7FAB /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E8A390295DC5E0006CB2D0 /* View+Extension.swift */; };
 		F321DA8A2B71205A00DDA0E6 /* NCTrashSelectTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F321DA892B71205A00DDA0E6 /* NCTrashSelectTabBar.swift */; };
 		F32FADA92D1176E3007035E2 /* UIButton+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32FADA82D1176DE007035E2 /* UIButton+Extension.swift */; };
+		F3374AF02D78B01B002A38F9 /* BitCollections in Frameworks */ = {isa = PBXBuildFile; productRef = F3374AEF2D78B01B002A38F9 /* BitCollections */; };
+		F3374AF22D78B01B002A38F9 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = F3374AF12D78B01B002A38F9 /* Collections */; };
+		F3374AF42D78B01B002A38F9 /* DequeModule in Frameworks */ = {isa = PBXBuildFile; productRef = F3374AF32D78B01B002A38F9 /* DequeModule */; };
+		F3374AF62D78B01B002A38F9 /* HashTreeCollections in Frameworks */ = {isa = PBXBuildFile; productRef = F3374AF52D78B01B002A38F9 /* HashTreeCollections */; };
+		F3374AF82D78B01B002A38F9 /* HeapModule in Frameworks */ = {isa = PBXBuildFile; productRef = F3374AF72D78B01B002A38F9 /* HeapModule */; };
 		F33918C42C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F33918C32C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift */; };
 		F33918C52C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F33918C32C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift */; };
 		F33918C62C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F33918C32C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift */; };
@@ -1995,20 +2000,25 @@
 				F7D56B1A2972405500FA46C4 /* Mantis in Frameworks */,
 				F7ED547C25EEA65400956C55 /* QRCodeReader in Frameworks */,
 				F788ECC7263AAAFA00ADC67F /* MarkdownKit in Frameworks */,
+				F3374AF02D78B01B002A38F9 /* BitCollections in Frameworks */,
 				F77BC3EB293E5268005F2B08 /* Swifter in Frameworks */,
 				F7BB7E4727A18C56009B9F29 /* Parchment in Frameworks */,
 				F33EE6E12BF4BDA500CA1A51 /* NIOSSL in Frameworks */,
 				F734B06628E75C0100E180D5 /* TLPhotoPicker in Frameworks */,
 				F787AC09298BCB4A0001BB00 /* SVGKitSwift in Frameworks */,
 				F760DE032AE66EA80027D78A /* KeychainAccess in Frameworks */,
+				F3374AF62D78B01B002A38F9 /* HashTreeCollections in Frameworks */,
 				F33EE6F02BF4C0FF00CA1A51 /* NIO in Frameworks */,
 				F3A0479E2BD268B500658E7B /* PopupView in Frameworks */,
+				F3374AF82D78B01B002A38F9 /* HeapModule in Frameworks */,
 				F770768E263A8C3400A1BA94 /* FloatingPanel in Frameworks */,
 				F758A01227A7F03E0069468B /* JGProgressHUD in Frameworks */,
 				F77333882927A72100466E35 /* OpenSSL in Frameworks */,
 				F753BA93281FD8020015BFB6 /* EasyTipView in Frameworks */,
+				F3374AF42D78B01B002A38F9 /* DequeModule in Frameworks */,
 				F7160A822BE933390034DCB3 /* RealmSwift in Frameworks */,
 				F76DA963277B760E0082465B /* Queuer in Frameworks */,
+				F3374AF22D78B01B002A38F9 /* Collections in Frameworks */,
 				F72AD70D28C24B93006CB92D /* NextcloudKit in Frameworks */,
 				F70B86752642CE3B00ED5349 /* FirebaseCrashlytics in Frameworks */,
 				F7A1050E29E587AF00FFD92B /* TagListView in Frameworks */,
@@ -3618,6 +3628,11 @@
 				F33EE6E02BF4BDA500CA1A51 /* NIOSSL */,
 				F33EE6EF2BF4C0FF00CA1A51 /* NIO */,
 				F7D4BF532CA2ED9D00A5E746 /* VLCKitSPM */,
+				F3374AEF2D78B01B002A38F9 /* BitCollections */,
+				F3374AF12D78B01B002A38F9 /* Collections */,
+				F3374AF32D78B01B002A38F9 /* DequeModule */,
+				F3374AF52D78B01B002A38F9 /* HashTreeCollections */,
+				F3374AF72D78B01B002A38F9 /* HeapModule */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -3797,6 +3812,7 @@
 				F33EE6DF2BF4BDA500CA1A51 /* XCRemoteSwiftPackageReference "swift-nio-ssl" */,
 				F33EE6EE2BF4C0FF00CA1A51 /* XCRemoteSwiftPackageReference "swift-nio" */,
 				F7D4BF4E2CA2ECCB00A5E746 /* XCRemoteSwiftPackageReference "vlckit-spm" */,
+				F3374AEE2D78B01B002A38F9 /* XCRemoteSwiftPackageReference "swift-collections" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -6009,6 +6025,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		F3374AEE2D78B01B002A38F9 /* XCRemoteSwiftPackageReference "swift-collections" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-collections.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.4;
+			};
+		};
 		F33EE6DF2BF4BDA500CA1A51 /* XCRemoteSwiftPackageReference "swift-nio-ssl" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-nio-ssl";
@@ -6228,6 +6252,31 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		F3374AEF2D78B01B002A38F9 /* BitCollections */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F3374AEE2D78B01B002A38F9 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = BitCollections;
+		};
+		F3374AF12D78B01B002A38F9 /* Collections */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F3374AEE2D78B01B002A38F9 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = Collections;
+		};
+		F3374AF32D78B01B002A38F9 /* DequeModule */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F3374AEE2D78B01B002A38F9 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = DequeModule;
+		};
+		F3374AF52D78B01B002A38F9 /* HashTreeCollections */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F3374AEE2D78B01B002A38F9 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = HashTreeCollections;
+		};
+		F3374AF72D78B01B002A38F9 /* HeapModule */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F3374AEE2D78B01B002A38F9 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = HeapModule;
+		};
 		F3391B072B4C52C5001C0C4B /* FirebaseDatabase */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

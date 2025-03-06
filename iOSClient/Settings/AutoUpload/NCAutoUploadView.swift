@@ -31,26 +31,10 @@ struct NCAutoUploadView: View {
     @StateObject var albumModel: AlbumModel
     @State private var showUploadFolder: Bool = false
     @State private var showSelectAlbums: Bool = false
-
+    @State private var showUploadAllPhotosWarning: Bool = false
     var body: some View {
         Form {
-            /// Auto Upload
-            Section(content: {
-                Toggle(NSLocalizedString("_autoupload_", comment: ""), isOn: $model.autoUpload)
-                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                    .onChange(of: model.autoUpload) { newValue in
-                        model.handleAutoUploadChange(newValue: newValue)
-                        albumModel.initAlbums()
-                    }
-            }, footer: {
-                Text(NSLocalizedString("_autoupload_notice_", comment: ""))
-            })
-            /// If `autoUpload` state will be true, we will animate out the whole `autoUploadOnView` section
-            if true {
-                autoUploadOnView
-                    .transition(.slide)
-                    .animation(.easeInOut, value: model.autoUpload)
-            }
+            autoUploadOnView
         }
         .navigationBarTitle(NSLocalizedString("_auto_upload_folder_", comment: ""))
         .navigationBarTitleDisplayMode(.inline)
@@ -69,12 +53,24 @@ struct NCAutoUploadView: View {
         .sheet(isPresented: $showSelectAlbums) {
             SelectAlbumView(model: albumModel)
         }
+        
+        .alert("_auto_upload_all_photos_warning_title", isPresented: $showUploadAllPhotosWarning, actions: {
+            Button("_confirm_") {
+                albumModel.populateSelectedAlbums()
+                model.handleAutoUploadChange(newValue: true, assetCollections: albumModel.selectedAlbums)
+            }
+            Button("_cancel_", role: .cancel) {
+                model.autoUploadStart = false
+            }
+        }, message: {
+            Text("_auto_upload_all_photos_warning_message")
+        })
         .onChange(of: model.autoUploadTimespan) { newValue in
             model.handleAutoUploadTimespanChange(newValue: newValue)
         }
         .tint(.primary)
     }
-
+    
     @ViewBuilder
     var autoUploadOnView: some View {
         Group {
@@ -94,7 +90,7 @@ struct NCAutoUploadView: View {
                     }
                 })
             })
-
+            
             Section(content: {
                 NavigationLink(destination: SelectAlbumView(model: albumModel)) {
                     Button(action: {
@@ -112,8 +108,8 @@ struct NCAutoUploadView: View {
                         }
                     })
                 }
-
-                Picker("Back up...", selection: $model.autoUploadTimespan) {
+                
+                Picker("_back_up_", selection: $model.autoUploadTimespan) {
                     ForEach(AutoUploadTimespan.allCases) { when in
                         Text(NSLocalizedString(when.rawValue, comment: ""))
                             .tag(when)
@@ -125,7 +121,7 @@ struct NCAutoUploadView: View {
                     Text("New photos since \(NCUtility().longDate(date))")
                 }
             })
-
+            
             /// Auto Upload Photo
             Section(content: {
                 Toggle(NSLocalizedString("_autoupload_photos_", comment: ""), isOn: $model.autoUploadImage)
@@ -154,7 +150,7 @@ struct NCAutoUploadView: View {
                         model.handleAutoUploadWWAnVideoChange(newValue: newValue)
                     }
             })
-
+            
             /// Auto Upload create subfolder
             Section(content: {
                 Toggle(NSLocalizedString("_autoupload_create_subfolder_", comment: ""), isOn: $model.autoUploadCreateSubfolder)
@@ -174,26 +170,30 @@ struct NCAutoUploadView: View {
                 Text(NSLocalizedString("_autoupload_create_subfolder_footer_", comment: ""))
             })
         }
-        .disabled(model.autoUploadFull)
-
+        .disabled(model.autoUploadStart)
+        
         /// Auto Upload Full
         Section(content: {
-            Toggle(isOn: $model.autoUploadFull) {
-                Text(model.autoUploadFull ? "_stop_autoupload_" : "_start_autoupload_")
+            Toggle(isOn: $model.autoUploadStart) {
+                Text(model.autoUploadStart ? "_stop_autoupload_" : "_start_autoupload_")
                     .padding(.horizontal, 20)
                     .padding(.vertical, 10)
             }
             .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-            .onChange(of: model.autoUploadFull) { newValue in
-                albumModel.populateSelectedAlbums()
-                model.handleAutoUploadChange(newValue: newValue, assetCollections: albumModel.selectedAlbums)
+            .onChange(of: model.autoUploadStart) { newValue in
+                if newValue && model.autoUploadTimespan == .allPhotos {
+                    showUploadAllPhotosWarning = true
+                } else {
+                    albumModel.populateSelectedAlbums()
+                    model.handleAutoUploadChange(newValue: newValue, assetCollections: albumModel.selectedAlbums)
+                }
             }
             .font(.headline)
             .toggleStyle(.button)
             .buttonStyle(.bordered)
         }, footer: {
-            Text(NSLocalizedString("_autoupload_fullphotos_footer_", comment: "") + "\n \n")
-                .padding(5)
+            Text(NSLocalizedString("_autoupload_notice_", comment: ""))
+                .padding(.top, 20)
         })
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         .listRowInsets(EdgeInsets())

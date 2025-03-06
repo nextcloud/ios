@@ -237,11 +237,11 @@
 "_autoupload_favorites_"            = "Auto upload favorites only";
 "_autoupload_description_"          = "New photos/videos will be automatically uploaded to your server.";
 "_autoupload_fullphotos_"           = "Upload the whole camera roll";
-"_start_autoupload_"                = "Start auto uploading";
+"_start_autoupload_"                = "Turn on auto uploading";
 "_stop_autoupload_"                 = "Stop auto uploading";
 "_autoupload_fullphotos_footer_"    = "Adjust the options above before uploading.";
 "_autoupload_create_subfolder_"     = "Use subfolders";
-"_autoupload_create_subfolder_footer_"  = "Store in subfolders based on year, month or daily.";
+"_autoupload_create_subfolder_footer_"  = "Store photos in subfolders based on year, month or day.";
 "_autoupload_subfolder_granularity_"    = "Subfolder Granularity";
 "_filenamemask_"                        = "Change filename mask";
 "_filenamemask_footer_"                 = "By default, when a file is uploaded, it automatically gets the following format: yy-mm-dd hh-mm-ss plus a 4-digit counter. If you do not like this format, you can change it here except for the final 4-digit counter, which cannot be omitted.";

@@ -45,8 +45,8 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     @Published var autoUploadVideo: Bool = false
     /// A state variable that indicates whether auto upload for videos is enabled or not
     @Published var autoUploadWWAnVideo: Bool = false
-    /// A state variable that indicates whether auto upload for full resolution photos is enabled or not
-    @Published var autoUploadFull: Bool = false
+    /// A state variable that indicates whether auto upload is enabled or not
+    @Published var autoUploadStart: Bool = false
     /// A state variable that indicates whether auto upload creates subfolders based on date or not
     @Published var autoUploadCreateSubfolder: Bool = false
     /// A state variable that indicates the granularity of the subfolders, either daily, monthly, or yearly
@@ -55,6 +55,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     @Published var autoUploadDate: Date?
     /// A state variable that indicates from when new photos/videos will be uploaded, either new photos only or all photos
     @Published var autoUploadTimespan: AutoUploadTimespan = .allPhotos
+    @Published var showUploadAllPhotosWarning = false
 
     /// A state variable that shows error in view in case of an error
     @Published var showErrorAlert: Bool = false
@@ -88,7 +89,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             autoUploadWWAnPhoto = tableAccount.autoUploadWWAnPhoto
             autoUploadVideo = tableAccount.autoUploadVideo
             autoUploadWWAnVideo = tableAccount.autoUploadWWAnVideo
-            autoUploadFull = tableAccount.autoUploadFull
+            autoUploadStart = tableAccount.autoUploadFull
             autoUploadCreateSubfolder = tableAccount.autoUploadCreateSubfolder
             autoUploadSubfolderGranularity = Granularity(rawValue: tableAccount.autoUploadSubfolderGranularity) ?? .monthly
             autoUploadDate = tableAccount.autoUploadDate
@@ -123,22 +124,22 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         }
     }
 
-    /// Updates the auto-upload setting.
-    func handleAutoUploadChange(newValue: Bool) {
-        if newValue {
-            requestAuthorization { value in
-                self.autoUpload = value
-                self.updateAccountProperty(\.autoUpload, value: value)
-                self.database.setAccountAutoUploadFileName("")
-                self.database.setAccountAutoUploadDirectory("", session: self.session)
-                NCAutoUpload.shared.alignPhotoLibrary(controller: self.controller, account: self.session.account)
-            }
-        } else {
-            updateAccountProperty(\.autoUpload, value: newValue)
-            updateAccountProperty(\.autoUploadFull, value: newValue)
-            self.database.clearMetadatasUpload(account: session.account)
-        }
-    }
+//    /// Updates the auto-upload setting.
+//    func handleAutoUploadChange(newValue: Bool) {
+//        if newValue {
+//            requestAuthorization { value in
+//                self.autoUpload = value
+//                self.updateAccountProperty(\.autoUpload, value: value)
+//                self.database.setAccountAutoUploadFileName("")
+//                self.database.setAccountAutoUploadDirectory("", session: self.session)
+//                NCAutoUpload.shared.alignPhotoLibrary(controller: self.controller, account: self.session.account)
+//            }
+//        } else {
+//            updateAccountProperty(\.autoUpload, value: newValue)
+//            updateAccountProperty(\.autoUploadFull, value: newValue)
+//            self.database.clearMetadatasUpload(account: session.account)
+//        }
+//    }
 
     /// Updates the auto-upload image setting.
     func handleAutoUploadImageChange(newValue: Bool) {
@@ -187,7 +188,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         if newValue {
             NCAutoUpload.shared.autoUploadSelectedAlbums(controller: self.controller, assetCollections: assetCollections, log: "Auto upload selected albums", account: session.account)
         } else {
-            self.database.clearMetadatasUpload(account: session.account)
+            database.clearMetadatasUpload(account: session.account)
         }
     }
 
@@ -206,6 +207,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         guard let activeAccount = self.database.getActiveTableAccount() else { return }
         activeAccount[keyPath: keyPath] = value
         self.database.updateAccount(activeAccount)
+//        initAutoUpload()
     }
 
     /// Returns the path for auto-upload based on the active account's settings.
@@ -244,6 +246,14 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             return NSLocalizedString("_multiple_albums_", comment: "")
         }
     }
+
+//    private func initAutoUpload() {
+//        database.clearMetadatasUpload(account: session.account)
+//
+//        NCAutoUpload.shared.initAutoUpload(controller: controller, account: session.account) { num in
+//
+//        }
+//    }
 }
 
 /// An enum that represents the granularity of the subfolders for auto upload
