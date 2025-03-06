@@ -159,7 +159,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 
         // RESPONSE
         if let statusCode = response.response?.statusCode {
-
             //
             // Unauthorized, append the account in groupDefaults unauthorized array
             //
@@ -168,8 +167,8 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
                headerValue.lowercased() == "true",
                let account = request.request?.allHTTPHeaderFields?[NextcloudKit.shared.nkCommonInstance.headerAccount] as? String,
                let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier) {
-
                 var unauthorizedArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized) as? [String] ?? []
+
                 if !unauthorizedArray.contains(account) {
                     unauthorizedArray.append(account)
                     groupDefaults.set(unauthorizedArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized)
@@ -181,36 +180,19 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
             } else if statusCode == 503,
                       let account = request.request?.allHTTPHeaderFields?[NextcloudKit.shared.nkCommonInstance.headerAccount] as? String,
                       let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier) {
-
                 var unavailableArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable) as? [String] ?? []
+
                 if !unavailableArray.contains(account) {
                     unavailableArray.append(account)
                     groupDefaults.set(unavailableArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable)
                 }
 
             //
-            // ToS, append the account in groupDefaults unavailable array
+            // ToS
             //
             } else if statusCode == 403,
-                      let account = request.request?.allHTTPHeaderFields?[NextcloudKit.shared.nkCommonInstance.headerAccount] as? String,
-                      let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier),
-                      let controller = SceneManager.shared.getControllers().first(where: { $0.account == account }) {
-                NextcloudKit.shared.getTermsOfService(account: account) { _, tos, _, error in
-                    if error == .success, let tos {
-                        var tosArray = groupDefaults.array(forKey: "ToS") as? [String] ?? []
-
-                        if !tosArray.contains(account) {
-                            tosArray.append(account)
-                            groupDefaults.set(tosArray, forKey: "ToS")
-                        }
-
-                        let termOfServiceModel = NCTermOfServiceModel(controller: controller, tos: tos)
-                        let termOfServiceView = NCTermOfServiceModelView(model: termOfServiceModel)
-                        let termOfServiceController = UIHostingController(rootView: termOfServiceView)
-                        controller.present(termOfServiceController, animated: true, completion: nil)
-                    }
-                }
-
+                      let account = request.request?.allHTTPHeaderFields?[NextcloudKit.shared.nkCommonInstance.headerAccount] as? String {
+                termsOfService(account: account)
             }
         }
 #endif

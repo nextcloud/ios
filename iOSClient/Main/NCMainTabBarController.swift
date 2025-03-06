@@ -41,6 +41,7 @@ class NCMainTabBarController: UITabBarController {
     private let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup)
     private var unauthorizedAccountInProgress: Bool = false
     private var unavailableAccountInProgress: Bool = false
+    private var timerProcess: Timer?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,6 +50,14 @@ class NCMainTabBarController: UITabBarController {
         if #available(iOS 17.0, *) {
             traitOverrides.horizontalSizeClass = .compact
         }
+
+        self.timerProcess = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
+            guard UIApplication.shared.applicationState == .active else {
+                return
+            }
+
+            self.userDefaultsDidChange()
+        })
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil, queue: .main) { [weak self] notification in
             if let userInfo = notification.userInfo as? NSDictionary,
@@ -103,6 +112,7 @@ class NCMainTabBarController: UITabBarController {
         let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup)
         let unauthorizedArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized) as? [String] ?? []
         var unavailableArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable) as? [String] ?? []
+        let tosArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
         let session = NCSession.shared.getSession(account: self.account)
 
         if unauthorizedArray.contains(account) {
@@ -128,6 +138,8 @@ class NCMainTabBarController: UITabBarController {
                 }
                 unavailableAccountInProgress = false
             }
+        } else if tosArray.contains(self.account) {
+            NCNetworking.shared.termsOfService(account: self.account)
         }
     }
 
