@@ -14,7 +14,8 @@ extension NCNetworking {
             return
         }
 
-        NextcloudKit.shared.getTermsOfService(account: account) { _, tos, _, error in
+        let options = NKRequestOptions(checkInterceptor: false)
+        NextcloudKit.shared.getTermsOfService(account: account, options: options) { _, tos, _, error in
             var tosArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
 
             if error == .success, let tos {

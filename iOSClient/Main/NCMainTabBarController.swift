@@ -128,7 +128,7 @@ class NCMainTabBarController: UITabBarController {
             unavailableAccountInProgress = true
             Task {
                 let serverUrlFileName = NCUtilityFileSystem().getHomeServer(session: session)
-                let options = NKRequestOptions(checkUnauthorized: false)
+                let options = NKRequestOptions(checkInterceptor: false)
                 let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: self.account, options: options)
                 if results.error == .success {
                     unavailableArray.removeAll { $0 == results.account }
