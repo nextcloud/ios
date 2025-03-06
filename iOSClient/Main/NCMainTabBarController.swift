@@ -121,22 +121,24 @@ class NCMainTabBarController: UITabBarController {
 
     private func checkUserDelaultError() {
         guard !checkUserDelaultErrorInProgress else { return }
-        checkUserDelaultErrorInProgress = true
 
-        let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup)
         let unauthorizedArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized) as? [String] ?? []
         var unavailableArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable) as? [String] ?? []
         let tosArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
-        let session = NCSession.shared.getSession(account: self.account)
 
+        /// Unauthorized
         if unauthorizedArray.contains(account) {
+            checkUserDelaultErrorInProgress = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self.checkRemoteUser {
                     self.checkUserDelaultErrorInProgress = false
                 }
             }
-        } else if unavailableArray.contains(self.account) {
+        /// Unavailable
+        } else if unavailableArray.contains(account) {
+            checkUserDelaultErrorInProgress = true
             Task {
+                let session = NCSession.shared.getSession(account: self.account)
                 let serverUrlFileName = NCUtilityFileSystem().getHomeServer(session: session)
                 let options = NKRequestOptions(checkInterceptor: false)
                 let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: self.account, options: options)
@@ -148,8 +150,10 @@ class NCMainTabBarController: UITabBarController {
                 }
                 checkUserDelaultErrorInProgress = false
             }
-        } else if tosArray.contains(self.account) {
-            NCNetworking.shared.termsOfService(account: self.account)
+        /// ToS
+        } else if tosArray.contains(account) {
+            checkUserDelaultErrorInProgress = true
+            NCNetworking.shared.termsOfService(account: account)
         }
     }
 

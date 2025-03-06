@@ -154,27 +154,21 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
            headerCheckInterceptor.lowercased() == "true",
            let account = request.request?.allHTTPHeaderFields?[NextcloudKit.shared.nkCommonInstance.headerAccount] as? String,
            let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier) {
-            ///
             /// Unauthorized
-            ///
             if statusCode == 401 {
                 var unauthorizedArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized) as? [String] ?? []
                 if !unauthorizedArray.contains(account) {
                     unauthorizedArray.append(account)
                     groupDefaults.set(unauthorizedArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized)
                 }
-            ///
             /// Unavailable
-            ///
             } else if statusCode == 503 {
                 var unavailableArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable) as? [String] ?? []
                 if !unavailableArray.contains(account) {
                     unavailableArray.append(account)
                     groupDefaults.set(unavailableArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable)
                 }
-            ///
             /// ToS
-            ///
             } else if statusCode == 403 {
                 termsOfService(account: account)
             }
