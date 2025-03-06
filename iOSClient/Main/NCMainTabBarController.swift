@@ -70,6 +70,16 @@ class NCMainTabBarController: UITabBarController {
             }
         }
 
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCheckUserDelaultErrorDone), object: nil, queue: nil) { notification in
+            if let userInfo = notification.userInfo,
+               let account = userInfo["account"] as? String,
+               let controller = userInfo["controller"] as? NCMainTabBarController,
+               account == self.account,
+               controller == self {
+                self.checkUserDelaultErrorInProgress = false
+            }
+        }
+
         /*
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { [weak self] _ in
             self?.userDefaultsDidChange()

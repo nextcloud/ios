@@ -13,12 +13,11 @@ extension NCNetworking {
               let controller = SceneManager.shared.getControllers().first(where: { $0.account == account }) else {
             return
         }
+        var tosArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
         let options = NKRequestOptions(checkInterceptor: false)
 
         NextcloudKit.shared.getTermsOfService(account: account, options: options) { _, tos, _, error in
-            var tosArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
-
-            if error == .success, let tos {
+            if error == .success, let tos, !tos.hasUserSigned() {
                 if !tosArray.contains(account) {
                     tosArray.append(account)
                     groupDefaults.set(tosArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS)
@@ -36,9 +35,17 @@ extension NCNetworking {
     }
 
     func signTermsOfService(account: String, termId: Int, completion: @escaping (NKError) -> Void) {
+        guard let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier) else {
+            return
+        }
+        var tosArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
         let options = NKRequestOptions(checkInterceptor: false)
 
         NextcloudKit.shared.signTermsOfService(termId: "\(termId)", account: account, options: options) { _, _, error in
+            if error == .success {
+                tosArray.removeAll { $0 == account }
+                groupDefaults.set(tosArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS)
+            }
             completion(error)
         }
     }
