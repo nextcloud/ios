@@ -704,6 +704,7 @@
 		F783030728B4C52800B84583 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70CEF5523E9C7E50007035B /* UIColor+Extension.swift */; };
 		F783030D28B4C59A00B84583 /* SwiftEntryKit in Frameworks */ = {isa = PBXBuildFile; productRef = F783030C28B4C59A00B84583 /* SwiftEntryKit */; };
 		F783034428B5142B00B84583 /* NextcloudKit in Frameworks */ = {isa = PBXBuildFile; productRef = F783034328B5142B00B84583 /* NextcloudKit */; };
+		F785129C2D7989B30087DDD0 /* NCNetworking+TermsOfService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F785129A2D79899E0087DDD0 /* NCNetworking+TermsOfService.swift */; };
 		F785EE9D246196DF00B3F945 /* NCNetworkingE2EE.swift in Sources */ = {isa = PBXBuildFile; fileRef = F785EE9C246196DF00B3F945 /* NCNetworkingE2EE.swift */; };
 		F785EE9E2461A09900B3F945 /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
 		F785EEA42461A4A600B3F945 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
@@ -1584,6 +1585,7 @@
 		F7802B312BD5584F00D74270 /* NCMedia+DragDrop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCMedia+DragDrop.swift"; sourceTree = "<group>"; };
 		F7816EF12C2C3E1F00A52517 /* NCPushNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCPushNotification.swift; sourceTree = "<group>"; };
 		F7817CF729801A3500FFBC65 /* Data+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+Extension.swift"; sourceTree = "<group>"; };
+		F785129A2D79899E0087DDD0 /* NCNetworking+TermsOfService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCNetworking+TermsOfService.swift"; sourceTree = "<group>"; };
 		F785EE9C246196DF00B3F945 /* NCNetworkingE2EE.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNetworkingE2EE.swift; sourceTree = "<group>"; };
 		F7864ACB2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+LocalFile.swift"; sourceTree = "<group>"; };
 		F787704E22E7019900F287A9 /* NCShareLinkCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCShareLinkCell.xib; sourceTree = "<group>"; };
@@ -2417,6 +2419,7 @@
 				F7327E1F2B73A42F00A462C7 /* NCNetworking+Download.swift */,
 				F7327E342B73AEDE00A462C7 /* NCNetworking+LivePhoto.swift */,
 				F7F3E58A2D3BB65000A32B14 /* NCNetworking+Recommendations.swift */,
+				F785129A2D79899E0087DDD0 /* NCNetworking+TermsOfService.swift */,
 				F7327E3C2B73B92800A462C7 /* NCNetworking+Synchronization.swift */,
 				F74230F22C79B57200CA1ACA /* NCNetworking+Task.swift */,
 				F7327E272B73A53400A462C7 /* NCNetworking+Upload.swift */,
@@ -4760,6 +4763,7 @@
 				F78E2D6529AF02DB0024D4F3 /* Database.swift in Sources */,
 				F70CEF5623E9C7E50007035B /* UIColor+Extension.swift in Sources */,
 				F76882242C0DD1E7001CF441 /* NCSettingsAdvancedView.swift in Sources */,
+				F785129C2D7989B30087DDD0 /* NCNetworking+TermsOfService.swift in Sources */,
 				F75CA1472962F13700B01130 /* NCHUDView.swift in Sources */,
 				F77BB748289985270090FC19 /* UITabBarController+Extension.swift in Sources */,
 				F763D29D2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */,
@@ -5777,7 +5781,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -5843,7 +5847,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;

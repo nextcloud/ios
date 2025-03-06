@@ -38,10 +38,9 @@ class NCMainTabBarController: UITabBarController {
     var documentPickerViewController: NCDocumentPickerViewController?
     let navigationCollectionViewCommon = ThreadSafeArray<NavigationCollectionViewCommon>()
     private var previousIndex: Int?
-    private var timerProcess: Timer?
     private let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup)
-    private var unauthorizedAccountInProgress: Bool = false
-    private var unavailableAccountInProgress: Bool = false
+    private var checkUserDelaultErrorInProgress: Bool = false
+    private var timerProcess: Timer?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,6 +49,14 @@ class NCMainTabBarController: UITabBarController {
         if #available(iOS 17.0, *) {
             traitOverrides.horizontalSizeClass = .compact
         }
+
+        self.timerProcess = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
+            guard UIApplication.shared.applicationState == .active else {
+                return
+            }
+
+            self.checkUserDelaultError()
+        })
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil, queue: .main) { [weak self] notification in
             if let userInfo = notification.userInfo as? NSDictionary,
@@ -63,6 +70,17 @@ class NCMainTabBarController: UITabBarController {
             }
         }
 
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCheckUserDelaultErrorDone), object: nil, queue: nil) { notification in
+            if let userInfo = notification.userInfo,
+               let account = userInfo["account"] as? String,
+               let controller = userInfo["controller"] as? NCMainTabBarController,
+               account == self.account,
+               controller == self {
+                self.checkUserDelaultErrorInProgress = false
+            }
+        }
+
+        /*
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { [weak self] _ in
             self?.userDefaultsDidChange()
         }
@@ -70,6 +88,7 @@ class NCMainTabBarController: UITabBarController {
         NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: nil, queue: nil) { [weak self] _ in
             self?.userDefaultsDidChange()
         }
+        */
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -100,35 +119,45 @@ class NCMainTabBarController: UITabBarController {
         return serverUrl
     }
 
-    private func userDefaultsDidChange() {
-        let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup)
-        let unauthorizedArray = groupDefaults?.array(forKey: "Unauthorized") as? [String] ?? []
-        var unavailableArray = groupDefaults?.array(forKey: "Unavailable") as? [String] ?? []
-        let session = NCSession.shared.getSession(account: self.account)
+    private func checkUserDelaultError() {
+        guard !checkUserDelaultErrorInProgress else { return }
 
-        if unauthorizedArray.contains(account) {
-            guard !unauthorizedAccountInProgress else { return }
-            unauthorizedAccountInProgress = true
+        var unavailableArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable) as? [String] ?? []
+        let unauthorizedArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized) as? [String] ?? []
+        let tosArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
+
+        /// Unavailable
+        if unavailableArray.contains(account) {
+            checkUserDelaultErrorInProgress = true
+            let serverUrl = NCSession.shared.getSession(account: account).urlBase
+            let account = self.account
+            NextcloudKit.shared.getServerStatus(serverUrl: serverUrl) { _, serverInfoResult in
+                switch serverInfoResult {
+                case .success(let serverInfo):
+
+                    unavailableArray.removeAll { $0 == account }
+                    self.groupDefaults?.set(unavailableArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable)
+
+                    if serverInfo.maintenance {
+                        NCContentPresenter().showInfo(title: "_warning_", description: "_maintenance_mode_")
+                    }
+                case .failure:
+                    break
+                }
+                self.checkUserDelaultErrorInProgress = false
+            }
+        /// Unauthorized
+        } else if unauthorizedArray.contains(account) {
+            checkUserDelaultErrorInProgress = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self.checkRemoteUser {
-                    self.unauthorizedAccountInProgress = false
+                    self.checkUserDelaultErrorInProgress = false
                 }
             }
-        } else if unavailableArray.contains(self.account) {
-            guard !unavailableAccountInProgress else { return }
-            unavailableAccountInProgress = true
-            Task {
-                let serverUrlFileName = NCUtilityFileSystem().getHomeServer(session: session)
-                let options = NKRequestOptions(checkUnauthorized: false)
-                let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: self.account, options: options)
-                if results.error == .success {
-                    unavailableArray.removeAll { $0 == results.account }
-                    groupDefaults?.set(unavailableArray, forKey: "Unavailable")
-                } else {
-                    NCContentPresenter().showWarning(error: results.error, priority: .max)
-                }
-                unavailableAccountInProgress = false
-            }
+        /// ToS
+        } else if tosArray.contains(account) {
+            checkUserDelaultErrorInProgress = true
+            NCNetworking.shared.termsOfService(account: account)
         }
     }
 
