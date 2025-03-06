@@ -52,7 +52,9 @@ final class AssistantUITests: BaseUIXCTestCase {
     private func createTask(input: String) {
         app.navigationBars["Assistant"].buttons["CreateButton"].tap()
 
-        app.textViews["InputTextEditor"].typeText(input)
+        let inputTextEditor = app.textViews["InputTextEditor"]
+        inputTextEditor.await()
+        inputTextEditor.typeText(input)
         app.navigationBars["New Free text to text prompt task"].buttons["Create"].tap()
     }
 
