@@ -152,26 +152,37 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         if let statusCode = response.response?.statusCode,
            let headerCheckInterceptor = request.request?.allHTTPHeaderFields?[NextcloudKit.shared.nkCommonInstance.headerCheckInterceptor],
            headerCheckInterceptor.lowercased() == "true",
-           let account = request.request?.allHTTPHeaderFields?[NextcloudKit.shared.nkCommonInstance.headerAccount] as? String,
-           let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier) {
-            /// Unauthorized
-            if statusCode == 401 {
-                var unauthorizedArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized) as? [String] ?? []
-                if !unauthorizedArray.contains(account) {
-                    unauthorizedArray.append(account)
-                    groupDefaults.set(unauthorizedArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized)
-                }
-            /// Unavailable
-            } else if statusCode == 503 {
-                var unavailableArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable) as? [String] ?? []
-                if !unavailableArray.contains(account) {
-                    unavailableArray.append(account)
-                    groupDefaults.set(unavailableArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable)
-                }
-            /// ToS
-            } else if statusCode == 403 {
-                termsOfService(account: account)
+           let account = request.request?.allHTTPHeaderFields?[NextcloudKit.shared.nkCommonInstance.headerAccount] as? String {
+            appenErrorIngroupDefaults(account: account, errorCode: statusCode)
+        }
+#endif
+    }
+
+    func appenErrorIngroupDefaults(account: String, errorCode: Int) {
+#if !EXTENSION
+        guard let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier) else {
+            return
+        }
+
+        /// Unauthorized
+        if errorCode == 401 {
+            var array = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized) as? [String] ?? []
+
+            if !array.contains(account) {
+                array.append(account)
+                groupDefaults.set(array, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized)
             }
+        /// Unavailable
+        } else if errorCode == 503 {
+            var array = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable) as? [String] ?? []
+
+            if !array.contains(account) {
+                array.append(account)
+                groupDefaults.set(array, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable)
+            }
+        /// ToS
+        } else if errorCode == 403 {
+            self.termsOfService(account: account)
         }
 #endif
     }

@@ -232,14 +232,7 @@ extension NCNetworking {
                                                                        "account": metadata.account],
                                                             second: 0.5)
             } else {
-                if error.errorCode == 401,
-                   let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) {
-                    var unauthorizedArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized) as? [String] ?? []
-                    if !unauthorizedArray.contains(metadata.account) {
-                        unauthorizedArray.append(metadata.account)
-                        groupDefaults.set(unauthorizedArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized)
-                    }
-                }
+                self.appenErrorIngroupDefaults(account: metadata.account, errorCode: error.errorCode)
 
                 NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
 
