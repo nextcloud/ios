@@ -141,6 +141,11 @@ class NCNetworkingProcess {
         let limitDownload = httpMaximumConnectionsPerHostInDownload - counterDownloading
         let metadatasWaitDownload = self.database.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d", networking.sessionDownloadBackground, global.metadataStatusWaitDownload), numItems: limitDownload, sorted: "sessionDate", ascending: true)
         for metadata in metadatasWaitDownload where counterDownloading < httpMaximumConnectionsPerHostInDownload {
+            /// Check Server Error
+            guard networking.noServerErrorAccount(metadata.account) else {
+                continue
+            }
+
             counterDownloading += 1
             networking.download(metadata: metadata, withNotificationProgressTask: true)
         }
@@ -187,6 +192,10 @@ class NCNetworkingProcess {
             }
 
             for metadata in metadatasWaitUpload where counterUploading < httpMaximumConnectionsPerHostInUpload {
+                /// Check Server Error
+                guard networking.noServerErrorAccount(metadata.account) else {
+                    continue
+                }
 
                 if NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer) != nil {
                     NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Process auto upload skipped file: \(metadata.serverUrl)/\(metadata.fileNameView), because is already in session.")
@@ -236,14 +245,9 @@ class NCNetworkingProcess {
         /// No upload available ? --> Retry Upload in Error
         ///
         if counterUploading == 0 {
-            let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup)
-            let unavailableArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable) as? [String] ?? []
-            let unauthorizedArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized) as? [String] ?? []
-            let tosArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
-
             for metadata in metadatasUploadError {
-                // Check groupDefaults Error
-                if unavailableArray.contains(metadata.account) || unauthorizedArray.contains(metadata.account) || tosArray.contains(metadata.account) {
+                /// Check Server Error
+                guard networking.noServerErrorAccount(metadata.account) else {
                     continue
                 }
 
@@ -290,6 +294,11 @@ class NCNetworkingProcess {
         ///
         if let metadatasWaitCreateFolder = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCreateFolder), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitCreateFolder.isEmpty {
             for metadata in metadatasWaitCreateFolder {
+                /// Check Server Error
+                guard networking.noServerErrorAccount(metadata.account) else {
+                    continue
+                }
+
                 /// For Auto Upload check if the folder exists
                 if metadata.sessionSelector == global.selectorUploadAutoUpload || metadata.sessionSelector == global.selectorUploadAutoUploadAll {
                     let results = await networking.fileExists(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, account: metadata.account)
@@ -316,6 +325,11 @@ class NCNetworkingProcess {
         ///
         if let metadatasWaitCopy = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCopy), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitCopy.isEmpty {
             for metadata in metadatasWaitCopy {
+                /// Check Server Error
+                guard networking.noServerErrorAccount(metadata.account) else {
+                    continue
+                }
+
                 let serverUrlTo = metadata.serverUrlTo
                 let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
                 var serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
@@ -348,6 +362,11 @@ class NCNetworkingProcess {
         ///
         if let metadatasWaitMove = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitMove), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitMove.isEmpty {
             for metadata in metadatasWaitMove {
+                /// Check Server Error
+                guard networking.noServerErrorAccount(metadata.account) else {
+                    continue
+                }
+
                 let serverUrlTo = metadata.serverUrlTo
                 let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
                 let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
@@ -393,6 +412,11 @@ class NCNetworkingProcess {
         ///
         if let metadatasWaitFavorite = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitFavorite), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitFavorite.isEmpty {
             for metadata in metadatasWaitFavorite {
+                /// Check Server Error
+                guard networking.noServerErrorAccount(metadata.account) else {
+                    continue
+                }
+
                 let session = NCSession.Session(account: metadata.account, urlBase: metadata.urlBase, user: metadata.user, userId: metadata.userId)
                 let fileName = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
                 let error = await networking.setFavorite(fileName: fileName, favorite: metadata.favorite, account: metadata.account)
@@ -412,6 +436,11 @@ class NCNetworkingProcess {
         ///
         if let metadatasWaitRename = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitRename), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitRename.isEmpty {
             for metadata in metadatasWaitRename {
+                /// Check Server Error
+                guard networking.noServerErrorAccount(metadata.account) else {
+                    continue
+                }
+
                 let serverUrlFileNameSource = metadata.serveUrlFileName
                 let serverUrlFileNameDestination = metadata.serverUrl + "/" + metadata.fileName
                 let result = await networking.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: false, account: metadata.account)
@@ -430,6 +459,11 @@ class NCNetworkingProcess {
         ///
         if let metadatasWaitDelete = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitDelete), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitDelete.isEmpty {
             for metadata in metadatasWaitDelete {
+                /// Check Server Error
+                guard networking.noServerErrorAccount(metadata.account) else {
+                    continue
+                }
+
                 if networking.deleteFileOrFolderQueue.operations.filter({ ($0 as? NCOperationDeleteFileOrFolder)?.ocId == metadata.ocId }).isEmpty {
                     networking.deleteFileOrFolderQueue.addOperation(NCOperationDeleteFileOrFolder(metadata: metadata))
                 }

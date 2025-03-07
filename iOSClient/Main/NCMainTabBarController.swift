@@ -55,7 +55,7 @@ class NCMainTabBarController: UITabBarController {
                 return
             }
 
-            self.checkUserDelaultError()
+            self.checkUserServerError()
         })
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil, queue: .main) { [weak self] notification in
@@ -119,7 +119,7 @@ class NCMainTabBarController: UITabBarController {
         return serverUrl
     }
 
-    private func checkUserDelaultError() {
+    private func checkUserServerError() {
         guard !checkUserDelaultErrorInProgress else { return }
 
         var unavailableArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable) as? [String] ?? []

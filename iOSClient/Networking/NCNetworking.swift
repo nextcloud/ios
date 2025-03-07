@@ -153,12 +153,12 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
            let headerCheckInterceptor = request.request?.allHTTPHeaderFields?[NextcloudKit.shared.nkCommonInstance.headerCheckInterceptor],
            headerCheckInterceptor.lowercased() == "true",
            let account = request.request?.allHTTPHeaderFields?[NextcloudKit.shared.nkCommonInstance.headerAccount] as? String {
-            appenErrorIngroupDefaults(account: account, errorCode: statusCode)
+            appendServerErrorAccount(account, errorCode: statusCode)
         }
 #endif
     }
 
-    func appenErrorIngroupDefaults(account: String, errorCode: Int) {
+    func appendServerErrorAccount(_ account: String, errorCode: Int) {
 #if !EXTENSION
         guard let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier) else {
             return
@@ -185,6 +185,41 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
             self.termsOfService(account: account)
         }
 #endif
+    }
+
+    func noServerErrorAccount(_ account: String) -> Bool {
+        guard let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier) else {
+            return true
+        }
+        let unavailableArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable) as? [String] ?? []
+        let unauthorizedArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized) as? [String] ?? []
+        let tosArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
+
+        if unavailableArray.contains(account) || unauthorizedArray.contains(account) || tosArray.contains(account) {
+            return false
+        }
+
+        return true
+    }
+
+    func removeServerErrorAccount(_ account: String) {
+        guard let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier) else {
+            return
+        }
+        var unauthorizedArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized) as? [String] ?? []
+        var unavailableArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable) as? [String] ?? []
+        var tosArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
+
+        unauthorizedArray.removeAll { $0 == account }
+        groupDefaults.set(unauthorizedArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized)
+
+        unavailableArray.removeAll { $0 == account }
+        groupDefaults.set(unavailableArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable)
+
+        tosArray.removeAll { $0 == account }
+        groupDefaults.set(tosArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS)
+
+        groupDefaults.synchronize()
     }
 
     // MARK: -
