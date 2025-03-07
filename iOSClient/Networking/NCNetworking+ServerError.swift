@@ -7,40 +7,6 @@ import UIKit
 import NextcloudKit
 
 extension NCNetworking {
-    func appendServerErrorAccount(_ account: String, errorCode: Int) {
-#if !EXTENSION
-        guard let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier) else {
-            return
-        }
-
-        /// Unavailable
-        if errorCode == 503 {
-            var array = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable) as? [String] ?? []
-
-            if !array.contains(account) {
-                array.append(account)
-                groupDefaults.set(array, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable)
-            }
-        /// Unauthorized
-        } else if errorCode == 401 {
-            var array = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized) as? [String] ?? []
-
-            if !array.contains(account) {
-                array.append(account)
-                groupDefaults.set(array, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized)
-            }
-        /// ToS
-        } else if errorCode == 403 {
-            var array = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
-
-            if !array.contains(account) {
-                array.append(account)
-                groupDefaults.set(array, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS)
-            }
-        }
-#endif
-    }
-
     func noServerErrorAccount(_ account: String) -> Bool {
         guard let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier) else {
             return true

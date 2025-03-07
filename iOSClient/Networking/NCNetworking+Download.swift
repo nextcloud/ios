@@ -232,7 +232,7 @@ extension NCNetworking {
                                                                        "account": metadata.account],
                                                             second: 0.5)
             } else {
-                self.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
+                NextcloudKit.shared.nkCommonInstance.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
 
                 NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
 
