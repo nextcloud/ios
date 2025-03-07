@@ -150,7 +150,7 @@ class NCMainTabBarController: UITabBarController {
         } else if unauthorizedArray.contains(account) {
             checkUserDelaultErrorInProgress = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                self.checkRemoteUser {
+                NCAccount().checkRemoteUser(account: self.account, controller: self) {
                     self.checkUserDelaultErrorInProgress = false
                 }
             }
@@ -158,43 +158,6 @@ class NCMainTabBarController: UITabBarController {
         } else if tosArray.contains(account) {
             checkUserDelaultErrorInProgress = true
             NCNetworking.shared.termsOfService(account: account)
-        }
-    }
-
-    private func checkRemoteUser(completion: @escaping () -> Void = {}) {
-        let token = NCKeychain().getPassword(account: account)
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
-              let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account))
-        else {
-            return completion()
-        }
-
-        func changeAccount() {
-            if let accounts = NCManageDatabase.shared.getAccounts(),
-               account.count > 0,
-               let account = accounts.first {
-                NCAccount().changeAccount(account, userProfile: nil, controller: self) { }
-            } else {
-                appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
-            }
-
-            completion()
-        }
-
-        NCContentPresenter().showCustomMessage(title: "", message: String(format: NSLocalizedString("_account_unauthorized_", comment: ""), account), priority: .high, delay: NCGlobal.shared.dismissAfterSecondLong, type: .error)
-
-        NextcloudKit.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) { account, wipe, _, error in
-            /// REMOVE ACCOUNT
-            NCAccount().deleteAccount(account, wipe: wipe)
-
-            if wipe {
-                NextcloudKit.shared.setRemoteWipeCompletition(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) { _, _, error in
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Set Remote Wipe Completition error code: \(error.errorCode)")
-                    changeAccount()
-                }
-            } else {
-                changeAccount()
-            }
         }
     }
 }
