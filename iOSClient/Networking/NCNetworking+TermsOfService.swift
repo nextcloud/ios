@@ -8,10 +8,10 @@ import SwiftUI
 import NextcloudKit
 
 extension NCNetworking {
-    func termsOfService(account: String) {
+    func termsOfService(account: String, completion: @escaping () -> Void = {}) {
         guard let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier),
               let controller = SceneManager.shared.getControllers().first(where: { $0.account == account }) else {
-            return
+            return completion()
         }
         var tosArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
         let options = NKRequestOptions(checkInterceptor: false)
@@ -31,6 +31,8 @@ extension NCNetworking {
                 tosArray.removeAll { $0 == account }
                 groupDefaults.set(tosArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS)
             }
+
+            completion()
         }
     }
 

@@ -72,7 +72,7 @@ extension NCNetworking {
     }
 
 #if !EXTENSION
-    func checkUserServerError(account: String, controller: NCMainTabBarController?, completion: @escaping () -> Void = {}) {
+    func checkServerError(account: String, controller: NCMainTabBarController?, completion: @escaping () -> Void = {}) {
         guard let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier) else {
             return completion()
         }
@@ -108,7 +108,9 @@ extension NCNetworking {
             }
         /// ToS
         } else if tosArray.contains(account) {
-            NCNetworking.shared.termsOfService(account: account)
+            NCNetworking.shared.termsOfService(account: account) {
+                completion()
+            }
         } else {
             completion()
         }

@@ -50,14 +50,6 @@ class NCMainTabBarController: UITabBarController {
             traitOverrides.horizontalSizeClass = .compact
         }
 
-        self.timerProcess = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
-            guard UIApplication.shared.applicationState == .active else {
-                return
-            }
-
-            self.checkUserServerError()
-        })
-
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil, queue: .main) { [weak self] notification in
             if let userInfo = notification.userInfo as? NSDictionary,
                let account = userInfo["account"] as? String,
@@ -80,15 +72,7 @@ class NCMainTabBarController: UITabBarController {
             }
         }
 
-        /*
-        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { [weak self] _ in
-            self?.userDefaultsDidChange()
-        }
-
-        NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: nil, queue: nil) { [weak self] _ in
-            self?.userDefaultsDidChange()
-        }
-        */
+        checkServerError()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -101,6 +85,18 @@ class NCMainTabBarController: UITabBarController {
 
             present(vc, animated: true)
         }
+    }
+
+    func checkServerError() {
+        self.timerProcess = Timer.scheduledTimer(withTimeInterval: 1, repeats: false, block: { _ in
+            guard UIApplication.shared.applicationState == .active else {
+                return self.checkServerError()
+            }
+
+            NCNetworking.shared.checkServerError(account: self.account, controller: self) {
+                self.checkServerError()
+            }
+        })
     }
 
     func currentViewController() -> UIViewController? {
@@ -117,48 +113,6 @@ class NCMainTabBarController: UITabBarController {
             }
         }
         return serverUrl
-    }
-
-    private func checkUserServerError() {
-        guard !checkUserDelaultErrorInProgress else { return }
-
-        var unavailableArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable) as? [String] ?? []
-        let unauthorizedArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized) as? [String] ?? []
-        let tosArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
-
-        /// Unavailable
-        if unavailableArray.contains(account) {
-            checkUserDelaultErrorInProgress = true
-            let serverUrl = NCSession.shared.getSession(account: account).urlBase
-            let account = self.account
-            NextcloudKit.shared.getServerStatus(serverUrl: serverUrl) { _, serverInfoResult in
-                switch serverInfoResult {
-                case .success(let serverInfo):
-
-                    unavailableArray.removeAll { $0 == account }
-                    self.groupDefaults?.set(unavailableArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable)
-
-                    if serverInfo.maintenance {
-                        NCContentPresenter().showInfo(title: "_warning_", description: "_maintenance_mode_")
-                    }
-                case .failure:
-                    break
-                }
-                self.checkUserDelaultErrorInProgress = false
-            }
-        /// Unauthorized
-        } else if unauthorizedArray.contains(account) {
-            checkUserDelaultErrorInProgress = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                NCAccount().checkRemoteUser(account: self.account, controller: self) {
-                    self.checkUserDelaultErrorInProgress = false
-                }
-            }
-        /// ToS
-        } else if tosArray.contains(account) {
-            checkUserDelaultErrorInProgress = true
-            NCNetworking.shared.termsOfService(account: account)
-        }
     }
 }
 
