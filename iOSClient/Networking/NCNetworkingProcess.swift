@@ -236,13 +236,23 @@ class NCNetworkingProcess {
         /// No upload available ? --> Retry Upload in Error
         ///
         if counterUploading == 0 {
+            let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup)
+            let unavailableArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable) as? [String] ?? []
+            let unauthorizedArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized) as? [String] ?? []
+            let tosArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
+
             for metadata in metadatasUploadError {
-                // Verify COUNTER ERROR
+                // Check groupDefaults Error
+                if unavailableArray.contains(metadata.account) || unauthorizedArray.contains(metadata.account) || tosArray.contains(metadata.account) {
+                    continue
+                }
+
+                // VeriCheckfy COUNTER ERROR
                 if let transfer = NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer),
                    transfer.countError > 3 {
                     continue
                 }
-                /// Verify QUOTA
+                /// Check QUOTA
                 if metadata.sessionError.contains("\(global.errorQuota)") {
                     NextcloudKit.shared.getUserProfile(account: metadata.account) { _, userProfile, _, error in
                         if error == .success, let userProfile, userProfile.quotaFree > 0, userProfile.quotaFree > metadata.size {
