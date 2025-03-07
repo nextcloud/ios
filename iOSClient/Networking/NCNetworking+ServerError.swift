@@ -31,7 +31,12 @@ extension NCNetworking {
             }
         /// ToS
         } else if errorCode == 403 {
-            self.termsOfService(account: account)
+            var array = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
+
+            if !array.contains(account) {
+                array.append(account)
+                groupDefaults.set(array, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS)
+            }
         }
 #endif
     }

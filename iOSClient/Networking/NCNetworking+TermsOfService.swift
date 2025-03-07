@@ -18,11 +18,6 @@ extension NCNetworking {
 
         NextcloudKit.shared.getTermsOfService(account: account, options: options) { _, tos, _, error in
             if error == .success, let tos, !tos.hasUserSigned() {
-                if !tosArray.contains(account) {
-                    tosArray.append(account)
-                    groupDefaults.set(tosArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS)
-                }
-
                 let termOfServiceModel = NCTermOfServiceModel(controller: controller, tos: tos)
                 let termOfServiceView = NCTermOfServiceModelView(model: termOfServiceModel)
                 let termOfServiceController = UIHostingController(rootView: termOfServiceView)
