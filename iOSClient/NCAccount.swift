@@ -162,4 +162,41 @@ class NCAccount: NSObject {
         }
         return NKShareAccounts().putShareAccounts(at: dirGroupApps, app: NCGlobal.shared.appScheme, dataAccounts: accounts)
     }
+
+    func checkRemoteUser(account: String, controller: NCMainTabBarController?, completion: @escaping () -> Void = {}) {
+        let token = NCKeychain().getPassword(account: account)
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+              let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account))
+        else {
+            return completion()
+        }
+
+        func setAccount() {
+            if let accounts = NCManageDatabase.shared.getAccounts(),
+               account.count > 0,
+               let account = accounts.first {
+                changeAccount(account, userProfile: nil, controller: controller) { }
+            } else {
+                appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
+            }
+
+            completion()
+        }
+
+        NCContentPresenter().showCustomMessage(title: "", message: String(format: NSLocalizedString("_account_unauthorized_", comment: ""), account), priority: .high, delay: NCGlobal.shared.dismissAfterSecondLong, type: .error)
+
+        NextcloudKit.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) { account, wipe, _, error in
+            /// REMOVE ACCOUNT
+            NCAccount().deleteAccount(account, wipe: wipe)
+
+            if wipe {
+                NextcloudKit.shared.setRemoteWipeCompletition(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) { _, _, error in
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Set Remote Wipe Completition error code: \(error.errorCode)")
+                    setAccount()
+                }
+            } else {
+                setAccount()
+            }
+        }
+    }
 }

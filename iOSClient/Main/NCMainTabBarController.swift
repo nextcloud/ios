@@ -50,14 +50,6 @@ class NCMainTabBarController: UITabBarController {
             traitOverrides.horizontalSizeClass = .compact
         }
 
-        self.timerProcess = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
-            guard UIApplication.shared.applicationState == .active else {
-                return
-            }
-
-            self.checkUserServerError()
-        })
-
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil, queue: .main) { [weak self] notification in
             if let userInfo = notification.userInfo as? NSDictionary,
                let account = userInfo["account"] as? String,
@@ -80,15 +72,7 @@ class NCMainTabBarController: UITabBarController {
             }
         }
 
-        /*
-        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { [weak self] _ in
-            self?.userDefaultsDidChange()
-        }
-
-        NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: nil, queue: nil) { [weak self] _ in
-            self?.userDefaultsDidChange()
-        }
-        */
+        timerCheckServerError()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -101,6 +85,18 @@ class NCMainTabBarController: UITabBarController {
 
             present(vc, animated: true)
         }
+    }
+
+    private func timerCheckServerError() {
+        self.timerProcess = Timer.scheduledTimer(withTimeInterval: 1, repeats: false, block: { _ in
+            guard UIApplication.shared.applicationState == .active else {
+                return self.timerCheckServerError()
+            }
+
+            NCNetworking.shared.checkServerError(account: self.account, controller: self) {
+                self.timerCheckServerError()
+            }
+        })
     }
 
     func currentViewController() -> UIViewController? {
@@ -117,85 +113,6 @@ class NCMainTabBarController: UITabBarController {
             }
         }
         return serverUrl
-    }
-
-    private func checkUserServerError() {
-        guard !checkUserDelaultErrorInProgress else { return }
-
-        var unavailableArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable) as? [String] ?? []
-        let unauthorizedArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized) as? [String] ?? []
-        let tosArray = groupDefaults?.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
-
-        /// Unavailable
-        if unavailableArray.contains(account) {
-            checkUserDelaultErrorInProgress = true
-            let serverUrl = NCSession.shared.getSession(account: account).urlBase
-            let account = self.account
-            NextcloudKit.shared.getServerStatus(serverUrl: serverUrl) { _, serverInfoResult in
-                switch serverInfoResult {
-                case .success(let serverInfo):
-
-                    unavailableArray.removeAll { $0 == account }
-                    self.groupDefaults?.set(unavailableArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable)
-
-                    if serverInfo.maintenance {
-                        NCContentPresenter().showInfo(title: "_warning_", description: "_maintenance_mode_")
-                    }
-                case .failure:
-                    break
-                }
-                self.checkUserDelaultErrorInProgress = false
-            }
-        /// Unauthorized
-        } else if unauthorizedArray.contains(account) {
-            checkUserDelaultErrorInProgress = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                self.checkRemoteUser {
-                    self.checkUserDelaultErrorInProgress = false
-                }
-            }
-        /// ToS
-        } else if tosArray.contains(account) {
-            checkUserDelaultErrorInProgress = true
-            NCNetworking.shared.termsOfService(account: account)
-        }
-    }
-
-    private func checkRemoteUser(completion: @escaping () -> Void = {}) {
-        let token = NCKeychain().getPassword(account: account)
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
-              let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account))
-        else {
-            return completion()
-        }
-
-        func changeAccount() {
-            if let accounts = NCManageDatabase.shared.getAccounts(),
-               account.count > 0,
-               let account = accounts.first {
-                NCAccount().changeAccount(account, userProfile: nil, controller: self) { }
-            } else {
-                appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
-            }
-
-            completion()
-        }
-
-        NCContentPresenter().showCustomMessage(title: "", message: String(format: NSLocalizedString("_account_unauthorized_", comment: ""), account), priority: .high, delay: NCGlobal.shared.dismissAfterSecondLong, type: .error)
-
-        NextcloudKit.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) { account, wipe, _, error in
-            /// REMOVE ACCOUNT
-            NCAccount().deleteAccount(account, wipe: wipe)
-
-            if wipe {
-                NextcloudKit.shared.setRemoteWipeCompletition(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) { _, _, error in
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Set Remote Wipe Completition error code: \(error.errorCode)")
-                    changeAccount()
-                }
-            } else {
-                changeAccount()
-            }
-        }
     }
 }
 

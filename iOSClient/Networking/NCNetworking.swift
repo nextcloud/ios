@@ -147,16 +147,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 #endif
     }
 
-    func request<Value>(_ request: DataRequest, didParseResponse response: AFDataResponse<Value>) {
-#if !EXTENSION
-        if let statusCode = response.response?.statusCode,
-           let headerCheckInterceptor = request.request?.allHTTPHeaderFields?[NextcloudKit.shared.nkCommonInstance.headerCheckInterceptor],
-           headerCheckInterceptor.lowercased() == "true",
-           let account = request.request?.allHTTPHeaderFields?[NextcloudKit.shared.nkCommonInstance.headerAccount] as? String {
-            appendServerErrorAccount(account, errorCode: statusCode)
-        }
-#endif
-    }
+    func request<Value>(_ request: DataRequest, didParseResponse response: AFDataResponse<Value>) { }
 
     // MARK: -
 
