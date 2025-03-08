@@ -88,7 +88,7 @@ class NCMainTabBarController: UITabBarController {
     }
 
     private func timerCheckServerError() {
-        self.timerProcess = Timer.scheduledTimer(withTimeInterval: 2, repeats: false, block: { _ in
+        self.timerProcess = Timer.scheduledTimer(withTimeInterval: 1, repeats: false, block: { _ in
             guard UIApplication.shared.applicationState == .active else {
                 return self.timerCheckServerError()
             }
