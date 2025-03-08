@@ -72,7 +72,7 @@ class NCMainTabBarController: UITabBarController {
             }
         }
 
-        timetCheckServerError()
+        timerCheckServerError()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -87,14 +87,14 @@ class NCMainTabBarController: UITabBarController {
         }
     }
 
-    func timetCheckServerError() {
+    private func timerCheckServerError() {
         self.timerProcess = Timer.scheduledTimer(withTimeInterval: 2, repeats: false, block: { _ in
             guard UIApplication.shared.applicationState == .active else {
-                return self.timetCheckServerError()
+                return self.timerCheckServerError()
             }
 
             NCNetworking.shared.checkServerError(account: self.account, controller: self) {
-                self.timetCheckServerError()
+                self.timerCheckServerError()
             }
         })
     }
