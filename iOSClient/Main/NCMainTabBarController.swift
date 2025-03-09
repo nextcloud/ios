@@ -40,7 +40,7 @@ class NCMainTabBarController: UITabBarController {
     private var previousIndex: Int?
     private let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup)
     private var checkUserDelaultErrorInProgress: Bool = false
-    private var timerProcess: Timer?
+    private var timer: Timer?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -72,7 +72,14 @@ class NCMainTabBarController: UITabBarController {
             }
         }
 
-        timerCheckServerError()
+        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
+            self.timer?.invalidate()
+            self.timer = nil
+        }
+
+        NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { _ in
+            self.timerCheckServerError()
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -88,11 +95,7 @@ class NCMainTabBarController: UITabBarController {
     }
 
     private func timerCheckServerError() {
-        self.timerProcess = Timer.scheduledTimer(withTimeInterval: 1, repeats: false, block: { _ in
-            guard UIApplication.shared.applicationState == .active else {
-                return self.timerCheckServerError()
-            }
-
+        self.timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: false, block: { _ in
             NCNetworking.shared.checkServerError(account: self.account, controller: self) {
                 self.timerCheckServerError()
             }

@@ -122,6 +122,7 @@ class NCAccountRequest: UIViewController {
 extension NCAccountRequest: UITableViewDelegate {
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         timer?.invalidate()
+        timer = nil
         progressView.progress = 0
     }
 

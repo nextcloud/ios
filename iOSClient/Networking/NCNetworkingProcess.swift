@@ -35,12 +35,10 @@ class NCNetworkingProcess {
     private let networking = NCNetworking.shared
     private var hasRun: Bool = false
     private let lockQueue = DispatchQueue(label: "com.nextcloud.networkingprocess.lockqueue")
-    private var timerProcess: Timer?
+    private var timer: Timer?
     private var enableControllingScreenAwake = true
 
     private init() {
-        self.startTimer()
-
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayerIsPlaying), object: nil, queue: nil) { _ in
             self.enableControllingScreenAwake = false
         }
@@ -48,15 +46,19 @@ class NCNetworkingProcess {
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayerStoppedPlaying), object: nil, queue: nil) { _ in
             self.enableControllingScreenAwake = true
         }
+
+        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
+            self.timer?.invalidate()
+            self.timer = nil
+        }
+
+        NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { _ in
+            self.startTimer()
+        }
     }
 
     private func startTimer() {
-        self.timerProcess?.invalidate()
-        self.timerProcess = Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: { _ in
-            guard UIApplication.shared.applicationState == .active else {
-                return
-            }
-
+        self.timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: { _ in
             self.lockQueue.async {
                 guard !self.hasRun,
                       self.networking.isOnline,
