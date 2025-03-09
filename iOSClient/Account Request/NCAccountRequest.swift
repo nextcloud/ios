@@ -86,6 +86,7 @@ class NCAccountRequest: UIViewController {
         super.viewDidDisappear(animated)
 
         timer?.invalidate()
+        timer = nil
     }
 
     // MARK: - NotificationCenter
