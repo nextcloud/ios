@@ -39,16 +39,16 @@ class NCLoginProvider: UIViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(self.closeView(sender:)))
 
         webView = WKWebView(frame: CGRect.zero, configuration: WKWebViewConfiguration())
-        guard let webView else { return }
+        if let webView {
+            webView.navigationDelegate = self
+            view.addSubview(webView)
 
-        webView.navigationDelegate = self
-        view.addSubview(webView)
-
-        webView.translatesAutoresizingMaskIntoConstraints = false
-        webView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
-        webView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
-        webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
-        webView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
+            webView.translatesAutoresizingMaskIntoConstraints = false
+            webView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
+            webView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
+            webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
+            webView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
