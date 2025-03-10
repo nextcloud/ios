@@ -108,6 +108,7 @@
 "_error_occurred_"          = "An error occurred, please try again.";
 "_retry_"                   = "Retry";
 "_images_"                  = "Images";
+"_confirm_"                 = "Confirm";
 
 /* MARK: Files lock */
 
@@ -687,3 +688,6 @@
 "_albums_" = "Albums";
 "_new_photos_only_" = "New photos only";
 "_all_photos_" = "All photos";
+"_back_up_" = "Back up...";
+"_auto_upload_all_photos_warning_title_" = "Are you sure you want to upload all photos?";
+"_auto_upload_all_photos_warning_message_" = "This can take some time to process depending on the amount of photos.";

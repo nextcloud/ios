@@ -54,7 +54,7 @@ struct NCAutoUploadView: View {
             SelectAlbumView(model: albumModel)
         }
         
-        .alert("_auto_upload_all_photos_warning_title", isPresented: $showUploadAllPhotosWarning, actions: {
+        .alert("_auto_upload_all_photos_warning_title_", isPresented: $showUploadAllPhotosWarning, actions: {
             Button("_confirm_") {
                 albumModel.populateSelectedAlbums()
                 model.handleAutoUploadChange(newValue: true, assetCollections: albumModel.selectedAlbums)
@@ -63,7 +63,7 @@ struct NCAutoUploadView: View {
                 model.autoUploadStart = false
             }
         }, message: {
-            Text("_auto_upload_all_photos_warning_message")
+            Text("_auto_upload_all_photos_warning_message_")
         })
         .onChange(of: model.autoUploadTimespan) { newValue in
             model.handleAutoUploadTimespanChange(newValue: newValue)
@@ -193,7 +193,7 @@ struct NCAutoUploadView: View {
             .buttonStyle(.bordered)
         }, footer: {
             Text(NSLocalizedString("_autoupload_notice_", comment: ""))
-                .padding(.top, 20)
+                .padding(.vertical, 20)
         })
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         .listRowInsets(EdgeInsets())
