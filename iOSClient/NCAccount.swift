@@ -38,6 +38,9 @@ class NCAccount: NSObject {
         if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
         let account: String = "\(user) \(urlBase)"
 
+        /// Remove Account Server in Error
+        NCNetworking.shared.removeServerErrorAccount(account)
+
         NextcloudKit.shared.appendSession(account: account,
                                           urlBase: urlBase,
                                           user: user,
@@ -62,9 +65,10 @@ class NCAccount: NSObject {
             } else {
                 NextcloudKit.shared.removeSession(account: account)
                 let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
+                    completion(account, error)
+                }))
                 UIApplication.shared.firstWindow?.rootViewController?.present(alertController, animated: true)
-                completion(account, error)
             }
         }
     }

@@ -49,8 +49,13 @@ class NCLoginProvider: UIViewController {
         webView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
         webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
         webView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
+    }
 
-        if let url = URL(string: urlBase) {
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        if let url = URL(string: urlBase),
+           let webView {
             WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), modifiedSince: Date(timeIntervalSince1970: 0), completionHandler: { [self] in
                 loadWebPage(webView: webView, url: url)
             })
