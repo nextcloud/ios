@@ -155,6 +155,7 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
 
     func stopTimer() {
         self.timer?.invalidate()
+        self.timer = nil
     }
 
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {

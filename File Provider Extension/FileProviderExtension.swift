@@ -254,13 +254,15 @@ class FileProviderExtension: NSFileProviderExtension {
                                          selector: "",
                                          status: NCGlobal.shared.metadataStatusUploading)
 
-        if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName,
+        let (task, error) = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName,
                                                                                                   fileNameLocalPath: url.path,
                                                                                                   dateCreationFile: nil,
                                                                                                   dateModificationFile: nil,
                                                                                                   overwrite: true,
                                                                                                   account: metadata.account,
-                                                                                                  sessionIdentifier: NCNetworking.shared.sessionUploadBackgroundExt) {
+                                                                                                  sessionIdentifier: NCNetworking.shared.sessionUploadBackgroundExt)
+
+        if let task, error == .success {
             self.database.setMetadataSession(ocId: metadata.ocId,
                                              sessionTaskIdentifier: task.taskIdentifier,
                                              status: NCGlobal.shared.metadataStatusUploading)
@@ -292,7 +294,7 @@ class FileProviderExtension: NSFileProviderExtension {
                     return completionHandler(nil, NSFileProviderError(.noSuchItem))
                 }
                 var size = 0 as Int64
-                var error: NSError?
+                var errorCoordinator: NSError?
                 _ = fileURL.startAccessingSecurityScopedResource()
                 // typefile directory ? (NOT PERMITTED)
                 do {
@@ -309,7 +311,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 let fileName = self.utilityFileSystem.createFileName(fileURL.lastPathComponent, serverUrl: tableDirectory.serverUrl, account: fileProviderData.shared.session.account)
                 let ocIdTransfer = NSUUID().uuidString.lowercased()
 
-                NSFileCoordinator().coordinate(readingItemAt: fileURL, options: .withoutChanges, error: &error) { url in
+                NSFileCoordinator().coordinate(readingItemAt: fileURL, options: .withoutChanges, error: &errorCoordinator) { url in
                     self.providerUtility.copyFile(url.path, toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTransfer, fileNameView: fileName))
                 }
 
@@ -333,13 +335,14 @@ class FileProviderExtension: NSFileProviderExtension {
                 let serverUrlFileName = tableDirectory.serverUrl + "/" + fileName
                 let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTransfer, fileNameView: fileName)
 
-                if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName,
-                                                                                                          fileNameLocalPath: fileNameLocalPath,
-                                                                                                          dateCreationFile: nil,
-                                                                                                          dateModificationFile: nil,
-                                                                                                          overwrite: true,
-                                                                                                          account: metadataForUpload.account,
-                                                                                                          sessionIdentifier: metadataForUpload.session) {
+                let (task, error) = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName,
+                                                                                                                fileNameLocalPath: fileNameLocalPath,
+                                                                                                                dateCreationFile: nil,
+                                                                                                                dateModificationFile: nil,
+                                                                                                                overwrite: true,
+                                                                                                                account: metadataForUpload.account,
+                                                                                                                sessionIdentifier: metadataForUpload.session)
+                if let task, error == .success {
                     self.database.setMetadataSession(ocId: metadataForUpload.ocId,
                                                      sessionTaskIdentifier: task.taskIdentifier,
                                                      status: NCGlobal.shared.metadataStatusUploading)

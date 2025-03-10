@@ -38,20 +38,8 @@ class NCAccount: NSObject {
         if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
         let account: String = "\(user) \(urlBase)"
 
-        /// Remove account in groupDefaults
-        ///
-        if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) {
-            var unauthorizedArray = groupDefaults.array(forKey: "Unauthorized") as? [String] ?? []
-            var unavailableArray = groupDefaults.array(forKey: "Unavailable") as? [String] ?? []
-
-            unauthorizedArray.removeAll { $0 == account }
-            groupDefaults.set(unauthorizedArray, forKey: "Unauthorized")
-
-            unavailableArray.removeAll { $0 == account }
-            groupDefaults.set(unavailableArray, forKey: "Unavailable")
-
-            groupDefaults.synchronize()
-        }
+        /// Remove Account Server in Error
+        NCNetworking.shared.removeServerErrorAccount(account)
 
         NextcloudKit.shared.appendSession(account: account,
                                           urlBase: urlBase,
@@ -77,9 +65,10 @@ class NCAccount: NSObject {
             } else {
                 NextcloudKit.shared.removeSession(account: account)
                 let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
+                    completion(account, error)
+                }))
                 UIApplication.shared.firstWindow?.rootViewController?.present(alertController, animated: true)
-                completion(account, error)
             }
         }
     }
@@ -151,6 +140,8 @@ class NCAccount: NSObject {
         NCKeychain().clearAllKeysPushNotification(account: account)
         /// Remove User Default Data
         NCNetworking.shared.removeAllKeyUserDefaultsData(account: account)
+        /// Remove Account Server in Error
+        NCNetworking.shared.removeServerErrorAccount(account)
 
         completion()
     }
@@ -174,5 +165,42 @@ class NCAccount: NSObject {
             accounts.append(NKShareAccounts.DataAccounts(withUrl: account.urlBase, user: account.user, name: name, image: image))
         }
         return NKShareAccounts().putShareAccounts(at: dirGroupApps, app: NCGlobal.shared.appScheme, dataAccounts: accounts)
+    }
+
+    func checkRemoteUser(account: String, controller: NCMainTabBarController?, completion: @escaping () -> Void = {}) {
+        let token = NCKeychain().getPassword(account: account)
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+              let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account))
+        else {
+            return completion()
+        }
+
+        func setAccount() {
+            if let accounts = NCManageDatabase.shared.getAccounts(),
+               account.count > 0,
+               let account = accounts.first {
+                changeAccount(account, userProfile: nil, controller: controller) { }
+            } else {
+                appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
+            }
+
+            completion()
+        }
+
+        NCContentPresenter().showCustomMessage(title: "", message: String(format: NSLocalizedString("_account_unauthorized_", comment: ""), account), priority: .high, delay: NCGlobal.shared.dismissAfterSecondLong, type: .error)
+
+        NextcloudKit.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) { account, wipe, _, error in
+            /// REMOVE ACCOUNT
+            NCAccount().deleteAccount(account, wipe: wipe)
+
+            if wipe {
+                NextcloudKit.shared.setRemoteWipeCompletition(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) { _, _, error in
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Set Remote Wipe Completition error code: \(error.errorCode)")
+                    setAccount()
+                }
+            } else {
+                setAccount()
+            }
+        }
     }
 }

@@ -1,25 +1,6 @@
-//
-//  NCLoginProvider.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 21/08/2019.
-//  Copyright © 2019 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2025 Milen Pivchev
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 @preconcurrency import WebKit
@@ -39,21 +20,30 @@ class NCLoginProvider: UIViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(self.closeView(sender:)))
 
         webView = WKWebView(frame: CGRect.zero, configuration: WKWebViewConfiguration())
-        guard let webView else { return }
+        if let webView {
+            webView.navigationDelegate = self
+            view.addSubview(webView)
 
-        webView.navigationDelegate = self
-        view.addSubview(webView)
+            webView.translatesAutoresizingMaskIntoConstraints = false
+            webView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
+            webView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
+            webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
+            webView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
+        }
+    }
 
-        webView.translatesAutoresizingMaskIntoConstraints = false
-        webView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
-        webView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
-        webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
-        webView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
 
-        if let url = URL(string: urlBase) {
-            WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), modifiedSince: Date(timeIntervalSince1970: 0), completionHandler: { [self] in
-                loadWebPage(webView: webView, url: url)
-            })
+        if let url = URL(string: urlBase),
+           let webView {
+            HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
+
+            WKWebsiteDataStore.default().fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
+                WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), for: records, completionHandler: {
+                    self.loadWebPage(webView: webView, url: url)
+                })
+            }
         } else {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_login_url_error_")
             NCContentPresenter().showError(error: error, priority: .max)

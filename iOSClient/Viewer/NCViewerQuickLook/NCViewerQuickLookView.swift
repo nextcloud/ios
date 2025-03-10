@@ -70,6 +70,19 @@ struct NCViewerQuickLookView: UIViewControllerRepresentable {
 
         init(parent: NCViewerQuickLookView) {
             self.parent = parent
+            super.init()
+
+            NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
+                parent.model.stopTimer()
+            }
+
+            NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { [weak self] _ in
+                guard let self = self,
+                      let navigationItem = self.viewController?.navigationItem else {
+                    return
+                }
+                parent.model.startTimer(navigationItem: navigationItem)
+            }
         }
 
         @objc func dismiss() {
