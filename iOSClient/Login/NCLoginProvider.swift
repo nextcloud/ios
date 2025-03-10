@@ -12,12 +12,13 @@ class NCLoginProvider: UIViewController {
     let utility = NCUtility()
     var titleView: String = ""
     var urlBase = ""
-
+    var uiColor: UIColor = .white
+    var pollTimer: DispatchSourceTimer?
+    weak var delegate: NCLoginProviderDelegate?
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(self.closeView(sender:)))
 
         webView = WKWebView(frame: CGRect.zero, configuration: WKWebViewConfiguration())
         if let webView {
@@ -30,6 +31,10 @@ class NCLoginProvider: UIViewController {
             webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
             webView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
         }
+
+        let navigationItemBack = UIBarButtonItem(image: UIImage(systemName: "arrow.left"), style: .done, target: self, action: #selector(goBack))
+        navigationItemBack.tintColor = uiColor
+        navigationItem.leftBarButtonItem = navigationItemBack
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -62,6 +67,9 @@ class NCLoginProvider: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         NCActivityIndicator.shared.stop()
+
+        pollTimer?.cancel()
+        pollTimer = nil
     }
 
     func loadWebPage(webView: WKWebView, url: URL) {
@@ -81,8 +89,59 @@ class NCLoginProvider: UIViewController {
         webView.load(request)
     }
 
-    @objc func closeView(sender: UIBarButtonItem) {
-        self.dismiss(animated: true, completion: nil)
+    @objc func goBack() {
+        delegate?.onBack()
+        navigationController?.popViewController(animated: true)
+    }
+
+    func poll(loginFlowV2Token: String, loginFlowV2Endpoint: String, loginFlowV2Login: String) {
+        let queue = DispatchQueue.global(qos: .background)
+        pollTimer = DispatchSource.makeTimerSource(queue: queue)
+
+        guard let timer = pollTimer else { return }
+
+        timer.schedule(deadline: .now(), repeating: .seconds(1), leeway: .seconds(1))
+        timer.setEventHandler(handler: {
+            DispatchQueue.main.async {
+                let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+                let loginOptions = NKRequestOptions(customUserAgent: userAgent)
+                NextcloudKit.shared.getLoginFlowV2Poll(token: loginFlowV2Token, endpoint: loginFlowV2Endpoint, options: loginOptions) { server, loginName, appPassword, _, error in
+                    if error == .success, let urlBase = server, let user = loginName, let appPassword {
+                        NCAccount().createAccount(urlBase: urlBase, user: user, password: appPassword, controller: controller) { account, error in
+
+                            if error == .success {
+                                let window = UIApplication.shared.firstWindow
+                                if let controller = window?.rootViewController as? NCMainTabBarController {
+                                    controller.account = account
+                                    controller.dismiss(animated: true, completion: nil)
+                                } else {
+                                    if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                                        controller.account = account
+                                        controller.modalPresentationStyle = .fullScreen
+                                        controller.view.alpha = 0
+
+                                        window?.rootViewController = controller
+                                        window?.makeKeyAndVisible()
+
+                                        if let scene = window?.windowScene {
+                                            SceneManager.shared.register(scene: scene, withRootViewController: controller)
+                                        }
+
+                                        UIView.animate(withDuration: 0.5) {
+                                            controller.view.alpha = 1
+                                        }
+                                    }
+                                }
+
+                                timer.cancel()
+                            }
+                        }
+                    }
+                }
+            }
+        })
+
+        timer.resume()
     }
 }
 
@@ -176,4 +235,8 @@ extension NCLoginProvider: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         NCActivityIndicator.shared.stop()
     }
+}
+
+protocol NCLoginProviderDelegate: AnyObject {
+    func onBack()
 }
