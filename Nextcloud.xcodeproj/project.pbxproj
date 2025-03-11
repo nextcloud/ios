@@ -41,10 +41,10 @@
 		AA8D31702D4123B200FE2775 /* DownloadLimitViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA8D31692D4123B200FE2775 /* DownloadLimitViewModel.swift */; };
 		AA8D31712D4123B200FE2775 /* NCShareDownloadLimitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA8D316C2D4123B200FE2775 /* NCShareDownloadLimitViewController.swift */; };
 		AA8E03DA2D2ED83300E7E89C /* TransientShare.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA8E03D92D2ED83300E7E89C /* TransientShare.swift */; };
-		AA8E03DC2D2FBAC200E7E89C /* DownloadLimitUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA8E03DB2D2FBAAD00E7E89C /* DownloadLimitUITests.swift */; };
+		AA8E03DC2D2FBAC200E7E89C /* DownloadLimitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA8E03DB2D2FBAAD00E7E89C /* DownloadLimitTests.swift */; };
 		AA8E041D2D300FDE00E7E89C /* NCShareNetworkingDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA8E041C2D300FDE00E7E89C /* NCShareNetworkingDelegate.swift */; };
 		AAA7BC2E2D3E39F1008F1A22 /* CapabilitiesResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA7BC2D2D3E39EC008F1A22 /* CapabilitiesResponse.swift */; };
-		AAA7BC302D3E3B88008F1A22 /* CapabilityResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA7BC2F2D3E3B83008F1A22 /* CapabilityResponse.swift */; };
+		AAA7BC302D3E3B88008F1A22 /* DownloadLimitCapabilityResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA7BC2F2D3E3B83008F1A22 /* DownloadLimitCapabilityResponse.swift */; };
 		AABD0C8A2D5F67A400F009E6 /* XCUIElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABD0C892D5F67A200F009E6 /* XCUIElement.swift */; };
 		AABD0C9B2D5F73FC00F009E6 /* Placeholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABD0C9A2D5F73FA00F009E6 /* Placeholder.swift */; };
 		AAE330042D2ED20200B04903 /* NCShareNavigationTitleSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE330032D2ED1FF00B04903 /* NCShareNavigationTitleSetting.swift */; };
@@ -98,10 +98,6 @@
 		F314F1142A30E2DE00BC7FAB /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E8A390295DC5E0006CB2D0 /* View+Extension.swift */; };
 		F321DA8A2B71205A00DDA0E6 /* NCTrashSelectTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F321DA892B71205A00DDA0E6 /* NCTrashSelectTabBar.swift */; };
 		F32FADA92D1176E3007035E2 /* UIButton+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32FADA82D1176DE007035E2 /* UIButton+Extension.swift */; };
-		F3374A812D64AB9F002A38F9 /* StatusInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3374A802D64AB9E002A38F9 /* StatusInfo.swift */; };
-		F3374A842D64AC31002A38F9 /* AssistantLabelStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3374A832D64AC2C002A38F9 /* AssistantLabelStyle.swift */; };
-		F3374A942D674454002A38F9 /* AssistantUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3374A932D674454002A38F9 /* AssistantUITests.swift */; };
-		F3374A962D6744A4002A38F9 /* BaseUIXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3374A952D6744A4002A38F9 /* BaseUIXCTestCase.swift */; };
 		F33918C42C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F33918C32C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift */; };
 		F33918C52C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F33918C32C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift */; };
 		F33918C62C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F33918C32C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift */; };
@@ -191,7 +187,7 @@
 		F39298972A3B12CB00509762 /* BaseNCMoreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F39298962A3B12CB00509762 /* BaseNCMoreCell.swift */; };
 		F3A047972BD2668800658E7B /* NCAssistantEmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A0478F2BD2668800658E7B /* NCAssistantEmptyView.swift */; };
 		F3A047982BD2668800658E7B /* NCAssistantCreateNewTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A047912BD2668800658E7B /* NCAssistantCreateNewTask.swift */; };
-		F3A047992BD2668800658E7B /* NCAssistantModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A047932BD2668800658E7B /* NCAssistantModel.swift */; };
+		F3A047992BD2668800658E7B /* NCAssistantTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A047932BD2668800658E7B /* NCAssistantTask.swift */; };
 		F3A0479A2BD2668800658E7B /* NCAssistantTaskDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A047952BD2668800658E7B /* NCAssistantTaskDetail.swift */; };
 		F3A0479B2BD2668800658E7B /* NCAssistant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A047962BD2668800658E7B /* NCAssistant.swift */; };
 		F3A0479E2BD268B500658E7B /* PopupView in Frameworks */ = {isa = PBXBuildFile; productRef = F3A0479D2BD268B500658E7B /* PopupView */; };
@@ -1270,11 +1266,11 @@
 		AA8D316B2D4123B200FE2775 /* NCShareDownloadLimitTableViewControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareDownloadLimitTableViewControllerDelegate.swift; sourceTree = "<group>"; };
 		AA8D316C2D4123B200FE2775 /* NCShareDownloadLimitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareDownloadLimitViewController.swift; sourceTree = "<group>"; };
 		AA8E03D92D2ED83300E7E89C /* TransientShare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransientShare.swift; sourceTree = "<group>"; };
-		AA8E03DB2D2FBAAD00E7E89C /* DownloadLimitUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadLimitUITests.swift; sourceTree = "<group>"; };
+		AA8E03DB2D2FBAAD00E7E89C /* DownloadLimitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadLimitTests.swift; sourceTree = "<group>"; };
 		AA8E041C2D300FDE00E7E89C /* NCShareNetworkingDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareNetworkingDelegate.swift; sourceTree = "<group>"; };
 		AA8E041E2D3114E200E7E89C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		AAA7BC2D2D3E39EC008F1A22 /* CapabilitiesResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapabilitiesResponse.swift; sourceTree = "<group>"; };
-		AAA7BC2F2D3E3B83008F1A22 /* CapabilityResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapabilityResponse.swift; sourceTree = "<group>"; };
+		AAA7BC2F2D3E3B83008F1A22 /* DownloadLimitCapabilityResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadLimitCapabilityResponse.swift; sourceTree = "<group>"; };
 		AABD0C862D5F58C400F009E6 /* Server.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = Server.sh; sourceTree = "<group>"; };
 		AABD0C892D5F67A200F009E6 /* XCUIElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCUIElement.swift; sourceTree = "<group>"; };
 		AABD0C9A2D5F73FA00F009E6 /* Placeholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Placeholder.swift; sourceTree = "<group>"; };
@@ -1325,10 +1321,6 @@
 		F310B1EE2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCViewerMedia+VisionKit.swift"; sourceTree = "<group>"; };
 		F321DA892B71205A00DDA0E6 /* NCTrashSelectTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrashSelectTabBar.swift; sourceTree = "<group>"; };
 		F32FADA82D1176DE007035E2 /* UIButton+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+Extension.swift"; sourceTree = "<group>"; };
-		F3374A802D64AB9E002A38F9 /* StatusInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusInfo.swift; sourceTree = "<group>"; };
-		F3374A832D64AC2C002A38F9 /* AssistantLabelStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantLabelStyle.swift; sourceTree = "<group>"; };
-		F3374A932D674454002A38F9 /* AssistantUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantUITests.swift; sourceTree = "<group>"; };
-		F3374A952D6744A4002A38F9 /* BaseUIXCTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseUIXCTestCase.swift; sourceTree = "<group>"; };
 		F33918C32C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileNameValidator+Extensions.swift"; sourceTree = "<group>"; };
 		F33EE6F12BF4C9B200CA1A51 /* PKCS12.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PKCS12.swift; sourceTree = "<group>"; };
 		F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PHAsset+Extension.swift"; sourceTree = "<group>"; };
@@ -1343,7 +1335,7 @@
 		F39298962A3B12CB00509762 /* BaseNCMoreCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseNCMoreCell.swift; sourceTree = "<group>"; };
 		F3A0478F2BD2668800658E7B /* NCAssistantEmptyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCAssistantEmptyView.swift; sourceTree = "<group>"; };
 		F3A047912BD2668800658E7B /* NCAssistantCreateNewTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCAssistantCreateNewTask.swift; sourceTree = "<group>"; };
-		F3A047932BD2668800658E7B /* NCAssistantModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCAssistantModel.swift; sourceTree = "<group>"; };
+		F3A047932BD2668800658E7B /* NCAssistantTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCAssistantTask.swift; sourceTree = "<group>"; };
 		F3A047952BD2668800658E7B /* NCAssistantTaskDetail.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCAssistantTaskDetail.swift; sourceTree = "<group>"; };
 		F3A047962BD2668800658E7B /* NCAssistant.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCAssistant.swift; sourceTree = "<group>"; };
 		F3BB464C2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCMoreAppSuggestionsCell.xib; sourceTree = "<group>"; };
@@ -2085,7 +2077,7 @@
 			children = (
 				AAA7BC2D2D3E39EC008F1A22 /* CapabilitiesResponse.swift */,
 				AA3C85F12D394B3600F74F12 /* DownloadLimitResponse.swift */,
-				AAA7BC2F2D3E3B83008F1A22 /* CapabilityResponse.swift */,
+				AAA7BC2F2D3E3B83008F1A22 /* DownloadLimitCapabilityResponse.swift */,
 				AA3C85ED2D36BCCB00F74F12 /* SharesResponse.swift */,
 				AA3C85EA2D36BBF400F74F12 /* OCSResponse.swift */,
 			);
@@ -2137,11 +2129,9 @@
 		C0046CDB2A17B98400D87C9D /* NextcloudUITests */ = {
 			isa = PBXGroup;
 			children = (
-				F3374A952D6744A4002A38F9 /* BaseUIXCTestCase.swift */,
 				AABD0C882D5F631600F009E6 /* Extensions */,
 				AA3C85E92D36BBDE00F74F12 /* UITestBackend */,
-				AA8E03DB2D2FBAAD00E7E89C /* DownloadLimitUITests.swift */,
-				F3374A932D674454002A38F9 /* AssistantUITests.swift */,
+				AA8E03DB2D2FBAAD00E7E89C /* DownloadLimitTests.swift */,
 				AA74AA962D3172CE00BE3458 /* UITestError.swift */,
 			);
 			path = NextcloudUITests;
@@ -2167,24 +2157,14 @@
 			path = Tests;
 			sourceTree = "<group>";
 		};
-		F3374A7F2D64AB40002A38F9 /* Components */ = {
-			isa = PBXGroup;
-			children = (
-				F3374A832D64AC2C002A38F9 /* AssistantLabelStyle.swift */,
-				F3374A802D64AB9E002A38F9 /* StatusInfo.swift */,
-				F3A0478F2BD2668800658E7B /* NCAssistantEmptyView.swift */,
-			);
-			path = Components;
-			sourceTree = "<group>";
-		};
 		F3A0478E2BD2668800658E7B /* Assistant */ = {
 			isa = PBXGroup;
 			children = (
-				F3A047962BD2668800658E7B /* NCAssistant.swift */,
 				F3A047902BD2668800658E7B /* Create Task */,
-				F3A047942BD2668800658E7B /* Task Detail */,
-				F3374A7F2D64AB40002A38F9 /* Components */,
 				F3A047922BD2668800658E7B /* Models */,
+				F3A047942BD2668800658E7B /* Task Detail */,
+				F3A047962BD2668800658E7B /* NCAssistant.swift */,
+				F3A0478F2BD2668800658E7B /* NCAssistantEmptyView.swift */,
 			);
 			path = Assistant;
 			sourceTree = "<group>";
@@ -2200,7 +2180,7 @@
 		F3A047922BD2668800658E7B /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				F3A047932BD2668800658E7B /* NCAssistantModel.swift */,
+				F3A047932BD2668800658E7B /* NCAssistantTask.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -4110,17 +4090,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AAA7BC302D3E3B88008F1A22 /* CapabilityResponse.swift in Sources */,
-				F3374A942D674454002A38F9 /* AssistantUITests.swift in Sources */,
+				AAA7BC302D3E3B88008F1A22 /* DownloadLimitCapabilityResponse.swift in Sources */,
 				AA3C85EB2D36BBFB00F74F12 /* OCSResponse.swift in Sources */,
 				AA74AA972D3172D100BE3458 /* UITestError.swift in Sources */,
 				AA3C85E82D36B08C00F74F12 /* UITestBackend.swift in Sources */,
-				AA8E03DC2D2FBAC200E7E89C /* DownloadLimitUITests.swift in Sources */,
+				AA8E03DC2D2FBAC200E7E89C /* DownloadLimitTests.swift in Sources */,
 				AABD0C8A2D5F67A400F009E6 /* XCUIElement.swift in Sources */,
 				AA3C85EE2D36BCCE00F74F12 /* SharesResponse.swift in Sources */,
 				AAA7BC2E2D3E39F1008F1A22 /* CapabilitiesResponse.swift in Sources */,
 				AA3C85F22D394B3A00F74F12 /* DownloadLimitResponse.swift in Sources */,
-				F3374A962D6744A4002A38F9 /* BaseUIXCTestCase.swift in Sources */,
 				F37208812BAB5979006B5430 /* TestConstants.swift in Sources */,
 				AABD0C9B2D5F73FC00F009E6 /* Placeholder.swift in Sources */,
 			);
@@ -4526,7 +4504,6 @@
 				F71CD6CA2930D7B1006C95C1 /* NCApplicationHandle.swift in Sources */,
 				F3754A7D2CF87D600009312E /* SetupPasscodeView.swift in Sources */,
 				F73EF7D72B0226080087E6E9 /* NCManageDatabase+Tip.swift in Sources */,
-				F3374A842D64AC31002A38F9 /* AssistantLabelStyle.swift in Sources */,
 				F74BAE172C7E2F4E0028D4FA /* FileProviderDomain.swift in Sources */,
 				F76882402C0DD30B001CF441 /* ViewOnAppear.swift in Sources */,
 				F790110E21415BF600D7B136 /* NCViewerRichDocument.swift in Sources */,
@@ -4596,7 +4573,6 @@
 				F77A697D250A0FBC00FF1708 /* NCCollectionViewCommon+Menu.swift in Sources */,
 				F7BF9D822934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift in Sources */,
 				AA8D31662D411FA100FE2775 /* NCShareDateCell.swift in Sources */,
-				F3374A812D64AB9F002A38F9 /* StatusInfo.swift in Sources */,
 				AF7E504E27A2D8FF00B5E4AF /* UIBarButton+Extension.swift in Sources */,
 				AA8D31682D41224800FE2775 /* NCShareToggleCell.swift in Sources */,
 				F7A846DE2BB01ACB0024816F /* NCTrashCellProtocol.swift in Sources */,
@@ -4738,7 +4714,7 @@
 				AF3FDCC22796ECC300710F60 /* NCTrash+CollectionView.swift in Sources */,
 				F70D7C3725FFBF82002B9E34 /* NCCollectionViewCommon.swift in Sources */,
 				F76D364628A4F8BF00214537 /* NCActivityIndicator.swift in Sources */,
-				F3A047992BD2668800658E7B /* NCAssistantModel.swift in Sources */,
+				F3A047992BD2668800658E7B /* NCAssistantTask.swift in Sources */,
 				F76882322C0DD1E7001CF441 /* NCAutoUploadView.swift in Sources */,
 				F36E64F72B9245210085ABB5 /* NCCollectionViewCommon+SelectTabBar.swift in Sources */,
 				F79A65C62191D95E00FF6DCC /* NCSelect.swift in Sources */,
@@ -6179,8 +6155,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nextcloud/NextcloudKit";
 			requirement = {
-				branch = "assistant-v2";
-				kind = branch;
+				kind = exactVersion;
+				version = 6.0.3;
 			};
 		};
 		F788ECC5263AAAF900ADC67F /* XCRemoteSwiftPackageReference "MarkdownKit" */ = {

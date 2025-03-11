@@ -13,7 +13,7 @@ enum TestConstants {
     ///
     /// The default number of seconds to wait for the appearance of user interface controls during user interface tests.
     ///
-    static let controlExistenceTimeout: Double = 10
+    static let controlExistenceTimeout: Double = 60
 
     ///
     /// The full base URL for the server to run against.

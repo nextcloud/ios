@@ -24,12 +24,9 @@
 import UIKit
 
 extension NCUtility {
-    /// Returns a localized string representing the given date in a user-friendly format.
-    /// The function handles the following cases:
-    /// - If the date is today: Returns "Today".
-    /// - If the date is yesterday: Returns "Yesterday".
-    /// - Otherwise, it returns the date in a long format (e.g., "10 February 2025").
+
     func getTitleFromDate(_ date: Date) -> String {
+
         guard let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: Date()) else {
             return DateFormatter.localizedString(from: date, dateStyle: .long, timeStyle: .none)
         }
@@ -49,14 +46,8 @@ extension NCUtility {
         }
     }
 
-    /// Represents date as relative time:  (e.g., "1 minute ago", "2 hours ago", "3 days ago", or a formatted date).
-    /// The function handles the following cases:
-    /// - Less than a minute: Returns "Less than a minute ago".
-    /// - Less than an hour: Returns the number of minutes (e.g., "5 minutes ago").
-    /// - Less than a day: Returns the number of hours (e.g., "2 hours ago").
-    /// - Less than a month: Returns the number of days (e.g., "3 days ago").
-    /// - More than a month: Returns the full formatted date (e.g., "Jan 10, 2025").
-    func getRelativeDateTitle(_ date: Date?) -> String {
+    func dateDiff(_ date: Date?) -> String {
+
         guard let date else { return "" }
         let today = Date()
         var ti = date.timeIntervalSince(today)
@@ -87,7 +78,7 @@ extension NCUtility {
         } else {
             let formatter = DateFormatter()
             formatter.formatterBehavior = .behavior10_4
-            formatter.dateStyle = .medium // Returns formatted date, e.g., "Jan 10, 2025"
+            formatter.dateStyle = .medium
             return formatter.string(from: date)
         }
     }

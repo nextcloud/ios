@@ -245,7 +245,7 @@ extension NCActivity: UITableViewDataSource {
         cell.labelUser.text = comment.actorDisplayName
         cell.labelUser.textColor = NCBrandColor.shared.textColor
         // Date
-        cell.labelDate.text = utility.getRelativeDateTitle(comment.creationDateTime as Date)
+        cell.labelDate.text = utility.dateDiff(comment.creationDateTime as Date)
         cell.labelDate.textColor = .lightGray
         // Message
         cell.labelMessage.text = comment.message
@@ -353,7 +353,7 @@ extension NCActivity: UITableViewDataSource {
                 $0.color = UIColor.lightGray
             }
 
-            subject += "\n" + "<date>" + utility.getRelativeDateTitle(activity.date as Date) + "</date>"
+            subject += "\n" + "<date>" + utility.dateDiff(activity.date as Date) + "</date>"
             cell.subject.attributedText = subject.set(style: StyleGroup(base: normal, ["bold": bold, "date": date]))
         }
 

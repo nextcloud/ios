@@ -12,11 +12,9 @@ struct CapabilitiesResponse: Decodable {
     struct CapabilitiesResponseCapabilitiesComponent: Decodable {
         enum CodingKeys: String, CodingKey {
             case downloadLimit = "downloadlimit"
-            case assistant = "assistant"
         }
 
-        let downloadLimit: CapabilityResponse?
-        let assistant: CapabilityResponse?
+        let downloadLimit: DownloadLimitCapabilityResponse?
     }
 
     let capabilities: CapabilitiesResponseCapabilitiesComponent

@@ -42,7 +42,7 @@ class BaseNCMoreCell: UITableViewCell {
         }
     }
 
-    open func setupCell(account: String, controller: NCMainTabBarController?) {}
+    open func setupCell(account: String) {}
 
     override func awakeFromNib() {
         super.awakeFromNib()

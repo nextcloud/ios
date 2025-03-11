@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 ///
-/// Capability response for a given capability..
+/// The schema for the `downloadlimit` capability response model embedded in ``CapabilitiesResponse``.
 ///
-struct CapabilityResponse: Decodable {
+struct DownloadLimitCapabilityResponse: Decodable {
     ///
     /// The download capability is enabled.
     ///

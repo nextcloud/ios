@@ -10,21 +10,14 @@ import SwiftUI
 import NextcloudKit
 
 struct NCAssistantTaskDetail: View {
-    @EnvironmentObject var model: NCAssistantModel
-    let task: AssistantTask
+    @EnvironmentObject var model: NCAssistantTask
+    let task: NKTextProcessingTask
 
     var body: some View {
         ZStack(alignment: .bottom) {
             InputOutputScrollView(task: task)
 
             BottomDetailsBar(task: task)
-        }
-        .toolbar {
-            Button(action: {
-                model.shareTask(task)
-            }, label: {
-                Image(systemName: "square.and.arrow.up")
-            })
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle(NSLocalizedString("_task_details_", comment: ""))
@@ -35,9 +28,9 @@ struct NCAssistantTaskDetail: View {
 }
 
 #Preview {
-    let model = NCAssistantModel(controller: nil)
+    let model = NCAssistantTask(controller: nil)
 
-    return NCAssistantTaskDetail(task: model.selectedTask!)
+    return NCAssistantTaskDetail(task: NKTextProcessingTask(id: 1, type: "OCP\\TextProcessing\\FreePromptTaskType", status: 1, userId: "christine", appId: "assistant", input: "", output: "", identifier: "", completionExpectedAt: 1712666412))
         .environmentObject(model)
         .onAppear {
             model.loadDummyData()
@@ -45,8 +38,8 @@ struct NCAssistantTaskDetail: View {
 }
 
 struct InputOutputScrollView: View {
-    @EnvironmentObject var model: NCAssistantModel
-    let task: AssistantTask
+    @EnvironmentObject var model: NCAssistantTask
+    let task: NKTextProcessingTask
 
     var body: some View {
         ScrollView {
@@ -54,22 +47,21 @@ struct InputOutputScrollView: View {
                 Text(NSLocalizedString("_input_", comment: "")).font(.headline)
                     .padding(.top, 10)
 
-                Text(model.selectedTask?.input?.input ?? "")
+                Text(model.selectedTask?.input ?? "")
                     .frame(maxWidth: .infinity, alignment: .topLeading)
                     .padding()
                     .background(Color(NCBrandColor.shared.textColor2).opacity(0.1))
                     .clipShape(.rect(cornerRadius: 8))
-                    .textSelection(.enabled)
 
                 Text(NSLocalizedString("_output_", comment: "")).font(.headline)
                     .padding(.top, 10)
 
-                Text(model.selectedTask?.output?.output ?? "")
+                Text(model.selectedTask?.output ?? "")
                     .frame(maxWidth: .infinity, alignment: .topLeading)
                     .padding()
                     .background(Color(NCBrandColor.shared.textColor2).opacity(0.1))
                     .clipShape(.rect(cornerRadius: 8))
-                    .textSelection(.enabled)
+
             }
             .padding(.horizontal)
             .padding(.bottom, 80)
@@ -79,20 +71,32 @@ struct InputOutputScrollView: View {
 }
 
 struct BottomDetailsBar: View {
-    @EnvironmentObject var model: NCAssistantModel
-    let task: AssistantTask
+    @EnvironmentObject var model: NCAssistantTask
+    let task: NKTextProcessingTask
 
     var body: some View {
         VStack(spacing: 0) {
             Divider()
+            HStack(alignment: .bottom) {
+                Label(
+                    title: {
+                        Text(NSLocalizedString(model.selectedTask?.statusInfo.stringKey ?? "", comment: ""))
+                    }, icon: {
+                        Image(systemName: model.selectedTask?.statusInfo.imageSystemName ?? "")
+                            .renderingMode(.original)
+                            .font(Font.system(.body).weight(.light))
+                    }
+                )
+                .frame(maxWidth: .infinity, alignment: .leading)
 
-            HStack {
-                StatusInfo(task: task, showStatusText: true)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding()
-                    .background(.bar)
-                    .frame(alignment: .bottom)
+                if let completionExpectedAt = task.completionExpectedAt {
+                    Text(NCUtility().dateDiff(.init(timeIntervalSince1970: TimeInterval(completionExpectedAt))))
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                }
             }
+            .padding()
+            .background(.bar)
+            .frame(alignment: .bottom)
         }
     }
 }

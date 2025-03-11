@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct NCAssistantEmptyView: View {
-    @EnvironmentObject var model: NCAssistantModel
+    @EnvironmentObject var model: NCAssistantTask
     let titleKey, subtitleKey: String
 
     var body: some View {
