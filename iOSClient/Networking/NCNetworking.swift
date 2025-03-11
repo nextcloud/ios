@@ -147,23 +147,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 #endif
     }
 
-    func request<Value>(_ request: DataRequest, didParseResponse response: AFDataResponse<Value>) {
-#if !EXTENSION
-        if let statusCode = response.response?.statusCode,
-           statusCode == NCGlobal.shared.errorForbidden,
-           let account = request.request?.allHTTPHeaderFields?["X-NC-Account"] as? String,
-           let controller = SceneManager.shared.getControllers().first(where: { $0.account == account }) {
-            NextcloudKit.shared.getTermsOfService(account: account) { _, tos, _, error in
-                if error == .success, let tos {
-                    let termOfServiceModel = NCTermOfServiceModel(controller: controller, tos: tos)
-                    let termOfServiceView = NCTermOfServiceModelView(model: termOfServiceModel)
-                    let termOfServiceController = UIHostingController(rootView: termOfServiceView)
-                    controller.present(termOfServiceController, animated: true, completion: nil)
-                }
-            }
-        }
-#endif
-    }
+    func request<Value>(_ request: DataRequest, didParseResponse response: AFDataResponse<Value>) { }
 
     // MARK: -
 
