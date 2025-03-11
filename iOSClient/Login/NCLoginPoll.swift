@@ -100,6 +100,11 @@ struct NCLoginPoll: View {
                             mainTabBarController.view.alpha = 0
                             window?.rootViewController = mainTabBarController
                             window?.makeKeyAndVisible()
+							
+							if let scene = window?.windowScene {
+								SceneManager.shared.register(scene: scene, withRootViewController: mainTabBarController)
+							}
+							
                             UIView.animate(withDuration: 0.5) {
                                 mainTabBarController.view.alpha = 1
                             }

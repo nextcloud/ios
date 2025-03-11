@@ -181,6 +181,11 @@ extension NCLoginProvider: WKNavigationDelegate {
                         controller.view.alpha = 0
                         window?.rootViewController = controller
                         window?.makeKeyAndVisible()
+						
+						if let scene = window?.windowScene {
+							SceneManager.shared.register(scene: scene, withRootViewController: controller)
+						}
+						
                         UIView.animate(withDuration: 0.5) {
                             controller.view.alpha = 1
                         }
