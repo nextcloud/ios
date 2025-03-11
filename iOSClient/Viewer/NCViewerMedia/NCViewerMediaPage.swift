@@ -159,6 +159,7 @@ class NCViewerMediaPage: UIViewController {
 
     deinit {
         timerAutoHide?.invalidate()
+        timerAutoHide = nil
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterEnableSwipeGesture), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDisableSwipeGesture), object: nil)

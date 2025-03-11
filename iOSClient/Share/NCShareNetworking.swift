@@ -117,7 +117,7 @@ class NCShareNetworking: NSObject {
                     self.updateShare(template, downloadLimit: downloadLimit)
                     // Download limit update should happen implicitly on share update.
                 } else {
-                    if case let .limited(limit, count) = downloadLimit {
+                    if case let .limited(limit, _) = downloadLimit {
                         self.setShareDownloadLimit(limit, token: share.token)
                     }
                 }
@@ -153,7 +153,7 @@ class NCShareNetworking: NSObject {
                 self.database.addShare(account: self.metadata.account, home: home, shares: [share])
                 self.delegate?.readShareCompleted()
 
-                if case let .limited(limit, count) = downloadLimit {
+                if case let .limited(limit, _) = downloadLimit {
                     self.setShareDownloadLimit(limit, token: share.token)
                 } else {
                     self.removeShareDownloadLimit(token: share.token)
@@ -186,7 +186,7 @@ class NCShareNetworking: NSObject {
     ///
     func removeShareDownloadLimit(token: String) {
         NCActivityIndicator.shared.start(backgroundView: view)
-        
+
         NextcloudKit.shared.removeShareDownloadLimit(account: metadata.account, token: token) { error in
             NCActivityIndicator.shared.stop()
 

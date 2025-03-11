@@ -362,6 +362,8 @@ extension NCManageDatabase {
 
             capabilities.capabilityAssistantEnabled = data.capabilities.assistant?.enabled ?? false
 
+            capabilities.capabilityActivityEnabled = data.capabilities.activity != nil
+
             capabilities.capabilityActivity.removeAll()
             if let activities = data.capabilities.activity?.apiv2 {
                 for activity in activities {

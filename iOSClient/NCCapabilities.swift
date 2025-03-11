@@ -65,6 +65,7 @@ final public class NCCapabilities: Sendable {
         var capabilityFilesBigfilechunking: Bool                    = false
         var capabilityUserStatusEnabled: Bool                       = false
         var capabilityExternalSites: Bool                           = false
+        var capabilityActivityEnabled: Bool                         = false
         var capabilityGroupfoldersEnabled: Bool                     = false // NC27
         var capabilityAssistantEnabled: Bool                        = false // NC28
         var isLivePhotoServerAvailable: Bool                        = false // NC28
