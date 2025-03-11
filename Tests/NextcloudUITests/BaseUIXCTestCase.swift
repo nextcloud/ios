@@ -1,10 +1,6 @@
-//
-//  Helpers.swift
-//  NextcloudUITests
-//
-//  Created by Milen Pivchev on 20.02.25.
-//  Copyright © 2025 Marino Faggiana. All rights reserved.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2025 Milen Pivchev
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
 import XCTest
@@ -118,8 +114,6 @@ class BaseUIXCTestCase: XCTestCase {
         grantButton.tap()
         grantButton.awaitInexistence()
 
-        // Switch back from Safari to our app.
-        app.activate()
         app.buttons["accountSwitcher"].await()
 
         try await aSmallMoment()
