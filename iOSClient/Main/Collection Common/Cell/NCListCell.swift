@@ -250,7 +250,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 
     func writeInfoDateSize(date: NSDate, size: Int64) {
-        labelInfo.text = NCUtility().dateDiff(date as Date)
+        labelInfo.text = NCUtility().getRelativeDateTitle(date as Date)
         labelSubinfo.text = NCUtilityFileSystem().transformedSize(size)
     }
 
