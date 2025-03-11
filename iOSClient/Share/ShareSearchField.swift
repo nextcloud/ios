@@ -93,9 +93,15 @@ class ShareSearchFieldHost: UIHostingController<ShareSearchField> {
         self.view.backgroundColor = .clear
         self.model = model
         
-        self.model.$text.sink { text in
-            onSearchTextChanged(text)
-        }.store(in: &cancellables)
+        self.model
+            .$text
+            .throttle(for: 0.5,
+                      scheduler: DispatchQueue.main,
+                      latest: true)
+            .removeDuplicates()
+            .sink { text in
+                onSearchTextChanged(text)
+            }.store(in: &cancellables)
     }
     
     @MainActor @preconcurrency required dynamic init?(coder aDecoder: NSCoder) {

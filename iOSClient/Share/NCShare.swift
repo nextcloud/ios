@@ -429,12 +429,10 @@ extension NCShare: CNContactPickerDelegate {
 
 extension NCShare {
     func searchTextDidChange(_ searchText: String) {
-        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(searchSharees), object: nil)
-
         if searchText.isEmpty {
             dropDown.hide()
         } else {
-            perform(#selector(searchSharees), with: nil, afterDelay: 0.5)
+            searchSharees()
         }
     }
 
