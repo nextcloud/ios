@@ -108,6 +108,10 @@ struct NCLoginPoll: View {
                 }
         }
         .onAppear {
+			if #available(iOS 16.0, *) {
+				SFSafariViewController.DataStore.default.clearWebsiteData()
+			}
+			
             loginManager.configure(loginFlowV2Token: loginFlowV2Token, loginFlowV2Endpoint: loginFlowV2Endpoint, loginFlowV2Login: loginFlowV2Login)
 
             if !isRunningForPreviews {
