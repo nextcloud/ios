@@ -19,6 +19,7 @@ docker run \
     ghcr.io/nextcloud/continuous-integration-shallow-server:latest
 
 # Wait a moment until the server is ready.
+echo "Please wait until the server is provisioned…"
 sleep 20
 
 # Enable File Download Limit App.
@@ -31,3 +32,5 @@ docker exec $CONTAINER_NAME su www-data -c "php /var/www/html/occ app:enable tes
 
 #Testing app generates fake Assitant responses via cronjob. Reduce cronjob downtime so it's quicker.
 docker exec $CONTAINER_NAME su www-data -c "set -e; while true; do php /var/www/html/occ background-job:worker -v -t 10 \"OC\TaskProcessing\SynchronousBackgroundJob\"; done"
+
+echo "Server provisioning done."
