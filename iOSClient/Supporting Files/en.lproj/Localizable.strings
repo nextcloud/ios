@@ -282,9 +282,10 @@
 "_no_lens_information_"                     = "No lens information";
 "_today_"                                   = "Today";
 "_yesterday_"                               = "Yesterday";
-"_access_photo_not_enabled_"                = "Access to Photos not enabled";
-"_access_photo_not_enabled_msg_"            = "Please go to \"Settings\" and turn on \"Photo Access\"";
+"_access_photo_not_enabled_"                = "Access to Photos is not enabled";
+"_access_photo_not_enabled_msg_"            = "Please go to Settings → Apps → Nextcloud → Photos and enable Photo Library Access";
 "_access_background_app_refresh_denied_"    = "\"Background App Refresh\" is denied. Please enable it in \"Settings\" otherwise, new photos or videos will not be detected when the application is in the background";
+"_new_photos_starting_"                     = "New photos starting %@";
 "_tutorial_photo_view_"                     = "No photos or videos uploaded yet";
 "_error_createsubfolders_upload_"           = "Error creating subfolders";
 "_remove_photo_CameraRoll_"                 = "Remove from camera roll";

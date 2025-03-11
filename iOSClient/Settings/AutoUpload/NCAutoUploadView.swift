@@ -32,9 +32,23 @@ struct NCAutoUploadView: View {
     @State private var showUploadFolder: Bool = false
     @State private var showSelectAlbums: Bool = false
     @State private var showUploadAllPhotosWarning: Bool = false
+
     var body: some View {
-        Form {
-            autoUploadOnView
+        ZStack {
+            if model.photosPermissionsGranted {
+                Form {
+                    autoUploadOnView
+                }
+            } else {
+                VStack {
+                    Text("_access_photo_not_enabled_").font(.title3)
+                        .padding()
+                    Text("_access_photo_not_enabled_msg_")
+                }
+                .padding(16)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color(UIColor.systemGroupedBackground))
+            }
         }
         .navigationBarTitle(NSLocalizedString("_auto_upload_folder_", comment: ""))
         .navigationBarTitleDisplayMode(.inline)
@@ -53,8 +67,7 @@ struct NCAutoUploadView: View {
         .sheet(isPresented: $showSelectAlbums) {
             SelectAlbumView(model: albumModel)
         }
-        
-        .alert("_auto_upload_all_photos_warning_title_", isPresented: $showUploadAllPhotosWarning, actions: {
+        .alert(NSLocalizedString("_auto_upload_all_photos_warning_title_", comment: ""), isPresented: $showUploadAllPhotosWarning, actions: {
             Button("_confirm_") {
                 albumModel.populateSelectedAlbums()
                 model.handleAutoUploadChange(newValue: true, assetCollections: albumModel.selectedAlbums)
@@ -70,7 +83,7 @@ struct NCAutoUploadView: View {
         }
         .tint(.primary)
     }
-    
+
     @ViewBuilder
     var autoUploadOnView: some View {
         Group {
@@ -90,7 +103,7 @@ struct NCAutoUploadView: View {
                     }
                 })
             })
-            
+
             Section(content: {
                 NavigationLink(destination: SelectAlbumView(model: albumModel)) {
                     Button(action: {
@@ -108,7 +121,7 @@ struct NCAutoUploadView: View {
                         }
                     })
                 }
-                
+
                 Picker("_back_up_", selection: $model.autoUploadTimespan) {
                     ForEach(AutoUploadTimespan.allCases) { when in
                         Text(NSLocalizedString(when.rawValue, comment: ""))
@@ -118,10 +131,10 @@ struct NCAutoUploadView: View {
                 .pickerStyle(.menu)
             }, footer: {
                 if model.autoUploadTimespan == .newPhotosOnly, let date = model.autoUploadDate {
-                    Text("New photos since \(NCUtility().longDate(date))")
+                    Text(String(format: NSLocalizedString("_new_photos_starting_", comment: ""), NCUtility().longDate(date)))
                 }
             })
-            
+
             /// Auto Upload Photo
             Section(content: {
                 Toggle(NSLocalizedString("_autoupload_photos_", comment: ""), isOn: $model.autoUploadImage)
@@ -150,7 +163,7 @@ struct NCAutoUploadView: View {
                         model.handleAutoUploadWWAnVideoChange(newValue: newValue)
                     }
             })
-            
+
             /// Auto Upload create subfolder
             Section(content: {
                 Toggle(NSLocalizedString("_autoupload_create_subfolder_", comment: ""), isOn: $model.autoUploadCreateSubfolder)
@@ -171,7 +184,7 @@ struct NCAutoUploadView: View {
             })
         }
         .disabled(model.autoUploadStart)
-        
+
         /// Auto Upload Full
         Section(content: {
             Toggle(isOn: $model.autoUploadStart) {
@@ -193,7 +206,8 @@ struct NCAutoUploadView: View {
             .buttonStyle(.bordered)
         }, footer: {
             Text(NSLocalizedString("_autoupload_notice_", comment: ""))
-                .padding(.vertical, 20)
+                .padding(.top, 20)
+                .padding(.bottom, 40)
         })
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         .listRowInsets(EdgeInsets())

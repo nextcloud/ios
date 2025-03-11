@@ -42,7 +42,7 @@ class NCAutoUpload: NSObject {
         DispatchQueue.global().async {
             guard NCNetworking.shared.isOnline,
                   let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
-                  tableAccount.autoUpload else {
+                  tableAccount.autoUploadStart else {
                 return completion(0)
             }
 

@@ -35,8 +35,8 @@ enum AutoUploadTimespan: String, CaseIterable, Identifiable {
 
 /// A model that allows the user to configure the `auto upload settings for Nextcloud`
 class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
-    /// A state variable that indicates whether auto upload is enabled or not
-    @Published var autoUpload: Bool = false
+//    / A state variable that indicates whether auto upload is enabled or not
+//    @Published var autoUpload: Bool = false
     /// A state variable that indicates whether auto upload for photos is enabled or not
     @Published var autoUploadImage: Bool = false
     /// A state variable that indicates whether auto upload for photos is restricted to Wi-Fi only or not
@@ -53,9 +53,12 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     @Published var autoUploadSubfolderGranularity: Granularity = .monthly
     /// A state variable that indicates the date from when new photos/videos will be uploaded.
     @Published var autoUploadDate: Date?
-    /// A state variable that indicates from when new photos/videos will be uploaded, either new photos only or all photos
+    /// A state variable that indicates from when new photos/videos will be uploaded, either new photos only or all photos.
     @Published var autoUploadTimespan: AutoUploadTimespan = .allPhotos
+    /// A state variable that indicates whether a warning should be shown if all photos must be uploaded.
     @Published var showUploadAllPhotosWarning = false
+    /// A state variable that indicates whether Photos permissions have been granted or not.
+    @Published var photosPermissionsGranted = true
 
     /// A state variable that shows error in view in case of an error
     @Published var showErrorAlert: Bool = false
@@ -84,69 +87,43 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// Triggered when the view appears.
     func onViewAppear() {
         if let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) {
-            autoUpload = tableAccount.autoUpload
             autoUploadImage = tableAccount.autoUploadImage
             autoUploadWWAnPhoto = tableAccount.autoUploadWWAnPhoto
             autoUploadVideo = tableAccount.autoUploadVideo
             autoUploadWWAnVideo = tableAccount.autoUploadWWAnVideo
-            autoUploadStart = tableAccount.autoUploadFull
+            autoUploadStart = tableAccount.autoUploadStart
             autoUploadCreateSubfolder = tableAccount.autoUploadCreateSubfolder
             autoUploadSubfolderGranularity = Granularity(rawValue: tableAccount.autoUploadSubfolderGranularity) ?? .monthly
             autoUploadDate = tableAccount.autoUploadDate
             autoUploadTimespan = tableAccount.autoUploadDate != nil ? .newPhotosOnly : .allPhotos
         }
+
         serverUrl = NCUtilityFileSystem().getHomeServer(session: session)
-        if autoUpload {
-            requestAuthorization { value in
-                self.autoUpload = value
-                self.updateAccountProperty(\.autoUpload, value: value)
-            }
-        }
+
+        requestAuthorization()
 
         if !autoUploadImage && !autoUploadVideo { autoUploadImage = true }
     }
 
     // MARK: - All functions
 
-    func requestAuthorization(completion: @escaping (Bool) -> Void = { _ in }) {
+    func requestAuthorization() {
         PHPhotoLibrary.requestAuthorization { status in
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [self] in
                 let value = (status == .authorized)
-                if !value {
-                    let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_access_photo_not_enabled_msg_", comment: ""), responseData: nil)
-                    NCContentPresenter().messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
-                } else if UIApplication.shared.backgroundRefreshStatus != .available {
+                photosPermissionsGranted = value
+
+                if value, UIApplication.shared.backgroundRefreshStatus != .available {
                     let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_access_background_app_refresh_denied_", comment: ""), responseData: nil)
                     NCContentPresenter().messageNotification("_info_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .info)
                 }
-                completion(value)
             }
         }
     }
 
-//    /// Updates the auto-upload setting.
-//    func handleAutoUploadChange(newValue: Bool) {
-//        if newValue {
-//            requestAuthorization { value in
-//                self.autoUpload = value
-//                self.updateAccountProperty(\.autoUpload, value: value)
-//                self.database.setAccountAutoUploadFileName("")
-//                self.database.setAccountAutoUploadDirectory("", session: self.session)
-//                NCAutoUpload.shared.alignPhotoLibrary(controller: self.controller, account: self.session.account)
-//            }
-//        } else {
-//            updateAccountProperty(\.autoUpload, value: newValue)
-//            updateAccountProperty(\.autoUploadFull, value: newValue)
-//            self.database.clearMetadatasUpload(account: session.account)
-//        }
-//    }
-
     /// Updates the auto-upload image setting.
     func handleAutoUploadImageChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadImage, value: newValue)
-//        if newValue {
-//            NCAutoUpload.shared.alignPhotoLibrary(controller: controller, account: session.account)
-//        }
     }
 
     /// Updates the auto-upload image over WWAN setting.
@@ -157,23 +134,12 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// Updates the auto-upload video setting.
     func handleAutoUploadVideoChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadVideo, value: newValue)
-//        if newValue {
-//            NCAutoUpload.shared.alignPhotoLibrary(controller: controller, account: session.account)
-//        }
     }
 
     /// Updates the auto-upload video over WWAN setting.
     func handleAutoUploadWWAnVideoChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadWWAnVideo, value: newValue)
     }
-
-    /// Updates the auto-upload favorite only.
-//    func handleAutoUploadFavoritesOnlyChange(newValue: Bool) {
-//        updateAccountProperty(\.autoUploadFavoritesOnly, value: newValue)
-//        if newValue {
-//            NCAutoUpload.shared.alignPhotoLibrary(controller: controller, account: session.account)
-//        }
-//    }
 
     func handleAutoUploadTimespanChange(newValue: AutoUploadTimespan) {
         let date = newValue == .newPhotosOnly ? Date.now : nil
@@ -183,7 +149,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     /// Updates the auto-upload full content setting.
     func handleAutoUploadChange(newValue: Bool, assetCollections: [PHAssetCollection]) {
-        updateAccountProperty(\.autoUploadFull, value: newValue)
+        updateAccountProperty(\.autoUploadStart, value: newValue)
 
         if newValue {
             NCAutoUpload.shared.autoUploadSelectedAlbums(controller: self.controller, assetCollections: assetCollections, log: "Auto upload selected albums", account: session.account)
@@ -207,7 +173,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         guard let activeAccount = self.database.getActiveTableAccount() else { return }
         activeAccount[keyPath: keyPath] = value
         self.database.updateAccount(activeAccount)
-//        initAutoUpload()
+        //        initAutoUpload()
     }
 
     /// Returns the path for auto-upload based on the active account's settings.
@@ -246,14 +212,6 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             return NSLocalizedString("_multiple_albums_", comment: "")
         }
     }
-
-//    private func initAutoUpload() {
-//        database.clearMetadatasUpload(account: session.account)
-//
-//        NCAutoUpload.shared.initAutoUpload(controller: controller, account: session.account) { num in
-//
-//        }
-//    }
 }
 
 /// An enum that represents the granularity of the subfolders for auto upload
