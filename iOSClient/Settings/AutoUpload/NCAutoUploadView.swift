@@ -81,6 +81,9 @@ struct NCAutoUploadView: View {
         .onChange(of: model.autoUploadTimespan) { newValue in
             model.handleAutoUploadTimespanChange(newValue: newValue)
         }
+        .onChange(of: model.photosPermissionsGranted) { newValue in
+            if newValue { albumModel.initAlbums() }
+        }
         .tint(.primary)
     }
 

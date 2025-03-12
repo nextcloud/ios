@@ -58,7 +58,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// A state variable that indicates whether a warning should be shown if all photos must be uploaded.
     @Published var showUploadAllPhotosWarning = false
     /// A state variable that indicates whether Photos permissions have been granted or not.
-    @Published var photosPermissionsGranted = true
+    @Published var photosPermissionsGranted = false
 
     /// A state variable that shows error in view in case of an error
     @Published var showErrorAlert: Bool = false
