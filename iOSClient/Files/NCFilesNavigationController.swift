@@ -20,6 +20,13 @@ class NCFilesNavigationController: NCMainNavigationController {
         return item
     }
 
+    let assistantButton = UIButton(type: .system)
+    var assistantButtonItem: UIBarButtonItem {
+        let item = UIBarButtonItem(customView: assistantButton)
+        item.tag = assistantButtonTag
+        return item
+    }
+
     let notificationsButton = UIButton(type: .system)
     var notificationsButtonItem: UIBarButtonItem {
         let item = UIBarButtonItem(customView: notificationsButton)
@@ -41,6 +48,15 @@ class NCFilesNavigationController: NCMainNavigationController {
         menuButton.tintColor = NCBrandColor.shared.iconImageColor
         menuButton.menu = createRightMenu()
         menuButton.showsMenuAsPrimaryAction = true
+
+        assistantButton.setImage(UIImage(systemName: "sparkles"), for: .normal)
+        assistantButton.tintColor = NCBrandColor.shared.iconImageColor
+        assistantButton.addAction(UIAction(handler: { _ in
+            let assistant = NCAssistant()
+                .environmentObject(NCAssistantModel(controller: self.controller))
+            let hostingController = UIHostingController(rootView: assistant)
+            self.present(hostingController, animated: true, completion: nil)
+        }), for: .touchUpInside)
 
         notificationsButton.setImage(UIImage(systemName: "bell.fill"), for: .normal)
         notificationsButton.tintColor = NCBrandColor.shared.iconImageColor
@@ -100,8 +116,13 @@ class NCFilesNavigationController: NCMainNavigationController {
         else {
             return
         }
+        let capabilities = NCCapabilities.shared.getCapabilities(account: session.account)
         let resultsCount = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal))?.count ?? 0
         var tempRightBarButtonItems = [self.menuBarButtonItem]
+
+        if capabilities.capabilityAssistantEnabled {
+            tempRightBarButtonItems.append(self.assistantButtonItem)
+        }
 
         if controller?.availableNotifications ?? false {
             tempRightBarButtonItems.append(self.notificationsButtonItem)
@@ -235,6 +256,7 @@ class NCFilesNavigationController: NCMainNavigationController {
             self.collectionViewCommon?.navigationItem.rightBarButtonItems = nil
             return
         }
+        let capabilities = NCCapabilities.shared.getCapabilities(account: session.account)
 
         if collectionViewCommon.isEditMode {
             collectionViewCommon.tabBarSelect?.update(fileSelect: collectionViewCommon.fileSelect, metadatas: collectionViewCommon.getSelectedMetadatas(), userId: session.userId)
@@ -251,6 +273,10 @@ class NCFilesNavigationController: NCMainNavigationController {
 
             collectionViewCommon.tabBarSelect?.hide()
             collectionViewCommon.navigationItem.rightBarButtonItems = [self.menuBarButtonItem]
+
+            if capabilities.capabilityAssistantEnabled {
+                collectionViewCommon.navigationItem.rightBarButtonItems?.append(self.assistantButtonItem)
+            }
 
         } else {
 
