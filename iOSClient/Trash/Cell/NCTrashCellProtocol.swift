@@ -39,7 +39,7 @@ extension NCTrashCellProtocol where Self: UICollectionViewCell {
         self.labelTitle.text = tableTrash.trashbinFileName
         self.labelTitle.textColor = NCBrandColor.shared.textColor
         if self is NCTrashListCell {
-            self.labelInfo?.text = NCUtility().dateDiff(tableTrash.trashbinDeletionTime as Date)
+            self.labelInfo?.text = NCUtility().getRelativeDateTitle(tableTrash.trashbinDeletionTime as Date)
         } else {
             let dateFormatter = DateFormatter()
             dateFormatter.dateStyle = .short

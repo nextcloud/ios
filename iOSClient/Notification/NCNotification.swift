@@ -157,7 +157,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
 
         cell.date.text = DateFormatter.localizedString(from: notification.date as Date, dateStyle: .medium, timeStyle: .medium)
         cell.notification = notification
-        cell.date.text = utility.dateDiff(notification.date as Date)
+        cell.date.text = utility.getRelativeDateTitle(notification.date as Date)
         cell.date.textColor = NCBrandColor.shared.iconImageColor2
         cell.subject.text = notification.subject
         cell.subject.textColor = NCBrandColor.shared.textColor

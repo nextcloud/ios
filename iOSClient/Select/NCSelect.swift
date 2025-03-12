@@ -361,11 +361,11 @@ extension NCSelect: UICollectionViewDataSource {
             }
             cell.imageItem.image = cell.imageItem.image?.colorizeFolder(metadata: metadata)
 
-            cell.labelInfo.text = utility.dateDiff(metadata.date as Date)
+            cell.labelInfo.text = utility.getRelativeDateTitle(metadata.date as Date)
 
         } else {
 
-            cell.labelInfo.text = utility.dateDiff(metadata.date as Date) + " · " + utilityFileSystem.transformedSize(metadata.size)
+            cell.labelInfo.text = utility.getRelativeDateTitle(metadata.date as Date) + " · " + utilityFileSystem.transformedSize(metadata.size)
 
             // image local
             if self.database.getTableLocalFile(ocId: metadata.ocId) != nil {
