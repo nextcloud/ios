@@ -6,12 +6,13 @@ import UIKit
 
 class NCFavoriteNavigationController: NCMainNavigationController {
     override func createRightMenu() -> UIMenu? {
-        guard let items = self.createMenuActions()
+        guard let items = self.createMenuActions(),
+              let collectionViewCommon
         else {
             return nil
         }
 
-        if collectionViewCommon?.layoutKey == global.layoutViewFavorite {
+        if collectionViewCommon.layoutKey == global.layoutViewFavorite {
             return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu])
         } else {
             let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.foldersOnTop, items.personalFilesOnlyAction, items.showDescription])
