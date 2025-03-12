@@ -30,9 +30,37 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     let transfersButtonTag = 3
     let notificationsButtonTag = 4
 
+    let menuButton = UIButton(type: .system)
+    var menuBarButtonItem: UIBarButtonItem {
+        let item = UIBarButtonItem(customView: menuButton)
+        item.tag = menuButtonTag
+        return item
+    }
+
+    let assistantButton = UIButton(type: .system)
+    var assistantButtonItem: UIBarButtonItem {
+        let item = UIBarButtonItem(customView: assistantButton)
+        item.tag = assistantButtonTag
+        return item
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         self.delegate = self
+
+        menuButton.setImage(UIImage(systemName: "ellipsis.circle"), for: .normal)
+        menuButton.tintColor = NCBrandColor.shared.iconImageColor
+        menuButton.menu = createRightMenu()
+        menuButton.showsMenuAsPrimaryAction = true
+
+        assistantButton.setImage(UIImage(systemName: "sparkles"), for: .normal)
+        assistantButton.tintColor = NCBrandColor.shared.iconImageColor
+        assistantButton.addAction(UIAction(handler: { _ in
+            let assistant = NCAssistant()
+                .environmentObject(NCAssistantModel(controller: self.controller))
+            let hostingController = UIHostingController(rootView: assistant)
+            self.present(hostingController, animated: true, completion: nil)
+        }), for: .touchUpInside)
 
         navigationBar.prefersLargeTitles = true
         setNavigationBarHidden(false, animated: true)
@@ -42,8 +70,52 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         setNavigationBarAppearance()
     }
 
+    func createRightMenu() -> UIMenu? { return nil }
+
+    func setNavigationRightItems() {
+        guard let collectionViewCommon else {
+            self.collectionViewCommon?.navigationItem.rightBarButtonItems = nil
+            return
+        }
+        let capabilities = NCCapabilities.shared.getCapabilities(account: session.account)
+
+        if collectionViewCommon.isEditMode {
+            collectionViewCommon.tabBarSelect?.update(fileSelect: collectionViewCommon.fileSelect, metadatas: collectionViewCommon.getSelectedMetadatas(), userId: session.userId)
+            collectionViewCommon.tabBarSelect?.show()
+
+            let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
+                collectionViewCommon.setEditMode(false)
+                collectionViewCommon.collectionView.reloadData()
+            }
+
+            self.collectionViewCommon?.navigationItem.rightBarButtonItems = [select]
+
+        } else if self.collectionViewCommon?.navigationItem.rightBarButtonItems == nil || (!collectionViewCommon.isEditMode && !(collectionViewCommon.tabBarSelect?.isHidden() ?? true)) {
+
+            collectionViewCommon.tabBarSelect?.hide()
+            collectionViewCommon.navigationItem.rightBarButtonItems = [self.menuBarButtonItem]
+
+            if capabilities.capabilityAssistantEnabled {
+                collectionViewCommon.navigationItem.rightBarButtonItems?.append(self.assistantButtonItem)
+            }
+
+        } else {
+
+            if let rightBarButtonItems = self.collectionViewCommon?.navigationItem.rightBarButtonItems,
+               let menuBarButtonItem = rightBarButtonItems.first(where: { $0.tag == menuButtonTag }),
+               let menuButton = menuBarButtonItem.customView as? UIButton {
+                menuButton.menu = createRightMenu()
+            }
+        }
+
+        // fix, if the tabbar was hidden before the update, set it in hidden
+        if self.tabBarController?.tabBar.isHidden ?? true,
+           collectionViewCommon.tabBarSelect?.isHidden() ?? true {
+            self.tabBarController?.tabBar.isHidden = true
+        }
+    }
+
     func setNavigationLeftItems() { }
-    func setNavigationRightItems() { }
 
     func createMenuActions() -> (select: UIAction, viewStyleSubmenu: UIMenu, sortSubmenu: UIMenu, foldersOnTop: UIAction, personalFilesOnlyAction: UIAction, showDescription: UIAction, showRecommendedFiles: UIAction)? {
         guard let collectionViewCommon,

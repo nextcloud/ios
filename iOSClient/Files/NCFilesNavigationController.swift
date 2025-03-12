@@ -13,20 +13,6 @@ class NCFilesNavigationController: NCMainNavigationController {
         super.init(coder: aDecoder)
     }
 
-    let menuButton = UIButton(type: .system)
-    var menuBarButtonItem: UIBarButtonItem {
-        let item = UIBarButtonItem(customView: menuButton)
-        item.tag = menuButtonTag
-        return item
-    }
-
-    let assistantButton = UIButton(type: .system)
-    var assistantButtonItem: UIBarButtonItem {
-        let item = UIBarButtonItem(customView: assistantButton)
-        item.tag = assistantButtonTag
-        return item
-    }
-
     let notificationsButton = UIButton(type: .system)
     var notificationsButtonItem: UIBarButtonItem {
         let item = UIBarButtonItem(customView: notificationsButton)
@@ -43,20 +29,6 @@ class NCFilesNavigationController: NCMainNavigationController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        menuButton.setImage(UIImage(systemName: "ellipsis.circle"), for: .normal)
-        menuButton.tintColor = NCBrandColor.shared.iconImageColor
-        menuButton.menu = createRightMenu()
-        menuButton.showsMenuAsPrimaryAction = true
-
-        assistantButton.setImage(UIImage(systemName: "sparkles"), for: .normal)
-        assistantButton.tintColor = NCBrandColor.shared.iconImageColor
-        assistantButton.addAction(UIAction(handler: { _ in
-            let assistant = NCAssistant()
-                .environmentObject(NCAssistantModel(controller: self.controller))
-            let hostingController = UIHostingController(rootView: assistant)
-            self.present(hostingController, animated: true, completion: nil)
-        }), for: .touchUpInside)
 
         notificationsButton.setImage(UIImage(systemName: "bell.fill"), for: .normal)
         notificationsButton.tintColor = NCBrandColor.shared.iconImageColor
@@ -137,7 +109,7 @@ class NCFilesNavigationController: NCMainNavigationController {
         }
     }
 
-    func createRightMenu() -> UIMenu? {
+    override func createRightMenu() -> UIMenu? {
         guard let items = self.createMenuActions(),
               let collectionViewCommon
         else {
@@ -248,49 +220,6 @@ class NCFilesNavigationController: NCMainNavigationController {
             let accountButton = self.collectionViewCommon?.navigationItem.leftBarButtonItems?.first?.customView as? UIButton
             accountButton?.setImage(image, for: .normal)
             accountButton?.menu = createLeftMenu()
-        }
-    }
-
-    override func setNavigationRightItems() {
-        guard let collectionViewCommon else {
-            self.collectionViewCommon?.navigationItem.rightBarButtonItems = nil
-            return
-        }
-        let capabilities = NCCapabilities.shared.getCapabilities(account: session.account)
-
-        if collectionViewCommon.isEditMode {
-            collectionViewCommon.tabBarSelect?.update(fileSelect: collectionViewCommon.fileSelect, metadatas: collectionViewCommon.getSelectedMetadatas(), userId: session.userId)
-            collectionViewCommon.tabBarSelect?.show()
-
-            let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
-                collectionViewCommon.setEditMode(false)
-                collectionViewCommon.collectionView.reloadData()
-            }
-
-            self.collectionViewCommon?.navigationItem.rightBarButtonItems = [select]
-
-        } else if self.collectionViewCommon?.navigationItem.rightBarButtonItems == nil || (!collectionViewCommon.isEditMode && !(collectionViewCommon.tabBarSelect?.isHidden() ?? true)) {
-
-            collectionViewCommon.tabBarSelect?.hide()
-            collectionViewCommon.navigationItem.rightBarButtonItems = [self.menuBarButtonItem]
-
-            if capabilities.capabilityAssistantEnabled {
-                collectionViewCommon.navigationItem.rightBarButtonItems?.append(self.assistantButtonItem)
-            }
-
-        } else {
-
-            if let rightBarButtonItems = self.collectionViewCommon?.navigationItem.rightBarButtonItems,
-               let menuBarButtonItem = rightBarButtonItems.first(where: { $0.tag == menuButtonTag }),
-               let menuButton = menuBarButtonItem.customView as? UIButton {
-                menuButton.menu = createRightMenu()
-            }
-        }
-
-        // fix, if the tabbar was hidden before the update, set it in hidden
-        if self.tabBarController?.tabBar.isHidden ?? true,
-           collectionViewCommon.tabBarSelect?.isHidden() ?? true {
-            self.tabBarController?.tabBar.isHidden = true
         }
     }
 }
