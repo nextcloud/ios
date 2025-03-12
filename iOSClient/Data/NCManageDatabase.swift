@@ -72,7 +72,6 @@ final class NCManageDatabase: Sendable {
                                 tableTag.self,
                                 tableAccount.self,
                                 tableCapabilities.self,
-//                                tablePhotoLibrary.self,
                                 tableE2eEncryption.self,
                                 tableE2eEncryptionLock.self,
                                 tableE2eMetadata12.self,
@@ -220,7 +219,6 @@ final class NCManageDatabase: Sendable {
         self.clearTable(TableGroupfoldersGroups.self, account: account)
         self.clearTable(tableLocalFile.self, account: account)
         self.clearTable(tableMetadata.self, account: account)
-//        self.clearTable(tablePhotoLibrary.self, account: account)
         self.clearTable(tableShare.self, account: account)
         self.clearTable(TableSecurityGuardDiagnostics.self, account: account)
         self.clearTable(tableTag.self, account: account)
