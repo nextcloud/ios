@@ -70,7 +70,7 @@ struct SelectionButton: View {
     let album: PHAssetCollection?
     let isSmartAlbum: Bool
     var customAssetCount = 0
-    @StateObject var loader: ImageLoader = ImageLoader()
+    @StateObject var loader = PHAssetCollectionThumbnailLoader()
     @Binding var selection: Set<String>
 
     var body: some View {
@@ -90,12 +90,22 @@ struct SelectionButton: View {
                     .foregroundColor(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                     .imageScale(.large)
 
-                Image(uiImage: loader.image ?? UIImage())
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 70, height: 70)
-                    .clipped()
-                    .cornerRadius(8)
+                if let image = loader.image {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 70, height: 70)
+                        .clipped()
+                        .cornerRadius(8)
+                } else {
+                    Image(systemName: "photo.on.rectangle")
+                        .imageScale(.large)
+                        .frame(width: 70, height: 70)
+                        .foregroundStyle(.tertiary)
+                        .background(.quaternary.opacity(0.5))
+                        .clipped()
+                        .cornerRadius(8)
+                }
 
                 VStack(alignment: .leading) {
                     Text((album?.assetCollectionSubtype == .smartAlbumUserLibrary) ? NSLocalizedString("_camera_roll_", comment: "") : (album?.localizedTitle ?? ""))
@@ -106,7 +116,7 @@ struct SelectionButton: View {
         }
         .foregroundColor(.primary)
         .onAppear {
-            loader.loadImage(from: album, targetSize: .zero)
+            loader.loadThumbnail(for: album)
         }
     }
 }
