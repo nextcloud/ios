@@ -7,17 +7,8 @@ import XCTest
 ///
 /// User interface tests for the download limits management on shares.
 ///
-/// > To Do: Check whether this can be converted to Swift Testing.
-///
 @MainActor
-final class DownloadLimitTests: XCTestCase {
-    var app: XCUIApplication!
-
-    ///
-    /// The Nextcloud server API abstraction object.
-    ///
-    var backend: UITestBackend!
-
+final class DownloadLimitUITests: BaseUIXCTestCase {
     ///
     /// Name of the file to work with.
     ///
@@ -25,122 +16,6 @@ final class DownloadLimitTests: XCTestCase {
     /// Obviously, this is fragile by making some assumptions of the user interface state.
     ///
     let testFileName = "_Xcode UI Test Subject.md"
-
-    // MARK: - Helpers
-
-    ///
-    /// Generic convenience method to define user interface interruption monitors.
-    ///
-    /// This is called every time an alert from outside the app's user interface is presented (in example system prompt about saving a password).
-    /// Then the button is tapped defined by the given `label`.
-    ///
-    /// - Parameters:
-    ///     - description: The human readable description for the monitor to create.
-    ///     - label: The localized text on the alert action to tap.
-    ///
-    /// > Important: This is a candidate for outsourcing into a dedicated library, if not NextcloudKit.
-    ///
-    func addUIInterruptionMonitor(withDescription description: String, for label: String) {
-        addUIInterruptionMonitor(withDescription: description) { alert in
-            let button = alert.buttons[label]
-
-            if button.exists {
-                button.tap()
-                return true
-            }
-
-            return false
-        }
-    }
-
-    ///
-    /// Let the current `Task` rest for ``TestConstants/controlExistenceTimeout``.
-    ///
-    /// Some asynchronous background activities like the follow up request to define a download limit have no effect on the visible user interface.
-    /// Hence their outcome can only be assumed after a brief period of time.
-    ///
-    /// The odd name may stick out but reads natural in an `try await aMoment()`.
-    ///
-    func aMoment() async throws {
-        try await Task.sleep(for: .seconds(TestConstants.controlExistenceTimeout))
-    }
-
-    ///
-    /// Pull to refresh on the first found collection view to reveal the new file on the server.
-    ///
-    func pullToRefresh(file: StaticString = #file, line: UInt = #line) {
-        let cell = app.collectionViews.firstMatch.staticTexts.firstMatch
-
-        guard cell.exists else {
-            XCTFail("Apparently no collection view cell is visible!", file: file, line: line)
-            return
-        }
-
-        let start = cell.coordinate(withNormalizedOffset: CGVectorMake(0, 0))
-        let finish = cell.coordinate(withNormalizedOffset: CGVectorMake(0, 20))
-
-        start.press(forDuration: 0.2, thenDragTo: finish)
-    }
-
-    ///
-    /// Automation of the sign-in, if required.
-    ///
-    /// > Important: This is a candidate for outsourcing into a dedicated library, if not NextcloudKit.
-    ///
-    func logIn() throws {
-        guard app.buttons["login"].exists else {
-            return
-        }
-
-        app.buttons["login"].tap()
-
-        let serverAddressTextField = app.textFields["serverAddress"].firstMatch
-        guard serverAddressTextField.await() else { return }
-
-        serverAddressTextField.tap()
-        serverAddressTextField.typeText(TestConstants.server)
-
-        app.buttons["submitServerAddress"].tap()
-
-        let webView = app.webViews.firstMatch
-
-        guard webView.await() else {
-            throw UITestError.waitForExistence(webView)
-        }
-
-        let loginButton = webView.buttons["Log in"]
-
-        if loginButton.await() {
-            loginButton.tap()
-        }
-
-        let usernameTextField = webView.textFields.firstMatch
-
-        if usernameTextField.await() {
-            guard usernameTextField.await() else { return }
-            usernameTextField.tap()
-            usernameTextField.typeText(TestConstants.username)
-
-            let passwordSecureTextField = webView.secureTextFields.firstMatch
-            passwordSecureTextField.tap()
-            passwordSecureTextField.typeText(TestConstants.password)
-
-            webView.buttons.firstMatch.tap()
-        }
-
-        let grantButton = webView.buttons["Grant access"]
-
-        guard grantButton.await() else {
-            throw UITestError.waitForExistence(grantButton)
-        }
-
-        grantButton.tap()
-        grantButton.awaitInexistence()
-
-        // Switch back from Safari to our app.
-        app.activate()
-        app.buttons["accountSwitcher"].await()
-    }
 
     // MARK: - Lifecycle
 
@@ -157,12 +32,12 @@ final class DownloadLimitTests: XCTestCase {
         app.launchArguments = ["UI_TESTING"]
         app.launch()
 
-        try logIn()
+        try await logIn()
 
         // Set up test backend communication.
         backend = UITestBackend()
 
-        try await backend.assertDownloadLimitCapability(true)
+        try await backend.assertCapability(true, capability: \.downloadLimit)
         try await backend.delete(testFileName)
         try await backend.prepareTestFile(testFileName)
     }
