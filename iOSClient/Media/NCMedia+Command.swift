@@ -24,11 +24,19 @@
 import Foundation
 import UIKit
 import NextcloudKit
+import SwiftUI
 
 extension NCMedia {
     @IBAction func selectOrCancelButtonPressed(_ sender: UIButton) {
         isEditMode = !isEditMode
         setSelectcancelButton()
+    }
+
+    @IBAction func assistantButtonPressed(_ sender: UIButton) {
+        let assistant = NCAssistant()
+            .environmentObject(NCAssistantModel(controller: self.controller))
+        let hostingController = UIHostingController(rootView: assistant)
+        self.present(hostingController, animated: true, completion: nil)
     }
 
     func setEditMode(_ editMode: Bool) {
@@ -47,18 +55,20 @@ extension NCMedia {
         }
 
         if isEditMode {
-            activityIndicatorTrailing.constant = 150
+            activityIndicatorTrailing.constant = 170
             selectOrCancelButton.setTitle( NSLocalizedString("_cancel_", comment: ""), for: .normal)
             selectOrCancelButtonTrailing.constant = 10
             selectOrCancelButton.isHidden = false
             menuButton.isHidden = true
+            assistantButton.isHidden = true
             tabBarSelect.show()
         } else {
-            activityIndicatorTrailing.constant = 150
+            activityIndicatorTrailing.constant = 170
             selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
-            selectOrCancelButtonTrailing.constant = 50
+            selectOrCancelButtonTrailing.constant = 90
             selectOrCancelButton.isHidden = false
             menuButton.isHidden = false
+            assistantButton.isHidden = false
             tabBarSelect.hide()
         }
     }
@@ -84,6 +94,7 @@ extension NCMedia {
                 activityIndicator.color = NCBrandColor.shared.textColor
                 selectOrCancelButton.setTitleColor(NCBrandColor.shared.textColor, for: .normal)
                 menuButton.setImage(NCUtility().loadImage(named: "ellipsis", colors: [NCBrandColor.shared.textColor]), for: .normal)
+                assistantButton.setImage(NCUtility().loadImage(named: "sparkles", colors: [NCBrandColor.shared.textColor]), for: .normal)
             }
         } else {
             UIView.animate(withDuration: 0.3) { [self] in
@@ -92,6 +103,7 @@ extension NCMedia {
                 activityIndicator.color = .white
                 selectOrCancelButton.setTitleColor(.white, for: .normal)
                 menuButton.setImage(NCUtility().loadImage(named: "ellipsis", colors: [.white]), for: .normal)
+                assistantButton.setImage(NCUtility().loadImage(named: "sparkles", colors: [.white]), for: .normal)
             }
         }
     }

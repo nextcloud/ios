@@ -34,6 +34,7 @@ class NCMedia: UIViewController {
     @IBOutlet weak var selectOrCancelButton: UIButton!
     @IBOutlet weak var selectOrCancelButtonTrailing: NSLayoutConstraint!
     @IBOutlet weak var menuButton: UIButton!
+    @IBOutlet weak var assistantButton: UIButton!
     @IBOutlet weak var gradientView: UIView!
 
     let semaphoreSearchMedia = DispatchSemaphore(value: 1)
@@ -125,12 +126,6 @@ class NCMedia: UIViewController {
 
         titleDate.text = ""
 
-        selectOrCancelButton.backgroundColor = .clear
-        selectOrCancelButton.layer.cornerRadius = 15
-        selectOrCancelButton.layer.masksToBounds = true
-        selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
-        selectOrCancelButton.addBlur(style: .systemUltraThinMaterial)
-
         menuButton.backgroundColor = .clear
         menuButton.layer.cornerRadius = 15
         menuButton.layer.masksToBounds = true
@@ -139,6 +134,21 @@ class NCMedia: UIViewController {
         menuButton.setImage(NCUtility().loadImage(named: "ellipsis"), for: .normal)
         menuButton.changesSelectionAsPrimaryAction = false
         menuButton.addBlur(style: .systemUltraThinMaterial)
+
+        assistantButton.backgroundColor = .clear
+        assistantButton.layer.cornerRadius = 15
+        assistantButton.layer.masksToBounds = true
+        assistantButton.showsMenuAsPrimaryAction = true
+        assistantButton.configuration = UIButton.Configuration.plain()
+        assistantButton.setImage(NCUtility().loadImage(named: "sparkles"), for: .normal)
+        assistantButton.changesSelectionAsPrimaryAction = false
+        assistantButton.addBlur(style: .systemUltraThinMaterial)
+
+        selectOrCancelButton.backgroundColor = .clear
+        selectOrCancelButton.layer.cornerRadius = 15
+        selectOrCancelButton.layer.masksToBounds = true
+        selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
+        selectOrCancelButton.addBlur(style: .systemUltraThinMaterial)
 
         gradient.startPoint = CGPoint(x: 0, y: 0.1)
         gradient.endPoint = CGPoint(x: 0, y: 1)

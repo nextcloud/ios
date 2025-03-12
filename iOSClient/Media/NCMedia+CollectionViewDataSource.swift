@@ -55,16 +55,19 @@ extension NCMedia: UICollectionViewDataSource {
         if numberOfItemsInSection == 0 || NCNetworking.shared.isOffline {
             selectOrCancelButton.isHidden = true
             menuButton.isHidden = false
+            assistantButton.isHidden = false
             gradientView.alpha = 0
             activityIndicatorTrailing.constant = 50
         } else if isEditMode {
             selectOrCancelButton.isHidden = false
             menuButton.isHidden = true
-            activityIndicatorTrailing.constant = 150
+            assistantButton.isHidden = true
+            activityIndicatorTrailing.constant = 170
         } else {
             selectOrCancelButton.isHidden = false
             menuButton.isHidden = false
-            activityIndicatorTrailing.constant = 150
+            assistantButton.isHidden = false
+            activityIndicatorTrailing.constant = 170
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             self.setTitleDate()
