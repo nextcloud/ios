@@ -59,6 +59,7 @@ class NCNetworkingProcess {
 
     private func startTimer() {
         self.timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: { _ in
+            let applicationState = UIApplication.shared.applicationState
             self.lockQueue.async {
                 guard !self.hasRun,
                       self.networking.isOnline,
@@ -87,6 +88,7 @@ class NCNetworkingProcess {
                     /// Remove Photo CameraRoll
                     ///
                     if NCKeychain().removePhotoCameraRoll,
+                       applicationState == .active,
                        let localIdentifiers = self.database.getAssetLocalIdentifiersUploaded(),
                        !localIdentifiers.isEmpty {
                         PHPhotoLibrary.shared().performChanges({
