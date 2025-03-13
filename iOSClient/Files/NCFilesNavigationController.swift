@@ -7,7 +7,7 @@ import SwiftUI
 import NextcloudKit
 
 class NCFilesNavigationController: NCMainNavigationController {
-    private var timerProcess: Timer?
+    private var timer: Timer?
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -61,10 +61,6 @@ class NCFilesNavigationController: NCMainNavigationController {
             }
         }), for: .touchUpInside)
 
-        self.timerProcess = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
-            self.updateRightBarButtonItems()
-        })
-
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadAvatar), object: nil, queue: nil) { notification in
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 self.collectionViewCommon?.showTip()
@@ -77,6 +73,17 @@ class NCFilesNavigationController: NCMainNavigationController {
             }
 
             self.setNavigationLeftItems()
+        }
+
+        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
+            self.timer?.invalidate()
+            self.timer = nil
+        }
+
+        NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { _ in
+            self.timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
+                self.updateRightBarButtonItems()
+            })
         }
     }
 

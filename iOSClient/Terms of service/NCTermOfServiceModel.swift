@@ -15,7 +15,6 @@ class NCTermOfServiceModel: ObservableObject {
     @Published var languages: [String: String] = [:]
     @Published var terms: [String: String] = [:]
     @Published var termsId: [String: Int] = [:]
-    @Published var hasUserSigned: Bool = false
 
     /// Initialization code
     init(controller: NCMainTabBarController?, tos: NKTermsOfService?) {
@@ -43,10 +42,6 @@ class NCTermOfServiceModel: ObservableObject {
                 "it": "Questi sono i Termini di servizio."
             ]
         }
-
-        if let hasUserSigned = tos?.hasUserSigned() {
-            self.hasUserSigned = hasUserSigned
-        }
     }
 
     func signTermsOfService(termId: Int?) {
@@ -56,13 +51,14 @@ class NCTermOfServiceModel: ObservableObject {
             return
         }
 
-        NextcloudKit.shared.signTermsOfService(termId: "\(termId)", account: controller.account) { _, _, error in
+        NCNetworking.shared.signTermsOfService(account: controller.account, termId: termId) { error in
             if error == .success {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterGetServerData)
-                self.dismissView = true
             } else {
                 NCContentPresenter().showError(error: error)
             }
+            self.dismissView = true
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCheckUserDelaultErrorDone, userInfo: ["account": controller.account, "controller": controller])
         }
     }
 

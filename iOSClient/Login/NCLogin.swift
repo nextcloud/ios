@@ -1,26 +1,7 @@
-//
-//  NCLogin.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 24/02/21.
-//  Copyright © 2021 Marino Faggiana. All rights reserved.
-//  Copyright © 2024 STRATO GmbH
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2025 Marino Faggiana
+// SPDX-FileCopyrightText: 2025 Milen Pivchev
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UniformTypeIdentifiers
 import UIKit
@@ -57,10 +38,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     private var p12Data: Data?
     private var p12Password: String?
-
-    var pollTimer: DispatchSourceTimer?
-
-    var loginFlowInProgress = false
 
     // MARK: - View Life Cycle
 
@@ -124,15 +101,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     self.openShareAccountsViewController()
                 }
             }
-        }
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-        if navigationController?.isBeingDismissed == true {
-            pollTimer?.cancel()
-            pollTimer = nil
         }
     }
 
@@ -246,9 +214,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     self?.qrCode.isEnabled = true
                     // Login Flow V2
                     if error == .success, let token, let endpoint, let login {
-                        self?.poll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
-
-                        let safariVC = NCLoginProvider()
+						let safariVC = NCLoginProvider()
+						safariVC.poll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
                         safariVC.urlBase = login
                         self?.navigationController?.pushViewController(safariVC, animated: true)
                     } else if serverInfo.versionMajor < NCGlobal.shared.nextcloudVersion12 { // No login flow available
@@ -423,65 +390,11 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
             self.present(alertWrongPassword, animated: true)
         }
     }
-
-    func poll(loginFlowV2Token: String, loginFlowV2Endpoint: String, loginFlowV2Login: String) {
-        let queue = DispatchQueue.global(qos: .background)
-        pollTimer = DispatchSource.makeTimerSource(queue: queue)
-
-        guard let timer = pollTimer else { return }
-
-        timer.schedule(deadline: .now(), repeating: .seconds(1), leeway: .seconds(1))
-        timer.setEventHandler(handler: {
-            DispatchQueue.main.async {
-                let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
-                let loginOptions = NKRequestOptions(customUserAgent: userAgent)
-                NextcloudKit.shared.getLoginFlowV2Poll(token: loginFlowV2Token, endpoint: loginFlowV2Endpoint, options: loginOptions) { [self] server, loginName, appPassword, _, error in
-                    if error == .success, let urlBase = server, let user = loginName, let appPassword {
-                        loginFlowInProgress = true
-
-                        NCAccount().createAccount(urlBase: urlBase, user: user, password: appPassword, controller: controller) { account, error in
-
-                            if error == .success {
-                                let window = UIApplication.shared.firstWindow
-                                if let controller = window?.rootViewController as? NCMainTabBarController {
-                                    controller.account = account
-                                    controller.dismiss(animated: true, completion: nil)
-                                } else {
-                                    if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
-                                        controller.account = account
-                                        controller.modalPresentationStyle = .fullScreen
-                                        controller.view.alpha = 0
-
-                                        window?.rootViewController = controller
-                                        window?.makeKeyAndVisible()
-
-                                        if let scene = window?.windowScene {
-                                            SceneManager.shared.register(scene: scene, withRootViewController: controller)
-                                        }
-
-                                        UIView.animate(withDuration: 0.5) {
-                                            controller.view.alpha = 1
-                                        }
-                                    }
-                                }
-
-                                timer.cancel()
-                            }
-                        }
-                    }
-                }
-            }
-        })
-
-        timer.resume()
-    }
 }
 
-extension NCLogin: SFSafariViewControllerDelegate {
-    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
-        if !loginFlowInProgress {
-            loginButton.isEnabled = true
-            loginButton.hideSpinnerAndShowButton()
-        }
+extension NCLogin: NCLoginProviderDelegate {
+    func onBack() {
+        loginButton.isEnabled = true
+        loginButton.hideSpinnerAndShowButton()
     }
 }

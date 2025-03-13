@@ -155,6 +155,7 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
 
     func stopTimer() {
         self.timer?.invalidate()
+        self.timer = nil
     }
 
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
@@ -173,18 +174,10 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
         }
 
         if useAutoUploadFolder {
-            Task { @MainActor in
-                let assets = self.assets.compactMap { $0.phAsset }
-                let foldersCreated = await NCNetworking.shared.createFolder(assets: assets, useSubFolder: self.useAutoUploadSubFolder, session: self.session)
-                self.showHUD = false
-                self.uploadInProgress.toggle()
-                if foldersCreated {
-                    createProcessUploads()
-                } else {
-                    let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_createsubfolders_upload_")
-                    NCContentPresenter().showError(error: error)
-                }
-            }
+            let assets = self.assets.compactMap { $0.phAsset }
+            NCNetworking.shared.createFolder(assets: assets, useSubFolder: self.useAutoUploadSubFolder, selector: NCGlobal.shared.selectorUploadFile, session: self.session)
+            self.showHUD = false
+            createProcessUploads()
         } else {
             createProcessUploads()
         }
@@ -242,7 +235,8 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
             metadataForUpload.sessionDate = Date()
             metadataForUpload.nativeFormat = previewStore.nativeFormat
 
-            if let previewStore = self.previewStore.first(where: { $0.id == asset.localIdentifier }), let data = previewStore.data {
+            if let previewStore = self.previewStore.first(where: { $0.id == asset.localIdentifier }),
+                let data = previewStore.data {
                 if metadataForUpload.contentType == "image/heic" {
                     let fileNameNoExtension = (fileName as NSString).deletingPathExtension
                     metadataForUpload.contentType = "image/jpeg"
