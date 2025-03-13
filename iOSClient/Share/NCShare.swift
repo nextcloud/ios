@@ -30,7 +30,6 @@ import DropDown
 import NextcloudKit
 import MarqueeLabel
 import ContactsUI
-import SwiftUI
 
 class NCShare: UIViewController, NCSharePagingContent {
     @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!

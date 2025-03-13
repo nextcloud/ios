@@ -20,20 +20,20 @@ struct ShareSearchField: View {
     
     var body: some View {
         HStack(spacing: 0) {
-            Spacer().frame(width: 16)
             Image(.Share.magnifyingGlass)
-            Spacer().frame(width: 11)
+                .padding(.leading, 16)
+                .padding(.trailing, 11)
             TextField(model.placeholder,
                       text: $model.text)
             .font(.system(size: 16))
             .autocorrectionDisabled()
-            Spacer().frame(width: 11)
             Button {
                 onContactButtonTap()
             } label: {
                 Image(.Share.userContacts)
             }
-            Spacer().frame(width: 12)
+            .padding(.leading, 11)
+            .padding(.trailing, 12)
         }
         .frame(height: 48)
         .background(
