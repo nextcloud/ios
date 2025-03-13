@@ -319,17 +319,12 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 NextcloudKit.shared.getLoginFlowV2(serverUrl: url, options: loginOptions) { [self] token, endpoint, login, _, error in
                     // Login Flow V2
                     if error == .success, let token, let endpoint, let login {
-
                         let safariVC = NCLoginProvider()
                         safariVC.urlBase = login
                         safariVC.uiColor = textColor
                         safariVC.delegate = self
                         safariVC.poll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
                         navigationController?.pushViewController(safariVC, animated: true)
-                    } else if serverInfo.versionMajor < NCGlobal.shared.nextcloudVersion12 { // No login flow available
-                        let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_webflow_not_available_", comment: ""), preferredStyle: .alert)
-                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-                        present(alertController, animated: true, completion: { })
                     }
                 }
             case .failure(let error):
