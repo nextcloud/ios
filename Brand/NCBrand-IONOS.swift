@@ -15,7 +15,7 @@ import UIKit
         super.init()
         
         brand = "IONOS HiDrive Next"
-        loginBaseUrl = "https://storage.ionos.fr"
+        loginBaseUrl = "https://prelive.storage.ionos.fr"
 
         disable_intro = true
         disable_request_login_url = true
