@@ -90,7 +90,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
             self.collectionViewCommon?.navigationItem.rightBarButtonItems = [select]
 
-        } else if self.collectionViewCommon?.navigationItem.rightBarButtonItems == nil || (!collectionViewCommon.isEditMode && !(collectionViewCommon.tabBarSelect?.isHidden() ?? true)) {
+        } else {
 
             collectionViewCommon.tabBarSelect?.hide()
             collectionViewCommon.navigationItem.rightBarButtonItems = [self.menuBarButtonItem]
@@ -98,14 +98,12 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             if capabilities.capabilityAssistantEnabled {
                 collectionViewCommon.navigationItem.rightBarButtonItems?.append(self.assistantButtonItem)
             }
+        }
 
-        } else {
-
-            if let rightBarButtonItems = self.collectionViewCommon?.navigationItem.rightBarButtonItems,
-               let menuBarButtonItem = rightBarButtonItems.first(where: { $0.tag == menuButtonTag }),
-               let menuButton = menuBarButtonItem.customView as? UIButton {
-                menuButton.menu = createRightMenu()
-            }
+        if let rightBarButtonItems = self.collectionViewCommon?.navigationItem.rightBarButtonItems,
+            let menuBarButtonItem = rightBarButtonItems.first(where: { $0.tag == menuButtonTag }),
+            let menuButton = menuBarButtonItem.customView as? UIButton {
+            menuButton.menu = createRightMenu()
         }
 
         // fix, if the tabbar was hidden before the update, set it in hidden

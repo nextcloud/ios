@@ -91,20 +91,31 @@ class NCFilesNavigationController: NCMainNavigationController {
         let capabilities = NCCapabilities.shared.getCapabilities(account: session.account)
         let resultsCount = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal))?.count ?? 0
         var tempRightBarButtonItems = [self.menuBarButtonItem]
+        var tempTotalTags = self.menuBarButtonItem.tag
+        var totalTags = 0
+
+        if let rightBarButtonItems = collectionViewCommon.navigationItem.rightBarButtonItems {
+            for item in rightBarButtonItems {
+                totalTags = totalTags + item.tag
+            }
+        }
 
         if capabilities.capabilityAssistantEnabled {
             tempRightBarButtonItems.append(self.assistantButtonItem)
+            tempTotalTags = tempTotalTags + self.assistantButtonItem.tag
         }
 
         if controller?.availableNotifications ?? false {
             tempRightBarButtonItems.append(self.notificationsButtonItem)
+            tempTotalTags = tempTotalTags + self.notificationsButtonItem.tag
         }
 
         if resultsCount > 0 {
             tempRightBarButtonItems.append(self.transfersButtonItem)
+            tempTotalTags = tempTotalTags + self.transfersButtonItem.tag
         }
 
-        if collectionViewCommon.navigationItem.rightBarButtonItems?.count != tempRightBarButtonItems.count {
+        if totalTags != tempTotalTags {
             collectionViewCommon.navigationItem.rightBarButtonItems = tempRightBarButtonItems
         }
     }
