@@ -30,9 +30,7 @@ class NCMedia: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var titleDate: UILabel!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    @IBOutlet weak var activityIndicatorTrailing: NSLayoutConstraint!
     @IBOutlet weak var selectOrCancelButton: UIButton!
-    @IBOutlet weak var selectOrCancelButtonTrailing: NSLayoutConstraint!
     @IBOutlet weak var menuButton: UIButton!
     @IBOutlet weak var assistantButton: UIButton!
     @IBOutlet weak var gradientView: UIView!

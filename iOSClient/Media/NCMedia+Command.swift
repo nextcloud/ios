@@ -55,17 +55,13 @@ extension NCMedia {
         }
 
         if isEditMode {
-            activityIndicatorTrailing.constant = 170
             selectOrCancelButton.setTitle( NSLocalizedString("_cancel_", comment: ""), for: .normal)
-            selectOrCancelButtonTrailing.constant = 10
             selectOrCancelButton.isHidden = false
             menuButton.isHidden = true
             assistantButton.isHidden = true
             tabBarSelect.show()
         } else {
-            activityIndicatorTrailing.constant = 170
             selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
-            selectOrCancelButtonTrailing.constant = 90
             selectOrCancelButton.isHidden = false
             menuButton.isHidden = false
             assistantButton.isHidden = false
