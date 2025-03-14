@@ -145,21 +145,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         } else {
 
             collectionViewCommon.tabBarSelect?.hide()
-            collectionViewCommon.navigationItem.rightBarButtonItems = [self.menuBarButtonItem]
-
-            if capabilities.capabilityAssistantEnabled {
-                collectionViewCommon.navigationItem.rightBarButtonItems?.append(self.assistantButtonItem)
-            }
-
-            if controller.availableNotifications {
-                collectionViewCommon.navigationItem.rightBarButtonItems?.append(self.notificationsButtonItem)
-            }
-
-            if resultsCount > 0 {
-                collectionViewCommon.navigationItem.rightBarButtonItems?.append(self.transfersButtonItem)
-            }
+            self.updateRightBarButtonItems()
         }
 
+        // TODO: XXXXXXXXXXXX
         if let rightBarButtonItems = self.collectionViewCommon?.navigationItem.rightBarButtonItems,
             let menuBarButtonItem = rightBarButtonItems.first(where: { $0.tag == menuButtonTag }),
             let menuButton = menuBarButtonItem.customView as? UIButton {
