@@ -45,6 +45,9 @@ extension NCMedia {
     }
 
     func setSelectcancelButton() {
+        let assistantEnabled = NCCapabilities.shared.getCapabilities(account: session.account).capabilityAssistantEnabled
+
+        assistantButton.isHidden = true
         fileSelect.removeAll()
         tabBarSelect.selectCount = fileSelect.count
 
@@ -58,13 +61,14 @@ extension NCMedia {
             selectOrCancelButton.setTitle( NSLocalizedString("_cancel_", comment: ""), for: .normal)
             selectOrCancelButton.isHidden = false
             menuButton.isHidden = true
-            assistantButton.isHidden = true
             tabBarSelect.show()
         } else {
             selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
             selectOrCancelButton.isHidden = false
             menuButton.isHidden = false
-            assistantButton.isHidden = false
+            if assistantEnabled {
+                assistantButton.isHidden = false
+            }
             tabBarSelect.hide()
         }
     }
