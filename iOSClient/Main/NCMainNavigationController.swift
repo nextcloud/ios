@@ -316,15 +316,13 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
 
         let showDescriptionKeychain = NCKeychain().showDescription
-        let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), attributes: collectionViewCommon.richWorkspaceText == nil ? .disabled : [], state: showDescriptionKeychain && collectionViewCommon.richWorkspaceText != nil ? .on : .off) { _ in
+        let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), state: showDescriptionKeychain ? .on : .off) { _ in
 
             NCKeychain().showDescription = !showDescriptionKeychain
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": collectionViewCommon.serverUrl, "clearDataSource": true])
             self.setNavigationRightItems()
         }
-
-        showDescription.subtitle = collectionViewCommon.richWorkspaceText == nil ? NSLocalizedString("_no_description_available_", comment: "") : ""
 
         let showRecommendedFilesKeychain = NCKeychain().showRecommendedFiles
         let capabilityRecommendations = NCCapabilities.shared.getCapabilities(account: session.account).capabilityRecommendations
