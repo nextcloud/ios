@@ -82,9 +82,11 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         notificationsButton.setImage(UIImage(systemName: "bell.fill"), for: .normal)
         notificationsButton.tintColor = NCBrandColor.shared.iconImageColor
         notificationsButton.addAction(UIAction(handler: { _ in
-            if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
+            if let navigationController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? UINavigationController,
+               let viewController = navigationController.topViewController as? NCNotification {
+                viewController.modalPresentationStyle = .pageSheet
                 viewController.session = self.session
-                self.pushViewController(viewController, animated: true)
+                self.present(navigationController, animated: true, completion: nil)
             }
         }), for: .touchUpInside)
 
