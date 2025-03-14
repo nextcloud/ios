@@ -34,6 +34,7 @@ class NCMedia: UIViewController {
     @IBOutlet weak var menuButton: UIButton!
     @IBOutlet weak var assistantButton: UIButton!
     @IBOutlet weak var gradientView: UIView!
+    @IBOutlet weak var stackView: UIStackView!
 
     let semaphoreSearchMedia = DispatchSemaphore(value: 1)
     let semaphoreNotificationCenter = DispatchSemaphore(value: 1)
