@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 70;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -1246,6 +1246,7 @@
 /* Begin PBXFileReference section */
 		0F08D6B82C94270600136502 /* ButtonStyleGuide.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyleGuide.swift; sourceTree = "<group>"; };
 		0F08D6BA2C94275600136502 /* CircleItemSpinner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleItemSpinner.swift; sourceTree = "<group>"; };
+		0F4374A82D8442BA0081F7C3 /* config */ = {isa = PBXFileReference; lastKnownFileType = text; path = config; sourceTree = "<group>"; };
 		0F5090CD2C786F04009348D9 /* FileActionsHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileActionsHeader.swift; sourceTree = "<group>"; };
 		0F8615AB2CBE6AC20056B4F2 /* UITabBarGuideline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITabBarGuideline.swift; sourceTree = "<group>"; };
 		0F8B9A5A2C7887F60041C17D /* FileActionsHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileActionsHeader.xib; sourceTree = "<group>"; };
@@ -1812,10 +1813,6 @@
 		FC930DC62CEE377700C9B237 /* WidgetCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCommon.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		AA517BB42D66149900F8D37C /* .tx */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = .tx; sourceTree = "<group>"; };
-/* End PBXFileSystemSynchronizedRootGroup section */
-
 /* Begin PBXFrameworksBuildPhase section */
 		2C33C47C23E2C475005F963B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -1994,6 +1991,14 @@
 				0F08D6BA2C94275600136502 /* CircleItemSpinner.swift */,
 			);
 			path = Style;
+			sourceTree = "<group>";
+		};
+		0F4374A92D8442BA0081F7C3 /* .tx */ = {
+			isa = PBXGroup;
+			children = (
+				0F4374A82D8442BA0081F7C3 /* config */,
+			);
+			path = .tx;
 			sourceTree = "<group>";
 		};
 		0F5090CC2C786EC8009348D9 /* ActionsHeader */ = {
@@ -3287,7 +3292,7 @@
 				426D0F862D2826B200F76A65 /* Toolbar */,
 				D5E1D4FA2CF4A86F00813AB6 /* DataProtection */,
 				D5C2D21D2C9DC0D800E7579D /* Components */,
-				AA517BB42D66149900F8D37C /* .tx */,
+				0F4374A92D8442BA0081F7C3 /* .tx */,
 				F702F2CC25EE5B4F008F8E80 /* AppDelegate.swift */,
 				F794E13E2BBC0F70003693D7 /* SceneDelegate.swift */,
 				F77DD6A72C5CC093009448FB /* NCSession.swift */,
