@@ -4,6 +4,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -39,8 +40,8 @@
                                     <constraint firstAttribute="height" constant="150" id="uAz-q2-42a"/>
                                 </constraints>
                             </view>
-                            <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3fa-2y-sT2">
-                                <rect key="frame" x="0.0" y="50" width="375" height="30"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="11" translatesAutoresizingMaskIntoConstraints="NO" id="3fa-2y-sT2">
+                                <rect key="frame" x="10" y="50" width="355" height="30"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rSH-l2-T1a">
                                         <rect key="frame" x="0.0" y="0.0" width="51.333333333333336" height="30"/>
@@ -49,11 +50,14 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="9bK-ms-LxX">
-                                        <rect key="frame" x="51.333333333333336" y="0.0" width="20.000000000000007" height="30"/>
+                                        <rect key="frame" x="62.333333333333329" y="0.0" width="30" height="30"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="30" id="Qf9-lF-0OH"/>
+                                        </constraints>
                                         <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </activityIndicatorView>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Enx-va-Bud">
-                                        <rect key="frame" x="71.333333333333329" y="0.0" width="56" height="30"/>
+                                        <rect key="frame" x="103.33333333333333" y="0.0" width="169.66666666666669" height="30"/>
                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="14"/>
                                         <inset key="contentEdgeInsets" minX="13" minY="0.0" maxX="13" maxY="0.0"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
@@ -63,7 +67,10 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kpg-uM-sin">
-                                        <rect key="frame" x="127.33333333333331" y="0.0" width="19" height="30"/>
+                                        <rect key="frame" x="284" y="0.0" width="30" height="30"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="30" id="9Ej-ma-gMt"/>
+                                        </constraints>
                                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <inset key="imageEdgeInsets" minX="4" minY="4" maxX="4" maxY="4"/>
                                         <state key="normal" image="sparkles" catalog="system"/>
@@ -72,12 +79,16 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="center" contentVerticalAlignment="center" adjustsImageWhenHighlighted="NO" adjustsImageWhenDisabled="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0dF-cq-2wr">
-                                        <rect key="frame" x="146.33333333333337" y="0.0" width="228.66666666666663" height="30"/>
+                                        <rect key="frame" x="325" y="0.0" width="30" height="30"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="30" id="Nkg-CG-vRA"/>
+                                        </constraints>
                                         <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <inset key="imageEdgeInsets" minX="4" minY="4" maxX="4" maxY="4"/>
                                         <state key="normal" image="ellipsis" catalog="system"/>
                                     </button>
                                 </subviews>
+                                <color key="backgroundColor" name="AccentColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="NcT-oT-eBm"/>
                                 </constraints>
@@ -85,11 +96,11 @@
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Meh-VD-wWh"/>
                         <constraints>
-                            <constraint firstItem="3fa-2y-sT2" firstAttribute="leading" secondItem="Meh-VD-wWh" secondAttribute="leading" id="1LT-PX-YMr"/>
+                            <constraint firstItem="3fa-2y-sT2" firstAttribute="leading" secondItem="Meh-VD-wWh" secondAttribute="leading" constant="10" id="1LT-PX-YMr"/>
                             <constraint firstItem="Zaz-Cl-qpZ" firstAttribute="leading" secondItem="QEs-gO-Cmp" secondAttribute="leading" id="1bp-sm-u0X"/>
                             <constraint firstAttribute="trailing" secondItem="7rV-YL-aM7" secondAttribute="trailing" id="28S-fu-Qxj"/>
                             <constraint firstItem="7rV-YL-aM7" firstAttribute="top" secondItem="QEs-gO-Cmp" secondAttribute="top" id="4hj-bC-66m"/>
-                            <constraint firstItem="Meh-VD-wWh" firstAttribute="trailing" secondItem="3fa-2y-sT2" secondAttribute="trailing" id="8NJ-MO-NVu"/>
+                            <constraint firstItem="Meh-VD-wWh" firstAttribute="trailing" secondItem="3fa-2y-sT2" secondAttribute="trailing" constant="10" id="8NJ-MO-NVu"/>
                             <constraint firstItem="3fa-2y-sT2" firstAttribute="top" secondItem="Meh-VD-wWh" secondAttribute="top" id="HDx-ch-bsw"/>
                             <constraint firstAttribute="trailing" secondItem="Zaz-Cl-qpZ" secondAttribute="trailing" id="aNd-UL-hmu"/>
                             <constraint firstAttribute="bottom" secondItem="Zaz-Cl-qpZ" secondAttribute="bottom" id="aNr-tf-2AH"/>
@@ -115,6 +126,9 @@
     <resources>
         <image name="ellipsis" catalog="system" width="128" height="37"/>
         <image name="sparkles" catalog="system" width="115" height="128"/>
+        <namedColor name="AccentColor">
+            <color red="1" green="0.79199999570846558" blue="0.15700000524520874" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
