@@ -72,7 +72,7 @@ final class NCGlobal: Sendable {
 
     // Nextcloud unsupported
     //
-    let nextcloud_unsupported_version: Int = 16
+    let nextcloud_unsupported_version: Int = 17
 
     // Intro selector
     //
