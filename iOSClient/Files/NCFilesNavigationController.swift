@@ -39,7 +39,7 @@ class NCFilesNavigationController: NCMainNavigationController {
             return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu])
 
         } else {
-            let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.foldersOnTop, items.personalFilesOnlyAction, items.showDescription])
+            let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.foldersOnTop, items.showDescription])
             return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu])
         }
     }
