@@ -212,11 +212,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
     func createRightMenu() -> UIMenu? { return nil }
 
-    // MARK: - Left
-
-    func setNavigationLeftItems() { }
-
-    func createMenuActions() -> (select: UIAction, viewStyleSubmenu: UIMenu, sortSubmenu: UIMenu, foldersOnTop: UIAction, personalFilesOnlyAction: UIAction, showDescription: UIAction, showRecommendedFiles: UIAction)? {
+    func createRightMenuActions() -> (select: UIAction, viewStyleSubmenu: UIMenu, sortSubmenu: UIMenu, foldersOnTop: UIAction, personalFilesOnlyAction: UIAction, showDescription: UIAction, showRecommendedFiles: UIAction)? {
         guard let collectionViewCommon,
               let layoutForView = database.getLayoutForView(account: session.account, key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl) else { return nil }
 
@@ -367,4 +363,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
         return (select, viewStyleSubmenu, sortSubmenu, foldersOnTop, personalFilesOnlyAction, showDescription, showRecommendedFiles)
     }
+
+    // MARK: - Left
+
+    func setNavigationLeftItems() { }
 }

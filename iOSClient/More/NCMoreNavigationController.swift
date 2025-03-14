@@ -17,7 +17,7 @@ class NCMoreNavigationController: NCMainNavigationController {
     // MARK: - Right
 
     override func createRightMenu() -> UIMenu? {
-        guard let items = self.createMenuActions(),
+        guard let items = self.createRightMenuActions(),
               let collectionViewCommon
         else {
             return nil
