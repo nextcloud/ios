@@ -179,6 +179,7 @@ extension NCMedia: HiDriveCollectionViewCommonSelectToolbarDelegate {
                 self.dataSource.removeMetadata(ocIds)
                 if indexPaths.count == ocIds.count {
                     self.collectionView.deleteItems(at: indexPaths)
+                    self.updateHeadersView()
                 } else {
                     self.collectionViewReloadData()
                 }

@@ -93,6 +93,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 	private func updateHeadersView() {
 		vHeader?.setIsEditingMode(isEditingMode: isEditMode)
 		vHeader?.setViewModeMenu(viewMenuElements: createViewModeMenuActions(), image: viewModeImage?.templateRendered())
+        vHeader?.enableSelection(enable: !(datasource?.isEmpty ?? true))
 		
 		vHeader?.onSelectModeChange = { [weak self] isSelectionMode in
 			self?.setEditMode(isSelectionMode)
