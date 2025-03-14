@@ -199,7 +199,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
     func createRightMenu() -> UIMenu? { return nil }
 
-    func createRightMenuActions() -> (select: UIAction, viewStyleSubmenu: UIMenu, sortSubmenu: UIMenu, foldersOnTop: UIAction, personalFilesOnlyAction: UIAction, showDescription: UIAction, showRecommendedFiles: UIAction)? {
+    func createRightMenuActions() -> (select: UIAction, viewStyleSubmenu: UIMenu, sortSubmenu: UIMenu, personalFilesOnlyAction: UIAction, showDescription: UIAction, showRecommendedFiles: UIAction)? {
         guard let collectionViewCommon,
               let layoutForView = database.getLayoutForView(account: session.account, key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl) else { return nil }
 
@@ -304,19 +304,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                                                                    "layoutForView": layoutForView])
         }
 
-        let directoryOnTop = NCKeychain().getDirectoryOnTop(account: session.account)
         let sortSubmenu = UIMenu(title: NSLocalizedString("_order_by_", comment: ""), options: .displayInline, children: [byName, byNewest, byLargest])
-
-        let foldersOnTop = UIAction(title: NSLocalizedString("_directory_on_top_no_", comment: ""), image: utility.loadImage(named: "folder"), state: directoryOnTop ? .on : .off) { _ in
-
-            NCKeychain().setDirectoryOnTop(account: self.session.account, value: !directoryOnTop)
-
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
-                                                        object: nil,
-                                                        userInfo: ["account": self.session.account,
-                                                                   "serverUrl": collectionViewCommon.serverUrl,
-                                                                   "layoutForView": layoutForView])
-        }
 
         let personalFilesOnly = NCKeychain().getPersonalFilesOnly(account: self.session.account)
         let personalFilesOnlyAction = UIAction(title: NSLocalizedString("_personal_files_only_", comment: ""), image: utility.loadImage(named: "folder.badge.person.crop", colors: NCBrandColor.shared.iconImageMultiColors), state: personalFilesOnly ? .on : .off) { _ in
@@ -348,7 +336,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             self.setNavigationRightItems()
         }
 
-        return (select, viewStyleSubmenu, sortSubmenu, foldersOnTop, personalFilesOnlyAction, showDescription, showRecommendedFiles)
+        return (select, viewStyleSubmenu, sortSubmenu, personalFilesOnlyAction, showDescription, showRecommendedFiles)
     }
 
     // MARK: - Left
