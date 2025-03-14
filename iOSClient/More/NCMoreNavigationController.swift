@@ -6,6 +6,16 @@ import UIKit
 import SwiftUI
 
 class NCMoreNavigationController: NCMainNavigationController {
+    override func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        if viewController is NCCollectionViewCommon || viewController is NCActivity || viewController is NCTrash {
+            setNavigationBarAppearance()
+        } else {
+            setGroupAppearance()
+        }
+    }
+
+    // MARK: - Right
+
     override func createRightMenu() -> UIMenu? {
         guard let items = self.createMenuActions(),
               let collectionViewCommon
@@ -22,14 +32,6 @@ class NCMoreNavigationController: NCMainNavigationController {
         } else {
             let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.foldersOnTop, items.personalFilesOnlyAction, items.showDescription])
             return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu])
-        }
-    }
-
-    override func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        if viewController is NCCollectionViewCommon || viewController is NCActivity || viewController is NCTrash {
-            setNavigationBarAppearance()
-        } else {
-            setGroupAppearance()
         }
     }
 }

@@ -7,47 +7,8 @@ import SwiftUI
 import NextcloudKit
 
 class NCFilesNavigationController: NCMainNavigationController {
-    private var timer: Timer?
-
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-
-    let notificationsButton = UIButton(type: .system)
-    var notificationsButtonItem: UIBarButtonItem {
-        let item = UIBarButtonItem(customView: notificationsButton)
-        item.tag = notificationsButtonTag
-        return item
-    }
-
-    let transfersButton = UIButton(type: .system)
-    var transfersButtonItem: UIBarButtonItem {
-        let item = UIBarButtonItem(customView: transfersButton)
-        item.tag = transfersButtonTag
-        return item
-    }
-
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        notificationsButton.setImage(UIImage(systemName: "bell.fill"), for: .normal)
-        notificationsButton.tintColor = NCBrandColor.shared.iconImageColor
-        notificationsButton.addAction(UIAction(handler: { _ in
-            if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
-                viewController.session = self.session
-                self.pushViewController(viewController, animated: true)
-            }
-        }), for: .touchUpInside)
-
-        transfersButton.setImage(UIImage(systemName: "arrow.left.arrow.right.circle.fill"), for: .normal)
-        transfersButton.tintColor = NCBrandColor.shared.iconImageColor
-        transfersButton.addAction(UIAction(handler: { _ in
-            if let navigationController = UIStoryboard(name: "NCTransfers", bundle: nil).instantiateInitialViewController() as? UINavigationController,
-               let viewController = navigationController.topViewController as? NCTransfers {
-                viewController.modalPresentationStyle = .pageSheet
-                self.present(navigationController, animated: true, completion: nil)
-            }
-        }), for: .touchUpInside)
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadAvatar), object: nil, queue: nil) { notification in
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
@@ -62,63 +23,9 @@ class NCFilesNavigationController: NCMainNavigationController {
 
             self.setNavigationLeftItems()
         }
-
-        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
-            self.timer?.invalidate()
-            self.timer = nil
-        }
-
-        NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { _ in
-            self.timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
-                self.updateRightBarButtonItems()
-            })
-        }
     }
 
-    override func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        super.navigationController(navigationController, willShow: viewController, animated: animated)
-        self.updateRightBarButtonItems()
-    }
-
-    // MARK: -
-
-    func updateRightBarButtonItems() {
-        guard let collectionViewCommon,
-              !collectionViewCommon.isEditMode
-        else {
-            return
-        }
-        let capabilities = NCCapabilities.shared.getCapabilities(account: session.account)
-        let resultsCount = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal))?.count ?? 0
-        var tempRightBarButtonItems = [self.menuBarButtonItem]
-        var tempTotalTags = self.menuBarButtonItem.tag
-        var totalTags = 0
-
-        if let rightBarButtonItems = collectionViewCommon.navigationItem.rightBarButtonItems {
-            for item in rightBarButtonItems {
-                totalTags = totalTags + item.tag
-            }
-        }
-
-        if capabilities.capabilityAssistantEnabled {
-            tempRightBarButtonItems.append(self.assistantButtonItem)
-            tempTotalTags = tempTotalTags + self.assistantButtonItem.tag
-        }
-
-        if controller?.availableNotifications ?? false {
-            tempRightBarButtonItems.append(self.notificationsButtonItem)
-            tempTotalTags = tempTotalTags + self.notificationsButtonItem.tag
-        }
-
-        if resultsCount > 0 {
-            tempRightBarButtonItems.append(self.transfersButtonItem)
-            tempTotalTags = tempTotalTags + self.transfersButtonItem.tag
-        }
-
-        if totalTags != tempTotalTags {
-            collectionViewCommon.navigationItem.rightBarButtonItems = tempRightBarButtonItems
-        }
-    }
+    // MARK: - Right
 
     override func createRightMenu() -> UIMenu? {
         guard let items = self.createMenuActions(),
@@ -136,6 +43,8 @@ class NCFilesNavigationController: NCMainNavigationController {
             return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu])
         }
     }
+
+    // MARK: - Left
 
     override func setNavigationLeftItems() {
         guard let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", self.session.account))

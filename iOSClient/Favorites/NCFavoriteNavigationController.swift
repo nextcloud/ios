@@ -5,6 +5,9 @@
 import UIKit
 
 class NCFavoriteNavigationController: NCMainNavigationController {
+
+    // MARK: - Right
+
     override func createRightMenu() -> UIMenu? {
         guard let items = self.createMenuActions(),
               let collectionViewCommon
