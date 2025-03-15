@@ -1052,7 +1052,7 @@ extension NCManageDatabase {
 
     // MARK: - GetResult(s)Metadata
 
-    func getResultsMetadatasPredicate(_ predicate: NSPredicate, layoutForView: NCDBLayoutForView?, directoryOnTop: Bool) -> [tableMetadata] {
+    func getResultsMetadatasPredicate(_ predicate: NSPredicate, layoutForView: NCDBLayoutForView?, directoryOnTop: Bool = true) -> [tableMetadata] {
         do {
             let realm = try Realm()
             var results = realm.objects(tableMetadata.self).filter(predicate).freeze()

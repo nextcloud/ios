@@ -130,7 +130,6 @@
                         <segue destination="WTp-0D-Gpe" kind="show" identifier="segueTrash" id="bPq-YD-SUy"/>
                         <segue destination="biz-Qc-WHi" kind="show" identifier="segueOffline" id="Pdi-HO-f4O"/>
                         <segue destination="2JP-H5-EI3" kind="show" identifier="segueActivity" id="aVb-Aj-gSf"/>
-                        <segue destination="yit-8P-Oea" kind="show" identifier="segueNotification" id="JSA-8l-ixD"/>
                         <segue destination="2L6-L3-iRl" kind="show" identifier="segueTransfers" id="oIQ-Yx-Gmt"/>
                         <segue destination="zzk-gS-FKl" kind="show" identifier="segueRecent" id="Snj-Bw-Ce2"/>
                         <segue destination="z7i-Sl-6Di" kind="show" identifier="segueShares" id="c59-fC-R3W"/>
@@ -160,7 +159,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="d9n-lT-FK4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10182" y="119"/>
+            <point key="canvasLocation" x="10182" y="125"/>
         </scene>
         <!--NCActivity.storyboard-->
         <scene sceneID="NqQ-oK-JeC">
@@ -170,17 +169,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="rXq-Ww-4Zx" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10185" y="157"/>
-        </scene>
-        <!--NCNotification.storyboard-->
-        <scene sceneID="1sy-aN-34T">
-            <objects>
-                <viewControllerPlaceholder storyboardName="NCNotification" referencedIdentifier="NCNotification.storyboard" id="yit-8P-Oea" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="avL-mw-LlT"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="EoH-78-6Yh" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="10203" y="190"/>
+            <point key="canvasLocation" x="10185" y="168"/>
         </scene>
         <!--NCTransfers.storyboard-->
         <scene sceneID="IDy-4E-Qqv">
@@ -190,7 +179,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="X5c-xg-peQ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10193" y="227"/>
+            <point key="canvasLocation" x="10193" y="217"/>
         </scene>
         <!--NCRecent.storyboard-->
         <scene sceneID="nO2-dy-n7J">
@@ -210,7 +199,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="olY-7a-lXK" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10182" y="305"/>
+            <point key="canvasLocation" x="10182" y="307"/>
         </scene>
         <!--NCGroupfolders.storyboard-->
         <scene sceneID="kED-94-ouZ">
@@ -220,7 +209,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="R0O-cD-1ke" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="10209" y="344"/>
+            <point key="canvasLocation" x="10209" y="348"/>
         </scene>
         <!--NCFiles.storyboard-->
         <scene sceneID="xwl-IR-lkD">

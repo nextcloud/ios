@@ -321,7 +321,6 @@
 "_directory_on_top_no_"         = "Folders on top";
 "_show_description_"            = "Show description";
 "_show_recommended_files_"      = "Show recommended files";
-"_no_description_available_"    = "No description available for this folder";
 "_search_no_record_found_"      = "No result";
 "_search_in_progress_"          = "Search in progress …";
 "_search_instruction_"          = "Search for file (minimum 2 characters)";
