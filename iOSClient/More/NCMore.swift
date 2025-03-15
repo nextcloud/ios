@@ -173,14 +173,12 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         functionMenu.append(item)
 
         // ITEM : Trash
-        if capabilities.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion15 {
-            item = NKExternalSite()
-            item.name = "_trash_view_"
-            item.icon = "trash"
-            item.url = "segueTrash"
-            item.order = 80
-            functionMenu.append(item)
-        }
+        item = NKExternalSite()
+        item.name = "_trash_view_"
+        item.icon = "trash"
+        item.url = "segueTrash"
+        item.order = 80
+        functionMenu.append(item)
 
         // ITEM : HANDLE
         applicationHandle.loadItems(functionMenu: &functionMenu)
