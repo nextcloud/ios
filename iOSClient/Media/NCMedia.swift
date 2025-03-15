@@ -130,7 +130,7 @@ class NCMedia: UIViewController {
         menuButton.layer.masksToBounds = true
         menuButton.showsMenuAsPrimaryAction = true
         menuButton.configuration = UIButton.Configuration.plain()
-        menuButton.setImage(NCUtility().loadImage(named: "ellipsis"), for: .normal)
+        menuButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
         menuButton.changesSelectionAsPrimaryAction = false
         menuButton.addBlur(style: .systemUltraThinMaterial)
 
@@ -139,7 +139,7 @@ class NCMedia: UIViewController {
         assistantButton.layer.masksToBounds = true
         assistantButton.showsMenuAsPrimaryAction = true
         assistantButton.configuration = UIButton.Configuration.plain()
-        assistantButton.setImage(NCUtility().loadImage(named: "sparkles"), for: .normal)
+        assistantButton.setImage(UIImage(systemName: "sparkles"), for: .normal)
         assistantButton.changesSelectionAsPrimaryAction = false
         assistantButton.addBlur(style: .systemUltraThinMaterial)
 
