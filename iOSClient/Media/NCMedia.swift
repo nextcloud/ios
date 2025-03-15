@@ -131,16 +131,13 @@ class NCMedia: UIViewController {
         menuButton.showsMenuAsPrimaryAction = true
         menuButton.configuration = UIButton.Configuration.plain()
         menuButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
-        menuButton.changesSelectionAsPrimaryAction = false
         menuButton.addBlur(style: .systemUltraThinMaterial)
 
         assistantButton.backgroundColor = .clear
         assistantButton.layer.cornerRadius = 15
         assistantButton.layer.masksToBounds = true
-        assistantButton.showsMenuAsPrimaryAction = true
         assistantButton.configuration = UIButton.Configuration.plain()
         assistantButton.setImage(UIImage(systemName: "sparkles"), for: .normal)
-        assistantButton.changesSelectionAsPrimaryAction = false
         assistantButton.addBlur(style: .systemUltraThinMaterial)
 
         selectOrCancelButton.backgroundColor = .clear
