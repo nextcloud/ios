@@ -393,6 +393,7 @@ extension NCMedia {
     func updateHeadersView() {
         fileActionsHeader?.showViewModeButton(false)
         fileActionsHeader?.setIsEditingMode(isEditingMode: isEditMode)
+        fileActionsHeader?.enableSelection(enable: self.dataSource.metadatas.count > 0)
         updateHeadersMenu()
         fileActionsHeader?.onSelectModeChange = { [weak self] isSelectionMode in
             self?.setEditMode(isSelectionMode)

@@ -843,6 +843,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                               completion: nil)
 
             (self.navigationController as? HiDriveMainNavigationController)?.setNavigationRightItems()
+            self.updateHeadersView()
             self.refreshControl.endRefreshing()
         }
     }

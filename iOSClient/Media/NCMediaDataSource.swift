@@ -41,6 +41,7 @@ extension NCMedia {
         DispatchQueue.main.async {
             self.collectionView.reloadData()
             self.refreshControl.endRefreshing()
+            self.updateHeadersView()
         }
     }
 

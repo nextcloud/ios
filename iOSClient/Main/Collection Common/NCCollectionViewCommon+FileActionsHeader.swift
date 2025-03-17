@@ -22,6 +22,7 @@ extension NCCollectionViewCommon {
         fileActionsHeader?.isHidden = isSearchingMode
         collectionViewTop?.constant = isSearchingMode ? 0 : fileActionsHeader?.bounds.height ?? 0
         fileActionsHeader?.setIsEditingMode(isEditingMode: isEditMode)
+        fileActionsHeader?.enableSelection(enable: !self.dataSource.isEmpty())
         
         fileActionsHeader?.setSortingMenu(sortingMenuElements: createSortMenuActions(), title: sortTitle, image: sortDirectionImage)
         fileActionsHeader?.setViewModeMenu(viewMenuElements: createViewModeMenuActions(), image: viewModeImage?.templateRendered())
