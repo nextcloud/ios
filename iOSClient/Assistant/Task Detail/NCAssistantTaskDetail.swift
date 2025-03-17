@@ -37,7 +37,7 @@ struct NCAssistantTaskDetail: View {
 #Preview {
     let model = NCAssistantModel(controller: nil)
 
-    return NCAssistantTaskDetail(task: model.selectedTask!)
+    NCAssistantTaskDetail(task: model.selectedTask!)
         .environmentObject(model)
         .onAppear {
             model.loadDummyData()

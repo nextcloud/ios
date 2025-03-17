@@ -59,7 +59,7 @@ struct NCAssistantCreateNewTask: View {
 #Preview {
     let model = NCAssistantModel(controller: nil)
     
-    return NCAssistantCreateNewTask()
+    NCAssistantCreateNewTask()
         .environmentObject(model)
         .onAppear {
             model.loadDummyData()
