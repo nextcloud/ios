@@ -54,6 +54,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var sectionFirstHeader: NCSectionFirstHeader?
     var sectionFirstHeaderEmptyData: NCSectionFirstHeaderEmptyData?
     var isSearchingMode: Bool = false
+    var networkSearchInProgress: Bool = false
     var layoutForView: NCDBLayoutForView?
     var dataSourceTask: URLSessionTask?
     var providers: [NKSearchProvider]?
@@ -840,12 +841,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func networkSearch() {
+        guard !networkSearchInProgress else {
+            return
+        }
         guard !session.account.isEmpty,
               let literalSearch = literalSearch,
               !literalSearch.isEmpty else {
             return self.refreshControl.endRefreshing()
         }
 
+        self.networkSearchInProgress = true
         self.dataSource.removeAll()
         self.refreshControl.beginRefreshing()
         self.reloadDataSource()
@@ -864,6 +869,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             } completion: { _, _ in
                 self.refreshControl.endRefreshing()
                 self.reloadDataSource()
+                self.networkSearchInProgress = false
             }
         } else {
             NCNetworking.shared.searchFiles(literal: literalSearch, account: session.account) { task in
@@ -876,10 +882,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 }
                 guard let metadatasSearch, error == .success, self.isSearchingMode else { return }
                 let ocId = metadatasSearch.map { $0.ocId }
-
                 let metadatas = self.database.getResultsMetadatasPredicate(NSPredicate(format: "ocId IN %@", ocId), layoutForView: self.layoutForView)
 
                 self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: self.layoutForView, providers: self.providers, searchResults: self.searchResults)
+                self.networkSearchInProgress = false
             }
         }
     }
