@@ -151,7 +151,7 @@ class NCMainTabBar: UITabBar {
 
         // File
         if let item = items?[0] {
-            item.title = NSLocalizedString("_home_dir_", comment: "")
+            item.title = NSLocalizedString("_home_", comment: "")
             item.image = UIImage(named: "home")
             item.selectedImage = item.image
         }
