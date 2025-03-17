@@ -33,8 +33,7 @@ class NCService: NSObject {
     // MARK: -
 
     public func startRequestServicesServer(account: String, controller: NCMainTabBarController?) {
-        guard !account.isEmpty,
-              UIApplication.shared.applicationState != .background
+        guard !account.isEmpty
         else {
             return
         }

@@ -136,7 +136,6 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
-            realm.refresh()
             guard let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first else { return nil }
             return tableVideo.init(value: result)
         } catch let error as NSError {

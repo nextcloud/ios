@@ -96,7 +96,6 @@ extension NCManageDatabase {
     func getDirectEditingCreators(account: String) -> [tableDirectEditingCreators]? {
         do {
             let realm = try Realm()
-            realm.refresh()
             let results = realm.objects(tableDirectEditingCreators.self).filter("account == %@", account)
             if results.isEmpty {
                 return nil
@@ -112,7 +111,6 @@ extension NCManageDatabase {
     func getDirectEditingCreators(predicate: NSPredicate) -> [tableDirectEditingCreators]? {
         do {
             let realm = try Realm()
-            realm.refresh()
             let results = realm.objects(tableDirectEditingCreators.self).filter(predicate)
             if results.isEmpty {
                 return nil
@@ -128,7 +126,6 @@ extension NCManageDatabase {
     func getDirectEditingEditors(account: String) -> [tableDirectEditingEditors]? {
         do {
             let realm = try Realm()
-            realm.refresh()
             let results = realm.objects(tableDirectEditingEditors.self).filter("account == %@", account)
             if results.isEmpty {
                 return nil

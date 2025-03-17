@@ -1235,7 +1235,6 @@ extension NCManageDatabase {
     func getResultsMetadatas(predicate: NSPredicate, sortedByKeyPath: String? = nil, ascending: Bool = false, freeze: Bool = false) -> Results<tableMetadata>? {
         do {
             let realm = try Realm()
-            realm.refresh()
             if let sortedByKeyPath {
                 let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sortedByKeyPath, ascending: ascending)
                 if freeze {
