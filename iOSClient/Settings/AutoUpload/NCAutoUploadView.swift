@@ -86,7 +86,7 @@ struct NCAutoUploadView: View {
             Text("\(NSLocalizedString("_autoupload_current_folder_", comment: "")): \(model.returnPath())").listRowBackground(Color.clear)
         }).applyGlobalFormSectionStyle()
         .sheet(isPresented: $model.autoUploadFolder) {
-            SelectView(serverUrl: $model.serverUrl)
+			SelectView(serverUrl: $model.serverUrl, session: model.session)
                 .onDisappear {
                     model.setAutoUploadDirectory(serverUrl: model.serverUrl)
                 }

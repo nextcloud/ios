@@ -167,7 +167,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             */
         }
 
-        ///
+        WidgetCenter.shared.reloadAllTimelines()
+
         let session = SceneManager.shared.getSession(scene: scene)
         guard !session.account.isEmpty else { return }
 
@@ -180,11 +181,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 showPrivacyProtectionWindow()
             }
         }
-
-        // Clear older files
-        let days = NCKeychain().cleanUpDay
-        let utilityFileSystem = NCUtilityFileSystem()
-        utilityFileSystem.cleanUp(directory: utilityFileSystem.directoryProviderStorage, days: TimeInterval(days))
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
@@ -218,6 +214,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if NCKeychain().presentPasscode {
             showPrivacyProtectionWindow()
         }
+
+        // Clear older files
+        let days = NCKeychain().cleanUpDay
+        let utilityFileSystem = NCUtilityFileSystem()
+        utilityFileSystem.cleanUp(directory: utilityFileSystem.directoryProviderStorage, days: TimeInterval(days))
     }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {

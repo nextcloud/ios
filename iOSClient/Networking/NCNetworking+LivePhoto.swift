@@ -27,9 +27,9 @@ import Alamofire
 import Queuer
 
 extension NCNetworking {
-    func createLivePhoto(metadata: tableMetadata, userInfo aUserInfo: [AnyHashable: Any]) {
+    func createLivePhoto(metadata: tableMetadata, userInfo aUserInfo: [AnyHashable: Any]? = nil) {
         database.realmRefresh()
-        guard let metadataLast = database.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@",
+        guard let metadataLast = database.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileNameView == %@",
                                                                              metadata.account,
                                                                              metadata.urlBase,
                                                                              metadata.path,
@@ -50,7 +50,7 @@ extension NCNetworking {
         }
     }
 
-    func setLivePhoto(metadataFirst: tableMetadata?, metadataLast: tableMetadata?, userInfo aUserInfo: [AnyHashable: Any], livePhoto: Bool = true) async {
+    func setLivePhoto(metadataFirst: tableMetadata?, metadataLast: tableMetadata?, userInfo aUserInfo: [AnyHashable: Any]? = nil, livePhoto: Bool = true) async {
         guard let metadataFirst, let metadataLast = metadataLast else { return }
         var livePhotoFileId = ""
 
@@ -80,9 +80,11 @@ extension NCNetworking {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Upload set LivePhoto with error \(resultsMetadataFirst.error.errorCode) - \(resultsMetadataLast.error.errorCode)")
         }
 
-        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadedLivePhoto,
-                                                    object: nil,
-                                                    userInfo: aUserInfo,
-                                                    second: 0.5)
+        if let aUserInfo {
+            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadedLivePhoto,
+                                                        object: nil,
+                                                        userInfo: aUserInfo,
+                                                        second: 0.5)
+        }
     }
 }

@@ -121,20 +121,13 @@ extension NCNetworking {
         })
     }
 
+    @discardableResult
     func createFolder(serverUrlFileName: String,
                       account: String,
                       options: NKRequestOptions = NKRequestOptions()) async -> (account: String, ocId: String?, date: Date?, responseData: AFDataResponse<Data?>?, error: NKError) {
         await withUnsafeContinuation({ continuation in
             NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName, account: account, options: options) { account, ocId, date, responseData, error in
                 continuation.resume(returning: (account: account, ocId: ocId, date: date, responseData: responseData, error: error))
-            }
-        })
-    }
-
-    func createFolder(metadata: tableMetadata) async -> NKError {
-        await withUnsafeContinuation({ continuation in
-            self.createFolder(fileName: metadata.fileName, serverUrl: metadata.serverUrl, overwrite: true, withPush: false, metadata: metadata, sceneIdentifier: nil, session: NCSession.shared.getSession(account: metadata.account)) { error in
-                continuation.resume(returning: error)
             }
         })
     }

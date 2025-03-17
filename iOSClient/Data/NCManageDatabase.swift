@@ -229,6 +229,10 @@ final class NCManageDatabase: Sendable {
         self.clearTable(tableVideo.self, account: account)
         self.clearTable(TableDownloadLimit.self, account: account)
         self.clearTable(tableRecommendedFiles.self, account: account)
+        self.clearTable(NCDBLayoutForView.self, account: account)
+        if account == nil {
+            self.clearTable(NCKeyValue.self)
+        }
     }
 
     func clearTablesE2EE(account: String?) {

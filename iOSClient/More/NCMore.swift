@@ -116,13 +116,15 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item.order = 20
         functionMenu.append(item)
 
-        // ITEM : Activity
-        item = NKExternalSite()
-        item.name = "_activity_"
-        item.icon = "bolt"
-        item.url = "segueActivity"
-        item.order = 30
-        functionMenu.append(item)
+        if capabilities.capabilityActivityEnabled {
+            // ITEM : Activity
+            item = NKExternalSite()
+            item.name = "_activity_"
+            item.icon = "bolt"
+            item.url = "segueActivity"
+            item.order = 30
+            functionMenu.append(item)
+        }
 
         if capabilities.capabilityAssistantEnabled, NCBrandOptions.shared.disable_show_more_nextcloud_apps_in_settings {
             // ITEM : Assistant

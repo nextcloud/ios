@@ -1155,16 +1155,6 @@ extension NCManageDatabase {
         return nil
     }
 
-    func getResultsImageCacheMetadatas(predicate: NSPredicate) -> Results<tableMetadata>? {
-        do {
-            let realm = try Realm()
-            return realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
-        }
-        return nil
-    }
-
     func getTableMetadatasDirectoryFavoriteIdentifierRank(account: String) -> [String: NSNumber] {
         var listIdentifierRank: [String: NSNumber] = [:]
         var counter = 10 as Int64

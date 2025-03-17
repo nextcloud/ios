@@ -585,7 +585,7 @@ struct NCSelectViewControllerRepresentable: UIViewControllerRepresentable {
 
 struct SelectView: UIViewControllerRepresentable {
     @Binding var serverUrl: String
-    var session: NCSession.Session!
+    var session: NCSession.Session
 
     class Coordinator: NSObject, NCSelectDelegate {
         var parent: SelectView

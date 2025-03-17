@@ -277,9 +277,6 @@ final class NCGlobal: Sendable {
     let metadataStatusFileDown                  = [-1, -2, -3]
     let metadataStatusHideInView                = [1, 2, 3, 11]
     let metadataStatusHideInFileExtension       = [1, 2, 3, 10, 11]
-    let metadataStatusObserveNetworkingProcess  = [-1, 1, 10, 11, 12, 13, 14, 15]
-    let metadataStatusObserveTrasfers           = [-2, 2, 10, 11, 12, 13, 14, 15]
-
     let metadataStatusWaitWebDav                = [10, 11, 12, 13, 14, 15]
 
     // Auto upload subfolder granularity
@@ -299,6 +296,7 @@ final class NCGlobal: Sendable {
     let notificationCenterReloadHeader                          = "reloadHeader"
     let notificationCenterClearCache                            = "clearCache"
     let notificationCenterChangeLayout                          = "changeLayout"                    // userInfo: account, serverUrl, layoutForView
+    let notificationCenterCheckUserDelaultErrorDone             = "checkUserDelaultErrorDone"       // userInfo: account, controller
 
     let notificationCenterReloadDataSource                      = "reloadDataSource"                // userInfo: serverUrl?, clearDataSource
     let notificationCenterGetServerData                         = "getServerData"                   // userInfo: serverUrl?
