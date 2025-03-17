@@ -463,6 +463,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let error = userInfo["error"] as? NKError else { return }
 
         if error == .success {
+            if isSearchingMode {
+                return networkSearch()
+            }
+
             if isRecommendationActived {
                 Task.detached {
                     await NCNetworking.shared.createRecommendations(session: self.session)
@@ -480,6 +484,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let serverUrl = userInfo["serverUrl"] as? String,
               let account = userInfo["account"] as? String,
               account == session.account else { return }
+
+        if isSearchingMode {
+            return networkSearch()
+        }
 
         if isRecommendationActived {
             Task.detached {
@@ -501,6 +509,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         else { return }
 
         if error == .success {
+            if isSearchingMode {
+                return networkSearch()
+            }
+
             if isRecommendationActived {
                 Task.detached {
                     await NCNetworking.shared.createRecommendations(session: self.session)
@@ -525,6 +537,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let metadata = database.getMetadataFromOcId(ocId)
         else { return }
 
+        if isSearchingMode {
+            return networkSearch()
+        }
+
         if metadata.serverUrl + "/" + metadata.fileName == self.serverUrl {
             reloadDataSource()
         } else if withPush, metadata.serverUrl == self.serverUrl {
@@ -540,6 +556,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func favoriteFile(_ notification: NSNotification) {
+        if isSearchingMode {
+            return networkSearch()
+        }
+
         if self is NCFavorite {
             return reloadDataSource()
         }
