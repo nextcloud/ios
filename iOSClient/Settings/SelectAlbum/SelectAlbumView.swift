@@ -13,17 +13,20 @@ struct SelectAlbumView: View {
     var body: some View {
         List {
             Section {
-                SelectionButton(model: model, album: model.allPhotosCollection, isSmartAlbum: true, selection: $selectedAlbums)
+                SelectionButton(model: model, album: model.allPhotosCollection, assetCount: model.allPhotosCollection?.assetCount ?? 0, selection: $selectedAlbums)
             }
 
             if !model.smartAlbums.isEmpty {
-                AlbumView(model: model, selectedAlbums: $selectedAlbums, albums: $model.smartAlbums, sectionTitle: "_smart_albums_")
+                AlbumView(model: model, selectedAlbums: $selectedAlbums, albums: model.smartAlbums, sectionTitle: "_smart_albums_")
             }
 
             if !model.userAlbums.isEmpty {
-                AlbumView(model: model, selectedAlbums: $selectedAlbums, albums: $model.userAlbums, sectionTitle: "_albums_")
+                AlbumView(model: model, selectedAlbums: $selectedAlbums, albums: model.userAlbums, sectionTitle: "_albums_")
             }
         }
+        .safeAreaInset(edge: .bottom, content: {
+            Spacer().frame(height: 30)
+        })
         .onChange(of: selectedAlbums) { newValue in
             if newValue.count > 1, oldSelectedAlbums.contains(model.allPhotosCollection?.localIdentifier ?? "") {
                 selectedAlbums.remove(model.allPhotosCollection?.localIdentifier ?? "")
@@ -42,7 +45,6 @@ struct SelectAlbumView: View {
         }
         .navigationBarTitle(NSLocalizedString("_upload_from_", comment: ""))
         .navigationBarTitleDisplayMode(.inline)
-
     }
 }
 
@@ -53,13 +55,13 @@ struct SelectAlbumView: View {
 struct AlbumView: View {
     @ObservedObject var model: AlbumModel
     @Binding var selectedAlbums: Set<String>
-    @Binding var albums: [PHAssetCollection]
+    var albums: [PHAssetCollection]
     let sectionTitle: String
 
     var body: some View {
         Section(NSLocalizedString(sectionTitle, comment: "")) {
             ForEach(albums, id: \.localIdentifier) { album in
-                SelectionButton(model: model, album: album, isSmartAlbum: true, assetCount: album.assetCount, selection: $selectedAlbums)
+                SelectionButton(model: model, album: album, assetCount: album.assetCount, selection: $selectedAlbums)
             }
         }
     }
@@ -68,8 +70,7 @@ struct AlbumView: View {
 struct SelectionButton: View {
     let model: AlbumModel
     let album: PHAssetCollection?
-    let isSmartAlbum: Bool
-    var assetCount = 0
+    var assetCount: Int
     @StateObject var loader = PHAssetCollectionThumbnailLoader()
     @Binding var selection: Set<String>
 
@@ -109,7 +110,7 @@ struct SelectionButton: View {
 
                 VStack(alignment: .leading) {
                     Text((album?.assetCollectionSubtype == .smartAlbumUserLibrary) ? NSLocalizedString("_camera_roll_", comment: "") : (album?.localizedTitle ?? ""))
-                    Text(String(assetCount)) // Only normal albums have an estimated asset count. Smart albums do not and must be calculated manually via .assetCount
+                    Text(String(album?.assetCount ?? 0)) // Only normal albums have an estimated asset count. Smart albums do not and must be calculated manually via .assetCount
                         .font(.footnote).foregroundStyle(.secondary)
                 }
             }
