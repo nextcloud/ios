@@ -13,15 +13,15 @@ struct SelectAlbumView: View {
     var body: some View {
         List {
             Section {
-                SelectionButton(model: model, album: model.allPhotosCollection, isSmartAlbum: true, customAssetCount: 0, selection: $selectedAlbums)
+                SelectionButton(model: model, album: model.allPhotosCollection, isSmartAlbum: true, selection: $selectedAlbums)
             }
 
             if !model.smartAlbums.isEmpty {
-                AlbumView(model: model, selectedAlbums: $selectedAlbums, albums: model.smartAlbums, sectionTitle: "_smart_albums_")
+                AlbumView(model: model, selectedAlbums: $selectedAlbums, albums: $model.smartAlbums, sectionTitle: "_smart_albums_")
             }
 
             if !model.userAlbums.isEmpty {
-                AlbumView(model: model, selectedAlbums: $selectedAlbums, albums: model.userAlbums, sectionTitle: "_albums_")
+                AlbumView(model: model, selectedAlbums: $selectedAlbums, albums: $model.userAlbums, sectionTitle: "_albums_")
             }
         }
         .onChange(of: selectedAlbums) { newValue in
@@ -53,13 +53,13 @@ struct SelectAlbumView: View {
 struct AlbumView: View {
     @ObservedObject var model: AlbumModel
     @Binding var selectedAlbums: Set<String>
-    let albums: [PHAssetCollection]
+    @Binding var albums: [PHAssetCollection]
     let sectionTitle: String
 
     var body: some View {
         Section(NSLocalizedString(sectionTitle, comment: "")) {
             ForEach(albums, id: \.localIdentifier) { album in
-                SelectionButton(model: model, album: album, isSmartAlbum: true, selection: $selectedAlbums)
+                SelectionButton(model: model, album: album, isSmartAlbum: true, assetCount: album.assetCount, selection: $selectedAlbums)
             }
         }
     }
@@ -69,7 +69,7 @@ struct SelectionButton: View {
     let model: AlbumModel
     let album: PHAssetCollection?
     let isSmartAlbum: Bool
-    var customAssetCount = 0
+    var assetCount = 0
     @StateObject var loader = PHAssetCollectionThumbnailLoader()
     @Binding var selection: Set<String>
 
@@ -109,7 +109,7 @@ struct SelectionButton: View {
 
                 VStack(alignment: .leading) {
                     Text((album?.assetCollectionSubtype == .smartAlbumUserLibrary) ? NSLocalizedString("_camera_roll_", comment: "") : (album?.localizedTitle ?? ""))
-                    Text(String((isSmartAlbum ? album?.assetCount : album?.estimatedAssetCount) ?? 0)) // Only normal albums have an estimated asset count. Smart albums do not and must be calculated manually via .assetCount
+                    Text(String(assetCount)) // Only normal albums have an estimated asset count. Smart albums do not and must be calculated manually via .assetCount
                         .font(.footnote).foregroundStyle(.secondary)
                 }
             }

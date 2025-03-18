@@ -53,12 +53,12 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     @Published var autoUploadSubfolderGranularity: Granularity = .monthly
     /// A state variable that indicates the date from when new photos/videos will be uploaded.
     @Published var autoUploadDate: Date?
-    /// A state variable that indicates from when new photos/videos will be uploaded, either new photos only or all photos.
-    @Published var autoUploadTimespan: AutoUploadTimespan = .allPhotos
+    /// A state variable that indicates from whether new photos only or all photos will be uploaded.
+    @Published var autoUploadNewPhotosOnly: Bool = false
     /// A state variable that indicates whether a warning should be shown if all photos must be uploaded.
     @Published var showUploadAllPhotosWarning = false
     /// A state variable that indicates whether Photos permissions have been granted or not.
-    @Published var photosPermissionsGranted = false
+    @Published var photosPermissionsGranted = true
 
     /// A state variable that shows error in view in case of an error
     @Published var showErrorAlert: Bool = false
@@ -81,7 +81,6 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// Initialization code to set up the ViewModel with the active account
     init(controller: NCMainTabBarController?) {
         self.controller = controller
-        onViewAppear()
     }
 
     /// Triggered when the view appears.
@@ -95,7 +94,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             autoUploadCreateSubfolder = tableAccount.autoUploadCreateSubfolder
             autoUploadSubfolderGranularity = Granularity(rawValue: tableAccount.autoUploadSubfolderGranularity) ?? .monthly
             autoUploadDate = tableAccount.autoUploadDate
-            autoUploadTimespan = tableAccount.autoUploadDate != nil ? .newPhotosOnly : .allPhotos
+            autoUploadNewPhotosOnly = tableAccount.autoUploadDate != nil ? true : false
         }
 
         serverUrl = NCUtilityFileSystem().getHomeServer(session: session)
@@ -141,8 +140,8 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         updateAccountProperty(\.autoUploadWWAnVideo, value: newValue)
     }
 
-    func handleAutoUploadTimespanChange(newValue: AutoUploadTimespan) {
-        let date = newValue == .newPhotosOnly ? Date.now : nil
+    func handleAutoUploadNewPhotosOnly(newValue: Bool) {
+        let date = newValue ? Date.now : nil
         autoUploadDate = date
         updateAccountProperty(\.autoUploadDate, value: date)
     }

@@ -69,12 +69,6 @@ struct NCAutoUploadView: View {
         }, message: {
             Text("_auto_upload_all_photos_warning_message_")
         })
-        .onChange(of: model.autoUploadTimespan) { newValue in
-            model.handleAutoUploadTimespanChange(newValue: newValue)
-        }
-        .onChange(of: model.photosPermissionsGranted) { newValue in
-            if newValue { albumModel.initAlbums() }
-        }
         .tint(.primary)
     }
 
@@ -110,22 +104,20 @@ struct NCAutoUploadView: View {
                                     .scaledToFit()
                                     .frame(width: 25, height: 25)
                                     .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-                                Text("\(NSLocalizedString("_upload_from_", comment: "")):")
+                                Text(NSLocalizedString("_upload_from_", comment: ""))
                                 Text(NSLocalizedString(model.createAlbumTitle(autoUploadAlbumIds: albumModel.autoUploadAlbumIds), comment: ""))
                                     .frame(maxWidth: .infinity, alignment: .trailing)
                             }
                         })
                     }
 
-                    Picker("_back_up_", selection: $model.autoUploadTimespan) {
-                        ForEach(AutoUploadTimespan.allCases) { when in
-                            Text(NSLocalizedString(when.rawValue, comment: ""))
-                                .tag(when)
+                    Toggle(NSLocalizedString("_back_up_new_photos_only_", comment: ""), isOn: $model.autoUploadNewPhotosOnly)
+                        .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+                        .onChange(of: model.autoUploadNewPhotosOnly) { newValue in
+                            model.handleAutoUploadNewPhotosOnly(newValue: newValue)
                         }
-                    }
-                    .pickerStyle(.menu)
                 }, footer: {
-                    if model.autoUploadTimespan == .newPhotosOnly, let date = model.autoUploadDate {
+                    if model.autoUploadNewPhotosOnly == true, let date = model.autoUploadDate {
                         Text(String(format: NSLocalizedString("_new_photos_starting_", comment: ""), NCUtility().longDate(date)))
                     }
                 })
@@ -189,7 +181,7 @@ struct NCAutoUploadView: View {
                 }
                 .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                 .onChange(of: model.autoUploadStart) { newValue in
-                    if newValue && model.autoUploadTimespan == .allPhotos {
+                    if newValue && model.autoUploadNewPhotosOnly == false {
                         showUploadAllPhotosWarning = true
                     } else {
                         albumModel.populateSelectedAlbums()
@@ -209,19 +201,20 @@ struct NCAutoUploadView: View {
             .background(Color(UIColor.systemGroupedBackground))
         }
     }
-
-    @ViewBuilder
-    var noPermissionsView: some View {
-        VStack {
-            Text("_access_photo_not_enabled_").font(.title3)
-                .padding()
-            Text("_access_photo_not_enabled_msg_")
-        }
-        .padding(16)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(UIColor.systemGroupedBackground))
-    }
 }
+
+@ViewBuilder
+var noPermissionsView: some View {
+    VStack {
+        Text("_access_photo_not_enabled_").font(.title3)
+            .padding()
+        Text("_access_photo_not_enabled_msg_")
+    }
+    .padding(16)
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .background(Color(UIColor.systemGroupedBackground))
+}
+
 
 #Preview {
     NCAutoUploadView(model: NCAutoUploadModel(controller: nil), albumModel: AlbumModel(controller: nil))
