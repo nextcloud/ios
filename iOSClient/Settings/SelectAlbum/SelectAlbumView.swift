@@ -110,7 +110,7 @@ struct SelectionButton: View {
 
                 VStack(alignment: .leading) {
                     Text((album?.assetCollectionSubtype == .smartAlbumUserLibrary) ? NSLocalizedString("_camera_roll_", comment: "") : (album?.localizedTitle ?? ""))
-                    Text(String(album?.assetCount ?? 0)) // Only normal albums have an estimated asset count. Smart albums do not and must be calculated manually via .assetCount
+                    Text(String(assetCount))
                         .font(.footnote).foregroundStyle(.secondary)
                 }
             }
