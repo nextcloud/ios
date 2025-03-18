@@ -35,8 +35,6 @@ enum AutoUploadTimespan: String, CaseIterable, Identifiable {
 
 /// A model that allows the user to configure the `auto upload settings for Nextcloud`
 class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
-//    / A state variable that indicates whether auto upload is enabled or not
-//    @Published var autoUpload: Bool = false
     /// A state variable that indicates whether auto upload for photos is enabled or not
     @Published var autoUploadImage: Bool = false
     /// A state variable that indicates whether auto upload for photos is restricted to Wi-Fi only or not
@@ -148,6 +146,8 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     /// Updates the auto-upload full content setting.
     func handleAutoUploadChange(newValue: Bool, assetCollections: [PHAssetCollection]) {
+        if let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)), tableAccount.autoUploadStart == newValue { return }
+
         updateAccountProperty(\.autoUploadStart, value: newValue)
 
         if newValue {
@@ -172,7 +172,6 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         guard let activeAccount = self.database.getActiveTableAccount() else { return }
         activeAccount[keyPath: keyPath] = value
         self.database.updateAccount(activeAccount)
-        //        initAutoUpload()
     }
 
     /// Returns the path for auto-upload based on the active account's settings.

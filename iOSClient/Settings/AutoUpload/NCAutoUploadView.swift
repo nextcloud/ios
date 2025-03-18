@@ -29,10 +29,10 @@ import UIKit
 struct NCAutoUploadView: View {
     @StateObject var model: NCAutoUploadModel
     @StateObject var albumModel: AlbumModel
-    @State private var showUploadFolder: Bool = false
-    @State private var showSelectAlbums: Bool = false
-    @State private var showUploadAllPhotosWarning: Bool = false
-
+    @State private var showUploadFolder = false
+    @State private var showSelectAlbums = false
+    @State private var showUploadAllPhotosWarning = false
+    @State private var startAutoUpload = false
     var body: some View {
         ZStack {
             if model.photosPermissionsGranted {
@@ -60,8 +60,7 @@ struct NCAutoUploadView: View {
         }
         .alert(NSLocalizedString("_auto_upload_all_photos_warning_title_", comment: ""), isPresented: $showUploadAllPhotosWarning, actions: {
             Button("_confirm_") {
-                albumModel.populateSelectedAlbums()
-                model.handleAutoUploadChange(newValue: true, assetCollections: albumModel.selectedAlbums)
+                model.autoUploadStart = true
             }
             Button("_cancel_", role: .cancel) {
                 model.autoUploadStart = false
@@ -174,19 +173,15 @@ struct NCAutoUploadView: View {
 
             /// Auto Upload Full
             Section(content: {
-                Toggle(isOn: $model.autoUploadStart) {
+                Toggle(isOn: model.autoUploadNewPhotosOnly || model.autoUploadStart ? $model.autoUploadStart : $showUploadAllPhotosWarning) {
                     Text(model.autoUploadStart ? "_stop_autoupload_" : "_start_autoupload_")
                         .padding(.horizontal, 20)
                         .padding(.vertical, 10)
                 }
                 .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                 .onChange(of: model.autoUploadStart) { newValue in
-                    if newValue && model.autoUploadNewPhotosOnly == false {
-                        showUploadAllPhotosWarning = true
-                    } else {
-                        albumModel.populateSelectedAlbums()
-                        model.handleAutoUploadChange(newValue: newValue, assetCollections: albumModel.selectedAlbums)
-                    }
+                    albumModel.populateSelectedAlbums()
+                    model.handleAutoUploadChange(newValue: newValue, assetCollections: albumModel.selectedAlbums)
                 }
                 .font(.headline)
                 .toggleStyle(.button)
@@ -214,7 +209,6 @@ var noPermissionsView: some View {
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color(UIColor.systemGroupedBackground))
 }
-
 
 #Preview {
     NCAutoUploadView(model: NCAutoUploadModel(controller: nil), albumModel: AlbumModel(controller: nil))
