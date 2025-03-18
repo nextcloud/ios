@@ -85,12 +85,6 @@ struct NCAutoUploadView: View {
         }, footer: {
             Text("\(NSLocalizedString("_autoupload_current_folder_", comment: "")): \(model.returnPath())").listRowBackground(Color.clear)
         }).applyGlobalFormSectionStyle()
-        .sheet(isPresented: $model.autoUploadFolder) {
-			SelectView(serverUrl: $model.serverUrl, session: model.session)
-                .onDisappear {
-                    model.setAutoUploadDirectory(serverUrl: model.serverUrl)
-                }
-        }
         /// Auto Upload Photo
         Section(content: {
             Toggle(NSLocalizedString("_autoupload_photos_", comment: ""), isOn: $model.autoUploadImage)
