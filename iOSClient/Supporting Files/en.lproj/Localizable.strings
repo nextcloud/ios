@@ -270,7 +270,6 @@
 "_connection_error_"            = "Connection error";
 "_login_url_"                   = "Server address https:// …";
 "_login_url_error_"             = "URL error, please verify your server URL";
-"_webflow_not_available_"       = "Web login not available, use the old login method";
 "_favorites_"                   = "Favorites";
 "_favorite_short_"              = "Favorite";
 "_tutorial_favorite_view_"      = "Files and folders you mark as favorites will show up here";
@@ -324,7 +323,6 @@
 "_directory_on_top_no_"         = "Folders on top";
 "_show_description_"            = "Show description";
 "_show_recommended_files_"      = "Show recommended files";
-"_no_description_available_"    = "No description available for this folder";
 "_search_no_record_found_"      = "No result";
 "_search_in_progress_"          = "Search in progress …";
 "_search_instruction_"          = "Search for file (minimum 2 characters)";

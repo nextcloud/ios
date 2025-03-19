@@ -78,7 +78,7 @@ struct NCAssistant: View {
 #Preview {
     let model = NCAssistantModel(controller: nil)
 
-    return NCAssistant()
+    NCAssistant()
         .environmentObject(model)
         .onAppear {
             model.loadDummyData()

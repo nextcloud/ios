@@ -39,7 +39,6 @@ extension NCManageDatabase {
     func getChunkFolder(account: String, ocId: String) -> String {
         do {
             let realm = try Realm()
-            realm.refresh()
             guard let result = realm.objects(tableChunk.self).filter("account == %@ AND ocId == %@", account, ocId).first else { return NSUUID().uuidString }
             return result.chunkFolder
         } catch let error as NSError {
@@ -53,7 +52,6 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
-            realm.refresh()
             let results = realm.objects(tableChunk.self).filter("account == %@ AND ocId == %@", account, ocId).sorted(byKeyPath: "fileName", ascending: true)
             for result in results {
                 filesChunk.append((fileName: "\(result.fileName)", size: result.size))

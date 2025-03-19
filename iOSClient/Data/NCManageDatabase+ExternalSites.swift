@@ -73,7 +73,6 @@ extension NCManageDatabase {
     func getAllExternalSites(account: String) -> [tableExternalSites]? {
         do {
             let realm = try Realm()
-            realm.refresh()
             let results = realm.objects(tableExternalSites.self).filter("account == %@", account).sorted(byKeyPath: "idExternalSite", ascending: true)
             if results.isEmpty {
                 return nil
