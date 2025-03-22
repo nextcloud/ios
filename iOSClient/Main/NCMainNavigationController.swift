@@ -109,9 +109,13 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { _ in
-            self.timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
-                self.updateRightBarButtonItems()
-            })
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                if UIApplication.shared.applicationState == .active {
+                    self.timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
+                        self.updateRightBarButtonItems()
+                    })
+                }
+            }
         }
     }
 

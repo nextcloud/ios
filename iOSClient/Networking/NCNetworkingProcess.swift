@@ -53,7 +53,11 @@ class NCNetworkingProcess {
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { _ in
-            self.startTimer()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                if UIApplication.shared.applicationState == .active {
+                    self.startTimer()
+                }
+            }
         }
     }
 

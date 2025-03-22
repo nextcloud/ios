@@ -197,8 +197,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         var downloadRequest: DownloadRequest?
         let hud = NCHud(viewController.tabBarController?.view)
 
-        if let metadata = database.getResultMetadataFromFileId(fileId) {
-            let metadata = tableMetadata(value: metadata)
+        if let metadata = database.getMetadataFromFileId(fileId) {
             do {
                 let attr = try FileManager.default.attributesOfItem(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
                 let fileSize = attr[FileAttributeKey.size] as? UInt64 ?? 0

@@ -598,7 +598,6 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
     }
 
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
-
         currentViewController.didPanWith(gestureRecognizer: gestureRecognizer)
     }
 
@@ -614,7 +613,6 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
 
     // MARK: - Live Photo
     @objc func didLongpressGestureEvent(gestureRecognizer: UITapGestureRecognizer) {
-
         if !currentViewController.metadata.isLivePhoto || currentViewController.detailView.isShown { return }
 
         if gestureRecognizer.state == .began {
