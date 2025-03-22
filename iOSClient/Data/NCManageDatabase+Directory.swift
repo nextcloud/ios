@@ -172,7 +172,10 @@ extension NCManageDatabase {
     func getTableDirectory(predicate: NSPredicate) -> tableDirectory? {
         do {
             let realm = try Realm()
-            guard let result = realm.objects(tableDirectory.self).filter(predicate).first else { return nil }
+            guard let result = realm.objects(tableDirectory.self).filter(predicate).first
+            else {
+                return nil
+            }
             return tableDirectory.init(value: result)
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
