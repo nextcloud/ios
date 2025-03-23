@@ -132,7 +132,10 @@ extension NCNetworking {
         })
     }
 
-    func setFavorite(fileName: String, favorite: Bool, account: String) async -> NKError {
+    func setFavorite(fileName: String,
+                     favorite: Bool,
+                     account: String,
+                     options: NKRequestOptions = NKRequestOptions()) async -> NKError {
         await withUnsafeContinuation({ continuation in
             NextcloudKit.shared.setFavorite(fileName: fileName, favorite: favorite, account: account) { _, _, error in
                 continuation.resume(returning: error)

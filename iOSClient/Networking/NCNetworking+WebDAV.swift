@@ -213,7 +213,8 @@ extension NCNetworking {
                       withPush: Bool,
                       metadata: tableMetadata? = nil,
                       sceneIdentifier: String?,
-                      session: NCSession.Session) async -> NKError {
+                      session: NCSession.Session,
+                      options: NKRequestOptions = NKRequestOptions()) async -> NKError {
         let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
         var fileNameFolder = utility.removeForbiddenCharacters(fileName)
 
@@ -233,7 +234,7 @@ extension NCNetworking {
 
         let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
 
-        await createFolder(serverUrlFileName: fileNameFolderUrl, account: session.account)
+        await createFolder(serverUrlFileName: fileNameFolderUrl, account: session.account, options: options)
         let results = await readFile(serverUrlFileName: fileNameFolderUrl, account: session.account)
 
         if let metadata, metadata.status == self.global.metadataStatusWaitCreateFolder {
