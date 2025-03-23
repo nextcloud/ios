@@ -472,9 +472,28 @@ class NCNetworkingProcess {
                     continue
                 }
 
-                if networking.deleteFileOrFolderQueue.operations.filter({ ($0 as? NCOperationDeleteFileOrFolder)?.ocId == metadata.ocId }).isEmpty {
-                    networking.deleteFileOrFolderQueue.addOperation(NCOperationDeleteFileOrFolder(metadata: metadata))
+                let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+                let result = await networking.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: metadata.account)
+
+                if result.error == .success || result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
+                    do {
+                        try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                    } catch { }
+
+                    NCImageCache.shared.removeImageCache(ocIdPlusEtag: metadata.ocId + metadata.etag)
+
+                    self.database.deleteVideo(metadata: metadata)
+                    self.database.deleteMetadataOcId(metadata.ocId)
+                    self.database.deleteLocalFileOcId(metadata.ocId)
+
+                    if metadata.directory {
+                        self.database.deleteDirectoryAndSubDirectory(serverUrl: NCUtilityFileSystem().stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: metadata.account)
+                    }
+                } else {
+                    self.database.setMetadataStatus(ocId: metadata.ocId, status: self.global.metadataStatusNormal)
                 }
+
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": [metadata.ocId], "error": result.error])
             }
         }
 
