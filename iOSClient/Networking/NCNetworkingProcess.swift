@@ -472,8 +472,9 @@ class NCNetworkingProcess {
                     continue
                 }
 
+                let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
                 let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                let result = await networking.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: metadata.account)
+                let result = await networking.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: metadata.account, options: options)
 
                 if result.error == .success || result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
                     do {
