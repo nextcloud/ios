@@ -213,7 +213,8 @@ extension NCNetworking {
                       withPush: Bool,
                       metadata: tableMetadata? = nil,
                       sceneIdentifier: String?,
-                      session: NCSession.Session) async -> NKError {
+                      session: NCSession.Session,
+                      options: NKRequestOptions = NKRequestOptions()) async -> NKError {
         let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
         var fileNameFolder = utility.removeForbiddenCharacters(fileName)
 
@@ -233,7 +234,7 @@ extension NCNetworking {
 
         let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
 
-        await createFolder(serverUrlFileName: fileNameFolderUrl, account: session.account)
+        await createFolder(serverUrlFileName: fileNameFolderUrl, account: session.account, options: options)
         let results = await readFile(serverUrlFileName: fileNameFolderUrl, account: session.account)
 
         if let metadata, metadata.status == self.global.metadataStatusWaitCreateFolder {
@@ -885,57 +886,6 @@ class NCOperationFileExists: ConcurrentOperation, @unchecked Sendable {
             } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterFileExists, userInfo: ["ocId": self.ocId, "fileExists": false])
             }
-
-            self.finish()
-        }
-    }
-}
-
-class NCOperationDeleteFileOrFolder: ConcurrentOperation, @unchecked Sendable {
-    let database = NCManageDatabase.shared
-    let global = NCGlobal.shared
-    let utility = NCUtility()
-    let utilityFileSystem = NCUtilityFileSystem()
-
-    var metadata: tableMetadata
-    var ocId: String
-
-    init(metadata: tableMetadata) {
-        self.metadata = metadata
-        self.ocId = metadata.ocId
-    }
-
-    override func start() {
-        guard !isCancelled else { return self.finish() }
-
-        let options = NKRequestOptions(taskDescription: global.taskDescriptionDeleteFileOrFolder,
-                                       queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-
-        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: self.metadata.serverUrl + "/" + self.metadata.fileName,
-                                               account: self.metadata.account,
-                                               options: options) { _, _, error in
-
-            if error == .success || error.errorCode == NCGlobal.shared.errorResourceNotFound {
-                do {
-                    try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(self.metadata.ocId))
-                } catch { }
-
-#if !EXTENSION
-                NCImageCache.shared.removeImageCache(ocIdPlusEtag: self.metadata.ocId + self.metadata.etag)
-#endif
-
-                self.database.deleteVideo(metadata: self.metadata)
-                self.database.deleteMetadataOcId(self.metadata.ocId)
-                self.database.deleteLocalFileOcId(self.metadata.ocId)
-
-                if self.metadata.directory {
-                    self.database.deleteDirectoryAndSubDirectory(serverUrl: NCUtilityFileSystem().stringAppendServerUrl(self.metadata.serverUrl, addFileName: self.metadata.fileName), account: self.metadata.account)
-                }
-            } else {
-                self.database.setMetadataStatus(ocId: self.ocId, status: self.global.metadataStatusNormal)
-            }
-
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": [self.ocId], "error": error])
 
             self.finish()
         }

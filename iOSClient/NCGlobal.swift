@@ -418,5 +418,4 @@ final class NCGlobal: Sendable {
     //
     let taskDescriptionRetrievesProperties  = "retrievesProperties"
     let taskDescriptionSynchronization      = "synchronization"
-    let taskDescriptionDeleteFileOrFolder   = "deleteFileOrFolder"
 }
