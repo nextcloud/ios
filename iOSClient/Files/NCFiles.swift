@@ -195,9 +195,11 @@ class NCFiles: NCCollectionViewCommon {
                 if error == .success {
                     let metadatas: [tableMetadata] = metadatas ?? self.dataSource.getMetadatas()
                     for metadata in metadatas where !metadata.directory && downloadMetadata(metadata) {
-                        if NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
-                            NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile))
-                        }
+                        self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
+                                                                        session: NCNetworking.shared.sessionDownload,
+                                                                        selector: NCGlobal.shared.selectorDownloadFile,
+                                                                        sceneIdentifier: self.controller?.sceneIdentifier)
+                        NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                     }
                     /// Recommendation
                     if self.isRecommendationActived {
