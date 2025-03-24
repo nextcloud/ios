@@ -51,9 +51,7 @@ class NCAutoUpload: NSObject {
                     self.database.setAccountAutoUploadProperty("autoUpload", state: false)
                     return completion(0)
                 }
-
                 let albumIds = NCKeychain().getAutoUploadAlbumIds(account: account)
-
                 let selectedAlbums = PHAssetCollection.allAlbums.filter({albumIds.contains($0.localIdentifier)})
 
                 self.uploadAssets(controller: controller, assetCollections: selectedAlbums, log: "Init Auto Upload", account: account) { num in
@@ -211,11 +209,8 @@ class NCAutoUpload: NSObject {
                   let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
                 return completion(nil)
             }
-
             var newAssets: OrderedSet<PHAsset> = []
-
             let fetchOptions = PHFetchOptions()
-
             var predicates: [NSPredicate] = []
 
             if tableAccount.autoUploadImage {
