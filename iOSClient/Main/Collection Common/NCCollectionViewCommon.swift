@@ -660,19 +660,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func updateShare(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let account = userInfo["account"] as? String,
-              account == session.account,
-              let serverUrl = userInfo["serverUrl"] as? String,
-              serverUrl == self.serverUrl
-        else {
-            return
-        }
-
         if isSearchingMode {
-            return networkSearch()
+            networkSearch()
         } else {
-            reloadDataSource()
+            self.dataSource.removeAll()
+            getServerData()
         }
     }
 
