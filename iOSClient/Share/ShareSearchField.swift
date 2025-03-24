@@ -23,8 +23,9 @@ struct ShareSearchField: View {
             Image(.Share.magnifyingGlass)
                 .padding(.leading, 16)
                 .padding(.trailing, 11)
-            TextField(model.placeholder,
-                      text: $model.text)
+            TextField("",
+                      text: $model.text,
+                      prompt: Text(model.placeholder).foregroundColor(Color(.Share.Advanced.SearchField.placeholder)))
             .font(.system(size: 16))
             .autocorrectionDisabled()
             Button {
