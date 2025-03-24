@@ -120,35 +120,35 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     /// Updates the auto-upload image setting.
     func handleAutoUploadImageChange(newValue: Bool) {
-        updateAccountProperty(\.autoUploadImage, value: newValue)
+        database.updateAccountProperty(\.autoUploadImage, value: newValue)
     }
 
     /// Updates the auto-upload image over WWAN setting.
     func handleAutoUploadWWAnPhotoChange(newValue: Bool) {
-        updateAccountProperty(\.autoUploadWWAnPhoto, value: newValue)
+        database.updateAccountProperty(\.autoUploadWWAnPhoto, value: newValue)
     }
 
     /// Updates the auto-upload video setting.
     func handleAutoUploadVideoChange(newValue: Bool) {
-        updateAccountProperty(\.autoUploadVideo, value: newValue)
+        database.updateAccountProperty(\.autoUploadVideo, value: newValue)
     }
 
     /// Updates the auto-upload video over WWAN setting.
     func handleAutoUploadWWAnVideoChange(newValue: Bool) {
-        updateAccountProperty(\.autoUploadWWAnVideo, value: newValue)
+        database.updateAccountProperty(\.autoUploadWWAnVideo, value: newValue)
     }
 
     func handleAutoUploadNewPhotosOnly(newValue: Bool) {
         let date = newValue ? Date.now : nil
         autoUploadDate = date
-        updateAccountProperty(\.autoUploadDate, value: date)
+        database.updateAccountProperty(\.autoUploadDate, value: date)
     }
 
     /// Updates the auto-upload full content setting.
     func handleAutoUploadChange(newValue: Bool, assetCollections: [PHAssetCollection]) {
         if let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)), tableAccount.autoUploadStart == newValue { return }
 
-        updateAccountProperty(\.autoUploadStart, value: newValue)
+        database.updateAccountProperty(\.autoUploadStart, value: newValue)
 
         if newValue {
             NCAutoUpload.shared.autoUploadSelectedAlbums(controller: self.controller, assetCollections: assetCollections, log: "Auto upload selected albums", account: session.account)
@@ -159,20 +159,20 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     /// Updates the auto-upload create subfolder setting.
     func handleAutoUploadCreateSubfolderChange(newValue: Bool) {
-        updateAccountProperty(\.autoUploadCreateSubfolder, value: newValue)
+        database.updateAccountProperty(\.autoUploadCreateSubfolder, value: newValue)
     }
 
     /// Updates the auto-upload subfolder granularity setting.
     func handleAutoUploadSubfolderGranularityChange(newValue: Granularity) {
-        updateAccountProperty(\.autoUploadSubfolderGranularity, value: newValue.rawValue)
+        database.updateAccountProperty(\.autoUploadSubfolderGranularity, value: newValue.rawValue)
     }
 
-    /// Updates a property of the active account in the database.
-    private func updateAccountProperty<T>(_ keyPath: ReferenceWritableKeyPath<tableAccount, T>, value: T) {
-        guard let activeAccount = self.database.getActiveTableAccount() else { return }
-        activeAccount[keyPath: keyPath] = value
-        self.database.updateAccount(activeAccount)
-    }
+//    /// Updates a property of the active account in the database.
+//    private func updateAccountProperty<T>(_ keyPath: ReferenceWritableKeyPath<tableAccount, T>, value: T) {
+//        guard let activeAccount = self.database.getActiveTableAccount() else { return }
+//        activeAccount[keyPath: keyPath] = value
+//        self.database.updateAccount(activeAccount)
+//    }
 
     /// Returns the path for auto-upload based on the active account's settings.
     ///

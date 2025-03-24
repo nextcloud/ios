@@ -106,6 +106,8 @@ class NCAutoUpload: NSObject {
             self.hud.progress(0.0)
             self.endForAssetToUpload = false
 
+            var lastUploadDate = Date()
+
             for asset in assets {
                 var isLivePhoto = false
                 var uploadSession: String = ""
@@ -168,8 +170,16 @@ class NCAutoUpload: NSObject {
                         metadata.classFile = NKCommon.TypeClassFile.image.rawValue
                     }
 
+                    let metadataCreationDate = metadata.creationDate as Date
+
+                    if lastUploadDate < metadataCreationDate {
+                        lastUploadDate = metadataCreationDate
+                    }
+
                     metadatas.append(metadata)
                 }
+
+                self.database.updateAccountProperty(\.autoUploadLastUploadedDate, value: lastUploadDate)
 
                 num += 1
                 self.hud.progress(num: num, total: Float(assets.count))
@@ -183,14 +193,6 @@ class NCAutoUpload: NSObject {
     }
 
     // MARK: -
-
-    @objc func alignPhotoLibrary(controller: NCMainTabBarController?, account: String) {
-        getCameraRollAssets(controller: controller, account: account) { assets in
-            guard let assets = assets else { return }
-
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Align Photo Library \(assets.count)")
-        }
-    }
 
     func processAssets(_ assetCollection: PHAssetCollection, _ fetchOptions: PHFetchOptions, _ tableAccount: tableAccount, _ account: String) -> [PHAsset] {
         let assets: PHFetchResult<PHAsset> = PHAsset.fetchAssets(in: assetCollection, options: fetchOptions)
@@ -211,42 +213,51 @@ class NCAutoUpload: NSObject {
             }
             var newAssets: OrderedSet<PHAsset> = []
             let fetchOptions = PHFetchOptions()
-            var predicates: [NSPredicate] = []
+            var mediaPredicates: [NSPredicate] = []
 
             if tableAccount.autoUploadImage {
-                predicates.append(NSPredicate(format: "mediaType == %i", PHAssetMediaType.image.rawValue))
+                mediaPredicates.append(NSPredicate(format: "mediaType == %i", PHAssetMediaType.image.rawValue))
             }
 
             if tableAccount.autoUploadVideo {
-                predicates.append(NSPredicate(format: "mediaType == %i", PHAssetMediaType.video.rawValue))
+                mediaPredicates.append(NSPredicate(format: "mediaType == %i", PHAssetMediaType.video.rawValue))
+            }
+
+            var datePredicates: [NSPredicate] = []
+
+            if let autoUploadLastUploadedDate = tableAccount.autoUploadLastUploadedDate {
+                datePredicates.append(NSPredicate(format: "creationDate > %@", autoUploadLastUploadedDate as NSDate))
+            }
+
+            if let autoUploadDate = tableAccount.autoUploadDate {
+                datePredicates.append(NSPredicate(format: "creationDate > %@", autoUploadDate as NSDate))
             }
 
             // Combine media type predicates with OR (if any exist)
-            let mediaPredicate = predicates.isEmpty ? nil : NSCompoundPredicate(orPredicateWithSubpredicates: predicates)
+            let finalMediaPredicate = mediaPredicates.isEmpty ? nil : NSCompoundPredicate(orPredicateWithSubpredicates: mediaPredicates)
+            let finalDatePredicate = datePredicates.isEmpty ? nil : NSCompoundPredicate(andPredicateWithSubpredicates: datePredicates)
 
-            // Date predicate
             var finalPredicate: NSPredicate?
 
-            if let autoUploadDate = tableAccount.autoUploadDate {
-                let datePredicate = NSPredicate(format: "creationDate >= %@", autoUploadDate as NSDate)
 
-                // If media type predicate exists, combine with AND
-                if let mediaPredicate {
-                    finalPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [mediaPredicate, datePredicate])
-                } else {
-                    finalPredicate = datePredicate
-                }
-            } else {
-                // No date filtering, just use media type predicate if available
-                finalPredicate = mediaPredicate
+            if let finalMediaPredicate, let finalDatePredicate {
+                finalPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [finalMediaPredicate, finalDatePredicate])
+            } else if let finalMediaPredicate {
+                finalPredicate = finalMediaPredicate
+            } else if let finalDatePredicate {
+                finalPredicate = finalDatePredicate
             }
 
             fetchOptions.predicate = finalPredicate
 
+            // Add assets into a set to avoid duplicate photos (same photo in multiple albums)
             if assetCollections.isEmpty {
                 let assetCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: PHAssetCollectionSubtype.smartAlbumUserLibrary, options: nil)
                 guard let assetCollection = assetCollection.firstObject else { return completion(nil) }
-                newAssets = OrderedSet(processAssets(assetCollection, fetchOptions, tableAccount, account))
+                let allAssets = processAssets(assetCollection, fetchOptions, tableAccount, account)
+                print(allAssets)
+                newAssets = OrderedSet(allAssets)
+                print(newAssets)
             } else {
                 var allAssets: [PHAsset] = []
                 for assetCollection in assetCollections {
