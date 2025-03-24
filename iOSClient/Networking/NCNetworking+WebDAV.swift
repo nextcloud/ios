@@ -658,17 +658,16 @@ extension NCNetworking {
             switch provider.id {
             case "files":
                 partialResult.entries.forEach({ entry in
-                    if let fileId = entry.fileId,
-                       let metadata = self.database.getMetadata(predicate: NSPredicate(format: "account == %@ && fileId == %@", session.account, String(fileId))) {
-                        metadatas.append(metadata)
-                    } else if let filePath = entry.filePath {
+                    if let filePath = entry.filePath {
                         let semaphore = DispatchSemaphore(value: 0)
                         self.loadMetadata(session: session, filePath: filePath, dispatchGroup: dispatchGroup) { _, metadata, _ in
                             metadatas.append(metadata)
                             semaphore.signal()
                         }
                         semaphore.wait()
-                    } else { print(#function, "[ERROR]: File search entry has no path: \(entry)") }
+                    } else {
+                        print(#function, "[ERROR]: File search entry has no path: \(entry)")
+                    }
                 })
             case "fulltextsearch":
                 // NOTE: FTS could also return attributes like files
@@ -805,7 +804,7 @@ extension NCNetworking {
         dispatchGroup?.enter()
         self.readFile(serverUrlFileName: urlPath, account: session.account) { account, metadata, error in
             defer { dispatchGroup?.leave() }
-            guard let metadata = metadata else { return }
+            guard let metadata else { return }
             let returnMetadata = tableMetadata.init(value: metadata)
             self.database.addMetadata(metadata)
             completion(account, returnMetadata, error)
