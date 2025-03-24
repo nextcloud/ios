@@ -172,7 +172,7 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
         let recommendedFiles = self.recommendations[indexPath.row]
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? NCRecommendationsCell else { fatalError() }
 
-        if let metadata = NCManageDatabase.shared.getResultMetadataFromFileId(recommendedFiles.id) {
+        if let metadata = NCManageDatabase.shared.getMetadataFromFileId(recommendedFiles.id) {
             let imagePreview = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512)
 
             if metadata.directory {
@@ -229,7 +229,7 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
 extension NCSectionFirstHeader: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let recommendedFiles = self.recommendations[indexPath.row]
-        guard let metadata = NCManageDatabase.shared.getResultMetadataFromFileId(recommendedFiles.id) else {
+        guard let metadata = NCManageDatabase.shared.getMetadataFromFileId(recommendedFiles.id) else {
             return
         }
 
@@ -238,7 +238,7 @@ extension NCSectionFirstHeader: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         let recommendedFiles = self.recommendations[indexPath.row]
-        guard let metadata = NCManageDatabase.shared.getResultMetadataFromFileId(recommendedFiles.id),
+        guard let metadata = NCManageDatabase.shared.getMetadataFromFileId(recommendedFiles.id),
               metadata.classFile != NKCommon.TypeClassFile.url.rawValue,
               let viewController else {
             return nil

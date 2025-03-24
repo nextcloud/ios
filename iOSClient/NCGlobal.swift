@@ -333,6 +333,8 @@ final class NCGlobal: Sendable {
     let notificationCenterPlayerIsPlaying                       = "playerIsPlaying"
     let notificationCenterPlayerStoppedPlaying                  = "playerStoppedPlaying"
 
+    let notificationCenterUpdateShare                           = "updateShare"
+
     // TIP
     //
     let tipNCViewerPDFThumbnail                                 = "tipncviewerpdfthumbnail"
@@ -418,5 +420,4 @@ final class NCGlobal: Sendable {
     //
     let taskDescriptionRetrievesProperties  = "retrievesProperties"
     let taskDescriptionSynchronization      = "synchronization"
-    let taskDescriptionDeleteFileOrFolder   = "deleteFileOrFolder"
 }

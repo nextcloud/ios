@@ -1208,12 +1208,14 @@ extension NCManageDatabase {
         return false
     }
 
-    func getResultMetadataFromFileId(_ fileId: String?) -> tableMetadata? {
+    func getMetadataFromFileId(_ fileId: String?) -> tableMetadata? {
         guard let fileId else { return nil }
 
         do {
             let realm = try Realm()
-            return realm.objects(tableMetadata.self).filter("fileId == %@", fileId).first
+            if let result = realm.objects(tableMetadata.self).filter("fileId == %@", fileId).first {
+                return tableMetadata(value: result)
+            }
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }

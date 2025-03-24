@@ -344,7 +344,13 @@ class NCViewerMediaPage: UIViewController {
 
         self.progressView.progress = 0
         let metadata = self.currentViewController.metadata
-        guard metadata.ocId == ocId, self.utilityFileSystem.fileProviderStorageExists(metadata) else { return }
+
+        guard !metadata.isInvalidated,
+              metadata.ocId == ocId,
+              self.utilityFileSystem.fileProviderStorageExists(metadata)
+        else {
+            return
+        }
 
         if metadata.isAudioOrVideo, let ncplayer = self.currentViewController.ncplayer {
             let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
@@ -598,7 +604,6 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
     }
 
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
-
         currentViewController.didPanWith(gestureRecognizer: gestureRecognizer)
     }
 
@@ -614,7 +619,6 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
 
     // MARK: - Live Photo
     @objc func didLongpressGestureEvent(gestureRecognizer: UITapGestureRecognizer) {
-
         if !currentViewController.metadata.isLivePhoto || currentViewController.detailView.isShown { return }
 
         if gestureRecognizer.state == .began {

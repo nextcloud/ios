@@ -282,30 +282,3 @@ extension NCNetworking {
         }
     }
 }
-
-class NCOperationDownload: ConcurrentOperation, @unchecked Sendable {
-    var metadata: tableMetadata
-    var selector: String
-
-    init(metadata: tableMetadata, selector: String) {
-        self.metadata = tableMetadata.init(value: metadata)
-        self.selector = selector
-    }
-
-    override func start() {
-        guard !isCancelled else { return self.finish() }
-
-        metadata.session = NCNetworking.shared.sessionDownload
-        metadata.sessionError = ""
-        metadata.sessionSelector = selector
-        metadata.sessionTaskIdentifier = 0
-        metadata.status = NCGlobal.shared.metadataStatusWaitDownload
-
-        let metadata = NCManageDatabase.shared.addMetadata(metadata)
-
-        NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true) {
-        } completion: { _, _ in
-            self.finish()
-        }
-    }
-}
