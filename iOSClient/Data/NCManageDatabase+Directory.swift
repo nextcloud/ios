@@ -306,7 +306,7 @@ extension NCManageDatabase {
                     directory.permissions = metadata.permissions
                     directory.richWorkspace = metadata.richWorkspace
 
-                    realm.add(directory)
+                    realm.add(directory, update: .all)
                 }
             }
         } catch let error {
