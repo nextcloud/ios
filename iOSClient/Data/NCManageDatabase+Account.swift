@@ -40,7 +40,9 @@ class tableAccount: Object {
     @objc dynamic var autoUploadVideo: Bool = false
     @objc dynamic var autoUploadWWAnPhoto: Bool = false
     @objc dynamic var autoUploadWWAnVideo: Bool = false
-    @objc dynamic var autoUploadDate: Date?
+    /// The Date from which new photos should be uploaded from
+    @objc dynamic var autoUploadSinceDate: Date?
+    /// The date of the most recently uploaded asset
     @objc dynamic var autoUploadLastUploadedDate: Date?
     @objc dynamic var backend = ""
     @objc dynamic var backendCapabilitiesSetDisplayName: Bool = false
@@ -102,6 +104,12 @@ class tableAccount: Object {
         self.user = codableObject.user
         self.userId = codableObject.userId
         self.urlBase = codableObject.urlBase
+    }
+
+    func updateAccountProperty<T>(_ keyPath: ReferenceWritableKeyPath<tableAccount, T>, value: T, account: String) {
+        guard let activeAccount = getTableAccount(account: account) else { return }
+        activeAccount[keyPath: keyPath] = value
+        updateAccount(activeAccount)
     }
 }
 
@@ -347,7 +355,7 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             guard let result = realm.objects(tableAccount.self).filter("active == true").first else { return .distantPast }
-            return result.autoUploadDate
+            return result.autoUploadSinceDate
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }

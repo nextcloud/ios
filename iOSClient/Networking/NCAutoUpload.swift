@@ -179,7 +179,7 @@ class NCAutoUpload: NSObject {
                     metadatas.append(metadata)
                 }
 
-                self.database.updateAccountProperty(\.autoUploadLastUploadedDate, value: lastUploadDate)
+                self.database.updateAccountProperty(\.autoUploadLastUploadedDate, value: lastUploadDate, account: account)
 
                 num += 1
                 self.hud.progress(num: num, total: Float(assets.count))
@@ -229,16 +229,11 @@ class NCAutoUpload: NSObject {
                 datePredicates.append(NSPredicate(format: "creationDate > %@", autoUploadLastUploadedDate as NSDate))
             }
 
-            if let autoUploadDate = tableAccount.autoUploadDate {
-                datePredicates.append(NSPredicate(format: "creationDate > %@", autoUploadDate as NSDate))
-            }
-
             // Combine media type predicates with OR (if any exist)
             let finalMediaPredicate = mediaPredicates.isEmpty ? nil : NSCompoundPredicate(orPredicateWithSubpredicates: mediaPredicates)
             let finalDatePredicate = datePredicates.isEmpty ? nil : NSCompoundPredicate(andPredicateWithSubpredicates: datePredicates)
 
             var finalPredicate: NSPredicate?
-
 
             if let finalMediaPredicate, let finalDatePredicate {
                 finalPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [finalMediaPredicate, finalDatePredicate])

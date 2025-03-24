@@ -176,12 +176,6 @@ final class NCManageDatabase: Sendable {
     // MARK: -
     // MARK: Utility Database
 
-    func updateAccountProperty<T>(_ keyPath: ReferenceWritableKeyPath<tableAccount, T>, value: T) {
-        guard let activeAccount = getActiveTableAccount() else { return }
-        activeAccount[keyPath: keyPath] = value
-        updateAccount(activeAccount)
-    }
-
     func clearTable(_ table: Object.Type, account: String? = nil) {
         do {
             let realm = try Realm()
