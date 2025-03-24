@@ -16,7 +16,7 @@ class NCBrandOptionsIONOS: NCBrandOptions, @unchecked Sendable {
         
         brand = "IONOS HiDrive Next"
         textCopyrightNextcloudiOS = "HiDrive Next iOS %@ © 2024"
-        loginBaseUrl = "https://prelive.storage.ionos.fr"
+        loginBaseUrl = "https://storage.ionos.fr"
         privacy = "https://wl.hidrive.com/easy/ios/privacy.html"
         sourceCode = "https://wl.hidrive.com/easy/0181"
 
