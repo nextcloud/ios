@@ -344,7 +344,13 @@ class NCViewerMediaPage: UIViewController {
 
         self.progressView.progress = 0
         let metadata = self.currentViewController.metadata
-        guard metadata.ocId == ocId, self.utilityFileSystem.fileProviderStorageExists(metadata) else { return }
+
+        guard !metadata.isInvalidated,
+              metadata.ocId == ocId,
+              self.utilityFileSystem.fileProviderStorageExists(metadata)
+        else {
+            return
+        }
 
         if metadata.isAudioOrVideo, let ncplayer = self.currentViewController.ncplayer {
             let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
