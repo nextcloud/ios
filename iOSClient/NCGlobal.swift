@@ -333,6 +333,8 @@ final class NCGlobal: Sendable {
     let notificationCenterPlayerIsPlaying                       = "playerIsPlaying"
     let notificationCenterPlayerStoppedPlaying                  = "playerStoppedPlaying"
 
+    let notificationCenterUpdateShare                           = "updateShare"                     // userInfo: ocId, serverUrl
+
     // TIP
     //
     let tipNCViewerPDFThumbnail                                 = "tipncviewerpdfthumbnail"
