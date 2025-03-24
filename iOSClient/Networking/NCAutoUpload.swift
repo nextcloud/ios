@@ -56,7 +56,7 @@ class NCAutoUpload: NSObject {
 
                 let selectedAlbums = PHAssetCollection.allAlbums.filter({albumIds.contains($0.localIdentifier)})
 
-                self.uploadAssetsNewAndFull(controller: controller, assetCollections: selectedAlbums, selector: NCGlobal.shared.selectorUploadAutoUpload, log: "Init Auto Upload", account: account) { num in
+                self.uploadAssets(controller: controller, assetCollections: selectedAlbums, log: "Init Auto Upload", account: account) { num in
                     completion(num)
                 }
             }
@@ -78,14 +78,14 @@ class NCAutoUpload: NSObject {
         NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
             guard hasPermission else { return }
             DispatchQueue.global().async {
-                self.uploadAssetsNewAndFull(controller: controller, assetCollections: assetCollections, selector: NCGlobal.shared.selectorUploadAutoUploadAll, log: log, account: account) { _ in
+                self.uploadAssets(controller: controller, assetCollections: assetCollections, log: log, account: account) { _ in
                     self.hud.dismiss()
                 }
             }
         }
     }
 
-    private func uploadAssetsNewAndFull(controller: NCMainTabBarController?, assetCollections: [PHAssetCollection] = [], selector: String, log: String, account: String, completion: @escaping (_ num: Int) -> Void) {
+    private func uploadAssets(controller: NCMainTabBarController?, assetCollections: [PHAssetCollection] = [], log: String, account: String, completion: @escaping (_ num: Int) -> Void) {
         guard let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
             return completion(0)
         }
@@ -93,7 +93,7 @@ class NCAutoUpload: NSObject {
         let autoUploadPath = self.database.getAccountAutoUploadPath(session: session)
         var metadatas: [tableMetadata] = []
 
-        self.getCameraRollAssets(controller: controller, assetCollections: assetCollections, selector: selector, alignPhotoLibrary: false, account: account) { assets in
+        self.getCameraRollAssets(controller: controller, assetCollections: assetCollections, account: account) { assets in
             guard let assets, !assets.isEmpty else {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload, no new assets found [" + log + "]")
                 return completion(0)
@@ -102,7 +102,7 @@ class NCAutoUpload: NSObject {
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload, new \(assets.count) assets found [" + log + "]")
 
-            NCNetworking.shared.createFolder(assets: assets, useSubFolder: tableAccount.autoUploadCreateSubfolder, selector: selector, session: session)
+            NCNetworking.shared.createFolder(assets: assets, useSubFolder: tableAccount.autoUploadCreateSubfolder, selector: NCGlobal.shared.selectorUploadAutoUpload, session: session)
 
             self.hud.setText(text: NSLocalizedString("_creating_db_photo_progress", comment: ""))
             self.hud.progress(0.0)
@@ -126,20 +126,16 @@ class NCAutoUpload: NSObject {
                     isLivePhoto = true
                 }
 
-                if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
-                    uploadSession = NCNetworking.shared.sessionUpload
+                if assetMediaType == PHAssetMediaType.image && tableAccount.autoUploadWWAnPhoto == false {
+                    uploadSession = NCNetworking.shared.sessionUploadBackground
+                } else if assetMediaType == PHAssetMediaType.video && tableAccount.autoUploadWWAnVideo == false {
+                    uploadSession = NCNetworking.shared.sessionUploadBackground
+                } else if assetMediaType == PHAssetMediaType.image && tableAccount.autoUploadWWAnPhoto {
+                    uploadSession = NCNetworking.shared.sessionUploadBackgroundWWan
+                } else if assetMediaType == PHAssetMediaType.video && tableAccount.autoUploadWWAnVideo {
+                    uploadSession = NCNetworking.shared.sessionUploadBackgroundWWan
                 } else {
-                    if assetMediaType == PHAssetMediaType.image && tableAccount.autoUploadWWAnPhoto == false {
-                        uploadSession = NCNetworking.shared.sessionUploadBackground
-                    } else if assetMediaType == PHAssetMediaType.video && tableAccount.autoUploadWWAnVideo == false {
-                        uploadSession = NCNetworking.shared.sessionUploadBackground
-                    } else if assetMediaType == PHAssetMediaType.image && tableAccount.autoUploadWWAnPhoto {
-                        uploadSession = NCNetworking.shared.sessionUploadBackgroundWWan
-                    } else if assetMediaType == PHAssetMediaType.video && tableAccount.autoUploadWWAnVideo {
-                        uploadSession = NCNetworking.shared.sessionUploadBackgroundWWan
-                    } else {
-                        uploadSession = NCNetworking.shared.sessionUploadBackground
-                    }
+                    uploadSession = NCNetworking.shared.sessionUploadBackground
                 }
 
                 // MOST COMPATIBLE SEARCH --> HEIC --> JPG
@@ -165,7 +161,7 @@ class NCAutoUpload: NSObject {
                     }
                     metadata.assetLocalIdentifier = asset.localIdentifier
                     metadata.session = uploadSession
-                    metadata.sessionSelector = selector
+                    metadata.sessionSelector = NCGlobal.shared.selectorUploadAutoUpload
                     metadata.status = NCGlobal.shared.metadataStatusWaitUpload
                     metadata.sessionDate = Date()
                     if assetMediaType == PHAssetMediaType.video {
@@ -191,14 +187,14 @@ class NCAutoUpload: NSObject {
     // MARK: -
 
     @objc func alignPhotoLibrary(controller: NCMainTabBarController?, account: String) {
-        getCameraRollAssets(controller: controller, selector: NCGlobal.shared.selectorUploadAutoUploadAll, alignPhotoLibrary: true, account: account) { assets in
+        getCameraRollAssets(controller: controller, account: account) { assets in
             guard let assets = assets else { return }
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Align Photo Library \(assets.count)")
         }
     }
 
-    func processAssets(_ assetCollection: PHAssetCollection, _ fetchOptions: PHFetchOptions, _ tableAccount: tableAccount, _ selector: String, _ account: String) -> [PHAsset] {
+    func processAssets(_ assetCollection: PHAssetCollection, _ fetchOptions: PHFetchOptions, _ tableAccount: tableAccount, _ account: String) -> [PHAsset] {
         let assets: PHFetchResult<PHAsset> = PHAsset.fetchAssets(in: assetCollection, options: fetchOptions)
         var assetResult: [PHAsset] = []
 
@@ -209,7 +205,7 @@ class NCAutoUpload: NSObject {
         return assetResult
     }
 
-    private func getCameraRollAssets(controller: NCMainTabBarController?, assetCollections: [PHAssetCollection] = [], selector: String, alignPhotoLibrary: Bool, account: String, completion: @escaping (_ assets: [PHAsset]?) -> Void) {
+    private func getCameraRollAssets(controller: NCMainTabBarController?, assetCollections: [PHAssetCollection] = [], account: String, completion: @escaping (_ assets: [PHAsset]?) -> Void) {
         NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { [self] hasPermission in
             guard hasPermission,
                   let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
@@ -221,7 +217,7 @@ class NCAutoUpload: NSObject {
             let fetchOptions = PHFetchOptions()
 
             var predicates: [NSPredicate] = []
-                
+
             if tableAccount.autoUploadImage {
                 predicates.append(NSPredicate(format: "mediaType == %i", PHAssetMediaType.image.rawValue))
             }
@@ -255,11 +251,11 @@ class NCAutoUpload: NSObject {
             if assetCollections.isEmpty {
                 let assetCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: PHAssetCollectionSubtype.smartAlbumUserLibrary, options: nil)
                 guard let assetCollection = assetCollection.firstObject else { return completion(nil) }
-                newAssets = OrderedSet(processAssets(assetCollection, fetchOptions, tableAccount, selector, account))
+                newAssets = OrderedSet(processAssets(assetCollection, fetchOptions, tableAccount, account))
             } else {
                 var allAssets: [PHAsset] = []
                 for assetCollection in assetCollections {
-                    allAssets += processAssets(assetCollection, fetchOptions, tableAccount, selector, account)
+                    allAssets += processAssets(assetCollection, fetchOptions, tableAccount, account)
                 }
 
                 newAssets = OrderedSet(allAssets)
