@@ -72,10 +72,14 @@ class BaseUIXCTestCase: XCTestCase {
         let serverAddressTextField = app.textFields["serverAddress"].firstMatch
         guard serverAddressTextField.await() else { return }
 
+        try await aSmallMoment()
+
         serverAddressTextField.tap()
         serverAddressTextField.typeText(TestConstants.server)
 
         app.buttons["submitServerAddress"].tap()
+
+        try await aSmallMoment()
 
         let webView = app.webViews.firstMatch
 
@@ -83,22 +87,45 @@ class BaseUIXCTestCase: XCTestCase {
             throw UITestError.waitForExistence(webView)
         }
 
+//        try await aSmallMoment()
+
         let loginButton = webView.buttons["Log in"]
+
+//        try await aSmallMoment()
 
         if loginButton.await() {
             loginButton.tap()
         }
 
+//        try await aSmallMoment()
+
         let usernameTextField = webView.textFields.firstMatch
 
         if usernameTextField.await() {
+
+            try await aSmallMoment()
+
             guard usernameTextField.await() else { return }
             usernameTextField.tap()
+
+            try await aSmallMoment()
+
             usernameTextField.typeText(TestConstants.username)
 
+            try await aSmallMoment()
+
             let passwordSecureTextField = webView.secureTextFields.firstMatch
+
+            try await aSmallMoment()
+
             passwordSecureTextField.tap()
+
+
+            try await aSmallMoment()
+
             passwordSecureTextField.typeText(TestConstants.password)
+
+            try await aSmallMoment()
 
             webView.buttons.firstMatch.tap()
         }
