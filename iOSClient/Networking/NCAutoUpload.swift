@@ -179,8 +179,6 @@ class NCAutoUpload: NSObject {
                     metadatas.append(metadata)
                 }
 
-//                self.database.updateAccountProperty(\.autoUploadLastUploadedDate, value: lastUploadDate, account: account)
-
                 num += 1
                 self.hud.progress(num: num, total: Float(assets.count))
             }
@@ -224,6 +222,19 @@ class NCAutoUpload: NSObject {
             }
 
             var datePredicates: [NSPredicate] = []
+
+//            if let autoUploadSinceDate = tableAccount.autoUploadSinceDate, tableAccount.autoUploadLastUploadedDate == nil {
+//                database.updateAccountProperty(\.autoUploadLastUploadedDate, value: autoUploadSinceDate, account: account)
+            //                datePredicates.append(NSPredicate(format: "creationDate > %@", autoUploadSinceDate as NSDate))
+            //            } else if let autoUploadLastUploadedDate = tableAccount.autoUploadLastUploadedDate {
+            //                datePredicates.append(NSPredicate(format: "creationDate > %@", autoUploadLastUploadedDate as NSDate))
+            //            }
+
+            //            var datePredicates: [NSPredicate] = []
+
+            if let autoUploadSinceDate = tableAccount.autoUploadSinceDate {
+                datePredicates.append(NSPredicate(format: "creationDate > %@", autoUploadSinceDate as NSDate))
+            }
 
             if let autoUploadLastUploadedDate = tableAccount.autoUploadLastUploadedDate {
                 datePredicates.append(NSPredicate(format: "creationDate > %@", autoUploadLastUploadedDate as NSDate))

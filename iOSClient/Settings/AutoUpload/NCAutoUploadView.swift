@@ -33,6 +33,7 @@ struct NCAutoUploadView: View {
     @State private var showSelectAlbums = false
     @State private var showUploadAllPhotosWarning = false
     @State private var startAutoUpload = false
+
     var body: some View {
         ZStack {
             if model.photosPermissionsGranted {
@@ -174,6 +175,12 @@ struct NCAutoUploadView: View {
 
             /// Auto Upload Full
             Section(content: {
+#if DEBUG
+                Button("[DEBUG] Reset last uploaded date") {
+                    model.resetAutoUploadLastUploadedDate()
+                }.buttonStyle(.borderedProminent)
+#endif
+
                 Toggle(isOn: model.autoUploadNewPhotosOnly || model.autoUploadStart ? $model.autoUploadStart : $showUploadAllPhotosWarning) {
                     Text(model.autoUploadStart ? "_stop_autoupload_" : "_start_autoupload_")
                         .padding(.horizontal, 20)

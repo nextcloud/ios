@@ -167,6 +167,13 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         database.updateAccountProperty(\.autoUploadSubfolderGranularity, value: newValue.rawValue, account: session.account)
     }
 
+    func resetAutoUploadLastUploadedDate() {
+        guard let activeAccount = database.getTableAccount(account: session.account) else { return }
+//        activeAccount[keyPath: keyPath] = value
+        activeAccount.autoUploadLastUploadedDate = nil
+        database.updateAccount(activeAccount)
+    }
+
     /// Returns the path for auto-upload based on the active account's settings.
     ///
     /// - Returns: The path for auto-upload.
