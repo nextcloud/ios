@@ -264,12 +264,11 @@ extension NCNetworking {
 
     func createFolder(assets: [PHAsset],
                       useSubFolder: Bool,
-                      selector: String,
                       session: NCSession.Session) {
         var foldersCreated: [String] = []
 
         func createMetadata(fileName: String, serverUrl: String) {
-            var metadata: tableMetadata?
+            var metadata = tableMetadata()
             guard !foldersCreated.contains(serverUrl + "/" + fileName) else {
                 return
             }
@@ -288,13 +287,7 @@ extension NCNetworking {
                                                                   sceneIdentifier: nil)
             }
 
-            guard let metadata
-            else {
-                return
-            }
-
             metadata.status = NCGlobal.shared.metadataStatusWaitCreateFolder
-            metadata.sessionSelector = selector
             metadata.sessionDate = Date()
             NCManageDatabase.shared.addMetadata(metadata)
 

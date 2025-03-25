@@ -67,18 +67,27 @@ extension UIAlertController {
                     completion?(error)
                 }
 #else
-                let metadataForCreateFolder = NCManageDatabase.shared.createMetadata(fileName: fileNameFolder,
-                                                                                     fileNameView: fileNameFolder,
-                                                                                     ocId: NSUUID().uuidString,
-                                                                                     serverUrl: serverUrl,
-                                                                                     url: "",
-                                                                                     contentType: "httpd/unix-directory",
-                                                                                     directory: true,
-                                                                                     session: session,
-                                                                                     sceneIdentifier: sceneIdentifier)
+                var metadataForCreateFolder = tableMetadata()
+                if let result = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", session.account, serverUrl, fileNameFolder)) {
+                    metadataForCreateFolder = result
+
+                }
+
+                metadataForCreateFolder = NCManageDatabase.shared.createMetadata(fileName: fileNameFolder,
+                                                                                 fileNameView: fileNameFolder,
+                                                                                 ocId: NSUUID().uuidString,
+                                                                                 serverUrl: serverUrl,
+                                                                                 url: "",
+                                                                                 contentType: "httpd/unix-directory",
+                                                                                 directory: true,
+                                                                                 session: session,
+                                                                                 sceneIdentifier: sceneIdentifier)
+
                 metadataForCreateFolder.status = NCGlobal.shared.metadataStatusWaitCreateFolder
                 metadataForCreateFolder.sessionDate = Date()
+
                 NCManageDatabase.shared.addMetadata(metadataForCreateFolder)
+
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadataForCreateFolder.ocId, "serverUrl": metadataForCreateFolder.serverUrl, "account": metadataForCreateFolder.account, "withPush": true, "sceneIdentifier": sceneIdentifier as Any])
 #endif
             }
