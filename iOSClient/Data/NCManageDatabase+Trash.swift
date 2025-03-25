@@ -117,7 +117,6 @@ extension NCManageDatabase {
     func getResultsTrash(filePath: String, account: String) -> Results<tableTrash>? {
         do {
             let realm = try Realm()
-            realm.refresh()
             return realm.objects(tableTrash.self).filter("account == %@ AND filePath == %@", account, filePath).sorted(byKeyPath: "trashbinDeletionTime", ascending: false)
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access to database: \(error)")
@@ -128,7 +127,6 @@ extension NCManageDatabase {
     func getResultTrashItem(fileId: String, account: String) -> tableTrash? {
         do {
             let realm = try Realm()
-            realm.refresh()
             return realm.objects(tableTrash.self).filter("account == %@ AND fileId == %@", account, fileId).first
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access to database: \(error)")

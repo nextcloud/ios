@@ -11,8 +11,7 @@ import NextcloudKit
 import PopupView
 
 struct NCAssistant: View {
-    @EnvironmentObject var model: NCAssistantTask
-    @State var presentNewTaskDialog = false
+    @EnvironmentObject var model: NCAssistantModel
     @State var input = ""
     @Environment(\.presentationMode) var presentationMode
 
@@ -21,20 +20,24 @@ struct NCAssistant: View {
             ZStack {
                 TaskList()
 
+                if model.isLoading, !model.isRefreshing {
+                    ProgressView()
+                        .controlSize(.regular)
+                }
+
                 if model.types.isEmpty, !model.isLoading {
                     NCAssistantEmptyView(titleKey: "_no_types_", subtitleKey: "_no_types_subtitle_")
                 } else if model.filteredTasks.isEmpty, !model.isLoading {
                     NCAssistantEmptyView(titleKey: "_no_tasks_", subtitleKey: "_create_task_subtitle_")
                 }
+
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button(action: {
                         presentationMode.wrappedValue.dismiss()
                     }) {
-                        Image(systemName: "xmark")
-                            .font(Font.system(.body).weight(.light))
-                            .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+                        Text("_close_")
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
@@ -44,24 +47,16 @@ struct NCAssistant: View {
                             .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
                     }
                     .disabled(model.selectedType == nil)
+                    .accessibilityIdentifier("CreateButton")
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
             .navigationTitle(NSLocalizedString("_assistant_", comment: ""))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .safeAreaInset(edge: .top, spacing: -10) {
-                ScrollViewReader { scrollProxy in
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack {
-                            ForEach(model.types, id: \.id) { type in
-                                TypeButton(taskType: type, scrollProxy: scrollProxy)
-                            }
-                        }
-                        .padding(20)
-                        .frame(height: 50)
-                    }
-                }
+                TypeList()
             }
+
         }
         .navigationViewStyle(.stack)
         .popup(isPresented: $model.hasError) {
@@ -81,9 +76,9 @@ struct NCAssistant: View {
 }
 
 #Preview {
-    let model = NCAssistantTask(controller: nil)
+    let model = NCAssistantModel(controller: nil)
 
-    return NCAssistant()
+    NCAssistant()
         .environmentObject(model)
         .onAppear {
             model.loadDummyData()
@@ -91,24 +86,89 @@ struct NCAssistant: View {
 }
 
 struct TaskList: View {
-    @EnvironmentObject var model: NCAssistantTask
+    @EnvironmentObject var model: NCAssistantModel
+    @State var presentEditTask = false
+    @State var showDeleteConfirmation = false
+
+    @State var taskToEdit: AssistantTask?
+    @State var taskToDelete: AssistantTask?
 
     var body: some View {
         List(model.filteredTasks, id: \.id) { task in
-            TaskItem(task: task)
+            TaskItem(showDeleteConfirmation: $showDeleteConfirmation, taskToDelete: $taskToDelete, task: task)
+                .contextMenu {
+                    Button {
+                        model.shareTask(task)
+                    } label: {
+                        Label {
+                            Text("_share_")
+                        } icon: {
+                            Image(systemName: "square.and.arrow.up")
+                        }
+                    }
+
+                    Button {
+                        model.scheduleTask(input: task.input?.input ?? "")
+                    } label: {
+                        Label {
+                            Text("_retry_")
+                        } icon: {
+                            Image(systemName: "arrow.trianglehead.clockwise")
+                        }
+                    }
+                    .accessibilityIdentifier("TaskRetryContextMenu")
+
+                    Button {
+                        taskToEdit = task
+                        presentEditTask = true
+                    } label: {
+                        Label {
+                            Text("_edit_")
+                        } icon: {
+                            Image(systemName: "pencil")
+                        }
+                    }
+                    .accessibilityIdentifier("TaskEditContextMenu")
+
+                    Button(role: .destructive) {
+                        taskToDelete = task
+                        showDeleteConfirmation = true
+                    } label: {
+                        Label {
+                            Text("_delete_")
+                        } icon: {
+                            Image(systemName: "trash")
+                        }
+                    }
+                    .accessibilityIdentifier("TaskDeleteContextMenu")
+                }
+                .accessibilityIdentifier("TaskContextMenu")
         }
         .if(!model.types.isEmpty) { view in
             view.refreshable {
-                model.load()
+                model.refresh()
+            }
+        }
+        .confirmationDialog("", isPresented: $showDeleteConfirmation) {
+            Button(NSLocalizedString("_delete_", comment: ""), role: .destructive) {
+                withAnimation {
+                    guard let taskToDelete else { return }
+                    model.deleteTask(taskToDelete)
+                }
+            }
+        }
+        .sheet(isPresented: $presentEditTask) { [taskToEdit] in
+            NavigationView {
+                NCAssistantCreateNewTask(text: taskToEdit?.input?.input ?? "", editMode: true)
             }
         }
     }
 }
 
 struct TypeButton: View {
-    @EnvironmentObject var model: NCAssistantTask
+    @EnvironmentObject var model: NCAssistantModel
 
-    let taskType: NKTextProcessingTaskType?
+    let taskType: TaskTypeData?
     var scrollProxy: ScrollViewProxy
 
     var body: some View {
@@ -123,12 +183,13 @@ struct TypeButton: View {
         }
         .padding(.horizontal)
         .padding(.vertical, 7)
-        .foregroundStyle(model.selectedType?.id == taskType?.id ? .white : .primary)
+        .foregroundStyle(.primary)
+        .background(.ultraThinMaterial)
         .if(model.selectedType?.id == taskType?.id) { view in
-            view.background(Color(NCBrandColor.shared.getElement(account: model.controller?.account)))
-        }
-        .if(model.selectedType?.id != taskType?.id) { view in
-            view.background(.ultraThinMaterial)
+            view
+                .foregroundStyle(.white)
+                .background(Color(NCBrandColor.shared.getElement(account: model.controller?.account)))
+
         }
         .clipShape(.capsule)
         .overlay(
@@ -140,20 +201,29 @@ struct TypeButton: View {
 }
 
 struct TaskItem: View {
-    @EnvironmentObject var model: NCAssistantTask
-    @State var showDeleteConfirmation = false
-    let task: NKTextProcessingTask
+    @EnvironmentObject var model: NCAssistantModel
+    @Binding var showDeleteConfirmation: Bool
+    @Binding var taskToDelete: AssistantTask?
+    var task: AssistantTask
 
     var body: some View {
         NavigationLink(destination: NCAssistantTaskDetail(task: task)) {
-            VStack(alignment: .leading) {
-                Text(task.input ?? "")
-                    .lineLimit(4)
+            VStack(alignment: .leading, spacing: 8) {
+                Text(task.input?.input ?? "")
+                    .lineLimit(1)
+
+                if let output = task.output?.output, !output.isEmpty {
+                    Text(output)
+                        .lineLimit(1)
+                        .foregroundStyle(.secondary)
+                }
 
                 HStack {
                     Label(
                         title: {
-                            Text(NSLocalizedString(task.statusInfo.stringKey, comment: ""))
+                            Text(task.statusDate)
+                                .font(.callout)
+                                .foregroundStyle(.secondary)
                         },
                         icon: {
                             Image(systemName: task.statusInfo.imageSystemName)
@@ -161,40 +231,35 @@ struct TaskItem: View {
                                 .font(Font.system(.body).weight(.light))
                         }
                     )
-                    .padding(.top, 1)
                     .labelStyle(CustomLabelStyle())
-
-                    if let completionExpectedAt = task.completionExpectedAt {
-                        Text(NCUtility().dateDiff(.init(timeIntervalSince1970: TimeInterval(completionExpectedAt))))
-                            .frame(maxWidth: .infinity, alignment: .trailing)
-                            .foregroundStyle(.tertiary)
-                    }
                 }
             }
             .swipeActions {
                 Button(NSLocalizedString("_delete_", comment: "")) {
+                    taskToDelete = task
                     showDeleteConfirmation = true
                 }
                 .tint(.red)
-            }
-            .confirmationDialog("", isPresented: $showDeleteConfirmation) {
-                Button(NSLocalizedString("_delete_", comment: ""), role: .destructive) {
-                    withAnimation {
-                        model.deleteTask(task)
-                    }
-                }
             }
         }
     }
 }
 
-private struct CustomLabelStyle: LabelStyle {
-    var spacing: Double = 5
+struct TypeList: View {
+    @EnvironmentObject var model: NCAssistantModel
 
-    func makeBody(configuration: Configuration) -> some View {
-        HStack(spacing: spacing) {
-            configuration.icon
-            configuration.title
+    var body: some View {
+        ScrollViewReader { scrollProxy in
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack {
+                    ForEach(model.types, id: \.id) { type in
+                        TypeButton(taskType: type, scrollProxy: scrollProxy)
+                    }
+                }
+                .padding(20)
+                .frame(height: 50)
+            }
+            .background(.ultraThinMaterial)
         }
     }
 }

@@ -89,32 +89,31 @@ class NCViewerProviderContextMenu: UIViewController {
                     } else {
                         maxDownload = NCGlobal.shared.maxAutoDownload
                     }
-                    if metadata.size <= maxDownload,
-                       NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
-                        NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: ""))
+                    if metadata.size <= maxDownload {
+                        NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
+                                                                                  session: NCNetworking.shared.sessionDownload,
+                                                                                  selector: "")
+                        NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                     }
                 }
             }
-            // AUTO DOWNLOAD IMAGE GIF
+            // DOWNLOAD IMAGE GIF SVG
             if !utilityFileSystem.fileProviderStorageExists(metadata),
                NCNetworking.shared.isOnline,
-               metadata.contentType == "image/gif",
-               NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
-                NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: ""))
+               (metadata.contentType == "image/gif" || metadata.contentType == "image/svg+xml") {
+                NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
+                                                                          session: NCNetworking.shared.sessionDownload,
+                                                                          selector: "")
+                NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
             }
-            // AUTO DOWNLOAD IMAGE SVG
-            if !utilityFileSystem.fileProviderStorageExists(metadata),
-               NCNetworking.shared.isOnline,
-               metadata.contentType == "image/svg+xml",
-               NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
-                NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: ""))
-            }
-            // AUTO DOWNLOAD LIVE PHOTO
+            // DOWNLOAD LIVE PHOTO
             if let metadataLivePhoto = self.metadataLivePhoto,
                NCNetworking.shared.isOnline,
-               !utilityFileSystem.fileProviderStorageExists(metadataLivePhoto),
-               NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
-                NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadataLivePhoto, selector: ""))
+               !utilityFileSystem.fileProviderStorageExists(metadataLivePhoto) {
+                NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadataLivePhoto],
+                                                                          session: NCNetworking.shared.sessionDownload,
+                                                                          selector: "")
+                NCNetworking.shared.download(metadata: metadataLivePhoto, withNotificationProgressTask: true)
             }
         }
     }

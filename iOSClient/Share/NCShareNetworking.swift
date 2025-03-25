@@ -121,6 +121,8 @@ class NCShareNetworking: NSObject {
                         self.setShareDownloadLimit(limit, token: share.token)
                     }
                 }
+
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateShare, userInfo: ["account": self.metadata.account, "serverUrl": self.metadata.serverUrl])
             } else {
                 NCContentPresenter().showError(error: error)
             }
@@ -137,6 +139,8 @@ class NCShareNetworking: NSObject {
             if error == .success {
                 self.database.deleteTableShare(account: account, idShare: idShare)
                 self.delegate?.unShareCompleted()
+
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateShare, userInfo: ["account": self.metadata.account, "serverUrl": self.metadata.serverUrl])
             } else {
                 NCContentPresenter().showError(error: error)
             }
@@ -158,6 +162,8 @@ class NCShareNetworking: NSObject {
                 } else {
                     self.removeShareDownloadLimit(token: share.token)
                 }
+
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateShare, userInfo: ["account": self.metadata.account, "serverUrl": self.metadata.serverUrl])
             } else {
                 NCContentPresenter().showError(error: error)
                 self.delegate?.updateShareWithError(idShare: option.idShare)

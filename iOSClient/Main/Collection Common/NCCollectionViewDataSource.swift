@@ -44,7 +44,7 @@ class NCCollectionViewDataSource: NSObject {
          layoutForView: NCDBLayoutForView? = nil,
          providers: [NKSearchProvider]? = nil,
          searchResults: [NKSearchResult]? = nil,
-         directoryOnTop: Bool) {
+         directoryOnTop: Bool = true) {
         super.init()
         removeAll()
 

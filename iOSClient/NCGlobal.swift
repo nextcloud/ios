@@ -59,9 +59,6 @@ final class NCGlobal: Sendable {
 
     // Nextcloud version
     //
-    let nextcloudVersion12: Int                     = 12
-    let nextcloudVersion15: Int                     = 15
-    let nextcloudVersion17: Int                     = 17
     let nextcloudVersion18: Int                     = 18
     let nextcloudVersion20: Int                     = 20
     let nextcloudVersion23: Int                     = 23
@@ -70,13 +67,12 @@ final class NCGlobal: Sendable {
     let nextcloudVersion26: Int                     = 26
     let nextcloudVersion27: Int                     = 27
     let nextcloudVersion28: Int                     = 28
+    let nextcloudVersion30: Int                     = 30
     let nextcloudVersion31: Int                     = 31
-    let nextcloudVersion99: Int                     = 99
-
 
     // Nextcloud unsupported
     //
-    let nextcloud_unsupported_version: Int = 16
+    let nextcloud_unsupported_version: Int = 17
 
     // Intro selector
     //
@@ -337,6 +333,8 @@ final class NCGlobal: Sendable {
     let notificationCenterPlayerIsPlaying                       = "playerIsPlaying"
     let notificationCenterPlayerStoppedPlaying                  = "playerStoppedPlaying"
 
+    let notificationCenterUpdateShare                           = "updateShare"
+
     // TIP
     //
     let tipNCViewerPDFThumbnail                                 = "tipncviewerpdfthumbnail"
@@ -422,5 +420,4 @@ final class NCGlobal: Sendable {
     //
     let taskDescriptionRetrievesProperties  = "retrievesProperties"
     let taskDescriptionSynchronization      = "synchronization"
-    let taskDescriptionDeleteFileOrFolder   = "deleteFileOrFolder"
 }

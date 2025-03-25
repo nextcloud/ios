@@ -58,17 +58,49 @@ extension NCManageDatabase {
                     if let permissions { result.permissions = permissions }
                     if let richWorkspace { result.richWorkspace = richWorkspace }
                 } else {
-                    let result = tableDirectory()
-                    result.e2eEncrypted = e2eEncrypted
-                    result.favorite = favorite
-                    result.ocId = ocId
-                    result.fileId = fileId
-                    if let etag { result.etag = etag }
-                    if let permissions { result.permissions = permissions }
-                    if let richWorkspace { result.richWorkspace = richWorkspace }
-                    result.serverUrl = serverUrl
-                    result.account = account
-                    realm.add(result, update: .modified)
+                    let directory = tableDirectory()
+                    directory.e2eEncrypted = e2eEncrypted
+                    directory.favorite = favorite
+                    directory.ocId = ocId
+                    directory.fileId = fileId
+                    if let etag { directory.etag = etag }
+                    if let permissions { directory.permissions = permissions }
+                    if let richWorkspace { directory.richWorkspace = richWorkspace }
+                    directory.serverUrl = serverUrl
+                    directory.account = account
+                    realm.add(directory, update: .modified)
+                }
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+        }
+    }
+
+    func addDirectories(metadatas: [tableMetadata]) {
+        do {
+            let realm = try Realm()
+            for metadata in metadatas {
+                let result = realm.objects(tableDirectory.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first
+                try realm.write {
+                    if let result {
+                        result.e2eEncrypted = metadata.e2eEncrypted
+                        result.favorite = metadata.favorite
+                        result.etag = metadata.etag
+                        result.permissions = metadata.permissions
+                        result.richWorkspace = metadata.richWorkspace
+                    } else {
+                        let directory = tableDirectory()
+                        directory.account = metadata.account
+                        directory.e2eEncrypted = metadata.e2eEncrypted
+                        directory.etag = metadata.etag
+                        directory.favorite = metadata.favorite
+                        directory.fileId = metadata.fileId
+                        directory.ocId = metadata.ocId
+                        directory.permissions = metadata.permissions
+                        directory.richWorkspace = metadata.richWorkspace
+                        directory.serverUrl = metadata.serveUrlFileName
+                        realm.add(directory, update: .modified)
+                    }
                 }
             }
         } catch let error {
@@ -140,8 +172,10 @@ extension NCManageDatabase {
     func getTableDirectory(predicate: NSPredicate) -> tableDirectory? {
         do {
             let realm = try Realm()
-            realm.refresh()
-            guard let result = realm.objects(tableDirectory.self).filter(predicate).first else { return nil }
+            guard let result = realm.objects(tableDirectory.self).filter(predicate).first
+            else {
+                return nil
+            }
             return tableDirectory.init(value: result)
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
@@ -162,7 +196,6 @@ extension NCManageDatabase {
     func getTableDirectory(ocId: String) -> tableDirectory? {
         do {
             let realm = try Realm()
-            realm.refresh()
             if let result = realm.objects(tableDirectory.self).filter("ocId == %@", ocId).first {
                 return tableDirectory(value: result)
             } else {
@@ -177,7 +210,6 @@ extension NCManageDatabase {
     func getTablesDirectory(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableDirectory]? {
         do {
             let realm = try Realm()
-            realm.refresh()
             let results = realm.objects(tableDirectory.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
             if results.isEmpty {
                 return nil
@@ -274,7 +306,7 @@ extension NCManageDatabase {
                     directory.permissions = metadata.permissions
                     directory.richWorkspace = metadata.richWorkspace
 
-                    realm.add(directory)
+                    realm.add(directory, update: .all)
                 }
             }
         } catch let error {

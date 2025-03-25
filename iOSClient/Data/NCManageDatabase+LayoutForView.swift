@@ -121,7 +121,6 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
-            realm.refresh()
             if let result = realm.objects(NCDBLayoutForView.self).filter("index == %@", index).first {
                 return NCDBLayoutForView(value: result)
             } else {

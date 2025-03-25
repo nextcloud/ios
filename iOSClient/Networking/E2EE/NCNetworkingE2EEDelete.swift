@@ -47,7 +47,7 @@ class NCNetworkingE2EEDelete: NSObject {
         // DELETE FILE
         //
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-        let options = NKRequestOptions(customHeader: ["e2e-token": e2eToken], taskDescription: NCGlobal.shared.taskDescriptionDeleteFileOrFolder)
+        let options = NKRequestOptions(customHeader: ["e2e-token": e2eToken])
         let result = await NCNetworking.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: metadata.account, options: options)
         if result.error == .success || result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
             do {

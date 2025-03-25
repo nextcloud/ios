@@ -30,11 +30,11 @@ class NCMedia: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var titleDate: UILabel!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    @IBOutlet weak var activityIndicatorTrailing: NSLayoutConstraint!
     @IBOutlet weak var selectOrCancelButton: UIButton!
-    @IBOutlet weak var selectOrCancelButtonTrailing: NSLayoutConstraint!
     @IBOutlet weak var menuButton: UIButton!
+    @IBOutlet weak var assistantButton: UIButton!
     @IBOutlet weak var gradientView: UIView!
+    @IBOutlet weak var stackView: UIStackView!
 
     let semaphoreSearchMedia = DispatchSemaphore(value: 1)
     let semaphoreNotificationCenter = DispatchSemaphore(value: 1)
@@ -63,7 +63,7 @@ class NCMedia: UIViewController {
     var showOnlyVideos = false
     var timeIntervalSearchNewMedia: TimeInterval = 2.0
     var timerSearchNewMedia: Timer?
-    let insetsTop: CGFloat = 75
+    let insetsTop: CGFloat = 65
     let livePhotoImage = NCUtility().loadImage(named: "livephoto", colors: [.white])
     let playImage = NCUtility().loadImage(named: "play.fill", colors: [.white])
     var photoImage = UIImage()
@@ -125,20 +125,26 @@ class NCMedia: UIViewController {
 
         titleDate.text = ""
 
-        selectOrCancelButton.backgroundColor = .clear
-        selectOrCancelButton.layer.cornerRadius = 15
-        selectOrCancelButton.layer.masksToBounds = true
-        selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
-        selectOrCancelButton.addBlur(style: .systemUltraThinMaterial)
-
         menuButton.backgroundColor = .clear
         menuButton.layer.cornerRadius = 15
         menuButton.layer.masksToBounds = true
         menuButton.showsMenuAsPrimaryAction = true
         menuButton.configuration = UIButton.Configuration.plain()
-        menuButton.setImage(NCUtility().loadImage(named: "ellipsis"), for: .normal)
-        menuButton.changesSelectionAsPrimaryAction = false
+        menuButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
         menuButton.addBlur(style: .systemUltraThinMaterial)
+
+        assistantButton.backgroundColor = .clear
+        assistantButton.layer.cornerRadius = 15
+        assistantButton.layer.masksToBounds = true
+        assistantButton.configuration = UIButton.Configuration.plain()
+        assistantButton.setImage(UIImage(systemName: "sparkles"), for: .normal)
+        assistantButton.addBlur(style: .systemUltraThinMaterial)
+
+        selectOrCancelButton.backgroundColor = .clear
+        selectOrCancelButton.layer.cornerRadius = 15
+        selectOrCancelButton.layer.masksToBounds = true
+        selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
+        selectOrCancelButton.addBlur(style: .systemUltraThinMaterial)
 
         gradient.startPoint = CGPoint(x: 0, y: 0.1)
         gradient.endPoint = CGPoint(x: 0, y: 1)

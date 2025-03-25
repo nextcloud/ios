@@ -172,7 +172,7 @@ class FileProviderExtension: NSFileProviderExtension {
         guard let metadata else {
             return completionHandler(NSFileProviderError(.noSuchItem))
         }
-        if metadata.session == NCNetworking.shared.sessionUploadBackgroundExt {
+        if metadata.directory || metadata.session == NCNetworking.shared.sessionUploadBackgroundExt {
             return completionHandler(nil)
         }
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
