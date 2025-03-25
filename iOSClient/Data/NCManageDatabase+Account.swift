@@ -40,7 +40,7 @@ class tableAccount: Object {
     @objc dynamic var autoUploadVideo: Bool = false
     @objc dynamic var autoUploadWWAnPhoto: Bool = false
     @objc dynamic var autoUploadWWAnVideo: Bool = false
-    /// The Date from which new photos should be uploaded from
+    /// The Date from which new photos should be uploaded
     @objc dynamic var autoUploadSinceDate: Date?
     /// The date of the most recently uploaded asset
     @objc dynamic var autoUploadLastUploadedDate: Date?
@@ -104,12 +104,6 @@ class tableAccount: Object {
         self.user = codableObject.user
         self.userId = codableObject.userId
         self.urlBase = codableObject.urlBase
-    }
-
-    func updateAccountProperty<T>(_ keyPath: ReferenceWritableKeyPath<tableAccount, T>, value: T, account: String) {
-        guard let activeAccount = getTableAccount(account: account) else { return }
-        activeAccount[keyPath: keyPath] = value
-        updateAccount(activeAccount)
     }
 }
 
@@ -215,6 +209,12 @@ extension NCManageDatabase {
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
+    }
+
+    func updateAccountProperty<T>(_ keyPath: ReferenceWritableKeyPath<tableAccount, T>, value: T, account: String) {
+        guard let activeAccount = getTableAccount(account: account) else { return }
+        activeAccount[keyPath: keyPath] = value
+        updateAccount(activeAccount)
     }
 
     func updateAccount(_ account: tableAccount) {

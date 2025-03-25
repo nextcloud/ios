@@ -50,7 +50,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// A state variable that indicates the granularity of the subfolders, either daily, monthly, or yearly
     @Published var autoUploadSubfolderGranularity: Granularity = .monthly
     /// A state variable that indicates the date from when new photos/videos will be uploaded.
-    @Published var autoUploadDate: Date?
+    @Published var autoUploadSinceDate: Date?
     /// A state variable that indicates from whether new photos only or all photos will be uploaded.
     @Published var autoUploadNewPhotosOnly: Bool = false
     /// A state variable that indicates whether a warning should be shown if all photos must be uploaded.
@@ -91,8 +91,8 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             autoUploadStart = tableAccount.autoUploadStart
             autoUploadCreateSubfolder = tableAccount.autoUploadCreateSubfolder
             autoUploadSubfolderGranularity = Granularity(rawValue: tableAccount.autoUploadSubfolderGranularity) ?? .monthly
-            autoUploadDate = tableAccount.autoUploadDate
-            autoUploadNewPhotosOnly = tableAccount.autoUploadDate != nil ? true : false
+            autoUploadSinceDate = tableAccount.autoUploadSinceDate
+            autoUploadNewPhotosOnly = tableAccount.autoUploadSinceDate != nil ? true : false
         }
 
         serverUrl = NCUtilityFileSystem().getHomeServer(session: session)
@@ -140,8 +140,8 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     func handleAutoUploadNewPhotosOnly(newValue: Bool) {
         let date = newValue ? Date.now : nil
-        autoUploadDate = date
-        database.updateAccountProperty(\.autoUploadDate, value: date, account: session.account)
+        autoUploadSinceDate = date
+        database.updateAccountProperty(\.autoUploadSinceDate, value: date, account: session.account)
     }
 
     /// Updates the auto-upload full content setting.
