@@ -289,6 +289,7 @@ extension NCNetworking {
 
             metadata.status = NCGlobal.shared.metadataStatusWaitCreateFolder
             metadata.sessionDate = Date()
+
             NCManageDatabase.shared.addMetadata(metadata)
 
             foldersCreated.append(serverUrl + "/" + fileName)
