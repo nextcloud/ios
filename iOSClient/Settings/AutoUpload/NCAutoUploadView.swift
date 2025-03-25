@@ -117,7 +117,7 @@ struct NCAutoUploadView: View {
                         }
                         .accessibilityIdentifier("NewPhotosToggle")
                 }, footer: {
-                    if model.autoUploadNewPhotosOnly == true, let date = model.autoUploadDate {
+                    if model.autoUploadNewPhotosOnly == true, let date = model.autoUploadSinceDate {
                         Text(String(format: NSLocalizedString("_new_photos_starting_", comment: ""), NCUtility().longDate(date)))
                     }
                 })
