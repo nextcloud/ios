@@ -308,17 +308,7 @@ class NCNetworkingProcess {
                     continue
                 }
 
-                /// For Auto Upload check if the folder exists
-                if metadata.sessionSelector == global.selectorUploadAutoUpload {
-                    let results = await networking.fileExists(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, account: metadata.account)
-                    if let exists = results.exists, exists {
-                        self.database.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", metadata.account, metadata.fileName, metadata.serverUrl))
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl])
-                        continue
-                    }
-                }
-
-                let error = await networking.createFolder(fileName: metadata.fileName, serverUrl: metadata.serverUrl, overwrite: true, withPush: false, metadata: metadata, sceneIdentifier: nil, session: NCSession.shared.getSession(account: metadata.account), options: options)
+                let error = await networking.createFolder(fileName: metadata.fileName, serverUrl: metadata.serverUrl, overwrite: true, withPush: false, sceneIdentifier: nil, session: NCSession.shared.getSession(account: metadata.account), options: options)
                 if error != .success {
                     if metadata.sessionError.isEmpty {
                         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
