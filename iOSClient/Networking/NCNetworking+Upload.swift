@@ -246,6 +246,16 @@ extension NCNetworking {
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
+        // Update last uploaded date for auto uploaded photos
+        if metadata.sessionSelector == NCGlobal.shared.selectorUploadAutoUpload,
+           let autoUploadLastUploadedDate = database.getTableAccount(account: metadata.account)?.autoUploadLastUploadedDate {
+            let metadataCreationDate = metadata.creationDate as Date
+
+            if autoUploadLastUploadedDate < metadataCreationDate {
+                self.database.updateAccountProperty(\.autoUploadLastUploadedDate, value: metadataCreationDate, account: metadata.account)
+            }
+        }
+
         start()
 
         // Check file dim > 0

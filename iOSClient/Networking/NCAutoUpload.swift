@@ -179,7 +179,7 @@ class NCAutoUpload: NSObject {
                     metadatas.append(metadata)
                 }
 
-                self.database.updateAccountProperty(\.autoUploadLastUploadedDate, value: lastUploadDate, account: account)
+//                self.database.updateAccountProperty(\.autoUploadLastUploadedDate, value: lastUploadDate, account: account)
 
                 num += 1
                 self.hud.progress(num: num, total: Float(assets.count))
