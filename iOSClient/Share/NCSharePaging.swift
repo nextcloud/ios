@@ -156,7 +156,9 @@ class NCSharePaging: UIViewController {
     }
 
     @objc func exitTapped() {
-        self.dismiss(animated: true, completion: nil)
+		self.dismiss(animated: true) {
+			NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterForceReloadHeader, userInfo: nil)
+		}
     }
 
     @objc func applicationDidEnterBackground(notification: Notification) {

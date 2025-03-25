@@ -326,12 +326,16 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             a11yValues.append(NSLocalizedString("_favorite_short_", comment: ""))
         }
 
+		func sharedByLinkImage(for metadata: tableMetadata) -> UIImage {
+			metadata.isDirectory ? imageCache.getImageFolderSharedByLink() : imageCache.getImageFileSharedByLink()
+		}
+		
         // Share image
         if isShare {
             cell.fileSharedImage?.image = imageCache.getImageShared()
         } else if !metadata.shareType.isEmpty {
             metadata.shareType.contains(3) ?
-            (cell.fileSharedImage?.image = imageCache.getImageShareByLink()) :
+			(cell.fileSharedImage?.image = sharedByLinkImage(for: metadata)) :
             (cell.fileSharedImage?.image = imageCache.getImageShared())
         } else {
             cell.fileSharedImage?.image = imageCache.getImageCanShare()
