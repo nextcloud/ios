@@ -132,12 +132,16 @@ struct NCAutoUploadView: View {
                             if !newValue { model.autoUploadVideo = true }
                             model.handleAutoUploadImageChange(newValue: newValue)
                         }
-                    Toggle(NSLocalizedString("_wifi_only_", comment: ""), isOn: $model.autoUploadWWAnPhoto)
-                        .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                        .onChange(of: model.autoUploadWWAnPhoto) { newValue in
-                            model.handleAutoUploadWWAnPhotoChange(newValue: newValue)
-                        }
+
+                    if model.autoUploadImage {
+                        Toggle(NSLocalizedString("_wifi_only_", comment: ""), isOn: $model.autoUploadWWAnPhoto)
+                            .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+                            .onChange(of: model.autoUploadWWAnPhoto) { newValue in
+                                model.handleAutoUploadWWAnPhotoChange(newValue: newValue)
+                            }
+                    }
                 })
+
                 /// Auto Upload Video
                 Section(content: {
                     Toggle(NSLocalizedString("_autoupload_videos_", comment: ""), isOn: $model.autoUploadVideo)
@@ -146,11 +150,14 @@ struct NCAutoUploadView: View {
                             if !newValue { model.autoUploadImage = true }
                             model.handleAutoUploadVideoChange(newValue: newValue)
                         }
-                    Toggle(NSLocalizedString("_wifi_only_", comment: ""), isOn: $model.autoUploadWWAnVideo)
-                        .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                        .onChange(of: model.autoUploadWWAnVideo) { newValue in
-                            model.handleAutoUploadWWAnVideoChange(newValue: newValue)
-                        }
+
+                    if model.autoUploadVideo {
+                        Toggle(NSLocalizedString("_wifi_only_", comment: ""), isOn: $model.autoUploadWWAnVideo)
+                            .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+                            .onChange(of: model.autoUploadWWAnVideo) { newValue in
+                                model.handleAutoUploadWWAnVideoChange(newValue: newValue)
+                            }
+                    }
                 })
 
                 /// Auto Upload create subfolder
@@ -160,13 +167,16 @@ struct NCAutoUploadView: View {
                         .onChange(of: model.autoUploadCreateSubfolder) { newValue in
                             model.handleAutoUploadCreateSubfolderChange(newValue: newValue)
                         }
-                    Picker(NSLocalizedString("_autoupload_subfolder_granularity_", comment: ""), selection: $model.autoUploadSubfolderGranularity) {
-                        Text(NSLocalizedString("_daily_", comment: "")).tag(Granularity.daily)
-                        Text(NSLocalizedString("_monthly_", comment: "")).tag(Granularity.monthly)
-                        Text(NSLocalizedString("_yearly_", comment: "")).tag(Granularity.yearly)
-                    }
-                    .onChange(of: model.autoUploadSubfolderGranularity) { newValue in
-                        model.handleAutoUploadSubfolderGranularityChange(newValue: newValue)
+
+                    if model.autoUploadCreateSubfolder {
+                        Picker(NSLocalizedString("_autoupload_subfolder_granularity_", comment: ""), selection: $model.autoUploadSubfolderGranularity) {
+                            Text(NSLocalizedString("_daily_", comment: "")).tag(Granularity.daily)
+                            Text(NSLocalizedString("_monthly_", comment: "")).tag(Granularity.monthly)
+                            Text(NSLocalizedString("_yearly_", comment: "")).tag(Granularity.yearly)
+                        }
+                        .onChange(of: model.autoUploadSubfolderGranularity) { newValue in
+                            model.handleAutoUploadSubfolderGranularityChange(newValue: newValue)
+                        }
                     }
                 }, footer: {
                     Text(NSLocalizedString("_autoupload_create_subfolder_footer_", comment: ""))
