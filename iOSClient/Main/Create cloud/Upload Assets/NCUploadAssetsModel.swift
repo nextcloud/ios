@@ -80,7 +80,7 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
                 continue
             }
 
-            self.previewStore.append(PreviewStore(id: localIdentifier, asset: asset, assetType: asset.type, uti: uti, nativeFormat: !NCKeychain().formatCompatibility, fileName: "", image: nil))
+            self.previewStore.append(PreviewStore(id: localIdentifier, asset: asset, assetType: asset.type, uti: uti, nativeFormat: !NCKeychain().formatCompatibility, fileName: ""))
 
         }
 
@@ -101,6 +101,23 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
         } else {
             return ""
         }
+    }
+
+    func lowResolutionImage(asset: PHAsset) -> UIImage? {
+        let imageManager = PHImageManager.default()
+        let options = PHImageRequestOptions()
+        options.isSynchronous = true
+        options.resizeMode = .fast
+        options.isNetworkAccessAllowed = true
+
+        let targetSize = CGSize(width: 80, height: 80)
+        var thumbnail: UIImage?
+
+        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFill, options: options) { result, _ in
+            thumbnail = result
+        }
+
+        return thumbnail
     }
 
     func deleteAsset(index: Int) {

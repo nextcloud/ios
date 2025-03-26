@@ -58,7 +58,7 @@ struct NCUploadAssetsView: View {
                                         }
                                         if item.data != nil {
                                             Button(action: {
-                                                if let image = model.previewStore[index].asset.fullResolutionImage?.resizeImage(size: CGSize(width: 300, height: 300), isAspectRation: true) {
+                                                if let image = model.previewStore[index].asset.fullResolutionImage?.resizeImage(size: CGSize(width: 240, height: 240), isAspectRation: true) {
                                                     model.previewStore[index].image = image
                                                     model.previewStore[index].data = nil
                                                     model.previewStore[index].assetType = model.previewStore[index].asset.type
@@ -259,8 +259,10 @@ struct NCUploadAssetsView: View {
                             .cornerRadius(10)
                             .onAppear {
                                 DispatchQueue.main.async {
-                                    let image = item.asset.fullResolutionImage?.resizeImage(size: CGSize(width: 300, height: 300), isAspectRation: true)
-                                    model.previewStore[index].image = image
+                                    if let asset = item.asset.phAsset,
+                                       let image = model.lowResolutionImage(asset: asset) {
+                                        model.previewStore[index].image = image
+                                    }
                                 }
                             }
                     }
