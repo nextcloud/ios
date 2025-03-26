@@ -54,6 +54,7 @@ struct NCAutoUploadView: View {
             SelectView(serverUrl: $model.serverUrl, session: model.session)
                 .onDisappear {
                     model.setAutoUploadDirectory(serverUrl: model.serverUrl)
+                    model.resetAutoUploadLastUploadedDate()
                 }
         }
         .sheet(isPresented: $showSelectAlbums) {
