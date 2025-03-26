@@ -236,7 +236,6 @@ final class NCGlobal: Sendable {
     let selectorLoadFileQuickLook               = "loadFileQuickLook"
     let selectorOpenIn                          = "openIn"
     let selectorUploadAutoUpload                = "uploadAutoUpload"
-    let selectorUploadAutoUploadAll             = "uploadAutoUploadAll"
     let selectorUploadFile                      = "uploadFile"
     let selectorUploadFileNODelete              = "UploadFileNODelete"
     let selectorUploadFileShareExtension        = "uploadFileShareExtension"

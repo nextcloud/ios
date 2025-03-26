@@ -180,7 +180,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
 
-        if tableAccount.autoUpload {
+        if tableAccount.autoUploadStart {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload: true")
             if UIApplication.shared.backgroundRefreshStatus == .available {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload in background: true")
