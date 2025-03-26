@@ -247,11 +247,24 @@ struct NCUploadAssetsView: View {
             ZStack(alignment: .bottomTrailing) {
                 if index < model.previewStore.count {
                     let item = model.previewStore[index]
-                    Image(uiImage: item.image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 80, height: 80, alignment: .center)
-                        .cornerRadius(10)
+                    if let image = item.image {
+                        Image(uiImage: image)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 80, height: 80, alignment: .center)
+                            .cornerRadius(10)
+                    } else {
+                        Color(.lightGray) // Placeholder
+                            .frame(width: 80, height: 80)
+                            .cornerRadius(10)
+                            .onAppear {
+                                DispatchQueue.main.async {
+                                    let image = item.asset.fullResolutionImage?.resizeImage(size: CGSize(width: 300, height: 300), isAspectRation: true)
+                                    model.previewStore[index].image = image
+                                }
+                            }
+                    }
+
                     if item.assetType == .livePhoto && item.data == nil {
                         Image(systemName: "livephoto")
                             .resizable()

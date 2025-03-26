@@ -38,7 +38,7 @@ struct PreviewStore {
     var nativeFormat: Bool
     var data: Data?
     var fileName: String
-    var image: UIImage
+    var image: UIImage?
 }
 
 class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate {
@@ -66,29 +66,25 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
         self.assets = assets
         self.serverUrl = serverUrl
         self.controller = controller
-        self.showHUD = true
 
-        DispatchQueue.global(qos: .userInteractive).async {
-            for asset in self.assets {
-                var uti: String?
+        for asset in self.assets {
+            var uti: String?
 
-                if let phAsset = asset.phAsset,
-                   let resource = PHAssetResource.assetResources(for: phAsset).first(where: { $0.type == .photo }) {
-                    uti = resource.uniformTypeIdentifier
-                }
-
-                guard let image = asset.fullResolutionImage?.resizeImage(size: CGSize(width: 300, height: 300), isAspectRation: true),
-                      let localIdentifier = asset.phAsset?.localIdentifier else { continue }
-
-                DispatchQueue.main.async {
-                    self.previewStore.append(PreviewStore(id: localIdentifier, asset: asset, assetType: asset.type, uti: uti, nativeFormat: !NCKeychain().formatCompatibility, fileName: "", image: image))
-                }
+            if let phAsset = asset.phAsset,
+               let resource = PHAssetResource.assetResources(for: phAsset).first(where: { $0.type == .photo }) {
+                uti = resource.uniformTypeIdentifier
             }
-            DispatchQueue.main.async {
-                self.showHUD = false
-                self.hiddenSave = false
+
+            guard let localIdentifier = asset.phAsset?.localIdentifier
+            else {
+                continue
             }
+
+            self.previewStore.append(PreviewStore(id: localIdentifier, asset: asset, assetType: asset.type, uti: uti, nativeFormat: !NCKeychain().formatCompatibility, fileName: "", image: nil))
+
         }
+
+        self.hiddenSave = false
     }
 
     func getTextServerUrl() -> String {
