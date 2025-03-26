@@ -99,54 +99,69 @@ class NCLoginProvider: UIViewController {
         }
     }
 
-    func poll(loginFlowV2Token: String, loginFlowV2Endpoint: String, loginFlowV2Login: String) {
-        let queue = DispatchQueue.global(qos: .background)
-        pollTimer = DispatchSource.makeTimerSource(queue: queue)
+    func getPollResponse(loginFlowV2Token: String, loginFlowV2Endpoint: String, loginOptions: NKRequestOptions) async -> (urlBase: String, loginName: String, appPassword: String)? {
+        await withCheckedContinuation { continuation in
+            NextcloudKit.shared.getLoginFlowV2Poll(token: loginFlowV2Token, endpoint: loginFlowV2Endpoint, options: loginOptions) { server, loginName, appPassword, _, error in
+                if error == .success, let urlBase = server, let user = loginName, let appPassword {
+                    continuation.resume(returning: (urlBase, user, appPassword))
+                } else {
+                    continuation.resume(returning: nil)
+                }
+            }
+        }
+    }
 
-        guard let timer = pollTimer else { return }
+    func handleGrant(urlBase: String, loginName: String, appPassword: String, controller: NCMainTabBarController?) async {
+        await withCheckedContinuation { continuation in
+            NCAccount().createAccount(urlBase: urlBase, user: loginName, password: appPassword, controller: controller) { account, error in
+                if error == .success {
+                    let window = UIApplication.shared.firstWindow
 
-        timer.schedule(deadline: .now(), repeating: .seconds(1), leeway: .seconds(1))
-        timer.setEventHandler(handler: {
-            DispatchQueue.main.async {
-                let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
-                let loginOptions = NKRequestOptions(customUserAgent: userAgent)
-                NextcloudKit.shared.getLoginFlowV2Poll(token: loginFlowV2Token, endpoint: loginFlowV2Endpoint, options: loginOptions) { server, loginName, appPassword, _, error in
-                    if error == .success, let urlBase = server, let user = loginName, let appPassword {
-                        NCAccount().createAccount(urlBase: urlBase, user: user, password: appPassword, controller: controller) { account, error in
+                    if let controller = window?.rootViewController as? NCMainTabBarController {
+                        controller.account = account
+                        controller.dismiss(animated: true, completion: nil)
+                    } else {
+                        if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                            controller.account = account
+                            controller.modalPresentationStyle = .fullScreen
+                            controller.view.alpha = 0
 
-                            if error == .success {
-                                let window = UIApplication.shared.firstWindow
-                                if let controller = window?.rootViewController as? NCMainTabBarController {
-                                    controller.account = account
-                                    controller.dismiss(animated: true, completion: nil)
-                                } else {
-                                    if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
-                                        controller.account = account
-                                        controller.modalPresentationStyle = .fullScreen
-                                        controller.view.alpha = 0
+                            window?.rootViewController = controller
+                            window?.makeKeyAndVisible()
 
-                                        window?.rootViewController = controller
-                                        window?.makeKeyAndVisible()
+                            if let scene = window?.windowScene {
+                                SceneManager.shared.register(scene: scene, withRootViewController: controller)
+                            }
 
-                                        if let scene = window?.windowScene {
-                                            SceneManager.shared.register(scene: scene, withRootViewController: controller)
-                                        }
-
-                                        UIView.animate(withDuration: 0.5) {
-                                            controller.view.alpha = 1
-                                        }
-                                    }
-                                }
-
-                                timer.cancel()
+                            UIView.animate(withDuration: 0.5) {
+                                controller.view.alpha = 1
                             }
                         }
                     }
                 }
-            }
-        })
 
-        timer.resume()
+                continuation.resume()
+            }
+        }
+    }
+
+    func poll(loginFlowV2Token: String, loginFlowV2Endpoint: String, loginFlowV2Login: String) {
+        let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+        let loginOptions = NKRequestOptions(customUserAgent: userAgent)
+        var grantValues: (urlBase: String, loginName: String, appPassword: String)?
+
+        Task { @MainActor in
+            repeat {
+                grantValues = await getPollResponse(loginFlowV2Token: loginFlowV2Token, loginFlowV2Endpoint: loginFlowV2Endpoint, loginOptions: loginOptions)
+                try await Task.sleep(nanoseconds: 1_000_000_000) // .seconds() is not supported on iOS 15 yet.
+            } while grantValues == nil
+
+            guard let grantValues else {
+                return
+            }
+
+            await handleGrant(urlBase: grantValues.urlBase, loginName: grantValues.loginName, appPassword: grantValues.appPassword, controller: controller)
+        }
     }
 }
 
