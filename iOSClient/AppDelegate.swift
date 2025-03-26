@@ -360,9 +360,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if activeLogin?.view.window == nil {
             if selector == NCGlobal.shared.introSignUpWithProvider {
                 // Login via provider
-                let web = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginProvider") as? NCLoginProvider
-                web?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
-                showLoginViewController(web)
+                activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginProvider") as? NCLoginProvider
+                activeLoginWeb?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
+                showLoginViewController(activeLoginWeb)
             } else {
                 // Regular login
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
