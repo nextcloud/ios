@@ -149,8 +149,6 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
             ufs.removeTemporaryDirectory()
             ufs.createDirectoryStandard()
 
-            NCAutoUpload.shared.alignPhotoLibrary(controller: self.controller, account: self.session.account)
-
             NCActivityIndicator.shared.stop()
             self.calculateSize()
 
