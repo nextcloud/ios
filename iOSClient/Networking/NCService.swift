@@ -38,11 +38,12 @@ class NCService: NSObject {
             return
         }
 
+        self.database.clearAllAvatarLoaded()
+        self.addInternalTypeIdentifier(account: account)
+
         Task(priority: .background) {
-            self.database.clearAllAvatarLoaded()
             let result = await requestServerStatus(account: account, controller: controller)
             if result {
-                addInternalTypeIdentifier(account: account)
                 requestServerCapabilities(account: account, controller: controller)
                 getAvatar(account: account)
                 NCNetworkingE2EE().unlockAll(account: account)
