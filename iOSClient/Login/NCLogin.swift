@@ -171,50 +171,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         NCNetworking.shared.certificateDelegate = self
 
 #if DEBUG
-        // Create a UIButton
-        let button = UIButton(type: .system)
-        button.setTitle("[DEBUG] Auto login", for: .normal)
-        button.backgroundColor = .black
-        button.setTitleColor(.white, for: .normal)
-
-        // Set Button Constraints
-        button.translatesAutoresizingMaskIntoConstraints = false
-
-        // Add target action
-        button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
-
-        // Add button to the view
-        view.addSubview(button)
-
-        // Set Auto Layout Constraints
-        NSLayoutConstraint.activate([
-            button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            button.centerYAnchor.constraint(equalTo: qrCode.topAnchor, constant: -50),
-            button.widthAnchor.constraint(equalToConstant: 150),
-            button.heightAnchor.constraint(equalToConstant: 50)
-        ])
+        addDebugAutoLogInButton()
 #endif
-    }
-
-    func setupAppToken(server: String, username: String, password: String) {
-        NextcloudKit.shared.getAppPassword(url: server, user: username, password: password) { [self] token, _, error in
-
-            guard let token else { return }
-
-            createAccount(urlBase: server, user: username, password: token)
-        }
-    }
-
-    @objc func buttonTapped() {
-        guard let baseUrl = ProcessInfo.processInfo.environment["DEBUG_AUTO_LOGIN_BASE_URL"],
-              let username = ProcessInfo.processInfo.environment["DEBUG_AUTO_LOGIN_USERNAME"],
-              let password = ProcessInfo.processInfo.environment["DEBUG_AUTO_LOGIN_PASSWORD"] else {
-
-            let alert = UIAlertController.warning(title: "No env vars found for debug auto log in.", message: "Add DEBUG_AUTO_LOGIN_BASE_URL, DEBUG_AUTO_LOGIN_USERNAME and DEBUG_AUTO_LOGIN_PASSWORD to env vars")
-            present(alert, animated: true)
-            return
-        }
-        setupAppToken(server: baseUrl, username: username, password: password)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -535,3 +493,59 @@ extension NCLogin: NCLoginProviderDelegate {
         loginButton.hideSpinnerAndShowButton()
     }
 }
+
+#if DEBUG
+extension NCLogin {
+    private func addDebugAutoLogInButton() {
+        let button = UIButton(type: .system)
+        button.setTitle("[DEBUG] Auto login", for: .normal)
+        button.backgroundColor = .black
+        button.setTitleColor(.white, for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+        view.addSubview(button)
+
+        NSLayoutConstraint.activate([
+            button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            button.centerYAnchor.constraint(equalTo: qrCode.topAnchor, constant: -50),
+            button.widthAnchor.constraint(equalToConstant: 150),
+            button.heightAnchor.constraint(equalToConstant: 50)
+        ])
+    }
+
+    private func getAppPassword(urlBase: String, user: String, password: String) {
+        NextcloudKit.shared.getAppPassword(url: urlBase, user: user, password: password) { token, _, error in
+            if error == .success, let password = token {
+                self.createAccount(urlBase: urlBase, user: user, password: password)
+            } else {
+                NCContentPresenter().showError(error: error)
+                self.dismiss(animated: true, completion: nil)
+            }
+        }
+    }
+
+    private func autoLogIn(server: String, username: String, password: String) {
+        NextcloudKit.shared.getAppPassword(url: server, user: username, password: password) { [self] token, _, error in
+            guard let token, error == .success else {
+                present(UIAlertController.warning(message: error.error.localizedDescription), animated: true)
+                return
+            }
+
+            createAccount(urlBase: server, user: username, password: token)
+        }
+    }
+
+    @objc func buttonTapped() {
+        guard let baseUrl = ProcessInfo.processInfo.environment["DEBUG_AUTO_LOGIN_BASE_URL"],
+              let username = ProcessInfo.processInfo.environment["DEBUG_AUTO_LOGIN_USERNAME"],
+              let password = ProcessInfo.processInfo.environment["DEBUG_AUTO_LOGIN_PASSWORD"] else {
+
+            let alert = UIAlertController.warning(title: "No env vars found for debug auto log in.", message: "Add DEBUG_AUTO_LOGIN_BASE_URL, DEBUG_AUTO_LOGIN_USERNAME and DEBUG_AUTO_LOGIN_PASSWORD to env vars")
+            present(alert, animated: true)
+            return
+        }
+
+        autoLogIn(server: baseUrl, username: username, password: password)
+    }
+}
+#endif
