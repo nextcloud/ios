@@ -52,17 +52,13 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
 
         refreshControl?.addTarget(self, action: #selector(getNetwokingNotification), for: .valueChanged)
 
-        // Navigation controller is being presented modally
-        if navigationController?.presentingViewController != nil {
-            navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .plain, action: { [weak self] in
-                self?.dismiss(animated: true)
-            })
-        }
-    }
+        navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.setNavigationBarAppearance()
+        let close = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .done) {
+            self.dismiss(animated: true)
+        }
+
+        self.navigationItem.leftBarButtonItems = [close]
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -157,7 +153,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
 
         cell.date.text = DateFormatter.localizedString(from: notification.date as Date, dateStyle: .medium, timeStyle: .medium)
         cell.notification = notification
-        cell.date.text = utility.dateDiff(notification.date as Date)
+        cell.date.text = utility.getRelativeDateTitle(notification.date as Date)
         cell.date.textColor = NCBrandColor.shared.iconImageColor2
         cell.subject.text = notification.subject
         cell.subject.textColor = NCBrandColor.shared.textColor

@@ -44,6 +44,19 @@ extension NCNetworking {
             NotificationCenter.default.postOnMainThread(name: NextcloudKit.shared.nkCommonInstance.notificationCenterChunkedFileStop.rawValue)
         }
 
+        let metadataCreationDate = metadata.creationDate as Date
+
+        // Update last uploaded date for auto uploaded photos
+        if database.getTableAccount(account: metadata.account)?.autoUploadLastUploadedDate == nil {
+            self.database.updateAccountProperty(\.autoUploadLastUploadedDate, value: metadataCreationDate, account: metadata.account)
+        } else if metadata.sessionSelector == NCGlobal.shared.selectorUploadAutoUpload,
+           let autoUploadLastUploadedDate = database.getTableAccount(account: metadata.account)?.autoUploadLastUploadedDate {
+
+            if autoUploadLastUploadedDate < metadataCreationDate {
+                self.database.updateAccountProperty(\.autoUploadLastUploadedDate, value: metadataCreationDate, account: metadata.account)
+            }
+        }
+
         if metadata.isDirectoryE2EE {
 #if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_WIDGET
             Task {

@@ -203,7 +203,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         loginButton.isEnabled = false
 		NextcloudKit.shared.getServerStatus(serverUrl: url) { [weak self] _, serverInfoResult in
             switch serverInfoResult {
-            case .success(let serverInfo):
+            case .success(_):
                 if let host = URL(string: url)?.host {
                     NCNetworking.shared.writeCertificate(host: host)
                 }
@@ -214,14 +214,14 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     self?.qrCode.isEnabled = true
                     // Login Flow V2
                     if error == .success, let token, let endpoint, let login {
-						let safariVC = NCLoginProvider()
-						safariVC.poll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
+                        let safariVC = NCLoginProvider()
                         safariVC.urlBase = login
-                        self?.navigationController?.pushViewController(safariVC, animated: true)
-                    } else if serverInfo.versionMajor < NCGlobal.shared.nextcloudVersion12 { // No login flow available
-                        let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_webflow_not_available_", comment: ""), preferredStyle: .alert)
-                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-                        self?.present(alertController, animated: true, completion: { })
+						if let color = self?.textColor {
+							safariVC.uiColor = color
+						}
+                        safariVC.delegate = self
+                        safariVC.poll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
+						self?.navigationController?.pushViewController(safariVC, animated: true)
                     }
                 }
             case .failure(let error):

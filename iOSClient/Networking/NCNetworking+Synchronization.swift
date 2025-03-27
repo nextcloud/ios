@@ -58,16 +58,22 @@ extension NCNetworking {
                         metadatasSynchronizationOffline.append(self.database.convertFileToMetadata(file, isDirectoryE2EE: false))
                     }
                 }
+
+                let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
+                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Synchronization \(serverUrl) in \(diffDate)")
+
                 self.database.addMetadatas(metadatasDirectory)
+                self.database.addDirectories(metadatas: metadatasDirectory)
+
                 self.database.setMetadatasSessionInWaitDownload(metadatas: metadatasSynchronizationOffline,
                                                                 session: self.sessionDownloadBackground,
                                                                 selector: self.global.selectorSynchronizationOffline)
                 self.database.setDirectorySynchronizationDate(serverUrl: serverUrl, account: account)
-                let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
-                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Synchronization \(serverUrl) in \(diffDate)")
+
                 completion(0, metadatasSynchronizationOffline.count)
             } else {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Synchronization \(serverUrl), \(error.errorCode)")
+
                 completion(error.errorCode, metadatasSynchronizationOffline.count)
             }
         }

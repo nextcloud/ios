@@ -455,6 +455,7 @@ import KeychainAccess
         }
     }
 
+    /* OBSOLETE
     func setDirectoryOnTop(account: String, value: Bool) {
         let key = "directoryOnTop" + account
         keychain[key] = String(value)
@@ -468,6 +469,7 @@ import KeychainAccess
             return true
         }
     }
+    */
 
     // MARK: - E2EE
 

@@ -51,7 +51,6 @@ extension NCManageDatabase {
     func getDashboardWidget(account: String, id: String) -> (tableDashboardWidget?, [tableDashboardWidgetButton]?) {
         do {
             let realm = try Realm()
-            realm.refresh()
             guard let resultDashboard = realm.objects(tableDashboardWidget.self).filter("account == %@ AND id == %@", account, id).first else { return (nil, nil) }
             let resultsButton = realm.objects(tableDashboardWidgetButton.self).filter("account == %@ AND id == %@", account, id).sorted(byKeyPath: "type", ascending: true)
             return (tableDashboardWidget.init(value: resultDashboard), Array(resultsButton.map { tableDashboardWidgetButton.init(value: $0) }))
@@ -64,7 +63,6 @@ extension NCManageDatabase {
     func getDashboardWidgetApplications(account: String) -> [tableDashboardWidget] {
         do {
             let realm = try Realm()
-            realm.refresh()
             let sortProperties = [SortDescriptor(keyPath: "order", ascending: true), SortDescriptor(keyPath: "title", ascending: true)]
             let results = realm.objects(tableDashboardWidget.self).filter("account == %@", account).sorted(by: sortProperties)
             return Array(results.map { tableDashboardWidget.init(value: $0) })

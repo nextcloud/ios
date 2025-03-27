@@ -1056,7 +1056,7 @@ extension NCManageDatabase {
 
     // MARK: - GetResult(s)Metadata
 
-    func getResultsMetadatasPredicate(_ predicate: NSPredicate, layoutForView: NCDBLayoutForView?, directoryOnTop: Bool) -> [tableMetadata] {
+    func getResultsMetadatasPredicate(_ predicate: NSPredicate, layoutForView: NCDBLayoutForView?, directoryOnTop: Bool = true) -> [tableMetadata] {
         do {
             let realm = try Realm()
             var results = realm.objects(tableMetadata.self).filter(predicate).freeze()
@@ -1212,12 +1212,14 @@ extension NCManageDatabase {
         return false
     }
 
-    func getResultMetadataFromFileId(_ fileId: String?) -> tableMetadata? {
+    func getMetadataFromFileId(_ fileId: String?) -> tableMetadata? {
         guard let fileId else { return nil }
 
         do {
             let realm = try Realm()
-            return realm.objects(tableMetadata.self).filter("fileId == %@", fileId).first
+            if let result = realm.objects(tableMetadata.self).filter("fileId == %@", fileId).first {
+                return tableMetadata(value: result)
+            }
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
@@ -1239,7 +1241,6 @@ extension NCManageDatabase {
     func getResultsMetadatas(predicate: NSPredicate, sortedByKeyPath: String? = nil, ascending: Bool = false, freeze: Bool = false) -> Results<tableMetadata>? {
         do {
             let realm = try Realm()
-            realm.refresh()
             if let sortedByKeyPath {
                 let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sortedByKeyPath, ascending: ascending)
                 if freeze {

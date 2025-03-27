@@ -77,11 +77,7 @@ extension NCCollectionViewCommon {
         
         let sortSubmenu = UIMenu(title: NSLocalizedString("_order_by_", comment: ""), options: .displayInline, children: [byName, byNewest, byLargest])
         
-        let directoryOnTop = NCKeychain().getDirectoryOnTop(account: session.account)
-        let foldersOnTop = UIAction(title: NSLocalizedString("_directory_on_top_no_", comment: ""), image: utility.loadImage(named: "folder"), state: directoryOnTop ? .on : .off) { [weak self]  _ in
-            if let account = self?.session.account {
-                NCKeychain().setDirectoryOnTop(account: account, value: !directoryOnTop)
-            }
+		let foldersOnTop = UIAction(title: NSLocalizedString("_directory_on_top_no_", comment: ""), image: utility.loadImage(named: "folder"), state: dataSource.directoryOnTop ? .on : .off) { [weak self]  _ in
             self?.notifyAboutLayoutChange(layoutForView)
         }
         

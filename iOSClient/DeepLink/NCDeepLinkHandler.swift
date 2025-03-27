@@ -101,10 +101,14 @@ class NCDeepLinkHandler {
 
     private func navigateToNotification(controller: NCMainTabBarController) {
         controller.selectedIndex = ControllerConstants.filesIndex
-        guard let navigationController = controller.viewControllers?[controller.selectedIndex] as? UINavigationController,
-              let viewController = UIStoryboard(name: ControllerConstants.notification, bundle: nil).instantiateInitialViewController() as? NCNotification else { return }
-        viewController.session = NCSession.shared.getSession(controller: controller)
-        navigationController.pushViewController(viewController, animated: true)
+        if let navigationController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? UINavigationController,
+           let viewController = navigationController.topViewController as? NCNotification {
+            viewController.modalPresentationStyle = .pageSheet
+            viewController.session = NCSession.shared.getSession(controller: controller)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                controller.present(navigationController, animated: true, completion: nil)
+            }
+        }
     }
 
     private func navigateToCreateNew(controller: NCMainTabBarController) {
@@ -146,10 +150,11 @@ class NCDeepLinkHandler {
         controller.selectedIndex = ControllerConstants.moreIndex
         guard let navigationController = controller.viewControllers?[controller.selectedIndex] as? UINavigationController else { return }
 
-        let autoUploadModel = NCAutoUploadModel(controller: controller)
-        let autoUploadView = NCAutoUploadView(model: autoUploadModel)
-        let autoUploadController = UIHostingController(rootView: autoUploadView)
-        navigationController.pushViewController(autoUploadController, animated: true)
+        Task { @MainActor in
+            let autoUploadView = NCAutoUploadView(model: NCAutoUploadModel(controller: controller), albumModel: AlbumModel(controller: controller))
+            let autoUploadController = UIHostingController(rootView: autoUploadView)
+            navigationController.pushViewController(autoUploadController, animated: true)
+        }
     }
 
     private func navigateAppUpdate() {

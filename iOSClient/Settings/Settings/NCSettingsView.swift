@@ -47,7 +47,7 @@ struct NCSettingsView: View {
             /// `Auto Upload` Section
             Section(content: {
                 NavigationLink(destination: LazyView {
-                    NCAutoUploadView(model: NCAutoUploadModel(controller: model.controller))
+                    NCAutoUploadView(model: NCAutoUploadModel(controller: model.controller), albumModel: AlbumModel(controller: model.controller))
                 }) {
                     HStack {
                         Image(.Settings.camera)

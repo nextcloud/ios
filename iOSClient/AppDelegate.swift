@@ -307,12 +307,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         func openNotification(controller: NCMainTabBarController) {
             if app == NCGlobal.shared.termsOfServiceName {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterGetServerData, second: 0.5)
-            } else if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
+            } else if let navigationController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? UINavigationController,
+                      let viewController = navigationController.topViewController as? NCNotification {
+                viewController.modalPresentationStyle = .pageSheet
                 viewController.session = NCSession.shared.getSession(account: account)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    let navigationController = UINavigationController(rootViewController: viewController)
-                    navigationController.modalPresentationStyle = .fullScreen
-                    controller.present(navigationController, animated: true)
+                    controller.present(navigationController, animated: true, completion: nil)
                 }
             }
         }
@@ -364,9 +364,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if activeLogin?.view.window == nil {
             if selector == NCGlobal.shared.introSignUpWithProvider {
                 // Login via provider
-                let web = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginProvider") as? NCLoginProvider
-                web?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
-                showLoginViewController(web)
+                activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginProvider") as? NCLoginProvider
+                activeLoginWeb?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
+                showLoginViewController(activeLoginWeb)
             } else {
                 // Regular login
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
