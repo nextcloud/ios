@@ -513,17 +513,6 @@ extension NCLogin {
         ])
     }
 
-    private func getAppPassword(urlBase: String, user: String, password: String) {
-        NextcloudKit.shared.getAppPassword(url: urlBase, user: user, password: password) { token, _, error in
-            if error == .success, let password = token {
-                self.createAccount(urlBase: urlBase, user: user, password: password)
-            } else {
-                NCContentPresenter().showError(error: error)
-                self.dismiss(animated: true, completion: nil)
-            }
-        }
-    }
-
     private func autoLogIn(server: String, username: String, password: String) {
         NextcloudKit.shared.getAppPassword(url: server, user: username, password: password) { [self] token, _, error in
             guard let token, error == .success else {
