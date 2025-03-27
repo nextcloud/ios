@@ -116,7 +116,7 @@ struct NCAutoUploadView: View {
 					.applyGlobalFormSectionStyle()
 
                     Toggle(NSLocalizedString("_back_up_new_photos_only_", comment: ""), isOn: $model.autoUploadNewPhotosOnly)
-                        .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+                        .tint(Color(NCBrandColor.shared.switchColor))
                         .onChange(of: model.autoUploadNewPhotosOnly) { newValue in
                             model.handleAutoUploadNewPhotosOnly(newValue: newValue)
                         }
@@ -131,7 +131,7 @@ struct NCAutoUploadView: View {
                 /// Auto Upload Photo
                 Section(content: {
                     Toggle(NSLocalizedString("_autoupload_photos_", comment: ""), isOn: $model.autoUploadImage)
-                        .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+                        .tint(Color(NCBrandColor.shared.switchColor))
                         .onChange(of: model.autoUploadImage) { newValue in
                             if !newValue { model.autoUploadVideo = true }
                             model.handleAutoUploadImageChange(newValue: newValue)
@@ -139,7 +139,7 @@ struct NCAutoUploadView: View {
 
                     if model.autoUploadImage {
                         Toggle(NSLocalizedString("_wifi_only_", comment: ""), isOn: $model.autoUploadWWAnPhoto)
-                            .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+                            .tint(Color(NCBrandColor.shared.switchColor))
                             .onChange(of: model.autoUploadWWAnPhoto) { newValue in
                                 model.handleAutoUploadWWAnPhotoChange(newValue: newValue)
                             }
@@ -150,7 +150,7 @@ struct NCAutoUploadView: View {
                 /// Auto Upload Video
                 Section(content: {
                     Toggle(NSLocalizedString("_autoupload_videos_", comment: ""), isOn: $model.autoUploadVideo)
-                        .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+                        .tint(Color(NCBrandColor.shared.switchColor))
                         .onChange(of: model.autoUploadVideo) { newValue in
                             if !newValue { model.autoUploadImage = true }
                             model.handleAutoUploadVideoChange(newValue: newValue)
@@ -158,7 +158,7 @@ struct NCAutoUploadView: View {
 
                     if model.autoUploadVideo {
                         Toggle(NSLocalizedString("_wifi_only_", comment: ""), isOn: $model.autoUploadWWAnVideo)
-                            .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+                            .tint(Color(NCBrandColor.shared.switchColor))
                             .onChange(of: model.autoUploadWWAnVideo) { newValue in
                                 model.handleAutoUploadWWAnVideoChange(newValue: newValue)
                             }
@@ -169,7 +169,7 @@ struct NCAutoUploadView: View {
                 /// Auto Upload create subfolder
                 Section(content: {
                     Toggle(NSLocalizedString("_autoupload_create_subfolder_", comment: ""), isOn: $model.autoUploadCreateSubfolder)
-                        .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+                        .tint(Color(NCBrandColor.shared.switchColor))
                         .onChange(of: model.autoUploadCreateSubfolder) { newValue in
                             model.handleAutoUploadCreateSubfolderChange(newValue: newValue)
                         }
@@ -206,7 +206,7 @@ struct NCAutoUploadView: View {
                         .padding(.horizontal, 20)
                         .padding(.vertical, 10)
                 }
-                .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+                .tint(Color(NCBrandColor.shared.switchColor))
                 .onChange(of: model.autoUploadStart) { newValue in
                     albumModel.populateSelectedAlbums()
                     model.handleAutoUploadChange(newValue: newValue, assetCollections: albumModel.selectedAlbums)
