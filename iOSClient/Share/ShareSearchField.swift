@@ -23,11 +23,22 @@ struct ShareSearchField: View {
             Image(.Share.magnifyingGlass)
                 .padding(.leading, 16)
                 .padding(.trailing, 11)
-            TextField("",
-                      text: $model.text,
-                      prompt: Text(model.placeholder).foregroundColor(Color(.Share.Advanced.SearchField.placeholder)))
-            .font(.system(size: 16))
-            .autocorrectionDisabled()
+            if #available(iOS 16.0, *) {
+                TextField("",
+                          text: $model.text,
+                          prompt: Text(model.placeholder).foregroundColor(Color(.Share.Advanced.SearchField.placeholder)))
+                .font(.system(size: 16))
+                .autocorrectionDisabled()
+            } else {
+                ZStack(alignment: .leading) {
+                    if model.text.isEmpty {
+                        Text(model.placeholder).foregroundColor(Color(.Share.Advanced.SearchField.placeholder))
+                    }
+                    TextField("", text: $model.text)
+                }
+                .font(.system(size: 16))
+                .autocorrectionDisabled()
+            }
             Button {
                 onContactButtonTap()
             } label: {
