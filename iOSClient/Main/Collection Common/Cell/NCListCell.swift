@@ -104,7 +104,9 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
     var fileSharedImage: UIImageView? {
         get { return imageShared }
-        set { imageShared = newValue }
+		set {
+			imageShared = newValue
+		}
     }
     var fileMoreImage: UIImageView? {
         get { return imageMore }

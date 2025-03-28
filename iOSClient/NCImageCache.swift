@@ -188,13 +188,43 @@ final class NCImageCache: @unchecked Sendable {
         return UIImage(resource: .Share.canShare).withTintColor(NCBrandColor.shared.brandElement)
     }
 
-	func getImageFileSharedByLink() -> UIImage {
-		return UIImage(resource: .Share.fileSharedByLink)
+	func getImageShareByLink() -> UIImage {
+		return UIImage(resource: .Share.shared)
 	}
 	
-	func getImageFolderSharedByLink() -> UIImage {
-		return UIImage(resource: .Share.folderSharedByLink)
+	
+	func getIconSharedBothWays() -> UIImage {
+		UIImage(resource: .Share.Icon.bothWays)
 	}
+
+	func getIconSharedByLink() -> UIImage {
+		UIImage(resource: .Share.Icon.byLink)
+	}
+
+	func getIconSharedInternally() -> UIImage {
+		UIImage(resource: .Share.Icon.internally)
+	}
+
+	func getIconSharedWithMe() -> UIImage {
+		UIImage(resource: .Share.Icon.withMe)
+	}
+
+	func getFolderSharedBothWays() -> UIImage {
+		UIImage(resource: .Share.Folder.bothWays)
+	}
+
+	func getFolderSharedByLink() -> UIImage {
+		UIImage(resource: .Share.Folder.byLink)
+	}
+
+	func getFolderSharedInternally() -> UIImage {
+		UIImage(resource: .Share.Folder.internally)
+	}
+
+	func getFolderSharedWithMe() -> UIImage {
+		UIImage(resource: .Share.Folder.withMe)
+	}
+
 	
     func getImageFavorite() -> UIImage {
         return UIImage(resource: .FileFolderCell.star)
@@ -228,6 +258,10 @@ final class NCImageCache: @unchecked Sendable {
         return utility.loadImage(named: "lock.fill", colors: [NCBrandColor.shared.iconImageColor])
     }
 
+	func getFolder() -> UIImage {
+		return UIImage(resource: .folder)
+	}
+	
     func getFolder(account: String) -> UIImage {
         return UIImage(resource: .folder)
     }

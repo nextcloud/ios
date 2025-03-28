@@ -271,7 +271,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource(_:)), name: NSNotification.Name(rawValue: global.notificationCenterReloadDataSource), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(getServerData(_:)), name: NSNotification.Name(rawValue: global.notificationCenterGetServerData), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadHeader(_:)), name: NSNotification.Name(rawValue: global.notificationCenterReloadHeader), object: nil)
-		NotificationCenter.default.addObserver(self, selector: #selector(onForceRefreshDataSourceNotification(_:)), name: NSNotification.Name(rawValue: global.notificationCenterForceReloadHeader), object: nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(onForceRefreshDataSourceNotification(_:)), name: NSNotification.Name(rawValue: global.notificationCenterForceReload), object: nil)
         DispatchQueue.main.async {
             self.collectionView?.collectionViewLayout.invalidateLayout()
         }
