@@ -367,6 +367,8 @@ extension NCNetworking {
             isApplicationStateActive = UIApplication.shared.applicationState == .active
 #endif
             DispatchQueue.global().async {
+                NextcloudKit.shared.nkCommonInstance.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
+
                 let selector = metadata.sessionSelector
 
                 if error == .success, let ocId = ocId, size == metadata.size {
@@ -497,8 +499,6 @@ extension NCNetworking {
                         }
 #endif
                     } else {
-                        NextcloudKit.shared.nkCommonInstance.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
-
                         NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
 
                         self.database.setMetadataSession(ocId: metadata.ocId,
