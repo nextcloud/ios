@@ -453,49 +453,53 @@ extension NCNetworking {
                     } else if error.errorCode == self.global.errorForbidden && isApplicationStateActive {
                         NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
 #if !EXTENSION
-                        DispatchQueue.main.async {
-                            let newFileName = self.utilityFileSystem.createFileName(metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account)
-                            let alertController = UIAlertController(title: error.errorDescription, message: NSLocalizedString("_change_upload_filename_", comment: ""), preferredStyle: .alert)
-                            alertController.addAction(UIAlertAction(title: String(format: NSLocalizedString("_save_file_as_", comment: ""), newFileName), style: .default, handler: { _ in
-                                let atpath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileName
-                                let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + newFileName
-                                self.utilityFileSystem.moveFile(atPath: atpath, toPath: toPath)
-                                self.database.setMetadataSession(ocId: metadata.ocId,
-                                                                 newFileName: newFileName,
-                                                                 sessionTaskIdentifier: 0,
-                                                                 sessionError: "",
-                                                                 status: self.global.metadataStatusWaitUpload,
-                                                                 errorCode: error.errorCode)
-                            }))
-                            alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive, handler: { _ in
-                                self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-                                self.database.deleteMetadataOcId(metadata.ocId)
-                                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadCancelFile,
-                                                                            object: nil,
-                                                                            userInfo: ["ocId": metadata.ocId,
-                                                                                       "ocIdTransfer": metadata.ocIdTransfer,
-                                                                                       "session": metadata.session,
-                                                                                       "serverUrl": metadata.serverUrl,
-                                                                                       "account": metadata.account],
-                                                                            second: 0.5)
-                            }))
+                        NextcloudKit.shared.getTermsOfService(account: metadata.account, options: NKRequestOptions(checkInterceptor: false)) { _, tos, _, error in
+                            if error == .success, let tos, !tos.hasUserSigned() {
+                                // it's a ToS not signed
+                            } else {
+                                let newFileName = self.utilityFileSystem.createFileName(metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account)
+                                let alertController = UIAlertController(title: error.errorDescription, message: NSLocalizedString("_change_upload_filename_", comment: ""), preferredStyle: .alert)
+                                alertController.addAction(UIAlertAction(title: String(format: NSLocalizedString("_save_file_as_", comment: ""), newFileName), style: .default, handler: { _ in
+                                    let atpath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileName
+                                    let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + newFileName
+                                    self.utilityFileSystem.moveFile(atPath: atpath, toPath: toPath)
+                                    self.database.setMetadataSession(ocId: metadata.ocId,
+                                                                     newFileName: newFileName,
+                                                                     sessionTaskIdentifier: 0,
+                                                                     sessionError: "",
+                                                                     status: self.global.metadataStatusWaitUpload,
+                                                                     errorCode: error.errorCode)
+                                }))
+                                alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive, handler: { _ in
+                                    self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                                    self.database.deleteMetadataOcId(metadata.ocId)
+                                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadCancelFile,
+                                                                                object: nil,
+                                                                                userInfo: ["ocId": metadata.ocId,
+                                                                                           "ocIdTransfer": metadata.ocIdTransfer,
+                                                                                           "session": metadata.session,
+                                                                                           "serverUrl": metadata.serverUrl,
+                                                                                           "account": metadata.account],
+                                                                                second: 0.5)
+                                }))
 
-                            // Select UIWindowScene active in serverUrl
-                            var controller = UIApplication.shared.firstWindow?.rootViewController
-                            let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
-                            for windowScene in windowScenes {
-                                if let rootViewController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
-                                   rootViewController.currentServerUrl() == metadata.serverUrl {
-                                    controller = rootViewController
-                                    break
+                                // Select UIWindowScene active in serverUrl
+                                var controller = UIApplication.shared.firstWindow?.rootViewController
+                                let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+                                for windowScene in windowScenes {
+                                    if let rootViewController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
+                                       rootViewController.currentServerUrl() == metadata.serverUrl {
+                                        controller = rootViewController
+                                        break
+                                    }
                                 }
-                            }
-                            controller?.present(alertController, animated: true)
+                                controller?.present(alertController, animated: true)
 
-                            // Client Diagnostic
-                            self.database.addDiagnostic(account: metadata.account,
-                                                        issue: self.global.diagnosticIssueProblems,
-                                                        error: self.global.diagnosticProblemsForbidden)
+                                // Client Diagnostic
+                                self.database.addDiagnostic(account: metadata.account,
+                                                            issue: self.global.diagnosticIssueProblems,
+                                                            error: self.global.diagnosticProblemsForbidden)
+                            }
                         }
 #endif
                     } else {
