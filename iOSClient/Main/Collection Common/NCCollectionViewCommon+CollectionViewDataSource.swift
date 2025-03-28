@@ -132,7 +132,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 		case sharedOnMe
 		case sharedInternally
 		case sharedByLink
-		case sharedBothWays
 		
 		static func state(by metadata: tableMetadata, isShare: Bool) -> ItemShareState {
 			if isShare {
@@ -144,8 +143,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 			}
 			
 			if metadata.shareType.contains(3) {
-				return metadata.shareType.count == 1 ? .sharedByLink : .sharedBothWays
+				return .sharedByLink
 			}
+			
 			return .sharedInternally
 		}
 		
@@ -156,7 +156,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 			case .sharedOnMe: 		return imageCache.getIconSharedWithMe()
 			case .sharedInternally: return imageCache.getIconSharedInternally()
 			case .sharedByLink: 	return imageCache.getIconSharedByLink()
-			case .sharedBothWays: 	return imageCache.getIconSharedBothWays()
 			}
 		}
 		
@@ -167,7 +166,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 			case .sharedOnMe: 		return imageCache.getFolderSharedWithMe()
 			case .sharedInternally: return imageCache.getFolderSharedInternally()
 			case .sharedByLink: 	return imageCache.getFolderSharedByLink()
-			case .sharedBothWays: 	return imageCache.getFolderSharedBothWays()
 			}
 		}
 	}

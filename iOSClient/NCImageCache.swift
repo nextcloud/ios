@@ -193,10 +193,6 @@ final class NCImageCache: @unchecked Sendable {
 	}
 	
 	
-	func getIconSharedBothWays() -> UIImage {
-		UIImage(resource: .Share.Icon.bothWays)
-	}
-
 	func getIconSharedByLink() -> UIImage {
 		UIImage(resource: .Share.Icon.byLink)
 	}
@@ -207,10 +203,6 @@ final class NCImageCache: @unchecked Sendable {
 
 	func getIconSharedWithMe() -> UIImage {
 		UIImage(resource: .Share.Icon.withMe)
-	}
-
-	func getFolderSharedBothWays() -> UIImage {
-		UIImage(resource: .Share.Folder.bothWays)
 	}
 
 	func getFolderSharedByLink() -> UIImage {
