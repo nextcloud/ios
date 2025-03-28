@@ -191,6 +191,10 @@ class NCShareNetworking: NSObject {
     /// Remove the download limit on the share, if existent.
     ///
     func removeShareDownloadLimit(token: String) {
+        guard NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityFileSharingDownloadLimit else {
+            return
+        }
+
         NCActivityIndicator.shared.start(backgroundView: view)
 
         NextcloudKit.shared.removeShareDownloadLimit(account: metadata.account, token: token) { error in
@@ -210,6 +214,10 @@ class NCShareNetworking: NSObject {
     /// - Parameter limit: The new download limit to set.
     ///
     func setShareDownloadLimit(_ limit: Int, token: String) {
+        guard NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityFileSharingDownloadLimit else {
+            return
+        }
+
         NCActivityIndicator.shared.start(backgroundView: view)
 
         NextcloudKit.shared.setShareDownloadLimit(account: metadata.account, token: token, limit: limit) { error in
