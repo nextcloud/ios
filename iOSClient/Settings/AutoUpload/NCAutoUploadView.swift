@@ -87,6 +87,7 @@ struct NCAutoUploadView: View {
                                 .scaledToFit()
                                 .frame(width: 25, height: 25)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+                                .opacity(model.autoUploadStart ? 0.3 : 1)
                             Text(NSLocalizedString("_destination_", comment: ""))
                             Text(model.returnPath())
                                 .frame(maxWidth: .infinity, alignment: .trailing)
