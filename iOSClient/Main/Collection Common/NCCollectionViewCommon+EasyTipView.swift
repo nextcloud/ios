@@ -37,7 +37,7 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
         var preferences = EasyTipView.Preferences()
 
         preferences.drawing.foregroundColor = .white
-        preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
+        preferences.drawing.backgroundColor = .lightGray
         preferences.drawing.textAlignment = .left
         preferences.drawing.arrowPosition = .top
         preferences.drawing.cornerRadius = 10
