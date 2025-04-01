@@ -55,6 +55,9 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     internal var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
     }
+
+    private var tipView: EasyTipView?
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -349,9 +352,9 @@ extension NCScan: EasyTipViewDelegate {
             preferences.animating.showDuration = 1.5
             preferences.animating.dismissDuration = 1.5
 
-            if appDelegate.tipView == nil {
-                appDelegate.tipView = EasyTipView(text: NSLocalizedString("_tip_addcopyimage_", comment: ""), preferences: preferences, delegate: self)
-                appDelegate.tipView?.show(forView: add, withinSuperview: self.view)
+            if tipView == nil {
+                tipView = EasyTipView(text: NSLocalizedString("_tip_addcopyimage_", comment: ""), preferences: preferences, delegate: self)
+                tipView?.show(forView: add, withinSuperview: self.view)
             }
         }
     }
@@ -366,8 +369,8 @@ extension NCScan: EasyTipViewDelegate {
         if !self.database.tipExists(NCGlobal.shared.tipNCScanAddImage) {
             self.database.addTip(NCGlobal.shared.tipNCScanAddImage)
         }
-        appDelegate.tipView?.dismiss()
-        appDelegate.tipView = nil
+        tipView?.dismiss()
+        tipView = nil
     }
 }
 

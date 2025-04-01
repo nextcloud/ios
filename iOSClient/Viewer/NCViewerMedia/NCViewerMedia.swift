@@ -67,6 +67,7 @@ class NCViewerMedia: UIViewController {
     weak var delegate: NCViewerMediaViewDelegate?
 
     private var allowOpeningDetails = true
+    private var tipView: EasyTipView?
 
     // MARK: - View Life Cycle
 
@@ -571,9 +572,9 @@ extension NCViewerMedia: EasyTipViewDelegate {
             preferences.animating.showDuration = 0.5
             preferences.animating.dismissDuration = 0
 
-            if appDelegate.tipView == nil {
-                appDelegate.tipView = EasyTipView(text: NSLocalizedString("_tip_open_mediadetail_", comment: ""), preferences: preferences, delegate: self)
-                appDelegate.tipView?.show(forView: detailView)
+            if tipView == nil {
+                tipView = EasyTipView(text: NSLocalizedString("_tip_open_mediadetail_", comment: ""), preferences: preferences, delegate: self)
+                tipView?.show(forView: detailView)
             }
         }
     }
@@ -588,7 +589,7 @@ extension NCViewerMedia: EasyTipViewDelegate {
         if !self.database.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView) {
             self.database.addTip(NCGlobal.shared.tipNCViewerMediaDetailView)
         }
-        appDelegate.tipView?.dismiss()
-        appDelegate.tipView = nil
+        tipView?.dismiss()
+        tipView = nil
     }
 }
