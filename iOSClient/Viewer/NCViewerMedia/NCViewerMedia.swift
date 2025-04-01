@@ -558,7 +558,7 @@ extension NCViewerMedia: NCViewerMediaDetailViewDelegate {
 
 extension NCViewerMedia: EasyTipViewDelegate {
     func showTip() {
-        if !self.database.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView) {
+        if !self.database.tipExists(NCGlobal.shared.tipMediaDetailView) {
             var preferences = EasyTipView.Preferences()
             preferences.drawing.foregroundColor = .white
             preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
@@ -580,14 +580,14 @@ extension NCViewerMedia: EasyTipViewDelegate {
     }
 
     func easyTipViewDidTap(_ tipView: EasyTipView) {
-        self.database.addTip(NCGlobal.shared.tipNCViewerMediaDetailView)
+        self.database.addTip(NCGlobal.shared.tipMediaDetailView)
     }
 
     func easyTipViewDidDismiss(_ tipView: EasyTipView) { }
 
     func dismissTip() {
-        if !self.database.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView) {
-            self.database.addTip(NCGlobal.shared.tipNCViewerMediaDetailView)
+        if !self.database.tipExists(NCGlobal.shared.tipMediaDetailView) {
+            self.database.addTip(NCGlobal.shared.tipMediaDetailView)
         }
         tipView?.dismiss()
         tipView = nil

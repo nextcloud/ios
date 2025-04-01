@@ -33,7 +33,7 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
               !NCBrandOptions.shared.disable_multiaccount,
               self.serverUrl == utilityFileSystem.getHomeServer(session: session),
               let view = self.navigationItem.leftBarButtonItem?.customView,
-              !database.tipExists(global.tipNCCollectionViewCommonAccountRequest) else { return }
+              !database.tipExists(global.tipAccountRequest) else { return }
         var preferences = EasyTipView.Preferences()
 
         preferences.drawing.foregroundColor = .white
@@ -49,24 +49,59 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
         preferences.animating.dismissDuration = 1.5
 
         if tipViewAccounts == nil {
-            tipViewAccounts = EasyTipView(text: NSLocalizedString("_tip_accountrequest_", comment: ""), preferences: preferences, delegate: self)
+            tipViewAccounts = EasyTipView(text: NSLocalizedString("_tip_accountrequest_", comment: ""), preferences: preferences, delegate: self, tip: global.tipAccountRequest)
             tipViewAccounts?.show(forView: view)
         }
     }
 
+    func showTipAutoUpload() {
+        guard !session.account.isEmpty,
+              self is NCFiles,
+              self.view.window != nil,
+              self.serverUrl == utilityFileSystem.getHomeServer(session: session),
+              let view = self.navigationItem.leftBarButtonItem?.customView,
+              !database.tipExists(global.tipAutoUpload) else { return }
+        var preferences = EasyTipView.Preferences()
+
+        preferences.drawing.foregroundColor = .white
+        preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
+        preferences.drawing.textAlignment = .left
+        preferences.drawing.arrowPosition = .top
+        preferences.drawing.cornerRadius = 10
+
+        preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: 100)
+        preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -100)
+        preferences.animating.showInitialAlpha = 0
+        preferences.animating.showDuration = 1.5
+        preferences.animating.dismissDuration = 1.5
+
+        if tipViewAutoUpload == nil {
+            tipViewAutoUpload = EasyTipView(text: NSLocalizedString("_tip_accountrequest_", comment: ""), preferences: preferences, delegate: self, tip: global.tipAutoUpload)
+            tipViewAutoUpload?.show(forView: view)
+        }
+    }
+
     func easyTipViewDidTap(_ tipView: EasyTipView) {
-        if tipView.tip == global.tipNCCollectionViewCommonAccountRequest {
-            database.addTip(global.tipNCCollectionViewCommonAccountRequest)
+        if tipView.tip == global.tipAccountRequest {
+            database.addTip(global.tipAccountRequest)
+        }
+        if tipView.tip == global.tipAutoUpload {
+            database.addTip(global.tipAutoUpload)
         }
     }
 
     func easyTipViewDidDismiss(_ tipView: EasyTipView) { }
 
     func dismissTip() {
-        if !database.tipExists(global.tipNCCollectionViewCommonAccountRequest) {
-            database.addTip(global.tipNCCollectionViewCommonAccountRequest)
+        if !database.tipExists(global.tipAccountRequest) {
+            database.addTip(global.tipAccountRequest)
+        }
+        if !database.tipExists(global.tipAutoUpload) {
+            database.addTip(global.tipAutoUpload)
         }
         tipViewAccounts?.dismiss()
         tipViewAccounts = nil
+        tipViewAutoUpload?.dismiss()
+        tipViewAutoUpload = nil
     }
 }

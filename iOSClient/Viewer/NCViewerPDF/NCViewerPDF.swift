@@ -535,7 +535,7 @@ extension NCViewerPDF: UIGestureRecognizerDelegate {
 extension NCViewerPDF: EasyTipViewDelegate {
     func showTip() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerPDFThumbnail) {
+            if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipPDFThumbnail) {
                 var preferences = EasyTipView.Preferences()
                 preferences.drawing.foregroundColor = .white
                 preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
@@ -560,14 +560,14 @@ extension NCViewerPDF: EasyTipViewDelegate {
     }
 
     func easyTipViewDidTap(_ tipView: EasyTipView) {
-        NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerPDFThumbnail)
+        NCManageDatabase.shared.addTip(NCGlobal.shared.tipPDFThumbnail)
     }
 
     func easyTipViewDidDismiss(_ tipView: EasyTipView) { }
 
     func dismissTip() {
-        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerPDFThumbnail) {
-            NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerPDFThumbnail)
+        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipPDFThumbnail) {
+            NCManageDatabase.shared.addTip(NCGlobal.shared.tipPDFThumbnail)
         }
         tipView?.dismiss()
         tipView = nil

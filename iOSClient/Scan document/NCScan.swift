@@ -338,7 +338,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
 
 extension NCScan: EasyTipViewDelegate {
     func showTip() {
-        if !self.database.tipExists(NCGlobal.shared.tipNCScanAddImage) {
+        if !self.database.tipExists(NCGlobal.shared.tipScanAddImage) {
             var preferences = EasyTipView.Preferences()
             preferences.drawing.foregroundColor = .white
             preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
@@ -360,14 +360,14 @@ extension NCScan: EasyTipViewDelegate {
     }
 
     func easyTipViewDidTap(_ tipView: EasyTipView) {
-        self.database.addTip(NCGlobal.shared.tipNCScanAddImage)
+        self.database.addTip(NCGlobal.shared.tipScanAddImage)
     }
 
     func easyTipViewDidDismiss(_ tipView: EasyTipView) { }
 
     func dismissTip() {
-        if !self.database.tipExists(NCGlobal.shared.tipNCScanAddImage) {
-            self.database.addTip(NCGlobal.shared.tipNCScanAddImage)
+        if !self.database.tipExists(NCGlobal.shared.tipScanAddImage) {
+            self.database.addTip(NCGlobal.shared.tipScanAddImage)
         }
         tipView?.dismiss()
         tipView = nil
