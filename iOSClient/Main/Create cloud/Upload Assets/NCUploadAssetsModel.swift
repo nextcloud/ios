@@ -196,15 +196,19 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
         }
     }
 
-    func save(completion: @escaping (_ metadatasNOConflict: [tableMetadata], _ metadatasUploadInConflict: [tableMetadata]) -> Void) {
+    func save(completion: @escaping (_ transferNOConflict: [TableTransfer], _ transferInConflict: [TableTransfer]) -> Void) {
         let utilityFileSystem = NCUtilityFileSystem()
-        var metadatasNOConflict: [tableMetadata] = []
-        var metadatasUploadInConflict: [tableMetadata] = []
+        var transferNOConflict: [TableTransfer] = []
+        var transferInConflict: [TableTransfer] = []
         let autoUploadPath = database.getAccountAutoUploadPath(session: self.session)
         var serverUrl = useAutoUploadFolder ? autoUploadPath : serverUrl
 
         for tlAsset in assets {
-            guard let asset = tlAsset.phAsset, let previewStore = previewStore.first(where: { $0.id == asset.localIdentifier }) else { continue }
+            guard let asset = tlAsset.phAsset,
+                  let previewStore = previewStore.first(where: { $0.id == asset.localIdentifier })
+            else {
+                continue
+            }
             let assetFileName = asset.originalFilename
             var livePhoto: Bool = false
             let creationDate = asset.creationDate ?? Date()
@@ -216,65 +220,56 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
                 livePhoto = true
             }
 
-            // Auto upload with subfolder
             if useAutoUploadSubFolder {
                 serverUrl = utilityFileSystem.createGranularityPath(asset: asset, serverUrl: autoUploadPath)
             }
 
-            // Check if is in upload
-            if let results = database.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''",
-                                                                                 session.account,
-                                                                                 serverUrl,
-                                                                                 fileName), sortedByKeyPath: "fileName", ascending: false), !results.isEmpty {
-                continue
-            }
+            if let transfer = self.database.createTransferForUpload(session: session,
+                                                                    serverUrl: serverUrl,
+                                                                    fileName: fileName,
+                                                                    livePhoto: livePhoto,
+                                                                    nativeFormat: previewStore.nativeFormat,
+                                                                    localIdentifier: asset.localIdentifier,
+                                                                    uploadSession: NCNetworking.shared.sessionUploadBackground,
+                                                                    sceneIdentifier: controller?.sceneIdentifier) {
 
-            let metadataForUpload = database.createMetadata(fileName: fileName,
-                                                            fileNameView: fileName,
-                                                            ocId: NSUUID().uuidString,
-                                                            serverUrl: serverUrl,
-                                                            url: "",
-                                                            contentType: "",
-                                                            session: session,
-                                                            sceneIdentifier: controller?.sceneIdentifier)
-
-            if livePhoto {
-                metadataForUpload.livePhotoFile = (metadataForUpload.fileName as NSString).deletingPathExtension + ".mov"
-            }
-            metadataForUpload.assetLocalIdentifier = asset.localIdentifier
-            metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
-            metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
-            metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
-            metadataForUpload.sessionDate = Date()
-            metadataForUpload.nativeFormat = previewStore.nativeFormat
-
-            if let previewStore = self.previewStore.first(where: { $0.id == asset.localIdentifier }),
-                let data = previewStore.data {
-                if metadataForUpload.contentType == "image/heic" {
-                    let fileNameNoExtension = (fileName as NSString).deletingPathExtension
-                    metadataForUpload.contentType = "image/jpeg"
-                    metadataForUpload.fileName = fileNameNoExtension + ".jpg"
-                    metadataForUpload.fileNameView = fileNameNoExtension + ".jpg"
-                    metadataForUpload.nativeFormat = false
+                if let previewStore = self.previewStore.first(where: { $0.id == asset.localIdentifier }),
+                   let data = previewStore.data {
+                    if transfer.contentType == "image/heic" {
+                        let fileNameNoExtension = (fileName as NSString).deletingPathExtension
+                        transfer.contentType = "image/jpeg"
+                        transfer.fileName = fileNameNoExtension + ".jpg"
+                        transfer.fileNameView = fileNameNoExtension + ".jpg"
+                        transfer.nativeFormat = false
+                    }
+                    let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(transfer.id, fileNameView: transfer.fileNameView)
+                    do {
+                        try data.write(to: URL(fileURLWithPath: fileNamePath))
+                        transfer.isExtractFile = true
+                        transfer.size = utilityFileSystem.getFileSize(filePath: fileNamePath)
+                        if let date = asset.creationDate {
+                            transfer.creationDate = date
+                        }
+                        if let date = asset.modificationDate {
+                            transfer.modificationDate = date
+                        }
+                    } catch {
+                        continue
+                    }
                 }
-                let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadataForUpload.ocId, fileNameView: metadataForUpload.fileNameView)
-                do {
-                    try data.write(to: URL(fileURLWithPath: fileNamePath))
-                    metadataForUpload.isExtractFile = true
-                    metadataForUpload.size = utilityFileSystem.getFileSize(filePath: fileNamePath)
-                    metadataForUpload.creationDate = asset.creationDate as? NSDate ?? (Date() as NSDate)
-                    metadataForUpload.date = asset.modificationDate as? NSDate ?? (Date() as NSDate)
-                } catch {  }
-            }
 
-            if let result = database.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName, nativeFormat: metadataForUpload.nativeFormat) {
-                metadataForUpload.fileName = result.fileName
-                metadatasUploadInConflict.append(metadataForUpload)
+                if let result = database.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName, nativeFormat: transfer.nativeFormat) {
+                    transfer.fileName = result.fileName
+                    transferInConflict.append(transfer)
+                } else {
+                    transferNOConflict.append(transfer)
+                }
+
             } else {
-                metadatasNOConflict.append(metadataForUpload)
+                continue
             }
         }
 
-        completion(metadatasNOConflict, metadatasUploadInConflict)
+        completion(transferNOConflict, transferInConflict)
     }
 }
