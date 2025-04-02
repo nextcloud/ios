@@ -89,7 +89,7 @@ class NCAutoUpload: NSObject {
         }
         let session = NCSession.shared.getSession(account: account)
         let autoUploadPath = self.database.getAccountAutoUploadPath(session: session)
-        var metadatas: [tableMetadata] = []
+        var transfers: [TableTransfer] = []
 
         self.getCameraRollAssets(controller: controller, assetCollections: assetCollections, account: account) { assets in
             guard let assets, !assets.isEmpty else {
@@ -105,8 +105,6 @@ class NCAutoUpload: NSObject {
             self.hud.setText(text: NSLocalizedString("_creating_db_photo_progress", comment: ""))
             self.hud.progress(0.0)
             self.endForAssetToUpload = false
-
-            var lastUploadDate = Date()
 
             for asset in assets {
                 var isLivePhoto = false
@@ -138,45 +136,15 @@ class NCAutoUpload: NSObject {
                     uploadSession = NCNetworking.shared.sessionUploadBackground
                 }
 
-                // MOST COMPATIBLE SEARCH --> HEIC --> JPG
-                var fileNameSearchMetadata = fileName
-                let ext = (fileNameSearchMetadata as NSString).pathExtension.lowercased()
+                if let transfer = self.database.createTransferForAutoUpload(session: session,
+                                                                            serverUrl: serverUrl,
+                                                                            fileName: fileName,
+                                                                            isLivePhoto: isLivePhoto,
+                                                                            localIdentifier: asset.localIdentifier,
+                                                                            uploadSession: uploadSession,
+                                                                            sceneIdentifier: controller?.sceneIdentifier) {
 
-                if ext == "heic", NCKeychain().formatCompatibility {
-                    fileNameSearchMetadata = (fileNameSearchMetadata as NSString).deletingPathExtension + ".jpg"
-                }
-
-                if self.database.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", session.account, serverUrl, fileNameSearchMetadata)) == nil {
-                    let metadata = self.database.createMetadata(fileName: fileName,
-                                                                fileNameView: fileName,
-                                                                ocId: NSUUID().uuidString,
-                                                                serverUrl: serverUrl,
-                                                                url: "",
-                                                                contentType: "",
-                                                                session: session,
-                                                                sceneIdentifier: controller?.sceneIdentifier)
-
-                    if isLivePhoto {
-                        metadata.livePhotoFile = (metadata.fileName as NSString).deletingPathExtension + ".mov"
-                    }
-                    metadata.assetLocalIdentifier = asset.localIdentifier
-                    metadata.session = uploadSession
-                    metadata.sessionSelector = NCGlobal.shared.selectorUploadAutoUpload
-                    metadata.status = NCGlobal.shared.metadataStatusWaitUpload
-                    metadata.sessionDate = Date()
-                    if assetMediaType == PHAssetMediaType.video {
-                        metadata.classFile = NKCommon.TypeClassFile.video.rawValue
-                    } else if assetMediaType == PHAssetMediaType.image {
-                        metadata.classFile = NKCommon.TypeClassFile.image.rawValue
-                    }
-
-                    let metadataCreationDate = metadata.creationDate as Date
-
-                    if lastUploadDate < metadataCreationDate {
-                        lastUploadDate = metadataCreationDate
-                    }
-
-                    metadatas.append(metadata)
+                    transfers.append(transfer)
                 }
 
                 num += 1
@@ -186,7 +154,7 @@ class NCAutoUpload: NSObject {
             self.endForAssetToUpload = true
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start createProcessUploads")
-            NCNetworkingProcess.shared.createProcessUploads(metadatas: metadatas, completion: completion)
+            self.database.createTransferProcessUploads(transfers: transfers)
         }
     }
 
