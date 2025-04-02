@@ -29,6 +29,7 @@ class TableTransfer: Object {
     @Persisted var livePhotoFile: String?
     @Persisted var classFile = ""
     @Persisted var contentType = ""
+    @Persisted var iconName = ""
     @Persisted var size: Int64 = 0
 
     @Persisted var e2eEncrypted: Bool = false
@@ -66,15 +67,21 @@ class TableTransfer: Object {
 }
 
 extension NCManageDatabase {
-    func createTransferForAutoUpload(session: NCSession.Session, serverUrl: String, fileName: String, isLivePhoto: Bool, localIdentifier: String, uploadSession: String, sceneIdentifier: String?) -> TableTransfer? {
+    func createTransferForAutoUpload(session: NCSession.Session,
+                                     serverUrl: String,
+                                     fileName: String,
+                                     livePhoto: Bool,
+                                     localIdentifier: String,
+                                     uploadSession: String,
+                                     sceneIdentifier: String?) -> TableTransfer? {
         /// MOST COMPATIBLE SEARCH --> HEIC --> JPG
-        var fileNameSearchMetadata = fileName
-        let ext = (fileNameSearchMetadata as NSString).pathExtension.lowercased()
+        var fileNameFormatCompatibility = fileName
+        let ext = (fileNameFormatCompatibility as NSString).pathExtension.lowercased()
         if ext == "heic", NCKeychain().formatCompatibility {
-            fileNameSearchMetadata = (fileNameSearchMetadata as NSString).deletingPathExtension + ".jpg"
+            fileNameFormatCompatibility = (fileNameFormatCompatibility as NSString).deletingPathExtension + ".jpg"
         }
+        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", session.account, serverUrl, fileNameFormatCompatibility)
 
-        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", session.account, serverUrl, fileNameSearchMetadata)
         do {
             let realm = try Realm()
             /// verify if already exists
@@ -92,13 +99,70 @@ extension NCManageDatabase {
             result.user = session.user
             result.userId = session.userId
 
-            if isLivePhoto {
+            if livePhoto {
                 result.livePhotoFile = (fileName as NSString).deletingPathExtension + ".mov"
             }
 
+            let (_, classFile, iconName, _, _, _) = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false, account: session.account)
+
+            result.classFile = classFile
+            result.iconName = iconName
             result.assetLocalIdentifier = localIdentifier
+
             result.session = uploadSession
             result.sessionSelector = NCGlobal.shared.selectorUploadAutoUpload
+            result.sessionStatus = NCGlobal.shared.metadataStatusWaitUpload
+
+            result.sceneIdentifier = sceneIdentifier
+
+            return result
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write database: \(error)")
+        }
+
+        return nil
+    }
+
+    func createTransferForUpload(session: NCSession.Session,
+                                 serverUrl: String,
+                                 fileName: String,
+                                 livePhoto: Bool,
+                                 nativeFormat: Bool,
+                                 localIdentifier: String,
+                                 uploadSession: String,
+                                 sceneIdentifier: String?) -> TableTransfer? {
+        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", session.account, serverUrl, fileName)
+
+        do {
+            let realm = try Realm()
+            /// verify if already exists
+            if realm.objects(TableTransfer.self).filter(predicate).first != nil {
+                return nil
+            }
+
+            let result = TableTransfer()
+            result.account = session.account
+            result.fileName = fileName
+            result.fileNameView = fileName
+
+            result.serverUrl = serverUrl
+            result.urlBase = session.urlBase
+            result.user = session.user
+            result.userId = session.userId
+
+            if livePhoto {
+                result.livePhotoFile = (fileName as NSString).deletingPathExtension + ".mov"
+            }
+
+            let (_, classFile, iconName, _, _, _) = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false, account: session.account)
+
+            result.classFile = classFile
+            result.iconName = iconName
+            result.nativeFormat = nativeFormat
+            result.assetLocalIdentifier = localIdentifier
+
+            result.session = uploadSession
+            result.sessionSelector = NCGlobal.shared.selectorUploadFile
             result.sessionStatus = NCGlobal.shared.metadataStatusWaitUpload
 
             result.sceneIdentifier = sceneIdentifier
