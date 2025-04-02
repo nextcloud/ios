@@ -336,10 +336,11 @@ final class NCGlobal: Sendable {
 
     // TIP
     //
-    let tipNCViewerPDFThumbnail                                 = "tipncviewerpdfthumbnail"
-    let tipNCCollectionViewCommonAccountRequest                 = "tipnccollectionviewcommonaccountrequest"
-    let tipNCScanAddImage                                       = "tipncscanaddimage"
-    let tipNCViewerMediaDetailView                              = "tipncviewermediadetailview"
+    let tipPDFThumbnail                                         = "tipPDFThumbnail"
+    let tipAccountRequest                                       = "tipAccountRequest"
+    let tipScanAddImage                                         = "tipScanAddImage"
+    let tipMediaDetailView                                      = "tipMediaDetailView"
+    let tipAutoUpload                                           = "tipAutoUpload"    
 
     // ACTION
     //

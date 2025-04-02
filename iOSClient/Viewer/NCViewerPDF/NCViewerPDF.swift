@@ -59,6 +59,8 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     private var pdfThumbnailScrollViewWidthAnchor: NSLayoutConstraint?
     private var pageViewWidthAnchor: NSLayoutConstraint?
 
+    private var tipView: EasyTipView?
+
     // MARK: - View Life Cycle
 
     required init?(coder aDecoder: NSCoder) {
@@ -533,10 +535,10 @@ extension NCViewerPDF: UIGestureRecognizerDelegate {
 extension NCViewerPDF: EasyTipViewDelegate {
     func showTip() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerPDFThumbnail) {
+            if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipPDFThumbnail) {
                 var preferences = EasyTipView.Preferences()
                 preferences.drawing.foregroundColor = .white
-                preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
+                preferences.drawing.backgroundColor = .lightGray
                 preferences.drawing.textAlignment = .left
                 preferences.drawing.arrowPosition = .right
                 preferences.drawing.cornerRadius = 10
@@ -549,25 +551,25 @@ extension NCViewerPDF: EasyTipViewDelegate {
                 preferences.animating.showDuration = 1.5
                 preferences.animating.dismissDuration = 1.5
 
-                if self.appDelegate.tipView == nil {
-                    self.appDelegate.tipView = EasyTipView(text: NSLocalizedString("_tip_pdf_thumbnails_", comment: ""), preferences: preferences, delegate: self)
-                    self.appDelegate.tipView?.show(forView: self.pdfThumbnailScrollView, withinSuperview: self.pdfContainer)
+                if self.tipView == nil {
+                    self.tipView = EasyTipView(text: NSLocalizedString("_tip_pdf_thumbnails_", comment: ""), preferences: preferences, delegate: self)
+                    self.tipView?.show(forView: self.pdfThumbnailScrollView, withinSuperview: self.pdfContainer)
                 }
             }
         }
     }
 
     func easyTipViewDidTap(_ tipView: EasyTipView) {
-        NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerPDFThumbnail)
+        NCManageDatabase.shared.addTip(NCGlobal.shared.tipPDFThumbnail)
     }
 
     func easyTipViewDidDismiss(_ tipView: EasyTipView) { }
 
     func dismissTip() {
-        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerPDFThumbnail) {
-            NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerPDFThumbnail)
+        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipPDFThumbnail) {
+            NCManageDatabase.shared.addTip(NCGlobal.shared.tipPDFThumbnail)
         }
-        appDelegate.tipView?.dismiss()
-        appDelegate.tipView = nil
+        tipView?.dismiss()
+        tipView = nil
     }
 }
