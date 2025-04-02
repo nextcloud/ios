@@ -107,7 +107,7 @@ class NCAutoUpload: NSObject {
             self.endForAssetToUpload = false
 
             for asset in assets {
-                var livePhoto = false
+                var isLivePhoto = false
                 var uploadSession: String = ""
                 let assetDate = asset.creationDate ?? Date()
                 let assetMediaType = asset.mediaType
@@ -121,7 +121,7 @@ class NCAutoUpload: NSObject {
                 }
 
                 if asset.mediaSubtypes.contains(.photoLive), NCKeychain().livePhoto {
-                    livePhoto = true
+                    isLivePhoto = true
                 }
 
                 if assetMediaType == PHAssetMediaType.image && tableAccount.autoUploadWWAnPhoto == false {
@@ -139,7 +139,7 @@ class NCAutoUpload: NSObject {
                 if let transfer = self.database.createTransferForAutoUpload(session: session,
                                                                             serverUrl: serverUrl,
                                                                             fileName: fileName,
-                                                                            livePhoto: livePhoto,
+                                                                            isLivePhoto: isLivePhoto,
                                                                             localIdentifier: asset.localIdentifier,
                                                                             uploadSession: uploadSession,
                                                                             sceneIdentifier: controller?.sceneIdentifier) {
