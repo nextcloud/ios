@@ -25,6 +25,8 @@ class TableTransfer: Object {
     @Persisted var userId = ""
     @Persisted var serverUrl = ""
 
+    //@Persisted var serverUrlTo = ""
+
     @Persisted var sceneIdentifier: String?
     @Persisted var livePhotoFile: String?
     @Persisted var classFile = ""
@@ -66,8 +68,8 @@ class TableTransfer: Object {
 }
 
 extension NCManageDatabase {
-    func createTransferForAutoUpload(session: NCSession.Session, serverUrl: String, fileName: String, isLivePhoto: Bool, localIdentifier: String, uploadSession: String, sceneIdentifier: String?) -> TableTransfer? {
-        /// MOST COMPATIBLE SEARCH --> HEIC --> JPG
+    func autoUpload(session: NCSession.Session, serverUrl: String, fileName: String, livePhotoFile: Bool, localIdentifier: String, uploadSession: String, sceneIdentifier: String?) {
+        // MOST COMPATIBLE SEARCH --> HEIC --> JPG
         var fileNameSearchMetadata = fileName
         let ext = (fileNameSearchMetadata as NSString).pathExtension.lowercased()
         if ext == "heic", NCKeychain().formatCompatibility {
@@ -79,57 +81,32 @@ extension NCManageDatabase {
             let realm = try Realm()
             /// verify if already exists
             if realm.objects(TableTransfer.self).filter(predicate).first != nil {
-                return nil
+                return
             }
-
-            let result = TableTransfer()
-            result.account = session.account
-            result.fileName = fileName
-            result.fileNameView = fileName
-
-            result.serverUrl = serverUrl
-            result.urlBase = session.urlBase
-            result.user = session.user
-            result.userId = session.userId
-
-            if isLivePhoto {
-                result.livePhotoFile = (fileName as NSString).deletingPathExtension + ".mov"
-            }
-
-            result.assetLocalIdentifier = localIdentifier
-            result.session = uploadSession
-            result.sessionSelector = NCGlobal.shared.selectorUploadAutoUpload
-            result.sessionStatus = NCGlobal.shared.metadataStatusWaitUpload
-
-            result.sceneIdentifier = sceneIdentifier
-
-            return result
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write database: \(error)")
-        }
-
-        return nil
-    }
-
-    func createTransferProcessUploads(transfers: [TableTransfer], with verify: Bool = false, completion: @escaping (_ items: Int) -> Void = {_ in}) {
-        var counter: Int = 0
-        do {
-            let realm = try Realm()
             try realm.write {
-                for transfer in transfers {
-                    if verify {
-                        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", transfer.account, transfer.serverUrl, transfer.fileName)
-                        if realm.objects(TableTransfer.self).filter(predicate).first != nil {
-                            continue
-                        }
-                    }
-                    realm.create(TableTransfer.self, value: transfer, update: .all)
-                    counter += 1
+                let result = TableTransfer()
+                result.account = session.account
+                result.fileName = fileName
+                result.fileNameView = fileName
+
+                result.serverUrl = serverUrl
+                result.urlBase = session.urlBase
+                result.user = session.user
+                result.userId = session.userId
+
+                if livePhotoFile {
+                    result.livePhotoFile = (fileName as NSString).deletingPathExtension + ".mov"
                 }
+
+                result.assetLocalIdentifier = localIdentifier
+                result.session = uploadSession
+                result.sessionSelector = NCGlobal.shared.selectorUploadAutoUpload
+                result.sessionStatus = NCGlobal.shared.metadataStatusWaitUpload
+
+                result.sceneIdentifier = sceneIdentifier
             }
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write database: \(error)")
         }
-        completion(counter)
     }
 }
