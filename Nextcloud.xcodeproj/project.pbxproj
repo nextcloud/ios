@@ -784,6 +784,13 @@
 		F799DF8B2C4B84EB003410B5 /* NCCollectionViewCommon+EndToEndInitialize.swift in Sources */ = {isa = PBXBuildFile; fileRef = F799DF8A2C4B84EB003410B5 /* NCCollectionViewCommon+EndToEndInitialize.swift */; };
 		F79A65C32191D90F00FF6DCC /* NCSelect.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F79A65C22191D90F00FF6DCC /* NCSelect.storyboard */; };
 		F79A65C62191D95E00FF6DCC /* NCSelect.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79A65C52191D95E00FF6DCC /* NCSelect.swift */; };
+		F79B59C42D9D331A00A65B65 /* NCManageDatabase+Transfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79B59C32D9D331800A65B65 /* NCManageDatabase+Transfer.swift */; };
+		F79B59C52D9D331A00A65B65 /* NCManageDatabase+Transfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79B59C32D9D331800A65B65 /* NCManageDatabase+Transfer.swift */; };
+		F79B59C62D9D331A00A65B65 /* NCManageDatabase+Transfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79B59C32D9D331800A65B65 /* NCManageDatabase+Transfer.swift */; };
+		F79B59C72D9D331A00A65B65 /* NCManageDatabase+Transfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79B59C32D9D331800A65B65 /* NCManageDatabase+Transfer.swift */; };
+		F79B59C82D9D331A00A65B65 /* NCManageDatabase+Transfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79B59C32D9D331800A65B65 /* NCManageDatabase+Transfer.swift */; };
+		F79B59C92D9D331A00A65B65 /* NCManageDatabase+Transfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79B59C32D9D331800A65B65 /* NCManageDatabase+Transfer.swift */; };
+		F79B59CA2D9D331A00A65B65 /* NCManageDatabase+Transfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79B59C32D9D331800A65B65 /* NCManageDatabase+Transfer.swift */; };
 		F79B646026CA661600838ACA /* UIControl+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79B645F26CA661600838ACA /* UIControl+Extension.swift */; };
 		F79B646126CA661600838ACA /* UIControl+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79B645F26CA661600838ACA /* UIControl+Extension.swift */; };
 		F79B646226CA661600838ACA /* UIControl+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79B645F26CA661600838ACA /* UIControl+Extension.swift */; };
@@ -1648,6 +1655,7 @@
 		F799DF8A2C4B84EB003410B5 /* NCCollectionViewCommon+EndToEndInitialize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCCollectionViewCommon+EndToEndInitialize.swift"; sourceTree = "<group>"; };
 		F79A65C22191D90F00FF6DCC /* NCSelect.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCSelect.storyboard; sourceTree = "<group>"; };
 		F79A65C52191D95E00FF6DCC /* NCSelect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSelect.swift; sourceTree = "<group>"; };
+		F79B59C32D9D331800A65B65 /* NCManageDatabase+Transfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+Transfer.swift"; sourceTree = "<group>"; };
 		F79B645F26CA661600838ACA /* UIControl+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIControl+Extension.swift"; sourceTree = "<group>"; };
 		F79B869A265E19D40085C0E0 /* NSMutableAttributedString+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSMutableAttributedString+Extension.swift"; sourceTree = "<group>"; };
 		F79EDA9F26B004980007D134 /* NCPlayerToolBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCPlayerToolBar.swift; sourceTree = "<group>"; };
@@ -2952,6 +2960,7 @@
 				F7B769A72B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift */,
 				F73EF7C62B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift */,
 				F7C687E82D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift */,
+				F79B59C32D9D331800A65B65 /* NCManageDatabase+Transfer.swift */,
 				F7C9B91C2B582F550064EA91 /* NCManageDatabase+SecurityGuard.swift */,
 				F749B649297B0CBB00087535 /* NCManageDatabase+Share.swift */,
 				F73EF7CE2B0225BA0087E6E9 /* NCManageDatabase+Tag.swift */,
@@ -4103,6 +4112,7 @@
 				F7BF9D872934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift in Sources */,
 				AA8D31592D41052900FE2775 /* NCManageDatabase+DownloadLimit.swift in Sources */,
 				F749B64F297B0CBB00087535 /* NCManageDatabase+Share.swift in Sources */,
+				F79B59CA2D9D331A00A65B65 /* NCManageDatabase+Transfer.swift in Sources */,
 				F359D86D2A7D03420023F405 /* NCUtility+Exif.swift in Sources */,
 				F73EF7AD2B0223900087E6E9 /* NCManageDatabase+Comments.swift in Sources */,
 				F7C9B9232B582F550064EA91 /* NCManageDatabase+SecurityGuard.swift in Sources */,
@@ -4208,6 +4218,7 @@
 				F7490E6F29882B67009DCE94 /* UIImage+Extension.swift in Sources */,
 				F7490E7E29882C6E009DCE94 /* NCManageDatabase+Account.swift in Sources */,
 				F7490E7029882B9B009DCE94 /* NCManageDatabase+Metadata.swift in Sources */,
+				F79B59C82D9D331A00A65B65 /* NCManageDatabase+Transfer.swift in Sources */,
 				F73EF7AC2B0223900087E6E9 /* NCManageDatabase+Comments.swift in Sources */,
 				F73EF7C42B02250B0087E6E9 /* NCManageDatabase+GPS.swift in Sources */,
 				F77DD6AD2C5CC093009448FB /* NCSession.swift in Sources */,
@@ -4268,6 +4279,7 @@
 				F7E98C1727E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */,
 				F79ED0F12D2FCA5B00A389D9 /* NCSectionFirstHeader.swift in Sources */,
 				F79B646126CA661600838ACA /* UIControl+Extension.swift in Sources */,
+				F79B59C92D9D331A00A65B65 /* NCManageDatabase+Transfer.swift in Sources */,
 				F77C973A2953143A00FDDD09 /* NCCameraRoll.swift in Sources */,
 				F740BEF02A35C2AD00E9B6D5 /* UILabel+Extension.swift in Sources */,
 				F7C30E01291BD2610017149B /* NCNetworkingE2EERename.swift in Sources */,
@@ -4385,6 +4397,7 @@
 				F7F3E58C2D3BB65600A32B14 /* NCNetworking+Recommendations.swift in Sources */,
 				F711D63128F44801003F43C8 /* IntentHandler.swift in Sources */,
 				F39170AE2CB82024006127BC /* FileAutoRenamer+Extensions.swift in Sources */,
+				F79B59C42D9D331A00A65B65 /* NCManageDatabase+Transfer.swift in Sources */,
 				F76DEE9728F808AF0041B1C9 /* LockscreenData.swift in Sources */,
 				F72EA95A28B7BD0D00C88F0C /* FilesWidgetView.swift in Sources */,
 				F768823C2C0DD231001CF441 /* NCKeychain.swift in Sources */,
@@ -4527,6 +4540,7 @@
 				F73EF7BB2B0224AB0087E6E9 /* NCManageDatabase+ExternalSites.swift in Sources */,
 				F7817CFC29801A3500FFBC65 /* Data+Extension.swift in Sources */,
 				F72429372AFE39980040AEF3 /* NCLivePhoto.swift in Sources */,
+				F79B59C52D9D331A00A65B65 /* NCManageDatabase+Transfer.swift in Sources */,
 				F7A76DCD256A71CE00119AB3 /* UIImage+Extension.swift in Sources */,
 				F73EF7DB2B0226080087E6E9 /* NCManageDatabase+Tip.swift in Sources */,
 				F71F6D0B2B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */,
@@ -4841,6 +4855,7 @@
 				F78E2D6529AF02DB0024D4F3 /* Database.swift in Sources */,
 				F70CEF5623E9C7E50007035B /* UIColor+Extension.swift in Sources */,
 				F76882242C0DD1E7001CF441 /* NCSettingsAdvancedView.swift in Sources */,
+				F79B59C72D9D331A00A65B65 /* NCManageDatabase+Transfer.swift in Sources */,
 				F785129C2D7989B30087DDD0 /* NCNetworking+TermsOfService.swift in Sources */,
 				F75CA1472962F13700B01130 /* NCHUDView.swift in Sources */,
 				F77BB748289985270090FC19 /* UITabBarController+Extension.swift in Sources */,
@@ -4876,6 +4891,7 @@
 			files = (
 				F78A10C129322E8A008499B8 /* NCManageDatabase+Directory.swift in Sources */,
 				F73EF7C12B02250B0087E6E9 /* NCManageDatabase+GPS.swift in Sources */,
+				F79B59C62D9D331A00A65B65 /* NCManageDatabase+Transfer.swift in Sources */,
 				F343A4BD2A1E734600DDA874 /* Optional+Extension.swift in Sources */,
 				F7A8D73528F17E16008BBE1C /* NCManageDatabase.swift in Sources */,
 				F7A8D74428F1827B008BBE1C /* ThreadSafeDictionary.swift in Sources */,
