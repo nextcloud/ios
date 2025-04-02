@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import OSLog
 
 protocol NCShareCellConfig {
     var title: String { get }
@@ -48,22 +49,29 @@ protocol NCPermission: NCToggleCellConfig {
     static var forDirectory: [Self] { get }
     static var forFile: [Self] { get }
     static func forDirectoryE2EE(account: String) -> [NCPermission]
-    func hasResharePermission(for parentPermission: Int) -> Bool
-    func hasDownload() -> Bool
+    func hasPermission(for parentPermission: Int) -> Bool
+    func hasDownloadPermission() -> Bool
+    func hasReadPermission() -> Bool
 }
 
 enum NCUserPermission: CaseIterable, NCPermission {
-    func hasResharePermission(for parentPermission: Int) -> Bool {
+    func hasPermission(for parentPermission: Int) -> Bool {
+        Logger().info("hasResharePermission \(parentPermission)")
         if self == .download { return true }
         return ((permissionBitFlag & parentPermission) != 0)
     }
 
-    func hasDownload() -> Bool {
+    func hasDownloadPermission() -> Bool {
         return self == .download
+    }
+
+    func hasReadPermission() -> Bool {
+        return self == .read
     }
 
     var permissionBitFlag: Int {
         switch self {
+        case .read: return NCPermissions().permissionReadShare
         case .reshare: return NCPermissions().permissionShareShare
         case .edit: return NCPermissions().permissionUpdateShare
         case .create: return NCPermissions().permissionCreateShare
@@ -95,12 +103,13 @@ enum NCUserPermission: CaseIterable, NCPermission {
         return []
     }
 
-    case reshare, edit, create, delete, download
+    case read, reshare, edit, create, delete, download
     static let forDirectory: [NCUserPermission] = NCUserPermission.allCases
-    static let forFile: [NCUserPermission] = [.reshare, .edit]
+    static let forFile: [NCUserPermission] = [.read, .reshare, .edit]
 
     var title: String {
         switch self {
+        case .read: return NSLocalizedString("_share_can_read_", comment: "")
         case .reshare: return NSLocalizedString("_share_can_reshare_", comment: "")
         case .edit: return NSLocalizedString("_share_can_change_", comment: "")
         case .create: return NSLocalizedString("_share_can_create_", comment: "")
@@ -111,6 +120,10 @@ enum NCUserPermission: CaseIterable, NCPermission {
 }
 
 enum NCLinkPermission: NCPermission {
+    func hasReadPermission() -> Bool {
+        return true
+    }
+
     func didChange(_ share: Shareable, to newValue: Bool) {
         guard self != .allowEdit || newValue else {
             share.permissions = NCPermissions().permissionReadShare
@@ -119,11 +132,11 @@ enum NCLinkPermission: NCPermission {
         share.permissions = permissionValue
     }
 
-    func hasResharePermission(for parentPermission: Int) -> Bool {
+    func hasPermission(for parentPermission: Int) -> Bool {
         permissionValue & parentPermission == permissionValue
     }
 
-    func hasDownload() -> Bool {
+    func hasDownloadPermission() -> Bool {
         return false
     }
 
@@ -250,11 +263,11 @@ enum NCShareDetails: CaseIterable, NCShareCellConfig {
 struct NCShareConfig {
     let permissions: [NCPermission]
     let advanced: [NCShareDetails]
-    let share: Shareable
+    let shareable: Shareable
     let resharePermission: Int
 
     init(parentMetadata: tableMetadata, share: Shareable) {
-        self.share = share
+        self.shareable = share
         self.resharePermission = parentMetadata.sharePermissionsCollaborationServices
         let type: NCPermission.Type = share.shareType == NCShareCommon().SHARE_TYPE_LINK ? NCLinkPermission.self : NCUserPermission.self
         self.permissions = parentMetadata.directory ? (parentMetadata.e2eEncrypted ? type.forDirectoryE2EE(account: parentMetadata.account) : type.forDirectory) : type.forFile
@@ -277,9 +290,18 @@ struct NCShareConfig {
 
     func cellFor(indexPath: IndexPath) -> UITableViewCell? {
         let cellConfig = config(for: indexPath)
-        let cell = cellConfig?.getCell(for: share)
+        let cell = cellConfig?.getCell(for: shareable)
         cell?.textLabel?.text = cellConfig?.title
-        if let cellConfig = cellConfig as? NCPermission, !cellConfig.hasResharePermission(for: resharePermission), !cellConfig.hasDownload() {
+        Logger().info("\(cellConfig?.title ?? "")")
+
+        if let cellConfig = cellConfig as? NCPermission,
+           !cellConfig.hasPermission(for: resharePermission),
+           !cellConfig.hasDownloadPermission() {
+            cell?.isUserInteractionEnabled = false
+            cell?.textLabel?.isEnabled = false
+        }
+
+        if let cellConfig = cellConfig as? NCPermission, cellConfig.hasReadPermission() {
             cell?.isUserInteractionEnabled = false
             cell?.textLabel?.isEnabled = false
         }
@@ -287,15 +309,15 @@ struct NCShareConfig {
     }
 
     func didSelectRow(at indexPath: IndexPath) {
-        let cellConfig = config(for: indexPath)
-        cellConfig?.didSelect(for: share)
-    }
+            let cellConfig = config(for: indexPath)
+            cellConfig?.didSelect(for: shareable)
+        }
 
-    func config(for indexPath: IndexPath) -> NCShareCellConfig? {
-        if indexPath.section == 0, indexPath.row < permissions.count {
-            return permissions[indexPath.row]
-        } else if indexPath.section == 1, indexPath.row < advanced.count {
-            return advanced[indexPath.row]
-        } else { return nil }
+        func config(for indexPath: IndexPath) -> NCShareCellConfig? {
+            if indexPath.section == 0, indexPath.row < permissions.count {
+                return permissions[indexPath.row]
+            } else if indexPath.section == 1, indexPath.row < advanced.count {
+                return advanced[indexPath.row]
+            } else { return nil }
+        }
     }
-}

@@ -50,7 +50,9 @@ class NCPermissions: NSObject {
     let permissionMaxFolderShare: Int = 31
     let permissionDefaultFileRemoteShareNoSupportShareOption: Int = 3
     let permissionDefaultFolderRemoteShareNoSupportShareOption: Int = 15
-    // ATTRIBUTES
+
+    // Additional attributes. This also includes the permission to download.
+    // Check https://docs.nextcloud.com/server/latest/developer_manual/client_apis/OCS/ocs-share-api.html#share-attributes
     let permissionDownloadShare: Int = 0
 
     func isPermissionToRead(_ permission: Int) -> Bool {
