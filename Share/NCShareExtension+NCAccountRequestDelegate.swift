@@ -104,11 +104,11 @@ extension NCShareExtension: NCCreateFormUploadConflictDelegate {
     func dismissCreateFormUploadConflict(transfers: [TableTransfer]?) {
         guard let transfers else {
             uploadStarted = false
-            uploadTransfers.removeAll()
+            self.transfers.removeAll()
             return
         }
 
-        self.uploadTransfers.append(contentsOf: transfers)
+        self.transfers.append(contentsOf: transfers)
         uploadStarted = true
         self.upload()
     }

@@ -59,7 +59,7 @@ class NCCameraRoll: NSObject {
             }
             //transferSource.e2eEncrypted = transfer.isDirectoryE2EE
             if transferSource.chunk > 0 || transferSource.e2eEncrypted {
-                transferSource.session = NCNetworking.shared.sessionUpload
+                transferSource.sessionItendifier = NCNetworking.shared.sessionUpload
             }
             transferSource.isExtractFile = true
 
@@ -122,7 +122,7 @@ class NCCameraRoll: NSObject {
                     }
                     //transfer.e2eEncrypted = transfer.isDirectoryE2EE
                     if transfer.chunk > 0 || transfer.e2eEncrypted {
-                        transfer.session = NCNetworking.shared.sessionUpload
+                        transfer.sessionItendifier = NCNetworking.shared.sessionUpload
                     }
                     transfer.isExtractFile = true
                     transfer = self.database.addTransfer(transfer)
@@ -239,7 +239,7 @@ class NCCameraRoll: NSObject {
         let id = NSUUID().uuidString
         let fileName = (transfer.fileName as NSString).deletingPathExtension + ".mov"
         let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(id, fileNameView: fileName)
-        let sessionItendifier = transfer.e2eEncrypted ? NCNetworking.shared.sessionUpload : transfer.session
+        let sessionItendifier = transfer.e2eEncrypted ? NCNetworking.shared.sessionUpload : transfer.sessionItendifier
 
         PHImageManager.default().requestLivePhoto(for: asset, targetSize: UIScreen.main.bounds.size, contentMode: PHImageContentMode.default, options: options) { livePhoto, _ in
             guard let livePhoto = livePhoto else { return completion(nil) }
