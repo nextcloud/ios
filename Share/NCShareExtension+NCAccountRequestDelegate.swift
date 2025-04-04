@@ -101,14 +101,14 @@ extension NCShareExtension: NCAccountRequestDelegate {
 }
 
 extension NCShareExtension: NCCreateFormUploadConflictDelegate {
-    func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
-        guard let metadatas = metadatas else {
+    func dismissCreateFormUploadConflict(transfers: [TableTransfer]?) {
+        guard let transfers else {
             uploadStarted = false
-            uploadMetadata.removeAll()
+            uploadTransfers.removeAll()
             return
         }
 
-        self.uploadMetadata.append(contentsOf: metadatas)
+        self.uploadTransfers.append(contentsOf: transfers)
         uploadStarted = true
         self.upload()
     }

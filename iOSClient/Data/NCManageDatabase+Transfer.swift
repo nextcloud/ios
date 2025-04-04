@@ -26,7 +26,7 @@ class TableTransfer: Object {
     @Persisted var serverUrl = ""
 
     @Persisted var sceneIdentifier: String?
-    @Persisted var livePhotoFile: String?
+    @Persisted var livePhotoFile: String = ""
     @Persisted var classFile = ""
     @Persisted var contentType = ""
     @Persisted var iconName = ""
@@ -41,7 +41,7 @@ class TableTransfer: Object {
     @Persisted var creationDate = Date()
     @Persisted var modificationDate = Date()
 
-    @Persisted var session = ""
+    @Persisted var sessionItendifier = ""
     @Persisted var sessionDate = Date()
     @Persisted var sessionError = ""
     @Persisted var sessionSelector = ""
@@ -67,6 +67,19 @@ class TableTransfer: Object {
 }
 
 extension NCManageDatabase {
+    func addTransfer(_ transfer: TableTransfer) -> TableTransfer {
+        do {
+            let realm = try Realm()
+            try realm.write {
+                return TableTransfer(value: realm.create(TableTransfer.self, value: transfer, update: .all))
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+        }
+
+        return TableTransfer(value: transfer)
+    }
+
     func createTransferForAutoUpload(session: NCSession.Session,
                                      serverUrl: String,
                                      fileName: String,
@@ -109,7 +122,7 @@ extension NCManageDatabase {
             result.iconName = iconName
             result.assetLocalIdentifier = localIdentifier
 
-            result.session = uploadSession
+            result.sessionItendifier = uploadSession
             result.sessionSelector = NCGlobal.shared.selectorUploadAutoUpload
             result.sessionStatus = NCGlobal.shared.metadataStatusWaitUpload
 
@@ -126,11 +139,12 @@ extension NCManageDatabase {
     func createTransferForUpload(session: NCSession.Session,
                                  serverUrl: String,
                                  fileName: String,
-                                 livePhoto: Bool,
-                                 nativeFormat: Bool,
-                                 localIdentifier: String,
-                                 uploadSession: String,
-                                 sceneIdentifier: String?) -> TableTransfer? {
+                                 livePhoto: Bool = false,
+                                 nativeFormat: Bool = false,
+                                 localIdentifier: String? = nil,
+                                 sessionItendifier: String,
+                                 sessionSelector: String = "NCGlobal.shared.selectorUploadFile",
+                                 sceneIdentifier: String? = nil) -> TableTransfer? {
         let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", session.account, serverUrl, fileName)
 
         do {
@@ -159,9 +173,12 @@ extension NCManageDatabase {
             result.classFile = classFile
             result.iconName = iconName
             result.nativeFormat = nativeFormat
-            result.assetLocalIdentifier = localIdentifier
 
-            result.session = uploadSession
+            if let localIdentifier {
+                result.assetLocalIdentifier = localIdentifier
+            }
+
+            result.sessionItendifier = sessionItendifier
             result.sessionSelector = NCGlobal.shared.selectorUploadFile
             result.sessionStatus = NCGlobal.shared.metadataStatusWaitUpload
 
@@ -173,6 +190,46 @@ extension NCManageDatabase {
         }
 
         return nil
+    }
+
+    func createTransferLivePhotoFileVideoForUpload(transfer: TableTransfer,
+                                                   id: String,
+                                                   fileName: String,
+                                                   size: Int64,
+                                                   sessionItendifier: String) -> TableTransfer {
+        let result = TableTransfer()
+
+        result.id = id
+        result.account = transfer.account
+        result.fileName = fileName
+        result.fileNameView = fileName
+        result.size = size
+
+        result.serverUrl = transfer.serverUrl
+        result.urlBase = transfer.urlBase
+        result.user = transfer.user
+        result.userId = transfer.userId
+
+        result.livePhotoFile = transfer.fileName
+
+        result.classFile = NKCommon.TypeClassFile.video.rawValue
+        result.isExtractFile = true
+
+        if size > NCGlobal.shared.chunkSizeMBCellular {
+            result.chunk = NCGlobal.shared.chunkSizeMBCellular
+        }
+        result.e2eEncrypted = transfer.e2eEncrypted
+
+        result.creationDate = transfer.creationDate
+        result.modificationDate = result.modificationDate
+
+        result.sessionItendifier = sessionItendifier
+        result.sessionSelector = transfer.sessionSelector
+        result.sessionStatus = transfer.sessionStatus
+
+        result.sceneIdentifier = transfer.sceneIdentifier
+
+        return result
     }
 
     func createTransferProcessUploads(transfers: [TableTransfer], with verify: Bool = false, completion: @escaping (_ items: Int) -> Void = {_ in}) {
