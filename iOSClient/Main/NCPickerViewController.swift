@@ -229,7 +229,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                     conflict.account = self.controller.account
                     conflict.delegate = appDelegate
                     conflict.serverUrl = serverUrl
-                    conflict.metadatasUploadInConflict = metadatasInConflict
+                //    conflict.metadatasUploadInConflict = metadatasInConflict
 
                     self.controller.present(conflict, animated: true, completion: nil)
                 }

@@ -230,7 +230,7 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
                                                                     livePhoto: livePhoto,
                                                                     nativeFormat: previewStore.nativeFormat,
                                                                     localIdentifier: asset.localIdentifier,
-                                                                    uploadSession: NCNetworking.shared.sessionUploadBackground,
+                                                                    sessionItendifier: NCNetworking.shared.sessionUploadBackground,
                                                                     sceneIdentifier: controller?.sceneIdentifier) {
 
                 if let previewStore = self.previewStore.first(where: { $0.id == asset.localIdentifier }),

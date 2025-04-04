@@ -47,39 +47,9 @@ class TableTransfer: Object {
     @Persisted var sessionSelector = ""
     @Persisted var sessionTaskIdentifier: Int = 0
     @Persisted var sessionStatus: Int = 0
-
-    /*
-    convenience init(account: String, id: String, timestamp: Date?, name: String, directory: String, extensionType: String, mimeType: String, hasPreview: Bool, reason: String) {
-        self.init()
-
-        self.account = account
-        self.id = id
-        self.primaryKey = account + id
-        self.timestamp = timestamp
-        self.name = name
-        self.directory = directory
-        self.extensionType = extensionType
-        self.mimeType = mimeType
-        self.hasPreview = hasPreview
-        self.reason = reason
-     }
-     */
 }
 
 extension NCManageDatabase {
-    func addTransfer(_ transfer: TableTransfer) -> TableTransfer {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                return TableTransfer(value: realm.create(TableTransfer.self, value: transfer, update: .all))
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
-        }
-
-        return TableTransfer(value: transfer)
-    }
-
     func createTransferForAutoUpload(session: NCSession.Session,
                                      serverUrl: String,
                                      fileName: String,
@@ -232,7 +202,7 @@ extension NCManageDatabase {
         return result
     }
 
-    func createTransferProcessUploads(transfers: [TableTransfer], with verify: Bool = false, completion: @escaping (_ items: Int) -> Void = {_ in}) {
+    func addTransfers(transfers: [TableTransfer], with verify: Bool = false, completion: @escaping (_ items: Int) -> Void = {_ in}) {
         var counter: Int = 0
         do {
             let realm = try Realm()
@@ -252,5 +222,18 @@ extension NCManageDatabase {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write database: \(error)")
         }
         completion(counter)
+    }
+
+    func addTransfer(_ transfer: TableTransfer) -> TableTransfer {
+        do {
+            let realm = try Realm()
+            try realm.write {
+                return TableTransfer(value: realm.create(TableTransfer.self, value: transfer, update: .all))
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+        }
+
+        return TableTransfer(value: transfer)
     }
 }
