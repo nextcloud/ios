@@ -187,12 +187,12 @@ struct NCUploadAssetsView: View {
                                 model.showHUD = true
                             }
                             model.uploadInProgress.toggle()
-                            model.save { metadatasNOConflict, metadatasUploadInConflict in
-                                if metadatasUploadInConflict.isEmpty {
-                                    model.dismissCreateFormUploadConflict(metadatas: metadatasNOConflict)
+                            model.save { transfersNoConflict, transfersInConflict in
+                                if transfersInConflict.isEmpty {
+                                    model.dismissCreateFormUploadConflict(transfers: transfersNOConflict)
                                 } else {
-                                    model.metadatasNOConflict = metadatasNOConflict
-                                    model.metadatasUploadInConflict = metadatasUploadInConflict
+                                    model.transfersNoConflict = transfersNoConflict
+                                    model.transfersInConflict = transfersInConflict
                                     showUploadConflict = true
                                 }
                             }

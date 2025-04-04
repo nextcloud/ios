@@ -58,8 +58,8 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
         NCSession.shared.getSession(controller: controller)
     }
     let database = NCManageDatabase.shared
-    var metadatasNOConflict: [tableMetadata] = []
-    var metadatasUploadInConflict: [tableMetadata] = []
+    var transfersNoConflict: [TableTransfer] = []
+    var transfersInConflict: [TableTransfer] = []
     var timer: Timer?
 
     init(assets: [TLPHAsset], serverUrl: String, controller: NCMainTabBarController?) {
@@ -171,8 +171,8 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
         self.timer = nil
     }
 
-    func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
-        guard let metadatas = metadatas else {
+    func dismissCreateFormUploadConflict(transfers: [TableTransfer]?) {
+        guard let transfers else {
             self.showHUD = false
             self.uploadInProgress.toggle()
             return
@@ -180,9 +180,9 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
 
         func createProcessUploads() {
             if !self.dismissView {
-                NCNetworkingProcess.shared.createProcessUploads(metadatas: metadatas, completion: { _ in
+                self.database.createTransferProcessUploads(transfers: transfers) { items in
                     self.dismissView = true
-                })
+                }
             }
         }
 
@@ -196,10 +196,10 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
         }
     }
 
-    func save(completion: @escaping (_ transferNOConflict: [TableTransfer], _ transferInConflict: [TableTransfer]) -> Void) {
+    func save(completion: @escaping (_ transfersNOConflict: [TableTransfer], _ transfersInConflict: [TableTransfer]) -> Void) {
         let utilityFileSystem = NCUtilityFileSystem()
-        var transferNOConflict: [TableTransfer] = []
-        var transferInConflict: [TableTransfer] = []
+        var transfersNoConflict: [TableTransfer] = []
+        var transfersInConflict: [TableTransfer] = []
         let autoUploadPath = database.getAccountAutoUploadPath(session: self.session)
         var serverUrl = useAutoUploadFolder ? autoUploadPath : serverUrl
 
@@ -260,9 +260,9 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
 
                 if let result = database.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName, nativeFormat: transfer.nativeFormat) {
                     transfer.fileName = result.fileName
-                    transferInConflict.append(transfer)
+                    transfersInConflict.append(transfer)
                 } else {
-                    transferNOConflict.append(transfer)
+                    transfersNoConflict.append(transfer)
                 }
 
             } else {
@@ -270,6 +270,6 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
             }
         }
 
-        completion(transferNOConflict, transferInConflict)
+        completion(transfersNoConflict, transfersInConflict)
     }
 }

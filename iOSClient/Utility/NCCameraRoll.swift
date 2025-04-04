@@ -30,80 +30,80 @@ class NCCameraRoll: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
     let database = NCManageDatabase.shared
 
-    func extractCameraRoll(from metadata: tableMetadata, completition: @escaping (_ metadatas: [tableMetadata]) -> Void) {
-        var metadatas: [tableMetadata] = []
-        let metadataSource = tableMetadata.init(value: metadata)
+    func extractCameraRoll(from transfer: TableTransfer, completition: @escaping (_ transfers: [TableTransfer]) -> Void) {
+        var transfers: [TableTransfer] = []
+        let transferSource = TableTransfer.init(value: transfer)
         var chunkSize = NCGlobal.shared.chunkSizeMBCellular
         if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
             chunkSize = NCGlobal.shared.chunkSizeMBEthernetOrWiFi
         }
-        guard !metadata.isExtractFile else { return  completition([metadataSource]) }
+        guard !transfer.isExtractFile else { return  completition([transferSource]) }
 
-        guard !metadataSource.assetLocalIdentifier.isEmpty else {
-            let filePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadataSource.ocId, fileNameView: metadataSource.fileName)
-            metadataSource.size = utilityFileSystem.getFileSize(filePath: filePath)
-            let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadataSource.fileNameView, mimeType: metadataSource.contentType, directory: false, account: metadataSource.account)
-            metadataSource.contentType = results.mimeType
-            metadataSource.iconName = results.iconName
-            metadataSource.classFile = results.classFile
-            if let date = utilityFileSystem.getFileCreationDate(filePath: filePath) {
-                metadataSource.creationDate = date
+        guard !transferSource.assetLocalIdentifier.isEmpty else {
+            let filePath = utilityFileSystem.getDirectoryProviderStorageOcId(transferSource.id, fileNameView: transferSource.fileName)
+            transferSource.size = utilityFileSystem.getFileSize(filePath: filePath)
+            let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: transferSource.fileNameView, mimeType: transferSource.contentType, directory: false, account: transferSource.account)
+            transferSource.contentType = results.mimeType
+            transferSource.iconName = results.iconName
+            transferSource.classFile = results.classFile
+            if let date = utilityFileSystem.getFileCreationDate(filePath: filePath) as? Date {
+                transferSource.creationDate = date
             }
-            if let date = utilityFileSystem.getFileModificationDate(filePath: filePath) {
-                metadataSource.date = date
+            if let date = utilityFileSystem.getFileModificationDate(filePath: filePath) as? Date {
+                transferSource.modificationDate = date
             }
-            if metadataSource.size > chunkSize {
-                metadataSource.chunk = chunkSize
+            if transferSource.size > chunkSize {
+                transferSource.chunk = chunkSize
             } else {
-                metadataSource.chunk = 0
+                transferSource.chunk = 0
             }
-            metadataSource.e2eEncrypted = metadata.isDirectoryE2EE
-            if metadataSource.chunk > 0 || metadataSource.e2eEncrypted {
-                metadataSource.session = NCNetworking.shared.sessionUpload
+            //transferSource.e2eEncrypted = transfer.isDirectoryE2EE
+            if transferSource.chunk > 0 || transferSource.e2eEncrypted {
+                transferSource.session = NCNetworking.shared.sessionUpload
             }
-            metadataSource.isExtractFile = true
+            transferSource.isExtractFile = true
 
-            metadatas.append(self.database.addMetadata(metadataSource))
+            transfers.append(self.database.addTransfer(transferSource))
 
-            return completition(metadatas)
+            return completition(transfers)
         }
 
-        extractImageVideoFromAssetLocalIdentifier(metadata: metadataSource, modifyMetadataForUpload: true) { metadata, fileNamePath, error in
-            if let metadata = metadata, let fileNamePath = fileNamePath, !error {
-                metadatas.append(metadata)
-                let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+        extractImageVideoFromAssetLocalIdentifier(transfer: transferSource, modifyTransfer: true) { transfer, fileNamePath, error in
+            if let transfer, let fileNamePath = fileNamePath, !error {
+                transfers.append(transfer)
+                let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(transfer.id, fileNameView: transfer.fileNameView)
                 self.utilityFileSystem.moveFile(atPath: fileNamePath, toPath: toPath)
-                let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadataSource.assetLocalIdentifier], options: nil)
-                if metadata.isLivePhoto, fetchAssets.count > 0 {
-                    self.createMetadataLivePhoto(metadata: metadata, asset: fetchAssets.firstObject) { metadata in
-                        if let metadata {
-                            metadatas.append(self.database.addMetadata(metadata))
+                let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [transferSource.assetLocalIdentifier], options: nil)
+                if !transfer.livePhotoFile.isEmpty, fetchAssets.count > 0 {
+                    self.createMetadataLivePhoto(transfer: transfer, asset: fetchAssets.firstObject) { transfer in
+                        if let transfer {
+                            transfers.append(transfer)
                         }
-                        completition(metadatas)
+                        completition(transfers)
                     }
                 } else {
-                    completition(metadatas)
+                    completition(transfers)
                 }
             } else {
-                completition(metadatas)
+                completition(transfers)
             }
         }
     }
 
-    func extractCameraRoll(from metadata: tableMetadata) async -> [tableMetadata] {
+    func extractCameraRoll(from transfer: TableTransfer) async -> [TableTransfer] {
         await withUnsafeContinuation({ continuation in
-            extractCameraRoll(from: metadata) { metadatas in
-                continuation.resume(returning: metadatas)
+            extractCameraRoll(from: transfer) { transfers in
+                continuation.resume(returning: transfers)
             }
         })
     }
 
-    func extractImageVideoFromAssetLocalIdentifier(metadata: tableMetadata,
-                                                   modifyMetadataForUpload: Bool,
-                                                   completion: @escaping (_ metadata: tableMetadata?, _ fileNamePath: String?, _ error: Bool) -> Void) {
+    func extractImageVideoFromAssetLocalIdentifier(transfer: TableTransfer,
+                                                   modifyTransfer: Bool,
+                                                   completion: @escaping (_ transfer: TableTransfer?, _ fileNamePath: String?, _ error: Bool) -> Void) {
 
         var fileNamePath: String?
-        var metadata = metadata
+        var transfer = transfer
         var compatibilityFormat: Bool = false
         var chunkSize = NCGlobal.shared.chunkSizeMBCellular
         if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
@@ -114,24 +114,24 @@ class NCCameraRoll: NSObject {
             if error {
                 completion(nil, nil, true)
             } else {
-                if modifyMetadataForUpload {
-                    if metadata.size > chunkSize {
-                        metadata.chunk = chunkSize
+                if modifyTransfer {
+                    if transfer.size > chunkSize {
+                        transfer.chunk = chunkSize
                     } else {
-                        metadata.chunk = 0
+                        transfer.chunk = 0
                     }
-                    metadata.e2eEncrypted = metadata.isDirectoryE2EE
-                    if metadata.chunk > 0 || metadata.e2eEncrypted {
-                        metadata.session = NCNetworking.shared.sessionUpload
+                    //transfer.e2eEncrypted = transfer.isDirectoryE2EE
+                    if transfer.chunk > 0 || transfer.e2eEncrypted {
+                        transfer.session = NCNetworking.shared.sessionUpload
                     }
-                    metadata.isExtractFile = true
-                    metadata = self.database.addMetadata(metadata)
+                    transfer.isExtractFile = true
+                    transfer = self.database.addTransfer(transfer)
                 }
-                completion(metadata, fileNamePath, error)
+                completion(transfer, fileNamePath, error)
             }
         }
 
-        let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadata.assetLocalIdentifier], options: nil)
+        let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [transfer.assetLocalIdentifier], options: nil)
         guard fetchAssets.count > 0, let asset = fetchAssets.firstObject else {
             return callCompletionWithError()
         }
@@ -140,15 +140,15 @@ class NCCameraRoll: NSObject {
         let creationDate = asset.creationDate ?? Date()
         let modificationDate = asset.modificationDate ?? Date()
 
-        if asset.mediaType == PHAssetMediaType.image && (extensionAsset == "heic" || extensionAsset == "dng") && !metadata.nativeFormat {
-            let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".jpg"
-            metadata.contentType = "image/jpeg"
+        if asset.mediaType == PHAssetMediaType.image && (extensionAsset == "heic" || extensionAsset == "dng") && !transfer.nativeFormat {
+            let fileName = (transfer.fileNameView as NSString).deletingPathExtension + ".jpg"
+            transfer.contentType = "image/jpeg"
             fileNamePath = NSTemporaryDirectory() + fileName
-            metadata.fileNameView = fileName
-            metadata.fileName = fileName
+            transfer.fileNameView = fileName
+            transfer.fileName = fileName
             compatibilityFormat = true
         } else {
-            fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
+            fileNamePath = NSTemporaryDirectory() + transfer.fileNameView
         }
 
         guard let fileNamePath = fileNamePath else { return callCompletionWithError() }
@@ -181,9 +181,9 @@ class NCCameraRoll: NSObject {
                 do {
                     try data.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
                 } catch { return callCompletionWithError() }
-                metadata.creationDate = creationDate as NSDate
-                metadata.date = modificationDate as NSDate
-                metadata.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
+                transfer.creationDate = creationDate
+                transfer.modificationDate = modificationDate
+                transfer.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
                 return callCompletionWithError(false)
             }
 
@@ -202,9 +202,9 @@ class NCCameraRoll: NSObject {
                     self.utilityFileSystem.removeFile(atPath: fileNamePath)
                     do {
                         try FileManager.default.copyItem(at: asset.url, to: URL(fileURLWithPath: fileNamePath))
-                        metadata.creationDate = creationDate as NSDate
-                        metadata.date = modificationDate as NSDate
-                        metadata.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
+                        transfer.creationDate = creationDate
+                        transfer.modificationDate = modificationDate
+                        transfer.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
                         return callCompletionWithError(false)
                     } catch { return callCompletionWithError() }
                 } else if let asset = asset as? AVComposition, asset.tracks.count > 1, let exporter = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetPassthrough) {
@@ -213,9 +213,9 @@ class NCCameraRoll: NSObject {
                     exporter.shouldOptimizeForNetworkUse = true
                     exporter.exportAsynchronously {
                         if exporter.status == .completed {
-                            metadata.creationDate = creationDate as NSDate
-                            metadata.date = modificationDate as NSDate
-                            metadata.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
+                            transfer.creationDate = creationDate
+                            transfer.modificationDate = modificationDate
+                            transfer.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
                             return callCompletionWithError(false)
                         } else { return callCompletionWithError() }
                     }
@@ -228,21 +228,18 @@ class NCCameraRoll: NSObject {
         }
     }
 
-    private func createMetadataLivePhoto(metadata: tableMetadata,
+    private func createMetadataLivePhoto(transfer: TableTransfer,
                                          asset: PHAsset?,
-                                         completion: @escaping (_ metadata: tableMetadata?) -> Void) {
+                                         completion: @escaping (_ transfer: TableTransfer?) -> Void) {
 
         guard let asset = asset else { return completion(nil) }
         let options = PHLivePhotoRequestOptions()
         options.deliveryMode = PHImageRequestOptionsDeliveryMode.fastFormat
         options.isNetworkAccessAllowed = true
-        let ocId = NSUUID().uuidString
-        let fileName = (metadata.fileName as NSString).deletingPathExtension + ".mov"
-        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
-        var chunkSize = NCGlobal.shared.chunkSizeMBCellular
-        if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
-            chunkSize = NCGlobal.shared.chunkSizeMBEthernetOrWiFi
-        }
+        let id = NSUUID().uuidString
+        let fileName = (transfer.fileName as NSString).deletingPathExtension + ".mov"
+        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(id, fileNameView: fileName)
+        let sessionItendifier = transfer.e2eEncrypted ? NCNetworking.shared.sessionUpload : transfer.session
 
         PHImageManager.default().requestLivePhoto(for: asset, targetSize: UIScreen.main.bounds.size, contentMode: PHImageContentMode.default, options: options) { livePhoto, _ in
             guard let livePhoto = livePhoto else { return completion(nil) }
@@ -255,36 +252,12 @@ class NCCameraRoll: NSObject {
             self.utilityFileSystem.removeFile(atPath: fileNamePath)
             PHAssetResourceManager.default().writeData(for: videoResource, toFile: URL(fileURLWithPath: fileNamePath), options: nil) { error in
                 guard error == nil else { return completion(nil) }
-                let session = NCSession.shared.getSession(account: metadata.account)
-                let metadataLivePhoto = self.database.createMetadata(fileName: fileName,
-                                                                     fileNameView: fileName,
-                                                                     ocId: ocId,
-                                                                     serverUrl: metadata.serverUrl,
-                                                                     url: "",
-                                                                     contentType: "",
-                                                                     session: session,
-                                                                     sceneIdentifier: metadata.sceneIdentifier)
-                metadataLivePhoto.livePhotoFile = metadata.fileName
-                metadataLivePhoto.classFile = NKCommon.TypeClassFile.video.rawValue
-                metadataLivePhoto.isExtractFile = true
-                metadataLivePhoto.session = metadata.session
-                metadataLivePhoto.sessionSelector = metadata.sessionSelector
-                metadataLivePhoto.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
-                metadataLivePhoto.status = metadata.status
-                if metadataLivePhoto.size > chunkSize {
-                    metadataLivePhoto.chunk = chunkSize
-                } else {
-                    metadataLivePhoto.chunk = 0
-                }
-                metadataLivePhoto.e2eEncrypted = metadata.isDirectoryE2EE
-                if metadataLivePhoto.chunk > 0 || metadataLivePhoto.e2eEncrypted {
-                    metadataLivePhoto.session = NCNetworking.shared.sessionUpload
-                }
-                metadataLivePhoto.creationDate = metadata.creationDate
-                metadataLivePhoto.date = metadata.date
-                metadataLivePhoto.uploadDate = metadata.uploadDate
-
-                return completion(self.database.addMetadata(metadataLivePhoto))
+                let transferLivePhoto = self.database.createTransferLivePhotoFileVideoForUpload(transfer: transfer,
+                                                                                                id: id,
+                                                                                                fileName: fileName,
+                                                                                                size: self.utilityFileSystem.getFileSize(filePath: fileNamePath),
+                                                                                                sessionItendifier: sessionItendifier)
+                return completion(self.database.addTransfer(transferLivePhoto))
             }
         }
     }

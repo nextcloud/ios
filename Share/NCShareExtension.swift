@@ -63,7 +63,7 @@ class NCShareExtension: UIViewController {
     var progress: CGFloat = 0
     var counterUploaded: Int = 0
     var uploadErrors: [tableMetadata] = []
-    var uploadMetadata: [tableMetadata] = []
+    var transfers: [TableTransfer] = []
     var uploadStarted = false
     let hud = NCHud()
     let utilityFileSystem = NCUtilityFileSystem()
@@ -284,7 +284,7 @@ extension NCShareExtension {
         uploadErrors = []
         var dismissAfterUpload = true
 
-        var conflicts: [tableMetadata] = []
+        var conflicts: [TableTransfer] = []
         var invalidNameIndexes: [Int] = []
 
         for (index, fileName) in filesName.enumerated() {
@@ -316,28 +316,25 @@ extension NCShareExtension {
         }
 
         for fileName in filesName {
-            let ocId = NSUUID().uuidString
-            let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
-            guard utilityFileSystem.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath) else { continue }
-            let metadataForUpload = self.database.createMetadata(fileName: fileName,
-                                                                 fileNameView: fileName,
-                                                                 ocId: ocId,
-                                                                 serverUrl: serverUrl,
-                                                                 url: "",
-                                                                 contentType: "",
-                                                                 session: session,
-                                                                 sceneIdentifier: nil)
 
-            metadataForUpload.session = NCNetworking.shared.sessionUpload
-            metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFileShareExtension
-            metadataForUpload.size = utilityFileSystem.getFileSize(filePath: toPath)
-            metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
-            metadataForUpload.sessionDate = Date()
-            if self.database.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName, nativeFormat: metadataForUpload.nativeFormat) != nil {
-                conflicts.append(metadataForUpload)
-            } else {
-                uploadMetadata.append(metadataForUpload)
-            }
+           if let transfer = database.createTransferForUpload(session: session,
+                                                              serverUrl: serverUrl,
+                                                              fileName: fileName,
+                                                              sessionItendifier: NCNetworking.shared.sessionUpload,
+                                                              sessionSelector: NCGlobal.shared.selectorUploadFileShareExtension) {
+               let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(transfer.id, fileNameView: fileName)
+               guard utilityFileSystem.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath)
+               else {
+                   continue
+               }
+               transfer.size = utilityFileSystem.getFileSize(filePath: toPath)
+
+               if self.database.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName, nativeFormat: transfer.nativeFormat) != nil {
+                   conflicts.append(transfer)
+               } else {
+                   transfers.append(transfer)
+               }
+           }
         }
 
         tableView.reloadData()
@@ -348,7 +345,7 @@ extension NCShareExtension {
 
             conflict.account = session.account
             conflict.serverUrl = self.serverUrl
-            conflict.metadatasUploadInConflict = conflicts
+            conflict.transfersInConflict = conflicts
             conflict.delegate = self
             self.present(conflict, animated: true, completion: nil)
         } else {
@@ -359,25 +356,17 @@ extension NCShareExtension {
 
     func upload(dismissAfterUpload: Bool = true) {
         guard uploadStarted else { return }
-        guard uploadMetadata.count > counterUploaded else { return DispatchQueue.main.async { self.finishedUploading(dismissAfterUpload: dismissAfterUpload) } }
-        let metadata = uploadMetadata[counterUploaded]
-        let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false, account: session.account)
+        guard transfers.count > counterUploaded else { return DispatchQueue.main.async { self.finishedUploading(dismissAfterUpload: dismissAfterUpload) } }
+        let transfer = transfers[counterUploaded]
 
-        metadata.contentType = results.mimeType
-        metadata.iconName = results.iconName
-        metadata.classFile = results.classFile
         // CHUNK
         var chunkSize = NCGlobal.shared.chunkSizeMBCellular
         if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
             chunkSize = NCGlobal.shared.chunkSizeMBEthernetOrWiFi
         }
-        if metadata.size > chunkSize {
-            metadata.chunk = chunkSize
-        } else {
-            metadata.chunk = 0
+        if transfer.size > chunkSize {
+            transfer.chunk = chunkSize
         }
-        // E2EE
-        metadata.e2eEncrypted = metadata.isDirectoryE2EE
 
         hud.initHudRing(view: self.view,
                         text: NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(self.filesName.count)")
