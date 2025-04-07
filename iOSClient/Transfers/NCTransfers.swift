@@ -25,7 +25,7 @@ import UIKit
 import NextcloudKit
 
 class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
-    var metadataTemp: tableMetadata?
+    var transferTemp: TableTransfer?
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -176,8 +176,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func longPressListItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer) {
         if gestureRecognizer.state != .began { return }
 
-        if let metadata = self.database.getMetadataFromOcIdAndocIdTransfer(ocIdTransfer) {
-            metadataTemp = metadata
+        if let transfer = self.database.getTransferFrom(id: ocIdTransfer) {
+            transferTemp = transfer
             let touchPoint = gestureRecognizer.location(in: collectionView)
             becomeFirstResponder()
             let startTaskItem = UIMenuItem(title: NSLocalizedString("_force_start_", comment: ""), action: #selector(startTask(_:)))
@@ -189,11 +189,11 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func longPressCollecationView(_ gestureRecognizer: UILongPressGestureRecognizer) { }
 
     @objc func startTask(_ notification: Any) {
-        guard let metadata = metadataTemp else { return }
+        guard let transfer = transferTemp else { return }
         let cameraRoll = NCCameraRoll()
 
-        cameraRoll.extractCameraRoll(from: metadata) { metadatas in
-            for metadata in metadatas {
+        cameraRoll.extractCameraRoll(from: transfer) { transfers in
+            for transfer in transfers {
                 if let metadata = self.database.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusUploading) {
                     NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
                     NCNetworking.shared.upload(metadata: metadata)
@@ -204,7 +204,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         if action != #selector(startTask(_:)) { return false }
-        guard let metadata = metadataTemp else { return false }
+        guard let transfer = transferTemp else { return false }
         if metadata.isDirectoryE2EE { return false }
 
         if metadata.isUpload {

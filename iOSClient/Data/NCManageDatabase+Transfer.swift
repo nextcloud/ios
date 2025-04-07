@@ -236,4 +236,22 @@ extension NCManageDatabase {
 
         return TableTransfer(value: transfer)
     }
+
+    func getTransferFrom(id: String?) -> TableTransfer? {
+        guard let id else { return nil }
+
+        do {
+            let realm = try Realm()
+            if let result = realm.objects(TableTransfer.self).filter("id == %@", id).first {
+                return TableTransfer(value: result)
+            }
+            if let result = realm.objects(TableTransfer.self).filter("id == %@", id).first {
+                return TableTransfer(value: result)
+            }
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
+        }
+        return nil
+    }
+
 }
