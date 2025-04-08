@@ -34,8 +34,6 @@ import SwiftUI
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     var backgroundSessionCompletionHandler: (() -> Void)?
-    var activeLogin: NCLogin?
-    var activeLoginWeb: NCLoginProvider?
     var taskAutoUploadDate: Date = Date()
     var isUiTestingEnabled: Bool {
         return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
@@ -356,18 +354,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
 
-        if activeLogin?.view.window == nil {
-            if selector == NCGlobal.shared.introSignUpWithProvider {
-                // Login via provider
-                activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginProvider") as? NCLoginProvider
-                activeLoginWeb?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
-                showLoginViewController(activeLoginWeb)
-            } else {
-                // Regular login
-                activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
-                activeLogin?.urlBase = NCBrandOptions.shared.disable_request_login_url ? NCBrandOptions.shared.loginBaseUrl : ""
-                showLoginViewController(activeLogin)
-            }
+        if selector == NCGlobal.shared.introSignUpWithProvider {
+            // Login via provider
+            let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginProvider") as? NCLoginProvider
+            viewController?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
+            showLoginViewController(viewController)
+        } else if selector == NCGlobal.shared.addNewAccount {
+            let viewController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? NCIntroViewController
+            showLoginViewController(viewController)
+        } else {
+            // Regular login
+            let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
+            viewController?.urlBase = NCBrandOptions.shared.disable_request_login_url ? NCBrandOptions.shared.loginBaseUrl : ""
+            showLoginViewController(viewController)
         }
     }
 
