@@ -325,50 +325,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
-    // MARK: - Login
-
-    func openLogin(selector: Int, window: UIWindow? = nil) {
+    /*
+    func openLogin(selector: Int, navigationController: UINavigationController, window: UIWindow? = nil) {
         UIApplication.shared.allSceneSessionDestructionExceptFirst()
-
-        func showLoginViewController(_ viewController: UIViewController?) {
-            guard let viewController else { return }
-            let navigationController = NCLoginNavigationController(rootViewController: viewController)
-
-            navigationController.modalPresentationStyle = .fullScreen
-            navigationController.navigationBar.barStyle = .black
-            navigationController.navigationBar.tintColor = NCBrandColor.shared.customerText
-            navigationController.navigationBar.barTintColor = NCBrandColor.shared.customer
-            navigationController.navigationBar.isTranslucent = false
-
-            if let controller = UIApplication.shared.firstWindow?.rootViewController {
-                if let presentedVC = controller.presentedViewController, !(presentedVC is NCLoginNavigationController) {
-                    presentedVC.dismiss(animated: false) {
-                        controller.present(navigationController, animated: true)
-                    }
-                } else {
-                    controller.present(navigationController, animated: true)
-                }
-            } else {
-                window?.rootViewController = navigationController
-                window?.makeKeyAndVisible()
-            }
+        /*
+        guard let navigationController = UIApplication.shared.firstWindow?.rootViewController as? UINavigationController
+        else {
+            return
         }
+        */
 
         if selector == NCGlobal.shared.introSignUpWithProvider {
-            // Login via provider
-            let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginProvider") as? NCLoginProvider
-            viewController?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
-            showLoginViewController(viewController)
-        } else if selector == NCGlobal.shared.addNewAccount {
-            let viewController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? NCIntroViewController
-            showLoginViewController(viewController)
+            if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginProvider") as? NCLoginProvider {
+                viewController.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
+                navigationController.pushViewController(viewController, animated: true)
+            }
         } else {
-            // Regular login
-            let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
-            viewController?.urlBase = NCBrandOptions.shared.disable_request_login_url ? NCBrandOptions.shared.loginBaseUrl : ""
-            showLoginViewController(viewController)
+            if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin {
+                viewController.urlBase = NCBrandOptions.shared.disable_request_login_url ? NCBrandOptions.shared.loginBaseUrl : ""
+                navigationController.pushViewController(viewController, animated: true)
+            }
         }
     }
+    */
 
     // MARK: -
 

@@ -370,7 +370,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
             let actionYes = UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
                 let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-                appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
+                // appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
             }
 
             let actionNo = UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (_: UIAlertAction) in

@@ -78,7 +78,6 @@ final class NCGlobal: Sendable {
     //
     let introLogin: Int                             = 0
     let introSignUpWithProvider: Int                = 1
-    let addNewAccount:Int                           = 3
 
     // Avatar
     //

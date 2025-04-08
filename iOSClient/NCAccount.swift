@@ -181,7 +181,7 @@ class NCAccount: NSObject {
                let account = accounts.first {
                 changeAccount(account, userProfile: nil, controller: controller) { }
             } else {
-                appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
+               // appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
             }
 
             completion()

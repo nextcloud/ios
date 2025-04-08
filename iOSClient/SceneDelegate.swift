@@ -80,10 +80,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 UserDefaults.standard.removePersistentDomain(forName: bundleID)
             }
             if NCBrandOptions.shared.disable_intro {
-                appDelegate.openLogin(selector: NCGlobal.shared.introLogin, window: window)
+            //    appDelegate.openLogin(selector: NCGlobal.shared.introLogin, window: window)
             } else {
-                if let viewController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? NCIntroViewController {
-                    let navigationController = NCLoginNavigationController(rootViewController: viewController)
+                if let navigationController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? UINavigationController {
+                    let viewController = navigationController.topViewController
                     window?.rootViewController = navigationController
                     window?.makeKeyAndVisible()
                 }
@@ -100,8 +100,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let session = SceneManager.shared.getSession(scene: scene)
 
         // In Login mode is possible ONLY 1 window
-        if (UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }).count > 1,
-           (UIApplication.shared.firstWindow?.rootViewController is NCLoginNavigationController) {
+        if (UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }).count > 1 {
+           // (UIApplication.shared.firstWindow?.rootViewController is NCLoginNavigationController) {
             UIApplication.shared.allSceneSessionDestructionExceptFirst()
             return
         }

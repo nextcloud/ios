@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="QS9-pa-PcE">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="FuM-W8-BTv">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -18,7 +18,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="o6I-qu-IDh">
-                                <rect key="frame" x="8" y="108" width="398" height="398"/>
+                                <rect key="frame" x="8" y="200" width="398" height="398"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="o6I-qu-IDh" secondAttribute="height" multiplier="1:1" priority="750" id="N8S-l1-3ac"/>
@@ -32,14 +32,14 @@
                                 </collectionViewFlowLayout>
                             </collectionView>
                             <pageControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" numberOfPages="3" translatesAutoresizingMaskIntoConstraints="NO" id="Eu1-Gv-7Jx">
-                                <rect key="frame" x="170" y="514" width="74" height="10"/>
+                                <rect key="frame" x="170" y="606" width="74" height="10"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="10" id="6xY-X5-z4w"/>
                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="10" id="HuN-3g-bM7"/>
                                 </constraints>
                             </pageControl>
                             <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Yyc-bK-mqW">
-                                <rect key="frame" x="72" y="588" width="270" height="40"/>
+                                <rect key="frame" x="72" y="680" width="270" height="40"/>
                                 <accessibility key="accessibilityConfiguration" identifier="login"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="h0h-Pp-A9q"/>
@@ -52,7 +52,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="N4X-JQ-1c1">
-                                <rect key="frame" x="72" y="636" width="270" height="40"/>
+                                <rect key="frame" x="72" y="728" width="270" height="40"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="Z1i-8h-Kkj"/>
                                     <constraint firstAttribute="width" constant="270" id="ski-k5-xeL"/>
@@ -64,7 +64,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Z5d-gx-rTR">
-                                <rect key="frame" x="72" y="832" width="270" height="30"/>
+                                <rect key="frame" x="72" y="798" width="270" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="270" id="rtc-VW-fLA"/>
                                     <constraint firstAttribute="height" constant="30" id="wPA-Ly-uB0"/>
@@ -97,6 +97,7 @@
                             <constraint firstItem="Eu1-Gv-7Jx" firstAttribute="centerX" secondItem="Xnz-EW-9gg" secondAttribute="centerX" id="rML-gL-iXA"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="0IX-p8-GUd"/>
                     <connections>
                         <outlet property="buttonHost" destination="Z5d-gx-rTR" id="Ngu-DS-yLh"/>
                         <outlet property="buttonLogin" destination="Yyc-bK-mqW" id="LPF-TP-LmK"/>
@@ -107,7 +108,25 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0nF-77-z2t" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-158" y="123"/>
+            <point key="canvasLocation" x="750.72463768115949" y="122.54464285714285"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="ORX-EL-cKy">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="FuM-W8-BTv" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="pzW-uK-RG0">
+                        <rect key="frame" x="0.0" y="96" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="QS9-pa-PcE" kind="relationship" relationship="rootViewController" id="eLO-W0-bjz"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="myu-up-6If" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-159.42028985507247" y="122.54464285714285"/>
         </scene>
     </scenes>
     <resources>
