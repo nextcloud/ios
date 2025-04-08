@@ -61,7 +61,7 @@ class NCMainTabBar: UITabBar {
     }
 
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-        let button = self.viewWithTag(99)
+        let button = self.viewWithTag(105)
         if self.bounds.contains(point) || (button != nil && button!.frame.contains(point)) {
             return true
         } else {
@@ -162,7 +162,7 @@ class NCMainTabBar: UITabBar {
 
         // Center button
 
-        if let centerButton = self.viewWithTag(99) {
+        if let centerButton = self.viewWithTag(105) {
             centerButton.removeFromSuperview()
         }
 
@@ -173,7 +173,7 @@ class NCMainTabBar: UITabBar {
         centerButton.setImage(imagePlus, for: .normal)
         centerButton.backgroundColor = color
         centerButton.tintColor = UIColor.white
-        centerButton.tag = 99
+        centerButton.tag = 105
         centerButton.accessibilityLabel = NSLocalizedString("_accessibility_add_upload_", comment: "")
         centerButton.layer.cornerRadius = centerButton.frame.size.width / 2.0
         centerButton.layer.masksToBounds = false
@@ -237,7 +237,7 @@ class NCMainTabBar: UITabBar {
     }
 
     func getCenterButton() -> UIView? {
-        if let centerButton = self.viewWithTag(99) {
+        if let centerButton = self.viewWithTag(105) {
             return centerButton
         } else {
             return nil
