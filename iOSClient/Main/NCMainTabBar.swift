@@ -123,6 +123,7 @@ class NCMainTabBar: UITabBar {
             item.title = NSLocalizedString("_home_", comment: "")
             item.image = UIImage(systemName: "folder.fill")
             item.selectedImage = item.image
+            item.tag = 100
         }
 
         // Favorite
@@ -130,6 +131,7 @@ class NCMainTabBar: UITabBar {
             item.title = NSLocalizedString("_favorites_", comment: "")
             item.image = UIImage(systemName: "star.fill")
             item.selectedImage = item.image
+            item.tag = 101
         }
 
         // +
@@ -138,6 +140,7 @@ class NCMainTabBar: UITabBar {
             item.title = ""
             item.image = nil
             item.isEnabled = false
+            item.tag = 102
         }
 
         // Media
@@ -145,6 +148,7 @@ class NCMainTabBar: UITabBar {
             item.title = NSLocalizedString("_media_", comment: "")
             item.image = UIImage(systemName: "photo")
             item.selectedImage = item.image
+            item.tag = 103
         }
 
         // More
@@ -153,6 +157,7 @@ class NCMainTabBar: UITabBar {
             item.image = UIImage(systemName: "line.3.horizontal")
             item.image = UIImage(systemName: "ellipsis")
             item.selectedImage = item.image
+            item.tag = 104
         }
 
         // Center button

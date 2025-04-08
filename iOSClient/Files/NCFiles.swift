@@ -113,7 +113,12 @@ class NCFiles: NCCollectionViewCommon {
             getServerData()
         }
 
-        self.showTipAutoUpload()
+        view.setNeedsLayout()
+        view.layoutIfNeeded()
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.showTipAutoUpload()
+        }
     }
 
     override func viewDidDisappear(_ animated: Bool) {
