@@ -211,14 +211,12 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     }
 
     @IBAction func login(_ sender: Any) {
-        UIApplication.shared.allSceneSessionDestructionExceptFirst()
         if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin {
             self.navigationController?.pushViewController(viewController, animated: true)
         }
     }
 
     @IBAction func signupWithProvider(_ sender: Any) {
-        UIApplication.shared.allSceneSessionDestructionExceptFirst()
         if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginProvider") as? NCLoginProvider {
             viewController.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
             self.navigationController?.pushViewController(viewController, animated: true)

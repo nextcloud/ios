@@ -325,30 +325,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
-    /*
-    func openLogin(selector: Int, navigationController: UINavigationController, window: UIWindow? = nil) {
-        UIApplication.shared.allSceneSessionDestructionExceptFirst()
-        /*
-        guard let navigationController = UIApplication.shared.firstWindow?.rootViewController as? UINavigationController
-        else {
-            return
-        }
-        */
-
-        if selector == NCGlobal.shared.introSignUpWithProvider {
-            if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginProvider") as? NCLoginProvider {
-                viewController.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
-                navigationController.pushViewController(viewController, animated: true)
-            }
-        } else {
-            if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin {
-                viewController.urlBase = NCBrandOptions.shared.disable_request_login_url ? NCBrandOptions.shared.loginBaseUrl : ""
-                navigationController.pushViewController(viewController, animated: true)
-            }
-        }
-    }
-    */
-
     // MARK: -
 
     func trustCertificateError(host: String) {
