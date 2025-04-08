@@ -66,7 +66,8 @@ class NCFilesNavigationController: NCMainNavigationController {
         func createLeftMenu() -> UIMenu? {
             var childrenAccountSubmenu: [UIMenuElement] = []
             let accounts = database.getAllAccountOrderAlias()
-            guard !accounts.isEmpty
+            guard !accounts.isEmpty,
+                  let controller = collectionViewCommon?.controller
             else {
                 return nil
             }
@@ -83,7 +84,7 @@ class NCFilesNavigationController: NCMainNavigationController {
                     name = account.alias
                 }
 
-                let action = UIAction(title: name, image: image, state: account.active ? .on : .off) { _ in
+                let action = UIAction(title: name, image: image, state: account.account == controller.account ? .on : .off) { _ in
                     if !account.active {
                         NCAccount().changeAccount(account.account, userProfile: nil, controller: self.controller) { }
                         self.collectionViewCommon?.setEditMode(false)
