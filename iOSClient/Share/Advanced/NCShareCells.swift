@@ -301,23 +301,25 @@ struct NCShareConfig {
             cell?.textLabel?.isEnabled = false
         }
 
+        // Read permission is always enabled and we show it as a non-interactable permissoin for brevity.
         if let cellConfig = cellConfig as? NCPermission, cellConfig.hasReadPermission() {
             cell?.isUserInteractionEnabled = false
             cell?.textLabel?.isEnabled = false
         }
+
         return cell
     }
 
     func didSelectRow(at indexPath: IndexPath) {
-            let cellConfig = config(for: indexPath)
-            cellConfig?.didSelect(for: shareable)
-        }
-
-        func config(for indexPath: IndexPath) -> NCShareCellConfig? {
-            if indexPath.section == 0, indexPath.row < permissions.count {
-                return permissions[indexPath.row]
-            } else if indexPath.section == 1, indexPath.row < advanced.count {
-                return advanced[indexPath.row]
-            } else { return nil }
-        }
+        let cellConfig = config(for: indexPath)
+        cellConfig?.didSelect(for: shareable)
     }
+
+    func config(for indexPath: IndexPath) -> NCShareCellConfig? {
+        if indexPath.section == 0, indexPath.row < permissions.count {
+            return permissions[indexPath.row]
+        } else if indexPath.section == 1, indexPath.row < advanced.count {
+            return advanced[indexPath.row]
+        } else { return nil }
+    }
+}

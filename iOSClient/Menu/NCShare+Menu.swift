@@ -96,8 +96,8 @@ extension NCShare {
         var actions = [NCMenuAction]()
         let permissions = NCPermissions()
 
-        actions.append(
-            NCMenuAction(
+        actions.append(contentsOf:
+            [NCMenuAction(
                 title: NSLocalizedString("_share_read_only_", comment: ""),
                 icon: utility.loadImage(named: "eye", colors: [NCBrandColor.shared.iconImageColor]),
                 selected: tableShare.permissions == (permissions.permissionReadShare + permissions.permissionShareShare) || tableShare.permissions == permissions.permissionReadShare,
@@ -107,10 +107,7 @@ extension NCShare {
                     let permissions = permissions.getPermission(canEdit: false, canCreate: false, canChange: false, canDelete: false, canShare: canShare, isDirectory: isDirectory)
                     self.updateSharePermissions(share: tableShare, permissions: permissions)
                 }
-            )
-        )
-
-        actions.append(
+            ),
             NCMenuAction(
                 title: isDirectory ? NSLocalizedString("_share_allow_upload_", comment: "") : NSLocalizedString("_share_editing_", comment: ""),
                 icon: utility.loadImage(named: "pencil", colors: [NCBrandColor.shared.iconImageColor]),
@@ -121,7 +118,14 @@ extension NCShare {
                     let permissions = permissions.getPermission(canEdit: true, canCreate: true, canChange: true, canDelete: true, canShare: canShare, isDirectory: isDirectory)
                     self.updateSharePermissions(share: tableShare, permissions: permissions)
                 }
-            )
+            ),
+            NCMenuAction(
+                title: NSLocalizedString("_custom_permissions_", comment: ""),
+                icon: utility.loadImage(named: "ellipsis", colors: [NCBrandColor.shared.iconImageColor]),
+                action: { _ in
+
+                }
+            )]
         )
 
         self.presentMenu(with: actions)
