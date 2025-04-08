@@ -80,10 +80,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 UserDefaults.standard.removePersistentDomain(forName: bundleID)
             }
             if NCBrandOptions.shared.disable_intro {
-            //    appDelegate.openLogin(selector: NCGlobal.shared.introLogin, window: window)
+                if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin {
+                   let navigationController = UINavigationController(rootViewController: viewController)
+                    window?.rootViewController = navigationController
+                    window?.makeKeyAndVisible()
+                }
             } else {
                 if let navigationController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? UINavigationController {
-                    let viewController = navigationController.topViewController
                     window?.rootViewController = navigationController
                     window?.makeKeyAndVisible()
                 }
