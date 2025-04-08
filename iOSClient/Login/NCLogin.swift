@@ -85,6 +85,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             baseUrlTextField.isEnabled = false
             baseUrlTextField.isUserInteractionEnabled = false
             baseUrlTextField.alpha = 0.5
+            urlBase = NCBrandOptions.shared.loginBaseUrl
         }
 
         // certificate

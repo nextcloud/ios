@@ -213,7 +213,6 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     @IBAction func login(_ sender: Any) {
         UIApplication.shared.allSceneSessionDestructionExceptFirst()
         if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin {
-            viewController.urlBase = NCBrandOptions.shared.disable_request_login_url ? NCBrandOptions.shared.loginBaseUrl : ""
             self.navigationController?.pushViewController(viewController, animated: true)
         }
     }
