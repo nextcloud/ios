@@ -208,8 +208,7 @@ class NCAccount: NSObject {
 
     func checkRemoteUser(account: String, controller: NCMainTabBarController?, completion: @escaping () -> Void = {}) {
         let token = NCKeychain().getPassword(account: account)
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
-              let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account))
+        guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account))
         else {
             return completion()
         }
@@ -220,7 +219,22 @@ class NCAccount: NSObject {
                let account = accounts.first {
                 changeAccount(account, userProfile: nil, controller: controller) { }
             } else {
-               // appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
+                if NCBrandOptions.shared.disable_intro {
+                    if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin {
+                        viewController.controller = controller
+                        let navigationController = UINavigationController(rootViewController: viewController)
+                        navigationController.modalPresentationStyle = .fullScreen
+                        controller?.present(navigationController, animated: true)
+                    }
+                } else {
+                    if let navigationController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? UINavigationController {
+                        if let viewController = navigationController.topViewController as? NCIntroViewController {
+                            viewController.controller = controller
+                        }
+                        navigationController.modalPresentationStyle = .fullScreen
+                        controller?.present(navigationController, animated: true)
+                    }
+                }
             }
 
             completion()
