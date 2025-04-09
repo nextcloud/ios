@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1400"
+   LastUpgradeVersion = "1540"
    wasCreatedForAppExtension = "YES"
    version = "2.0">
    <BuildAction
@@ -15,9 +15,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "F771E3CF20E2392D00AFB62D"
-               BuildableName = "File Provider Extension.appex"
-               BlueprintName = "File Provider Extension"
+               BlueprintIdentifier = "F77B0DEB1D118A16002130FE"
+               BuildableName = "Nextcloud.app"
+               BlueprintName = "Nextcloud"
                ReferencedContainer = "container:Nextcloud.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -29,9 +29,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "F77B0DEB1D118A16002130FE"
-               BuildableName = "Nextcloud.app"
-               BlueprintName = "Nextcloud"
+               BlueprintIdentifier = "F771E3CF20E2392D00AFB62D"
+               BuildableName = "File Provider Extension.appex"
+               BlueprintName = "File Provider Extension"
                ReferencedContainer = "container:Nextcloud.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -120,8 +120,7 @@
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES"
       launchAutomaticallySubstyle = "2">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F77B0DEB1D118A16002130FE"
@@ -129,7 +128,7 @@
             BlueprintName = "Nextcloud"
             ReferencedContainer = "container:Nextcloud.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

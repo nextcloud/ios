@@ -44,18 +44,16 @@ class NCShareCell: UITableViewCell {
         self.fileName = fileName
         let resultInternalType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false)
 
-        backgroundColor = .systemBackground
+        backgroundColor = NCBrandColor.shared.appBackgroundColor
         imageCell?.layer.cornerRadius = 6
         imageCell?.layer.masksToBounds = true
 
         if let image = UIImage.downsample(imageAt: URL(fileURLWithPath: NSTemporaryDirectory() + fileName), to: CGSize(width: 80, height: 80)) {
             imageCell.image = image
+            imageCell.contentMode = .scaleAspectFill
         } else {
-            if !resultInternalType.iconName.isEmpty {
-                imageCell?.image = UIImage(named: resultInternalType.iconName)
-            } else {
-                imageCell?.image = NCImageCache.images.file
-            }
+            imageCell.image = utility.loadImage(named: resultInternalType.iconName, useTypeIconFile: true)
+            imageCell.contentMode = .scaleAspectFit
         }
 
         fileNameCell?.text = fileName
@@ -63,7 +61,7 @@ class NCShareCell: UITableViewCell {
         let fileSize = utilityFileSystem.getFileSize(filePath: (NSTemporaryDirectory() + fileName))
         sizeCell?.text = utilityFileSystem.transformedSize(fileSize)
 
-        moreButton?.setImage(utility.loadImage(named: "more").image(color: .label, size: 15), for: .normal)
+        moreButton?.setImage(NCImageCache.images.buttonMore, for: .normal)
     }
 
     @IBAction func buttonTapped(_ sender: Any) {

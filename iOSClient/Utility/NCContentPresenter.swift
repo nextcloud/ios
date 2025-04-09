@@ -78,7 +78,7 @@ class NCContentPresenter: NSObject {
     }
 
     func showInfo(title: String = "", description: String = "") {
-        self.flatTop(title: NSLocalizedString(title, comment: ""), description: NSLocalizedString(description, comment: ""), delay: NCGlobal.shared.dismissAfterSecond, imageName: nil, type: .info, priority: .normal)
+        self.flatTop(title: NSLocalizedString(title, comment: ""), description: NSLocalizedString(description, comment: ""), delay: NCGlobal.shared.dismissAfterSecond, type: .info, priority: .normal)
     }
 
     func showWarning(error: NKError, priority: EKAttributes.Precedence.Priority = .normal) {
@@ -108,7 +108,7 @@ class NCContentPresenter: NSObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + afterDelay) {
             switch error.errorCode {
             case Int(CFNetworkErrors.cfurlErrorNotConnectedToInternet.rawValue):
-                let image = UIImage(named: "networkInProgress")!.image(color: .white, size: 20)
+                let image = UIImage(named: "InfoNetwork")?.image(color: .white, size: 20)
                 self.noteTop(text: NSLocalizedString(title, comment: ""), image: image, color: .lightGray, delay: delay, priority: .max)
             default:
                 var responseMessage = ""
@@ -124,7 +124,7 @@ class NCContentPresenter: NSObject {
                 }
                 if error.errorDescription.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { return }
                 let description = NSLocalizedString(error.errorDescription, comment: "")
-                self.flatTop(title: NSLocalizedString(title, comment: ""), description: description + responseMessage, delay: delay, imageName: nil, type: type, priority: priority, dropEnqueuedEntries: dropEnqueuedEntries)
+                self.flatTop(title: NSLocalizedString(title, comment: ""), description: description + responseMessage, delay: delay, type: type, priority: priority, dropEnqueuedEntries: dropEnqueuedEntries)
             }
         }
     }
@@ -163,12 +163,10 @@ class NCContentPresenter: NSObject {
 
     // MARK: - Flat message
 
-    private func flatTop(title: String, description: String, delay: TimeInterval, imageName: String?, type: messageType, priority: EKAttributes.Precedence.Priority = .normal, dropEnqueuedEntries: Bool = false) {
-
+    private func flatTop(title: String, description: String, delay: TimeInterval, type: messageType, priority: EKAttributes.Precedence.Priority = .normal, dropEnqueuedEntries: Bool = false) {
         if SwiftEntryKit.isCurrentlyDisplaying(entryNamed: title + description) { return }
 
         var attributes = EKAttributes.topFloat
-        var image: UIImage?
 
         attributes.windowLevel = .normal
         attributes.displayDuration = delay
@@ -181,13 +179,7 @@ class NCContentPresenter: NSObject {
 
         let title = EKProperty.LabelContent(text: title, style: .init(font: MainFont.bold.with(size: 16), color: .white))
         let description = EKProperty.LabelContent(text: description, style: .init(font: MainFont.medium.with(size: 13), color: .white))
-
-        if imageName == nil {
-            image = getImageFromType(type)
-        } else {
-            image = UIImage(named: imageName!)
-        }
-        let imageMessage = EKProperty.ImageContent(image: image!, size: CGSize(width: 35, height: 35))
+        let imageMessage = EKProperty.ImageContent(image: getImageFromType(type), size: CGSize(width: 35, height: 35))
 
         let simpleMessage = EKSimpleMessage(image: imageMessage, title: title, description: description)
         let notificationMessage = EKNotificationMessage(simpleMessage: simpleMessage)
@@ -305,16 +297,16 @@ class NCContentPresenter: NSObject {
         }
     }
 
-    private func getImageFromType(_ type: messageType) -> UIImage? {
+    private func getImageFromType(_ type: messageType) -> UIImage {
         switch type {
         case .info:
-            return UIImage(named: "iconInfo")
+            return UIImage(named: "iconInfo")!
         case .error:
-            return UIImage(named: "iconError")
+            return UIImage(named: "iconError")!
         case .success:
-            return UIImage(named: "iconSuccess")
+            return UIImage(named: "iconSuccess")!
         default:
-            return nil
+            return UIImage(named: "iconInfo")!
         }
     }
 

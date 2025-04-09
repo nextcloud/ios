@@ -22,6 +22,8 @@
 //
 
 import Foundation
+import UIKit
+import Photos
 import VisionKit
 
 class NCDocumentCamera: NSObject, VNDocumentCameraViewControllerDelegate {
@@ -29,32 +31,22 @@ class NCDocumentCamera: NSObject, VNDocumentCameraViewControllerDelegate {
         let instance = NCDocumentCamera()
         return instance
     }()
-
     var viewController: UIViewController?
     let utilityFileSystem = NCUtilityFileSystem()
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
-    func openScannerDocument(viewController: UIViewController) {
-
-        self.viewController = viewController
-
+    func openScannerDocument(viewController: UIViewController?) {
         guard VNDocumentCameraViewController.isSupported else { return }
-
+        self.viewController = viewController
         let controller = VNDocumentCameraViewController()
-        controller.delegate = self
 
-        self.viewController?.present(controller, animated: true)
+        controller.delegate = self
+        viewController?.present(controller, animated: true)
     }
 
     func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
-
         for pageNumber in 0..<scan.pageCount {
-            let fileName = CCUtility.createFileName("scan.png",
-                                                    fileDate: Date(),
-                                                    fileType: PHAssetMediaType.image,
-                                                    keyFileName: NCGlobal.shared.keyFileNameMask,
-                                                    keyFileNameType: NCGlobal.shared.keyFileNameType,
-                                                    keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
-                                                    forcedNewFileName: true)!
+            let fileName = utilityFileSystem.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, notUseMask: true)
             let fileNamePath = utilityFileSystem.directoryScan + "/" + fileName
             let image = scan.imageOfPage(at: pageNumber)
             do {
@@ -65,12 +57,14 @@ class NCDocumentCamera: NSObject, VNDocumentCameraViewControllerDelegate {
         controller.dismiss(animated: true) {
             if let viewController = self.viewController as? NCScan {
                 viewController.loadImage()
-            } else {
-                let storyboard = UIStoryboard(name: "NCScan", bundle: nil)
-                let controller = storyboard.instantiateInitialViewController()!
-
-                controller.modalPresentationStyle = UIModalPresentationStyle.pageSheet
-                self.viewController?.present(controller, animated: true, completion: nil)
+            } else if let controller = self.viewController as? NCMainTabBarController {
+                if let navigationController = UIStoryboard(name: "NCScan", bundle: nil).instantiateInitialViewController() {
+                    navigationController.modalPresentationStyle = UIModalPresentationStyle.pageSheet
+                    if let viewController = navigationController.topMostViewController() as? NCScan {
+                        viewController.serverUrl = controller.currentServerUrl()
+                    }
+                    self.viewController?.present(navigationController, animated: true, completion: nil)
+                }
             }
         }
     }

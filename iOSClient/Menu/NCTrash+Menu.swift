@@ -5,6 +5,7 @@
 //  Created by Marino Faggiana on 03/03/2021.
 //  Copyright © 2021 Marino Faggiana. All rights reserved.
 //  Copyright © 2022 Henrik Storch. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //  Author Henrik Storch <henrik.storch@nextcloud.com>
@@ -48,9 +49,9 @@ extension NCTrash {
             iconHeader = icon
         } else {
             if tableTrash.directory {
-                iconHeader = UIImage(named: "folder")!.image(color: UIColor.systemGray, size: 50)
+                iconHeader = NCImageCache.images.folder
             } else {
-                iconHeader = UIImage(named: tableTrash.iconName)
+                iconHeader = NCImageCache.images.file
             }
         }
 
@@ -65,7 +66,7 @@ extension NCTrash {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_restore_", comment: ""),
-                icon: UIImage(named: "restore")!.image(color: UIColor.systemGray, size: 50),
+                icon: NCImagesRepository.menuRestore,
                 action: { _ in
                     self.restoreItem(with: objectId)
                 }
@@ -75,8 +76,7 @@ extension NCTrash {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_", comment: ""),
-                destructive: true,
-                icon: utility.loadImage(named: "trash"),
+                icon: NCImagesRepository.menuIconTrash,
                 action: { _ in
                     self.deleteItem(with: objectId)
                 }

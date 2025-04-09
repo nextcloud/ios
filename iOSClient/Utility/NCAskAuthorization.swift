@@ -22,6 +22,8 @@
 //
 
 import UIKit
+import AVFAudio
+import Photos
 
 class NCAskAuthorization: NSObject {
 
@@ -85,7 +87,7 @@ class NCAskAuthorization: NSObject {
             PHPhotoLibrary.requestAuthorization { allowed in
                 self.isRequesting = false
 #if !EXTENSION
-                DispatchQueue.main.async { NCPasscode.shared.hidePrivacyProtectionWindow() }
+                // DispatchQueue.main.async { NCPasscode.shared.hidePrivacyProtectionWindow() }
 #endif
                 DispatchQueue.main.async {
                     if allowed == PHAuthorizationStatus.authorized {

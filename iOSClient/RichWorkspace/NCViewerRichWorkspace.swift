@@ -43,25 +43,26 @@ import MarkdownKit
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = NCBrandColor.shared.appBackgroundColor
+        navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
         presentationController?.delegate = self
 
         let closeItem = UIBarButtonItem(title: NSLocalizedString("_back_", comment: ""), style: .plain, target: self, action: #selector(closeItemTapped(_:)))
         self.navigationItem.leftBarButtonItem = closeItem
 
-        let editItem = UIBarButtonItem(image: UIImage(named: "actionSheetModify"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(editItemAction(_:)))
+        let editItem = UIBarButtonItem(image: NCUtility().loadImage(named: "square.and.pencil"), style: UIBarButtonItem.Style.plain, target: self, action: #selector(editItemAction(_:)))
         self.navigationItem.rightBarButtonItem = editItem
 
-        markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: .label)
+        markdownParser = MarkdownParser(font: UIFont.systemFont(ofSize: 15), color: NCBrandColor.shared.textColor)
         markdownParser.header.font = UIFont.systemFont(ofSize: 25)
         textView.attributedText = markdownParser.parse(richWorkspaceText)
-        textViewColor = .label
+        textViewColor = NCBrandColor.shared.textColor
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        NCNetworking.shared.readFile(serverUrlFileName: self.serverUrl, queue: .main) { _ in
+        NCNetworking.shared.readFile(serverUrlFileName: self.serverUrl, account: appDelegate.account, queue: .main) { _ in
         } completion: { account, metadata, error in
             if error == .success, account == self.appDelegate.account, let metadata {
                 NCManageDatabase.shared.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadata.richWorkspace, account: account)

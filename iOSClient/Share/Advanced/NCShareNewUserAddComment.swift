@@ -4,6 +4,7 @@
 //
 //  Created by TSI-mc on 21/06/21.
 //  Copyright © 2022 All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -38,6 +39,9 @@ class NCShareNewUserAddComment: UIViewController, NCShareDetail {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setNavigationTitle()
+        
+        self.view.backgroundColor = UIColor(resource: .Share.Advanced.background)
+        self.headerContainerView.backgroundColor = .clear
 
         NotificationCenter.default.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillHideNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
@@ -45,7 +49,14 @@ class NCShareNewUserAddComment: UIViewController, NCShareDetail {
         sharingLabel.text = NSLocalizedString("_share_note_recipient_", comment: "")
 
         noteTextField.textContainerInset = UIEdgeInsets(top: contentInsets, left: contentInsets, bottom: contentInsets, right: contentInsets)
+        noteTextField.backgroundColor = UIColor(resource: .Share.Comment.textFieldBackground)
         noteTextField.text = share.note
+        
+        noteTextField.clipsToBounds = true
+        noteTextField.layer.borderColor = UIColor(resource: .Share.Comment.textFieldBorder).cgColor
+        noteTextField.layer.borderWidth = 1.0
+        noteTextField.layer.cornerRadius = 8.0
+        
         let toolbar = UIToolbar.toolbar {
             self.noteTextField.resignFirstResponder()
             self.noteTextField.text = ""
@@ -58,7 +69,7 @@ class NCShareNewUserAddComment: UIViewController, NCShareDetail {
 
         noteTextField.inputAccessoryView = toolbar.wrappedSafeAreaContainer
 
-        guard let headerView = (Bundle.main.loadNibNamed("NCShareAdvancePermissionHeader", owner: self, options: nil)?.first as? NCShareAdvancePermissionHeader) else { return }
+        guard let headerView = (Bundle.main.loadNibNamed("NCShareHeader", owner: self, options: nil)?.first as? NCShareHeader) else { return }
         headerContainerView.addSubview(headerView)
         headerView.frame = headerContainerView.frame
         headerView.translatesAutoresizingMaskIntoConstraints = false
@@ -90,5 +101,12 @@ class NCShareNewUserAddComment: UIViewController, NCShareDetail {
         }
 
         noteTextField.scrollIndicatorInsets = noteTextField.contentInset
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if traitCollection.userInterfaceStyle != previousTraitCollection?.userInterfaceStyle {
+            noteTextField.layer.borderColor = UIColor(resource: .Share.Comment.textFieldBorder).cgColor
+        }
     }
 }

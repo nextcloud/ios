@@ -81,13 +81,13 @@ class NCShareExtension: UIViewController {
 
         self.navigationController?.navigationBar.prefersLargeTitles = false
 
-        collectionView.register(UINib(nibName: "NCSectionHeaderEmptyData", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderEmptyData")
+        collectionView.register(UINib(nibName: "NCSectionFirstHeaderEmptyData", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionFirstHeaderEmptyData")
         collectionView.register(UINib(nibName: "NCListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
         collectionView.collectionViewLayout = NCListLayout()
 
         collectionView.refreshControl = refreshControl
         refreshControl.tintColor = NCBrandColor.shared.brandText
-        refreshControl.backgroundColor = .systemBackground
+        refreshControl.backgroundColor = NCBrandColor.shared.appBackgroundColor
         refreshControl.addTarget(self, action: #selector(reloadDatasource), for: .valueChanged)
 
         commandView.backgroundColor = .secondarySystemBackground
@@ -100,14 +100,13 @@ class NCShareExtension: UIViewController {
         commandViewHeightConstraint.constant = heightCommandView
 
         createFolderView.layer.cornerRadius = 10
-        createFolderImage.image = utility.loadImage(named: "folder.badge.plus", color: .label)
+        createFolderImage.image = utility.loadImage(named: "folder.badge.plus", colors: [NCBrandColor.shared.iconImageColor])
         createFolderLabel.text = NSLocalizedString("_create_folder_", comment: "")
         let createFolderGesture = UITapGestureRecognizer(target: self, action: #selector(actionCreateFolder))
         createFolderView.addGestureRecognizer(createFolderGesture)
 
         uploadView.layer.cornerRadius = 10
 
-        // uploadImage.image = utility).loadImage(named: "square.and.arrow.up", color: .label)
         uploadLabel.text = NSLocalizedString("_upload_", comment: "")
         uploadLabel.textColor = .systemBlue
         let uploadGesture = UITapGestureRecognizer(target: self, action: #selector(actionUpload))
@@ -137,6 +136,7 @@ class NCShareExtension: UIViewController {
         hud.indicatorView = JGProgressHUDRingIndicatorView()
         if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
             indicatorView.ringWidth = 1.5
+            indicatorView.ringColor = NCBrandColor.shared.brandElement
         }
 
         NotificationCenter.default.addObserver(self, selector: #selector(didCreateFolder(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCreateFolder), object: nil)
@@ -160,8 +160,10 @@ class NCShareExtension: UIViewController {
             self.filesName = fileNames
             DispatchQueue.main.async { self.setCommandView() }
         }
-        NCPasscode.shared.presentPasscode(viewController: self, delegate: self) {
-            NCPasscode.shared.enableTouchFaceID()
+        if NCKeychain().presentPasscode {
+            NCPasscode.shared.presentPasscode(viewController: self, delegate: self) {
+                NCPasscode.shared.enableTouchFaceID()
+            }
         }
     }
 
@@ -221,7 +223,7 @@ class NCShareExtension: UIViewController {
             }
         }
 
-        let image = utility.loadUserImage(for: activeAccount.user, displayName: activeAccount.displayName, userBaseUrl: activeAccount)
+        let image = utility.userImage
         let profileButton = UIButton(type: .custom)
         profileButton.setImage(image, for: .normal)
 
@@ -276,7 +278,7 @@ class NCShareExtension: UIViewController {
     }
 
     @objc func actionCreateFolder() {
-        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, urlBase: activeAccount) { error in
+        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, userBaseUrl: activeAccount) { error in
             guard error != .success else { return }
             self.showAlert(title: "_error_createsubfolders_upload_", description: error.errorDescription)
         }
@@ -296,6 +298,12 @@ extension NCShareExtension {
 
         var conflicts: [tableMetadata] = []
         for fileName in filesName {
+            if let fileNameError = FileNameValidator.shared.checkFileName(fileName) {
+                present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+
+                continue
+            }
+
             let ocId = NSUUID().uuidString
             let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
             guard utilityFileSystem.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath) else { continue }
@@ -333,6 +341,7 @@ extension NCShareExtension {
         guard uploadStarted else { return }
         guard uploadMetadata.count > counterUploaded else { return DispatchQueue.main.async { self.finishedUploading() } }
         let metadata = uploadMetadata[counterUploaded]
+
         let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false)
         metadata.contentType = results.mimeType
         metadata.iconName = results.iconName
@@ -383,6 +392,7 @@ extension NCShareExtension {
             }
         } else {
             hud.indicatorView = JGProgressHUDSuccessIndicatorView()
+            hud.indicatorView?.tintColor = NCBrandColor.shared.brandElement
             hud.textLabel.text = NSLocalizedString("_success_", comment: "")
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
@@ -392,7 +402,6 @@ extension NCShareExtension {
 }
 
 extension NCShareExtension: uploadE2EEDelegate {
-
     func start() {
         self.hud.progress = 0
     }

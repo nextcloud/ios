@@ -4,6 +4,7 @@
 //
 //  Created by Marino Faggiana on 29/12/22.
 //  Copyright © 2022 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -24,6 +25,7 @@
 import SwiftUI
 
 extension View {
+    
     func complexModifier<V: View>(@ViewBuilder _ closure: (Self) -> V) -> some View {
         closure(self)
     }
@@ -37,4 +39,69 @@ extension View {
     func hiddenConditionally(isHidden: Bool) -> some View {
         isHidden ? AnyView(self.hidden()) : AnyView(self)
     }
+
+    /// Applies the given transform if the given condition evaluates to `true`.
+    /// - Parameters:
+    ///   - condition: The condition to evaluate.
+    ///   - transform: The transform to apply to the source `View`.
+    /// - Returns: Either the original `View` or the modified `View` if the condition is `true`.
+    @ViewBuilder func `if`<Content: View>(_ condition: Bool, transform: (Self) -> Content) -> some View {
+        if condition {
+            transform(self)
+        } else {
+            self
+        }
+    }
+
+    func onFirstAppear(perform action: @escaping () -> Void) -> some View {
+        modifier(ViewFirstAppearModifier(perform: action))
+    }
+    
+    func applyScrollContentBackground() -> some View {
+        self.modifier(ScrollContentBackgroundModifier())
+    }
+    
+    
+    func applyGlobalFormStyle() -> some View {
+        self
+            .applyScrollContentBackground()
+            .background(Color(NCBrandColor.shared.formBackgroundColor))
+    }
+    
+    func applyGlobalFormSectionStyle() -> some View {
+        self
+            .listRowBackground(Color(NCBrandColor.shared.formRowBackgroundColor))
+            .listRowSeparatorTint(Color(NCBrandColor.shared.formSeparatorColor))
+    }
+}
+
+struct ScrollContentBackgroundModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 16.0, *) {
+            content.scrollContentBackground(.hidden)
+        } else {
+            content
+        }
+    }
+}
+
+struct ViewFirstAppearModifier: ViewModifier {
+    @State private var didAppearBefore = false
+    private let action: () -> Void
+
+    init(perform action: @escaping () -> Void) {
+        self.action = action
+    }
+
+    func body(content: Content) -> some View {
+        content.onAppear {
+            guard !didAppearBefore else { return }
+            didAppearBefore = true
+            action()
+        }
+    }
+}
+
+var isRunningForPreviews: Bool {
+    return ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
 }

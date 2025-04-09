@@ -55,9 +55,22 @@ extension UIView {
         self.addSubview(blurredEffectView)
     }
 
+    func insertBlur(style: UIBlurEffect.Style) {
+        let blur = UIBlurEffect(style: style)
+        let blurredEffectView = UIVisualEffectView(effect: blur)
+        blurredEffectView.frame = self.bounds
+        blurredEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        blurredEffectView.isUserInteractionEnabled = false
+        self.insertSubview(blurredEffectView, at: 0)
+    }
+
     func makeCircularBackground(withColor backgroundColor: UIColor) {
         self.backgroundColor = backgroundColor
         self.layer.cornerRadius = self.frame.size.width / 2
         self.layer.masksToBounds = true
+    }
+    
+    var bottomCenter: CGRect {
+        return CGRect(origin: CGPoint(x: center.x, y: bounds.height), size: CGSizeZero)
     }
 }

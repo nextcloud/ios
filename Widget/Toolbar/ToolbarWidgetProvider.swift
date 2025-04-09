@@ -21,15 +21,15 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import UIKit
 import WidgetKit
 import SwiftUI
 
 struct ToolbarWidgetProvider: TimelineProvider {
-
     typealias Entry = ToolbarDataEntry
 
     func placeholder(in context: Context) -> Entry {
-        return Entry(date: Date(), isPlaceholder: true, userId: "", url: "", footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " toolbar")
+        return Entry(date: Date(), isPlaceholder: true, userId: "", url: "", footerImage: "Cloud_Checkmark", footerText: NCBrandOptions.shared.brand + " toolbar")
     }
 
     func getSnapshot(in context: Context, completion: @escaping (Entry) -> Void) {

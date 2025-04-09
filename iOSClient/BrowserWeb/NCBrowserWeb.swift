@@ -30,10 +30,10 @@ import WebKit
 
 class NCBrowserWeb: UIViewController {
 
-    @objc var urlBase = ""
-    @objc var isHiddenButtonExit = false
-    @objc var titleBrowser: String?
-    @objc weak var delegate: NCBrowserWebDelegate?
+    var urlBase = ""
+    var isHiddenButtonExit = false
+    var titleBrowser: String?
+    weak var delegate: NCBrowserWebDelegate?
 
     @IBOutlet weak var buttonExit: UIButton!
 
@@ -55,7 +55,7 @@ class NCBrowserWeb: UIViewController {
             buttonExit.isHidden = true
         } else {
             self.view.bringSubviewToFront(buttonExit)
-            let image = NCUtility().loadImage(named: "xmark", color: .systemBlue)
+            let image = NCUtility().loadImage(named: "xmark", colors: [.systemBlue])
             buttonExit.setImage(image, for: .normal)
         }
 

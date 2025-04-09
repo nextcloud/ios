@@ -26,7 +26,6 @@ import RealmSwift
 import NextcloudKit
 
 class tableCapabilities: Object {
-
     @objc dynamic var account = ""
     @objc dynamic var jsondata: Data?
 
@@ -36,9 +35,7 @@ class tableCapabilities: Object {
 }
 
 extension NCManageDatabase {
-
     func addCapabilitiesJSon(_ data: Data, account: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -53,7 +50,6 @@ extension NCManageDatabase {
     }
 
     func getCapabilities(account: String) -> Data? {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -67,11 +63,9 @@ extension NCManageDatabase {
     }
 
     func setCapabilities(account: String, data: Data? = nil) {
-
         let jsonData: Data?
 
         struct CapabilityNextcloud: Codable {
-
             struct Ocs: Codable {
                 let meta: Meta
                 let data: Data
@@ -103,6 +97,7 @@ extension NCManageDatabase {
                         let external: External?
                         let groupfolders: GroupFolders?
                         let securityguard: SecurityGuard?
+                        let assistant: Assistant?
 
                         enum CodingKeys: String, CodingKey {
                             case filessharing = "files_sharing"
@@ -112,6 +107,7 @@ extension NCManageDatabase {
                             case userstatus = "user_status"
                             case external, groupfolders
                             case securityguard = "security_guard"
+                            case assistant
                         }
 
                         struct FilesSharing: Codable {
@@ -233,11 +229,19 @@ extension NCManageDatabase {
                             let bigfilechunking: Bool?
                             let versiondeletion: Bool?
                             let versionlabeling: Bool?
+                            let forbiddenFileNames: [String]?
+                            let forbiddenFileNameBasenames: [String]?
+                            let forbiddenFileNameCharacters: [String]?
+                            let forbiddenFileNameExtensions: [String]?
 
                             enum CodingKeys: String, CodingKey {
                                 case undelete, locking, comments, versioning, directEditing, bigfilechunking
                                 case versiondeletion = "version_deletion"
                                 case versionlabeling = "version_labeling"
+                                case forbiddenFileNames = "forbidden_filenames"
+                                case forbiddenFileNameBasenames = "forbidden_filename_basenames"
+                                case forbiddenFileNameCharacters = "forbidden_filename_characters"
+                                case forbiddenFileNameExtensions = "forbidden_filename_extensions"
                             }
 
                             struct DirectEditing: Codable {
@@ -268,6 +272,11 @@ extension NCManageDatabase {
 
                         struct SecurityGuard: Codable {
                             let diagnostics: Bool?
+                        }
+
+                        struct Assistant: Codable {
+                            let enabled: Bool?
+                            let version: String?
                         }
                     }
                 }
@@ -324,13 +333,15 @@ extension NCManageDatabase {
             global.capabilityE2EEEnabled = data.capabilities.endtoendencryption?.enabled ?? false
             global.capabilityE2EEApiVersion = data.capabilities.endtoendencryption?.apiversion ?? ""
 
-            global.capabilityRichdocumentsEnabled = json.ocs.data.capabilities.richdocuments?.directediting ?? false
-            global.capabilityRichdocumentsMimetypes.removeAll()
+            global.capabilityRichDocumentsEnabled = json.ocs.data.capabilities.richdocuments?.directediting ?? false
+            global.capabilityRichDocumentsMimetypes.removeAll()
             if let mimetypes = data.capabilities.richdocuments?.mimetypes {
                 for mimetype in mimetypes {
-                    global.capabilityRichdocumentsMimetypes.append(mimetype)
+                    global.capabilityRichDocumentsMimetypes.append(mimetype)
                 }
             }
+
+            global.capabilityAssistantEnabled = data.capabilities.assistant?.enabled ?? false
 
             global.capabilityActivity.removeAll()
             if let activities = data.capabilities.activity?.apiv2 {
@@ -351,12 +362,17 @@ extension NCManageDatabase {
             global.capabilityFilesComments = data.capabilities.files?.comments ?? false
             global.capabilityFilesBigfilechunking = data.capabilities.files?.bigfilechunking ?? false
 
-            global.capabilityUserStatusEnabled = data.capabilities.files?.undelete ?? false
+            global.capabilityUserStatusEnabled = data.capabilities.userstatus?.enabled ?? false
             if data.capabilities.external != nil {
                 global.capabilityExternalSites = true
             }
             global.capabilityGroupfoldersEnabled = data.capabilities.groupfolders?.hasGroupFolders ?? false
             global.capabilitySecurityGuardDiagnostics = data.capabilities.securityguard?.diagnostics ?? false
+
+            global.capabilityForbiddenFileNames = data.capabilities.files?.forbiddenFileNames ?? []
+            global.capabilityForbiddenFileNameBasenames = data.capabilities.files?.forbiddenFileNameBasenames ?? []
+            global.capabilityForbiddenFileNameCharacters = data.capabilities.files?.forbiddenFileNameCharacters ?? []
+            global.capabilityForbiddenFileNameExtensions = data.capabilities.files?.forbiddenFileNameExtensions ?? []
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
             return

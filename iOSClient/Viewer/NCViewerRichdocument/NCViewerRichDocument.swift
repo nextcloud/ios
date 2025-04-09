@@ -46,7 +46,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
         super.viewDidLoad()
 
         if !metadata.ocId.hasPrefix("TEMP") {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(self.openMenuMore))
+            navigationItem.rightBarButtonItem = UIBarButtonItem(image: NCImageCache.images.buttonMore, style: .plain, target: self, action: #selector(self.openMenuMore))
         }
         navigationController?.navigationBar.prefersLargeTitles = false
         navigationItem.title = metadata.fileNameView
@@ -64,6 +64,8 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
         webView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 0).isActive = true
         webView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: 0).isActive = true
         webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0).isActive = true
+        webView.backgroundColor = NCBrandColor.shared.appBackgroundColor
+        webView.scrollView.backgroundColor = NCBrandColor.shared.appBackgroundColor
         bottomConstraint = webView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0)
         bottomConstraint?.isActive = true
 
@@ -83,8 +85,6 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        appDelegate.activeViewController = self
 
         NotificationCenter.default.addObserver(self, selector: #selector(favoriteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
 
@@ -157,7 +157,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     // MARK: - Action
 
     @objc func openMenuMore() {
-        if imageIcon == nil { imageIcon = UIImage(named: "file_txt") }
+        if imageIcon == nil { imageIcon = NCUtility().loadImage(named: "doc.text", colors: [NCBrandColor.shared.iconImageColor]) }
         NCViewer().toggleMenu(viewController: self, metadata: metadata, webView: true, imageIcon: imageIcon)
     }
 
@@ -216,7 +216,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
                             NCActivityIndicator.shared.start(backgroundView: view)
 
-                            NextcloudKit.shared.download(serverUrlFileName: url, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
+                            NextcloudKit.shared.download(serverUrlFileName: url, fileNameLocalPath: fileNameLocalPath, account: appDelegate.account, requestHandler: { _ in
 
                             }, taskHandler: { _ in
 
@@ -307,7 +307,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
             let path = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
 
-            NextcloudKit.shared.createAssetRichdocuments(path: path) { account, url, _, error in
+            NextcloudKit.shared.createAssetRichdocuments(path: path, account: metadata.account) { account, url, _, error in
                 if error == .success, account == self.appDelegate.account, let url {
                     let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url)')"
                     self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })
@@ -324,7 +324,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
         let path = utilityFileSystem.getFileNamePath(metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
 
-        NextcloudKit.shared.createAssetRichdocuments(path: path) { account, url, _, error in
+        NextcloudKit.shared.createAssetRichdocuments(path: path, account: metadata.account) { account, url, _, error in
             if error == .success, account == self.appDelegate.account, let url {
                 let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url)')"
                 self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })

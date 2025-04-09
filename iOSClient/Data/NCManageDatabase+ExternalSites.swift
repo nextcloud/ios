@@ -26,7 +26,6 @@ import RealmSwift
 import NextcloudKit
 
 class tableExternalSites: Object {
-
     @objc dynamic var account = ""
     @objc dynamic var icon = ""
     @objc dynamic var idExternalSite: Int = 0
@@ -37,9 +36,7 @@ class tableExternalSites: Object {
 }
 
 extension NCManageDatabase {
-
     func addExternalSites(_ externalSite: NKExternalSite, account: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -61,7 +58,6 @@ extension NCManageDatabase {
     }
 
     func deleteExternalSites(account: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -74,7 +70,6 @@ extension NCManageDatabase {
     }
 
     func getAllExternalSites(account: String) -> [tableExternalSites]? {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -87,7 +82,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access to database: \(error)")
         }
-
         return nil
     }
 }

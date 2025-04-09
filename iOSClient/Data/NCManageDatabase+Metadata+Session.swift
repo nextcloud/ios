@@ -26,7 +26,6 @@ import RealmSwift
 import NextcloudKit
 
 extension NCManageDatabase {
-
     func setMetadataSession(ocId: String,
                             newFileName: String? = nil,
                             session: String? = nil,
@@ -80,7 +79,6 @@ extension NCManageDatabase {
     func setMetadataSession(ocId: String,
                             status: Int? = nil,
                             taskIdentifier: Int? = nil) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -104,7 +102,7 @@ extension NCManageDatabase {
     }
 
     @discardableResult
-    func setMetadatasSessionInWaitDownload(metadatas: [tableMetadata], session: String, selector: String) -> tableMetadata? {
+    func setMetadatasSessionInWaitDownload(metadatas: [tableMetadata], session: String, selector: String, sceneIdentifier: String? = nil) -> tableMetadata? {
         if metadatas.isEmpty { return nil }
         var metadataUpdated: tableMetadata?
 
@@ -113,6 +111,7 @@ extension NCManageDatabase {
             try realm.write {
                 for metadata in metadatas {
                     if let result = realm.objects(tableMetadata.self).filter("ocId == %@", metadata.ocId).first {
+                        result.sceneIdentifier = sceneIdentifier
                         result.session = session
                         result.sessionError = ""
                         result.sessionSelector = selector
@@ -120,6 +119,7 @@ extension NCManageDatabase {
                         result.sessionDate = Date()
                         metadataUpdated = tableMetadata(value: result)
                     } else {
+                        metadata.sceneIdentifier = sceneIdentifier
                         metadata.session = session
                         metadata.sessionError = ""
                         metadata.sessionSelector = selector
@@ -142,6 +142,7 @@ extension NCManageDatabase {
             let realm = try Realm()
             try realm.write {
                 for metadata in metadatas {
+                    metadata.sceneIdentifier = nil
                     metadata.session = ""
                     metadata.sessionError = ""
                     metadata.sessionSelector = ""
@@ -157,6 +158,7 @@ extension NCManageDatabase {
     @discardableResult
     func setMetadataStatus(ocId: String, status: Int) -> tableMetadata? {
         var result: tableMetadata?
+
         do {
             let realm = try Realm()
             try realm.write {
@@ -171,5 +173,17 @@ extension NCManageDatabase {
         } else {
             return nil
         }
+    }
+
+    func getMetadata(from url: URL?, sessionTaskIdentifier: Int) -> tableMetadata? {
+        guard let url,
+              var serverUrl = url.deletingLastPathComponent().absoluteString.removingPercentEncoding
+        else { return nil }
+        let fileName = url.lastPathComponent
+
+        if serverUrl.hasSuffix("/") {
+            serverUrl = String(serverUrl.dropLast())
+        }
+        return NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@ AND sessionTaskIdentifier == %d", serverUrl, fileName, sessionTaskIdentifier))
     }
 }

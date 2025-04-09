@@ -24,9 +24,10 @@
 import UIKit
 import NextcloudKit
 import SafariServices
+import SwiftUI
+import Foundation
 
 class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
-
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var labelQuota: UILabel!
     @IBOutlet weak var labelQuotaExternalSite: UILabel!
@@ -40,6 +41,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private let applicationHandle = NCApplicationHandle()
     private var tabAccount: tableAccount?
+
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
 
@@ -48,12 +50,10 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         var type: SectionType
 
         enum SectionType {
-            case account
             case moreApps
             case regular
         }
     }
-
     private var sections: [Section] = []
 
     // MARK: - View Life Cycle
@@ -68,7 +68,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.backgroundColor = .systemGroupedBackground
-        tableView.register(NCMoreUserCell.fromNib(), forCellReuseIdentifier: NCMoreUserCell.reuseIdentifier)
         tableView.register(NCMoreAppSuggestionsCell.fromNib(), forCellReuseIdentifier: NCMoreAppSuggestionsCell.reuseIdentifier)
 
         // create tap gesture recognizer
@@ -79,7 +78,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        appDelegate.activeViewController = self
+
         navigationController?.setGroupAppearance()
         loadItems()
         tableView.reloadData()
@@ -88,7 +87,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     // MARK: -
 
     func loadItems() {
-
         var item = NKExternalSite()
         var quota: String = ""
 
@@ -122,14 +120,24 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item.name = "_activity_"
         item.icon = "bolt"
         item.url = "segueActivity"
-        item.order = 40
+        item.order = 30
         functionMenu.append(item)
+
+        if NCGlobal.shared.capabilityAssistantEnabled, NCBrandOptions.shared.disable_show_more_nextcloud_apps_in_settings {
+            // ITEM : Assistant
+            item = NKExternalSite()
+            item.name = "_assistant_"
+            item.icon = "sparkles"
+            item.url = "openAssistant"
+            item.order = 40
+            functionMenu.append(item)
+        }
 
         // ITEM : Shares
         if NCGlobal.shared.capabilityFileSharingApiEnabled {
             item = NKExternalSite()
             item.name = "_list_shares_"
-            item.icon = "share"
+            item.icon = "person.badge.plus"
             item.url = "segueShares"
             item.order = 50
             functionMenu.append(item)
@@ -138,7 +146,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         // ITEM : Offline
         item = NKExternalSite()
         item.name = "_manage_file_offline_"
-        item.icon = "tray.and.arrow.down"
+        item.icon = "icloud.and.arrow.down"
         item.url = "segueOffline"
         item.order = 60
         functionMenu.append(item)
@@ -152,6 +160,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             item.order = 61
             functionMenu.append(item)
         }
+
         // ITEM : Scan
         item = NKExternalSite()
         item.name = "_scanned_images_"
@@ -180,7 +189,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item = NKExternalSite()
         item.name = "_settings_"
         item.icon = "gear"
-        item.url = "segueSettings"
+        item.url = "openSettings"
         settingsMenu.append(item)
 
         if !quotaMenu.isEmpty {
@@ -189,9 +198,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
 
         // Display Name user & Quota
-
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
-
             self.tabAccount = activeAccount
 
             if activeAccount.quotaRelative > 0 {
@@ -238,10 +245,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     }
 
     private func loadSections() {
-        if tabAccount != nil {
-            sections.append(Section(items: [NKExternalSite()], type: .account))
-        }
-
         if !NCBrandOptions.shared.disable_show_more_nextcloud_apps_in_settings {
             sections.append(Section(items: [NKExternalSite()], type: .moreApps))
         }
@@ -262,7 +265,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     // MARK: - Action
 
     @objc func tapLabelQuotaExternalSite() {
-
         if !quotaMenu.isEmpty {
             let item = quotaMenu[0]
             if let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as? NCBrowserWeb {
@@ -275,21 +277,10 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
     }
 
-    @objc func tapImageLogoManageAccount() {
-
-        let controller = CCManageAccount()
-
-        self.navigationController?.pushViewController(controller, animated: true)
-    }
-
     // MARK: -
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if sections[indexPath.section].type == .account {
-            return 75
-        } else {
-            return NCGlobal.shared.heightCellSettings
-        }
+        return 50
     }
 
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -299,9 +290,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForHeaderInSection index: Int) -> CGFloat {
         let section = sections[index]
 
-        if section.type == .account {
-            return 10
-        } else if section.type == .moreApps || sections[index - 1].type == .moreApps {
+        if section.type == .moreApps || (index > 0 && sections[index - 1].type == .moreApps) {
             return 1
         } else {
             return 20
@@ -315,57 +304,18 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let section = sections[indexPath.section]
 
-        if section.type == .account {
-
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: NCMoreUserCell.reuseIdentifier, for: indexPath) as? NCMoreUserCell else { return UITableViewCell() }
-
-            cell.avatar.image = nil
-            cell.icon.image = nil
-            cell.status.text = ""
-            cell.displayName.text = ""
-
-            if let account = tabAccount {
-                cell.avatar.image = utility.loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: appDelegate)
-
-                if account.alias.isEmpty {
-                    cell.displayName?.text = account.displayName
-                } else {
-                    cell.displayName?.text = account.displayName + " (" + account.alias + ")"
-                }
-                cell.displayName.textColor = .label
-            }
-            cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
-
-            if NCGlobal.shared.capabilityUserStatusEnabled, let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", appDelegate.account)) {
-                let status = utility.getUserStatus(userIcon: account.userStatusIcon, userStatus: account.userStatusStatus, userMessage: account.userStatusMessage)
-                cell.icon.image = status.onlineStatus
-                cell.status.text = status.statusMessage
-                cell.status.textColor = .label
-                cell.status.trailingBuffer = cell.status.frame.width
-                if cell.status.labelShouldScroll() {
-                    cell.status.tapToScroll = true
-                } else {
-                    cell.status.tapToScroll = false
-                }
-            }
-
-            cell.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMinXMinYCorner, .layerMaxXMaxYCorner, .layerMinXMaxYCorner]
-
-            return cell
-
-        } else if section.type == .moreApps {
+        if section.type == .moreApps {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: NCMoreAppSuggestionsCell.reuseIdentifier, for: indexPath) as? NCMoreAppSuggestionsCell else { return UITableViewCell() }
-
             return cell
         } else {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: CCCellMore.reuseIdentifier, for: indexPath) as? CCCellMore else { return UITableViewCell() }
 
             let item = sections[indexPath.section].items[indexPath.row]
 
-            cell.imageIcon?.image = utility.loadImage(named: item.icon)
+            cell.imageIcon?.image = utility.loadImage(named: item.icon, colors: [NCBrandColor.shared.iconImageColor])
             cell.imageIcon?.contentMode = .scaleAspectFit
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
-            cell.labelText.textColor = .label
+            cell.labelText.textColor = NCBrandColor.shared.textColor
 
             cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
 
@@ -396,12 +346,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let item = sections[indexPath.section].items[indexPath.row]
 
-        // Menu Function
-        if sections[indexPath.section].type == .account {
-            tapImageLogoManageAccount()
-            return
-        }
-
         // Action
         if item.url.contains("segue") && !item.url.contains("//") {
             self.navigationController?.performSegue(withIdentifier: item.url, sender: self)
@@ -422,12 +366,8 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             }
         } else if item.url == "logout" {
             let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
-
             let actionYes = UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
-                let manageAccount = CCManageAccount()
-                manageAccount.delete(self.appDelegate.account)
-
-                self.appDelegate.openLogin(viewController: self, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+                self.appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             }
 
             let actionNo = UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
@@ -437,6 +377,14 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             alertController.addAction(actionYes)
             alertController.addAction(actionNo)
             self.present(alertController, animated: true, completion: nil)
+        } else if item.url == "openAssistant" {
+            let assistant = NCAssistant().environmentObject(NCAssistantTask())
+            let hostingController = UIHostingController(rootView: assistant)
+            present(hostingController, animated: true, completion: nil)
+        } else if item.url == "openSettings" {
+            let settingsView = NCSettingsView(model: NCSettingsModel(controller: mainTabBarController))
+            let settingsController = UIHostingController(rootView: settingsView)
+            navigationController?.pushViewController(settingsController, animated: true)
         } else {
             applicationHandle.didSelectItem(item, viewController: self)
         }

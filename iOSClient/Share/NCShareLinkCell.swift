@@ -4,6 +4,7 @@
 //
 //  Created by Henrik Storch on 15.11.2021.
 //  Copyright © 2021 Henrik Storch. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Henrik Storch <henrik.storch@nextcloud.com>
 //
@@ -42,21 +43,22 @@ class NCShareLinkCell: UITableViewCell {
     }
 
     func setupCellUI() {
-        var imageName: String
-        var imageBGColor: UIColor
-        var menuImageName = "shareMenu"
+        var menuImageName = "ellipsis"
+        let commonIconTint = UIColor(resource: .Share.commonIconTint)
 
         menuButton.isHidden = isInternalLink
         descriptionLabel.isHidden = !isInternalLink
+        descriptionLabel.textColor = UIColor(resource: .Share.Advanced.Cell.subtitle)
         copyButton.isHidden = !isInternalLink && tableShare == nil
         copyButton.accessibilityLabel = NSLocalizedString("_copy_", comment: "")
+        copyButton.setImage(UIImage(resource: .Share.internalLink).withTintColor(commonIconTint), for: .normal)
+        copyButton.imageView?.contentMode = .scaleAspectFit
         menuButton.accessibilityLabel = NSLocalizedString("_more_", comment: "")
 
         if isInternalLink {
-            imageName = "shareInternalLink"
-            imageBGColor = .gray
             labelTitle.text = NSLocalizedString("_share_internal_link_", comment: "")
             descriptionLabel.text = NSLocalizedString("_share_internal_link_des_", comment: "")
+            setImageItemForInternalLink()
         } else {
             labelTitle.text = NSLocalizedString("_share_link_", comment: "")
             if let tableShare = tableShare {
@@ -64,19 +66,20 @@ class NCShareLinkCell: UITableViewCell {
                     labelTitle.text? += " (\(tableShare.label))"
                 }
             } else {
-                menuImageName = "shareAdd"
+                menuImageName = "plus"
                 menuButton.accessibilityLabel = NSLocalizedString("_add_", comment: "")
             }
 
-            imageName = "sharebylink"
-            imageBGColor = NCBrandColor.shared.brandElement
-
-            menuButton.setImage(UIImage(named: menuImageName)?.image(color: .gray, size: 50), for: .normal)
+            imageItem.image = UIImage(resource: .Share.linkCircleFill)
+            menuButton.setImage(NCUtility().loadImage(named: menuImageName, colors: [commonIconTint]), for: .normal)
         }
 
-        labelTitle.textColor = .label
-        imageItem.image = NCShareCommon().createLinkAvatar(imageName: imageName, colorCircle: imageBGColor)
-        copyButton.setImage(UIImage(named: "shareCopy")?.image(color: .gray, size: 50), for: .normal)
+        labelTitle.textColor = NCBrandColor.shared.textColor
+    }
+    
+    private func setImageItemForInternalLink() {
+        imageItem.contentMode = .scaleAspectFit
+        imageItem.image = UIImage(resource: .Share.squareAndArrowUpCircleFill)
     }
 
     @IBAction func touchUpCopy(_ sender: Any) {
@@ -85,6 +88,13 @@ class NCShareLinkCell: UITableViewCell {
 
     @IBAction func touchUpMenu(_ sender: Any) {
         delegate?.tapMenu(with: tableShare, sender: sender)
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if (traitCollection.userInterfaceStyle != previousTraitCollection?.userInterfaceStyle) && isInternalLink {
+            setImageItemForInternalLink()
+        }
     }
 }
 

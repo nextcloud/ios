@@ -22,9 +22,10 @@
 //
 
 import Foundation
+import UIKit
+import MessageUI
 import SVGKit
 import NextcloudKit
-import UIKit
 
 extension UIViewController {
     fileprivate func handleProfileAction(_ action: NKHovercard.Action, for userId: String) {
@@ -60,27 +61,23 @@ extension UIViewController {
     }
 
     func showProfileMenu(userId: String) {
-
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
         guard NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion23 else { return }
 
-        NextcloudKit.shared.getHovercard(for: userId) { account, card, _, _ in
+        NextcloudKit.shared.getHovercard(for: userId, account: appDelegate.account) { account, card, _, _ in
             guard let card = card, account == appDelegate.account else { return }
 
             let personHeader = NCMenuAction(
                 title: card.displayName,
-                icon: NCUtility().loadUserImage(
-                    for: userId,
-                       displayName: card.displayName,
-                       userBaseUrl: appDelegate),
+                icon: NCUtility().userImage,
                 action: nil)
 
             let actions = card.actions.map { action -> NCMenuAction in
-                var image = NCUtility().loadImage(named: "user", color: .label)
+                var image = NCUtility().loadImage(named: "user", colors: [NCBrandColor.shared.iconImageColor])
                 if let url = URL(string: action.icon),
                    let svgSource = SVGKSourceURL.source(from: url),
                    let svg = SVGKImage(source: svgSource) {
-                    image = svg.uiImage.withTintColor(.label, renderingMode: .alwaysOriginal)
+                    image = svg.uiImage.withTintColor(NCBrandColor.shared.iconImageColor, renderingMode: .alwaysOriginal)
                 }
                 return NCMenuAction(
                     title: action.title,
@@ -107,7 +104,7 @@ extension UIViewController {
         present(mail, animated: true)
     }
 
-    func presentMenu(with actions: [NCMenuAction], menuColor: UIColor = .systemBackground, textColor: UIColor = .label) {
+	func presentMenu(with actions: [NCMenuAction], menuColor: UIColor = UIColor(resource: .FileMenu.background), textColor: UIColor = NCBrandColor.shared.textColor) {
         guard !actions.isEmpty else { return }
         let actions = actions.sorted(by: { $0.order < $1.order })
         guard let menuViewController = NCMenu.makeNCMenu(with: actions, menuColor: menuColor, textColor: textColor) else {

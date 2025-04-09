@@ -33,7 +33,8 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     @IBOutlet weak var introCollectionView: UICollectionView!
     @IBOutlet weak var pageControl: UIPageControl!
 
-    @objc weak var delegate: NCIntroViewController?
+    weak var delegate: NCIntroViewController?
+
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private let titles = [NSLocalizedString("_intro_1_title_", comment: ""), NSLocalizedString("_intro_2_title_", comment: ""), NSLocalizedString("_intro_3_title_", comment: ""), NSLocalizedString("_intro_4_title_", comment: "")]
     private let images = [UIImage(named: "intro1"), UIImage(named: "intro2"), UIImage(named: "intro3"), UIImage(named: "intro4")]
@@ -97,6 +98,28 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
 
         view.backgroundColor = NCBrandColor.shared.customer
         timerAutoScroll = Timer.scheduledTimer(timeInterval: 5, target: self, selector: (#selector(NCIntroViewController.autoScroll)), userInfo: nil, repeats: true)
+
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
+            let window = UIApplication.shared.firstWindow
+            if window?.rootViewController is NCMainTabBarController {
+                self.dismiss(animated: true)
+            } else {
+                if let mainTabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                    mainTabBarController.modalPresentationStyle = .fullScreen
+                    mainTabBarController.view.alpha = 0
+                    window?.rootViewController = mainTabBarController
+                    window?.makeKeyAndVisible()
+					
+					if let scene = window?.windowScene {
+						SceneManager.shared.register(scene: scene, withRootViewController: mainTabBarController)
+					}
+					
+                    UIView.animate(withDuration: 0.5) {
+                        mainTabBarController.view.alpha = 1
+                    }
+                }
+            }
+        }
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -113,8 +136,11 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        pageControl.currentPage = 0
-        introCollectionView.collectionViewLayout.invalidateLayout()
+        super.viewWillTransition(to: size, with: coordinator)
+        coordinator.animate(alongsideTransition: nil) { _ in
+            self.pageControl?.currentPage = 0
+            self.introCollectionView?.collectionViewLayout.invalidateLayout()
+        }
     }
 
     @objc func autoScroll() {
@@ -158,11 +184,11 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     }
 
     @IBAction func login(_ sender: Any) {
-        appDelegate.openLogin(viewController: navigationController, selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+        appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
     }
 
     @IBAction func signup(_ sender: Any) {
-        appDelegate.openLogin(viewController: navigationController, selector: NCGlobal.shared.introSignup, openLoginWeb: false)
+        appDelegate.openLogin(selector: NCGlobal.shared.introSignup, openLoginWeb: false)
     }
 
     @IBAction func host(_ sender: Any) {

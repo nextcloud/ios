@@ -51,7 +51,7 @@ struct ButtonRounded: ButtonStyle {
         configuration.label
             .padding(.horizontal, 40)
             .padding(.vertical, 10)
-            .background(disabled ? Color(UIColor.placeholderText) : Color(NCBrandColor.shared.brand))
+            .background(disabled ? Color(UIColor.placeholderText) : Color(NCBrandColor.shared.brandElement))
             .foregroundColor(disabled ? Color(UIColor.placeholderText) : Color(NCBrandColor.shared.brandText))
             .clipShape(Capsule())
             .opacity(configuration.isPressed ? 0.5 : 1.0)

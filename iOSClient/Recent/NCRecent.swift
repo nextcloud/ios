@@ -33,13 +33,18 @@ class NCRecent: NCCollectionViewCommon {
         layoutKey = NCGlobal.shared.layoutViewRecent
         enableSearchBar = false
         headerRichWorkspaceDisable = true
-        emptyImage = utility.loadImage(named: "clock.arrow.circlepath", color: .gray, size: UIScreen.main.bounds.width)
+        emptyImage = utility.loadImage(named: "clock.arrow.circlepath", colors: [NCBrandColor.shared.brandElement])
         emptyTitle = "_files_no_files_"
         emptyDescription = ""
     }
 
     // MARK: - View Life Cycle
 
+	override func viewDidLoad() {
+		super.viewDidLoad()
+		fileActionsHeader?.enableSorting(enable: false)
+	}
+	
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         reloadDataSourceNetwork()
@@ -50,17 +55,16 @@ class NCRecent: NCCollectionViewCommon {
     override func queryDB() {
         super.queryDB()
 
-        let metadatas = NCManageDatabase.shared.getAdvancedMetadatas(predicate: NSPredicate(format: "account == %@", self.appDelegate.account), page: 1, limit: 100, sorted: "date", ascending: false)
-        self.dataSource = NCDataSource(metadatas: metadatas,
-                                       account: self.appDelegate.account,
-                                       directoryOnTop: false,
-                                       favoriteOnTop: false,
-                                       groupByField: self.groupByField,
-                                       providers: self.providers,
-                                       searchResults: self.searchResults)
+        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@", self.appDelegate.account), numItems: 200, sorted: "date", ascending: false)
+
+        layoutForView?.sort = "date"
+        layoutForView?.ascending = false
+        layoutForView?.directoryOnTop = false
+
+        self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account, layoutForView: layoutForView, favoriteOnTop: false, providers: self.providers, searchResults: self.searchResults)
     }
 
-    override func reloadDataSourceNetwork() {
+    override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         super.reloadDataSourceNetwork()
 
         let requestBodyRecent =
@@ -134,23 +138,19 @@ class NCRecent: NCCollectionViewCommon {
         NextcloudKit.shared.searchBodyRequest(serverUrl: appDelegate.urlBase,
                                               requestBody: requestBody,
                                               showHiddenFiles: NCKeychain().showHiddenFiles,
+                                              account: appDelegate.account,
                                               options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
-        } completion: { account, files, _, error in
+        } completion: { _, files, _, error in
             if error == .success {
-                NCManageDatabase.shared.convertFilesToMetadatas(files, useMetadataFolder: false) { _, metadatasFolder, metadatas in
-                    // Update sub directories
-                    for metadata in metadatasFolder {
-                        let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-                        NCManageDatabase.shared.addDirectory(e2eEncrypted: metadata.e2eEncrypted, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrl, account: account)
-                    }
+                NCManageDatabase.shared.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
                     // Add metadatas
                     NCManageDatabase.shared.addMetadatas(metadatas)
                     self.reloadDataSource()
                 }
             } else {
-                self.reloadDataSource(withQueryDB: false)
+                self.reloadDataSource(withQueryDB: withQueryDB)
             }
         }
     }

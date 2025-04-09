@@ -39,7 +39,7 @@ struct LockscreenWidgetView: View {
                     label: {},
                     currentValueLabel: {
                         Image(systemName: "xmark.icloud")
-                            .font(.system(size: 25.0))
+                            .font(.system(size: 25.0).weight(.light))
                     }
                 )
                 .gaugeStyle(.accessoryCircularCapacity)
@@ -66,17 +66,17 @@ struct LockscreenWidgetView: View {
                         .renderingMode(.template)
                         .resizable()
                         .scaledToFill()
-                        .foregroundColor(.gray)
+                        .foregroundColor(Color(NCBrandColor.shared.textColor2))
                         .frame(width: 11, height: 11)
                     Text(NSLocalizedString("_recent_activity_", comment: ""))
                         .font(.system(size: 11))
                         .fontWeight(.heavy)
-                        .foregroundColor(.gray)
+                        .foregroundColor(Color(NCBrandColor.shared.textColor2))
                 }
                 if entry.error {
                     VStack(spacing: 1) {
                         Image(systemName: "xmark.icloud")
-                            .font(.system(size: 25.0))
+                            .font(Font.system(size: 25.0).weight(.light))
                             .frame(maxWidth: .infinity, alignment: .center)
                     }.padding(8)
                 } else {

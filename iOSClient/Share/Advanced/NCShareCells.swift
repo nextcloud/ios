@@ -4,6 +4,7 @@
 //
 //  Created by Henrik Storch on 18.03.22.
 //  Copyright © 2022 Henrik Storch. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Henrik Storch <henrik.storch@nextcloud.com>
 //
@@ -36,7 +37,7 @@ protocol NCToggleCellConfig: NCShareCellConfig {
 
 extension NCToggleCellConfig {
     func getCell(for share: NCTableShareable) -> UITableViewCell {
-        return NCShareToggleCell(isOn: isOn(for: share))
+        return NCShareToggleCell(isOn: isOn(for: share), customIcons: (.checkmarkIcon, nil))
     }
 
     func didSelect(for share: NCTableShareable) {
@@ -64,11 +65,11 @@ enum NCUserPermission: CaseIterable, NCPermission {
 
     var permissionBitFlag: Int {
         switch self {
-        case .reshare: return NCGlobal.shared.permissionShareShare
-        case .edit: return NCGlobal.shared.permissionUpdateShare
-        case .create: return NCGlobal.shared.permissionCreateShare
-        case .delete: return NCGlobal.shared.permissionDeleteShare
-        case .download: return NCGlobal.shared.permissionDownloadShare
+        case .reshare: return NCPermissions().permissionShareShare
+        case .edit: return NCPermissions().permissionUpdateShare
+        case .create: return NCPermissions().permissionCreateShare
+        case .delete: return NCPermissions().permissionDeleteShare
+        case .download: return NCPermissions().permissionDownloadShare
         }
     }
 
@@ -108,7 +109,7 @@ enum NCLinkPermission: NCPermission {
 
     func didChange(_ share: NCTableShareable, to newValue: Bool) {
         guard self != .allowEdit || newValue else {
-            share.permissions = NCGlobal.shared.permissionReadShare
+            share.permissions = NCPermissions().permissionReadShare
             return
         }
         share.permissions = permissionValue
@@ -125,45 +126,46 @@ enum NCLinkPermission: NCPermission {
     var permissionValue: Int {
         switch self {
         case .allowEdit:
-            return CCUtility.getPermissionsValue(
-                byCanEdit: true,
-                andCanCreate: true,
-                andCanChange: true,
-                andCanDelete: true,
-                andCanShare: false,
-                andIsFolder: false)
+            return NCPermissions().getPermission(
+                canEdit: true,
+                canCreate: true,
+                canChange: true,
+                canDelete: true,
+                canShare: false,
+                isDirectory: false)
         case .viewOnly:
-            return CCUtility.getPermissionsValue(
-                byCanEdit: false,
-                andCanCreate: false,
-                andCanChange: false,
-                andCanDelete: false,
+            return NCPermissions().getPermission(
+                canEdit: false,
+                canCreate: false,
+                canChange: false,
+                canDelete: false,
                 // not possible to create "read-only" shares without reshare option
                 // https://github.com/nextcloud/server/blame/f99876997a9119518fe5f7ad3a3a51d33459d4cc/apps/files_sharing/lib/Controller/ShareAPIController.php#L1104-L1107
-                andCanShare: true,
-                andIsFolder: true)
+                canShare: true,
+                isDirectory: true)
         case .uploadEdit:
-            return CCUtility.getPermissionsValue(
-                byCanEdit: true,
-                andCanCreate: true,
-                andCanChange: true,
-                andCanDelete: true,
-                andCanShare: false,
-                andIsFolder: true)
+            return NCPermissions().getPermission(
+                canEdit: true,
+                canCreate: true,
+                canChange: true,
+                canDelete: true,
+                canShare: false,
+                isDirectory: true)
         case .fileDrop:
-            return NCGlobal.shared.permissionCreateShare
+            return NCPermissions().permissionCreateShare
         case .secureFileDrop:
-            return NCGlobal.shared.permissionCreateShare
+            return NCPermissions().permissionCreateShare
         }
     }
 
     func isOn(for share: NCTableShareable) -> Bool {
+        let permissions = NCPermissions()
         switch self {
-        case .allowEdit: return CCUtility.isAnyPermission(toEdit: share.permissions)
-        case .viewOnly: return !CCUtility.isAnyPermission(toEdit: share.permissions) && share.permissions != NCGlobal.shared.permissionCreateShare
-        case .uploadEdit: return CCUtility.isAnyPermission(toEdit: share.permissions) && share.permissions != NCGlobal.shared.permissionCreateShare
-        case .fileDrop: return share.permissions == NCGlobal.shared.permissionCreateShare
-        case .secureFileDrop: return share.permissions == NCGlobal.shared.permissionCreateShare
+        case .allowEdit: return permissions.isAnyPermissionToEdit(share.permissions)
+        case .viewOnly: return !permissions.isAnyPermissionToEdit(share.permissions) && share.permissions != permissions.permissionCreateShare
+        case .uploadEdit: return permissions.isAnyPermissionToEdit(share.permissions) && share.permissions != permissions.permissionCreateShare
+        case .fileDrop: return share.permissions == permissions.permissionCreateShare
+        case .secureFileDrop: return share.permissions == permissions.permissionCreateShare
         }
     }
 
@@ -197,10 +199,10 @@ enum NCShareDetails: CaseIterable, NCShareCellConfig {
     func getCell(for share: NCTableShareable) -> UITableViewCell {
         switch self {
         case .hideDownload:
-            return NCShareToggleCell(isOn: share.hideDownload)
+            return NCShareToggleCell(isOn: share.hideDownload, customIcons: (.checkmarkIcon, nil))
         case .expirationDate:
             return NCShareDateCell(share: share)
-        case .password: return NCShareToggleCell(isOn: !share.password.isEmpty, customIcons: ("lock", "lock_open"))
+        case .password: return NCShareToggleCell(isOn: !share.password.isEmpty, customIcons: (.itemLock, .itemLockOpen))
         case .note:
             let cell = UITableViewCell(style: .value1, reuseIdentifier: "shareNote")
             cell.detailTextLabel?.text = share.note
@@ -246,6 +248,7 @@ struct NCShareConfig {
         let cellConfig = config(for: indexPath)
         let cell = cellConfig?.getCell(for: share)
         cell?.textLabel?.text = cellConfig?.title
+        cell?.textLabel?.textColor = UIColor(resource: .Share.Advanced.Cell.title)
         if let cellConfig = cellConfig as? NCPermission, !cellConfig.hasResharePermission(for: resharePermission), !cellConfig.hasDownload() {
             cell?.isUserInteractionEnabled = false
             cell?.textLabel?.isEnabled = false
@@ -268,18 +271,23 @@ struct NCShareConfig {
 }
 
 class NCShareToggleCell: UITableViewCell {
-    typealias CustomToggleIcon = (onIconName: String?, offIconName: String?)
+    typealias CustomToggleIcon = (onIconName: ImageResource?, offIconName: ImageResource?)
     init(isOn: Bool, customIcons: CustomToggleIcon? = nil) {
         super.init(style: .default, reuseIdentifier: "toggleCell")
         self.accessibilityValue = isOn ? NSLocalizedString("_on_", comment: "") : NSLocalizedString("_off_", comment: "")
-
+        self.tintColor = NCBrandColor.shared.brandElement
+        
         guard let customIcons = customIcons,
               let iconName = isOn ? customIcons.onIconName : customIcons.offIconName else {
+            
             self.accessoryType = isOn ? .checkmark : .none
             return
         }
-        let image = NCUtility().loadImage(named: iconName, color: NCBrandColor.shared.brandElement, size: self.frame.height - 26)
-        self.accessoryView = UIImageView(image: image)
+        let checkmark = UIImage(resource: iconName).withTintColor(NCBrandColor.shared.brandElement)
+        let imageView = UIImageView(image: checkmark)
+        imageView.frame = CGRect(x: 0, y: 0, width: 19, height: 19)
+        imageView.contentMode = .scaleAspectFit
+        self.accessoryView = imageView
     }
 
     required init?(coder: NSCoder) {

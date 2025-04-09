@@ -4,6 +4,7 @@
 //
 //  Created by Marino Faggiana on 08/10/2018.
 //  Copyright © 2018 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -24,7 +25,6 @@
 import UIKit
 
 class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
-
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
@@ -34,7 +34,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var labelInfo: UILabel!
     @IBOutlet weak var labelSubinfo: UILabel!
     @IBOutlet weak var buttonMore: UIButton!
-    @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
 
     var objectId = ""
     var indexPath = IndexPath()
@@ -67,10 +66,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         get { return labelSubinfo }
         set { labelSubinfo = newValue }
     }
-    var fileSelectImage: UIImageView? {
-        get { return imageSelect }
-        set { imageSelect = newValue }
-    }
     var fileStatusImage: UIImageView? {
         get { return imageStatus }
         set { imageStatus = newValue }
@@ -86,8 +81,15 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        initCell()
+    }
 
-        // use entire cell as accessibility element
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        initCell()
+    }
+
+    func initCell() {
         accessibilityHint = nil
         accessibilityLabel = nil
         accessibilityValue = nil
@@ -96,9 +98,8 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
 
-        imageVisualEffect.layer.cornerRadius = 6
-        imageVisualEffect.clipsToBounds = true
-        imageVisualEffect.alpha = 0.5
+        imageSelect.isHidden = true
+        imageSelect.image = UIImage(resource: .FileSelection.gridItemSelected)
 
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
         longPressedGesture.minimumPressDuration = 0.5
@@ -106,23 +107,9 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         longPressedGesture.delaysTouchesBegan = true
         self.addGestureRecognizer(longPressedGesture)
 
-        let longPressedGestureMore = UILongPressGestureRecognizer(target: self, action: #selector(longPressInsideMore(gestureRecognizer:)))
-        longPressedGestureMore.minimumPressDuration = 0.5
-        longPressedGestureMore.delegate = self
-        longPressedGestureMore.delaysTouchesBegan = true
-        buttonMore.addGestureRecognizer(longPressedGestureMore)
-
         labelTitle.text = ""
         labelInfo.text = ""
         labelSubinfo.text = ""
-    }
-
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        imageItem.backgroundColor = nil
-        accessibilityHint = nil
-        accessibilityLabel = nil
-        accessibilityValue = nil
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
@@ -131,10 +118,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
     @IBAction func touchUpInsideMore(_ sender: Any) {
         gridCellDelegate?.tapMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, image: imageItem.image, indexPath: indexPath, sender: sender)
-    }
-
-    @objc func longPressInsideMore(gestureRecognizer: UILongPressGestureRecognizer) {
-        gridCellDelegate?.longPressMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
     }
 
     @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
@@ -162,43 +145,19 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         buttonMore.isHidden = status
     }
 
-    func selectMode(_ status: Bool) {
-        if status {
-            imageSelect.isHidden = false
+    func selected(_ isSelected: Bool, isEditMode: Bool) {
+        if isEditMode {
             buttonMore.isHidden = true
             accessibilityCustomActions = nil
         } else {
-            imageSelect.isHidden = true
-            imageVisualEffect.isHidden = true
             buttonMore.isHidden = false
             setA11yActions()
         }
-    }
-
-    func selected(_ status: Bool) {
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId), !metadata.isInTransfer else {
-            imageSelect.isHidden = true
-            imageVisualEffect.isHidden = true
-            return
-        }
-        if status {
-            if traitCollection.userInterfaceStyle == .dark {
-                imageVisualEffect.effect = UIBlurEffect(style: .dark)
-                imageVisualEffect.backgroundColor = .black
-            } else {
-                imageVisualEffect.effect = UIBlurEffect(style: .extraLight)
-                imageVisualEffect.backgroundColor = .lightGray
-            }
-            imageSelect.image = NCImageCache.images.checkedYes
-            imageVisualEffect.isHidden = false
-        } else {
-            imageSelect.isHidden = true
-            imageVisualEffect.isHidden = true
-        }
+        setBorderForGridViewCell(isSelected: isSelected)
+        imageSelect.isHidden = !isSelected
     }
 
     func writeInfoDateSize(date: NSDate, size: Int64) {
-
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .short
         dateFormatter.timeStyle = .none
@@ -224,27 +183,16 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
 protocol NCGridCellDelegate: AnyObject {
     func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any)
-    func longPressMoreGridItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer)
     func longPressGridItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer)
-}
-
-// optional func
-extension NCGridCellDelegate {
-    func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {}
-    func longPressMoreGridItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {}
-    func longPressGridItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {}
 }
 
 // MARK: - Grid Layout
 
 class NCGridLayout: UICollectionViewFlowLayout {
-
     var heightLabelPlusButton: CGFloat = 60
     var marginLeftRight: CGFloat = 10
-    var itemForLine: CGFloat = 3
+    var column: CGFloat = 3
     var itemWidthDefault: CGFloat = 140
-
-    // MARK: - View Life Cycle
 
     override init() {
         super.init()
@@ -265,20 +213,15 @@ class NCGridLayout: UICollectionViewFlowLayout {
     override var itemSize: CGSize {
         get {
             if let collectionView = collectionView {
-
                 if collectionView.frame.width < 400 {
-                    itemForLine = 3
+                    column = 3
                 } else {
-                    itemForLine = collectionView.frame.width / itemWidthDefault
+                    column = collectionView.frame.width / itemWidthDefault
                 }
-
-                let itemWidth: CGFloat = (collectionView.frame.width - marginLeftRight * 2 - marginLeftRight * (itemForLine - 1)) / itemForLine
+                let itemWidth: CGFloat = (collectionView.frame.width - marginLeftRight * 2 - marginLeftRight * (column - 1)) / column
                 let itemHeight: CGFloat = itemWidth + heightLabelPlusButton
-
                 return CGSize(width: itemWidth, height: itemHeight)
             }
-
-            // Default fallback
             return CGSize(width: itemWidthDefault, height: itemWidthDefault)
         }
         set {

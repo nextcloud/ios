@@ -4,6 +4,7 @@
 //
 //  Created by Marino Faggiana on 18/10/23.
 //  Copyright © 2021 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -26,15 +27,15 @@ import LRUCache
 import NextcloudKit
 import RealmSwift
 
-@objc class NCImageCache: NSObject {
-    @objc public static let shared: NCImageCache = {
+class NCImageCache: NSObject {
+    public static let shared: NCImageCache = {
         let instance = NCImageCache()
         return instance
     }()
 
     // MARK: -
 
-    private let limit: Int = 1000
+    private let limitCacheImagePreview: Int = 1000
     private var brandElementColor: UIColor?
     private var totalSize: Int64 = 0
 
@@ -51,14 +52,18 @@ import RealmSwift
         var date: Date
     }
 
-    private typealias ThumbnailImageLRUCache = LRUCache<String, imageInfo>
-    private typealias ThumbnailSizeLRUCache = LRUCache<String, CGSize?>
+    private typealias ThumbnailImagePreviewLRUCache = LRUCache<String, imageInfo>
+    private typealias ThumbnailImageIconLRUCache = LRUCache<String, UIImage>
+    private typealias ThumbnailSizePreviewLRUCache = LRUCache<String, CGSize?>
 
-    private lazy var cacheImage: ThumbnailImageLRUCache = {
-        return ThumbnailImageLRUCache(countLimit: limit)
+    private lazy var cacheImagePreview: ThumbnailImagePreviewLRUCache = {
+        return ThumbnailImagePreviewLRUCache(countLimit: limitCacheImagePreview)
     }()
-    private lazy var cacheSize: ThumbnailSizeLRUCache = {
-        return ThumbnailSizeLRUCache()
+    private lazy var cacheImageIcon: ThumbnailImageIconLRUCache = {
+        return ThumbnailImageIconLRUCache()
+    }()
+    private lazy var cacheSizePreview: ThumbnailSizePreviewLRUCache = {
+        return ThumbnailSizePreviewLRUCache()
     }()
     private var metadatasInfo: [String: metadataInfo] = [:]
     private var metadatas: ThreadSafeArray<tableMetadata>?
@@ -70,7 +75,10 @@ import RealmSwift
 
     override private init() {}
 
-    @objc func createMediaCache(account: String, withCacheSize: Bool) {
+    ///
+    /// MEDIA CACHE
+    ///
+    func createMediaCache(account: String, withCacheSize: Bool) {
         if createMediaCacheInProgress {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] ThumbnailLRUCache image process already in progress")
             return
@@ -80,7 +88,6 @@ import RealmSwift
         self.metadatasInfo.removeAll()
         self.metadatas = nil
         self.metadatas = getMediaMetadatas(account: account)
-        let ext = ".preview.ico"
         let manager = FileManager.default
         let resourceKeys = Set<URLResourceKey>([.nameKey, .pathKey, .fileSizeKey, .creationDateKey])
         struct FileInfo {
@@ -101,7 +108,7 @@ import RealmSwift
         }
 
         if let enumerator = manager.enumerator(at: URL(fileURLWithPath: NCUtilityFileSystem().directoryProviderStorage), includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles]) {
-            for case let fileURL as URL in enumerator where fileURL.lastPathComponent.hasSuffix(ext) {
+            for case let fileURL as URL in enumerator where fileURL.lastPathComponent.hasSuffix(NCGlobal.shared.storageExtPreview) {
                 let fileName = fileURL.lastPathComponent
                 let ocId = fileURL.deletingLastPathComponent().lastPathComponent
                 guard let resourceValues = try? fileURL.resourceValues(forKeys: resourceKeys),
@@ -112,16 +119,14 @@ import RealmSwift
                 if withCacheSize {
                     if let date = metadatasInfo[ocId]?.date,
                        let etag = metadatasInfo[ocId]?.etag,
-                       fileName == etag + ext {
+                       fileName == etag + NCGlobal.shared.storageExtPreview {
                         files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date as Date, fileSize: fileSize, width: width, height: height))
                     } else {
-                        let etag = fileName.replacingOccurrences(of: ".preview.ico", with: "")
+                        let etag = fileName.replacingOccurrences(of: NCGlobal.shared.storageExtPreview, with: "")
                         files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: Date.distantPast, fileSize: fileSize, width: width, height: height))
                     }
-                } else if let date = metadatasInfo[ocId]?.date, let etag = metadatasInfo[ocId]?.etag, fileName == etag + ext {
+                } else if let date = metadatasInfo[ocId]?.date, let etag = metadatasInfo[ocId]?.etag, fileName == etag + NCGlobal.shared.storageExtPreview {
                     files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date as Date, fileSize: fileSize, width: width, height: height))
-                } else {
-                    print("Nothing")
                 }
             }
         }
@@ -132,31 +137,31 @@ import RealmSwift
             print("Last date: \(lastDate)")
         }
 
-        cacheImage.removeAllValues()
-        cacheSize.removeAllValues()
+        cacheImagePreview.removeAllValues()
+        cacheSizePreview.removeAllValues()
         var counter: Int = 0
         for file in files {
-            if !withCacheSize, counter > limit {
+            if !withCacheSize, counter > limitCacheImagePreview {
                 break
             }
             autoreleasepool {
                 if let image = UIImage(contentsOfFile: file.path.path) {
-                    if counter < limit {
-                        cacheImage.setValue(imageInfo(image: image, size: image.size, date: file.date), forKey: file.ocIdEtag)
+                    if counter < limitCacheImagePreview {
+                        cacheImagePreview.setValue(imageInfo(image: image, size: image.size, date: file.date), forKey: file.ocIdEtag)
                         totalSize = totalSize + Int64(file.fileSize)
+                        counter += 1
                     }
                     if file.width == 0, file.height == 0 {
-                        cacheSize.setValue(image.size, forKey: file.ocIdEtag)
+                        cacheSizePreview.setValue(image.size, forKey: file.ocIdEtag)
                     }
                 }
             }
-            counter += 1
         }
 
         let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
-        NextcloudKit.shared.nkCommonInstance.writeLog("Counter cache image: \(cacheImage.count)")
-        NextcloudKit.shared.nkCommonInstance.writeLog("Counter cache size: \(cacheSize.count)")
+        NextcloudKit.shared.nkCommonInstance.writeLog("Counter cache image: \(cacheImagePreview.count)")
+        NextcloudKit.shared.nkCommonInstance.writeLog("Counter cache size: \(cacheSizePreview.count)")
         NextcloudKit.shared.nkCommonInstance.writeLog("Total size images process: " + NCUtilityFileSystem().transformedSize(totalSize))
         NextcloudKit.shared.nkCommonInstance.writeLog("Time process: \(diffDate)")
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
@@ -170,34 +175,51 @@ import RealmSwift
         return self.metadatas
     }
 
-    func setMediaImage(ocId: String, etag: String, image: UIImage, date: Date) {
-        cacheImage.setValue(imageInfo(image: image, size: image.size, date: date), forKey: ocId + etag)
-    }
-
-    func getMediaImage(ocId: String, etag: String) -> UIImage? {
-        if let cache = cacheImage.value(forKey: ocId + etag) {
-            return cache.image
-        }
-        return nil
-    }
-
-    func hasMediaImageEnoughSpace() -> Bool {
-        return limit > cacheImage.count
-    }
-
-    func setMediaSize(ocId: String, etag: String, size: CGSize) {
-        cacheSize.setValue(size, forKey: ocId + etag)
-    }
-
-    func getMediaSize(ocId: String, etag: String) -> CGSize? {
-        return cacheSize.value(forKey: ocId + etag) ?? nil
-    }
-
     func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> ThreadSafeArray<tableMetadata>? {
         guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return nil }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: tableAccount.urlBase, userId: tableAccount.userId) + tableAccount.mediaPath
         let predicateBoth = NSPredicate(format: showBothPredicateMediaString, account, startServerUrl)
         return NCManageDatabase.shared.getMediaMetadatas(predicate: predicate ?? predicateBoth)
+    }
+
+    ///
+    /// PREVIEW CACHE
+    ///
+    func addPreviewImageCache(metadata: tableMetadata, image: UIImage) {
+        cacheImagePreview.setValue(imageInfo(image: image, size: image.size, date: metadata.date as Date), forKey: metadata.ocId + metadata.etag)
+        cacheSizePreview.setValue(image.size, forKey: metadata.ocId + metadata.etag)
+    }
+
+    func getPreviewImageCache(ocId: String, etag: String) -> UIImage? {
+        if let cache = cacheImagePreview.value(forKey: ocId + etag) {
+            return cache.image
+        }
+        return nil
+    }
+
+    ///
+    /// SIZE CACHE
+    ///
+    func getPreviewSizeCache(ocId: String, etag: String) -> CGSize? {
+        if let size = cacheSizePreview.value(forKey: ocId + etag) {
+            return size
+        } else {
+            if let image = UIImage(contentsOfFile: NCUtilityFileSystem().getDirectoryProviderStoragePreviewOcId(ocId, etag: etag)) {
+                return image.size
+            }
+        }
+        return nil
+    }
+
+    ///
+    /// ICON CACHE
+    ///
+    func setIconImageCache(ocId: String, etag: String, image: UIImage) {
+        cacheImageIcon.setValue(image, forKey: ocId + etag)
+    }
+
+    func getIconImageCache(ocId: String, etag: String) -> UIImage? {
+        return cacheImageIcon.value(forKey: ocId + etag)
     }
 
     // MARK: -
@@ -223,14 +245,12 @@ import RealmSwift
         static var folderAutomaticUpload = UIImage()
         static var folder = UIImage()
 
-        static var checkedYes = UIImage()
-        static var checkedNo = UIImage()
+		static var checkedYes: UIImage? = UIImage()
+		static var checkedNo: UIImage? = UIImage()
 
         static var buttonMore = UIImage()
         static var buttonStop = UIImage()
         static var buttonMoreLock = UIImage()
-        static var buttonRestore = UIImage()
-        static var buttonTrash = UIImage()
 
         static var iconContacts = UIImage()
         static var iconTalk = UIImage()
@@ -239,59 +259,57 @@ import RealmSwift
         static var iconMail = UIImage()
         static var iconConfirm = UIImage()
         static var iconPages = UIImage()
+        static var iconFile = UIImage()
     }
 
     func createImagesCache() {
-
-        let yellowFavorite = NCBrandColor.shared.yellowFavorite
         let utility = NCUtility()
 
-        images.file = UIImage(named: "file")!
+        images.file = utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor2])
 
-        images.shared = UIImage(named: "share")!.image(color: .systemGray, size: 50)
-        images.canShare = UIImage(named: "share")!.image(color: .systemGray, size: 50)
-        images.shareByLink = UIImage(named: "sharebylink")!.image(color: .systemGray, size: 50)
+        let canShareImage = UIImage(resource: .Share.canShare).withTintColor(NCBrandColor.shared.brandElement)
+        images.shared = canShareImage
+        images.canShare = canShareImage
+        images.shareByLink = UIImage(resource: .Share.shared)
 
-        images.favorite = utility.loadImage(named: "star.fill", color: yellowFavorite)
-        images.comment = UIImage(named: "comment")!.image(color: .systemGray, size: 50)
-        images.livePhoto = utility.loadImage(named: "livephoto", color: .label)
-        images.offlineFlag = UIImage(named: "offlineFlag")!
-        images.local = UIImage(named: "local")!
+        images.favorite = NCImagesRepository.favorite
+        images.livePhoto = NCImagesRepository.livePhoto
+        images.offlineFlag = UIImage(resource: .offlineFlag)
+        images.local = UIImage(resource: .local)
 
-        images.checkedYes = utility.loadImage(named: "checkmark.circle.fill", color: .systemBlue)
-        images.checkedNo = utility.loadImage(named: "circle", color: .systemGray)
+        images.checkedYes = UIImage(named: "FileSelection/list_item_selected")
+        images.checkedNo =  UIImage(named: "FileSelection/list_item_deselected")
 
-        images.buttonMore = UIImage(named: "more")!.image(color: .systemGray, size: 50)
-        images.buttonStop = UIImage(named: "stop")!.image(color: .systemGray, size: 50)
-        images.buttonMoreLock = UIImage(named: "moreLock")!.image(color: .systemGray, size: 50)
-        images.buttonRestore = UIImage(named: "restore")!.image(color: .systemGray, size: 50)
-        images.buttonTrash = UIImage(named: "trash")!.image(color: .systemGray, size: 50)
+        images.buttonMore = UIImage(resource: .more).withTintColor(NCBrandColor.shared.brandElement)
+        images.buttonStop = utility.loadImage(named: "stop.circle", colors: [NCBrandColor.shared.iconImageColor])
+        images.buttonMoreLock = utility.loadImage(named: "lock.fill", colors: [NCBrandColor.shared.iconImageColor])
 
         createImagesBrandCache()
     }
 
     func createImagesBrandCache() {
-
         let brandElement = NCBrandColor.shared.brandElement
         guard brandElement != self.brandElementColor else { return }
         self.brandElementColor = brandElement
+        let utility = NCUtility()
 
-        let folderWidth: CGFloat = UIScreen.main.bounds.width / 3
-        images.folderEncrypted = UIImage(named: "folderEncrypted")!.image(color: brandElement, size: folderWidth)
-        images.folderSharedWithMe = UIImage(named: "folder_shared_with_me")!.image(color: brandElement, size: folderWidth)
-        images.folderPublic = UIImage(named: "folder_public")!.image(color: brandElement, size: folderWidth)
-        images.folderGroup = UIImage(named: "folder_group")!.image(color: brandElement, size: folderWidth)
-        images.folderExternal = UIImage(named: "folder_external")!.image(color: brandElement, size: folderWidth)
-        images.folderAutomaticUpload = UIImage(named: "folderAutomaticUpload")!.image(color: brandElement, size: folderWidth)
-        images.folder = UIImage(named: "folder")!.image(color: brandElement, size: folderWidth)
+        let folderGroup = UIImage(resource: .folderGroup)
+        images.folderEncrypted = UIImage(named: "folderEncrypted")!.image(color: brandElement)
+        images.folderSharedWithMe = folderGroup
+        images.folderPublic = folderGroup
+        images.folderGroup = folderGroup
+        images.folderExternal = UIImage(named: "folder_external")!.image(color: brandElement)
+        images.folderAutomaticUpload = UIImage(resource: .folderAutomaticUpload)
+        images.folder = UIImage(resource: .folder)
 
-        images.iconContacts = UIImage(named: "icon-contacts")!.image(color: brandElement, size: folderWidth)
-        images.iconTalk = UIImage(named: "icon-talk")!.image(color: brandElement, size: folderWidth)
-        images.iconCalendar = UIImage(named: "icon-calendar")!.image(color: brandElement, size: folderWidth)
-        images.iconDeck = UIImage(named: "icon-deck")!.image(color: brandElement, size: folderWidth)
-        images.iconMail = UIImage(named: "icon-mail")!.image(color: brandElement, size: folderWidth)
-        images.iconConfirm = UIImage(named: "icon-confirm")!.image(color: brandElement, size: folderWidth)
-        images.iconPages = UIImage(named: "icon-pages")!.image(color: brandElement, size: folderWidth)
+        images.iconContacts = utility.loadImage(named: "person.crop.rectangle.stack", colors: [NCBrandColor.shared.iconImageColor])
+        images.iconTalk = UIImage(named: "talk-template")!.image(color: brandElement)
+        images.iconCalendar = utility.loadImage(named: "calendar", colors: [NCBrandColor.shared.iconImageColor])
+        images.iconDeck = utility.loadImage(named: "square.stack.fill", colors: [NCBrandColor.shared.iconImageColor])
+        images.iconMail = utility.loadImage(named: "mail", colors: [NCBrandColor.shared.iconImageColor])
+        images.iconConfirm = utility.loadImage(named: "arrow.right", colors: [NCBrandColor.shared.iconImageColor])
+        images.iconPages = utility.loadImage(named: "doc.richtext", colors: [NCBrandColor.shared.iconImageColor])
+        images.iconFile = utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor])
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
     }

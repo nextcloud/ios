@@ -24,7 +24,6 @@ import Foundation
 extension NCTrash: NCTrashSelectTabBarDelegate {
     func onListSelected() {
         if layoutForView?.layout == NCGlobal.shared.layoutGrid {
-            // list layout
             layoutForView?.layout = NCGlobal.shared.layoutList
             NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: "", layout: layoutForView?.layout)
 
@@ -36,7 +35,6 @@ extension NCTrash: NCTrashSelectTabBarDelegate {
 
     func onGridSelected() {
         if layoutForView?.layout == NCGlobal.shared.layoutList {
-            // grid layout
             layoutForView?.layout = NCGlobal.shared.layoutGrid
             NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: "", layout: layoutForView?.layout)
 
@@ -52,7 +50,7 @@ extension NCTrash: NCTrashSelectTabBarDelegate {
         } else {
             selectOcId = self.datasource.compactMap({ $0.fileId })
         }
-        tabBarSelect.update(selectOcId: selectOcId)
+        selectionToolbar.update(selectOcId: selectOcId)
         collectionView.reloadData()
     }
 
@@ -69,7 +67,12 @@ extension NCTrash: NCTrashSelectTabBarDelegate {
     func setEditMode(_ editMode: Bool) {
         isEditMode = editMode
         selectOcId.removeAll()
-        setNavigationRightItems(enableMenu: !editMode)
+
+        updateSelectionToolbar()
+
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = !editMode
+        navigationItem.hidesBackButton = editMode
         collectionView.reloadData()
+
     }
 }

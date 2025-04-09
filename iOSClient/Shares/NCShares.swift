@@ -33,7 +33,7 @@ class NCShares: NCCollectionViewCommon {
         layoutKey = NCGlobal.shared.layoutViewShares
         enableSearchBar = false
         headerRichWorkspaceDisable = true
-        emptyImage = UIImage(named: "share")?.image(color: .gray, size: UIScreen.main.bounds.width)
+        emptyImage = utility.loadImage(named: "person.fill.badge.plus", colors: [NCBrandColor.shared.brandElement])
         emptyTitle = "_list_shares_no_files_"
         emptyDescription = "_tutorial_list_shares_view_"
     }
@@ -56,15 +56,7 @@ class NCShares: NCCollectionViewCommon {
         var metadatas: [tableMetadata] = []
 
         func reload() {
-            self.dataSource = NCDataSource(metadatas: metadatas,
-                                           account: appDelegate.account,
-                                           sort: layoutForView?.sort,
-                                           ascending: layoutForView?.ascending,
-                                           directoryOnTop: layoutForView?.directoryOnTop,
-                                           favoriteOnTop: true,
-                                           groupByField: groupByField,
-                                           providers: providers,
-                                           searchResults: searchResults)
+            self.dataSource = NCDataSource(metadatas: metadatas, account: appDelegate.account, layoutForView: layoutForView, providers: providers, searchResults: searchResults)
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
                 self.collectionView.reloadData()
@@ -79,7 +71,7 @@ class NCShares: NCCollectionViewCommon {
                 }
             } else {
                 let serverUrlFileName = share.serverUrl + "/" + share.fileName
-                NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName) { task in
+                NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: appDelegate.account) { task in
                     self.dataSourceTask = task
                     self.collectionView.reloadData()
                 } completion: { _, metadata, _ in
@@ -97,10 +89,10 @@ class NCShares: NCCollectionViewCommon {
         reload()
     }
 
-    override func reloadDataSourceNetwork() {
+    override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         super.reloadDataSourceNetwork()
 
-        NextcloudKit.shared.readShares(parameters: NKShareParameter()) { task in
+        NextcloudKit.shared.readShares(parameters: NKShareParameter(), account: appDelegate.account) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { account, shares, _, error in
@@ -112,7 +104,7 @@ class NCShares: NCCollectionViewCommon {
                 }
                 self.reloadDataSource()
             } else {
-                self.reloadDataSource(withQueryDB: false)
+                self.reloadDataSource(withQueryDB: withQueryDB)
             }
         }
     }

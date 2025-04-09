@@ -33,7 +33,7 @@ class NotificationService: UNNotificationServiceExtension {
 
         if let bestAttemptContent = bestAttemptContent {
             bestAttemptContent.title = ""
-            bestAttemptContent.body = "Nextcloud notification"
+            bestAttemptContent.body = "HiDrive Next notification"
             do {
                 if let message = bestAttemptContent.userInfo["subject"] as? String {
                     let tableAccounts = NCManageDatabase.shared.getAllAccount()
@@ -46,7 +46,7 @@ class NotificationService: UNNotificationServiceExtension {
                         if var json = try JSONSerialization.jsonObject(with: data) as? [String: AnyObject],
                            let subject = json["subject"] as? String {
                             bestAttemptContent.body = subject
-                            if let pref = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroups) {
+                            if let pref = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) {
                                 json["account"] = tableAccount.account as AnyObject
                                 pref.set(json, forKey: "NOTIFICATION_DATA")
                                 pref.synchronize()
@@ -67,7 +67,7 @@ class NotificationService: UNNotificationServiceExtension {
         // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
         if let contentHandler = contentHandler, let bestAttemptContent = bestAttemptContent {
             bestAttemptContent.title = ""
-            bestAttemptContent.body = "Nextcloud notification"
+            bestAttemptContent.body = "HiDrive Next notification"
             contentHandler(bestAttemptContent)
         }
     }

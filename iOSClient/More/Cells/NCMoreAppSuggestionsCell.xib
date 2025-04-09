@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22113.3" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_0" orientation="portrait" appearance="dark"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22089.1"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -20,21 +20,21 @@
                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="ppx-X2-oTM">
                         <rect key="frame" x="0.0" y="0.0" width="1076" height="44"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalCentering" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="Tbt-MZ-3jf">
-                                <rect key="frame" x="0.0" y="0.0" width="353.33333333333331" height="44"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalCentering" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="Tbt-MZ-3jf" userLabel="Assistant View">
+                                <rect key="frame" x="0.0" y="0.0" width="263" height="44"/>
                                 <subviews>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" image="talk-template" translatesAutoresizingMaskIntoConstraints="NO" id="Uby-L5-yV4" userLabel="Icon">
-                                        <rect key="frame" x="167.66666666666666" y="8" width="18" height="18"/>
-                                        <color key="tintColor" systemColor="linkColor"/>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" image="sparkles" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="Uby-L5-yV4" userLabel="Icon">
+                                        <rect key="frame" x="122.66666666666669" y="7.0000000000000018" width="18" height="18.666666666666671"/>
+                                        <color key="tintColor" red="0.0" green="0.50980392159999999" blue="0.78823529410000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="18" id="Vl1-Ip-OUw"/>
                                             <constraint firstAttribute="width" constant="18" id="m7P-Or-Esh"/>
                                         </constraints>
                                     </imageView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Talk" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9cY-LF-9EI">
-                                        <rect key="frame" x="167" y="26" width="19.333333333333343" height="10"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Assistant" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9cY-LF-9EI">
+                                        <rect key="frame" x="109.33333333333333" y="26" width="44.666666666666671" height="10"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="10"/>
-                                        <color key="textColor" systemColor="systemBlueColor"/>
+                                        <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
@@ -50,21 +50,51 @@
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                             </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalCentering" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="zMY-2F-GWL" userLabel="Talk View">
+                                <rect key="frame" x="271" y="0.0" width="263" height="44"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" image="talk-template" translatesAutoresizingMaskIntoConstraints="NO" id="zLh-jf-KKN" userLabel="Icon">
+                                        <rect key="frame" x="122.66666666666669" y="8" width="18" height="18"/>
+                                        <color key="tintColor" red="0.0" green="0.50980392159999999" blue="0.78823529410000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="18" id="KVE-Ou-EQq"/>
+                                            <constraint firstAttribute="width" constant="18" id="o18-Us-gIE"/>
+                                        </constraints>
+                                    </imageView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Talk" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PUm-p8-Okc">
+                                        <rect key="frame" x="121.99999999999999" y="26" width="19.333333333333329" height="10"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="secondarySystemGroupedBackgroundColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="PUm-p8-Okc" secondAttribute="bottom" constant="8" id="6Kg-uP-bCY"/>
+                                    <constraint firstItem="PUm-p8-Okc" firstAttribute="top" secondItem="zLh-jf-KKN" secondAttribute="bottom" id="dlm-ig-4oN"/>
+                                    <constraint firstItem="zLh-jf-KKN" firstAttribute="top" secondItem="zMY-2F-GWL" secondAttribute="top" constant="8" id="syZ-4o-jwc"/>
+                                </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="8"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalCentering" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="4jA-wm-kCc">
-                                <rect key="frame" x="361.33333333333337" y="0.0" width="353.33333333333337" height="44"/>
+                                <rect key="frame" x="542" y="0.0" width="263" height="44"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" image="notes-template" translatesAutoresizingMaskIntoConstraints="NO" id="BT7-Nt-9RH" userLabel="Icon">
-                                        <rect key="frame" x="167.66666666666669" y="8" width="18" height="18"/>
-                                        <color key="tintColor" systemColor="linkColor"/>
+                                        <rect key="frame" x="122.66666666666663" y="8" width="18" height="18"/>
+                                        <color key="tintColor" red="0.0" green="0.50980392159999999" blue="0.78823529410000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="18" id="3YI-i4-Ykd"/>
                                             <constraint firstAttribute="width" constant="18" id="Riu-Cr-O0l"/>
                                         </constraints>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Notes" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tQM-o0-e3W">
-                                        <rect key="frame" x="162.33333333333331" y="26" width="28.666666666666657" height="10"/>
+                                        <rect key="frame" x="117.33333333333339" y="26" width="28.666666666666671" height="10"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="10"/>
-                                        <color key="textColor" systemColor="systemBlueColor"/>
+                                        <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
@@ -81,20 +111,20 @@
                                 </userDefinedRuntimeAttributes>
                             </stackView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalCentering" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="SA6-fX-Xmx">
-                                <rect key="frame" x="722.66666666666663" y="0.0" width="353.33333333333337" height="44"/>
+                                <rect key="frame" x="813" y="0.0" width="263" height="44"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" image="more-apps-template" translatesAutoresizingMaskIntoConstraints="NO" id="dzE-0b-iBn" userLabel="Icon">
-                                        <rect key="frame" x="167.66666666666674" y="8" width="18" height="18"/>
-                                        <color key="tintColor" systemColor="linkColor"/>
+                                        <rect key="frame" x="122.66666666666663" y="8" width="18" height="18"/>
+                                        <color key="tintColor" red="0.0" green="0.50980392159999999" blue="0.78823529410000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <constraints>
                                             <constraint firstAttribute="width" constant="18" id="Yo0-sL-LJN"/>
                                             <constraint firstAttribute="height" constant="18" id="bOc-vN-4Ry"/>
                                         </constraints>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="More apps" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GIQ-5h-VeA">
-                                        <rect key="frame" x="151.33333333333337" y="26" width="51" height="12"/>
+                                        <rect key="frame" x="106" y="26" width="51" height="12"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="10"/>
-                                        <color key="textColor" systemColor="systemBlueColor"/>
+                                        <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
@@ -127,15 +157,16 @@
                 </constraints>
                 <variation key="widthClass=regular">
                     <mask key="constraints">
-                        <exclude reference="XRL-5j-YM1"/>
-                        <exclude reference="yEM-LQ-UIV"/>
+                        <include reference="XRL-5j-YM1"/>
+                        <include reference="yEM-LQ-UIV"/>
                     </mask>
                 </variation>
             </tableViewCellContentView>
             <connections>
+                <outlet property="assistantView" destination="Tbt-MZ-3jf" id="hqz-b7-O11"/>
                 <outlet property="moreAppsView" destination="SA6-fX-Xmx" id="fiE-FN-en3"/>
                 <outlet property="notesView" destination="4jA-wm-kCc" id="XuQ-8X-RDH"/>
-                <outlet property="talkView" destination="Tbt-MZ-3jf" id="1Tf-ff-0k1"/>
+                <outlet property="talkView" destination="zMY-2F-GWL" id="JxU-ba-d3i"/>
             </connections>
             <point key="canvasLocation" x="209.30232558139534" y="-65.665236051502148"/>
         </tableViewCell>
@@ -143,15 +174,10 @@
     <resources>
         <image name="more-apps-template" width="32" height="32"/>
         <image name="notes-template" width="24" height="24"/>
-        <image name="talk-template" width="600" height="600"/>
-        <systemColor name="linkColor">
-            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
+        <image name="sparkles" catalog="system" width="115" height="128"/>
+        <image name="talk-template" width="16" height="16"/>
         <systemColor name="secondarySystemGroupedBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-        <systemColor name="systemBlueColor">
-            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

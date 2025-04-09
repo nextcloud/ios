@@ -44,3 +44,8 @@ Package.resolved
 
 *.generated.swift
 /.env-vars
+
+## CI artifacts
+BuildForSimulator/
+ipaDerivedData/
+build/

@@ -4,6 +4,7 @@
 //
 //  Created by Marino Faggiana on 29/03/2020.
 //  Copyright © 2020 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -79,10 +80,10 @@ class NCCreateFormUploadConflict: UIViewController {
         tableView.allowsSelection = false
         tableView.tableFooterView = UIView()
 
-        view.backgroundColor = .systemGroupedBackground
-        tableView.backgroundColor = .systemGroupedBackground
-        viewSwitch.backgroundColor = .systemGroupedBackground
-        viewButton.backgroundColor = .systemGroupedBackground
+        view.backgroundColor = NCBrandColor.shared.appBackgroundColor
+        tableView.backgroundColor = NCBrandColor.shared.appBackgroundColor
+        viewSwitch.backgroundColor = NCBrandColor.shared.appBackgroundColor
+        viewButton.backgroundColor = NCBrandColor.shared.appBackgroundColor
 
         tableView.register(UINib(nibName: "NCCreateFormUploadConflictCell", bundle: nil), forCellReuseIdentifier: "Cell")
 
@@ -98,25 +99,12 @@ class NCCreateFormUploadConflict: UIViewController {
             labelAlreadyExistingFiles.text = NSLocalizedString("_file_conflict_exists_", comment: "")
         }
 
-        switchNewFiles.onTintColor = NCBrandColor.shared.brand
         switchNewFiles.isOn = false
-        switchAlreadyExistingFiles.onTintColor = NCBrandColor.shared.brand
         switchAlreadyExistingFiles.isOn = false
 
-        buttonCancel.layer.cornerRadius = 20
-        buttonCancel.layer.masksToBounds = true
-        buttonCancel.layer.borderWidth = 0.5
-        buttonCancel.layer.borderColor = UIColor.darkGray.cgColor
-        buttonCancel.backgroundColor = .systemGray5
         buttonCancel.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)
-        buttonCancel.setTitleColor(.label, for: .normal)
-
-        buttonContinue.layer.cornerRadius = 20
-        buttonContinue.layer.masksToBounds = true
-        buttonContinue.backgroundColor = NCBrandColor.shared.brand
         buttonContinue.setTitle(NSLocalizedString("_continue_", comment: ""), for: .normal)
         buttonContinue.isEnabled = false
-        buttonContinue.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
 
         let blurEffect = UIBlurEffect(style: .light)
         blurView = UIVisualEffectView(effect: blurEffect)
@@ -311,8 +299,6 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
         if let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCCreateFormUploadConflictCell {
 
             cell.backgroundColor = tableView.backgroundColor
-            cell.switchNewFile.onTintColor = NCBrandColor.shared.brand
-            cell.switchAlreadyExistingFile.onTintColor = NCBrandColor.shared.brand
 
             let metadataNewFile = tableMetadata.init(value: metadatasUploadInConflict[indexPath.row])
 
@@ -338,7 +324,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
 
             } else {
                 if metadataAlreadyExists.iconName.isEmpty {
-                    cell.imageAlreadyExistingFile.image = UIImage(named: "file")
+                    cell.imageAlreadyExistingFile.image = NCImageCache.images.file
                 } else {
                     cell.imageAlreadyExistingFile.image = UIImage(named: metadataAlreadyExists.iconName)
                 }
@@ -354,7 +340,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             // -----> New File
 
             if metadataNewFile.iconName.isEmpty {
-                cell.imageNewFile.image = UIImage(named: "file")
+                cell.imageNewFile.image = NCImageCache.images.file
             } else {
                 cell.imageNewFile.image = UIImage(named: metadataNewFile.iconName)
             }
@@ -502,10 +488,8 @@ extension NCCreateFormUploadConflict: NCCreateFormUploadConflictCellDelegate {
 
         if result {
             buttonContinue.isEnabled = true
-            buttonContinue.setTitleColor(.label, for: .normal)
         } else {
             buttonContinue.isEnabled = false
-            buttonContinue.setTitleColor(UIColor.systemGray, for: .normal)
         }
     }
 }

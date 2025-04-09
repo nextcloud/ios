@@ -25,37 +25,29 @@ import UIKit
 import NextcloudKit
 
 @objc class NCRichWorkspaceCommon: NSObject {
-
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
 
     @objc func createViewerNextcloudText(serverUrl: String, viewController: UIViewController) {
-
         if !NextcloudKit.shared.isNetworkReachable() {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_go_online_")
             NCContentPresenter().showError(error: error)
             return
         }
-
         guard let directEditingCreator = NCManageDatabase.shared.getDirectEditingCreators(predicate: NSPredicate(format: "account == %@ AND editor == 'text'", appDelegate.account))?.first else { return }
 
         NCActivityIndicator.shared.start(backgroundView: viewController.view)
 
         let fileNamePath = utilityFileSystem.getFileNamePath(NCGlobal.shared.fileNameRichWorkspace, serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-        NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier, templateId: "") { account, url, _, error in
-
+        NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier, templateId: "", account: appDelegate.account) { account, url, _, error in
             NCActivityIndicator.shared.stop()
 
             if error == .success && account == self.appDelegate.account {
-
                 if let viewerRichWorkspaceWebView = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
-
                     viewerRichWorkspaceWebView.url = url!
                     viewerRichWorkspaceWebView.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
-
                     viewController.present(viewerRichWorkspaceWebView, animated: true, completion: nil)
                 }
-
             } else if error != .success {
                 NCContentPresenter().showError(error: error)
             }
@@ -63,7 +55,6 @@ import NextcloudKit
     }
 
     @objc func openViewerNextcloudText(serverUrl: String, viewController: UIViewController) {
-
         if !NextcloudKit.shared.isNetworkReachable() {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_go_online_")
             NCContentPresenter().showError(error: error)
@@ -73,38 +64,28 @@ import NextcloudKit
         if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.account, serverUrl, NCGlobal.shared.fileNameRichWorkspace.lowercased())) {
 
             if metadata.url.isEmpty {
-
                 NCActivityIndicator.shared.start(backgroundView: viewController.view)
 
                 let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-                NextcloudKit.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: "text") { account, url, _, error in
-
+                NextcloudKit.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: "text", account: metadata.account) { account, url, _, error in
                     NCActivityIndicator.shared.stop()
 
                     if error == .success && account == self.appDelegate.account {
-
                         if let viewerRichWorkspaceWebView = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
-
                             viewerRichWorkspaceWebView.url = url!
                             viewerRichWorkspaceWebView.metadata = metadata
                             viewerRichWorkspaceWebView.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
-
                             viewController.present(viewerRichWorkspaceWebView, animated: true, completion: nil)
                         }
-
                     } else if error != .success {
                         NCContentPresenter().showError(error: error)
                     }
                 }
-
             } else {
-
                 if let viewerRichWorkspaceWebView = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
-
                     viewerRichWorkspaceWebView.url = metadata.url
                     viewerRichWorkspaceWebView.metadata = metadata
                     viewerRichWorkspaceWebView.presentationController?.delegate = viewController as? UIAdaptivePresentationControllerDelegate
-
                     viewController.present(viewerRichWorkspaceWebView, animated: true, completion: nil)
                 }
             }

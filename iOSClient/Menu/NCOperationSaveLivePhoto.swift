@@ -33,10 +33,12 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
     let hud = JGProgressHUD()
     let appDelegate = UIApplication.shared.delegate as? AppDelegate
     let utilityFileSystem = NCUtilityFileSystem()
+    let hudView: UIView
 
-    init(metadata: tableMetadata, metadataMOV: tableMetadata) {
+    init(metadata: tableMetadata, metadataMOV: tableMetadata, hudView: UIView) {
         self.metadata = tableMetadata.init(value: metadata)
         self.metadataMOV = tableMetadata.init(value: metadataMOV)
+        self.hudView = hudView
     }
 
     override func start() {
@@ -51,10 +53,12 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
             self.hud.indicatorView = JGProgressHUDRingIndicatorView()
             if let indicatorView = self.hud.indicatorView as? JGProgressHUDRingIndicatorView {
                 indicatorView.ringWidth = 1.5
+                indicatorView.ringColor = NCBrandColor.shared.brandElement
             }
             self.hud.textLabel.text = NSLocalizedString("_download_image_", comment: "")
             self.hud.detailTextLabel.text = self.metadata.fileName
-            self.hud.show(in: (self.appDelegate?.window?.rootViewController?.view)!)
+            self.hud.detailTextLabel.textColor = NCBrandColor.shared.iconImageColor2
+            self.hud.show(in: self.hudView)
         }
 
         NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
@@ -112,6 +116,7 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
                             self.hud.textLabel.text = NSLocalizedString("_livephoto_save_error_", comment: "")
                         } else {
                             self.hud.indicatorView = JGProgressHUDSuccessIndicatorView()
+                            self.hud.indicatorView?.tintColor = NCBrandColor.shared.brandElement
                             self.hud.textLabel.text = NSLocalizedString("_success_", comment: "")
                         }
                         self.hud.dismiss()

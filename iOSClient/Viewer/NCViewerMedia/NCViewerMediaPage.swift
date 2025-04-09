@@ -30,6 +30,7 @@ import JGProgressHUD
 enum ScreenMode {
     case full, normal
 }
+
 var viewerMediaScreenMode: ScreenMode = .normal
 
 class NCViewerMediaPage: UIViewController {
@@ -60,7 +61,7 @@ class NCViewerMediaPage: UIViewController {
     var panGestureRecognizer: UIPanGestureRecognizer!
     var singleTapGestureRecognizer: UITapGestureRecognizer!
     var longtapGestureRecognizer: UILongPressGestureRecognizer!
-    var textColor: UIColor = .label
+    var textColor: UIColor = NCBrandColor.shared.textColor
     var playCommand: Any?
     var pauseCommand: Any?
     var skipForwardCommand: Any?
@@ -76,8 +77,8 @@ class NCViewerMediaPage: UIViewController {
     var timerAutoHide: Timer?
     private var timerAutoHideSeconds: Double = 4
 
-    private lazy var moreNavigationItem = UIBarButtonItem(image: UIImage(named: "more")!.image(color: .label, size: 25), style: .plain, target: self, action: #selector(openMenuMore))
-    private lazy var imageDetailNavigationItem = UIBarButtonItem(image: UIImage(systemName: "info.circle")!.image(color: .label, size: 22), style: .plain, target: self, action: #selector(toggleDetail))
+    private lazy var moreNavigationItem = UIBarButtonItem(image: NCImageCache.images.buttonMore, style: .plain, target: self, action: #selector(openMenuMore))
+    private lazy var imageDetailNavigationItem = UIBarButtonItem(image: NCUtility().loadImage(named: "info.circle", colors: [NCBrandColor.shared.iconImageColor]), style: .plain, target: self, action: #selector(toggleDetail))
 
     // MARK: - View Life Cycle
 
@@ -96,6 +97,8 @@ class NCViewerMediaPage: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
+
         singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
         panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:)))
         longtapGestureRecognizer = UILongPressGestureRecognizer()
@@ -110,7 +113,7 @@ class NCViewerMediaPage: UIViewController {
         pageViewController.view.addGestureRecognizer(singleTapGestureRecognizer)
         pageViewController.view.addGestureRecognizer(longtapGestureRecognizer)
 
-        progressView.tintColor = NCBrandColor.shared.brand
+        progressView.tintColor = NCBrandColor.shared.brandElement
         progressView.trackTintColor = .clear
         progressView.progress = 0
 
@@ -134,7 +137,7 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(uploadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: UIApplication.didBecomeActiveNotification, object: nil)
 
         if currentViewController.metadata.isImage {
             navigationItem.rightBarButtonItems = [moreNavigationItem, imageDetailNavigationItem]
@@ -167,7 +170,7 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIApplication.didBecomeActiveNotification, object: nil)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -251,14 +254,14 @@ class NCViewerMediaPage: UIViewController {
             }
 
             if metadata.isAudioOrVideo {
-                colorNavigationController(backgroundColor: .black, titleColor: .label, tintColor: nil, withoutShadow: false)
+                colorNavigationController(backgroundColor: .black, titleColor: NCBrandColor.shared.textColor, tintColor: nil, withoutShadow: false)
                 currentViewController.playerToolBar?.show()
                 view.backgroundColor = .black
                 textColor = .white
             } else {
-                colorNavigationController(backgroundColor: .systemBackground, titleColor: .label, tintColor: nil, withoutShadow: false)
+                colorNavigationController(backgroundColor: .systemBackground, titleColor: NCBrandColor.shared.textColor, tintColor: nil, withoutShadow: false)
                 view.backgroundColor = .systemGray6
-                textColor = .label
+                textColor = NCBrandColor.shared.textColor
             }
 
         } else if !currentViewController.detailView.isShown {
@@ -327,7 +330,6 @@ class NCViewerMediaPage: UIViewController {
     // MARK: - NotificationCenter
 
     @objc func downloadedFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String
         else {
@@ -357,7 +359,6 @@ class NCViewerMediaPage: UIViewController {
     }
 
     @objc func triggerProgressTask(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let progressNumber = userInfo["progress"] as? NSNumber
         else { return }
@@ -375,7 +376,6 @@ class NCViewerMediaPage: UIViewController {
     @objc func uploadStartFile(_ notification: NSNotification) { }
 
     @objc func uploadedFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let error = userInfo["error"] as? NKError,
@@ -397,24 +397,14 @@ class NCViewerMediaPage: UIViewController {
     }
 
     @objc func deleteFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary? else { return }
 
-        if let ocIds = userInfo["ocId"] as? [String],
-           let ocId = ocIds.first {
-
+        if let ocIds = userInfo["ocId"] as? [String] {
             // Stop media
             if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
                 ncplayer.playerPause()
             }
-
-            let metadatas = self.metadatas.filter { $0.ocId != ocId }
-            if self.metadatas.count == metadatas.count { return }
-            self.metadatas = metadatas
-
-            if ocId == currentViewController.metadata.ocId {
-                shiftCurrentPage()
-            }
+            self.viewUnload()
         }
     }
 
@@ -423,7 +413,6 @@ class NCViewerMediaPage: UIViewController {
     }
 
     @objc func copyFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError else { return }
 
@@ -433,7 +422,6 @@ class NCViewerMediaPage: UIViewController {
     }
 
     @objc func renameFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let index = metadatas.firstIndex(where: {$0.ocId == ocId}),
@@ -454,7 +442,6 @@ class NCViewerMediaPage: UIViewController {
     }
 
     @objc func applicationDidBecomeActive(_ notification: NSNotification) {
-
         progressView.progress = 0
         changeScreenMode(mode: .normal)
     }
@@ -558,24 +545,6 @@ class NCViewerMediaPage: UIViewController {
 // MARK: - UIPageViewController Delegate Datasource
 
 extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerDataSource {
-
-    func shiftCurrentPage() {
-
-        if metadatas.isEmpty {
-            self.viewUnload()
-            return
-        }
-
-        var direction: UIPageViewController.NavigationDirection = .forward
-
-        if currentIndex == metadatas.count {
-            currentIndex -= 1
-            direction = .reverse
-        }
-
-        let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex])
-        pageViewController.setViewControllers([viewerMedia], direction: direction, animated: true, completion: nil)
-    }
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
 
@@ -717,11 +686,11 @@ extension UIPageViewController {
 extension NCViewerMediaPage: NCViewerMediaViewDelegate {
     func didOpenDetail() {
         changeScreenMode(mode: .normal)
-        imageDetailNavigationItem.image = UIImage(systemName: "info.circle.fill")
+        imageDetailNavigationItem.image = NCUtility().loadImage(named: "info.circle.fill")
     }
 
     func didCloseDetail() {
-        imageDetailNavigationItem.image = UIImage(systemName: "info.circle")
+        imageDetailNavigationItem.image = NCUtility().loadImage(named: "info.circle")
     }
 }
 

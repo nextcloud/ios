@@ -29,14 +29,7 @@ public protocol NCAccountRequestDelegate: AnyObject {
     func accountRequestChangeAccount(account: String)
 }
 
-// optional func
-public extension NCAccountRequestDelegate {
-    func accountRequestAddAccount() {}
-    func accountRequestChangeAccount(account: String) {}
-}
-
 class NCAccountRequest: UIViewController {
-
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var progressView: UIProgressView!
@@ -73,8 +66,8 @@ class NCAccountRequest: UIViewController {
             progressView.isHidden = true
         }
 
-        NotificationCenter.default.addObserver(self, selector: #selector(startTimer), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidBecomeActive), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterApplicationDidEnterBackground), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(startTimer), name: UIApplication.didBecomeActiveNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -97,7 +90,6 @@ class NCAccountRequest: UIViewController {
     // MARK: - NotificationCenter
 
     @objc func applicationDidEnterBackground() {
-
         if dismissDidEnterBackground {
             dismiss(animated: false)
         }
@@ -106,19 +98,17 @@ class NCAccountRequest: UIViewController {
     // MARK: - Progress
 
     @objc func startTimer() {
-
         if enableTimerProgress {
             time = 0
             timer?.invalidate()
             timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(updateProgress), userInfo: nil, repeats: true)
-            progressView.isHidden = false
+            progressView?.isHidden = false
         } else {
-            progressView.isHidden = true
+            progressView?.isHidden = true
         }
     }
 
     @objc func updateProgress() {
-
         time += 0.1
         if time >= secondsAutoDismiss {
             dismiss(animated: true)
@@ -129,9 +119,7 @@ class NCAccountRequest: UIViewController {
 }
 
 extension NCAccountRequest: UITableViewDelegate {
-
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-
         timer?.invalidate()
         progressView.progress = 0
     }
@@ -141,14 +129,10 @@ extension NCAccountRequest: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-
         if indexPath.row == accounts.count {
-
             dismiss(animated: true)
             delegate?.accountRequestAddAccount()
-
         } else {
-
             let account = accounts[indexPath.row]
             if account.account != activeAccount?.account {
                 dismiss(animated: true) {
@@ -162,7 +146,6 @@ extension NCAccountRequest: UITableViewDelegate {
 }
 
 extension NCAccountRequest: UITableViewDataSource {
-
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if enableAddAccount {
             return accounts.count + 1
@@ -172,10 +155,8 @@ extension NCAccountRequest: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         cell.backgroundColor = tableView.backgroundColor
-
         let avatarImage = cell.viewWithTag(10) as? UIImageView
         let userLabel = cell.viewWithTag(20) as? UILabel
         let urlLabel = cell.viewWithTag(30) as? UILabel
@@ -186,7 +167,7 @@ extension NCAccountRequest: UITableViewDataSource {
 
         if indexPath.row == accounts.count {
 
-            avatarImage?.image = utility.loadImage(named: "plus").image(color: .systemBlue, size: 15)
+            avatarImage?.image = utility.loadImage(named: "plus", colors: [.systemBlue])
             avatarImage?.contentMode = .center
             userLabel?.text = NSLocalizedString("_add_account_", comment: "")
             userLabel?.textColor = .systemBlue
@@ -196,10 +177,7 @@ extension NCAccountRequest: UITableViewDataSource {
 
             let account = accounts[indexPath.row]
 
-            avatarImage?.image = utility.loadUserImage(
-                for: account.user,
-                   displayName: account.displayName,
-                   userBaseUrl: account)
+            avatarImage?.image = utility.userImage
 
             if account.alias.isEmpty {
                 userLabel?.text = account.user.uppercased()
@@ -209,7 +187,7 @@ extension NCAccountRequest: UITableViewDataSource {
             }
 
             if account.active {
-                activeImage?.image = utility.loadImage(named: "checkmark").image(color: .systemBlue, size: 30)
+                activeImage?.image = utility.loadImage(named: "checkmark", colors: [.systemBlue])
             } else {
                 activeImage?.image = nil
             }

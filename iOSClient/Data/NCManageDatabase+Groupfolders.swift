@@ -26,7 +26,6 @@ import RealmSwift
 import NextcloudKit
 
 class TableGroupfolders: Object {
-
     @Persisted var account = ""
     @Persisted var acl: Bool = false
     @Persisted var groups: List<TableGroupfoldersGroups>
@@ -38,7 +37,6 @@ class TableGroupfolders: Object {
 }
 
 class TableGroupfoldersGroups: Object {
-
     @Persisted var account = ""
     @Persisted var group = ""
     @Persisted var permission: Int = 0
@@ -53,9 +51,7 @@ class TableGroupfoldersGroups: Object {
 }
 
 extension NCManageDatabase {
-
     func addGroupfolders(account: String, groupfolders: [NKGroupfolders]) {
-
         do {
             let realm = try Realm()
             try realm.write {

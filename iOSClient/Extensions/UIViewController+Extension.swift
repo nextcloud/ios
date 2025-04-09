@@ -4,6 +4,7 @@
 //
 //  Created by Marino Faggiana on 02/08/2022.
 //  Copyright © 2022 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -22,6 +23,7 @@
 //
 
 import Foundation
+import UIKit
 
 extension UIViewController {
 
@@ -61,4 +63,28 @@ extension UIViewController {
             return false
         }
     }
+    
+    var mainTabBarController: NCMainTabBarController? {
+        self.view.window?.rootViewController as? NCMainTabBarController
+    }
+    
+    var sceneIdentifier: String? {
+        return (self.view.window?.windowScene?.delegate as? SceneDelegate)?.sceneIdentifier
+    }
+	
+	func setNavigationBarLogo() {
+		let logo = UIImage(resource: .ionosEasyStorageLogo)
+			.withTintColor(UIColor(resource: .NavigationBar.logoTint))
+		let imageView = UIImageView(image: logo)
+		
+		let originalSize = logo.size
+		let multiplier = 0.89
+		imageView.translatesAutoresizingMaskIntoConstraints = false
+		navigationItem.titleView = imageView
+		
+		NSLayoutConstraint.activate([
+			imageView.widthAnchor.constraint(equalToConstant: originalSize.width * multiplier),
+			imageView.heightAnchor.constraint(equalToConstant: originalSize.height * multiplier)
+		])
+	}
 }

@@ -26,7 +26,6 @@ import RealmSwift
 import NextcloudKit
 
 class tableTrash: Object {
-
     @objc dynamic var account = ""
     @objc dynamic var classFile = ""
     @objc dynamic var contentType = ""
@@ -48,9 +47,7 @@ class tableTrash: Object {
 }
 
 extension NCManageDatabase {
-
     func addTrash(account: String, items: [NKTrash]) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -58,7 +55,7 @@ extension NCManageDatabase {
                     let object = tableTrash()
                     object.account = account
                     object.contentType = trash.contentType
-                    object.date = trash.date
+                    object.date = trash.date as NSDate
                     object.directory = trash.directory
                     object.fileId = trash.fileId
                     object.fileName = trash.fileName
@@ -66,7 +63,7 @@ extension NCManageDatabase {
                     object.hasPreview = trash.hasPreview
                     object.iconName = trash.iconName
                     object.size = trash.size
-                    object.trashbinDeletionTime = trash.trashbinDeletionTime
+                    object.trashbinDeletionTime = trash.trashbinDeletionTime as NSDate
                     object.trashbinFileName = trash.trashbinFileName
                     object.trashbinOriginalLocation = trash.trashbinOriginalLocation
                     object.classFile = trash.classFile
@@ -79,7 +76,6 @@ extension NCManageDatabase {
     }
 
     func deleteTrash(filePath: String?, account: String) {
-
         var predicate = NSPredicate()
 
         do {
@@ -99,7 +95,6 @@ extension NCManageDatabase {
     }
 
     func deleteTrash(fileId: String?, account: String) {
-
         var predicate = NSPredicate()
 
         do {
@@ -118,25 +113,19 @@ extension NCManageDatabase {
         }
     }
 
-    func getTrash(filePath: String, sort: String?, ascending: Bool?, account: String) -> [tableTrash] {
-
-        let sort = sort ?? "date"
-        let ascending = ascending ?? false
-
+    func getTrash(filePath: String, account: String) -> [tableTrash] {
         do {
             let realm = try Realm()
             realm.refresh()
-            let results = realm.objects(tableTrash.self).filter("account == %@ AND filePath == %@", account, filePath).sorted(byKeyPath: sort, ascending: ascending)
+            let results = realm.objects(tableTrash.self).filter("account == %@ AND filePath == %@", account, filePath).sorted(byKeyPath: "trashbinDeletionTime", ascending: false)
             return Array(results.map { tableTrash.init(value: $0) })
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access to database: \(error)")
         }
-
         return []
     }
 
     func getTrashItem(fileId: String, account: String) -> tableTrash? {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -145,7 +134,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access to database: \(error)")
         }
-
         return nil
     }
 }

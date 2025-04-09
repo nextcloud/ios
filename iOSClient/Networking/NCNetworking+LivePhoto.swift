@@ -28,9 +28,7 @@ import Alamofire
 import Queuer
 
 extension NCNetworking {
-
     func uploadLivePhoto(metadata: tableMetadata, userInfo aUserInfo: [AnyHashable: Any]) {
-
         guard let metadata1 = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@", metadata.account, metadata.urlBase, metadata.path, metadata.livePhotoFile)) else {
             metadata.livePhotoFile = ""
             NCManageDatabase.shared.addMetadata(metadata)
@@ -43,7 +41,7 @@ extension NCNetworking {
         Task {
             let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.fileName
             var livePhotoFile = metadata1.fileId
-            let results = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile)
+            let results = await setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile, account: metadata.account)
             if results.error == .success {
                 NCManageDatabase.shared.setMetadataLivePhotoByServer(account: metadata.account, ocId: metadata.ocId, livePhotoFile: livePhotoFile)
             } else {
@@ -52,7 +50,7 @@ extension NCNetworking {
 
             let serverUrlfileNamePath1 = metadata1.urlBase + metadata1.path + metadata1.fileName
             livePhotoFile = metadata.fileId
-            let results1 = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath1, livePhotoFile: livePhotoFile)
+            let results1 = await setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath1, livePhotoFile: livePhotoFile, account: metadata1.account)
             if results1.error == .success {
                 NCManageDatabase.shared.setMetadataLivePhotoByServer(account: metadata1.account, ocId: metadata1.ocId, livePhotoFile: livePhotoFile)
             } else {
@@ -69,16 +67,14 @@ extension NCNetworking {
     }
 
     func convertLivePhoto(metadata: tableMetadata) {
-
         guard metadata.status == NCGlobal.shared.metadataStatusNormal else { return }
-
         let account = metadata.account
         let livePhotoFile = metadata.livePhotoFile
         let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.fileName
         let ocId = metadata.ocId
 
         DispatchQueue.global().async {
-            if let result = NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "account == '\(account)' AND status == \(NCGlobal.shared.metadataStatusNormal) AND (fileName == '\(livePhotoFile)' || fileId == '\(livePhotoFile)')")) {
+            if let result = NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND status == %d AND (fileName == %@ || fileId == %@)", account, NCGlobal.shared.metadataStatusNormal, livePhotoFile, livePhotoFile)) {
                 if livePhotoFile == result.fileId { return }
                 for case let operation as NCOperationConvertLivePhoto in self.convertLivePhotoQueue.operations where operation.serverUrlfileNamePath == serverUrlfileNamePath { continue }
                 self.convertLivePhotoQueue.addOperation(NCOperationConvertLivePhoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: result.fileId, account: account, ocId: ocId))
@@ -88,7 +84,6 @@ extension NCNetworking {
 }
 
 class NCOperationConvertLivePhoto: ConcurrentOperation {
-
     var serverUrlfileNamePath, livePhotoFile, account, ocId: String
 
     init(serverUrlfileNamePath: String, livePhotoFile: String, account: String, ocId: String) {
@@ -99,9 +94,11 @@ class NCOperationConvertLivePhoto: ConcurrentOperation {
     }
 
     override func start() {
+        guard !isCancelled else {
+            return self.finish()
+        }
 
-        guard !isCancelled else { return self.finish() }
-        NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, error in
+        NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile, account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, error in
             if error == .success {
                 NCManageDatabase.shared.setMetadataLivePhotoByServer(account: self.account, ocId: self.ocId, livePhotoFile: self.livePhotoFile)
             } else {

@@ -22,11 +22,11 @@
 //
 
 import Foundation
+import UIKit
 import RealmSwift
 import NextcloudKit
 
 class tableAvatar: Object {
-
     @objc dynamic var date = NSDate()
     @objc dynamic var etag = ""
     @objc dynamic var fileName = ""
@@ -38,9 +38,7 @@ class tableAvatar: Object {
 }
 
 extension NCManageDatabase {
-
     func addAvatar(fileName: String, etag: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -57,7 +55,6 @@ extension NCManageDatabase {
     }
 
     func getTableAvatar(fileName: String) -> tableAvatar? {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -66,12 +63,10 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return nil
     }
 
     func clearAllAvatarLoaded() {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -88,7 +83,6 @@ extension NCManageDatabase {
 
     @discardableResult
     func setAvatarLoaded(fileName: String) -> UIImage? {
-
         let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
         var image: UIImage?
 
@@ -107,12 +101,10 @@ extension NCManageDatabase {
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
-
         return image
     }
 
     func getImageAvatarLoaded(fileName: String) -> UIImage? {
-
         let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
 
         do {

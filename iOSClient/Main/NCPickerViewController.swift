@@ -26,19 +26,19 @@ import TLPhotoPicker
 import MobileCoreServices
 import Photos
 import NextcloudKit
+import SwiftUI
 
 // MARK: - Photo Picker
 
 class NCPhotosPickerViewController: NSObject {
-
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    var sourceViewController: UIViewController
+    var controller: NCMainTabBarController
     var maxSelectedAssets = 1
     var singleSelectedMode = false
 
     @discardableResult
-    init(viewController: UIViewController, maxSelectedAssets: Int, singleSelectedMode: Bool) {
-        sourceViewController = viewController
+    init(controller: NCMainTabBarController, maxSelectedAssets: Int, singleSelectedMode: Bool) {
+        self.controller = controller
         super.init()
 
         self.maxSelectedAssets = maxSelectedAssets
@@ -46,16 +46,16 @@ class NCPhotosPickerViewController: NSObject {
 
         self.openPhotosPickerViewController { assets in
             if !assets.isEmpty {
-                let vc = NCHostingUploadAssetsView().makeShipDetailsUI(assets: assets, serverUrl: self.appDelegate.activeServerUrl, userBaseUrl: self.appDelegate)
+                let serverUrl = controller.currentServerUrl()
+                let view = NCUploadAssetsView(model: NCUploadAssetsModel(assets: assets, serverUrl: serverUrl, userBaseUrl: self.appDelegate, controller: controller))
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                    viewController.present(vc, animated: true, completion: nil)
+                    controller.present(UIHostingController(rootView: view), animated: true, completion: nil)
                 }
             }
         }
     }
 
     private func openPhotosPickerViewController(completition: @escaping ([TLPHAsset]) -> Void) {
-
         var configure = TLPhotosPickerConfigure()
 
         configure.cancelTitle = NSLocalizedString("_cancel_", comment: "")
@@ -71,34 +71,27 @@ class NCPhotosPickerViewController: NSObject {
         configure.allowedAlbumCloudShared = true
 
         let viewController = customPhotoPickerViewController(withTLPHAssets: { assets in
-
             completition(assets)
-
         }, didCancel: nil)
-
         viewController.didExceedMaximumNumberOfSelection = { _ in
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_limited_dimension_")
             NCContentPresenter().showError(error: error)
         }
-
         viewController.handleNoAlbumPermissions = { _ in
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_denied_album_")
             NCContentPresenter().showError(error: error)
         }
-
         viewController.handleNoCameraPermissions = { _ in
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_denied_camera_")
             NCContentPresenter().showError(error: error)
         }
-
         viewController.configure = configure
 
-        sourceViewController.present(viewController, animated: true, completion: nil)
+        controller.present(viewController, animated: true, completion: nil)
     }
 }
 
 class customPhotoPickerViewController: TLPhotosPickerViewController {
-
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
@@ -106,23 +99,23 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
     override func makeUI() {
         super.makeUI()
 
-        self.customNavItem.leftBarButtonItem?.tintColor = .systemBlue
-        self.customNavItem.rightBarButtonItem?.tintColor = .systemBlue
+        self.customNavItem.leftBarButtonItem?.tintColor = .label
+        self.customNavItem.rightBarButtonItem?.tintColor = .label
     }
 }
 
 // MARK: - Document Picker
 
 class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
-
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     var isViewerMedia: Bool
     var viewController: UIViewController?
+    var mainTabBarController: NCMainTabBarController
 
     @discardableResult
-    init (tabBarController: UITabBarController, isViewerMedia: Bool, allowsMultipleSelection: Bool, viewController: UIViewController? = nil) {
-
+    init (controller: NCMainTabBarController, isViewerMedia: Bool, allowsMultipleSelection: Bool, viewController: UIViewController? = nil) {
+        self.mainTabBarController = controller
         self.isViewerMedia = isViewerMedia
         self.viewController = viewController
         super.init()
@@ -131,11 +124,11 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
         documentProviderMenu.modalPresentationStyle = .formSheet
         documentProviderMenu.allowsMultipleSelection = allowsMultipleSelection
-        documentProviderMenu.popoverPresentationController?.sourceView = tabBarController.tabBar
-        documentProviderMenu.popoverPresentationController?.sourceRect = tabBarController.tabBar.bounds
+        documentProviderMenu.popoverPresentationController?.sourceView = mainTabBarController.tabBar
+        documentProviderMenu.popoverPresentationController?.sourceRect = mainTabBarController.tabBar.bounds
         documentProviderMenu.delegate = self
 
-        appDelegate.window?.rootViewController?.present(documentProviderMenu, animated: true, completion: nil)
+        mainTabBarController.present(documentProviderMenu, animated: true, completion: nil)
     }
 
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
@@ -144,18 +137,21 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
             let url = self.copySecurityScopedResource(url: urlIn, urlOut: FileManager.default.temporaryDirectory.appendingPathComponent(urlIn.lastPathComponent)),
             let viewController = self.viewController {
             let ocId = NSUUID().uuidString
-
             let fileName = url.lastPathComponent
             let metadata = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: "", urlBase: appDelegate.urlBase, url: url.path, contentType: "")
             if metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
                 metadata.classFile = NKCommon.TypeClassFile.video.rawValue
             }
-            NCManageDatabase.shared.addMetadata(metadata)
-            NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+
+            if let fileNameError = FileNameValidator.shared.checkFileName(metadata.fileNameView) {
+                mainTabBarController.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+            } else {
+                NCManageDatabase.shared.addMetadata(metadata)
+                NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+            }
 
         } else {
-            let serverUrl = appDelegate.activeServerUrl
-
+            let serverUrl = mainTabBarController.currentServerUrl()
             var metadatas = [tableMetadata]()
             var metadatasInConflict = [tableMetadata]()
 
@@ -169,6 +165,11 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 guard self.copySecurityScopedResource(url: urlIn, urlOut: urlOut) != nil else { continue }
 
                 let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "")
+
+                if let fileNameError = FileNameValidator.shared.checkFileName(metadataForUpload.fileNameView) {
+                    mainTabBarController.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+                    continue
+                }
 
                 metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
@@ -192,14 +193,13 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                     conflict.serverUrl = serverUrl
                     conflict.metadatasUploadInConflict = metadatasInConflict
 
-                    appDelegate.window?.rootViewController?.present(conflict, animated: true, completion: nil)
+                    mainTabBarController.present(conflict, animated: true, completion: nil)
                 }
             }
         }
     }
 
     func copySecurityScopedResource(url: URL, urlOut: URL) -> URL? {
-
         try? FileManager.default.removeItem(at: urlOut)
         if url.startAccessingSecurityScopedResource() {
             do {

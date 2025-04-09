@@ -4,6 +4,7 @@
 //
 //  Created by Marino Faggiana on 01/07/21.
 //  Copyright © 2021 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -48,7 +49,7 @@ class NCPlayerToolBar: UIView {
     @IBOutlet weak var playbackSlider: NCPlayerToolBarSlider!
     @IBOutlet weak var labelLeftTime: UILabel!
     @IBOutlet weak var labelCurrentTime: UILabel!
-    @IBOutlet weak var repeatButton: UIButton!
+    @IBOutlet weak var repeatButton: UIButton?
 
     enum sliderEventType {
         case began
@@ -75,12 +76,12 @@ class NCPlayerToolBar: UIView {
 
         self.backgroundColor = UIColor.black.withAlphaComponent(0.1)
 
-        fullscreenButton.setImage(utility.loadImage(named: "arrow.up.left.and.arrow.down.right", color: .white), for: .normal)
+		fullscreenButton.setImage(NCImagesRepository.mediaIconFullscreen, for: .normal)
 
-        subtitleButton.setImage(utility.loadImage(named: "captions.bubble", color: .white), for: .normal)
+		subtitleButton.setImage(NCImagesRepository.mediaIconMessage, for: .normal)
         subtitleButton.isEnabled = false
 
-        audioButton.setImage(utility.loadImage(named: "speaker.zzz", color: .white), for: .normal)
+        audioButton.setImage(NCImagesRepository.mediaIconSound, for: .normal)
         audioButton.isEnabled = false
 
         if UIDevice.current.userInterfaceIdiom == .pad {
@@ -92,16 +93,18 @@ class NCPlayerToolBar: UIView {
         playerButtonView.spacing = pointSize
         playerButtonView.isHidden = true
 
-        backButton.setImage(utility.loadImage(named: "gobackward.10", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize)), for: .normal)
-        playButton.setImage(utility.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize)), for: .normal)
-        forwardButton.setImage(utility.loadImage(named: "goforward.10", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize)), for: .normal)
+		backButton.setImage(NCImagesRepository.mediaIconRewind, for: .normal)
+        playButton.setImage(NCImagesRepository.mediaIconPlay, for: .normal)
+        forwardButton.setImage(NCImagesRepository.mediaIconForward, for: .normal)
 
         playbackSlider.addTapGesture()
-        playbackSlider.setThumbImage(UIImage(systemName: "circle.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 15)), for: .normal)
+        playbackSlider.setThumbImage(UIImage(systemName: "circle.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 24)), for: .normal)
+        playbackSlider.thumbTintColor = UIColor(resource: .MediaPlayer.sliderThumb)
+        playbackSlider.minimumTrackTintColor = UIColor(resource: .MediaPlayer.sliderMin)
+        playbackSlider.maximumTrackTintColor = UIColor(resource: .MediaPlayer.sliderMax)
         playbackSlider.value = 0
-        playbackSlider.tintColor = .white
         playbackSlider.addTarget(self, action: #selector(playbackValChanged(slider:event:)), for: .valueChanged)
-        repeatButton.setImage(utility.loadImage(named: "repeat", color: .gray), for: .normal)
+        repeatButton?.setImage(utility.loadImage(named: "repeat", colors: [NCBrandColor.shared.iconImageColor2]), for: .normal)
 
         utilityView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tap(gestureRecognizer:))))
         playbackSliderView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tap(gestureRecognizer:))))
@@ -141,7 +144,7 @@ class NCPlayerToolBar: UIView {
 
         playerButtonView.isHidden = true
 
-        playButton.setImage(utility.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize)), for: .normal)
+        playButton.setImage(NCImagesRepository.mediaIconPlay, for: .normal)
 
         playbackSlider.value = position
 
@@ -204,14 +207,12 @@ class NCPlayerToolBar: UIView {
     }
 
     func playButtonPause() {
-
-        playButton.setImage(utility.loadImage(named: "pause.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize)), for: .normal)
+        playButton.setImage(NCImagesRepository.mediaIconPause, for: .normal)
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 1
     }
 
     func playButtonPlay() {
-
-        playButton.setImage(utility.loadImage(named: "play.fill", color: .white, symbolConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize)), for: .normal)
+        playButton.setImage(NCImagesRepository.mediaIconPlay, for: .normal)
         MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] = 0
     }
 
@@ -253,9 +254,9 @@ class NCPlayerToolBar: UIView {
 
         isFullscreen = !isFullscreen
         if isFullscreen {
-            fullscreenButton.setImage(utility.loadImage(named: "arrow.down.right.and.arrow.up.left", color: .white), for: .normal)
+			fullscreenButton.setImage(NCImagesRepository.mediaIconCloseFullscreen, for: .normal)
         } else {
-            fullscreenButton.setImage(utility.loadImage(named: "arrow.up.left.and.arrow.down.right", color: .white), for: .normal)
+			fullscreenButton.setImage(NCImagesRepository.mediaIconFullscreen, for: .normal)
         }
         viewerMediaPage?.changeScreenMode(mode: viewerMediaScreenMode)
     }
@@ -314,10 +315,10 @@ class NCPlayerToolBar: UIView {
 
         if playRepeat {
             playRepeat = false
-            repeatButton.setImage(utility.loadImage(named: "repeat", color: .gray), for: .normal)
+            repeatButton?.setImage(utility.loadImage(named: "repeat", colors: [NCBrandColor.shared.iconImageColor2]), for: .normal)
         } else {
             playRepeat = true
-            repeatButton.setImage(utility.loadImage(named: "repeat", color: .white), for: .normal)
+            repeatButton?.setImage(utility.loadImage(named: "repeat", colors: [.white]), for: .normal)
         }
     }
 }
@@ -473,8 +474,10 @@ extension NCPlayerToolBar: NCSelectDelegate {
                 hud.indicatorView = JGProgressHUDRingIndicatorView()
                 hud.textLabel.text = NSLocalizedString("_downloading_", comment: "")
                 hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
+                hud.detailTextLabel.textColor = NCBrandColor.shared.iconImageColor2
                 if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
                     indicatorView.ringWidth = 1.5
+                    indicatorView.ringColor = NCBrandColor.shared.brandElement
                 }
                 hud.tapOnHUDViewBlock = { _ in
                     if let request = downloadRequest {
@@ -483,7 +486,7 @@ extension NCPlayerToolBar: NCSelectDelegate {
                 }
                 hud.show(in: viewerMediaPage.view)
 
-                NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { request in
+                NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account ,requestHandler: { request in
                     downloadRequest = request
                 }, taskHandler: { _ in
                 }, progressHandler: { progress in

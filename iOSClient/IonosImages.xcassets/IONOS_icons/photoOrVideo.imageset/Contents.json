@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "photoOrVideo.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

@@ -20,7 +20,6 @@
 //
 
 import UIKit
-import OpenSSL
 import NextcloudKit
 import CFNetwork
 import Alamofire
@@ -45,7 +44,6 @@ class NCNetworkingE2EEUpload: NSObject {
     var numChunks: Int = 0
 
     func upload(metadata: tableMetadata, uploadE2EEDelegate: uploadE2EEDelegate? = nil, hudView: UIView?, hud: JGProgressHUD?) async -> NKError {
-
         var metadata = metadata
         let ocIdTemp = metadata.ocId
 
@@ -69,7 +67,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
             // ENCRYPT FILE
             //
-            if NCEndToEndEncryption.sharedManager()?.encryptFile(metadata.fileNameView, fileNameIdentifier: metadata.fileName, directory: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId), key: &key, initializationVector: &initializationVector, authenticationTag: &authenticationTag) == false {
+            if NCEndToEndEncryption.shared().encryptFile(metadata.fileNameView, fileNameIdentifier: metadata.fileName, directory: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId), key: &key, initializationVector: &initializationVector, authenticationTag: &authenticationTag) == false {
                 return NKError(errorCode: NCGlobal.shared.errorE2EEEncryptFile, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
             }
             guard let key = key as? String, let initializationVector = initializationVector as? String else {
@@ -93,7 +91,7 @@ class NCNetworkingE2EEUpload: NSObject {
                 object.metadataKey = results.metadataKey
                 object.metadataKeyIndex = results.metadataKeyIndex
             } else {
-                guard let key = NCEndToEndEncryption.sharedManager()?.generateKey() as NSData? else {
+                guard let key = NCEndToEndEncryption.shared().generateKey() as NSData? else {
                     return NKError(errorCode: NCGlobal.shared.errorE2EEGenerateKey, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
                 }
                 object.metadataKey = key.base64EncodedString()
@@ -173,12 +171,14 @@ class NCNetworkingE2EEUpload: NSObject {
                     hud.indicatorView = JGProgressHUDRingIndicatorView()
                     if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
                         indicatorView.ringWidth = 1.5
+                        indicatorView.ringColor = NCBrandColor.shared.brandElement
                     }
                     hud.tapOnHUDViewBlock = { _ in
                         NotificationCenter.default.postOnMainThread(name: "NextcloudKit.chunkedFile.stop")
                     }
                     hud.textLabel.text = NSLocalizedString("_wait_file_preparation_", comment: "")
                     hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
+                    hud.detailTextLabel.textColor = NCBrandColor.shared.iconImageColor2
                 }
             }
         }
@@ -210,7 +210,7 @@ class NCNetworkingE2EEUpload: NSObject {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             utilityFileSystem.moveFileInBackground(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId), toPath: utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
 
-            metadata.date = resultsSendFile.date ?? NSDate()
+            metadata.date = (resultsSendFile.date as? NSDate) ?? NSDate()
             metadata.etag = resultsSendFile.etag ?? ""
             metadata.ocId = ocId
             metadata.chunk = 0
@@ -254,7 +254,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
     // BRIDGE for chunk
     //
-    private func sendFile(metadata: tableMetadata, e2eToken: String, hud: JGProgressHUD?, uploadE2EEDelegate: uploadE2EEDelegate? = nil) async -> (ocId: String?, etag: String?, date: NSDate?, afError: AFError?, error: NKError) {
+    private func sendFile(metadata: tableMetadata, e2eToken: String, hud: JGProgressHUD?, uploadE2EEDelegate: uploadE2EEDelegate? = nil) async -> (ocId: String?, etag: String?, date: Date?, afError: AFError?, error: NKError) {
 
         if metadata.chunk > 0 {
 

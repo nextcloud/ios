@@ -30,17 +30,14 @@ extension NKShare: NCTableShareable { }
 protocol NCTableShareable: AnyObject {
     var shareType: Int { get set }
     var permissions: Int { get set }
-
     var idShare: Int { get set }
     var shareWith: String { get set }
-
     var hideDownload: Bool { get set }
     var password: String { get set }
     var label: String { get set }
     var note: String { get set }
     var expirationDate: NSDate? { get set }
     var shareWithDisplayname: String { get set }
-
     var attributes: String? { get set }
 }
 
@@ -82,7 +79,7 @@ class NCTableShareOptions: NCTableShareable {
 
     private init(shareType: Int, metadata: tableMetadata, password: String?) {
         if metadata.e2eEncrypted && NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 {
-            self.permissions = NCGlobal.shared.permissionCreateShare
+            self.permissions = NCPermissions().permissionCreateShare
         } else {
             self.permissions = NCGlobal.shared.capabilityFileSharingDefaultPermission & metadata.sharePermissionsCollaborationServices
         }

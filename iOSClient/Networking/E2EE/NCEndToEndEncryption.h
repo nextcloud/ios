@@ -28,10 +28,10 @@
 
 @interface NCEndToEndEncryption : NSObject
 
-+ (instancetype)sharedManager;
-
 @property (nonatomic, strong) NSString *generatedPublicKey;
 @property (nonatomic, strong) NSString *generatedPrivateKey;
+
++ (instancetype)shared;
 
 // Certificate
 

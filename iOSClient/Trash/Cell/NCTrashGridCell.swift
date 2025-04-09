@@ -4,6 +4,7 @@
 //
 //  Created by Marino Faggiana on 19/03/2024.
 //  Copyright © 2024 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -35,7 +36,6 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
     @IBOutlet weak var labelInfo: UILabel!
     @IBOutlet weak var labelSubinfo: UILabel!
     @IBOutlet weak var buttonMore: UIButton!
-    @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
 
     weak var delegate: NCTrashGridCellDelegate?
     var objectId = ""
@@ -45,8 +45,15 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        initCell()
+    }
 
-        // use entire cell as accessibility element
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        initCell()
+    }
+
+    func initCell() {
         accessibilityHint = nil
         accessibilityLabel = nil
         accessibilityValue = nil
@@ -55,21 +62,11 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
 
-        imageVisualEffect.layer.cornerRadius = 6
-        imageVisualEffect.clipsToBounds = true
-        imageVisualEffect.alpha = 0.5
-
         labelTitle.text = ""
         labelInfo.text = ""
         labelSubinfo.text = ""
-    }
-
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        imageItem.backgroundColor = nil
-        accessibilityHint = nil
-        accessibilityLabel = nil
-        accessibilityValue = nil
+        
+        imageSelect.image = UIImage(resource: .FileSelection.gridItemSelected)
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
@@ -101,38 +98,19 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
         buttonMore.isHidden = status
     }
 
-    func selectMode(_ status: Bool) {
-        if status {
-            imageSelect.isHidden = false
+    func selected(_ isSelected: Bool, isEditMode: Bool) {
+        if isEditMode {
             buttonMore.isHidden = true
             accessibilityCustomActions = nil
         } else {
-            imageSelect.isHidden = true
-            imageVisualEffect.isHidden = true
             buttonMore.isHidden = false
             setA11yActions()
         }
-    }
-
-    func selected(_ status: Bool) {
-        if status {
-            if traitCollection.userInterfaceStyle == .dark {
-                imageVisualEffect.effect = UIBlurEffect(style: .dark)
-                imageVisualEffect.backgroundColor = .black
-            } else {
-                imageVisualEffect.effect = UIBlurEffect(style: .extraLight)
-                imageVisualEffect.backgroundColor = .lightGray
-            }
-            imageSelect.image = NCImageCache.images.checkedYes
-            imageVisualEffect.isHidden = false
-        } else {
-            imageSelect.isHidden = true
-            imageVisualEffect.isHidden = true
-        }
+        setBorderForGridViewCell(isSelected: isSelected)
+        imageSelect.isHidden = !isSelected
     }
 
     func writeInfoDateSize(date: NSDate, size: Int64) {
-
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .short
         dateFormatter.timeStyle = .none

@@ -54,7 +54,6 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        buttonMenu.setImage(UIImage(named: "shareMenu")!.image(color: .lightGray, size: 50), for: .normal)
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapAvatarImage))
         imageItem?.addGestureRecognizer(tapGesture)
     }

@@ -21,6 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import Foundation
 import UIKit
 import NextcloudKit
 
@@ -31,16 +32,18 @@ extension UIAlertController {
     ///   - urlBase: UrlBase object
     ///   - completion: If not` nil` it overrides the default behavior which shows an error using `NCContentPresenter`
     /// - Returns: The presentable alert controller
-    static func createFolder(serverUrl: String, urlBase: NCUserBaseUrl, markE2ee: Bool = false, completion: ((_ error: NKError) -> Void)? = nil) -> UIAlertController {
+    static func createFolder(serverUrl: String, userBaseUrl: NCUserBaseUrl, markE2ee: Bool = false, sceneIdentifier: String? = nil, completion: ((_ error: NKError) -> Void)? = nil) -> UIAlertController {
         let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message: nil, preferredStyle: .alert)
+        
+        alertController.view.backgroundColor = NCBrandColor.shared.appBackgroundColor
 
         let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in
             guard let fileNameFolder = alertController.textFields?.first?.text else { return }
             if markE2ee {
                 Task {
-                    let createFolderResults = await NextcloudKit.shared.createFolder(serverUrlFileName: serverUrl + "/" + fileNameFolder)
+                    let createFolderResults = await NCNetworking.shared.createFolder(serverUrlFileName: serverUrl + "/" + fileNameFolder, account: userBaseUrl.account)
                     if createFolderResults.error == .success {
-                        let error = await NCNetworkingE2EEMarkFolder().markFolderE2ee(account: urlBase.account, fileName: fileNameFolder, serverUrl: serverUrl, userId: urlBase.userId)
+                        let error = await NCNetworkingE2EEMarkFolder().markFolderE2ee(account: userBaseUrl.account, fileName: fileNameFolder, serverUrl: serverUrl, userId: userBaseUrl.userId)
                         if error != .success {
                             NCContentPresenter().showError(error: error)
                         }
@@ -49,7 +52,7 @@ extension UIAlertController {
                     }
                 }
             } else {
-                NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, account: urlBase.account, urlBase: urlBase.urlBase, userId: urlBase.userId, overwrite: false, withPush: true) { error in
+                NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, account: userBaseUrl.account, urlBase: userBaseUrl.urlBase, userId: userBaseUrl.userId, overwrite: false, withPush: true, sceneIdentifier: sceneIdentifier) { error in
                     if let completion = completion {
                         completion(error)
                     } else if error != .success {
@@ -74,7 +77,10 @@ extension UIAlertController {
             queue: .main) { _ in
                 guard let text = alertController.textFields?.first?.text else { return }
                 let folderName = text.trimmingCharacters(in: .whitespaces)
-                okAction.isEnabled = !folderName.isEmpty && folderName != "." && folderName != ".."
+
+                let textCheck = FileNameValidator.shared.checkFileName(folderName)
+                okAction.isEnabled = textCheck?.error == nil && !folderName.isEmpty
+                alertController.message = textCheck?.error.localizedDescription
             }
 
         alertController.addAction(cancelAction)
@@ -146,6 +152,125 @@ extension UIAlertController {
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in
             completion(true)
         })
+        return alertController
+    }
+
+    static func renameFile(fileName: String, completion: @escaping (_ newFileName: String) -> Void) -> UIAlertController {
+        let alertController = UIAlertController(title: NSLocalizedString("_rename_", comment: ""), message: nil, preferredStyle: .alert)
+
+        let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in
+            guard let newFileName = alertController.textFields?.first?.text else { return }
+
+            completion(newFileName)
+        })
+
+        // text field is initially empty, no action
+        okAction.isEnabled = false
+        let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel)
+
+        alertController.addTextField { textField in
+            textField.text = fileName
+            textField.autocapitalizationType = .words
+        }
+
+        // only allow saving if folder name exists
+        NotificationCenter.default.addObserver(
+            forName: UITextField.textDidBeginEditingNotification,
+            object: alertController.textFields?.first,
+            queue: .main) { _ in
+                guard let textField = alertController.textFields?.first else { return }
+
+                if let start = textField.position(from: textField.beginningOfDocument, offset: 0),
+                   let end = textField.position(from: start, offset: textField.text?.withRemovedFileExtension.count ?? 0) {
+                    textField.selectedTextRange = textField.textRange(from: start, to: end)
+                }
+            }
+
+        NotificationCenter.default.addObserver(
+            forName: UITextField.textDidChangeNotification,
+            object: alertController.textFields?.first,
+            queue: .main) { _ in
+                guard let text = alertController.textFields?.first?.text else { return }
+
+                let textCheck = FileNameValidator.shared.checkFileName(text)
+                okAction.isEnabled = textCheck?.error == nil && !text.isEmpty
+                alertController.message = textCheck?.error.localizedDescription
+            }
+
+        alertController.addAction(cancelAction)
+        alertController.addAction(okAction)
+        return alertController
+    }
+
+    static func renameFile(metadata: tableMetadata, indexPath: IndexPath) -> UIAlertController {
+        let alertController = UIAlertController(title: NSLocalizedString("_rename_", comment: ""), message: nil, preferredStyle: .alert)
+
+        let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in
+            guard let newFileName = alertController.textFields?.first?.text else { return }
+
+            // verify if already exists
+            if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, newFileName)) != nil {
+                NCContentPresenter().showError(error: NKError(errorCode: 0, errorDescription: "_rename_already_exists_"))
+                return
+            }
+
+            NCActivityIndicator.shared.start()
+
+            NCNetworking.shared.renameMetadata(metadata, fileNameNew: newFileName, indexPath: indexPath) { error in
+
+                NCActivityIndicator.shared.stop()
+
+                if error != .success {
+                    NCContentPresenter().showError(error: error)
+                }
+            }
+        })
+
+        // text field is initially empty, no action
+        okAction.isEnabled = false
+        let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel)
+
+        alertController.addTextField { textField in
+            textField.text = metadata.fileName
+            textField.autocapitalizationType = .words
+        }
+
+        // only allow saving if folder name exists
+        NotificationCenter.default.addObserver(
+            forName: UITextField.textDidBeginEditingNotification,
+            object: alertController.textFields?.first,
+            queue: .main) { _ in
+                guard let textField = alertController.textFields?.first else { return }
+
+                if let start = textField.position(from: textField.beginningOfDocument, offset: 0),
+                   let end = textField.position(from: start, offset: textField.text?.withRemovedFileExtension.count ?? 0) {
+                    textField.selectedTextRange = textField.textRange(from: start, to: end)
+                }
+            }
+
+        NotificationCenter.default.addObserver(
+            forName: UITextField.textDidChangeNotification,
+            object: alertController.textFields?.first,
+            queue: .main) { _ in
+                guard let text = alertController.textFields?.first?.text else { return }
+
+                let textCheck = FileNameValidator.shared.checkFileName(text)
+                okAction.isEnabled = textCheck?.error == nil && !text.isEmpty
+                alertController.message = textCheck?.error.localizedDescription
+            }
+
+        alertController.addAction(cancelAction)
+        alertController.addAction(okAction)
+        return alertController
+    }
+
+    static func warning(title: String? = nil, message: String? = nil) -> UIAlertController {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+
+        let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default)
+
+        alertController.addAction(okAction)
+
         return alertController
     }
 }

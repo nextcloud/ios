@@ -31,7 +31,6 @@ protocol NCTrashListCellDelegate: AnyObject {
 }
 
 class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
-
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageSelect: UIImageView!
@@ -50,7 +49,15 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        initCell()
+    }
 
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        initCell()
+    }
+
+    func initCell() {
         isAccessibilityElement = true
 
         self.accessibilityCustomActions = [
@@ -65,17 +72,13 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
 
         ]
 
-        imageRestore.image = UIImage(systemName: "arrow.circlepath")
-        imageRestore.tintColor = .gray
-
-        imageMore.image = UIImage(systemName: "trash")
-        imageMore.tintColor = .red
-
+        imageRestore.image = UIImage(resource: .restoreFromDeleted).withTintColor(NCBrandColor.shared.iconImageColor)
+		imageMore.image = NCImagesRepository.menuIconTrash.image(color: .red)
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
 
-        separator.backgroundColor = .separator
-        separatorHeightConstraint.constant = 0.5
+		separator.backgroundColor = UIColor(resource: .ListCell.separator)
+        separatorHeightConstraint.constant = 1
     }
 
     @IBAction func touchUpInsideMore(_ sender: Any) {
@@ -85,9 +88,9 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
     @IBAction func touchUpInsideRestore(_ sender: Any) {
         delegate?.tapRestoreListItem(with: objectId, image: imageItem.image, sender: sender)
     }
-
-    func selectMode(_ status: Bool) {
-        if status {
+	
+    func selected(_ isSelected: Bool, isEditMode: Bool) {
+        if isEditMode {
             imageItemLeftConstraint.constant = 45
             imageSelect.isHidden = false
             imageRestore.isHidden = true
@@ -103,30 +106,11 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
             buttonMore.isHidden = false
             backgroundView = nil
         }
-    }
-
-    func selected(_ status: Bool) {
-        if status {
-            var blurEffect: UIVisualEffect?
-            var blurEffectView: UIView?
-            imageSelect.image = NCImageCache.images.checkedYes
-            if traitCollection.userInterfaceStyle == .dark {
-                blurEffect = UIBlurEffect(style: .dark)
-                blurEffectView = UIVisualEffectView(effect: blurEffect)
-                blurEffectView?.backgroundColor = .black
-            } else {
-                blurEffect = UIBlurEffect(style: .extraLight)
-                blurEffectView = UIVisualEffectView(effect: blurEffect)
-                blurEffectView?.backgroundColor = .lightGray
-            }
-            blurEffectView?.frame = self.bounds
-            blurEffectView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            backgroundView = blurEffectView
-            separator.isHidden = true
+        if isSelected {
+            imageSelect.image = NCImageCache.images.checkedYes?.withTintColor(NCBrandColor.shared.brandElement)
         } else {
-            imageSelect.image = NCImageCache.images.checkedNo
-            backgroundView = nil
-            separator.isHidden = false
+            imageSelect.image = NCImageCache.images.checkedNo?.withTintColor(UIColor(resource: .FileSelection.listItemDeselected))
         }
+
     }
 }

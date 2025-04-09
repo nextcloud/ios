@@ -36,7 +36,7 @@ disabled_rules:
   - shorthand_operator
   - type_name
   - void_function_in_ternary
-
+  - switch_case_alignment
 excluded:
   - Carthage
   - Pods
@@ -44,5 +44,6 @@ excluded:
   - Brand/NCBrand.swift
   - iOSClient/NCGlobal.swift
   - iOSClient/Utility/NCLivePhoto.swift
-
+  - DerivedData
+  
 reporter: "xcode"

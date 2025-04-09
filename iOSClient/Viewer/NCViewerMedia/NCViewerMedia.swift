@@ -45,7 +45,6 @@ class NCViewerMedia: UIViewController {
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var detailView: NCViewerMediaDetailView!
 
-    private var tipView: EasyTipView?
     private let player = VLCMediaPlayer()
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
@@ -81,7 +80,6 @@ class NCViewerMedia: UIViewController {
     deinit {
         print("deinit NCViewerMedia")
 
-        self.tipView?.dismiss()
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
     }
 
@@ -91,11 +89,12 @@ class NCViewerMedia: UIViewController {
         scrollView.delegate = self
         scrollView.maximumZoomScale = 4
         scrollView.minimumZoomScale = 1
+        scrollView.backgroundColor = NCBrandColor.shared.appBackgroundColor
 
         view.addGestureRecognizer(doubleTapGestureRecognizer)
 
         if NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) != nil {
-            statusViewImage.image = utility.loadImage(named: "livephoto", color: .gray)
+            statusViewImage.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor2])
             statusLabel.text = "LIVE"
         } else {
             statusViewImage.image = nil
@@ -116,22 +115,6 @@ class NCViewerMedia: UIViewController {
 
             self.ncplayer = NCPlayer(imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, viewerMediaPage: self.viewerMediaPage)
         }
-
-        // TIP
-        var preferences = EasyTipView.Preferences()
-        preferences.drawing.foregroundColor = .white
-        preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
-        preferences.drawing.textAlignment = .left
-        preferences.drawing.arrowPosition = .bottom
-        preferences.drawing.cornerRadius = 10
-
-        preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: -15)
-        preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -15)
-        preferences.animating.showInitialAlpha = 0
-        preferences.animating.showDuration = 0.5
-        preferences.animating.dismissDuration = 0
-
-        tipView = EasyTipView(text: NSLocalizedString("_tip_open_mediadetail_", comment: ""), preferences: preferences, delegate: self)
 
         detailViewTopConstraint.constant = 0
         detailView.hide()
@@ -181,13 +164,17 @@ class NCViewerMedia: UIViewController {
                             hud.indicatorView = JGProgressHUDRingIndicatorView()
                             hud.textLabel.text = NSLocalizedString("_downloading_", comment: "")
                             hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
-                            if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView { indicatorView.ringWidth = 1.5 }
+                            hud.detailTextLabel.textColor = NCBrandColor.shared.iconImageColor2
+                            if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
+                                indicatorView.ringWidth = 1.5
+                                indicatorView.ringColor = NCBrandColor.shared.brandElement
+                            }
                             hud.tapOnHUDViewBlock = { _ in
                                 if let request = downloadRequest {
                                     request.cancel()
                                 }
                             }
-                            if let view = self.appDelegate.window?.rootViewController?.view {
+                            if let view = self.view {
                                 hud.show(in: view)
                             }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
@@ -232,8 +219,7 @@ class NCViewerMedia: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-
-        self.tipView?.dismiss()
+        dismissTip()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -252,7 +238,7 @@ class NCViewerMedia: UIViewController {
         if UIDevice.current.orientation.isValidInterfaceOrientation {
 
             if wasShown { closeDetail(animate: false) }
-            self.tipView?.dismiss()
+            dismissTip()
             if metadata.isVideo {
                 self.imageVideoContainer.isHidden = true
             }
@@ -271,14 +257,6 @@ class NCViewerMedia: UIViewController {
                     self.openDetail(animate: true)
                 }
             })
-        }
-    }
-
-    // MARK: - Tip
-
-    func showTip() {
-        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView) {
-            self.tipView?.show(forView: detailView)
         }
     }
 
@@ -303,33 +281,45 @@ class NCViewerMedia: UIViewController {
         }
 
         // Get image
-        let image = getImageMetadata(metadata)
-        if self.metadata.ocId == metadata.ocId {
-            self.image = image
-            self.imageVideoContainer.image = image
+        getImageMetadata(metadata) { image in
+            if self.metadata.ocId == metadata.ocId {
+                self.image = image
+                self.imageVideoContainer.image = image
+            }
         }
     }
 
-    func getImageMetadata(_ metadata: tableMetadata) -> UIImage? {
-
-        if let image = utility.getImage(metadata: metadata) {
-            return image
-        }
-
+    func getImageMetadata(_ metadata: tableMetadata, completion: @escaping (UIImage?) -> Void) {
         if metadata.isVideo && !metadata.hasPreview {
             utility.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+        } else if metadata.isAudio {
+            return completion(utility.loadImage(named: "waveform", colors: [NCBrandColor.shared.iconImageColor2]))
+        } else if let image = utility.getImage(metadata: metadata) {
+            return completion(image)
         }
 
         if utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
-            return UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag))
-        }
-
-        if metadata.isAudio {
-            return UIImage(named: "noPreviewAudio")!.image(color: .gray, size: view.frame.width)
-        } else if metadata.isImage {
-            return UIImage(named: "noPreview")!.image(color: .gray, size: view.frame.width)
+            return completion(UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)))
         } else {
-            return nil
+            let fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
+            let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
+            let sizePreview = NCUtility().getSizePreview(width: metadata.width, height: metadata.height)
+
+            NextcloudKit.shared.downloadPreview(fileId: metadata.fileId,
+                                                fileNamePreviewLocalPath: fileNamePreviewLocalPath,
+                                                fileNameIconLocalPath: fileNameIconLocalPath,
+                                                widthPreview: Int(sizePreview.width),
+                                                heightPreview: Int(sizePreview.height),
+                                                sizeIcon: NCGlobal.shared.sizeIcon,
+                                                account: metadata.account,
+                                                options: NKRequestOptions(queue: .main)) { _, imagePreview, _, _, etag, error in
+                if error == .success, let image = imagePreview {
+                    NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
+                    return completion(image)
+                } else {
+                    return completion(self.utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor2]))
+                }
+            }
         }
     }
 
@@ -342,10 +332,13 @@ class NCViewerMedia: UIViewController {
             self.allowOpeningDetails = false
         } completion: { _, _ in
             DispatchQueue.main.async {
-                let image = self.getImageMetadata(self.metadata)
-                self.image = image
-                self.imageVideoContainer.image = image
-                self.allowOpeningDetails = true
+                self.getImageMetadata(self.metadata) { image in
+                    if self.metadata.ocId == metadata.ocId {
+                        self.image = image
+                        self.imageVideoContainer.image = image
+                        self.allowOpeningDetails = true
+                    }
+                }
             }
         }
     }
@@ -575,8 +568,28 @@ extension NCViewerMedia: NCViewerMediaDetailViewDelegate {
 }
 
 extension NCViewerMedia: EasyTipViewDelegate {
+    func showTip() {
+        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView) {
+            var preferences = EasyTipView.Preferences()
+            preferences.drawing.foregroundColor = .white
+            preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
+            preferences.drawing.textAlignment = .left
+            preferences.drawing.arrowPosition = .bottom
+            preferences.drawing.cornerRadius = 10
 
-    // TIP
+            preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: -15)
+            preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -15)
+            preferences.animating.showInitialAlpha = 0
+            preferences.animating.showDuration = 0.5
+            preferences.animating.dismissDuration = 0
+
+            if appDelegate.tipView == nil {
+                appDelegate.tipView = EasyTipView(text: NSLocalizedString("_tip_open_mediadetail_", comment: ""), preferences: preferences, delegate: self)
+                appDelegate.tipView?.show(forView: detailView)
+            }
+        }
+    }
+
     func easyTipViewDidTap(_ tipView: EasyTipView) {
         NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerMediaDetailView)
     }
@@ -584,7 +597,10 @@ extension NCViewerMedia: EasyTipViewDelegate {
     func easyTipViewDidDismiss(_ tipView: EasyTipView) { }
 
     func dismissTip() {
-        NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerMediaDetailView)
-        self.tipView?.dismiss()
+        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView) {
+            NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerMediaDetailView)
+        }
+        appDelegate.tipView?.dismiss()
+        appDelegate.tipView = nil
     }
 }

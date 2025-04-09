@@ -23,6 +23,7 @@
 
 import Foundation
 import UIKit
+import Photos
 
 extension PHAsset {
     var originalFilename: NSString {

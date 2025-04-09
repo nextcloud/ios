@@ -4,6 +4,7 @@
 //
 //  Created by Marino Faggiana on 02/04/24.
 //  Copyright © 2024 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -23,13 +24,86 @@
 
 import UIKit
 
+struct NavigationCollectionViewCommon {
+    var serverUrl: String
+    var navigationController: UINavigationController?
+    var viewController: NCCollectionViewCommon
+}
+
 class NCMainTabBarController: UITabBarController {
+    var documentPickerViewController: NCDocumentPickerViewController?
+    let navigationCollectionViewCommon = ThreadSafeArray<NavigationCollectionViewCommon>()
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    private var previousIndex: Int?
+    private(set) var burgerMenuController: BurgerMenuAttachController?
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        delegate = self
+		setupTabBarView()
+        burgerMenuController = BurgerMenuAttachController(with: self)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        DataProtectionAgreementManager.shared.showAgreement(viewController: self)
+    }
+	
+	private func setupTabBarView() {
+		if UIDevice.current.userInterfaceIdiom == .pad {
+			tabBar.itemPositioning = .centered
+			if let itemsCount = tabBar.items?.count {
+				tabBar.itemWidth = UITabBarGuideline.padItemWidth
+				tabBar.itemSpacing = UITabBarGuideline.padItemsSpacing(for: view.bounds.width, itemsCount: itemsCount)
+			}
+		}
+	}
+    
+    func showBurgerMenu() {
+        burgerMenuController?.showMenu()
+    }
+    
+    func presentedNavigationController() -> UINavigationController? {
+        return presentedViewController as? UINavigationController
+    }
 
-    var identifier: String = UUID().uuidString
+    func currentViewController() -> UIViewController? {
+        if let navVC = presentedNavigationController() {
+            return navVC.topViewController
+        }
+        return (selectedViewController as? UINavigationController)?.topViewController
+    }
 
-    // MARK: - Life Cycle
+    func currentServerUrl() -> String {
+        var serverUrl = NCUtilityFileSystem().getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
+        let viewController = currentViewController()
+        if let collectionViewCommon = viewController as? NCCollectionViewCommon {
+            if !collectionViewCommon.serverUrl.isEmpty {
+                serverUrl = collectionViewCommon.serverUrl
+            }
+        } else if let media = viewController as? NCMedia {
+            serverUrl = media.serverUrl
+        } else if let viewerMediaPage = viewController as? NCViewerMediaPage {
+            serverUrl = viewerMediaPage.metadatas[viewerMediaPage.currentIndex].serverUrl
+        }
+        return serverUrl
+    }
+}
 
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
+extension NCMainTabBarController: UITabBarControllerDelegate {
+    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+        if previousIndex == tabBarController.selectedIndex {
+            scrollToTop(viewController: viewController)
+        }
+        previousIndex = tabBarController.selectedIndex
+    }
+
+    private func scrollToTop(viewController: UIViewController) {
+        guard let navigationController = viewController as? UINavigationController,
+              let topViewController = navigationController.topViewController else { return }
+
+        if let scrollView = topViewController.view.subviews.compactMap({ $0 as? UIScrollView }).first {
+            scrollView.setContentOffset(CGPoint(x: 0, y: -scrollView.adjustedContentInset.top), animated: true)
+        }
     }
 }

@@ -65,7 +65,7 @@ class NCColorPicker: UIViewController {
             }
         }
 
-        closeButton.setImage(NCUtility().loadImage(named: "xmark", color: .label), for: .normal)
+        closeButton.setImage(NCUtility().loadImage(named: "xmark", colors: [NCBrandColor.shared.iconImageColor]), for: .normal)
         titleLabel.text = NSLocalizedString("_select_color_", comment: "")
 
         orangeButton.backgroundColor = .orange
@@ -212,10 +212,9 @@ class NCColorPicker: UIViewController {
     func updateColor(hexColor: String?) {
         if let metadata = metadata {
             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-            if NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, colorFolder: hexColor, account: metadata.account) != nil {
-                self.dismiss(animated: true)
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
-            }
+            NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, colorFolder: hexColor, metadata: metadata)
+            self.dismiss(animated: true)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
         }
         self.dismiss(animated: true)
     }

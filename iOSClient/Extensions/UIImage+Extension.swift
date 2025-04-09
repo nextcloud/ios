@@ -115,6 +115,10 @@ extension UIImage {
         return UIImage(cgImage: newCGImage, scale: 1, orientation: .up)
     }
 
+    @objc func image(color: UIColor) -> UIImage {
+        return image(color: color, width: self.size.width, height: self.size.height)
+    }
+
     @objc func image(color: UIColor, size: CGFloat) -> UIImage {
         return image(color: color, width: size, height: size)
     }

@@ -50,7 +50,7 @@ class NCAutoUpload: NSObject {
                 NCManageDatabase.shared.setAccountAutoUploadProperty("autoUpload", state: false)
                 return completion(0)
             }
-            DispatchQueue.global().async {
+            DispatchQueue.global(qos: .userInteractive).async {
                 self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUpload, log: "Init Auto Upload") { items in
                     completion(items)
                 }
@@ -67,7 +67,6 @@ class NCAutoUpload: NSObject {
     }
 
     @objc func autoUploadFullPhotos(viewController: UIViewController?, log: String) {
-
         applicationState = UIApplication.shared.applicationState
 
         NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
@@ -75,7 +74,7 @@ class NCAutoUpload: NSObject {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_create_full_upload_")
             NCContentPresenter().showWarning(error: error, priority: .max)
             NCActivityIndicator.shared.start()
-            DispatchQueue.global().async {
+            DispatchQueue.global(qos: .userInteractive).async {
                 self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUploadAll, log: log) { _ in
                     NCActivityIndicator.shared.stop()
                 }
@@ -84,10 +83,8 @@ class NCAutoUpload: NSObject {
     }
 
     private func uploadAssetsNewAndFull(viewController: UIViewController?, selector: String, log: String, completion: @escaping (_ items: Int) -> Void) {
-
         guard let account = NCManageDatabase.shared.getActiveAccount() else { return completion(0) }
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: account.urlBase, userId: account.userId, account: account.account)
-        let autoUploadSubfolderGranularity = NCManageDatabase.shared.getAccountAutoUploadSubfolderGranularity()
         var metadatas: [tableMetadata] = []
 
         self.getCameraRollAssets(viewController: viewController, account: account, selector: selector, alignPhotoLibrary: false) { assets in
@@ -99,7 +96,7 @@ class NCAutoUpload: NSObject {
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload, new \(assets.count) assets found [" + log + "]")
             // Create the folder for auto upload & if request the subfolders
-            if !NCNetworking.shared.createFolder(assets: assets, selector: selector, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase, userId: account.userId, withPush: false) {
+            if !NCNetworking.shared.createFolder(assets: assets, useSubFolder: account.autoUploadCreateSubfolder, account: account.account, urlBase: account.urlBase, userId: account.userId, withPush: false) {
                 if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
                     let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_createsubfolders_upload_")
                     NCContentPresenter().showError(error: error, priority: .max)
@@ -110,20 +107,18 @@ class NCAutoUpload: NSObject {
             self.endForAssetToUpload = false
 
             for asset in assets {
-
                 var isLivePhoto = false
                 var session: String = ""
-                let dateFormatter = DateFormatter()
                 let assetDate = asset.creationDate ?? Date()
-                dateFormatter.dateFormat = "yyyy"
-                let year = dateFormatter.string(from: assetDate)
-                dateFormatter.dateFormat = "MM"
-                let month = dateFormatter.string(from: assetDate)
-                dateFormatter.dateFormat = "dd"
-                let day = dateFormatter.string(from: assetDate)
                 let assetMediaType = asset.mediaType
                 var serverUrl: String = ""
-                let fileName = CCUtility.createFileName(asset.originalFilename as String, fileDate: assetDate, fileType: assetMediaType, keyFileName: NCGlobal.shared.keyFileNameAutoUploadMask, keyFileNameType: NCGlobal.shared.keyFileNameAutoUploadType, keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginalAutoUpload, forcedNewFileName: false)!
+                let fileName = NCUtilityFileSystem().createFileName(asset.originalFilename as String, fileDate: assetDate, fileType: assetMediaType)
+
+                if account.autoUploadCreateSubfolder {
+                    serverUrl = NCUtilityFileSystem().createGranularityPath(asset: asset, serverUrl: autoUploadPath)
+                } else {
+                    serverUrl = autoUploadPath
+                }
 
                 if asset.mediaSubtypes.contains(.photoLive), NCKeychain().livePhoto {
                     isLivePhoto = true
@@ -141,18 +136,6 @@ class NCAutoUpload: NSObject {
                     } else if assetMediaType == PHAssetMediaType.video && account.autoUploadWWAnVideo {
                         session = NCNetworking.shared.sessionUploadBackgroundWWan
                     } else { session = NCNetworking.shared.sessionUploadBackground }
-                }
-
-                if account.autoUploadCreateSubfolder {
-                    if autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityYearly {
-                        serverUrl = autoUploadPath + "/" + year
-                    } else if autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityDaily {
-                        serverUrl = autoUploadPath + "/" + year + "/" + month + "/" + day
-                    } else {  // Month Granularity is default
-                        serverUrl = autoUploadPath + "/" + year + "/" + month
-                    }
-                } else {
-                    serverUrl = autoUploadPath
                 }
 
                 // MOST COMPATIBLE SEARCH --> HEIC --> JPG
@@ -200,7 +183,6 @@ class NCAutoUpload: NSObject {
     // MARK: -
 
     @objc func alignPhotoLibrary(viewController: UIViewController?) {
-
         guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return }
 
         getCameraRollAssets(viewController: viewController, account: activeAccount, selector: NCGlobal.shared.selectorUploadAutoUploadAll, alignPhotoLibrary: true) { assets in
@@ -213,13 +195,10 @@ class NCAutoUpload: NSObject {
     }
 
     private func getCameraRollAssets(viewController: UIViewController?, account: tableAccount, selector: String, alignPhotoLibrary: Bool, completion: @escaping (_ assets: [PHAsset]?) -> Void) {
-
         NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
-
             guard hasPermission else { return completion(nil) }
             let assetCollection = PHAssetCollection.fetchAssetCollections(with: PHAssetCollectionType.smartAlbum, subtype: PHAssetCollectionSubtype.smartAlbumUserLibrary, options: nil)
             guard let assetCollection = assetCollection.firstObject else { return completion(nil) }
-
             let predicateImage = NSPredicate(format: "mediaType == %i", PHAssetMediaType.image.rawValue)
             let predicateVideo = NSPredicate(format: "mediaType == %i", PHAssetMediaType.video.rawValue)
             var predicate: NSPredicate?

@@ -22,16 +22,15 @@
 //
 
 import Foundation
+import UIKit
 import Queuer
 import NextcloudKit
-import Realm
+import RealmSwift
 
 class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
-
     var metadata: tableMetadata
     var cell: NCCellProtocol?
     var collectionView: UICollectionView?
-    var fileNamePath: String
     var fileNamePreviewLocalPath: String
     var fileNameIconLocalPath: String
     let utilityFileSystem = NCUtilityFileSystem()
@@ -40,14 +39,12 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
         self.metadata = tableMetadata.init(value: metadata)
         self.cell = cell
         self.collectionView = collectionView
-        self.fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
         self.fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
         self.fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
     }
 
     override func start() {
         guard !isCancelled else { return self.finish() }
-
         var etagResource: String?
         let sizePreview = NCUtility().getSizePreview(width: metadata.width, height: metadata.height)
 
@@ -55,19 +52,20 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
             etagResource = metadata.etagResource
         }
 
-        NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePath,
+        NextcloudKit.shared.downloadPreview(fileId: metadata.fileId,
                                             fileNamePreviewLocalPath: fileNamePreviewLocalPath,
+                                            fileNameIconLocalPath: fileNameIconLocalPath,
                                             widthPreview: Int(sizePreview.width),
                                             heightPreview: Int(sizePreview.height),
-                                            fileNameIconLocalPath: fileNameIconLocalPath,
                                             sizeIcon: NCGlobal.shared.sizeIcon,
                                             etag: etagResource,
+                                            account: self.metadata.account,
                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, imageIcon, _, etag, error in
-
-            if error == .success, let image = imageIcon {
+            if error == .success, let imageIcon {
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                 DispatchQueue.main.async {
                     if self.metadata.ocId == self.cell?.fileObjectId, let filePreviewImageView = self.cell?.filePreviewImageView {
+                        self.cell?.filePreviewImageView?.contentMode = .scaleAspectFill
                         if self.metadata.hasPreviewBorder {
                             self.cell?.filePreviewImageView?.layer.borderWidth = 0.2
                             self.cell?.filePreviewImageView?.layer.borderColor = UIColor.systemGray3.cgColor
@@ -75,7 +73,7 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
                         UIView.transition(with: filePreviewImageView,
                                           duration: 0.75,
                                           options: .transitionCrossDissolve,
-                                          animations: { filePreviewImageView.image = image },
+                                          animations: { filePreviewImageView.image = imageIcon },
                                           completion: nil)
                     } else {
                         self.collectionView?.reloadData()

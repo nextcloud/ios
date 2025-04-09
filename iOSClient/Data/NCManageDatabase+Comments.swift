@@ -47,9 +47,7 @@ class tableComments: Object, DateCompareable {
 }
 
 extension NCManageDatabase {
-
     func addComments(_ comments: [NKComments], account: String, objectId: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -78,7 +76,6 @@ extension NCManageDatabase {
     }
 
     func getComments(account: String, objectId: String) -> [tableComments] {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -87,7 +84,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return []
     }
 }

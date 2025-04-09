@@ -21,12 +21,12 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import UIKit
 import WidgetKit
 import Intents
 import SwiftUI
 
 struct DashboardWidgetProvider: IntentTimelineProvider {
-
     typealias Intent = DashboardIntent
     typealias Entry = DashboardDataEntry
 
@@ -35,7 +35,7 @@ struct DashboardWidgetProvider: IntentTimelineProvider {
         let datasPlaceholder = Array(dashboardDatasTest[0...dashboardItems])
         let title = "Dashboard"
         let titleImage = UIImage(named: "widget")!
-        return Entry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget")
+        return Entry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: titleImage, title: title, footerImage: "Cloud_Checkmark", footerText: NCBrandOptions.shared.brand + " widget")
     }
 
     func getSnapshot(for configuration: DashboardIntent, in context: Context, completion: @escaping (DashboardDataEntry) -> Void) {

@@ -21,6 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import UIKit
 import WidgetKit
 import Intents
 import NextcloudKit
@@ -65,18 +66,16 @@ let dashboardDatasTest: [DashboardData] = [
 ]
 
 func getDashboardItems(displaySize: CGSize, withButton: Bool) -> Int {
-
     if withButton {
-        let height = Int((displaySize.height - 85) / 50)
-        return height
+        let items = Int((displaySize.height - 90) / 59)
+        return items
     } else {
-        let height = Int((displaySize.height - 60) / 50)
-        return height
+        let items = Int((displaySize.height - 50) / 59)
+        return items
     }
 }
 
 func convertDataToImage(data: Data?, size: CGSize, fileNameToWrite: String?) -> UIImage? {
-
     guard let data = data else { return nil }
     var imageData: UIImage?
 
@@ -98,7 +97,6 @@ func convertDataToImage(data: Data?, size: CGSize, fileNameToWrite: String?) -> 
 }
 
 func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
-
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     let dashboardItems = getDashboardItems(displaySize: displaySize, withButton: false)
@@ -106,7 +104,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     var account: tableAccount?
 
     if isPreview {
-        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
+        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "Cloud_Checkmark", footerText: NCBrandOptions.shared.brand + " dashboard"))
     }
 
     let accountIdentifier: String = configuration?.accounts?.identifier ?? "active"
@@ -117,7 +115,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     }
 
     guard let account = account else {
-        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", comment: "")))
+        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "Cloud_Xmark", footerText: NSLocalizedString("_no_active_account_", comment: "")))
     }
 
     // Default widget
@@ -128,7 +126,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     NCManageDatabase.shared.setCapabilities(account: account.account)
 
     guard NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion25 else {
-        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_widget_available_nc25_", comment: "")))
+        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "Cloud_Xmark", footerText: NSLocalizedString("_widget_available_nc25_", comment: "")))
     }
 
     // NETWORKING
@@ -164,14 +162,13 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     if let fileName = tableDashboard?.iconClass {
         let fileNamePath: String = utilityFileSystem.directoryUserData + "/" + fileName + ".png"
         if let image = UIImage(contentsOfFile: fileNamePath) {
-            imagetmp = image.withTintColor(.label, renderingMode: .alwaysOriginal)
+            imagetmp = image.withTintColor(NCBrandColor.shared.iconImageColor, renderingMode: .alwaysOriginal)
         }
     }
     let titleImage = imagetmp
 
     let options = NKRequestOptions(timeout: 90, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-    NextcloudKit.shared.getDashboardWidgetsApplication(id, options: options) { _, results, data, error in
-
+    NextcloudKit.shared.getDashboardWidgetsApplication(id, account: account.account, options: options) { _, results, data, error in
         Task {
             var datas = [DashboardData]()
             var numberItems = 0
@@ -222,14 +219,15 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                                     let path = (urlComponents.path as NSString)
                                     let colorString = ((path.lastPathComponent) as NSString).deletingPathExtension
                                     imageColor = UIColor(hex: colorString)
-                                    icon = UIImage(systemName: "circle.fill")!
+                                    icon = utility.loadImage(named: "circle.fill")
                                 } else if let fileName = iconFileName {
                                     let fileNamePath: String = utilityFileSystem.directoryUserData + "/" + fileName + ".png"
                                     if FileManager().fileExists(atPath: fileNamePath), let image = UIImage(contentsOfFile: fileNamePath) {
                                         icon = image
                                     } else {
-                                        let (_, data, _) = await NextcloudKit.shared.getPreview(url: url)
-                                        if let image = convertDataToImage(data: data, size: CGSize(width: 256, height: 256), fileNameToWrite: fileName) {
+                                        let (_, data, error) = await NCNetworking.shared.downloadPreview(url: url, account: account.account)
+                                        if error == .success,
+                                           let image = convertDataToImage(data: data, size: CGSize(width: 256, height: 256), fileNameToWrite: fileName) {
                                             icon = image
                                         }
                                     }
@@ -254,9 +252,9 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
             let footerText = "Dashboard " + NSLocalizedString("_of_", comment: "") + " " + account.displayName + alias
 
             if error != .success {
-                completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: tableDashboard, buttons: buttons, isPlaceholder: true, isEmpty: false, titleImage: titleImage, title: title, footerImage: "xmark.icloud", footerText: error.errorDescription))
+                completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: tableDashboard, buttons: buttons, isPlaceholder: true, isEmpty: false, titleImage: titleImage, title: title, footerImage: "Cloud_Xmark", footerText: error.errorDescription))
             } else {
-                completion(DashboardDataEntry(date: Date(), datas: datas, dashboard: tableDashboard, buttons: buttons, isPlaceholder: false, isEmpty: datas.isEmpty, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: footerText))
+                completion(DashboardDataEntry(date: Date(), datas: datas, dashboard: tableDashboard, buttons: buttons, isPlaceholder: false, isEmpty: datas.isEmpty, titleImage: titleImage, title: title, footerImage: "Cloud_Checkmark", footerText: footerText))
             }
         }
     }
