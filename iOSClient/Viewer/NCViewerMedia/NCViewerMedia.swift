@@ -67,6 +67,7 @@ class NCViewerMedia: UIViewController {
     weak var delegate: NCViewerMediaViewDelegate?
 
     private var allowOpeningDetails = true
+    private var tipView: EasyTipView?
 
     // MARK: - View Life Cycle
 
@@ -557,10 +558,10 @@ extension NCViewerMedia: NCViewerMediaDetailViewDelegate {
 
 extension NCViewerMedia: EasyTipViewDelegate {
     func showTip() {
-        if !self.database.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView) {
+        if !self.database.tipExists(NCGlobal.shared.tipMediaDetailView) {
             var preferences = EasyTipView.Preferences()
             preferences.drawing.foregroundColor = .white
-            preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
+            preferences.drawing.backgroundColor = .lightGray
             preferences.drawing.textAlignment = .left
             preferences.drawing.arrowPosition = .bottom
             preferences.drawing.cornerRadius = 10
@@ -571,24 +572,24 @@ extension NCViewerMedia: EasyTipViewDelegate {
             preferences.animating.showDuration = 0.5
             preferences.animating.dismissDuration = 0
 
-            if appDelegate.tipView == nil {
-                appDelegate.tipView = EasyTipView(text: NSLocalizedString("_tip_open_mediadetail_", comment: ""), preferences: preferences, delegate: self)
-                appDelegate.tipView?.show(forView: detailView)
+            if tipView == nil {
+                tipView = EasyTipView(text: NSLocalizedString("_tip_open_mediadetail_", comment: ""), preferences: preferences, delegate: self)
+                tipView?.show(forView: detailView)
             }
         }
     }
 
     func easyTipViewDidTap(_ tipView: EasyTipView) {
-        self.database.addTip(NCGlobal.shared.tipNCViewerMediaDetailView)
+        self.database.addTip(NCGlobal.shared.tipMediaDetailView)
     }
 
     func easyTipViewDidDismiss(_ tipView: EasyTipView) { }
 
     func dismissTip() {
-        if !self.database.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView) {
-            self.database.addTip(NCGlobal.shared.tipNCViewerMediaDetailView)
+        if !self.database.tipExists(NCGlobal.shared.tipMediaDetailView) {
+            self.database.addTip(NCGlobal.shared.tipMediaDetailView)
         }
-        appDelegate.tipView?.dismiss()
-        appDelegate.tipView = nil
+        tipView?.dismiss()
+        tipView = nil
     }
 }

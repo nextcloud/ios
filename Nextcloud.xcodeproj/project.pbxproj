@@ -679,6 +679,7 @@
 		F77BB74A2899857B0090FC19 /* UINavigationController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77BB7492899857B0090FC19 /* UINavigationController+Extension.swift */; };
 		F77BC3EB293E5268005F2B08 /* Swifter in Frameworks */ = {isa = PBXBuildFile; productRef = F77BC3EA293E5268005F2B08 /* Swifter */; };
 		F77BC3ED293E528A005F2B08 /* NCConfigServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77BC3EC293E528A005F2B08 /* NCConfigServer.swift */; };
+		F77C3F5B2D9BF8CD00F3C471 /* UITabBar+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77C3F5A2D9BF8B500F3C471 /* UITabBar+Extension.swift */; };
 		F77C97392953131000FDDD09 /* NCCameraRoll.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77C97382953131000FDDD09 /* NCCameraRoll.swift */; };
 		F77C973A2953143A00FDDD09 /* NCCameraRoll.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77C97382953131000FDDD09 /* NCCameraRoll.swift */; };
 		F77CB6A92AA08053000C3CA4 /* OpenSSL in Frameworks */ = {isa = PBXBuildFile; productRef = F77CB6A82AA08053000C3CA4 /* OpenSSL */; };
@@ -1605,6 +1606,7 @@
 		F77BB747289985270090FC19 /* UITabBarController+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITabBarController+Extension.swift"; sourceTree = "<group>"; };
 		F77BB7492899857B0090FC19 /* UINavigationController+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UINavigationController+Extension.swift"; sourceTree = "<group>"; };
 		F77BC3EC293E528A005F2B08 /* NCConfigServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCConfigServer.swift; sourceTree = "<group>"; };
+		F77C3F5A2D9BF8B500F3C471 /* UITabBar+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITabBar+Extension.swift"; sourceTree = "<group>"; };
 		F77C97382953131000FDDD09 /* NCCameraRoll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCameraRoll.swift; sourceTree = "<group>"; };
 		F77DD6A72C5CC093009448FB /* NCSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSession.swift; sourceTree = "<group>"; };
 		F77ED59028C9CE9D00E24ED0 /* ToolbarData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarData.swift; sourceTree = "<group>"; };
@@ -2872,6 +2874,7 @@
 				F7EE66AC2A20B226009AE765 /* UILabel+Extension.swift */,
 				F77BB7492899857B0090FC19 /* UINavigationController+Extension.swift */,
 				F77BB747289985270090FC19 /* UITabBarController+Extension.swift */,
+				F77C3F5A2D9BF8B500F3C471 /* UITabBar+Extension.swift */,
 				AFCE353227E4ED1900FEA6C2 /* UIToolbar+Extension.swift */,
 				F7E41315294A19B300839300 /* UIView+Extension.swift */,
 				F77BB745289984CA0090FC19 /* UIViewController+Extension.swift */,
@@ -4842,6 +4845,7 @@
 				F70CEF5623E9C7E50007035B /* UIColor+Extension.swift in Sources */,
 				F76882242C0DD1E7001CF441 /* NCSettingsAdvancedView.swift in Sources */,
 				F785129C2D7989B30087DDD0 /* NCNetworking+TermsOfService.swift in Sources */,
+				F77C3F5B2D9BF8CD00F3C471 /* UITabBar+Extension.swift in Sources */,
 				F75CA1472962F13700B01130 /* NCHUDView.swift in Sources */,
 				F77BB748289985270090FC19 /* UITabBarController+Extension.swift in Sources */,
 				F763D29D2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */,
@@ -5859,7 +5863,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 4;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -5925,7 +5929,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -6151,8 +6155,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/marinofaggiana/EasyTipView";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
+				branch = master;
+				kind = branch;
 			};
 		};
 		F75E57A725BF0D61002B72C2 /* XCRemoteSwiftPackageReference "SVGKit" */ = {

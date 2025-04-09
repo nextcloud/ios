@@ -12,7 +12,7 @@ class NCFilesNavigationController: NCMainNavigationController {
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadAvatar), object: nil, queue: nil) { notification in
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                self.collectionViewCommon?.showTip()
+                self.collectionViewCommon?.showTipAccounts()
             }
             guard let userInfo = notification.userInfo as NSDictionary?,
                   let error = userInfo["error"] as? NKError,

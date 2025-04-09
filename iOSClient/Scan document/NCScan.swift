@@ -55,6 +55,9 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     internal var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
     }
+
+    private var tipView: EasyTipView?
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -335,10 +338,10 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
 
 extension NCScan: EasyTipViewDelegate {
     func showTip() {
-        if !self.database.tipExists(NCGlobal.shared.tipNCScanAddImage) {
+        if !self.database.tipExists(NCGlobal.shared.tipScanAddImage) {
             var preferences = EasyTipView.Preferences()
             preferences.drawing.foregroundColor = .white
-            preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
+            preferences.drawing.backgroundColor = .lightGray
             preferences.drawing.textAlignment = .left
             preferences.drawing.arrowPosition = .left
             preferences.drawing.cornerRadius = 10
@@ -349,25 +352,25 @@ extension NCScan: EasyTipViewDelegate {
             preferences.animating.showDuration = 1.5
             preferences.animating.dismissDuration = 1.5
 
-            if appDelegate.tipView == nil {
-                appDelegate.tipView = EasyTipView(text: NSLocalizedString("_tip_addcopyimage_", comment: ""), preferences: preferences, delegate: self)
-                appDelegate.tipView?.show(forView: add, withinSuperview: self.view)
+            if tipView == nil {
+                tipView = EasyTipView(text: NSLocalizedString("_tip_addcopyimage_", comment: ""), preferences: preferences, delegate: self)
+                tipView?.show(forView: add, withinSuperview: self.view)
             }
         }
     }
 
     func easyTipViewDidTap(_ tipView: EasyTipView) {
-        self.database.addTip(NCGlobal.shared.tipNCScanAddImage)
+        self.database.addTip(NCGlobal.shared.tipScanAddImage)
     }
 
     func easyTipViewDidDismiss(_ tipView: EasyTipView) { }
 
     func dismissTip() {
-        if !self.database.tipExists(NCGlobal.shared.tipNCScanAddImage) {
-            self.database.addTip(NCGlobal.shared.tipNCScanAddImage)
+        if !self.database.tipExists(NCGlobal.shared.tipScanAddImage) {
+            self.database.addTip(NCGlobal.shared.tipScanAddImage)
         }
-        appDelegate.tipView?.dismiss()
-        appDelegate.tipView = nil
+        tipView?.dismiss()
+        tipView = nil
     }
 }
 
