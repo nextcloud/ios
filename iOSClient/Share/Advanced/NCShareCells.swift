@@ -264,11 +264,11 @@ struct NCShareConfig {
     let permissions: [NCPermission]
     let advanced: [NCShareDetails]
     let shareable: Shareable
-    let resharePermission: Int
+    let sharePermission: Int
 
     init(parentMetadata: tableMetadata, share: Shareable) {
         self.shareable = share
-        self.resharePermission = parentMetadata.sharePermissionsCollaborationServices
+        self.sharePermission = parentMetadata.sharePermissionsCollaborationServices
         let type: NCPermission.Type = share.shareType == NCShareCommon().SHARE_TYPE_LINK ? NCLinkPermission.self : NCUserPermission.self
         self.permissions = parentMetadata.directory ? (parentMetadata.e2eEncrypted ? type.forDirectoryE2EE(account: parentMetadata.account) : type.forDirectory) : type.forFile
 
@@ -295,7 +295,7 @@ struct NCShareConfig {
         Logger().info("\(cellConfig?.title ?? "")")
 
         if let cellConfig = cellConfig as? NCPermission,
-           !cellConfig.hasPermission(for: resharePermission),
+           !cellConfig.hasPermission(for: sharePermission),
            !cellConfig.hasDownloadPermission() {
             cell?.isUserInteractionEnabled = false
             cell?.textLabel?.isEnabled = false
