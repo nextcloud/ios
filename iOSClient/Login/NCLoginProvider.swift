@@ -115,11 +115,13 @@ class NCLoginProvider: UIViewController {
 
     func handleGrant(urlBase: String, loginName: String, appPassword: String, controller: NCMainTabBarController?) async {
         await withCheckedContinuation { continuation in
+            if self.controller == nil {
+                self.controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+            }
+
             NCAccount().createAccount(urlBase: urlBase, user: loginName, password: appPassword, controller: controller) { account, error in
                 if error == .success {
-                    let window = UIApplication.shared.firstWindow
-
-                    if let controller = window?.rootViewController as? NCMainTabBarController {
+                    if let controller = self.controller {
                         controller.account = account
                         controller.dismiss(animated: true, completion: nil)
                     } else {
@@ -128,10 +130,10 @@ class NCLoginProvider: UIViewController {
                             controller.modalPresentationStyle = .fullScreen
                             controller.view.alpha = 0
 
-                            window?.rootViewController = controller
-                            window?.makeKeyAndVisible()
+                            UIApplication.shared.firstWindow?.rootViewController = controller
+                            UIApplication.shared.firstWindow?.makeKeyAndVisible()
 
-                            if let scene = window?.windowScene {
+                            if let scene = UIApplication.shared.firstWindow?.windowScene {
                                 SceneManager.shared.register(scene: scene, withRootViewController: controller)
                             }
 
