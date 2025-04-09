@@ -39,14 +39,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
               let cell = (cell as? NCCellProtocol) else { return }
         let existsIcon = utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)
 
-        func downloadAvatar(fileName: String, user: String, dispalyName: String?) {
-            if let image = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
-                cell.fileAvatarImageView?.contentMode = .scaleAspectFill
-                cell.fileAvatarImageView?.image = image
-            } else {
-                NCNetworking.shared.downloadAvatar(user: user, dispalyName: dispalyName, fileName: fileName, cell: cell, view: collectionView)
-            }
-        }
         /// CONTENT MODE
         cell.filePreviewImageView?.layer.borderWidth = 0
         if existsIcon {
@@ -112,7 +104,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 if !metadata.iconUrl.isEmpty {
                     if let ownerId = getAvatarFromIconUrl(metadata: metadata) {
                         let fileName = metadata.userBaseUrl + "-" + ownerId + ".png"
-                        downloadAvatar(fileName: fileName, user: ownerId, dispalyName: nil)
+						cell.fileAvatarImageView?.image = utility.userImage
                     }
                 }
             }
@@ -122,7 +114,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
            metadata.ownerId != appDelegate.userId,
            appDelegate.account == metadata.account {
             let fileName = metadata.userBaseUrl + "-" + metadata.ownerId + ".png"
-            downloadAvatar(fileName: fileName, user: metadata.ownerId, dispalyName: metadata.ownerDisplayName)
+			cell.fileAvatarImageView?.image = utility.userImage
         }
     }
 

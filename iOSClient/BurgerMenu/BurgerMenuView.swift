@@ -48,7 +48,7 @@ struct BurgerMenuView: View {
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: 10, height: 16)
-                                Text(NSLocalizedString("_previous_", tableName: nil, bundle: Bundle.main, value: "Previous", comment: ""))
+                                Text(NSLocalizedString("_back_", tableName: nil, bundle: Bundle.main, value: "Back", comment: ""))
                                     .font(_Constants.font)
                             }
                             .foregroundStyle(Color(.BurgerMenu.buttonForeground))

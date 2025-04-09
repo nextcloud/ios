@@ -1113,7 +1113,6 @@
 "_login_wrong_QR_format_" = "QR code format is incorrect";
 
 //MARK: Burger menu
-"_previous_" = "Previous";
 "_storage_used_" = "Storage used";
 "_used_of_space_" = "%@ of %@ used";
 
