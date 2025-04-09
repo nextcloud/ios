@@ -92,7 +92,7 @@ extension NCShare {
         self.presentMenu(with: actions)
     }
 
-    func toggleUserPermissionMenu(isDirectory: Bool, tableShare: tableShare) {
+    func toggleUserPermissionMenu(isDirectory: Bool, share: tableShare) {
         var actions = [NCMenuAction]()
         let permissions = NCPermissions()
 
@@ -100,30 +100,42 @@ extension NCShare {
             [NCMenuAction(
                 title: NSLocalizedString("_share_read_only_", comment: ""),
                 icon: utility.loadImage(named: "eye", colors: [NCBrandColor.shared.iconImageColor]),
-                selected: tableShare.permissions == (permissions.permissionReadShare + permissions.permissionShareShare) || tableShare.permissions == permissions.permissionReadShare,
+                selected: share.permissions == (permissions.permissionReadShare + permissions.permissionShareShare) || share.permissions == permissions.permissionReadShare,
                 on: false,
                 action: { _ in
-                    let canShare = permissions.isPermissionToCanShare(tableShare.permissions)
+                    let canShare = permissions.isPermissionToCanShare(share.permissions)
                     let permissions = permissions.getPermission(canEdit: false, canCreate: false, canChange: false, canDelete: false, canShare: canShare, isDirectory: isDirectory)
-                    self.updateSharePermissions(share: tableShare, permissions: permissions)
+                    self.updateSharePermissions(share: share, permissions: permissions)
                 }
             ),
             NCMenuAction(
                 title: isDirectory ? NSLocalizedString("_share_allow_upload_", comment: "") : NSLocalizedString("_share_editing_", comment: ""),
                 icon: utility.loadImage(named: "pencil", colors: [NCBrandColor.shared.iconImageColor]),
-                selected: hasUploadPermission(tableShare: tableShare),
+                selected: hasUploadPermission(tableShare: share),
                 on: false,
                 action: { _ in
-                    let canShare = permissions.isPermissionToCanShare(tableShare.permissions)
+                    let canShare = permissions.isPermissionToCanShare(share.permissions)
                     let permissions = permissions.getPermission(canEdit: true, canCreate: true, canChange: true, canDelete: true, canShare: canShare, isDirectory: isDirectory)
-                    self.updateSharePermissions(share: tableShare, permissions: permissions)
+                    self.updateSharePermissions(share: share, permissions: permissions)
                 }
             ),
             NCMenuAction(
                 title: NSLocalizedString("_custom_permissions_", comment: ""),
                 icon: utility.loadImage(named: "ellipsis", colors: [NCBrandColor.shared.iconImageColor]),
                 action: { _ in
+                    guard
+                        let advancePermission = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "NCShareAdvancePermission") as? NCShareAdvancePermission,
+                        let navigationController = self.navigationController, !share.isInvalidated else { return }
+                    advancePermission.networking = self.networking
+                    advancePermission.share = tableShare(value: share)
+                    advancePermission.oldTableShare = tableShare(value: share)
+                    advancePermission.metadata = self.metadata
 
+                    if let downloadLimit = try? self.database.getDownloadLimit(byAccount: self.metadata.account, shareToken: share.token) {
+                        advancePermission.downloadLimit = .limited(limit: downloadLimit.limit, count: downloadLimit.count)
+                    }
+
+                    navigationController.pushViewController(advancePermission, animated: true)
                 }
             )]
         )

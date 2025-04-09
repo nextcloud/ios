@@ -64,6 +64,6 @@ extension NCShare: NCShareLinkCellDelegate, NCShareUserCellDelegate {
         guard let tableShare,
               let metadata,
               tableShare.shareType != NCPermissions().permissionDefaultFileRemoteShareNoSupportShareOption else { return }
-        self.toggleUserPermissionMenu(isDirectory: metadata.directory, tableShare: tableShare)
+        self.toggleUserPermissionMenu(isDirectory: metadata.directory, share: tableShare)
     }
 }
