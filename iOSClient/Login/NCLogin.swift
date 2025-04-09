@@ -410,40 +410,13 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         if self.controller == nil {
             self.controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
         }
+
         if let host = URL(string: urlBase)?.host {
             NCNetworking.shared.writeCertificate(host: host)
         }
-        NCAccount().createAccount(urlBase: urlBase, user: user, password: password, controller: controller) { account, error in
-            if error == .success {
-                if let controller = self.controller {
-                    controller.account = account
-                    self.dismiss(animated: true)
-                } else {
-                    if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
-                        controller.account = account
-                        controller.modalPresentationStyle = .fullScreen
-                        controller.view.alpha = 0
 
-                        UIApplication.shared.firstWindow?.rootViewController = controller
-                        UIApplication.shared.firstWindow?.makeKeyAndVisible()
-
-                        if let scene = UIApplication.shared.firstWindow?.windowScene {
-                            SceneManager.shared.register(scene: scene, withRootViewController: controller)
-                        }
-
-                        UIView.animate(withDuration: 0.5) {
-                            controller.view.alpha = 1
-                        }
-                    }
-                }
-            } else {
-                let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-                self.present(alertController, animated: true)
-            }
-        }
+        NCAccount().createAccountViewController(self, urlBase: urlBase, user: user, password: password, controller: self.controller)
     }
-
 }
 
 extension NCLogin: NCShareAccountsDelegate {
