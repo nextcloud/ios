@@ -217,6 +217,7 @@ enum NCShareDetails: CaseIterable, NCShareCellConfig {
         case .password: return
         case .note: return
         case .label: return
+        case .downloadAndSync: return
         }
     }
 
@@ -241,6 +242,8 @@ enum NCShareDetails: CaseIterable, NCShareCellConfig {
             let cell = UITableViewCell(style: .value1, reuseIdentifier: "shareLabel")
             cell.detailTextLabel?.text = share.label
             return cell
+        case .downloadAndSync:
+            return NCShareToggleCell(isOn: share.downloadAndSync)
         }
     }
 
@@ -252,12 +255,13 @@ enum NCShareDetails: CaseIterable, NCShareCellConfig {
         case .password: return NSLocalizedString("_share_password_protect_", comment: "")
         case .note: return NSLocalizedString("_share_note_recipient_", comment: "")
         case .label: return NSLocalizedString("_share_link_name_", comment: "")
+        case .downloadAndSync: return NSLocalizedString("_share_can_download_", comment: "")
         }
     }
 
-    case label, hideDownload, limitDownload, expirationDate, password, note
+    case label, hideDownload, limitDownload, expirationDate, password, note, downloadAndSync
     static let forLink: [NCShareDetails] = NCShareDetails.allCases
-    static let forUser: [NCShareDetails] = [.expirationDate, .note]
+    static let forUser: [NCShareDetails] = [.expirationDate, .note, .downloadAndSync]
 }
 
 struct NCShareConfig {

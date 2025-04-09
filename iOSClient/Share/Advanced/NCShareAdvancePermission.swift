@@ -186,7 +186,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
         if section == 0 {
             // check reshare permission, if restricted add note
             let maxPermission = metadata.directory ? NCPermissions().permissionMaxFolderShare : NCPermissions().permissionMaxFileShare
-            return shareConfig.resharePermission != maxPermission ? shareConfig.permissions.count + 1 : shareConfig.permissions.count
+            return shareConfig.sharePermission != maxPermission ? shareConfig.permissions.count + 1 : shareConfig.permissions.count
         } else if section == 1 {
             return shareConfig.advanced.count
         } else { return 0 }
@@ -259,6 +259,10 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
                 tableView.reloadData()
             }
             self.present(alertController, animated: true)
+        case .downloadAndSync:
+            share.downloadAndSync.toggle()
+            tableView.reloadData()
+//            NCManageDatabase.shared.setAttibuteDownload(state: value)
         }
     }
 }
