@@ -249,7 +249,7 @@ extension NCLoginProvider: WKNavigationDelegate {
     }
 
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-        NCActivityIndicator.shared.startActivity(style: .medium, blurEffect: false)
+        NCActivityIndicator.shared.startActivity(backgroundView: self.view, style: .medium, blurEffect: false)
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
