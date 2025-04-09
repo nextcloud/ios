@@ -252,9 +252,9 @@ extension NCManageDatabase {
     // There is currently only one share attribute “download” from the scope “permissions”. This attribute is only valid for user and group shares, not for public link shares.
     func setAttibuteDownload(state: Bool) -> String? {
         if state {
-            return nil
+            return "[{\"scope\":\"permissions\",\"key\":\"download\",\"value\":true}]"
         } else {
-            return "[{\"scope\":\"permissions\",\"key\":\"download\",\"enabled\":false}]"
+            return "[{\"scope\":\"permissions\",\"key\":\"download\",\"value\":null}]"
         }
     }
 
@@ -264,10 +264,10 @@ extension NCManageDatabase {
                 if let json = try JSONSerialization.jsonObject(with: data) as? [Dictionary<String, Any>] {
                     for sub in json {
                         let key = sub["key"] as? String
-                        let enabled = sub["enabled"] as? Bool
+                        let enabled = sub["value"] as? Bool
                         let scope = sub["scope"] as? String
-                        if key == "download", scope == "permissions", let enabled = enabled {
-                            return enabled
+                        if key == "download", scope == "permissions" {
+                            return enabled ?? false
                         }
                     }
                 }

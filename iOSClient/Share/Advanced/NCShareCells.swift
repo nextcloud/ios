@@ -82,7 +82,7 @@ enum NCUserPermission: CaseIterable, NCPermission {
 
     func didChange(_ share: Shareable, to newValue: Bool) {
         if self == .download {
-            share.attributes = NCManageDatabase.shared.setAttibuteDownload(state: newValue)
+//            share.attributes = NCManageDatabase.shared.setAttibuteDownload(state: newValue)
         } else {
             share.permissions ^= permissionBitFlag
         }
