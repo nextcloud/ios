@@ -33,6 +33,8 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     @IBOutlet weak var pageControl: UIPageControl!
 
     weak var delegate: NCIntroViewController?
+    /// Controller
+    var controller: NCMainTabBarController?
 
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private let titles = [NSLocalizedString("_intro_1_title_", comment: ""), NSLocalizedString("_intro_2_title_", comment: ""), NSLocalizedString("_intro_3_title_", comment: ""), NSLocalizedString("_intro_4_title_", comment: "")]
@@ -212,12 +214,14 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
 
     @IBAction func login(_ sender: Any) {
         if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin {
+            viewController.controller = self.controller
             self.navigationController?.pushViewController(viewController, animated: true)
         }
     }
 
     @IBAction func signupWithProvider(_ sender: Any) {
         if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginProvider") as? NCLoginProvider {
+            viewController.controller = self.controller
             viewController.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
             self.navigationController?.pushViewController(viewController, animated: true)
         }

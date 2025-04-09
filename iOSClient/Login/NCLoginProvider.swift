@@ -15,6 +15,8 @@ class NCLoginProvider: UIViewController {
     var uiColor: UIColor = .white
     var pollTimer: DispatchSourceTimer?
     weak var delegate: NCLoginProviderDelegate?
+    var controller: NCMainTabBarController?
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -197,13 +199,14 @@ extension NCLoginProvider: WKNavigationDelegate {
                 let server: String = server.replacingOccurrences(of: "/server:", with: "")
                 let username: String = user.replacingOccurrences(of: "user:", with: "").replacingOccurrences(of: "+", with: " ")
                 let password: String = password.replacingOccurrences(of: "password:", with: "")
-                let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+
+                if self.controller == nil {
+                    self.controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+                }
 
                 NCAccount().createAccount(urlBase: server, user: username, password: password, controller: controller) { account, error in
-
                     if error == .success {
-                        let window = UIApplication.shared.firstWindow
-                        if let controller = window?.rootViewController as? NCMainTabBarController {
+                        if let controller = self.controller {
                             controller.account = account
                             controller.dismiss(animated: true, completion: nil)
                         } else {
@@ -212,10 +215,10 @@ extension NCLoginProvider: WKNavigationDelegate {
                                 controller.modalPresentationStyle = .fullScreen
                                 controller.view.alpha = 0
 
-                                window?.rootViewController = controller
-                                window?.makeKeyAndVisible()
+                                UIApplication.shared.firstWindow?.rootViewController = controller
+                                UIApplication.shared.firstWindow?.makeKeyAndVisible()
 
-                                if let scene = window?.windowScene {
+                                if let scene = UIApplication.shared.firstWindow?.windowScene {
                                     SceneManager.shared.register(scene: scene, withRootViewController: controller)
                                 }
 

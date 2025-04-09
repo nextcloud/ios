@@ -29,6 +29,9 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     private var shareAccounts: [NKShareAccounts.DataAccounts]?
 
+    /// Controller
+    var controller: NCMainTabBarController?
+
     /// The URL that will show up on the URL field when this screen appears
     var urlBase = ""
 
@@ -404,14 +407,15 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     }
 
     private func createAccount(urlBase: String, user: String, password: String) {
-        let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+        if self.controller == nil {
+            self.controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+        }
         if let host = URL(string: urlBase)?.host {
             NCNetworking.shared.writeCertificate(host: host)
         }
         NCAccount().createAccount(urlBase: urlBase, user: user, password: password, controller: controller) { account, error in
             if error == .success {
-                let window = UIApplication.shared.firstWindow
-                if let controller = window?.rootViewController as? NCMainTabBarController {
+                if let controller = self.controller {
                     controller.account = account
                     self.dismiss(animated: true)
                 } else {
@@ -420,10 +424,10 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                         controller.modalPresentationStyle = .fullScreen
                         controller.view.alpha = 0
 
-                        window?.rootViewController = controller
-                        window?.makeKeyAndVisible()
+                        UIApplication.shared.firstWindow?.rootViewController = controller
+                        UIApplication.shared.firstWindow?.makeKeyAndVisible()
 
-                        if let scene = window?.windowScene {
+                        if let scene = UIApplication.shared.firstWindow?.windowScene {
                             SceneManager.shared.register(scene: scene, withRootViewController: controller)
                         }
 
