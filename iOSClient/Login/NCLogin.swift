@@ -47,7 +47,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         self.overrideUserInterfaceStyle = .dark
 		
 		// Login Button
-		loginButton.setTitle(NSLocalizedString("_login_", comment: ""), for: .normal)
+		loginButton.setTitle(NSLocalizedString("_log_in_", comment: ""), for: .normal)
         
         // qrcode
         qrCode.setTitle(NSLocalizedString("_login_with_qrcode_", tableName: nil, bundle: Bundle.main, value:  "Scan QR code", comment: ""), for: .normal)
