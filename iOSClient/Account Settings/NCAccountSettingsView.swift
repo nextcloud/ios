@@ -277,7 +277,9 @@ struct NCAccountSettingsView: View {
             }
         }
         .onDisappear {
-            model.delegate?.accountSettingsDidDismiss(tableAccount: model.tblAccount, controller: model.controller)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                model.delegate?.accountSettingsDidDismiss(tableAccount: model.tblAccount, controller: model.controller)
+            }
         }
     }
 }
