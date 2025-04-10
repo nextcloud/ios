@@ -64,7 +64,6 @@ extension tableShare: Shareable {
             attributes = NCManageDatabase.shared.setAttibuteDownload(state: newValue)
         }
     }    
-
 }
 
 // MARK: - NKShare Extension

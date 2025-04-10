@@ -208,7 +208,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         guard let cellConfig = shareConfig.config(for: indexPath) else { return }
-        guard let cellConfig = cellConfig as? NCShareDetails else {
+        guard let cellConfig = cellConfig as? NCAdvancedPermission else {
             cellConfig.didSelect(for: share)
             tableView.reloadData()
             return

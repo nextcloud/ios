@@ -50,19 +50,12 @@ protocol NCPermission: NCToggleCellConfig {
     static var forFile: [Self] { get }
     static func forDirectoryE2EE(account: String) -> [NCPermission]
     func hasPermission(for parentPermission: Int) -> Bool
-    func hasDownloadPermission() -> Bool
     func hasReadPermission() -> Bool
 }
 
 enum NCUserPermission: CaseIterable, NCPermission {
     func hasPermission(for parentPermission: Int) -> Bool {
-        Logger().info("hasResharePermission \(parentPermission)")
-        if self == .download { return true }
         return ((permissionBitFlag & parentPermission) != 0)
-    }
-
-    func hasDownloadPermission() -> Bool {
-        return self == .download
     }
 
     func hasReadPermission() -> Bool {
@@ -76,24 +69,15 @@ enum NCUserPermission: CaseIterable, NCPermission {
         case .edit: return NCPermissions().permissionUpdateShare
         case .create: return NCPermissions().permissionCreateShare
         case .delete: return NCPermissions().permissionDeleteShare
-        case .download: return NCPermissions().permissionDownloadShare
         }
     }
 
     func didChange(_ share: Shareable, to newValue: Bool) {
-        if self == .download {
-//            share.attributes = NCManageDatabase.shared.setAttibuteDownload(state: newValue)
-        } else {
-            share.permissions ^= permissionBitFlag
-        }
+        share.permissions ^= permissionBitFlag
     }
 
     func isOn(for share: Shareable) -> Bool {
-        if self == .download {
-            return NCManageDatabase.shared.isAttributeDownloadEnabled(attributes: share.attributes)
-        } else {
-            return (share.permissions & permissionBitFlag) != 0
-        }
+        return (share.permissions & permissionBitFlag) != 0
     }
 
     static func forDirectoryE2EE(account: String) -> [NCPermission] {
@@ -103,7 +87,7 @@ enum NCUserPermission: CaseIterable, NCPermission {
         return []
     }
 
-    case read, reshare, edit, create, delete, download
+    case read, reshare, edit, create, delete
     static let forDirectory: [NCUserPermission] = NCUserPermission.allCases
     static let forFile: [NCUserPermission] = [.read, .reshare, .edit]
 
@@ -114,7 +98,6 @@ enum NCUserPermission: CaseIterable, NCPermission {
         case .edit: return NSLocalizedString("_share_can_change_", comment: "")
         case .create: return NSLocalizedString("_share_can_create_", comment: "")
         case .delete: return NSLocalizedString("_share_can_delete_", comment: "")
-        case .download: return NSLocalizedString("_share_can_download_", comment: "")
         }
     }
 }
@@ -134,10 +117,6 @@ enum NCLinkPermission: NCPermission {
 
     func hasPermission(for parentPermission: Int) -> Bool {
         permissionValue & parentPermission == permissionValue
-    }
-
-    func hasDownloadPermission() -> Bool {
-        return false
     }
 
     var permissionValue: Int {
@@ -208,7 +187,7 @@ enum NCLinkPermission: NCPermission {
 ///
 /// Individual aspects of share.
 ///
-enum NCShareDetails: CaseIterable, NCShareCellConfig {
+enum NCAdvancedPermission: CaseIterable, NCShareCellConfig {
     func didSelect(for share: Shareable) {
         switch self {
         case .hideDownload: share.hideDownload.toggle()
@@ -260,13 +239,13 @@ enum NCShareDetails: CaseIterable, NCShareCellConfig {
     }
 
     case label, hideDownload, limitDownload, expirationDate, password, note, downloadAndSync
-    static let forLink: [NCShareDetails] = NCShareDetails.allCases
-    static let forUser: [NCShareDetails] = [.expirationDate, .note, .downloadAndSync]
+    static let forLink: [NCAdvancedPermission] = [.expirationDate, .hideDownload, .label, .limitDownload, .note, .password]
+    static let forUser: [NCAdvancedPermission] = [.expirationDate, .note, .downloadAndSync]
 }
 
 struct NCShareConfig {
     let permissions: [NCPermission]
-    let advanced: [NCShareDetails]
+    let advanced: [NCAdvancedPermission]
     let shareable: Shareable
     let sharePermission: Int
 
@@ -283,12 +262,12 @@ struct NCShareConfig {
                 .capabilityFileSharingDownloadLimit
 
             if parentMetadata.isDirectory || hasDownloadLimitCapability == false {
-                self.advanced = NCShareDetails.forLink.filter { $0 != .limitDownload }
+                self.advanced = NCAdvancedPermission.forLink.filter { $0 != .limitDownload }
             } else {
-                self.advanced = NCShareDetails.forLink
+                self.advanced = NCAdvancedPermission.forLink
             }
         } else {
-            self.advanced = NCShareDetails.forUser
+            self.advanced = NCAdvancedPermission.forUser
         }
     }
 
@@ -298,9 +277,7 @@ struct NCShareConfig {
         cell?.textLabel?.text = cellConfig?.title
         Logger().info("\(cellConfig?.title ?? "")")
 
-        if let cellConfig = cellConfig as? NCPermission,
-           !cellConfig.hasPermission(for: sharePermission),
-           !cellConfig.hasDownloadPermission() {
+        if let cellConfig = cellConfig as? NCPermission, !cellConfig.hasPermission(for: sharePermission) {
             cell?.isUserInteractionEnabled = false
             cell?.textLabel?.isEnabled = false
         }
