@@ -193,7 +193,8 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
         // Instantiate NCViewerQuickLook with the log file URL, editing disabled, and no metadata
         let viewerQuickLook = NCViewerQuickLook(with: NSURL(fileURLWithPath: NextcloudKit.shared.nkCommonInstance.filenamePathLog) as URL, isEditingEnabled: false, metadata: nil)
         // Present the NCViewerQuickLook view controller
-        controller?.present(viewerQuickLook, animated: true, completion: nil)
+		let topController = controller?.presentedViewController ?? controller
+		topController?.present(viewerQuickLook, animated: true, completion: nil)
     }
 
     /// Clears the log file.
