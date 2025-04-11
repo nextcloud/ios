@@ -91,31 +91,6 @@ extension String {
         let urlAllowedCharSet = CharacterSet.urlQueryAllowed.subtracting(["+", "?", "&"])
         return addingPercentEncoding(withAllowedCharacters: urlAllowedCharSet)
     }
-
-    func isVersion(lessThan other: String) -> Bool {
-        return compareVersion(to: other) == .orderedAscending
-    }
-
-    func isVersion(equalTo other: String) -> Bool {
-        return compareVersion(to: other) == .orderedSame
-    }
-
-    func isVersion(greaterThan other: String) -> Bool {
-        return compareVersion(to: other) == .orderedDescending
-    }
-
-    private func compareVersion(to other: String) -> ComparisonResult {
-        let versionComponents = self.split(separator: ".").compactMap { Int($0) }
-        let otherComponents = other.split(separator: ".").compactMap { Int($0) }
-
-        for i in 0..<max(versionComponents.count, otherComponents.count) {
-            let v = i < versionComponents.count ? versionComponents[i] : 0
-            let o = i < otherComponents.count ? otherComponents[i] : 0
-            if v < o { return .orderedAscending }
-            if v > o { return .orderedDescending }
-        }
-        return .orderedSame
-    }
 }
 
 extension StringProtocol {

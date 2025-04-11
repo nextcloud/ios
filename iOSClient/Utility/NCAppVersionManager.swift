@@ -7,7 +7,6 @@ import Foundation
 enum AppInstallState: String {
     case firstInstall
     case updated
-    case sameVersion
 }
 
 class NCAppVersionManager {
@@ -22,39 +21,37 @@ class NCAppVersionManager {
         return Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0.0"
     }
 
+    var previousVersion: String? {
+        return defaults.string(forKey: previousVersionKey)
+    }
+
     var installState: AppInstallState {
         get {
             if let rawValue = defaults.string(forKey: installStateKey),
                let state = AppInstallState(rawValue: rawValue) {
                 return state
             }
-            return .sameVersion
+            return .firstInstall
         }
         set {
             defaults.set(newValue.rawValue, forKey: installStateKey)
         }
     }
 
-    var previousVersion: String? {
-        return defaults.string(forKey: previousVersionKey)
-    }
-
     func checkAndUpdateInstallState() {
-        let savedVersion = defaults.string(forKey: versionKey)
-
-        if savedVersion == nil {
+        if previousVersion == nil {
             installState = .firstInstall
-        } else if savedVersion != currentVersion {
-            defaults.set(savedVersion, forKey: previousVersionKey)
+        } else if isNewerVersion(currentVersion, than: previousVersion!) {
             installState = .updated
+            defaults.set(currentVersion, forKey: previousVersionKey)
         } else {
-            installState = .sameVersion
+            installState = .updated
         }
 
         defaults.set(currentVersion, forKey: versionKey)
     }
 
-    func setCurrentVersion() {
-        defaults.set(currentVersion, forKey: versionKey)
+    private func isNewerVersion(_ version: String, than previousVersion: String) -> Bool {
+        return version.compare(previousVersion, options: .numeric) == .orderedDescending
     }
 }
