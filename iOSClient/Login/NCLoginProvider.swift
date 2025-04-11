@@ -15,6 +15,8 @@ class NCLoginProvider: UIViewController {
     var uiColor: UIColor = .white
     var pollTimer: DispatchSourceTimer?
     weak var delegate: NCLoginProviderDelegate?
+    var controller: NCMainTabBarController?
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -111,42 +113,19 @@ class NCLoginProvider: UIViewController {
         }
     }
 
-    func handleGrant(urlBase: String, loginName: String, appPassword: String, controller: NCMainTabBarController?) async {
+    func handleGrant(urlBase: String, loginName: String, appPassword: String) async {
         await withCheckedContinuation { continuation in
-            NCAccount().createAccount(urlBase: urlBase, user: loginName, password: appPassword, controller: controller) { account, error in
-                if error == .success {
-                    let window = UIApplication.shared.firstWindow
+            if self.controller == nil {
+                self.controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+            }
 
-                    if let controller = window?.rootViewController as? NCMainTabBarController {
-                        controller.account = account
-                        controller.dismiss(animated: true, completion: nil)
-                    } else {
-                        if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
-                            controller.account = account
-                            controller.modalPresentationStyle = .fullScreen
-                            controller.view.alpha = 0
-
-                            window?.rootViewController = controller
-                            window?.makeKeyAndVisible()
-
-                            if let scene = window?.windowScene {
-                                SceneManager.shared.register(scene: scene, withRootViewController: controller)
-                            }
-
-                            UIView.animate(withDuration: 0.5) {
-                                controller.view.alpha = 1
-                            }
-                        }
-                    }
-                }
-
+            NCAccount().createAccount(viewController: self, urlBase: urlBase, user: loginName, password: appPassword, controller: controller) {
                 continuation.resume()
             }
         }
     }
 
     func poll(loginFlowV2Token: String, loginFlowV2Endpoint: String, loginFlowV2Login: String) {
-        let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
         let loginOptions = NKRequestOptions(customUserAgent: userAgent)
         var grantValues: (urlBase: String, loginName: String, appPassword: String)?
 
@@ -160,7 +139,7 @@ class NCLoginProvider: UIViewController {
                 return
             }
 
-            await handleGrant(urlBase: grantValues.urlBase, loginName: grantValues.loginName, appPassword: grantValues.appPassword, controller: controller)
+            await handleGrant(urlBase: grantValues.urlBase, loginName: grantValues.loginName, appPassword: grantValues.appPassword)
         }
     }
 }
@@ -197,39 +176,12 @@ extension NCLoginProvider: WKNavigationDelegate {
                 let server: String = server.replacingOccurrences(of: "/server:", with: "")
                 let username: String = user.replacingOccurrences(of: "user:", with: "").replacingOccurrences(of: "+", with: " ")
                 let password: String = password.replacingOccurrences(of: "password:", with: "")
-                let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
 
-                NCAccount().createAccount(urlBase: server, user: username, password: password, controller: controller) { account, error in
-
-                    if error == .success {
-                        let window = UIApplication.shared.firstWindow
-                        if let controller = window?.rootViewController as? NCMainTabBarController {
-                            controller.account = account
-                            controller.dismiss(animated: true, completion: nil)
-                        } else {
-                            if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
-                                controller.account = account
-                                controller.modalPresentationStyle = .fullScreen
-                                controller.view.alpha = 0
-
-                                window?.rootViewController = controller
-                                window?.makeKeyAndVisible()
-
-                                if let scene = window?.windowScene {
-                                    SceneManager.shared.register(scene: scene, withRootViewController: controller)
-                                }
-
-                                UIView.animate(withDuration: 0.5) {
-                                    controller.view.alpha = 1
-                                }
-                            }
-                        }
-                    } else {
-                        let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
-                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-                        self.present(alertController, animated: true)
-                    }
+                if self.controller == nil {
+                    self.controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
                 }
+
+                NCAccount().createAccount(viewController: self, urlBase: server, user: username, password: password, controller: controller)
             }
         }
     }
@@ -249,7 +201,7 @@ extension NCLoginProvider: WKNavigationDelegate {
     }
 
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-        NCActivityIndicator.shared.startActivity(style: .medium, blurEffect: false)
+        NCActivityIndicator.shared.startActivity(backgroundView: self.view, style: .medium, blurEffect: false)
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {

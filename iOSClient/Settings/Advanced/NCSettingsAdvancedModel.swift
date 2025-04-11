@@ -132,7 +132,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
 
     /// Clears cache
     func clearCache() {
-        NCActivityIndicator.shared.startActivity(style: .large, blurEffect: true)
+        NCActivityIndicator.shared.startActivity(backgroundView: self.controller?.view, style: .large, blurEffect: true)
         // Cancel all networking tasks
         NCNetworking.shared.cancelAllTask()
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {

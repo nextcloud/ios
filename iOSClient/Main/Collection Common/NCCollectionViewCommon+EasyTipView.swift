@@ -59,6 +59,7 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
               self.view.window != nil,
               self.serverUrl == utilityFileSystem.getHomeServer(session: session),
               !database.tipExists(global.tipAutoUpload) else { return }
+
         var preferences = EasyTipView.Preferences()
 
         preferences.drawing.foregroundColor = .white
@@ -76,7 +77,7 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
 
         if tipViewAutoUpload == nil {
             tipViewAutoUpload = EasyTipView(text: NSLocalizedString("_tip_autoupload_", comment: ""), preferences: preferences, delegate: self, tip: global.tipAutoUpload)
-            if  let item = controller?.tabBar.items?.last,
+            if  let item = controller?.tabBar.items?.first(where: { $0.tag == 104 }),
                 let view = controller?.tabBar.viewForItem(item) {
                 tipViewAutoUpload?.show(forView: view)
             }

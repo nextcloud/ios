@@ -61,7 +61,7 @@ class NCMainTabBar: UITabBar {
     }
 
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-        let button = self.viewWithTag(99)
+        let button = self.viewWithTag(105)
         if self.bounds.contains(point) || (button != nil && button!.frame.contains(point)) {
             return true
         } else {
@@ -123,6 +123,7 @@ class NCMainTabBar: UITabBar {
             item.title = NSLocalizedString("_home_", comment: "")
             item.image = UIImage(systemName: "folder.fill")
             item.selectedImage = item.image
+            item.tag = 100
         }
 
         // Favorite
@@ -130,6 +131,7 @@ class NCMainTabBar: UITabBar {
             item.title = NSLocalizedString("_favorites_", comment: "")
             item.image = UIImage(systemName: "star.fill")
             item.selectedImage = item.image
+            item.tag = 101
         }
 
         // +
@@ -138,6 +140,7 @@ class NCMainTabBar: UITabBar {
             item.title = ""
             item.image = nil
             item.isEnabled = false
+            item.tag = 102
         }
 
         // Media
@@ -145,6 +148,7 @@ class NCMainTabBar: UITabBar {
             item.title = NSLocalizedString("_media_", comment: "")
             item.image = UIImage(systemName: "photo")
             item.selectedImage = item.image
+            item.tag = 103
         }
 
         // More
@@ -153,11 +157,12 @@ class NCMainTabBar: UITabBar {
             item.image = UIImage(systemName: "line.3.horizontal")
             item.image = UIImage(systemName: "ellipsis")
             item.selectedImage = item.image
+            item.tag = 104
         }
 
         // Center button
 
-        if let centerButton = self.viewWithTag(99) {
+        if let centerButton = self.viewWithTag(105) {
             centerButton.removeFromSuperview()
         }
 
@@ -168,7 +173,7 @@ class NCMainTabBar: UITabBar {
         centerButton.setImage(imagePlus, for: .normal)
         centerButton.backgroundColor = color
         centerButton.tintColor = UIColor.white
-        centerButton.tag = 99
+        centerButton.tag = 105
         centerButton.accessibilityLabel = NSLocalizedString("_accessibility_add_upload_", comment: "")
         centerButton.layer.cornerRadius = centerButton.frame.size.width / 2.0
         centerButton.layer.masksToBounds = false
@@ -232,7 +237,7 @@ class NCMainTabBar: UITabBar {
     }
 
     func getCenterButton() -> UIView? {
-        if let centerButton = self.viewWithTag(99) {
+        if let centerButton = self.viewWithTag(105) {
             return centerButton
         } else {
             return nil
