@@ -395,8 +395,8 @@
 "_share_can_create_"            = "Create";
 "_share_can_change_"            = "Edit";
 "_share_can_delete_"            = "Delete";
-"_share_can_download_"          = "Download and Sync";
-"_share_unshare_"               = "Unshare";
+"_share_can_download_"          = "Allow download and sync";
+"_share_unshare_"               = "Delete share";
 "_share_internal_link_"         = "Internal link";
 "_share_internal_link_des_"     = "Only works for users with access to this file/folder.";
 "_share_reshare_disabled_"      = "You are not allowed to reshare this file/folder.";

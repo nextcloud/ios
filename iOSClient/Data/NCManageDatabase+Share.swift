@@ -264,7 +264,7 @@ extension NCManageDatabase {
                 if let json = try JSONSerialization.jsonObject(with: data) as? [Dictionary<String, Any>] {
                     for sub in json {
                         let key = sub["key"] as? String
-                        let enabled = sub["value"] as? Bool
+                        let enabled = (sub["value"] as? Bool) /* >= NC 30 */ ?? sub["enabled"] as? Bool // /* < NC 29 */
                         let scope = sub["scope"] as? String
                         if key == "download", scope == "permissions" {
                             return enabled ?? false
