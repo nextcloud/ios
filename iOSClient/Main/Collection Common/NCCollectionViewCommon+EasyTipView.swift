@@ -59,6 +59,23 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
               self.view.window != nil,
               self.serverUrl == utilityFileSystem.getHomeServer(session: session),
               !database.tipExists(global.tipAutoUpload) else { return }
+
+        let installState = NCAppVersionManager.shared.installState
+        switch installState {
+        case .firstInstall:
+            return
+        case .updated:
+            if let fromVersion = NCAppVersionManager.shared.previousVersion {
+                if fromVersion.isVersion(lessThan: "6.5.0") || fromVersion.isVersion(equalTo: "6.5.0") {
+                    // print Tip
+                } else {
+                    return
+                }
+            }
+        case .sameVersion:
+            return
+        }
+
         var preferences = EasyTipView.Preferences()
 
         preferences.drawing.foregroundColor = .white

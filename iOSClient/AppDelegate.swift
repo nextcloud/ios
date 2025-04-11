@@ -56,6 +56,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let utility = NCUtility()
         let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
 
+        NCAppVersionManager.shared.checkAndUpdateInstallState()
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0)
 
         UserDefaults.standard.register(defaults: ["UserAgent": userAgent])
