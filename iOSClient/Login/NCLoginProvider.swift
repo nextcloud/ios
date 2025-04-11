@@ -113,7 +113,7 @@ class NCLoginProvider: UIViewController {
         }
     }
 
-    func handleGrant(urlBase: String, loginName: String, appPassword: String, controller: NCMainTabBarController?) async {
+    func handleGrant(urlBase: String, loginName: String, appPassword: String) async {
         await withCheckedContinuation { continuation in
             if self.controller == nil {
                 self.controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
@@ -126,7 +126,6 @@ class NCLoginProvider: UIViewController {
     }
 
     func poll(loginFlowV2Token: String, loginFlowV2Endpoint: String, loginFlowV2Login: String) {
-        let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
         let loginOptions = NKRequestOptions(customUserAgent: userAgent)
         var grantValues: (urlBase: String, loginName: String, appPassword: String)?
 
@@ -140,7 +139,7 @@ class NCLoginProvider: UIViewController {
                 return
             }
 
-            await handleGrant(urlBase: grantValues.urlBase, loginName: grantValues.loginName, appPassword: grantValues.appPassword, controller: controller)
+            await handleGrant(urlBase: grantValues.urlBase, loginName: grantValues.loginName, appPassword: grantValues.appPassword)
         }
     }
 }

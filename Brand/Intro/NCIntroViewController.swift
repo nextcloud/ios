@@ -105,34 +105,6 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
 
         view.backgroundColor = NCBrandColor.shared.customer
 
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
-            if let userInfo = notification.userInfo,
-               let account = userInfo["account"] as? String {
-                let window = UIApplication.shared.firstWindow
-                if let controller = window?.rootViewController as? NCMainTabBarController {
-                    controller.account = account
-                    self.dismiss(animated: true)
-                } else {
-                    if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
-                        controller.account = account
-                        controller.modalPresentationStyle = .fullScreen
-                        controller.view.alpha = 0
-
-                        window?.rootViewController = controller
-                        window?.makeKeyAndVisible()
-
-                        if let scene = window?.windowScene {
-                            SceneManager.shared.register(scene: scene, withRootViewController: controller)
-                        }
-
-                        UIView.animate(withDuration: 0.5) {
-                            controller.view.alpha = 1
-                        }
-                    }
-                }
-            }
-        }
-
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
             self.timer?.invalidate()
             self.timer = nil
