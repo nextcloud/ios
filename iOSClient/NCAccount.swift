@@ -29,12 +29,12 @@ class NCAccount: NSObject {
     let database = NCManageDatabase.shared
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
-    func createAccountViewController(_ viewController: UIViewController,
-                                     urlBase: String,
-                                     user: String,
-                                     password: String,
-                                     controller: NCMainTabBarController?,
-                                     completion: @escaping () -> Void = {}) {
+    func createAccount(viewController: UIViewController,
+                       urlBase: String,
+                       user: String,
+                       password: String,
+                       controller: NCMainTabBarController?,
+                       completion: @escaping () -> Void = {}) {
         var urlBase = urlBase
         if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
         let account: String = "\(user) \(urlBase)"

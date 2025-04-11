@@ -119,7 +119,7 @@ class NCLoginProvider: UIViewController {
                 self.controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
             }
 
-            NCAccount().createAccountViewController(self, urlBase: urlBase, user: loginName, password: appPassword, controller: controller) {
+            NCAccount().createAccount(viewController: self, urlBase: urlBase, user: loginName, password: appPassword, controller: controller) {
                 continuation.resume()
             }
         }
@@ -182,7 +182,7 @@ extension NCLoginProvider: WKNavigationDelegate {
                     self.controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
                 }
 
-                NCAccount().createAccountViewController(self, urlBase: server, user: username, password: password, controller: controller)
+                NCAccount().createAccount(viewController: self, urlBase: server, user: username, password: password, controller: controller)
             }
         }
     }

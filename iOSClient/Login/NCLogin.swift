@@ -415,7 +415,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             NCNetworking.shared.writeCertificate(host: host)
         }
 
-        NCAccount().createAccountViewController(self, urlBase: urlBase, user: user, password: password, controller: self.controller)
+        NCAccount().createAccount(viewController: self, urlBase: urlBase, user: user, password: password, controller: self.controller)
     }
 }
 
