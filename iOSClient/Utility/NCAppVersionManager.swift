@@ -6,7 +6,6 @@ import Foundation
 
 enum AppInstallState: String {
     case firstInstall
-    case updatedNewerVersion
     case updated
 }
 
@@ -14,6 +13,7 @@ class NCAppVersionManager {
     static let shared = NCAppVersionManager()
 
     private let versionKey = "lastAppVersion"
+    private let installStateKey = "appInstallState"
     private let previousVersionKey = "previousVersion"
     private let defaults = UserDefaults.standard
 
@@ -26,24 +26,26 @@ class NCAppVersionManager {
     }
 
     var installState: AppInstallState {
-        guard let previousVersion else {
+        get {
+            if let rawValue = defaults.string(forKey: installStateKey),
+               let state = AppInstallState(rawValue: rawValue) {
+                return state
+            }
             return .firstInstall
         }
-
-        if previousVersion == currentVersion {
-            return .firstInstall
+        set {
+            defaults.set(newValue.rawValue, forKey: installStateKey)
         }
-
-        if isNewerVersion(currentVersion, than: previousVersion) {
-            return .updatedNewerVersion
-        }
-
-        return .updated
     }
 
     func checkAndUpdateInstallState() {
-        if previousVersion == nil || previousVersion == currentVersion {
+        if previousVersion == nil {
+            installState = .firstInstall
+        } else if isNewerVersion(currentVersion, than: previousVersion!) {
+            installState = .updated
             defaults.set(currentVersion, forKey: previousVersionKey)
+        } else {
+            installState = .updated
         }
 
         defaults.set(currentVersion, forKey: versionKey)

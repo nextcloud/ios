@@ -57,20 +57,8 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
     func showTipAutoUpload() {
         guard !session.account.isEmpty,
               self.view.window != nil,
-              self.serverUrl == utilityFileSystem.getHomeServer(session: session) else { return }
-             // !database.tipExists(global.tipAutoUpload) else { return }
-
-        let installState = NCAppVersionManager.shared.installState
-        switch installState {
-        case .firstInstall:
-            return
-        case .updatedNewerVersion:
-            print(NCAppVersionManager.shared.currentVersion)
-            print(NCAppVersionManager.shared.previousVersion)
-        case .updated:
-            print(NCAppVersionManager.shared.currentVersion)
-            print(NCAppVersionManager.shared.previousVersion)
-        }
+              self.serverUrl == utilityFileSystem.getHomeServer(session: session),
+              !database.tipExists(global.tipAutoUpload) else { return }
 
         var preferences = EasyTipView.Preferences()
 
