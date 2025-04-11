@@ -64,10 +64,12 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
         switch installState {
         case .firstInstall:
             return
+        case .updatedNewerVersion:
+            print(NCAppVersionManager.shared.currentVersion)
+            print(NCAppVersionManager.shared.previousVersion)
         case .updated:
             print(NCAppVersionManager.shared.currentVersion)
             print(NCAppVersionManager.shared.previousVersion)
-            break
         }
 
         var preferences = EasyTipView.Preferences()
