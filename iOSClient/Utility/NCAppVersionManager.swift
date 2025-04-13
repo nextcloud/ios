@@ -4,20 +4,19 @@
 
 import Foundation
 
-enum AppInstallState: String {
+enum AppInstallState {
     case firstInstall
-    case updated
+    case updated(from: String)
 }
 
 class NCAppVersionManager {
     static let shared = NCAppVersionManager()
 
     private let versionKey = "lastAppVersion"
-    private let installStateKey = "appInstallState"
     private let previousVersionKey = "previousVersion"
     private let defaults = UserDefaults.standard
 
-    var currentVersion: String {
+    var version: String {
         return Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0.0"
     }
 
@@ -25,30 +24,27 @@ class NCAppVersionManager {
         return defaults.string(forKey: previousVersionKey)
     }
 
+    var currentVersion: String? {
+        return defaults.string(forKey: versionKey)
+    }
+
     var installState: AppInstallState {
-        get {
-            if let rawValue = defaults.string(forKey: installStateKey),
-               let state = AppInstallState(rawValue: rawValue) {
-                return state
-            }
+        if previousVersion == nil {
             return .firstInstall
-        }
-        set {
-            defaults.set(newValue.rawValue, forKey: installStateKey)
+        } else {
+            return .updated(from: previousVersion ?? "0.0.0")
         }
     }
 
     func checkAndUpdateInstallState() {
-        if previousVersion == nil {
-            installState = .firstInstall
-        } else if isNewerVersion(currentVersion, than: previousVersion!) {
-            installState = .updated
-            defaults.set(currentVersion, forKey: previousVersionKey)
-        } else {
-            installState = .updated
+        if previousVersion == nil, (currentVersion == version || currentVersion == nil) {
+            defaults.set(version, forKey: versionKey)
+        } else if currentVersion != version {
+            if let currentVersion {
+                defaults.set(currentVersion, forKey: previousVersionKey)
+            }
+            defaults.set(version, forKey: versionKey)
         }
-
-        defaults.set(currentVersion, forKey: versionKey)
     }
 
     private func isNewerVersion(_ version: String, than previousVersion: String) -> Bool {
