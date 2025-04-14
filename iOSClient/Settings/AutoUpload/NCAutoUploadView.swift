@@ -206,14 +206,15 @@ struct NCAutoUploadView: View {
                         .padding(.horizontal, 20)
                         .padding(.vertical, 10)
                 }
-                .tint(Color(NCBrandColor.shared.switchColor))
-                .onChange(of: model.autoUploadStart) { newValue in
+				.font(.headline)
+				.toggleStyle(.button)
+				.tint(Color(NCBrandColor.shared.customerText))
+				.background(Color(.Button.Primary.Background.selected))
+				.clipShape(.capsule)
+				.onChange(of: model.autoUploadStart) { newValue in
                     albumModel.populateSelectedAlbums()
                     model.handleAutoUploadChange(newValue: newValue, assetCollections: albumModel.selectedAlbums)
                 }
-                .font(.headline)
-                .toggleStyle(.button)
-                .buttonStyle(.bordered)
             }, footer: {
                 Text(NSLocalizedString("_autoupload_notice_", comment: ""))
                     .padding(.top, 20)
