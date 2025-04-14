@@ -121,7 +121,7 @@ class NCMedia: UIViewController {
         collectionView.collectionViewLayout = layout
         layoutType = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "")?.layout ?? global.mediaLayoutRatio
 
-        tabBarSelect = NCMediaSelectTabBar(tabBarController: self.tabBarController, delegate: self)
+        tabBarSelect = NCMediaSelectTabBar(controller: self.tabBarController, delegate: self)
 
         titleDate.text = ""
 
@@ -225,9 +225,7 @@ class NCMedia: UIViewController {
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
 
-        if let frame = tabBarController?.tabBar.frame {
-            tabBarSelect.hostingController.view.frame = frame
-        }
+        tabBarSelect?.setFrame()
         gradient.frame = gradientView.bounds
     }
 

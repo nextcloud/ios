@@ -56,7 +56,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        tabBarSelect = NCTrashSelectTabBar(tabBarController: tabBarController, delegate: self)
+        tabBarSelect = NCTrashSelectTabBar(controller: tabBarController, delegate: self)
 
         view.backgroundColor = .systemBackground
         self.navigationController?.navigationBar.prefersLargeTitles = true
@@ -113,9 +113,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
 
-        if let frame = tabBarController?.tabBar.frame {
-            tabBarSelect.hostingController?.view.frame = frame
-        }
+        tabBarSelect?.setFrame()
     }
 
     // MARK: - Layout
