@@ -252,6 +252,7 @@ struct NCShareConfig {
         let type: NCPermission.Type = share.shareType == NCShareCommon().SHARE_TYPE_LINK ? NCLinkPermission.self : NCUserPermission.self
         self.permissions = parentMetadata.directory ? (parentMetadata.e2eEncrypted ? type.forDirectoryE2EE(account: parentMetadata.account) : type.forDirectory) : type.forFile
 
+        // There are many share types, but we only classify them as a link share (link type) and a user share (every other share type).
         if share.shareType == NCShareCommon().SHARE_TYPE_LINK {
             let hasDownloadLimitCapability = NCCapabilities
                 .shared
@@ -280,7 +281,7 @@ struct NCShareConfig {
         }
 
         // Read permission is always enabled and we show it as a non-interactable permissoin for brevity.
-        if let cellConfig = cellConfig as? NCPermission, cellConfig.hasReadPermission() {
+        if let cellConfig = cellConfig as? NCUserPermission, cellConfig.hasReadPermission() {
             cell?.isUserInteractionEnabled = false
             cell?.textLabel?.isEnabled = false
         }
