@@ -370,9 +370,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
 
-        if let frame = tabBarController?.tabBar.frame {
-            tabBarSelect?.hostingController?.view.frame = frame
-        }
+        tabBarSelect?.setFrame()
     }
 
     // MARK: - NotificationCenter

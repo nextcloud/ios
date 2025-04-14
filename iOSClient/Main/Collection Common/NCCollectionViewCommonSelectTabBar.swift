@@ -60,12 +60,13 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
 
         guard let controller, let hostingController else { return }
 
-        controller.view.addSubview(hostingController.view)
+        setFrame()
 
-        hostingController.view.frame = controller.tabBar.frame
         hostingController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         hostingController.view.backgroundColor = .clear
         hostingController.view.isHidden = true
+
+        controller.view.addSubview(hostingController.view)
     }
 
     func show() {
@@ -91,6 +92,20 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
     func isHidden() -> Bool {
         guard let hostingController else { return false }
         return hostingController.view.isHidden
+    }
+
+    func setFrame() {
+        guard let controller,
+              let hostingController
+        else {
+            return
+        }
+        let bottomAreaInsets: CGFloat = controller.tabBar.safeAreaInsets.bottom == 0 ? 34 : 0
+
+        hostingController.view.frame = CGRect(x: controller.tabBar.frame.origin.x,
+                                              y: controller.tabBar.frame.origin.y - bottomAreaInsets,
+                                              width: controller.tabBar.frame.width,
+                                              height: controller.tabBar.frame.height + bottomAreaInsets)
     }
 
     func update(fileSelect: [String], metadatas: [tableMetadata]? = nil, userId: String? = nil) {
