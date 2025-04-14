@@ -46,10 +46,6 @@ class NCMainTabBarController: UITabBarController {
         super.viewDidLoad()
         delegate = self
 
-        if #available(iOS 17.0, *) {
-            traitOverrides.horizontalSizeClass = .compact
-        }
-
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil, queue: .main) { [weak self] notification in
             if let userInfo = notification.userInfo as? NSDictionary,
                let account = userInfo["account"] as? String,
@@ -120,6 +116,22 @@ class NCMainTabBarController: UITabBarController {
             }
         }
         return serverUrl
+    }
+
+    func hide() {
+        if #available(iOS 18.0, *) {
+            setTabBarHidden(true, animated: true)
+        } else {
+            tabBar.isHidden = true
+        }
+    }
+
+    func show() {
+        if #available(iOS 18.0, *) {
+            setTabBarHidden(false, animated: true)
+        } else {
+            tabBar.isHidden = false
+        }
     }
 }
 

@@ -140,19 +140,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 collectionViewCommon.setEditMode(false)
                 collectionViewCommon.collectionView.reloadData()
             }
-
-            self.collectionViewCommon?.navigationItem.rightBarButtonItems = [select]
-
+            collectionViewCommon.navigationItem.rightBarButtonItems = [select]
         } else {
-
             collectionViewCommon.tabBarSelect?.hide()
             self.updateRightBarButtonItems()
-        }
-
-        // fix, if the tabbar was hidden before the update, set it in hidden
-        if self.tabBarController?.tabBar.isHidden ?? true,
-           collectionViewCommon.tabBarSelect?.isHidden() ?? true {
-            self.tabBarController?.tabBar.isHidden = true
         }
     }
 
