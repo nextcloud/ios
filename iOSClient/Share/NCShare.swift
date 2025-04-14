@@ -369,6 +369,7 @@ extension NCShare: UITableViewDataSource {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "cellUser", for: indexPath) as? NCShareUserCell {
                 cell.indexPath = indexPath
                 cell.tableShare = tableShare
+                cell.isDirectory = metadata.directory
                 cell.delegate = self
                 cell.setupCellUI(userId: session.userId)
 

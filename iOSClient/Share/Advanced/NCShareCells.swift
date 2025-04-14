@@ -66,7 +66,7 @@ enum NCUserPermission: CaseIterable, NCPermission {
         switch self {
         case .read: return NCPermissions().permissionReadShare
         case .reshare: return NCPermissions().permissionShareShare
-        case .edit: return NCPermissions().permissionUpdateShare
+        case .edit: return NCPermissions().permissionEditShare
         case .create: return NCPermissions().permissionCreateShare
         case .delete: return NCPermissions().permissionDeleteShare
         }
@@ -122,28 +122,25 @@ enum NCLinkPermission: NCPermission {
     var permissionValue: Int {
         switch self {
         case .allowEdit:
-            return NCPermissions().getPermission(
-                canEdit: true,
+            return NCPermissions().getPermissionValue(
                 canCreate: true,
-                canChange: true,
+                canEdit: true,
                 canDelete: true,
                 canShare: false,
                 isDirectory: false)
         case .viewOnly:
-            return NCPermissions().getPermission(
-                canEdit: false,
+            return NCPermissions().getPermissionValue(
                 canCreate: false,
-                canChange: false,
+                canEdit: false,
                 canDelete: false,
                 // not possible to create "read-only" shares without reshare option
                 // https://github.com/nextcloud/server/blame/f99876997a9119518fe5f7ad3a3a51d33459d4cc/apps/files_sharing/lib/Controller/ShareAPIController.php#L1104-L1107
                 canShare: true,
                 isDirectory: true)
         case .uploadEdit:
-            return NCPermissions().getPermission(
-                canEdit: true,
+            return NCPermissions().getPermissionValue(
                 canCreate: true,
-                canChange: true,
+                canEdit: true,
                 canDelete: true,
                 canShare: false,
                 isDirectory: true)

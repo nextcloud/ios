@@ -103,19 +103,17 @@ extension NCShare {
                 selected: share.permissions == (permissions.permissionReadShare + permissions.permissionShareShare) || share.permissions == permissions.permissionReadShare,
                 on: false,
                 action: { _ in
-                    let canShare = permissions.isPermissionToCanShare(share.permissions)
-                    let permissions = permissions.getPermission(canEdit: false, canCreate: false, canChange: false, canDelete: false, canShare: canShare, isDirectory: isDirectory)
+                    let permissions = permissions.getPermissionValue(canCreate: false, canEdit: false, canDelete: false, canShare: false, isDirectory: isDirectory)
                     self.updateSharePermissions(share: share, permissions: permissions)
                 }
             ),
             NCMenuAction(
-                title: isDirectory ? NSLocalizedString("_share_allow_upload_", comment: "") : NSLocalizedString("_share_editing_", comment: ""),
+                title: NSLocalizedString("_share_editing_", comment: ""),
                 icon: utility.loadImage(named: "pencil", colors: [NCBrandColor.shared.iconImageColor]),
                 selected: hasUploadPermission(tableShare: share),
                 on: false,
                 action: { _ in
-                    let canShare = permissions.isPermissionToCanShare(share.permissions)
-                    let permissions = permissions.getPermission(canEdit: true, canCreate: true, canChange: true, canDelete: true, canShare: canShare, isDirectory: isDirectory)
+                    let permissions = permissions.getPermissionValue(canCreate: true, canEdit: true, canDelete: true, canShare: true, isDirectory: isDirectory)
                     self.updateSharePermissions(share: share, permissions: permissions)
                 }
             ),

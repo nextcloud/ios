@@ -6211,8 +6211,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/scenee/FloatingPanel";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
+				kind = exactVersion;
+				version = 2.8.6;
 			};
 		};
 		F77333862927A72100466E35 /* XCRemoteSwiftPackageReference "OpenSSL" */ = {
