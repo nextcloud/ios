@@ -66,7 +66,8 @@ class NCFilesNavigationController: NCMainNavigationController {
         func createLeftMenu() -> UIMenu? {
             var childrenAccountSubmenu: [UIMenuElement] = []
             let accounts = database.getAllAccountOrderAlias()
-            guard !accounts.isEmpty
+            guard !accounts.isEmpty,
+                  let controller = collectionViewCommon?.controller
             else {
                 return nil
             }
@@ -83,7 +84,7 @@ class NCFilesNavigationController: NCMainNavigationController {
                     name = account.alias
                 }
 
-                let action = UIAction(title: name, image: image, state: account.active ? .on : .off) { _ in
+                let action = UIAction(title: name, image: image, state: account.account == controller.account ? .on : .off) { _ in
                     if !account.active {
                         NCAccount().changeAccount(account.account, userProfile: nil, controller: self.controller) { }
                         self.collectionViewCommon?.setEditMode(false)
@@ -95,7 +96,22 @@ class NCFilesNavigationController: NCMainNavigationController {
             }
 
             let addAccountAction = UIAction(title: NSLocalizedString("_add_account_", comment: ""), image: utility.loadImage(named: "person.crop.circle.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors)) { _ in
-                self.appDelegate.openLogin(selector: self.global.introLogin)
+                if NCBrandOptions.shared.disable_intro {
+                    if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin {
+                        viewController.controller = self.controller
+                        let navigationController = UINavigationController(rootViewController: viewController)
+                        navigationController.modalPresentationStyle = .fullScreen
+                        self.present(navigationController, animated: true)
+                    }
+                } else {
+                    if let navigationController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? UINavigationController {
+                        if let viewController = navigationController.topViewController as? NCIntroViewController {
+                            viewController.controller = nil
+                        }
+                        navigationController.modalPresentationStyle = .fullScreen
+                        self.present(navigationController, animated: true)
+                    }
+                }
             }
 
             let settingsAccountAction = UIAction(title: NSLocalizedString("_account_settings_", comment: ""), image: utility.loadImage(named: "gear", colors: [NCBrandColor.shared.iconImageColor])) { _ in

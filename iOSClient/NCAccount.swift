@@ -29,11 +29,12 @@ class NCAccount: NSObject {
     let database = NCManageDatabase.shared
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
-    func createAccount(urlBase: String,
+    func createAccount(viewController: UIViewController,
+                       urlBase: String,
                        user: String,
                        password: String,
                        controller: NCMainTabBarController?,
-                       completion: @escaping (_ account: String, _ error: NKError) -> Void) {
+                       completion: @escaping () -> Void = {}) {
         var urlBase = urlBase
         if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
         let account: String = "\(user) \(urlBase)"
@@ -60,15 +61,31 @@ class NCAccount: NSObject {
                 self.database.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
                 self.changeAccount(account, userProfile: userProfile, controller: controller) {
                     NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
-                    completion(account, error)
+                }
+                if let controller {
+                    controller.account = account
+                    viewController.dismiss(animated: true)
+                } else if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                    controller.account = account
+                    controller.modalPresentationStyle = .fullScreen
+                    controller.view.alpha = 0
+
+                    UIApplication.shared.firstWindow?.rootViewController = controller
+                    UIApplication.shared.firstWindow?.makeKeyAndVisible()
+
+                    if let scene = UIApplication.shared.firstWindow?.windowScene {
+                        SceneManager.shared.register(scene: scene, withRootViewController: controller)
+                    }
+
+                    UIView.animate(withDuration: 0.5) {
+                        controller.view.alpha = 1
+                    }
                 }
             } else {
                 NextcloudKit.shared.removeSession(account: account)
                 let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
-                    completion(account, error)
-                }))
-                UIApplication.shared.firstWindow?.rootViewController?.present(alertController, animated: true)
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+                viewController.present(alertController, animated: true)
             }
         }
     }
@@ -169,8 +186,7 @@ class NCAccount: NSObject {
 
     func checkRemoteUser(account: String, controller: NCMainTabBarController?, completion: @escaping () -> Void = {}) {
         let token = NCKeychain().getPassword(account: account)
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
-              let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account))
+        guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account))
         else {
             return completion()
         }
@@ -181,7 +197,22 @@ class NCAccount: NSObject {
                let account = accounts.first {
                 changeAccount(account, userProfile: nil, controller: controller) { }
             } else {
-                appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
+                if NCBrandOptions.shared.disable_intro {
+                    if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin {
+                        viewController.controller = controller
+                        let navigationController = UINavigationController(rootViewController: viewController)
+                        navigationController.modalPresentationStyle = .fullScreen
+                        controller?.present(navigationController, animated: true)
+                    }
+                } else {
+                    if let navigationController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? UINavigationController {
+                        if let viewController = navigationController.topViewController as? NCIntroViewController {
+                            viewController.controller = controller
+                        }
+                        navigationController.modalPresentationStyle = .fullScreen
+                        controller?.present(navigationController, animated: true)
+                    }
+                }
             }
 
             completion()

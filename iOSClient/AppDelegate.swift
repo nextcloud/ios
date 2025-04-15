@@ -34,8 +34,6 @@ import SwiftUI
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     var backgroundSessionCompletionHandler: (() -> Void)?
-    var activeLogin: NCLogin?
-    var activeLoginWeb: NCLoginProvider?
     var taskAutoUploadDate: Date = Date()
     var isUiTestingEnabled: Bool {
         return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
@@ -58,6 +56,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let utility = NCUtility()
         let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
 
+        NCAppVersionManager.shared.checkAndUpdateInstallState()
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0)
 
         UserDefaults.standard.register(defaults: ["UserAgent": userAgent])
@@ -324,50 +323,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
             UIApplication.shared.firstWindow?.rootViewController?.present(alertController, animated: true, completion: { })
-        }
-    }
-
-    // MARK: - Login
-
-    func openLogin(selector: Int, window: UIWindow? = nil) {
-        UIApplication.shared.allSceneSessionDestructionExceptFirst()
-
-        func showLoginViewController(_ viewController: UIViewController?) {
-            guard let viewController else { return }
-            let navigationController = NCLoginNavigationController(rootViewController: viewController)
-
-            navigationController.modalPresentationStyle = .fullScreen
-            navigationController.navigationBar.barStyle = .black
-            navigationController.navigationBar.tintColor = NCBrandColor.shared.customerText
-            navigationController.navigationBar.barTintColor = NCBrandColor.shared.customer
-            navigationController.navigationBar.isTranslucent = false
-
-            if let controller = UIApplication.shared.firstWindow?.rootViewController {
-                if let presentedVC = controller.presentedViewController, !(presentedVC is NCLoginNavigationController) {
-                    presentedVC.dismiss(animated: false) {
-                        controller.present(navigationController, animated: true)
-                    }
-                } else {
-                    controller.present(navigationController, animated: true)
-                }
-            } else {
-                window?.rootViewController = navigationController
-                window?.makeKeyAndVisible()
-            }
-        }
-
-        if activeLogin?.view.window == nil {
-            if selector == NCGlobal.shared.introSignUpWithProvider {
-                // Login via provider
-                activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginProvider") as? NCLoginProvider
-                activeLoginWeb?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
-                showLoginViewController(activeLoginWeb)
-            } else {
-                // Regular login
-                activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
-                activeLogin?.urlBase = NCBrandOptions.shared.disable_request_login_url ? NCBrandOptions.shared.loginBaseUrl : ""
-                showLoginViewController(activeLogin)
-            }
         }
     }
 

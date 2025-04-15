@@ -375,9 +375,7 @@ struct UploadScanDocumentView: View {
                             TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $fileName)
                                 .multilineTextAlignment(.trailing)
                                 .onChange(of: fileName) { _ in
-                                    let controller = (UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController)
-
-                                    if let fileNameError = FileNameValidator.checkFileName(fileName, account: controller?.account) {
+                                    if let fileNameError = FileNameValidator.checkFileName(fileName, account: self.model.controller?.account) {
                                         footer = fileNameError.errorDescription
                                     } else {
                                         footer = ""

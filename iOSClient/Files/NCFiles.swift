@@ -347,7 +347,10 @@ class NCFiles: NCCollectionViewCommon {
         let currentAccount = session.account
 
         if database.getAllTableAccount().isEmpty {
-            appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
+            if let navigationController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? UINavigationController {
+                navigationController.modalPresentationStyle = .fullScreen
+                self.present(navigationController, animated: true)
+            }
         } else if let account = tableAccount?.account, account != currentAccount {
             NCAccount().changeAccount(account, userProfile: nil, controller: controller) { }
         } else if self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session) {

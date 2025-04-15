@@ -33,6 +33,8 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     @IBOutlet weak var pageControl: UIPageControl!
 
     weak var delegate: NCIntroViewController?
+    /// Controller
+    var controller: NCMainTabBarController?
 
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private let titles = [NSLocalizedString("_intro_1_title_", comment: ""), NSLocalizedString("_intro_2_title_", comment: ""), NSLocalizedString("_intro_3_title_", comment: ""), NSLocalizedString("_intro_4_title_", comment: "")]
@@ -68,6 +70,12 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
         self.navigationController?.view.backgroundColor = NCBrandColor.shared.customer
         self.navigationController?.navigationBar.tintColor = textColor
 
+        if !NCManageDatabase.shared.getAllTableAccount().isEmpty {
+            let navigationItemCancel = UIBarButtonItem(image: UIImage(systemName: "xmark"), style: .done, target: self, action: #selector(self.actionCancel))
+            navigationItemCancel.tintColor = textColor
+            navigationItem.leftBarButtonItem = navigationItemCancel
+        }
+
         pageControl.currentPageIndicatorTintColor = textColor
         pageControl.pageIndicatorTintColor = .lightGray
 
@@ -96,34 +104,6 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
         pageControl.numberOfPages = self.titles.count
 
         view.backgroundColor = NCBrandColor.shared.customer
-
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
-            if let userInfo = notification.userInfo,
-               let account = userInfo["account"] as? String {
-                let window = UIApplication.shared.firstWindow
-                if let controller = window?.rootViewController as? NCMainTabBarController {
-                    controller.account = account
-                    self.dismiss(animated: true)
-                } else {
-                    if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
-                        controller.account = account
-                        controller.modalPresentationStyle = .fullScreen
-                        controller.view.alpha = 0
-
-                        window?.rootViewController = controller
-                        window?.makeKeyAndVisible()
-
-                        if let scene = window?.windowScene {
-                            SceneManager.shared.register(scene: scene, withRootViewController: controller)
-                        }
-
-                        UIView.animate(withDuration: 0.5) {
-                            controller.view.alpha = 1
-                        }
-                    }
-                }
-            }
-        }
 
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
             self.timer?.invalidate()
@@ -198,12 +178,25 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
         timer = nil
     }
 
+    // MARK: - Action
+
+    @objc func actionCancel() {
+        dismiss(animated: true) { }
+    }
+
     @IBAction func login(_ sender: Any) {
-        appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
+        if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin {
+            viewController.controller = self.controller
+            self.navigationController?.pushViewController(viewController, animated: true)
+        }
     }
 
     @IBAction func signupWithProvider(_ sender: Any) {
-        appDelegate.openLogin(selector: NCGlobal.shared.introSignUpWithProvider)
+        if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginProvider") as? NCLoginProvider {
+            viewController.controller = self.controller
+            viewController.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
+            self.navigationController?.pushViewController(viewController, animated: true)
+        }
     }
 
     @IBAction func host(_ sender: Any) {

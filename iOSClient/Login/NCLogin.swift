@@ -29,6 +29,9 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     private var shareAccounts: [NKShareAccounts.DataAccounts]?
 
+    /// Controller
+    var controller: NCMainTabBarController?
+
     /// The URL that will show up on the URL field when this screen appears
     var urlBase = ""
 
@@ -85,6 +88,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             baseUrlTextField.isEnabled = false
             baseUrlTextField.isUserInteractionEnabled = false
             baseUrlTextField.alpha = 0.5
+            urlBase = NCBrandOptions.shared.loginBaseUrl
         }
 
         // certificate
@@ -102,12 +106,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         self.navigationController?.navigationBar.standardAppearance = navBarAppearance
         self.navigationController?.view.backgroundColor = NCBrandColor.shared.customer
         self.navigationController?.navigationBar.tintColor = textColor
-
-        if !NCManageDatabase.shared.getAllTableAccount().isEmpty || presentingViewController is NCLoginNavigationController {
-            let navigationItemCancel = UIBarButtonItem(image: UIImage(systemName: "arrow.left"), style: .done, target: self, action: #selector(self.actionCancel))
-            navigationItemCancel.tintColor = textColor
-            navigationItem.leftBarButtonItem = navigationItemCancel
-        }
 
         if let dirGroupApps = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupApps) {
             // Nextcloud update share accounts
@@ -169,6 +167,17 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
 
         NCNetworking.shared.certificateDelegate = self
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        if !NCManageDatabase.shared.getAllTableAccount().isEmpty,
+           self.navigationController?.viewControllers.count ?? 0 == 1 {
+            let navigationItemCancel = UIBarButtonItem(image: UIImage(systemName: "xmark"), style: .done, target: self, action: #selector(self.actionCancel))
+            navigationItemCancel.tintColor = textColor
+            navigationItem.leftBarButtonItem = navigationItemCancel
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -311,7 +320,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
         NextcloudKit.shared.getServerStatus(serverUrl: url) { [self] _, serverInfoResult in
             switch serverInfoResult {
-            case .success(_):
+            case .success:
                 if let host = URL(string: url)?.host {
                     NCNetworking.shared.writeCertificate(host: host)
                 }
@@ -398,42 +407,16 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     }
 
     private func createAccount(urlBase: String, user: String, password: String) {
-        let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+        if self.controller == nil {
+            self.controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+        }
+
         if let host = URL(string: urlBase)?.host {
             NCNetworking.shared.writeCertificate(host: host)
         }
-        NCAccount().createAccount(urlBase: urlBase, user: user, password: password, controller: controller) { account, error in
-            if error == .success {
-                let window = UIApplication.shared.firstWindow
-                if let controller = window?.rootViewController as? NCMainTabBarController {
-                    controller.account = account
-                    self.dismiss(animated: true)
-                } else {
-                    if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
-                        controller.account = account
-                        controller.modalPresentationStyle = .fullScreen
-                        controller.view.alpha = 0
 
-                        window?.rootViewController = controller
-                        window?.makeKeyAndVisible()
-
-                        if let scene = window?.windowScene {
-                            SceneManager.shared.register(scene: scene, withRootViewController: controller)
-                        }
-
-                        UIView.animate(withDuration: 0.5) {
-                            controller.view.alpha = 1
-                        }
-                    }
-                }
-            } else {
-                let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-                self.present(alertController, animated: true)
-            }
-        }
+        NCAccount().createAccount(viewController: self, urlBase: urlBase, user: user, password: password, controller: self.controller)
     }
-
 }
 
 extension NCLogin: NCShareAccountsDelegate {

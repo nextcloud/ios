@@ -80,10 +80,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 UserDefaults.standard.removePersistentDomain(forName: bundleID)
             }
             if NCBrandOptions.shared.disable_intro {
-                appDelegate.openLogin(selector: NCGlobal.shared.introLogin, window: window)
+                if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin {
+                    let navigationController = UINavigationController(rootViewController: viewController)
+                    window?.rootViewController = navigationController
+                    window?.makeKeyAndVisible()
+                }
             } else {
-                if let viewController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? NCIntroViewController {
-                    let navigationController = NCLoginNavigationController(rootViewController: viewController)
+                if let navigationController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? UINavigationController {
                     window?.rootViewController = navigationController
                     window?.makeKeyAndVisible()
                 }
@@ -98,13 +101,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneWillEnterForeground(_ scene: UIScene) {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene will enter in foreground")
         let session = SceneManager.shared.getSession(scene: scene)
-
-        // In Login mode is possible ONLY 1 window
-        if (UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }).count > 1,
-           (appDelegate?.activeLogin?.view.window != nil || appDelegate?.activeLoginWeb?.view.window != nil) || (UIApplication.shared.firstWindow?.rootViewController is NCLoginNavigationController) {
-            UIApplication.shared.allSceneSessionDestructionExceptFirst()
-            return
-        }
         guard !session.account.isEmpty else { return }
 
         hidePrivacyProtectionWindow()
