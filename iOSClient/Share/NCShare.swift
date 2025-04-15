@@ -163,11 +163,14 @@ class NCShare: UIViewController, NCSharePagingContent {
                     if error == .success, let etag = etag, let imageAvatar = imageAvatar {
                         self.database.addAvatar(fileName: fileName, etag: etag)
                         self.sharedWithYouByImage.image = imageAvatar
+                        self.reloadData()
                     } else if error.errorCode == NCGlobal.shared.errorNotModified, let imageAvatar = self.database.setAvatarLoaded(fileName: fileName) {
                         self.sharedWithYouByImage.image = imageAvatar
                     }
                 }
         }
+
+        reloadData()
     }
 
     // MARK: - Notification Center
@@ -221,18 +224,20 @@ class NCShare: UIViewController, NCSharePagingContent {
 extension NCShare: NCShareNetworkingDelegate {
     func readShareCompleted() {
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataNCShare)
+        reloadData()
     }
 
     func shareCompleted() {
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataNCShare)
+        reloadData()
     }
 
     func unShareCompleted() {
-        self.reloadData()
+        reloadData()
     }
 
     func updateShareWithError(idShare: Int) {
-        self.reloadData()
+        reloadData()
     }
 
     func getSharees(sharees: [NKSharee]?) {
