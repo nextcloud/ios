@@ -84,15 +84,10 @@ class NCShareNetworking: NSObject {
                     }
 
                     Task {
-                        do {
-                            defer {
-                                Task { @MainActor in
-                                    self.delegate?.readShareCompleted()
-                                }
-                            }
-                            try await self.readDownloadLimits(account: account, tokens: shares.map(\.token))
-                        } catch {
-                            print("Error reading download limits: \(error)")
+                        try? await self.readDownloadLimits(account: account, tokens: shares.map(\.token))
+
+                        Task { @MainActor in
+                            self.delegate?.readShareCompleted()
                         }
                     }
                 }
