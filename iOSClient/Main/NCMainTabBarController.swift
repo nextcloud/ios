@@ -37,6 +37,7 @@ class NCMainTabBarController: UITabBarController {
     var availableNotifications: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?
     let navigationCollectionViewCommon = ThreadSafeArray<NavigationCollectionViewCommon>()
+    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var previousIndex: Int?
     private let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup)
     private var checkUserDelaultErrorInProgress: Bool = false
@@ -141,6 +142,34 @@ extension NCMainTabBarController: UITabBarControllerDelegate {
             scrollToTop(viewController: viewController)
         }
         previousIndex = tabBarController.selectedIndex
+    }
+
+    func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
+        if let index = tabBarController.viewControllers?.firstIndex(of: viewController),
+           let item = tabBar.items?[index],
+           item.tag == 102 {
+            let serverUrl = self.currentServerUrl()
+            let fileFolderPath = NCUtilityFileSystem().getFileNamePath("", serverUrl: serverUrl, session: NCSession.shared.getSession(controller: self))
+            let fileFolderName = (serverUrl as NSString).lastPathComponent
+
+            if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", NCSession.shared.getSession(controller: self).account, serverUrl)) {
+                if !directory.permissions.contains("CK") {
+                    let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_add_file_")
+                    NCContentPresenter().showWarning(error: error)
+                    return false
+                }
+            }
+
+            if !FileNameValidator.checkFolderPath(fileFolderPath, account: self.account) {
+                self.present(UIAlertController.warning(message: "\(String(format: NSLocalizedString("_file_name_validator_error_reserved_name_", comment: ""), fileFolderName)) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+                return false
+            }
+
+            self.appDelegate.toggleMenu(controller: self)
+            return false
+        }
+
+        return true
     }
 
     private func scrollToTop(viewController: UIViewController) {

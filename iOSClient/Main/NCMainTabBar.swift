@@ -97,7 +97,6 @@ class NCMainTabBar: UITabBar {
     }
 
     private func createPath() -> CGPath {
-
         let height: CGFloat = 28
         let margin: CGFloat = 6
         let path = UIBezierPath()
@@ -117,7 +116,6 @@ class NCMainTabBar: UITabBar {
     }
 
     private func createButtons() {
-
         // File
         if let item = items?[0] {
             item.title = NSLocalizedString("_home_", comment: "")
@@ -181,8 +179,11 @@ class NCMainTabBar: UITabBar {
         centerButton.layer.shadowRadius = 3.0
         centerButton.layer.shadowOpacity = 0.5
         centerButton.action(for: .touchUpInside) { _ in
-            if let controller = self.window?.rootViewController as? NCMainTabBarController {
+            if let controller = self.parentTabBarController as? NCMainTabBarController {
                 let serverUrl = controller.currentServerUrl()
+                let fileFolderPath = NCUtilityFileSystem().getFileNamePath("", serverUrl: serverUrl, session: NCSession.shared.getSession(controller: controller))
+                let fileFolderName = (serverUrl as NSString).lastPathComponent
+
                 if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", NCSession.shared.getSession(controller: controller).account, serverUrl)) {
                     if !directory.permissions.contains("CK") {
                         let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_add_file_")
@@ -191,12 +192,8 @@ class NCMainTabBar: UITabBar {
                     }
                 }
 
-                let fileFolderPath = NCUtilityFileSystem().getFileNamePath("", serverUrl: serverUrl, session: NCSession.shared.getSession(controller: controller))
-                let fileFolderName = (serverUrl as NSString).lastPathComponent
-
                 if !FileNameValidator.checkFolderPath(fileFolderPath, account: controller.account) {
                     controller.present(UIAlertController.warning(message: "\(String(format: NSLocalizedString("_file_name_validator_error_reserved_name_", comment: ""), fileFolderName)) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
-
                     return
                 }
 
