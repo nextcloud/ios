@@ -56,6 +56,8 @@ class tableShareV2: Object {
     @objc dynamic var serverUrl = ""
 
     ///
+    /// shareType - (int) 0 = user; 1 = group; 3 = public link; 4 = email; 6 = federated cloud share; 7 = circle; 10 = Talk conversation
+    ///
     /// See [OCS Share API documentation](https://docs.nextcloud.com/server/latest/developer_manual/client_apis/OCS/ocs-share-api.html) for semantic definitions of the different possible values.
     ///
     @objc dynamic var shareType: Int = 0

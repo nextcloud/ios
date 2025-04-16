@@ -310,10 +310,6 @@ extension NCShare: NCShareNetworkingDelegate {
 extension NCShare: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if indexPath.section == 0, indexPath.row == 0 {
-            // internal cell has description
-            return 40
-        }
         return 60
     }
 }
@@ -365,6 +361,7 @@ extension NCShare: UITableViewDataSource {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell {
                 cell.indexPath = indexPath
                 cell.tableShare = tableShare
+                cell.isDirectory = metadata.directory
                 cell.delegate = self
                 cell.setupCellUI()
                 return cell

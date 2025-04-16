@@ -28,9 +28,12 @@ class NCShareLinkCell: UITableViewCell {
     @IBOutlet private weak var labelTitle: UILabel!
     @IBOutlet private weak var descriptionLabel: UILabel!
 
+    @IBOutlet weak var labelQuickStatus: UILabel!
+    @IBOutlet weak var statusStackView: UIStackView!
     @IBOutlet private weak var menuButton: UIButton!
     @IBOutlet private weak var copyButton: UIButton!
     var tableShare: tableShare?
+    var isDirectory = false
     weak var delegate: NCShareLinkCellDelegate?
     var isInternalLink = false
     var indexPath = IndexPath()
@@ -43,10 +46,12 @@ class NCShareLinkCell: UITableViewCell {
 
     func setupCellUI() {
         var menuImageName = "ellipsis"
+        let permissions = NCPermissions()
 
         menuButton.isHidden = isInternalLink
         descriptionLabel.isHidden = !isInternalLink
         copyButton.isHidden = !isInternalLink && tableShare == nil
+        statusStackView.isHidden = isInternalLink
         if #available(iOS 18.0, *) {
             // use NCShareLinkCell image
         } else {
@@ -78,6 +83,18 @@ class NCShareLinkCell: UITableViewCell {
         }
 
         labelTitle.textColor = NCBrandColor.shared.textColor
+
+        if let tableShare = tableShare {
+            if permissions.canEdit(tableShare.permissions, isDirectory: isDirectory) { // Can edit
+                labelQuickStatus.text = NSLocalizedString("_share_editing_", comment: "")
+            } else if tableShare.permissions == permissions.permissionReadShare { // Read only
+                labelQuickStatus.text = NSLocalizedString("_share_read_only_", comment: "")
+            } else { // Custom permissions
+                labelQuickStatus.text = NSLocalizedString("_custom_permissions_", comment: "")
+            }
+        }
+
+        statusStackView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openQuickStatus)))
     }
 
     @IBAction func touchUpCopy(_ sender: Any) {
@@ -87,9 +104,14 @@ class NCShareLinkCell: UITableViewCell {
     @IBAction func touchUpMenu(_ sender: Any) {
         delegate?.tapMenu(with: tableShare, sender: sender)
     }
+
+    @objc func openQuickStatus(_ sender: UITapGestureRecognizer) {
+        delegate?.quickStatus(with: tableShare, sender: sender)
+    }
 }
 
 protocol NCShareLinkCellDelegate: AnyObject {
     func tapCopy(with tableShare: tableShare?, sender: Any)
     func tapMenu(with tableShare: tableShare?, sender: Any)
+    func quickStatus(with tableShare: tableShare?, sender: Any)
 }

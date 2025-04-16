@@ -50,7 +50,7 @@ protocol NCPermission: NCToggleCellConfig {
     static var forFile: [Self] { get }
     static func forDirectoryE2EE(account: String) -> [NCPermission]
     func hasPermission(for parentPermission: Int) -> Bool
-    func hasReadPermission() -> Bool
+    func hasReadPermission(isDirectory: Bool) -> Bool
 }
 
 enum NCUserPermission: CaseIterable, NCPermission {
@@ -58,7 +58,7 @@ enum NCUserPermission: CaseIterable, NCPermission {
         return ((permissionBitFlag & parentPermission) != 0)
     }
 
-    func hasReadPermission() -> Bool {
+    func hasReadPermission(isDirectory: Bool) -> Bool {
         return self == .read
     }
 
@@ -103,17 +103,17 @@ enum NCUserPermission: CaseIterable, NCPermission {
 }
 
 enum NCLinkPermission: NCPermission {
-    func hasReadPermission() -> Bool {
-        return true
+    func hasReadPermission(isDirectory: Bool) -> Bool {
+        return isDirectory ? self == .read : false
     }
 
-    func didChange(_ share: Shareable, to newValue: Bool) {
-        guard self != .allowEdit || newValue else {
-            share.permissions = NCPermissions().permissionReadShare
-            return
-        }
-        share.permissions = permissionValue
-    }
+//    func didChange(_ share: Shareable, to newValue: Bool) {
+//        guard self != .edit || newValue else {
+//            share.permissions = NCPermissions().permissionReadShare
+//            return
+//        }
+//        share.permissions = permissionValue
+//    }
 
     func hasPermission(for parentPermission: Int) -> Bool {
         permissionValue & parentPermission == permissionValue
@@ -121,14 +121,14 @@ enum NCLinkPermission: NCPermission {
 
     var permissionValue: Int {
         switch self {
-        case .allowEdit:
+        case .edit:
             return NCPermissions().getPermissionValue(
                 canCreate: true,
                 canEdit: true,
                 canDelete: true,
                 canShare: false,
                 isDirectory: false)
-        case .viewOnly:
+        case .read:
             return NCPermissions().getPermissionValue(
                 canCreate: false,
                 canEdit: false,
@@ -151,16 +151,42 @@ enum NCLinkPermission: NCPermission {
         }
     }
 
-    func isOn(for share: Shareable) -> Bool {
-        let permissions = NCPermissions()
+    var permissionBitFlag: Int {
         switch self {
-        case .allowEdit: return permissions.isAnyPermissionToEdit(share.permissions)
-        case .viewOnly: return !permissions.isAnyPermissionToEdit(share.permissions) && share.permissions != permissions.permissionCreateShare
-        case .uploadEdit: return permissions.isAnyPermissionToEdit(share.permissions) && share.permissions != permissions.permissionCreateShare
-        case .fileDrop: return share.permissions == permissions.permissionCreateShare
-        case .secureFileDrop: return share.permissions == permissions.permissionCreateShare
+        case .read: return NCPermissions().permissionReadShare
+//        case .reshare: return NCPermissions().permissionShareShare
+        case .edit: return NCPermissions().permissionEditShare
+//        case .create: return NCPermissions().permissionCreateShare
+//        case .delete: return NCPermissions().permissionDeleteShare
+        case .uploadEdit:
+            return 0
+        case .fileDrop:
+            return 0
+
+        case .secureFileDrop:
+            return 0
+
         }
     }
+
+    func didChange(_ share: Shareable, to newValue: Bool) {
+        share.permissions ^= permissionBitFlag
+    }
+
+    func isOn(for share: Shareable) -> Bool {
+        return (share.permissions & permissionBitFlag) != 0
+    }
+
+//    func isOn(for share: Shareable) -> Bool {
+//        let permissions = NCPermissions()
+//        switch self {
+//        case .edit: return permissions.isAnyPermissionToEdit(share.permissions)
+//        case .read: return share.permissions == permissions.permissionReadShare
+//        case .uploadEdit: return permissions.isAnyPermissionToEdit(share.permissions) && share.permissions != permissions.permissionCreateShare
+//        case .fileDrop: return share.permissions == permissions.permissionCreateShare
+//        case .secureFileDrop: return share.permissions == permissions.permissionCreateShare
+//        }
+//    }
 
     static func forDirectoryE2EE(account: String) -> [NCPermission] {
         return [NCLinkPermission.secureFileDrop]
@@ -168,17 +194,17 @@ enum NCLinkPermission: NCPermission {
 
     var title: String {
         switch self {
-        case .allowEdit: return NSLocalizedString("_share_can_change_", comment: "")
-        case .viewOnly: return NSLocalizedString("_share_read_only_", comment: "")
+        case .edit: return NSLocalizedString("_share_can_change_", comment: "")
+        case .read: return NSLocalizedString("_share_can_read_", comment: "")
         case .uploadEdit: return NSLocalizedString("_share_allow_upload_", comment: "")
         case .fileDrop: return NSLocalizedString("_share_file_drop_", comment: "")
         case .secureFileDrop: return NSLocalizedString("_share_secure_file_drop_", comment: "")
         }
     }
 
-    case allowEdit, viewOnly, uploadEdit, fileDrop, secureFileDrop
-    static let forDirectory: [NCLinkPermission] = [.viewOnly, .uploadEdit, .fileDrop]
-    static let forFile: [NCLinkPermission] = [.allowEdit]
+    case edit, read, uploadEdit, fileDrop, secureFileDrop
+    static let forDirectory: [NCLinkPermission] = [.read, .uploadEdit, .fileDrop]
+    static let forFile: [NCLinkPermission] = [.read, .edit]
 }
 
 ///
@@ -245,10 +271,12 @@ struct NCShareConfig {
     let advanced: [NCAdvancedPermission]
     let shareable: Shareable
     let sharePermission: Int
+    let isDirectory: Bool
 
     init(parentMetadata: tableMetadata, share: Shareable) {
         self.shareable = share
         self.sharePermission = parentMetadata.sharePermissionsCollaborationServices
+        self.isDirectory = parentMetadata.directory
         let type: NCPermission.Type = share.shareType == NCShareCommon().SHARE_TYPE_LINK ? NCLinkPermission.self : NCUserPermission.self
         self.permissions = parentMetadata.directory ? (parentMetadata.e2eEncrypted ? type.forDirectoryE2EE(account: parentMetadata.account) : type.forDirectory) : type.forFile
 
@@ -281,7 +309,7 @@ struct NCShareConfig {
         }
 
         // Read permission is always enabled and we show it as a non-interactable permissoin for brevity.
-        if let cellConfig = cellConfig as? NCUserPermission, cellConfig.hasReadPermission() {
+        if let cellConfig = cellConfig as? NCUserPermission, cellConfig.hasReadPermission(isDirectory: isDirectory) {
             cell?.isUserInteractionEnabled = false
             cell?.textLabel?.isEnabled = false
         }

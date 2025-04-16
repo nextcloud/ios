@@ -262,7 +262,6 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
         case .downloadAndSync:
             share.downloadAndSync.toggle()
             tableView.reloadData()
-//            NCManageDatabase.shared.setAttibuteDownload(state: value)
         }
     }
 }
