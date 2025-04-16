@@ -46,15 +46,41 @@ class NCMainTabBarController: UITabBarController {
         super.viewDidLoad()
         delegate = self
 
+        tabBar.tintColor = NCBrandColor.shared.getElement(account: account)
+
+        // File
+        if let item = tabBar.items?[0] {
+            item.title = NSLocalizedString("_home_", comment: "")
+            item.image = UIImage(systemName: "folder.fill")
+            item.selectedImage = item.image
+        }
+
+        // Favorite
+        if let item = tabBar.items?[1] {
+            item.title = NSLocalizedString("_favorites_", comment: "")
+            item.image = UIImage(systemName: "star.fill")
+            item.selectedImage = item.image
+        }
+
+        // Media
+        if let item = tabBar.items?[2] {
+            item.title = NSLocalizedString("_media_", comment: "")
+            item.image = UIImage(systemName: "photo")
+            item.selectedImage = item.image
+        }
+
+        // More
+        if let item = tabBar.items?[3] {
+            item.title = NSLocalizedString("_more_", comment: "")
+            item.image = UIImage(systemName: "ellipsis")
+            item.selectedImage = item.image
+        }
+
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil, queue: .main) { [weak self] notification in
             if let userInfo = notification.userInfo as? NSDictionary,
                let account = userInfo["account"] as? String,
-               let tabBar = self?.tabBar as? NCMainTabBar,
                self?.account == account {
-                let color = NCBrandColor.shared.getElement(account: account)
-                tabBar.color = color
-                tabBar.tintColor = color
-                tabBar.setNeedsDisplay()
+                self?.tabBar.tintColor = NCBrandColor.shared.getElement(account: account)
             }
         }
 

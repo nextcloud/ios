@@ -381,9 +381,6 @@ extension NCActivity {
         self.isFetchingActivity = true
         var bottom: CGFloat = 0
 
-        if let mainTabBar = self.tabBarController?.tabBar as? NCMainTabBar {
-           bottom = -mainTabBar.getHeight()
-        }
         NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom - 35, style: .medium)
 
         let dispatchGroup = DispatchGroup()
