@@ -27,6 +27,8 @@ import RealmSwift
 import SwiftUI
 
 class NCFiles: NCCollectionViewCommon {
+    @IBOutlet weak var plusButton: UIButton!
+
     internal var fileNameBlink: String?
     internal var fileNameOpen: String?
     internal var matadatasHash: String = ""
@@ -47,6 +49,28 @@ class NCFiles: NCCollectionViewCommon {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        /// Plus Button
+        let image = UIImage(systemName: "plus", withConfiguration: UIImage.SymbolConfiguration(scale: .large))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [.white]))
+
+        plusButton.setTitle("", for: .normal)
+        plusButton.setImage(image, for: .normal)
+        plusButton.backgroundColor = NCBrandColor.shared.customer
+        if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
+            self.plusButton.backgroundColor = NCBrandColor.shared.getElement(account: activeTableAccount.account)
+        }
+        plusButton.accessibilityLabel = NSLocalizedString("_accessibility_add_upload_", comment: "")
+        plusButton.layer.cornerRadius = plusButton.frame.size.width / 2.0
+        plusButton.layer.masksToBounds = false
+        plusButton.layer.shadowOffset = CGSize(width: 0, height: 0)
+        plusButton.layer.shadowRadius = 3.0
+        plusButton.layer.shadowOpacity = 0.5
+
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil, queue: nil) { _ in
+            if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
+                self.plusButton.backgroundColor = NCBrandColor.shared.getElement(account: activeTableAccount.account)
+            }
+        }
 
         if self.serverUrl.isEmpty {
 
@@ -359,5 +383,9 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
+    }
+
+    @IBAction func plusButtonAction(_ sender: UIButton) {
+
     }
 }
