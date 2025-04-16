@@ -47,6 +47,7 @@ class NCMainTabBarController: UITabBarController {
         delegate = self
 
         tabBar.tintColor = NCBrandColor.shared.getElement(account: account)
+        let capabilities = NCCapabilities.shared.getCapabilities(account: account)
 
         // File
         if let item = tabBar.items?[0] {
@@ -69,8 +70,16 @@ class NCMainTabBarController: UITabBarController {
             item.selectedImage = item.image
         }
 
-        // More
+        // Activity
         if let item = tabBar.items?[3] {
+            item.title = NSLocalizedString("_activity_", comment: "")
+            item.image = UIImage(systemName: "bolt")
+            item.selectedImage = item.image
+            item.isEnabled = capabilities.capabilityActivityEnabled
+        }
+
+        // More
+        if let item = tabBar.items?[4] {
             item.title = NSLocalizedString("_more_", comment: "")
             item.image = UIImage(systemName: "ellipsis")
             item.selectedImage = item.image

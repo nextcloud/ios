@@ -379,9 +379,8 @@ extension NCActivity {
     func fetchAll(isInitial: Bool) {
         guard !isFetchingActivity else { return }
         self.isFetchingActivity = true
-        var bottom: CGFloat = 0
 
-        NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom - 35, style: .medium)
+        NCActivityIndicator.shared.start(backgroundView: self.view, style: .medium)
 
         let dispatchGroup = DispatchGroup()
         loadComments(disptachGroup: dispatchGroup)
