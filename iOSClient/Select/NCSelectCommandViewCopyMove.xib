@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -42,12 +42,13 @@
                             <nil key="highlightedColor"/>
                         </label>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WCL-bl-0j0" customClass="PrimaryButton" customModule="Nextcloud" customModuleProvider="target">
-                            <rect key="frame" x="20" y="70" width="120" height="30"/>
-                            <color key="backgroundColor" name="CopyMove/ButtonStateNormal"/>
+                            <rect key="frame" x="20" y="60" width="120" height="40"/>
+                            <color key="backgroundColor" name="Button/Primary/Background/Selected"/>
                             <constraints>
-                                <constraint firstAttribute="height" constant="30" id="AHg-gX-UT0"/>
-                                <constraint firstAttribute="width" constant="120" id="e9E-Zi-Svf"/>
+                                <constraint firstAttribute="height" constant="40" id="AHg-gX-UT0"/>
+                                <constraint firstAttribute="width" priority="700" constant="120" id="e9E-Zi-Svf"/>
                             </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
                             <state key="normal" title="Create  folder">
                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </state>
@@ -56,12 +57,13 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mg4-vG-Xr7" customClass="PrimaryButton" customModule="Nextcloud" customModuleProvider="target">
-                            <rect key="frame" x="253" y="0.0" width="120" height="30"/>
-                            <color key="backgroundColor" name="CopyMove/ButtonStateNormal"/>
+                            <rect key="frame" x="253" y="0.0" width="120" height="40"/>
+                            <color key="backgroundColor" name="Button/Primary/Background/Selected"/>
                             <constraints>
-                                <constraint firstAttribute="height" constant="30" id="aRa-Cb-dIJ"/>
-                                <constraint firstAttribute="width" constant="120" id="q7x-Zg-aFX"/>
+                                <constraint firstAttribute="height" constant="40" id="aRa-Cb-dIJ"/>
+                                <constraint firstAttribute="width" priority="700" constant="120" id="q7x-Zg-aFX"/>
                             </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
                             <state key="normal" title="Copy">
                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </state>
@@ -70,12 +72,13 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Oq2-Kg-sDp" customClass="PrimaryButton" customModule="Nextcloud" customModuleProvider="target">
-                            <rect key="frame" x="253" y="70" width="120" height="30"/>
-                            <color key="backgroundColor" name="CopyMove/ButtonStateNormal"/>
+                            <rect key="frame" x="253" y="60" width="120" height="40"/>
+                            <color key="backgroundColor" name="Button/Primary/Background/Selected"/>
                             <constraints>
-                                <constraint firstAttribute="width" constant="120" id="JyD-uF-cFT"/>
-                                <constraint firstAttribute="height" constant="30" id="QAO-kF-IOZ"/>
+                                <constraint firstAttribute="width" priority="700" constant="120" id="JyD-uF-cFT"/>
+                                <constraint firstAttribute="height" constant="40" id="QAO-kF-IOZ"/>
                             </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
                             <state key="normal" title="Move">
                                 <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </state>
@@ -123,7 +126,7 @@
         </view>
     </objects>
     <resources>
-        <namedColor name="CopyMove/ButtonStateNormal">
+        <namedColor name="Button/Primary/Background/Selected">
             <color red="0.078431372549019607" green="0.45490196078431372" blue="0.7686274509803922" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="Tabbar/Background">

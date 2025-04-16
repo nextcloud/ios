@@ -83,10 +83,10 @@ struct NCAutoUploadView: View {
                         showUploadFolder.toggle()
                     }, label: {
                         HStack {
-                            Image(systemName: "folder")
+							Image(.Settings.AutoUpload.folder)
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 25, height: 25)
+                                .frame(width: 20, height: 20)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_destination_", comment: ""))
                             Text(model.returnPath())
@@ -102,10 +102,10 @@ struct NCAutoUploadView: View {
                             showSelectAlbums.toggle()
                         }, label: {
                             HStack {
-                                Image(systemName: "person.2.crop.square.stack")
+								Image(.Settings.AutoUpload.folderOpened)
                                     .resizable()
                                     .scaledToFit()
-                                    .frame(width: 25, height: 25)
+                                    .frame(width: 20, height: 20)
                                     .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                                 Text(NSLocalizedString("_upload_from_", comment: ""))
                                 Text(NSLocalizedString(model.createAlbumTitle(autoUploadAlbumIds: albumModel.autoUploadAlbumIds), comment: ""))
@@ -203,8 +203,9 @@ struct NCAutoUploadView: View {
 
                 Toggle(isOn: model.autoUploadNewPhotosOnly || model.autoUploadStart ? $model.autoUploadStart : $showUploadAllPhotosWarning) {
                     Text(model.autoUploadStart ? "_stop_autoupload_" : "_start_autoupload_")
+						.font(.system(size: 16))
                         .padding(.horizontal, 20)
-                        .padding(.vertical, 10)
+                        .padding(.vertical, 7)
                 }
 				.font(.headline)
 				.toggleStyle(.button)
