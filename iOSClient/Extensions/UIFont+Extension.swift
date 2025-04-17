@@ -28,5 +28,5 @@ extension UIFont {
 
     static func incosolataMedium(size: CGFloat) -> UIFont {
         return UIFont(name: "Inconsolata-Medium", size: size)!
-    }
+    }	
 }

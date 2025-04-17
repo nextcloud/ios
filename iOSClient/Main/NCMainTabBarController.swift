@@ -4,6 +4,7 @@
 //
 //  Created by Marino Faggiana on 02/04/24.
 //  Copyright © 2024 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -32,7 +33,6 @@ struct NavigationCollectionViewCommon {
 }
 
 class NCMainTabBarController: UITabBarController {
-    var sceneIdentifier: String = UUID().uuidString
     var account = ""
     var availableNotifications: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?
@@ -41,6 +41,10 @@ class NCMainTabBarController: UITabBarController {
     private let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup)
     private var checkUserDelaultErrorInProgress: Bool = false
     private var timer: Timer?
+    private var unauthorizedAccountInProgress: Bool = false
+    private var unavailableAccountInProgress: Bool = false
+    
+    private(set) var burgerMenuController: BurgerMenuAttachController?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -84,18 +88,40 @@ class NCMainTabBarController: UITabBarController {
                 }
             }
         }
+        
+		setupTabBarView()
+        burgerMenuController = BurgerMenuAttachController(with: self)
     }
-
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        DataProtectionAgreementManager.shared.showAgreement(viewController: self)
+        
         previousIndex = selectedIndex
-
         if NCBrandOptions.shared.enforce_passcode_lock && NCKeychain().passcode.isEmptyOrNil {
             let vc = UIHostingController(rootView: SetupPasscodeView(isLockActive: .constant(false)))
             vc.isModalInPresentation = true
 
             present(vc, animated: true)
         }
+    }
+	
+	private func setupTabBarView() {
+		if UIDevice.current.userInterfaceIdiom == .pad {
+			tabBar.itemPositioning = .centered
+			if let itemsCount = tabBar.items?.count {
+				tabBar.itemWidth = UITabBarGuideline.padItemWidth
+				tabBar.itemSpacing = UITabBarGuideline.padItemsSpacing(for: view.bounds.width, itemsCount: itemsCount)
+			}
+		}
+	}
+    
+    func showBurgerMenu() {
+        burgerMenuController?.showMenu()
+    }
+    
+    func presentedNavigationController() -> UINavigationController? {
+        return presentedViewController as? UINavigationController
     }
 
     private func timerCheckServerError() {
@@ -107,6 +133,9 @@ class NCMainTabBarController: UITabBarController {
     }
 
     func currentViewController() -> UIViewController? {
+        if let navVC = presentedNavigationController() {
+            return navVC.topViewController
+        }
         return (selectedViewController as? UINavigationController)?.topViewController
     }
 

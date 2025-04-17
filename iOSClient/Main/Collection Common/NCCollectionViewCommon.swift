@@ -4,6 +4,7 @@
 //
 //  Created by Marino Faggiana on 12/09/2020.
 //  Copyright © 2020 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -28,8 +29,11 @@ import NextcloudKit
 import EasyTipView
 
 class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCPhotoCellDelegate, NCSectionFirstHeaderDelegate, NCSectionFooterDelegate, NCSectionFirstHeaderEmptyDataDelegate, NCAccountSettingsModelDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
-
+    
     @IBOutlet weak var collectionView: UICollectionView!
+	@IBOutlet weak var headerTop: NSLayoutConstraint?
+	@IBOutlet weak var collectionViewTop: NSLayoutConstraint?
+	@IBOutlet weak var fileActionsHeader: FileActionsHeader?
 
     let database = NCManageDatabase.shared
     let global = NCGlobal.shared
@@ -46,15 +50,27 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var searchController: UISearchController?
     var backgroundImageView = UIImageView()
     var serverUrl: String = ""
-    var isEditMode = false
+    var isEditMode = false {
+		didSet {
+			DispatchQueue.main.async { [weak self] in
+				self?.updateHeadersView()
+			}
+		}
+	}
     var isDirectoryEncrypted = false
     var fileSelect: [String] = []
     var metadataFolder: tableMetadata?
     var richWorkspaceText: String?
     var sectionFirstHeader: NCSectionFirstHeader?
     var sectionFirstHeaderEmptyData: NCSectionFirstHeaderEmptyData?
-    var isSearchingMode: Bool = false
     var networkSearchInProgress: Bool = false
+	var isSearchingMode: Bool = false {
+		didSet {
+			DispatchQueue.main.async { [weak self] in
+				self?.updateHeadersView()
+			}
+		}
+	}
     var layoutForView: NCDBLayoutForView?
     var dataSourceTask: URLSessionTask?
     var providers: [NKSearchProvider]?
@@ -62,9 +78,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var listLayout = NCListLayout()
     var gridLayout = NCGridLayout()
     var mediaLayout = NCMediaLayout()
-    var layoutType = NCGlobal.shared.layoutList
+	var layoutType = NCGlobal.shared.layoutList {
+		didSet {
+			DispatchQueue.main.async { [weak self] in
+				self?.updateHeadersView()
+			}
+		}
+	}
     var literalSearch: String?
-    var tabBarSelect: NCCollectionViewCommonSelectTabBar?
+    var tabBarSelect: HiDriveCollectionViewCommonSelectToolbar?
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
 
@@ -99,7 +121,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     let heightHeaderSection: CGFloat = 30
 
     var session: NCSession.Session {
-        NCSession.shared.getSession(controller: tabBarController)
+        NCSession.shared.getSession(controller: controller)
     }
 
     var isLayoutPhoto: Bool {
@@ -128,7 +150,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     var controller: NCMainTabBarController? {
-        self.tabBarController as? NCMainTabBarController
+		self.tabBarController as? NCMainTabBarController ?? mainTabBarController
     }
 
     var defaultPredicate: NSPredicate {
@@ -163,16 +185,27 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - View Life Cycle
 
+	private func forceRefreshDataSource() {
+		dataSource.removeAll()
+		getServerData()
+		if isRecommendationActived {
+			Task.detached {
+				await NCNetworking.shared.createRecommendations(session: self.session)
+			}
+		}
+	}
+	
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        tabBarSelect = NCCollectionViewCommonSelectTabBar(controller: self.controller, delegate: self)
+        tabBarSelect = HiDriveCollectionViewCommonSelectToolbar(controller: controller, delegate: self)
         self.navigationController?.presentationController?.delegate = self
         collectionView.alwaysBounceVertical = true
         collectionView.accessibilityIdentifier = "NCCollectionViewCommon"
 
-        view.backgroundColor = .systemBackground
-        collectionView.backgroundColor = .systemBackground
+        // Color
+        view.backgroundColor = NCBrandColor.shared.appBackgroundColor
+        collectionView.backgroundColor = NCBrandColor.shared.appBackgroundColor
         refreshControl.tintColor = NCBrandColor.shared.textColor2
 
         if enableSearchBar {
@@ -182,8 +215,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             searchController?.delegate = self
             searchController?.searchBar.delegate = self
             searchController?.searchBar.autocapitalizationType = .none
+            searchController?.searchBar.searchTextField.backgroundColor = UIColor(resource: .searchBarBackground)
+            searchController?.searchBar.searchTextField.layer.cornerRadius = 10
+            searchController?.searchBar.searchTextField.layer.masksToBounds = true
+            searchController?.searchBar.setSearchFieldBackgroundImage(UIImage(), for: .normal)
             navigationItem.searchController = searchController
             navigationItem.hidesSearchBarWhenScrolling = true
+            fixSearchBarPlacementForIOS16()
         }
 
         // Cell
@@ -206,13 +244,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
-            self.dataSource.removeAll()
-            self.getServerData()
-            if self.isRecommendationActived {
-                Task.detached {
-                    await NCNetworking.shared.createRecommendations(session: self.session)
-                }
-            }
+			self.forceRefreshDataSource()
         }
 
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPressCollecationView(_:)))
@@ -236,7 +268,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource(_:)), name: NSNotification.Name(rawValue: global.notificationCenterReloadDataSource), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(getServerData(_:)), name: NSNotification.Name(rawValue: global.notificationCenterGetServerData), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadHeader(_:)), name: NSNotification.Name(rawValue: global.notificationCenterReloadHeader), object: nil)
-
         DispatchQueue.main.async {
             self.collectionView?.collectionViewLayout.invalidateLayout()
         }
@@ -249,11 +280,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             navigationController?.navigationBar.topItem?.title = titlePreviusFolder
         }
         navigationItem.title = titleCurrentFolder
-
-        isEditMode = false
-
-        (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
-        (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
+        
+		isEditMode = false
+		setNavigationBarLogoIfNeeded()
+        (self.navigationController as? HiDriveMainNavigationController)?.setNavigationLeftItems()
+        (self.navigationController as? HiDriveMainNavigationController)?.setNavigationRightItems()
 
         layoutForView = database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl)
         if isLayoutList {
@@ -271,6 +302,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         collectionView.reloadData()
+        updateHeadersView()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -297,6 +329,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.addObserver(self, selector: #selector(uploadCancelFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterUploadCancelFile), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(updateShare(_:)), name: NSNotification.Name(rawValue: global.notificationCenterUpdateShare), object: nil)
+        
+        tabBarSelect?.controller = controller
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -366,10 +400,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-
-        if let frame = tabBarController?.tabBar.frame {
-            tabBarSelect?.hostingController?.view.frame = frame
-        }
+        tabBarSelect?.onViewWillLayoutSubviews()
     }
 
     // MARK: - NotificationCenter
@@ -391,6 +422,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               serverUrl == self.serverUrl
         else { return }
 
+        defer {
+            (self.navigationController as? HiDriveMainNavigationController)?.setNavigationRightItems()
+            self.updateHeadersView()
+        }
+        
         if self.layoutForView?.layout == layoutForView.layout {
             self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
             self.reloadDataSource()
@@ -416,7 +452,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         self.collectionView.collectionViewLayout.invalidateLayout()
 
-        (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
+        (self.navigationController as? HiDriveMainNavigationController)?.setNavigationRightItems()
     }
 
     @objc func reloadDataSource(_ notification: NSNotification) {
@@ -678,19 +714,17 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
         return NCBrandOptions.shared.brand
     }
-
+    
     func accountSettingsDidDismiss(tableAccount: tableAccount?, controller: NCMainTabBarController?) { }
 
     // MARK: - SEARCH
 
     func searchController(enabled: Bool) {
         guard enableSearchBar else { return }
-        searchController?.searchBar.isUserInteractionEnabled = enabled
         if enabled {
-            searchController?.searchBar.alpha = 1
+            navigationItem.searchController = searchController
         } else {
-            searchController?.searchBar.alpha = 0.3
-
+            navigationItem.searchController = nil
         }
     }
 
@@ -845,7 +879,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                               animations: { self.collectionView.reloadData() },
                               completion: nil)
 
-            (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
+            (self.navigationController as? HiDriveMainNavigationController)?.setNavigationRightItems()
+            self.updateHeadersView()
             self.refreshControl.endRefreshing()
         }
     }

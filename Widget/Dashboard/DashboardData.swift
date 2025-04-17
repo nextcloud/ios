@@ -68,10 +68,10 @@ let dashboardDatasTest: [DashboardData] = [
 
 func getDashboardItems(displaySize: CGSize, withButton: Bool) -> Int {
     if withButton {
-        let items = Int((displaySize.height - 90) / 55)
+        let items = Int((displaySize.height - 90) / 59)
         return items
     } else {
-        let items = Int((displaySize.height - 50) / 55)
+        let items = Int((displaySize.height - 50) / 59)
         return items
     }
 }
@@ -105,7 +105,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     var activeTableAccount: tableAccount?
 
     if isPreview {
-        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard", account: ""))
+        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "Cloud_Checkmark", footerText: NCBrandOptions.shared.brand + " dashboard", account: ""))
     }
 
     let accountIdentifier: String = configuration?.accounts?.identifier ?? "active"
@@ -117,7 +117,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
 
     guard let activeTableAccount,
           let capabilities = NCManageDatabase.shared.setCapabilities(account: activeTableAccount.account) else {
-        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", comment: ""), account: ""))
+        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "Cloud_Xmark", footerText: NSLocalizedString("_no_active_account_", comment: ""), account: ""))
     }
 
     // Default widget
@@ -125,7 +125,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     let id: String = configuration?.applications?.identifier ?? (result?.id ?? "recommendations")
 
     guard capabilities.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion25 else {
-        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_widget_available_nc25_", comment: ""), account: activeTableAccount.account))
+        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "Cloud_Xmark", footerText: NSLocalizedString("_widget_available_nc25_", comment: ""), account: activeTableAccount.account))
     }
 
     // NETWORKING
@@ -251,9 +251,9 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
             let footerText = "Dashboard " + NSLocalizedString("_of_", comment: "") + " " + activeTableAccount.displayName + alias
 
             if error != .success {
-                completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: tableDashboard, buttons: buttons, isPlaceholder: true, isEmpty: false, titleImage: titleImage, title: title, footerImage: "xmark.icloud", footerText: error.errorDescription, account: account))
+                completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: tableDashboard, buttons: buttons, isPlaceholder: true, isEmpty: false, titleImage: titleImage, title: title, footerImage: "Cloud_Xmark", footerText: error.errorDescription, account: account))
             } else {
-                completion(DashboardDataEntry(date: Date(), datas: datas, dashboard: tableDashboard, buttons: buttons, isPlaceholder: false, isEmpty: datas.isEmpty, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: footerText, account: account))
+                completion(DashboardDataEntry(date: Date(), datas: datas, dashboard: tableDashboard, buttons: buttons, isPlaceholder: false, isEmpty: datas.isEmpty, titleImage: titleImage, title: title, footerImage: "Cloud_Checkmark", footerText: footerText, account: account))
             }
         }
     }

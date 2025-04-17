@@ -35,6 +35,8 @@ extension UIAlertController {
     static func createFolder(serverUrl: String, session: NCSession.Session, markE2ee: Bool = false, sceneIdentifier: String? = nil, completion: ((_ error: NKError) -> Void)? = nil) -> UIAlertController {
         let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message: nil, preferredStyle: .alert)
         let isDirectoryEncrypted = NCUtilityFileSystem().isDirectoryE2EE(session: session, serverUrl: serverUrl)
+        
+        alertController.view.backgroundColor = NCBrandColor.shared.appBackgroundColor
 
         let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in
             guard let fileNameFolder = alertController.textFields?.first?.text else { return }
@@ -67,19 +69,28 @@ extension UIAlertController {
                     completion?(error)
                 }
 #else
-                let metadataForCreateFolder = NCManageDatabase.shared.createMetadata(fileName: fileNameFolder,
-                                                                                     fileNameView: fileNameFolder,
-                                                                                     ocId: NSUUID().uuidString,
-                                                                                     serverUrl: serverUrl,
-                                                                                     url: "",
-                                                                                     contentType: "httpd/unix-directory",
-                                                                                     directory: true,
-                                                                                     session: session,
-                                                                                     sceneIdentifier: sceneIdentifier)
-                metadataForCreateFolder.status = NCGlobal.shared.metadataStatusWaitCreateFolder
-                metadataForCreateFolder.sessionDate = Date()
-                NCManageDatabase.shared.addMetadata(metadataForCreateFolder)
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadataForCreateFolder.ocId, "serverUrl": metadataForCreateFolder.serverUrl, "account": metadataForCreateFolder.account, "withPush": true, "sceneIdentifier": sceneIdentifier as Any])
+                var metadata = tableMetadata()
+
+                if let result = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", session.account, serverUrl, fileNameFolder)) {
+                    metadata = result
+                } else {
+                    metadata = NCManageDatabase.shared.createMetadata(fileName: fileNameFolder,
+                                                                      fileNameView: fileNameFolder,
+                                                                      ocId: NSUUID().uuidString,
+                                                                      serverUrl: serverUrl,
+                                                                      url: "",
+                                                                      contentType: "httpd/unix-directory",
+                                                                      directory: true,
+                                                                      session: session,
+                                                                      sceneIdentifier: sceneIdentifier)
+                }
+
+                metadata.status = NCGlobal.shared.metadataStatusWaitCreateFolder
+                metadata.sessionDate = Date()
+
+                NCManageDatabase.shared.addMetadata(metadata)
+
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "withPush": true, "sceneIdentifier": sceneIdentifier as Any])
 #endif
             }
         })

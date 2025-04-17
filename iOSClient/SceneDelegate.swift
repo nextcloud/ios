@@ -4,6 +4,7 @@
 //
 //  Created by Marino Faggiana on 25/03/24.
 //  Copyright © 2024 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -34,12 +35,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private var privacyProtectionWindow: UIWindow?
     private var isFirstScene: Bool = true
     private let database = NCManageDatabase.shared
+    
+    let sceneIdentifier: String = UUID().uuidString
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene),
               let appDelegate else { return }
 
         self.window = UIWindow(windowScene: windowScene)
+		setupUIAppearance()
         if !NCKeychain().appearanceAutomatic {
             self.window?.overrideUserInterfaceStyle = NCKeychain().appearanceInterfaceStyle
         }
@@ -91,6 +95,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
 
+	private func setupUIAppearance() {
+		NCMainTabBar.setupAppearance()
+	}
+	
     func sceneDidDisconnect(_ scene: UIScene) {
         print("[DEBUG] Scene did disconnect")
     }
@@ -110,6 +118,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         hidePrivacyProtectionWindow()
         if let window = SceneManager.shared.getWindow(scene: scene), let controller = SceneManager.shared.getController(scene: scene) {
             window.rootViewController = controller
+            
+            DataProtectionAgreementManager.shared.showAgreement(viewController: controller)
+            
             if NCKeychain().presentPasscode {
                 NCPasscode.shared.presentPasscode(viewController: controller, delegate: self) {
                     NCPasscode.shared.enableTouchFaceID()
@@ -180,7 +191,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
 
-        if tableAccount.autoUpload {
+        if tableAccount.autoUploadStart {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload: true")
             if UIApplication.shared.backgroundRefreshStatus == .available {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload in background: true")
@@ -212,7 +223,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         guard let controller = SceneManager.shared.getController(scene: scene),
-              let url = URLContexts.first?.url else { return }
+              let url = URLContexts.first?.url,
+              let sceneIdentifier = controller.sceneIdentifier else { return }
+
         let scheme = url.scheme
         let action = url.host
 
@@ -336,7 +349,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                         serverUrl = tableAccount.urlBase + "/" + davFiles
                     }
 
-                    NCActionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileNameBlink: nil, fileNameOpen: fileName, sceneIdentifier: controller.sceneIdentifier)
+                    NCActionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileNameBlink: nil, fileNameOpen: fileName, sceneIdentifier: sceneIdentifier)
                 }
             }
 
@@ -469,7 +482,10 @@ final class SceneManager: @unchecked Sendable {
     func getSceneIdentifier() -> [String] {
         var results: [String] = []
         for controller in sceneController.keys {
-            results.append(controller.sceneIdentifier)
+            guard let sceneIdentifier = controller.sceneIdentifier else {
+                continue
+            }
+            results.append(sceneIdentifier)
         }
         return results
     }

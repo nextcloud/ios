@@ -5,6 +5,10 @@
 import Photos
 
 extension PHAssetCollection {
+    public static func == (lhs: PHAssetCollection, rhs: PHAssetCollection) -> Bool {
+        return lhs.localIdentifier == rhs.localIdentifier || lhs.assetCount == rhs.assetCount
+        }
+
     var assetCount: Int {
         let fetchOptions = PHFetchOptions()
         let result = PHAsset.fetchAssets(in: self, options: fetchOptions)

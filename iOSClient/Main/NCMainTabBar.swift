@@ -4,6 +4,7 @@
 //
 //  Created by Marino Faggiana on 06/01/2020.
 //  Copyright © 2020 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -25,12 +26,33 @@ import UIKit
 import NextcloudKit
 
 class NCMainTabBar: UITabBar {
+
+	private let heightForDevicesWithRectCornersDisplay: CGFloat = 64.0
+
     private var fillColor: UIColor!
     private var shapeLayer: CALayer?
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private let centerButtonY: CGFloat = -28
     public var color = NCBrandColor.shared.customer
 
+	private var centerButtonColor: UIColor {
+        UIColor(resource: .Tabbar.fabButton)
+	}
+    
+	override open func sizeThatFits(_ size: CGSize) -> CGSize {
+		guard !UIDevice.current.hasComplexSaveArea else {
+			return super.sizeThatFits(size)
+		}
+		
+		var sizeThatFits = super.sizeThatFits(size)
+		sizeThatFits.height = heightForDevicesWithRectCornersDisplay
+		return sizeThatFits
+	}
+	
+    private var customBackgroundColor: UIColor? {
+        UIColor(named: "Tabbar/Background")
+    }
+	
     public var menuRect: CGRect {
         let tabBarItemWidth = Int(self.frame.size.width) / (self.items?.count ?? 0)
         let rect = CGRect(x: 0, y: -5, width: tabBarItemWidth, height: Int(self.frame.size.height))
@@ -44,22 +66,29 @@ class NCMainTabBar: UITabBar {
 
         NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
 
-        if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
-            self.color = NCBrandColor.shared.getElement(account: activeTableAccount.account)
-            tintColor = color
+        changeTheming()
+    }
+
+    @objc func changeTheming() {
+        layer.shadowOffset = CGSize(width: 0, height: 0)
+        layer.shadowRadius = 2.0
+        layer.shadowOpacity = 0.5
+        tintColor = UIColor(resource: .Tabbar.activeItem)
+        if let centerButton = self.viewWithTag(99) {
+            centerButton.backgroundColor = centerButtonColor
         }
     }
 
-    override var backgroundColor: UIColor? {
-        get {
-            return self.fillColor
-        }
-        set {
-            fillColor = newValue
-            self.setNeedsDisplay()
-        }
-    }
-
+	override var backgroundColor: UIColor? {
+		get {
+			return self.fillColor
+		}
+		set {
+			fillColor = newValue
+			self.setNeedsDisplay()
+		}
+	}
+	
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
         let button = self.viewWithTag(99)
         if self.bounds.contains(point) || (button != nil && button!.frame.contains(point)) {
@@ -77,25 +106,27 @@ class NCMainTabBar: UITabBar {
     }
 
     private func addShape() {
-        let blurEffect = UIBlurEffect(style: .systemThinMaterial)
-
-        let blurView = UIVisualEffectView(effect: blurEffect)
-        blurView.frame = self.bounds
+        let backgroundView = UIView(frame: self.bounds)
+        backgroundView.backgroundColor = customBackgroundColor
 
         let maskLayer = CAShapeLayer()
         maskLayer.path = createPath()
 
-        blurView.layer.mask = maskLayer
-
-        let border = CALayer()
-        border.backgroundColor = UIColor.separator.cgColor
-        border.frame = CGRect(x: 0, y: 0, width: blurView.frame.width, height: 0.5)
-
-        blurView.layer.addSublayer(border)
-
-        self.addSubview(blurView)
+        backgroundView.layer.mask = maskLayer
+        self.addSubview(backgroundView)
     }
 
+	private func setupSizeClasses() {
+		if #available(iOS 17.0, *) {
+			traitOverrides.horizontalSizeClass = .compact
+		}
+	}
+
+	override var traitCollection: UITraitCollection {
+		guard UIDevice.current.userInterfaceIdiom == .pad else { return super.traitCollection }
+		return UITraitCollection(traitsFrom: [super.traitCollection, UITraitCollection(horizontalSizeClass: .compact)])
+	}
+	
     private func createPath() -> CGPath {
 
         let height: CGFloat = 28
@@ -121,14 +152,14 @@ class NCMainTabBar: UITabBar {
         // File
         if let item = items?[0] {
             item.title = NSLocalizedString("_home_", comment: "")
-            item.image = UIImage(systemName: "folder.fill")
+            item.image = UIImage(named: "home")
             item.selectedImage = item.image
         }
-
-        // Favorite
+        
+        // Media
         if let item = items?[1] {
-            item.title = NSLocalizedString("_favorites_", comment: "")
-            item.image = UIImage(systemName: "star.fill")
+            item.title = NSLocalizedString("_media_", comment: "")
+            item.image = UIImage(named: "media")
             item.selectedImage = item.image
         }
 
@@ -140,18 +171,17 @@ class NCMainTabBar: UITabBar {
             item.isEnabled = false
         }
 
-        // Media
+        // Shares
         if let item = items?[3] {
-            item.title = NSLocalizedString("_media_", comment: "")
-            item.image = UIImage(systemName: "photo")
+            item.title = NSLocalizedString("_list_shares_", comment: "")
+            item.image = UIImage(named: "shares")
             item.selectedImage = item.image
         }
-
-        // More
+        
+        // Favorite
         if let item = items?[4] {
-            item.title = NSLocalizedString("_more_", comment: "")
-            item.image = UIImage(systemName: "line.3.horizontal")
-            item.image = UIImage(systemName: "ellipsis")
+            item.title = NSLocalizedString("_favorites_", comment: "")
+            item.image = UIImage(named: "favorites")
             item.selectedImage = item.image
         }
 

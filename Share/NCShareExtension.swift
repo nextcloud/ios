@@ -95,7 +95,7 @@ class NCShareExtension: UIViewController {
 
         collectionView.refreshControl = refreshControl
         refreshControl.tintColor = NCBrandColor.shared.iconImageColor
-        refreshControl.backgroundColor = .systemBackground
+        refreshControl.backgroundColor = NCBrandColor.shared.appBackgroundColor
         refreshControl.addTarget(self, action: #selector(reloadDatasource), for: .valueChanged)
 
         commandView.backgroundColor = .secondarySystemBackground

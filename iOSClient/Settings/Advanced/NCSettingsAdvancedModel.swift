@@ -5,6 +5,7 @@
 //  Created by Aditya Tyagi on 08/03/24.
 //  Created by Marino Faggiana on 30/05/24.
 //  Copyright © 2024 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Aditya Tyagi <adityagi02@yahoo.com>
 //
@@ -149,8 +150,6 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
             ufs.removeTemporaryDirectory()
             ufs.createDirectoryStandard()
 
-            NCAutoUpload.shared.alignPhotoLibrary(controller: self.controller, account: self.session.account)
-
             NCActivityIndicator.shared.stop()
             self.calculateSize()
 
@@ -194,7 +193,8 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
         // Instantiate NCViewerQuickLook with the log file URL, editing disabled, and no metadata
         let viewerQuickLook = NCViewerQuickLook(with: NSURL(fileURLWithPath: NextcloudKit.shared.nkCommonInstance.filenamePathLog) as URL, isEditingEnabled: false, metadata: nil)
         // Present the NCViewerQuickLook view controller
-        controller?.present(viewerQuickLook, animated: true, completion: nil)
+		let topController = controller?.presentedViewController ?? controller
+		topController?.present(viewerQuickLook, animated: true, completion: nil)
     }
 
     /// Clears the log file.

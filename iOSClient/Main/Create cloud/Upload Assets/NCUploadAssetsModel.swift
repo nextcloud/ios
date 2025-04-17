@@ -38,7 +38,7 @@ struct PreviewStore {
     var nativeFormat: Bool
     var data: Data?
     var fileName: String
-    var image: UIImage
+    var image: UIImage?
 }
 
 class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate {
@@ -66,29 +66,25 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
         self.assets = assets
         self.serverUrl = serverUrl
         self.controller = controller
-        self.showHUD = true
 
-        DispatchQueue.global(qos: .userInteractive).async {
-            for asset in self.assets {
-                var uti: String?
+        for asset in self.assets {
+            var uti: String?
 
-                if let phAsset = asset.phAsset,
-                   let resource = PHAssetResource.assetResources(for: phAsset).first(where: { $0.type == .photo }) {
-                    uti = resource.uniformTypeIdentifier
-                }
-
-                guard let image = asset.fullResolutionImage?.resizeImage(size: CGSize(width: 300, height: 300), isAspectRation: true),
-                      let localIdentifier = asset.phAsset?.localIdentifier else { continue }
-
-                DispatchQueue.main.async {
-                    self.previewStore.append(PreviewStore(id: localIdentifier, asset: asset, assetType: asset.type, uti: uti, nativeFormat: !NCKeychain().formatCompatibility, fileName: "", image: image))
-                }
+            if let phAsset = asset.phAsset,
+               let resource = PHAssetResource.assetResources(for: phAsset).first(where: { $0.type == .photo }) {
+                uti = resource.uniformTypeIdentifier
             }
-            DispatchQueue.main.async {
-                self.showHUD = false
-                self.hiddenSave = false
+
+            guard let localIdentifier = asset.phAsset?.localIdentifier
+            else {
+                continue
             }
+
+            self.previewStore.append(PreviewStore(id: localIdentifier, asset: asset, assetType: asset.type, uti: uti, nativeFormat: !NCKeychain().formatCompatibility, fileName: ""))
+
         }
+
+        self.hiddenSave = false
     }
 
     func getTextServerUrl() -> String {
@@ -105,6 +101,23 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
         } else {
             return ""
         }
+    }
+
+    func lowResolutionImage(asset: PHAsset) -> UIImage? {
+        let imageManager = PHImageManager.default()
+        let options = PHImageRequestOptions()
+        options.isSynchronous = true
+        options.resizeMode = .fast
+        options.isNetworkAccessAllowed = true
+
+        let targetSize = CGSize(width: 80, height: 80)
+        var thumbnail: UIImage?
+
+        imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFill, options: options) { result, _ in
+            thumbnail = result
+        }
+
+        return thumbnail
     }
 
     func deleteAsset(index: Int) {
@@ -175,7 +188,7 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
 
         if useAutoUploadFolder {
             let assets = self.assets.compactMap { $0.phAsset }
-            NCNetworking.shared.createFolder(assets: assets, useSubFolder: self.useAutoUploadSubFolder, selector: NCGlobal.shared.selectorUploadFile, session: self.session)
+            NCNetworking.shared.createFolder(assets: assets, useSubFolder: self.useAutoUploadSubFolder, session: self.session)
             self.showHUD = false
             createProcessUploads()
         } else {

@@ -33,7 +33,7 @@ class NCContextMenu: NSObject {
 
     func viewMenu(ocId: String, viewController: UIViewController, image: UIImage?) -> UIMenu {
         guard let metadata = self.database.getMetadataFromOcId(ocId),
-              let sceneIdentifier = (viewController.tabBarController as? NCMainTabBarController)?.sceneIdentifier else { return UIMenu() }
+              let sceneIdentifier = (viewController.mainTabBarController as? NCMainTabBarController)?.sceneIdentifier else { return UIMenu() }
         var downloadRequest: DownloadRequest?
         var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
         let metadataMOV = self.database.getMetadataLivePhoto(metadata: metadata)
@@ -44,14 +44,14 @@ class NCContextMenu: NSObject {
         // MENU ITEMS
 
         let detail = UIAction(title: NSLocalizedString("_details_", comment: ""),
-                              image: utility.loadImage(named: "info.circle")) { _ in
+                              image: NCImagesRepository.menuIconDetails) { _ in
             NCActionCenter.shared.openShare(viewController: viewController, metadata: metadata, page: .activity)
         }
 
         let favorite = UIAction(title: metadata.favorite ?
                                 NSLocalizedString("_remove_favorites_", comment: "") :
                                 NSLocalizedString("_add_favorites_", comment: ""),
-                                image: utility.loadImage(named: metadata.favorite ? "star.slash" : "star", colors: [NCBrandColor.shared.yellowFavorite])) { _ in
+                                image: metadata.favorite ? NCImagesRepository.menuIconRemoveFromFavorite : NCImagesRepository.menuIconAddToFavorite) { _ in
             NCNetworking.shared.favoriteMetadata(metadata) { error in
                 if error != .success {
                     NCContentPresenter().showError(error: error)
@@ -60,7 +60,7 @@ class NCContextMenu: NSObject {
         }
 
         let share = UIAction(title: NSLocalizedString("_share_", comment: ""),
-                             image: utility.loadImage(named: "square.and.arrow.up") ) { _ in
+                             image: NCImagesRepository.menuIconShare ) { _ in
             if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile,
                                                             object: nil,
@@ -99,18 +99,18 @@ class NCContextMenu: NSObject {
         }
 
         let viewInFolder = UIAction(title: NSLocalizedString("_view_in_folder_", comment: ""),
-                                    image: utility.loadImage(named: "questionmark.folder")) { _ in
+                                    image: NCImagesRepository.menuIconViewInFolder) { _ in
             NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil, sceneIdentifier: sceneIdentifier)
         }
 
-        let livePhotoSave = UIAction(title: NSLocalizedString("_livephoto_save_", comment: ""), image: utility.loadImage(named: "livephoto")) { _ in
+        let livePhotoSave = UIAction(title: NSLocalizedString("_livephoto_save_", comment: ""), image: NCImagesRepository.menuIconLivePhoto) { _ in
             if let metadataMOV = metadataMOV {
                 NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, hudView: viewController.view))
             }
         }
 
         let modify = UIAction(title: NSLocalizedString("_modify_", comment: ""),
-                              image: utility.loadImage(named: "pencil.tip.crop.circle")) { _ in
+                              image: NCImagesRepository.menuIconModifyWithQuickLook) { _ in
             if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile,
                                                             object: nil,
@@ -149,13 +149,14 @@ class NCContextMenu: NSObject {
         }
 
         let deleteConfirmFile = UIAction(title: titleDeleteConfirmFile,
-                                         image: utility.loadImage(named: "trash"), attributes: .destructive) { _ in
+                                         image: NCImagesRepository.menuIconTrash, attributes: .destructive) { _ in
 
             var alertStyle = UIAlertController.Style.actionSheet
             if UIDevice.current.userInterfaceIdiom == .pad {
                 alertStyle = .alert
             }
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: alertStyle)
+            alertController.view.backgroundColor = NCBrandColor.shared.appBackgroundColor
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_file_", comment: ""), style: .destructive) { _ in
                 NCNetworking.shared.deleteMetadatas([metadata], sceneIdentifier: sceneIdentifier)
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
@@ -165,7 +166,7 @@ class NCContextMenu: NSObject {
         }
 
         let deleteConfirmLocal = UIAction(title: NSLocalizedString("_remove_local_file_", comment: ""),
-                                          image: utility.loadImage(named: "trash"), attributes: .destructive) { _ in
+                                          image: NCImagesRepository.menuIconTrash, attributes: .destructive) { _ in
             Task {
                 var ocId: [String] = []
                 let error = await NCNetworking.shared.deleteCache(metadata, sceneIdentifier: sceneIdentifier)
@@ -177,7 +178,6 @@ class NCContextMenu: NSObject {
         }
 
         let deleteSubMenu = UIMenu(title: NSLocalizedString("_delete_file_", comment: ""),
-                                   image: utility.loadImage(named: "trash"),
                                    options: .destructive,
                                    children: [deleteConfirmLocal, deleteConfirmFile])
 

@@ -4,6 +4,7 @@
 //
 //  Created by Marino Faggiana on 24/10/2018.
 //  Copyright © 2018 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -28,7 +29,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var imageFavorite: UIImageView!
-    @IBOutlet weak var imageFavoriteBackground: UIImageView!
     @IBOutlet weak var imageLocal: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
@@ -38,6 +38,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var buttonShared: UIButton!
     @IBOutlet weak var imageMore: UIImageView!
     @IBOutlet weak var buttonMore: UIButton!
+    @IBOutlet weak var progressView: UIProgressView!
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var tag0: UILabel!
     @IBOutlet weak var tag1: UILabel!
@@ -45,12 +46,18 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var titleTrailingConstraint: NSLayoutConstraint!
+    @IBOutlet weak var subInfoTrailingConstraint: NSLayoutConstraint!
 
     var ocId = ""
     var ocIdTransfer = ""
     var user = ""
 
     weak var listCellDelegate: NCListCellDelegate?
+    var namedButtonMore = ""
+    
+    var separatorBackground: UIColor? {
+       UIColor(named: "ListCell/Separator")
+    }
 
     var fileAvatarImageView: UIImageView? {
         return imageShared
@@ -97,7 +104,9 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
     var fileSharedImage: UIImageView? {
         get { return imageShared }
-        set { imageShared = newValue }
+		set {
+			imageShared = newValue
+		}
     }
     var fileMoreImage: UIImageView? {
         get { return imageMore }
@@ -140,9 +149,9 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         imageItem.image = nil
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
+        imageItem.backgroundColor = nil
         imageStatus.image = nil
         imageFavorite.image = nil
-        imageFavoriteBackground.isHidden = true
         imageLocal.image = nil
         labelTitle.text = ""
         labelInfo.text = ""
@@ -159,6 +168,16 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         longPressedGesture.delegate = self
         longPressedGesture.delaysTouchesBegan = true
         self.addGestureRecognizer(longPressedGesture)
+
+        separator.backgroundColor = separatorBackground
+        separatorHeightConstraint.constant = 1
+
+        labelTitle.text = ""
+        labelInfo.text = ""
+        labelSubinfo.text = ""
+        labelTitle.textColor = UIColor(resource: .ListCell.title)
+        labelInfo.textColor = UIColor(resource: .ListCell.subtitle)
+        labelSubinfo.textColor = UIColor(resource: .ListCell.subtitle)
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
@@ -213,7 +232,11 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         buttonShared.isHidden = status
     }
 
-    func selected(_ status: Bool, isEditMode: Bool) {
+    func hideSeparator(_ status: Bool) {
+        separator.isHidden = status
+    }
+	
+    func selected(_ isSelected: Bool, isEditMode: Bool) {
         if isEditMode {
             imageItemLeftConstraint.constant = 45
             imageSelect.isHidden = false
@@ -232,19 +255,10 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             backgroundView = nil
             setA11yActions()
         }
-        if status {
-            var blurEffectView: UIView?
-            blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterial))
-            blurEffectView?.backgroundColor = .lightGray
-            blurEffectView?.frame = self.bounds
-            blurEffectView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            imageSelect.image = NCImageCache.shared.getImageCheckedYes()
-            backgroundView = blurEffectView
-            separator.isHidden = true
+        if isSelected {
+            imageSelect.image = NCImageCache.shared.getImageCheckedYes().withTintColor(NCBrandColor.shared.brandElement)
         } else {
-            imageSelect.image = NCImageCache.shared.getImageCheckedNo()
-            backgroundView = nil
-            separator.isHidden = false
+            imageSelect.image = NCImageCache.shared.getImageCheckedNo().withTintColor(UIColor(resource: .FileSelection.listItemDeselected))
         }
 
     }
@@ -282,18 +296,10 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 
     func setIconOutlines() {
-        imageFavoriteBackground.isHidden = fileFavoriteImage?.image == nil
-
         if imageStatus.image != nil {
             imageStatus.makeCircularBackground(withColor: .systemBackground)
         } else {
             imageStatus.backgroundColor = .clear
-        }
-
-        if imageLocal.image != nil {
-            imageLocal.makeCircularBackground(withColor: .systemBackground)
-        } else {
-            imageLocal.backgroundColor = .clear
         }
     }
 }
@@ -307,7 +313,7 @@ protocol NCListCellDelegate: AnyObject {
 // MARK: - List Layout
 
 class NCListLayout: UICollectionViewFlowLayout {
-    var itemHeight: CGFloat = 60
+    var itemHeight: CGFloat = 64
 
     override init() {
         super.init()

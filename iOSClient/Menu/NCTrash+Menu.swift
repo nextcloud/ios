@@ -5,6 +5,7 @@
 //  Created by Marino Faggiana on 03/03/2021.
 //  Copyright © 2021 Marino Faggiana. All rights reserved.
 //  Copyright © 2022 Henrik Storch. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //  Author Henrik Storch <henrik.storch@nextcloud.com>
@@ -65,7 +66,7 @@ extension NCTrash {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_restore_", comment: ""),
-                icon: utility.loadImage(named: "arrow.circlepath", colors: [NCBrandColor.shared.iconImageColor]),
+                icon: NCImagesRepository.menuRestore,
                 action: { _ in
                     self.restoreItem(with: objectId)
                 }
@@ -75,8 +76,7 @@ extension NCTrash {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_delete_", comment: ""),
-                destructive: true,
-                icon: utility.loadImage(named: "trash", colors: [.red]),
+                icon: NCImagesRepository.menuIconTrash,
                 action: { _ in
                     self.deleteItem(with: objectId)
                 }

@@ -69,13 +69,13 @@ class NCActivity: UIViewController, NCSharePagingContent {
         super.viewDidLoad()
 
         self.navigationController?.navigationBar.prefersLargeTitles = true
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = NCBrandColor.shared.appBackgroundColor
         self.title = NSLocalizedString("_activity_", comment: "")
 
         tableView.allowsSelection = false
         tableView.separatorColor = UIColor.clear
         tableView.contentInset = insets
-        tableView.backgroundColor = .systemBackground
+        tableView.backgroundColor = NCBrandColor.shared.appBackgroundColor
 
         if showComments {
             setupComments()
@@ -533,7 +533,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_edit_comment_", comment: ""),
-                icon: utility.loadImage(named: "pencil", colors: [NCBrandColor.shared.iconImageColor]),
+                icon:  NCImagesRepository.menuIconEdit,
                 action: { _ in
                     guard let metadata = self.metadata, let tableComments = tableComments else { return }
 

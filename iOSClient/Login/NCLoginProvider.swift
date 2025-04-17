@@ -91,7 +91,12 @@ class NCLoginProvider: UIViewController {
 
     @objc func goBack() {
         delegate?.onBack()
-        navigationController?.popViewController(animated: true)
+
+        if isModal {
+            dismiss(animated: true)
+        } else {
+            navigationController?.popViewController(animated: true)
+        }
     }
 
     func poll(loginFlowV2Token: String, loginFlowV2Endpoint: String, loginFlowV2Login: String) {

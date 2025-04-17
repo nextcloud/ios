@@ -4,6 +4,7 @@
 //
 //  Created by Marino Faggiana on 25/07/2019.
 //  Copyright © 2019 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -92,7 +93,7 @@ class NCShareNetworking: NSObject {
                 if showLoadingIndicator {
                     NCActivityIndicator.shared.stop()
                 }
-                NCContentPresenter().showError(error: error)
+                self.showAlert(with: error)
                 self.delegate?.readShareCompleted()
             }
         }
@@ -124,7 +125,7 @@ class NCShareNetworking: NSObject {
 
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateShare, userInfo: ["account": self.metadata.account, "serverUrl": self.metadata.serverUrl])
             } else {
-                NCContentPresenter().showError(error: error)
+                self.showAlert(with: error)
             }
 
             self.delegate?.shareCompleted()
@@ -142,7 +143,7 @@ class NCShareNetworking: NSObject {
 
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateShare, userInfo: ["account": self.metadata.account, "serverUrl": self.metadata.serverUrl])
             } else {
-                NCContentPresenter().showError(error: error)
+                self.showAlert(with: error)
             }
         }
     }
@@ -165,7 +166,7 @@ class NCShareNetworking: NSObject {
 
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateShare, userInfo: ["account": self.metadata.account, "serverUrl": self.metadata.serverUrl])
             } else {
-                NCContentPresenter().showError(error: error)
+                self.showAlert(with: error)
                 self.delegate?.updateShareWithError(idShare: option.idShare)
             }
         }
@@ -179,7 +180,7 @@ class NCShareNetworking: NSObject {
             if error == .success {
                 self.delegate?.getSharees(sharees: sharees)
             } else {
-                NCContentPresenter().showError(error: error)
+                self.showAlert(with: error)
                 self.delegate?.getSharees(sharees: nil)
             }
         }
@@ -199,7 +200,7 @@ class NCShareNetworking: NSObject {
             if error == .success {
                 self.delegate?.downloadLimitRemoved(by: token)
             } else {
-                NCContentPresenter().showError(error: error)
+                self.showAlert(with: error)
             }
         }
     }
@@ -219,8 +220,34 @@ class NCShareNetworking: NSObject {
                 self.delegate?.downloadLimitSet(to: limit, by: token)
             } else {
                 self.delegate?.downloadLimitRemoved(by: token)
-                NCContentPresenter().showError(error: error)
+                self.showAlert(with: error)
             }
+        }
+    }
+    
+    private func showAlert(with error: NKError) {
+        if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled { return }
+        
+        let title = "_error_"
+        
+        switch error.errorCode {
+        case Int(CFNetworkErrors.cfurlErrorNotConnectedToInternet.rawValue):
+            NCContentPresenter().showError(error: error)
+        default:
+            var responseMessage = ""
+            if let data = error.responseData {
+                do {
+                    if let json = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: Any],
+                       let message = json["message"] as? String {
+                        responseMessage = "\n\n" + message
+                    }
+                } catch {
+                    print("Something went wrong")
+                }
+            }
+            if error.errorDescription.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { return }
+            let description = NSLocalizedString(error.errorDescription, comment: "")
+            self.delegate?.showOKAlert(title: NSLocalizedString(title, comment: ""), message: description + responseMessage)
         }
     }
 }

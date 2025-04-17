@@ -4,6 +4,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -15,7 +16,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6gG-SV-Hvv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="7770" y="899"/>
+            <point key="canvasLocation" x="6367" y="899"/>
         </scene>
         <!--Main Tab Bar Controller-->
         <scene sceneID="gY3-Ur-rTC">
@@ -28,14 +29,23 @@
                     <tabBar key="tabBar" contentMode="scaleToFill" id="72f-jP-cei" customClass="NCMainTabBar" customModule="Nextcloud" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" name="Tabbar/Background"/>
+                        <color key="tintColor" name="Tabbar/ActiveItem"/>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="color" keyPath="tintColor">
+                                <color key="value" name="Tabbar/ActiveItem"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="color" keyPath="unselectedItemTintColor">
+                                <color key="value" name="Tabbar/InactiveItem"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
                     </tabBar>
                     <connections>
                         <segue destination="bSZ-tE-FEj" kind="relationship" relationship="viewControllers" id="qbu-nX-qCk"/>
-                        <segue destination="hwM-4d-Afb" kind="relationship" relationship="viewControllers" id="tds-0Q-7Zf"/>
-                        <segue destination="Cc7-4O-z6Q" kind="relationship" relationship="viewControllers" id="YKg-LH-tor"/>
-                        <segue destination="Npr-vu-PSD" kind="relationship" relationship="viewControllers" id="XeU-GF-etm"/>
-                        <segue destination="1Z8-Bx-Dqo" kind="relationship" relationship="viewControllers" id="z6l-ei-IMY"/>
+                        <segue destination="Npr-vu-PSD" kind="relationship" relationship="viewControllers" id="e2C-Xa-JKZ"/>
+                        <segue destination="Cc7-4O-z6Q" kind="relationship" relationship="viewControllers" id="JRH-QC-Abr"/>
+                        <segue destination="SnI-tP-Duk" kind="relationship" relationship="viewControllers" id="Ufi-bZ-0xS"/>
+                        <segue destination="hwM-4d-Afb" kind="relationship" relationship="viewControllers" id="ZPH-AB-yBc"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="d2B-Yg-rp2" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -45,7 +55,7 @@
         <!--File-->
         <scene sceneID="dMv-43-hWy">
             <objects>
-                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="bSZ-tE-FEj" customClass="NCFilesNavigationController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="bSZ-tE-FEj" customClass="HiDriveMainNavigationController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="File" id="Zxv-aS-HGF"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="cj6-rT-wnB">
@@ -64,7 +74,7 @@
         <!--Favorites-->
         <scene sceneID="YSr-JF-a0V">
             <objects>
-                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="hwM-4d-Afb" customClass="NCFavoriteNavigationController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="hwM-4d-Afb" customClass="HiDriveMainNavigationController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Favorites" id="o09-67-hwf"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="MJw-Bn-5le">
@@ -78,7 +88,24 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NME-vT-pfd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="6367" y="327"/>
+            <point key="canvasLocation" x="8523" y="335"/>
+        </scene>
+        <!--Shares-->
+        <scene sceneID="91T-LL-h92">
+            <objects>
+                <navigationController id="SnI-tP-Duk" userLabel="Shares" customClass="HiDriveMainNavigationController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="" id="W5E-2H-tgy" userLabel="Shares"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="9sY-Wy-qOL">
+                        <rect key="frame" x="0.0" y="48" width="414" height="96"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="3YH-o1-17m" kind="relationship" relationship="rootViewController" id="yqG-uw-A7i"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="c1H-4M-rxR" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="7770" y="327"/>
         </scene>
         <!--Media-->
         <scene sceneID="IuY-Iu-oAm">
@@ -97,7 +124,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cZf-pk-3Bd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="7771" y="327"/>
+            <point key="canvasLocation" x="6367" y="327"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="cip-AF-Ks2">
@@ -229,20 +256,32 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gnf-oc-B60" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="6367" y="899"/>
+            <point key="canvasLocation" x="8522" y="899"/>
         </scene>
-        <!--NCMore.storyboard-->
+        <!--NCShares.storyboard-->
         <scene sceneID="OXv-NF-UnP">
             <objects>
-                <viewControllerPlaceholder storyboardName="NCMore" referencedIdentifier="NCMore.storyboard" id="3YH-o1-17m" sceneMemberID="viewController">
+                <viewControllerPlaceholder storyboardName="NCShares" referencedIdentifier="NCShares.storyboard" id="3YH-o1-17m" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" id="kVD-Ed-Voa"/>
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CL1-x1-23E" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="8458" y="899"/>
+            <point key="canvasLocation" x="7770" y="899"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="yqG-uw-A7i"/>
+    </inferredMetricsTieBreakers>
     <resources>
         <image name="tabBarPlus" width="80" height="80"/>
+        <namedColor name="Tabbar/ActiveItem">
+            <color red="0.078431372549019607" green="0.45490196078431372" blue="0.7686274509803922" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="Tabbar/Background">
+            <color red="0.95686274509803926" green="0.96862745098039216" blue="0.98039215686274506" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="Tabbar/InactiveItem">
+            <color red="0.27450980392156865" green="0.35294117647058826" blue="0.45882352941176469" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
     </resources>
 </document>

@@ -4,6 +4,7 @@
 //
 //  Created by Marino Faggiana on 26/09/2020.
 //  Copyright © 2020 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -37,7 +38,6 @@ class NCFiles: NCCollectionViewCommon {
 
         titleCurrentFolder = NCBrandOptions.shared.brand
         layoutKey = NCGlobal.shared.layoutViewFiles
-        enableSearchBar = true
         headerRichWorkspaceDisable = false
         emptyTitle = "_files_no_files_"
         emptyDescription = "_no_file_pull_down_"
@@ -46,6 +46,8 @@ class NCFiles: NCCollectionViewCommon {
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
+        enableSearchBar = !isOpenedFromSearchResults()
+        
         super.viewDidLoad()
 
         if self.serverUrl.isEmpty {
@@ -337,6 +339,12 @@ class NCFiles: NCCollectionViewCommon {
                 }
             }
         }
+    }
+    
+    private func isOpenedFromSearchResults() -> Bool {
+        return self.navigationController?.viewControllers.contains(where: { viewController in
+            return (viewController as? NCCollectionViewCommon)?.isSearchingMode ?? false
+        }) ?? false
     }
 
     // MARK: - NCAccountSettingsModelDelegate

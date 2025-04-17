@@ -172,9 +172,11 @@ class NCViewer: NSObject {
             let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), isEditingEnabled: false, metadata: metadata)
             viewController.present(viewerQuickLook, animated: true)
         } else {
-            // Document Interaction Controller
-            if let controller = viewController.tabBarController as? NCMainTabBarController {
-                NCActionCenter.shared.openDocumentController(metadata: metadata, controller: controller)
+        // Document Interaction Controller
+            if let mainTabBarController = viewController.tabBarController as? NCMainTabBarController {
+                NCActionCenter.shared.openDocumentController(metadata: metadata, controller: mainTabBarController)
+            } else {
+                NCActionCenter.shared.openDocumentController(metadata: metadata, viewController: viewController)
             }
         }
     }

@@ -4,6 +4,7 @@
 //
 //  Created by Marino Faggiana on 24/02/24.
 //  Copyright © 2024 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -24,7 +25,6 @@
 import Foundation
 import UIKit
 import NextcloudKit
-import SwiftUI
 
 extension NCMedia {
     @IBAction func selectOrCancelButtonPressed(_ sender: UIButton) {
@@ -32,24 +32,16 @@ extension NCMedia {
         setSelectcancelButton()
     }
 
-    @IBAction func assistantButtonPressed(_ sender: UIButton) {
-        let assistant = NCAssistant()
-            .environmentObject(NCAssistantModel(controller: self.controller))
-        let hostingController = UIHostingController(rootView: assistant)
-        self.present(hostingController, animated: true, completion: nil)
-    }
-
     func setEditMode(_ editMode: Bool) {
         isEditMode = editMode
         setSelectcancelButton()
+        updateHeadersView()
+        setNavigationLeftItems()
     }
 
     func setSelectcancelButton() {
-        let assistantEnabled = NCCapabilities.shared.getCapabilities(account: session.account).capabilityAssistantEnabled
-
-        assistantButton.isHidden = true
         fileSelect.removeAll()
-        tabBarSelect.selectCount = fileSelect.count
+        tabBarSelect.update(fileSelect: fileSelect)
 
         if let visibleCells = self.collectionView?.indexPathsForVisibleItems.compactMap({ self.collectionView?.cellForItem(at: $0) }) {
             for case let cell as NCMediaCell in visibleCells {
@@ -58,57 +50,13 @@ extension NCMedia {
         }
 
         if isEditMode {
-            selectOrCancelButton.setTitle( NSLocalizedString("_cancel_", comment: ""), for: .normal)
-            selectOrCancelButton.isHidden = false
-            menuButton.isHidden = true
             tabBarSelect.show()
         } else {
-            selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
-            selectOrCancelButton.isHidden = false
-            menuButton.isHidden = false
-            if assistantEnabled {
-                assistantButton.isHidden = false
-            }
             tabBarSelect.hide()
         }
     }
 
-    func setTitleDate() {
-        if let layoutAttributes = collectionView.collectionViewLayout.layoutAttributesForElements(in: collectionView.bounds) {
-            let sortedAttributes = layoutAttributes.sorted { $0.frame.minY < $1.frame.minY || ($0.frame.minY == $1.frame.minY && $0.frame.minX < $1.frame.minX) }
-
-            if let firstAttribute = sortedAttributes.first, let metadata = dataSource.getMetadata(indexPath: firstAttribute.indexPath) {
-                titleDate?.text = utility.getTitleFromDate(metadata.datePhotosOriginal as Date)
-                return
-            }
-        }
-
-        titleDate?.text = ""
-    }
-
-    func setColor() {
-        if isTop {
-            UIView.animate(withDuration: 0.3) { [self] in
-                gradientView.alpha = 0
-                titleDate?.textColor = NCBrandColor.shared.textColor
-                activityIndicator.color = NCBrandColor.shared.textColor
-                selectOrCancelButton.setTitleColor(NCBrandColor.shared.textColor, for: .normal)
-                menuButton.setImage(NCUtility().loadImage(named: "ellipsis", colors: [NCBrandColor.shared.textColor]), for: .normal)
-                assistantButton.setImage(NCUtility().loadImage(named: "sparkles", colors: [NCBrandColor.shared.textColor]), for: .normal)
-            }
-        } else {
-            UIView.animate(withDuration: 0.3) { [self] in
-                gradientView.alpha = 1
-                titleDate?.textColor = .white
-                activityIndicator.color = .white
-                selectOrCancelButton.setTitleColor(.white, for: .normal)
-                menuButton.setImage(NCUtility().loadImage(named: "ellipsis", colors: [.white]), for: .normal)
-                assistantButton.setImage(NCUtility().loadImage(named: "sparkles", colors: [.white]), for: .normal)
-            }
-        }
-    }
-
-    func createMenu() {
+    func createMenuElements() -> [UIMenuElement] {
         let layoutForView = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "")
         var layout = layoutForView?.layout ?? global.mediaLayoutRatio
         /// Overwrite default value
@@ -147,7 +95,7 @@ extension NCMedia {
                     self.database.setLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "", layout: self.global.mediaLayoutRatio)
                     self.layoutType = self.global.mediaLayoutRatio
                 }
-                self.createMenu()
+                self.updateHeadersMenu()
                 self.collectionViewReloadData()
             }
         ])
@@ -192,11 +140,11 @@ extension NCMedia {
             self.present(alert, animated: true)
         }
 
-        menuButton.menu = UIMenu(title: "", children: [viewFilterMenu, viewLayoutMenu, viewFolderMedia, playFile, playURL])
+        return [viewFilterMenu, viewLayoutMenu, viewFolderMedia, playFile, playURL]
     }
 }
 
-extension NCMedia: NCMediaSelectTabBarDelegate {
+extension NCMedia: HiDriveCollectionViewCommonSelectToolbarDelegate {
     func delete() {
         let ocIds = self.fileSelect.map { $0 }
         var alertStyle = UIAlertController.Style.actionSheet
@@ -210,8 +158,7 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: alertStyle)
 
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_selected_photos_", comment: ""), style: .destructive) { (_: UIAlertAction) in
-                self.isEditMode = false
-                self.setSelectcancelButton()
+                self.setEditMode(false)
 
                 for ocId in ocIds {
                     if let metadata = self.database.getMetadataFromOcId(ocId) {
@@ -232,6 +179,7 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
                 self.dataSource.removeMetadata(ocIds)
                 if indexPaths.count == ocIds.count {
                     self.collectionView.deleteItems(at: indexPaths)
+                    self.updateHeadersView()
                 } else {
                     self.collectionViewReloadData()
                 }
@@ -241,5 +189,13 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
 
             present(alertController, animated: true, completion: { })
         }
+    }
+    
+    func toolbarWillAppear() {
+        self.tabBarController?.tabBar.isHidden = true
+    }
+    
+    func toolbarWillDisappear() {
+        self.tabBarController?.tabBar.isHidden = false
     }
 }

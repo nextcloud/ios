@@ -4,6 +4,7 @@
 //
 //  Created by Marino Faggiana on 25/08/22.
 //  Copyright © 2022 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -34,91 +35,71 @@ struct ToolbarWidgetView: View {
         let linkNoAction: URL = URL(string: NCGlobal.shared.widgetActionNoAction + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionNoAction + parameterLink)! : URL(string: NCGlobal.shared.widgetActionNoAction)!
         let linkActionUploadAsset: URL = URL(string: NCGlobal.shared.widgetActionUploadAsset + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionUploadAsset + parameterLink)! : URL(string: NCGlobal.shared.widgetActionUploadAsset)!
         let linkActionScanDocument: URL = URL(string: NCGlobal.shared.widgetActionScanDocument + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionScanDocument + parameterLink)! : URL(string: NCGlobal.shared.widgetActionScanDocument)!
-        let linkActionTextDocument: URL = URL(string: NCGlobal.shared.widgetActionTextDocument + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionTextDocument + parameterLink)! : URL(string: NCGlobal.shared.widgetActionTextDocument)!
         let linkActionVoiceMemo: URL = URL(string: NCGlobal.shared.widgetActionVoiceMemo + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionVoiceMemo + parameterLink)! : URL(string: NCGlobal.shared.widgetActionVoiceMemo)!
 
         GeometryReader { geo in
 
             ZStack(alignment: .topLeading) {
-
+				
                 HStack(spacing: 0) {
-
-                    let sizeButton: CGFloat = 65
+					
+					let height: CGFloat = 60
+                    let width = geo.size.width / 3
 
                     Link(destination: entry.isPlaceholder ? linkNoAction : linkActionUploadAsset, label: {
-                        Image("addImage")
+						Image(uiImage: UIImage(resource: .media))
                             .resizable()
                             .renderingMode(.template)
-                            .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getText(account: entry.account)))
-                            .padding()
-                            .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getElement(account: entry.account)))
+                            .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(.text))
+                            .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
                             .clipShape(Circle())
                             .scaledToFit()
-                            .frame(width: geo.size.width / 4, height: sizeButton)
+                            .frame(width: width, height: height)
                     })
 
                     Link(destination: entry.isPlaceholder ? linkNoAction : linkActionScanDocument, label: {
-                        Image(systemName: "doc.text.viewfinder")
+						Image(uiImage: UIImage(resource: .scan))
                             .resizable()
                             .renderingMode(.template)
                             .font(Font.system(.body).weight(.light))
-                            .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getText(account: entry.account)))
-                            .padding()
-                            .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getElement(account: entry.account)))
+                            .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(.text))
+                            .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
                             .clipShape(Circle())
                             .scaledToFit()
-                            .frame(width: geo.size.width / 4, height: sizeButton)
+                            .frame(width: width, height: height)
                     })
-
-                    Link(destination: entry.isPlaceholder ? linkNoAction : linkActionTextDocument, label: {
-                        Image("note.text")
-                            .resizable()
-                            .renderingMode(.template)
-                            .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getText(account: entry.account)))
-                            .padding()
-                            .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getElement(account: entry.account)))
-                            .clipShape(Circle())
-                            .scaledToFit()
-                            .frame(width: geo.size.width / 4, height: sizeButton)
-                    })
-
-                    Link(destination: entry.isPlaceholder ? linkNoAction : linkActionVoiceMemo, label: {
-                        Image("microphone")
-                            .resizable()
-                            .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getText(account: entry.account)))
-                            .padding()
-                            .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getElement(account: entry.account)))
-                            .clipShape(Circle())
-                            .scaledToFit()
-                            .frame(width: geo.size.width / 4, height: sizeButton)
-                    })
+					
+					Link(destination: entry.isPlaceholder ? linkNoAction : linkActionVoiceMemo, label: {
+						Image(uiImage: UIImage(resource: .mic))
+							.resizable()
+							.foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(.text))
+							.background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
+							.clipShape(Circle())
+							.scaledToFit()
+							.frame(width: width, height: height)
+					})
                 }
                 .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
+				.padding(.vertical, geo.size.height / 2 * -0.25)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
 
-                HStack {
-                    Image(systemName: entry.footerImage)
-                        .resizable()
-                        .font(Font.system(.body).weight(.light))
-                        .scaledToFit()
-                        .frame(width: 15, height: 15)
-                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getElement(account: entry.account)))
-
-                    Text(entry.footerText)
-                        .font(.caption2)
-                        .padding(.trailing, 13.0)
-                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getElement(account: entry.account)))
-                }
-                .frame(maxWidth: geo.size.width - 5, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
+                FooterView(imageName: entry.footerImage,
+                           text: entry.footerText,
+                           isPlaceholder: entry.isPlaceholder)
+                    .padding(.horizontal, 15.0)
+                    .padding(.bottom, 10.0)
+                    .frame(maxWidth: geo.size.width - 5,
+                           maxHeight: geo.size.height - 2,
+                           alignment: .bottomTrailing)
             }
         }
-        .widgetBackground(Color.black.opacity(0.9))
+        .widgetBackground(Color(.background))
     }
 }
 
 struct ToolbarWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let entry = ToolbarDataEntry(date: Date(), isPlaceholder: false, userId: "", url: "", account: "", footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " toolbar")
+        let entry = ToolbarDataEntry(date: Date(), isPlaceholder: false, userId: "", url: "", account: "", footerImage: "Cloud_Checkmark", footerText: NCBrandOptions.shared.brand + " toolbar")
         ToolbarWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemMedium))
     }
 }
