@@ -16,7 +16,7 @@ extension NCFiles {
             accumulatedScrollDown += deltaY
             if accumulatedScrollDown > 70 {             // threshold before decreasing alpha
                 UIView.animate(withDuration: 0.2) {
-                    self.plusButton.alpha = max(0.6, self.plusButton.alpha - 0.02)
+                    self.plusButton.alpha = max(0.5, self.plusButton.alpha - 0.02)
                 }
             }
         } else if deltaY < 0 {
