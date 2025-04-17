@@ -519,17 +519,17 @@ extension NCActivity: NCShareCommentsCellDelegate {
     }
 
     func tapMenu(with tableComments: tableComments?, sender: Any) {
-        toggleMenu(with: tableComments)
+        toggleMenu(with: tableComments, sender: sender)
     }
 
-    func toggleMenu(with tableComments: tableComments?) {
+    func toggleMenu(with tableComments: tableComments?, sender: Any) {
         var actions = [NCMenuAction]()
 
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_edit_comment_", comment: ""),
                 icon: utility.loadImage(named: "pencil", colors: [NCBrandColor.shared.iconImageColor]),
-                sender: nil,
+                sender: sender,
                 action: { _ in
                     guard let metadata = self.metadata, let tableComments = tableComments else { return }
 
@@ -562,7 +562,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
                 title: NSLocalizedString("_delete_comment_", comment: ""),
                 destructive: true,
                 icon: utility.loadImage(named: "trash", colors: [.red]),
-                sender: nil,
+                sender: sender,
                 action: { _ in
                     guard let metadata = self.metadata, let tableComments = tableComments else { return }
 

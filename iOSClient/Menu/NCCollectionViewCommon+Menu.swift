@@ -229,7 +229,7 @@ extension NCCollectionViewCommon {
         //
         if NCNetworking.shared.isOnline,
            metadata.canSetAsAvailableOffline {
-            actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: self, order: 60, completion: {
+            actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: self, order: 60, sender: sender, completion: {
                 self.reloadDataSource()
             }))
         }
@@ -238,7 +238,7 @@ extension NCCollectionViewCommon {
         // SHARE
         //
         if (NCNetworking.shared.isOnline || (tableLocalFile != nil && fileExists)) && metadata.canShare {
-            actions.append(.share(selectedMetadatas: [metadata], controller: self.controller, order: 80, sender: sender,))
+            actions.append(.share(selectedMetadatas: [metadata], controller: self.controller, order: 80, sender: sender))
         }
 
         //
