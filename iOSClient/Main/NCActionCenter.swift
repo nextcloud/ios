@@ -351,7 +351,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         documentController?.presentOptionsMenu(from: controller.view.frame, in: controller.view, animated: true)
     }
 
-    func openActivityViewController(selectedMetadata: [tableMetadata], controller: NCMainTabBarController?) {
+    func openActivityViewController(selectedMetadata: [tableMetadata], controller: NCMainTabBarController?, sender: Any?) {
         guard let controller else { return }
         let metadatas = selectedMetadata.filter({ !$0.directory })
         var items: [URL] = []

@@ -27,19 +27,17 @@ import SwiftyJSON
 import NextcloudKit
 
 extension NCNotification {
-
     func toggleMenu(notification: NKNotifications) {
-
         var actions = [NCMenuAction]()
 
         if let notificationActions = notification.actions, let jsonNotificationActionsActions = JSON(notificationActions).array {
-
             for action in jsonNotificationActionsActions {
                 let label = action["label"].stringValue
                 actions.append(
                     NCMenuAction(
                         title: action["label"].stringValue,
                         icon: UIImage(),
+                        sender: nil,
                         action: { _ in
                             self.tapAction(with: notification, label: label)
                         }

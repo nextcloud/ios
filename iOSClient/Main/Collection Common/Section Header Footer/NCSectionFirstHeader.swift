@@ -28,7 +28,7 @@ import NextcloudKit
 protocol NCSectionFirstHeaderDelegate: AnyObject {
     func tapRichWorkspace(_ sender: Any)
     func tapRecommendations(with metadata: tableMetadata)
-    func tapRecommendationsButtonMenu(with metadata: tableMetadata, image: UIImage?)
+    func tapRecommendationsButtonMenu(with metadata: tableMetadata, image: UIImage?, sender: Any?)
 }
 
 class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegate {
@@ -267,7 +267,7 @@ extension NCSectionFirstHeader: UICollectionViewDelegateFlowLayout {
 }
 
 extension NCSectionFirstHeader: NCRecommendationsCellDelegate {
-    func touchUpInsideButtonMenu(with metadata: tableMetadata, image: UIImage?) {
-        self.delegate?.tapRecommendationsButtonMenu(with: metadata, image: image)
+    func touchUpInsideButtonMenu(with metadata: tableMetadata, image: UIImage?, sender: Any?) {
+        self.delegate?.tapRecommendationsButtonMenu(with: metadata, image: image, sender: sender)
     }
 }

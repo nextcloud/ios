@@ -415,6 +415,7 @@ extension NCShare: CNContactPickerDelegate {
                     icon: utility.loadImage(named: "email", colors: [NCBrandColor.shared.iconImageColor]),
                     selected: false,
                     on: false,
+                    sender: nil,
                     action: { _ in
                         self.searchField?.text = email
                         self.networking?.getSharees(searchString: email)

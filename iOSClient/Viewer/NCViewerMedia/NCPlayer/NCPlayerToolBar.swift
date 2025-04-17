@@ -335,6 +335,7 @@ extension NCPlayerToolBar {
                         onIcon: UIImage(),
                         selected: (subTitleIndex ?? -9999) == idx,
                         on: (subTitleIndex ?? -9999) == idx,
+                        sender: nil,
                         action: { _ in
                             self.ncplayer?.player.currentVideoSubTitleIndex = idx
                             self.database.addVideo(metadata: metadata, currentVideoSubTitleIndex: Int(idx))
@@ -354,6 +355,7 @@ extension NCPlayerToolBar {
                 onIcon: UIImage(),
                 selected: false,
                 on: false,
+                sender: nil,
                 action: { _ in
 
                     guard let metadata = self.metadata else { return }
@@ -399,6 +401,7 @@ extension NCPlayerToolBar {
                         onIcon: UIImage(),
                         selected: (audioIndex ?? -9999) == idx,
                         on: (audioIndex ?? -9999) == idx,
+                        sender: nil,
                         action: { _ in
                             self.ncplayer?.player.currentAudioTrackIndex = idx
                             self.database.addVideo(metadata: metadata, currentAudioTrackIndex: Int(idx))
@@ -418,6 +421,7 @@ extension NCPlayerToolBar {
                 onIcon: UIImage(),
                 selected: false,
                 on: false,
+                sender: nil,
                 action: { _ in
                     guard let metadata = self.metadata else { return }
                     let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)

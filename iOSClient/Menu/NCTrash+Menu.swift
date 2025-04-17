@@ -58,6 +58,7 @@ extension NCTrash {
             NCMenuAction(
                 title: resultTableTrash.trashbinFileName,
                 icon: iconHeader,
+                sender: nil,
                 action: nil
             )
         )
@@ -66,6 +67,7 @@ extension NCTrash {
             NCMenuAction(
                 title: NSLocalizedString("_restore_", comment: ""),
                 icon: utility.loadImage(named: "arrow.circlepath", colors: [NCBrandColor.shared.iconImageColor]),
+                sender: nil,
                 action: { _ in
                     self.restoreItem(with: objectId)
                 }
@@ -77,6 +79,7 @@ extension NCTrash {
                 title: NSLocalizedString("_delete_", comment: ""),
                 destructive: true,
                 icon: utility.loadImage(named: "trash", colors: [.red]),
+                sender: nil,
                 action: { _ in
                     self.deleteItem(with: objectId)
                 }

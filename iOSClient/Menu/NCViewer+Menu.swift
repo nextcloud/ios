@@ -41,6 +41,7 @@ extension NCViewer {
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
                     icon: utility.loadImage(named: "info.circle", colors: [NCBrandColor.shared.iconImageColor]),
+                    sender: nil,
                     action: { _ in
                         NCActionCenter.shared.openShare(viewController: controller, metadata: metadata, page: .activity)
                     }
@@ -56,6 +57,7 @@ extension NCViewer {
                 NCMenuAction(
                     title: NSLocalizedString("_view_in_folder_", comment: ""),
                     icon: utility.loadImage(named: "questionmark.folder", colors: [NCBrandColor.shared.iconImageColor]),
+                    sender: nil,
                     action: { _ in
                         NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil, sceneIdentifier: controller.sceneIdentifier)
                     }
@@ -72,6 +74,7 @@ extension NCViewer {
                 NCMenuAction(
                     title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
                     icon: utility.loadImage(named: metadata.favorite ? "star.slash" : "star", colors: [NCBrandColor.shared.yellowFavorite]),
+                    sender: nil,
                     action: { _ in
                         NCNetworking.shared.favoriteMetadata(metadata) { error in
                             if error != .success {
@@ -94,7 +97,9 @@ extension NCViewer {
         // SHARE
         //
         if !webView, metadata.canShare {
-            actions.append(.share(selectedMetadatas: [metadata], controller: controller))
+            actions.append(.share(selectedMetadatas: [metadata],
+                                  controller: controller,
+                                  sender: nil))
         }
 
         //
@@ -106,6 +111,7 @@ extension NCViewer {
                 NCMenuAction(
                     title: NSLocalizedString("_livephoto_save_", comment: ""),
                     icon: NCUtility().loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor]),
+                    sender: nil,
                     action: { _ in
                         NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, hudView: hudView))
                     }
@@ -121,6 +127,7 @@ extension NCViewer {
                 NCMenuAction(
                     title: NSLocalizedString("_save_as_scan_", comment: ""),
                     icon: utility.loadImage(named: "doc.viewfinder", colors: [NCBrandColor.shared.iconImageColor]),
+                    sender: nil,
                     action: { _ in
                         if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile,
@@ -162,6 +169,7 @@ extension NCViewer {
                 NCMenuAction(
                     title: title,
                     icon: utility.loadImage(named: "iphone.circle", colors: [NCBrandColor.shared.iconImageColor]),
+                    sender: nil,
                     action: { _ in
                         guard let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                              session: NCNetworking.shared.sessionDownload,
@@ -181,6 +189,7 @@ extension NCViewer {
                 NCMenuAction(
                     title: NSLocalizedString("_search_", comment: ""),
                     icon: utility.loadImage(named: "magnifyingglass", colors: [NCBrandColor.shared.iconImageColor]),
+                    sender: nil,
                     action: { _ in
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMenuSearchTextPDF)
                     }
@@ -191,6 +200,7 @@ extension NCViewer {
                 NCMenuAction(
                     title: NSLocalizedString("_go_to_page_", comment: ""),
                     icon: utility.loadImage(named: "number.circle", colors: [NCBrandColor.shared.iconImageColor]),
+                    sender: nil,
                     action: { _ in
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMenuGotToPageInPDF)
                     }
@@ -206,6 +216,7 @@ extension NCViewer {
                 NCMenuAction(
                     title: NSLocalizedString("_modify_", comment: ""),
                     icon: utility.loadImage(named: "pencil.tip.crop.circle", colors: [NCBrandColor.shared.iconImageColor]),
+                    sender: nil,
                     action: { _ in
                         if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile,
