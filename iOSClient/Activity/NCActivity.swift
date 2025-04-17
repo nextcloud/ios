@@ -103,7 +103,6 @@ class NCActivity: UIViewController, NCSharePagingContent {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        navigationController?.setNavigationBarAppearance()
         fetchAll(isInitial: true)
     }
 
