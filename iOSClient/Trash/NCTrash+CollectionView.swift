@@ -4,6 +4,7 @@
 //
 //  Created by Henrik Storch on 18.01.22.
 //  Copyright © 2022 Henrik Storch. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Henrik Storch <henrik.storch@nextcloud.com>
 //
@@ -24,8 +25,17 @@
 import UIKit
 import RealmSwift
 
-// MARK: UICollectionViewDelegate
+// MARK: UICollectionViewDelegate 
 extension NCTrash: UICollectionViewDelegate {
+	var selectionState: FileActionsHeaderSelectionState {
+		let selectedItemsCount = selectOcId.count
+        if selectedItemsCount == datasource?.count {
+			return .all
+		}
+		
+		return selectedItemsCount == 0 ? .none : .some(selectedItemsCount)
+	}
+	
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let resultTableTrash = datasource?[indexPath.item] else { return }
         guard !isEditMode else {
@@ -34,8 +44,9 @@ extension NCTrash: UICollectionViewDelegate {
             } else {
                 selectOcId.append(resultTableTrash.fileId)
             }
+			vHeader.setSelectionState(selectionState: selectionState)
             collectionView.reloadItems(at: [indexPath])
-            tabBarSelect.update(selectOcId: selectOcId)
+            selectionToolbar.update(fileSelect: selectOcId)
             return
         }
 

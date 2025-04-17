@@ -25,4 +25,6 @@ protocol NCShareNetworkingDelegate: AnyObject {
     /// The download limit was successfully removed from the share on the server.
     ///
     func downloadLimitSet(to limit: Int, by token: String)
+    
+    func showOKAlert(title: String?, message: String?)
 }

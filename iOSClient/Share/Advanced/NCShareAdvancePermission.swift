@@ -4,6 +4,7 @@
 //
 //  Created by T-systems on 09/08/21.
 //  Copyright © 2022 Henrik Storch. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Henrik Storch <henrik.storch@nextcloud.com>
 //
@@ -45,6 +46,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
                 handler: { _ in self.navigationController?.popViewController(animated: true) }))
 
             alert.addAction(UIAlertAction(title: NSLocalizedString("_continue_editing_", comment: ""), style: .default))
+            alert.view.backgroundColor = NCBrandColor.shared.appBackgroundColor
             self.present(alert, animated: true)
 
             return
@@ -113,6 +115,9 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
         super.viewDidLoad()
         self.shareConfig = NCShareConfig(parentMetadata: metadata, share: share)
 
+        tableView.backgroundColor = UIColor(resource: .Share.Advanced.background)
+        tableView.separatorColor = UIColor(resource: .Share.Advanced.tableCellSeparator)
+
         // Only persisted shares have tokens which are provided by the server.
         // A download limit requires a token to exist.
         // Hence it can only be looked up if the share is already persisted at this point.
@@ -130,9 +135,12 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
 
         tableView.estimatedRowHeight = tableView.rowHeight
         tableView.rowHeight = UITableView.automaticDimension
+        
         self.setNavigationTitle()
         self.navigationItem.hidesBackButton = true
-        // disable pull to dimiss
+        self.navigationController?.setNavigationBarAppearance(backround: UIColor(resource: .Share.Advanced.background))
+        
+        // disbale pull to dimiss
         isModalInPresentation = true
     }
 
@@ -177,6 +185,21 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
             return NSLocalizedString("_advanced_", comment: "")
         } else { return nil }
     }
+    
+    override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        guard let headerView = view as? UITableViewHeaderFooterView else { return }
+        
+        var contentConfiguration = UIListContentConfiguration.plainHeader()
+        contentConfiguration.text = self.tableView(tableView, titleForHeaderInSection: section)
+        contentConfiguration.textProperties.color = UIColor(resource: .Share.Advanced.sectionTitle)
+        headerView.contentConfiguration = contentConfiguration
+        
+        headerView.configurationUpdateHandler = { (headerFooterView: UITableViewHeaderFooterView, state: UIViewConfigurationState) -> Void in
+            var backgroundConfiguration = UIBackgroundConfiguration.clear()
+            backgroundConfiguration.backgroundColor = state.isPinned ? UIColor(resource: .Share.Advanced.sectionTitleBackground) : .clear
+            headerView.backgroundConfiguration = backgroundConfiguration
+        }
+    }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 2
@@ -201,6 +224,13 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
             noteCell.detailTextLabel?.numberOfLines = 0
             return noteCell
         }
+        
+        cell.configurationUpdateHandler = { (cell: UITableViewCell, state: UICellConfigurationState) -> Void in
+            var backgroundConfiguration = UIBackgroundConfiguration.clear()
+            backgroundConfiguration.backgroundColor = UIColor(resource: state.isHighlighted ? .Share.Advanced.Cell.backgroundHighlighted : .Share.Advanced.Cell.backgroundNormal)
+            cell.backgroundConfiguration = backgroundConfiguration
+        }
+        
         if let cell = cell as? NCShareDateCell { cell.onReload = tableView.reloadData }
         return cell
     }

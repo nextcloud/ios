@@ -4,6 +4,7 @@
 //
 //  Created by Marino Faggiana on 06/06/24.
 //  Copyright © 2024 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -94,7 +95,7 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// Triggered when the view appears.
     func onViewAppear() {
         var indexActiveAccount = 0
-        let tableAccounts = database.getAllTableAccount()
+        let tableAccounts = getAllAccountsOrderByEmail()
         var alias = ""
 
         for (index, account) in tableAccounts.enumerated() {
@@ -110,7 +111,11 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
         self.tblAccount = tblAccount
         self.alias = alias
     }
-
+    
+    private func getAllAccountsOrderByEmail() -> [tableAccount] {
+        NCManageDatabase.shared.getAllAccountOrderByEmail()
+    }
+	
     /// Func to get the user display name + alias
     func getUserName() -> String {
         guard let tblAccount else { return "" }
@@ -124,7 +129,11 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// Func to set alias
     func setAlias(_ value: String) {
         guard let tblAccount else { return }
-        database.setAccountAlias(tblAccount.account, alias: alias)
+		NCManageDatabase.shared.setAccountAlias(tblAccount.account, alias: alias) {
+			[weak self] in
+            guard let self = self else { return }
+            self.tblAccounts = getAllAccountsOrderByEmail()
+		}
     }
 
     /// Function to update the user data
@@ -170,16 +179,25 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
         if let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) {
             self.tblAccount = tableAccount
             self.alias = tableAccount.alias
+            NCAccount().changeAccount(tableAccount.account, userProfile: nil, controller: self.controller) { }
         }
+    }
+    
+    func openLogin() {
+        self.appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
     }
 
     /// Function to delete the current account
     func deleteAccount() {
         if let tblAccount {
-            NCAccount().deleteAccount(tblAccount.account) {
-                let account = database.getAllTableAccount().first?.account
-                setAccount(account: account)
+			NCAccount().deleteAccount(tblAccount.account)
+            if let account = getAllAccountsOrderByEmail().first?.account {
+                NCAccount().changeAccount(account, userProfile: nil, controller: self.controller) {
+                    onViewAppear()
+                }
+            } else {
                 dismissView = true
+                appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
             }
         }
     }

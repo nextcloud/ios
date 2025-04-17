@@ -4,6 +4,7 @@
 //
 //  Created by Henrik Storch on 15.11.2021.
 //  Copyright © 2021 Henrik Storch. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Henrik Storch <henrik.storch@nextcloud.com>
 //
@@ -42,10 +43,12 @@ class NCShareLinkCell: UITableViewCell {
     }
 
     func setupCellUI() {
-        var menuImageName = "ellipsis"
+        var menuImageResource: ImageResource = .Share.threeDots
+        let commonIconTint = UIColor(resource: .Share.commonIconTint)
 
         menuButton.isHidden = isInternalLink
         descriptionLabel.isHidden = !isInternalLink
+        descriptionLabel.textColor = UIColor(resource: .Share.Advanced.Cell.subtitle)
         copyButton.isHidden = !isInternalLink && tableShare == nil
         if #available(iOS 18.0, *) {
             // use NCShareLinkCell image
@@ -53,14 +56,15 @@ class NCShareLinkCell: UITableViewCell {
             copyButton.setImage(UIImage(systemName: "doc.on.doc")?.withTintColor(.label, renderingMode: .alwaysOriginal), for: .normal)
         }
         copyButton.accessibilityLabel = NSLocalizedString("_copy_", comment: "")
-
+        copyButton.setImage(UIImage(resource: .Share.internalLink).withTintColor(commonIconTint), for: .normal)
+        copyButton.imageView?.contentMode = .scaleAspectFit
         menuButton.accessibilityLabel = NSLocalizedString("_more_", comment: "")
         menuButton.accessibilityIdentifier = "showShareLinkDetails"
 
         if isInternalLink {
             labelTitle.text = NSLocalizedString("_share_internal_link_", comment: "")
             descriptionLabel.text = NSLocalizedString("_share_internal_link_des_", comment: "")
-            imageItem.image = NCUtility().loadImage(named: "square.and.arrow.up.circle.fill", colors: [NCBrandColor.shared.iconImageColor2])
+            imageItem.image = UIImage(resource: .Share.squareAndArrowUpCircleFill)
         } else {
             labelTitle.text = NSLocalizedString("_share_link_", comment: "")
             if let tableShare = tableShare {
@@ -68,13 +72,13 @@ class NCShareLinkCell: UITableViewCell {
                     labelTitle.text? += " (\(tableShare.label))"
                 }
             } else {
-                menuImageName = "plus"
+                menuImageResource = .Share.plus
                 menuButton.accessibilityLabel = NSLocalizedString("_add_", comment: "")
                 menuButton.accessibilityIdentifier = "addShareLink"
             }
 
-            imageItem.image = NCUtility().loadImage(named: "link.circle.fill", colors: [NCBrandColor.shared.getElement(account: tableShare?.account)])
-            menuButton.setImage(NCUtility().loadImage(named: menuImageName, colors: [NCBrandColor.shared.iconImageColor]), for: .normal)
+            imageItem.image = UIImage(resource: .Share.linkCircleFill)
+            menuButton.setImage(UIImage(resource: menuImageResource).withTintColor(commonIconTint), for: .normal)
         }
 
         labelTitle.textColor = NCBrandColor.shared.textColor

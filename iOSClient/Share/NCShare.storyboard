@@ -4,7 +4,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
-        <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -59,31 +58,13 @@
                                         <rect key="frame" x="0.0" y="101" width="404" height="655"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </tableView>
-                                    <searchBar opaque="NO" contentMode="redraw" horizontalHuggingPriority="249" searchBarStyle="minimal" translatesAutoresizingMaskIntoConstraints="NO" id="iSO-mc-0TB">
-                                        <rect key="frame" x="0.0" y="45" width="366" height="56"/>
-                                        <textInputTraits key="textInputTraits" returnKeyType="search"/>
-                                    </searchBar>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GsB-jy-SBk">
-                                        <rect key="frame" x="371" y="60.666666666666657" width="25" height="25"/>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wJ9-lt-Aft">
+                                        <rect key="frame" x="7" y="45" width="390" height="56"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="25" id="1uS-RH-5n3"/>
-                                            <constraint firstAttribute="width" constant="25" id="9wy-7u-IsC"/>
+                                            <constraint firstAttribute="height" constant="56" id="soE-ND-vSJ"/>
                                         </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                        <state key="normal">
-                                            <imageReference key="image" image="person.circle" catalog="system" symbolScale="large" renderingMode="hierarchical">
-                                                <hierarchicalColors>
-                                                    <color systemColor="labelColor"/>
-                                                    <color systemColor="secondaryLabelColor"/>
-                                                    <color systemColor="tertiaryLabelColor"/>
-                                                </hierarchicalColors>
-                                            </imageReference>
-                                        </state>
-                                        <connections>
-                                            <action selector="selectContactClicked:" destination="bgO-Rz-2M1" eventType="touchUpInside" id="TEM-Pg-YgB"/>
-                                        </connections>
-                                    </button>
+                                    </view>
                                     <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oBQ-TP-qof" userLabel="View Shared with you by">
                                         <rect key="frame" x="5" y="5" width="391" height="40"/>
                                         <subviews>
@@ -113,15 +94,13 @@
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="oBQ-TP-qof" firstAttribute="top" secondItem="X2m-IC-J1u" secondAttribute="top" constant="5" id="09Y-bm-RvQ"/>
-                                    <constraint firstAttribute="trailing" secondItem="GsB-jy-SBk" secondAttribute="trailing" constant="8" id="32l-QA-7ue"/>
+                                    <constraint firstItem="wJ9-lt-Aft" firstAttribute="top" secondItem="X2m-IC-J1u" secondAttribute="top" constant="45" id="2jC-Ks-cBs"/>
+                                    <constraint firstItem="wJ9-lt-Aft" firstAttribute="leading" secondItem="X2m-IC-J1u" secondAttribute="leading" constant="7" id="BPh-XA-LiP"/>
                                     <constraint firstAttribute="trailing" secondItem="c94-b9-Sim" secondAttribute="trailing" id="BtN-cJ-TTc"/>
-                                    <constraint firstItem="c94-b9-Sim" firstAttribute="top" secondItem="iSO-mc-0TB" secondAttribute="bottom" id="Co6-l6-HiT"/>
-                                    <constraint firstItem="GsB-jy-SBk" firstAttribute="centerY" secondItem="iSO-mc-0TB" secondAttribute="centerY" id="Qe6-An-Hda"/>
                                     <constraint firstAttribute="bottom" secondItem="c94-b9-Sim" secondAttribute="bottom" constant="-20" id="Svm-RV-vnl"/>
                                     <constraint firstAttribute="trailing" secondItem="oBQ-TP-qof" secondAttribute="trailing" constant="8" id="ZuM-2G-aoM"/>
-                                    <constraint firstItem="GsB-jy-SBk" firstAttribute="leading" secondItem="iSO-mc-0TB" secondAttribute="trailing" constant="5" id="cqh-P5-H1x"/>
-                                    <constraint firstItem="iSO-mc-0TB" firstAttribute="leading" secondItem="X2m-IC-J1u" secondAttribute="leading" id="d8E-WM-YfC"/>
-                                    <constraint firstItem="iSO-mc-0TB" firstAttribute="top" secondItem="X2m-IC-J1u" secondAttribute="top" constant="45" id="jPM-Uo-0lS"/>
+                                    <constraint firstItem="c94-b9-Sim" firstAttribute="top" secondItem="wJ9-lt-Aft" secondAttribute="bottom" id="jp1-QV-XkA"/>
+                                    <constraint firstAttribute="trailing" secondItem="wJ9-lt-Aft" secondAttribute="trailing" constant="7" id="lph-MW-NIr"/>
                                     <constraint firstItem="c94-b9-Sim" firstAttribute="leading" secondItem="X2m-IC-J1u" secondAttribute="leading" id="rvD-u3-Dug"/>
                                 </constraints>
                             </view>
@@ -137,9 +116,8 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="btnContact" destination="GsB-jy-SBk" id="76u-5m-CTZ"/>
-                        <outlet property="searchField" destination="iSO-mc-0TB" id="1vY-Js-dGQ"/>
-                        <outlet property="searchFieldTopConstraint" destination="jPM-Uo-0lS" id="yfd-cG-1mu"/>
+                        <outlet property="searchFieldTopConstraint" destination="2jC-Ks-cBs" id="xAF-cm-UNG"/>
+                        <outlet property="searchPlaceholder" destination="wJ9-lt-Aft" id="U2z-pp-Ri2"/>
                         <outlet property="sharedWithYouByImage" destination="fKv-xM-rVY" id="EJ0-sV-By8"/>
                         <outlet property="sharedWithYouByLabel" destination="ngi-GT-jvv" id="Qay-IG-tZh"/>
                         <outlet property="sharedWithYouByView" destination="oBQ-TP-qof" id="nfN-yx-627"/>
@@ -392,7 +370,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="person.circle" catalog="system" width="128" height="123"/>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

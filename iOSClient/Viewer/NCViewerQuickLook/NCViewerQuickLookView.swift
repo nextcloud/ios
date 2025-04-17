@@ -88,7 +88,8 @@ struct NCViewerQuickLookView: UIViewControllerRepresentable {
         @objc func dismiss() {
             parent.model.stopTimer()
             parent.isPresentedQuickLook = false
-            if let imageData = image, let image = image?.resizeImage(size: CGSize(width: 300, height: 300), isAspectRation: true) {
+            if let imageData = image,
+               let image = image?.resizeImage(size: CGSize(width: 240, height: 240), isAspectRation: true) {
                 parent.model.previewStore[parent.index].image = image
                 parent.model.previewStore[parent.index].data = imageData.jpegData(compressionQuality: 0.9)
             }
@@ -167,7 +168,7 @@ struct NCViewerQuickLookView: UIViewControllerRepresentable {
             let cropViewController = Mantis.cropViewController(image: image, config: config, cropToolbar: toolbar)
 
             cropViewController.delegate = self
-            cropViewController.backgroundColor = .systemBackground
+            cropViewController.backgroundColor = NCBrandColor.shared.appBackgroundColor
             cropViewController.modalPresentationStyle = .fullScreen
 
             viewController?.present(cropViewController, animated: true)

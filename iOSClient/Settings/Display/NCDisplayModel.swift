@@ -30,8 +30,7 @@ class NCDisplayModel: ObservableObject, ViewOnAppearHandling {
     }
 
     /// Initializes the view model with default values.
-    init(controller: NCMainTabBarController?) {
-        self.controller = controller
+    init() {
         onViewAppear()
     }
 

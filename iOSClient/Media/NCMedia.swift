@@ -4,6 +4,7 @@
 //
 //  Created by Marino Faggiana on 12/02/2019.
 //  Copyright © 2019 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -28,13 +29,7 @@ import RealmSwift
 
 class NCMedia: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
-    @IBOutlet weak var titleDate: UILabel!
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    @IBOutlet weak var selectOrCancelButton: UIButton!
-    @IBOutlet weak var menuButton: UIButton!
-    @IBOutlet weak var assistantButton: UIButton!
-    @IBOutlet weak var gradientView: UIView!
-    @IBOutlet weak var stackView: UIStackView!
+    @IBOutlet weak var fileActionsHeader: FileActionsHeader?
 
     let semaphoreSearchMedia = DispatchSemaphore(value: 1)
     let semaphoreNotificationCenter = DispatchSemaphore(value: 1)
@@ -42,7 +37,7 @@ class NCMedia: UIViewController {
     let layout = NCMediaLayout()
     var layoutType = NCGlobal.shared.mediaLayoutRatio
     var documentPickerViewController: NCDocumentPickerViewController?
-    var tabBarSelect: NCMediaSelectTabBar!
+    var tabBarSelect: HiDriveCollectionViewCommonSelectToolbar!
     let utilityFileSystem = NCUtilityFileSystem()
     let global = NCGlobal.shared
     let utility = NCUtility()
@@ -63,12 +58,13 @@ class NCMedia: UIViewController {
     var showOnlyVideos = false
     var timeIntervalSearchNewMedia: TimeInterval = 2.0
     var timerSearchNewMedia: Timer?
-    let insetsTop: CGFloat = 65
     let livePhotoImage = NCUtility().loadImage(named: "livephoto", colors: [.white])
     let playImage = NCUtility().loadImage(named: "play.fill", colors: [.white])
     var photoImage = UIImage()
     var videoImage = UIImage()
     var pinchGesture: UIPinchGestureRecognizer = UIPinchGestureRecognizer()
+    
+    var accountButtonFactory: AccountButtonFactory!
 
     var lastScale: CGFloat = 1.0
     var currentScale: CGFloat = 1.0
@@ -103,14 +99,14 @@ class NCMedia: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = NCBrandColor.shared.appBackgroundColor
 
         collectionView.register(UINib(nibName: "NCSectionFirstHeaderEmptyData", bundle: nil), forSupplementaryViewOfKind: mediaSectionHeader, withReuseIdentifier: "sectionFirstHeaderEmptyData")
         collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: mediaSectionFooter, withReuseIdentifier: "sectionFooter")
         collectionView.register(UINib(nibName: "NCMediaCell", bundle: nil), forCellWithReuseIdentifier: "mediaCell")
         collectionView.alwaysBounceVertical = true
-        collectionView.contentInset = UIEdgeInsets(top: insetsTop, left: 0, bottom: 50, right: 0)
-        collectionView.backgroundColor = .systemBackground
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 50, right: 0)
+        collectionView.backgroundColor = NCBrandColor.shared.appBackgroundColor
         collectionView.prefetchDataSource = self
         collectionView.dragInteractionEnabled = true
         collectionView.dragDelegate = self
@@ -121,35 +117,11 @@ class NCMedia: UIViewController {
         collectionView.collectionViewLayout = layout
         layoutType = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "")?.layout ?? global.mediaLayoutRatio
 
-        tabBarSelect = NCMediaSelectTabBar(tabBarController: self.tabBarController, delegate: self)
-
-        titleDate.text = ""
-
-        menuButton.backgroundColor = .clear
-        menuButton.layer.cornerRadius = 15
-        menuButton.layer.masksToBounds = true
-        menuButton.showsMenuAsPrimaryAction = true
-        menuButton.configuration = UIButton.Configuration.plain()
-        menuButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
-        menuButton.addBlur(style: .systemUltraThinMaterial)
-
-        assistantButton.backgroundColor = .clear
-        assistantButton.layer.cornerRadius = 15
-        assistantButton.layer.masksToBounds = true
-        assistantButton.configuration = UIButton.Configuration.plain()
-        assistantButton.setImage(UIImage(systemName: "sparkles"), for: .normal)
-        assistantButton.addBlur(style: .systemUltraThinMaterial)
-
-        selectOrCancelButton.backgroundColor = .clear
-        selectOrCancelButton.layer.cornerRadius = 15
-        selectOrCancelButton.layer.masksToBounds = true
-        selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
-        selectOrCancelButton.addBlur(style: .systemUltraThinMaterial)
+        tabBarSelect = HiDriveCollectionViewCommonSelectToolbar(controller: controller, delegate: self, displayedButtons: [.delete])
 
         gradient.startPoint = CGPoint(x: 0, y: 0.1)
         gradient.endPoint = CGPoint(x: 0, y: 1)
         gradient.colors = [UIColor.black.withAlphaComponent(UIAccessibility.isReduceTransparencyEnabled ? 0.8 : 0.4).cgColor, UIColor.clear.cgColor]
-        gradientView.layer.insertSublayer(gradient, at: 0)
 
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
@@ -180,15 +152,25 @@ class NCMedia: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource(_:)), name: NSNotification.Name(rawValue: global.notificationCenterReloadDataSource), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(networkRemoveAll), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        
+        accountButtonFactory = AccountButtonFactory(controller: controller,
+                                                    onAccountDetailsOpen: { [weak self] in self?.setEditMode(false) },
+                                                    presentVC: { [weak self] vc in self?.present(vc, animated: true) })
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        navigationController?.setMediaAppreance()
+        navigationController?.setNavigationBarAppearance()
+        navigationItem.largeTitleDisplayMode = .never
         if dataSource.metadatas.isEmpty {
             loadDataSource()
         }
+        
+        setNavigationRightItems()
+        setNavigationLeftItems()
+        updateHeadersView()
+		setNavigationBarLogoIfNeeded()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -199,7 +181,6 @@ class NCMedia: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(enterForeground(_:)), name: UIApplication.willEnterForegroundNotification, object: nil)
 
         searchNewMedia()
-        createMenu()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -224,11 +205,7 @@ class NCMedia: UIViewController {
 
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-
-        if let frame = tabBarController?.tabBar.frame {
-            tabBarSelect.hostingController.view.frame = frame
-        }
-        gradient.frame = gradientView.bounds
+        tabBarSelect.onViewWillLayoutSubviews()
     }
 
     func searchNewMedia() {
@@ -349,19 +326,6 @@ class NCMedia: UIViewController {
 // MARK: -
 
 extension NCMedia: UIScrollViewDelegate {
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if !dataSource.metadatas.isEmpty {
-            isTop = scrollView.contentOffset.y <= -(insetsTop + view.safeAreaInsets.top - 25)
-            setColor()
-            setTitleDate()
-            setNeedsStatusBarAppearanceUpdate()
-        } else {
-            setColor()
-        }
-    }
-
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-    }
 
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
@@ -373,11 +337,6 @@ extension NCMedia: UIScrollViewDelegate {
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         searchNewMedia()
-    }
-
-    func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
-        let y = view.safeAreaInsets.top
-        scrollView.contentOffset.y = -(insetsTop + y)
     }
 }
 
@@ -394,5 +353,82 @@ extension NCMedia: NCSelectDelegate {
         imageCache.removeAll()
         loadDataSource()
         searchNewMedia()
+    }
+}
+
+// MARK: -
+extension NCMedia {
+    func setNavigationRightItems() {
+        navigationItem.rightBarButtonItems = [createAccountButton()]
+    }
+    
+    private func createAccountButton() -> UIBarButtonItem {
+        accountButtonFactory.createAccountButton()
+    }
+    
+    func setNavigationLeftItems() {
+        if isEditMode {
+            navigationItem.setLeftBarButtonItems(nil, animated: true)
+            return
+        }
+        let burgerMenuItem = UIBarButtonItem(image: UIImage(resource: .BurgerMenu.bars),
+                                             style: .plain,
+                                             action: { [weak self] in
+            self?.showBurgerMenu()
+        })
+        burgerMenuItem.tintColor = UIColor(resource: .BurgerMenu.navigationBarButton)
+        navigationItem.setLeftBarButtonItems([burgerMenuItem], animated: true)
+    }
+    
+    func showBurgerMenu() {
+		mainTabBarController?.showBurgerMenu()
+    }
+    
+    private func setNavigationBarLogoIfNeeded() {
+        if self.navigationController?.viewControllers.count == 1 {
+            setNavigationBarLogo()
+        }
+    }
+    
+    func updateHeadersView() {
+        fileActionsHeader?.showViewModeButton(false)
+        fileActionsHeader?.setIsEditingMode(isEditingMode: isEditMode)
+        fileActionsHeader?.enableSelection(enable: self.dataSource.metadatas.count > 0)
+        updateHeadersMenu()
+        fileActionsHeader?.onSelectModeChange = { [weak self] isSelectionMode in
+            self?.setEditMode(isSelectionMode)
+            self?.updateHeadersView()
+            self?.fileActionsHeader?.setSelectionState(selectionState: .none)
+        }
+        
+        fileActionsHeader?.onSelectAll = { [weak self] in
+            guard let self = self else { return }
+            self.selectAllOrDeselectAll()
+            tabBarSelect.update(fileSelect: fileSelect)
+            self.fileActionsHeader?.setSelectionState(selectionState: selectionState)
+        }
+    }
+    
+    var selectionState: FileActionsHeaderSelectionState {
+        let selectedItemsCount = fileSelect.count
+        if selectedItemsCount == self.dataSource.metadatas.count {
+            return .all
+        }
+        
+        return selectedItemsCount == 0 ? .none : .some(selectedItemsCount)
+    }
+    
+    func selectAllOrDeselectAll() {
+        let metadatas = self.dataSource.metadatas
+        if !fileSelect.isEmpty, metadatas.count == fileSelect.count {
+            fileSelect = []
+        } else {
+            fileSelect = metadatas.compactMap({ $0.ocId })
+        }
+        collectionView.reloadData()
+    }
+    
+    func updateHeadersMenu() {
+        fileActionsHeader?.setSortingMenu(sortingMenuElements: createMenuElements(), title: NSLocalizedString("_media_options_", tableName: nil, bundle: Bundle.main, value: "Media Options", comment: ""), image: nil)
     }
 }

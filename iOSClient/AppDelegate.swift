@@ -62,9 +62,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0)
 
         UserDefaults.standard.register(defaults: ["UserAgent": userAgent])
-        if !NCKeychain().disableCrashservice, !NCBrandOptions.shared.disable_crash_service {
-            FirebaseApp.configure()
-        }
+        
+        FirebaseApp.configure()
+        DataProtectionAgreementManager.shared.setupAnalyticsCollection()
 
         utilityFileSystem.createDirectoryStandard()
         utilityFileSystem.emptyTemporaryDirectory()
@@ -106,6 +106,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         BGTaskScheduler.shared.register(forTaskWithIdentifier: NCGlobal.shared.processingTask, using: nil) { task in
             self.handleProcessingTask(task)
         }
+        
+        UISwitch.appearance().onTintColor = NCBrandColor.shared.switchColor
+        UISlider.appearance().thumbTintColor = UIColor(Color(.QualitySlider.thumb))
+        UISlider.appearance().maximumTrackTintColor = UIColor(Color(.QualitySlider.maximumTrack))
 
         if NCBrandOptions.shared.enforce_passcode_lock {
             NCKeychain().requestPasscodeAtStart = true
@@ -360,9 +364,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if activeLogin?.view.window == nil {
             if selector == NCGlobal.shared.introSignUpWithProvider {
                 // Login via provider
-                let web = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginProvider") as? NCLoginProvider
-                web?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
-                showLoginViewController(web)
+                activeLoginWeb = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginProvider") as? NCLoginProvider
+                activeLoginWeb?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
+                showLoginViewController(activeLoginWeb)
             } else {
                 // Regular login
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin

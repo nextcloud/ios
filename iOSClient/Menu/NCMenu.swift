@@ -6,6 +6,7 @@
 //  Copyright © 2020 Philippe Weidmann. All rights reserved.
 //  Copyright © 2020 Marino Faggiana All rights reserved.
 //  Copyright © 2021 Henrik Storch All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Philippe Weidmann <philippe.weidmann@infomaniak.com>
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
@@ -35,8 +36,8 @@ extension Array where Element == NCMenuAction {
 class NCMenu: UITableViewController {
 
     var actions = [NCMenuAction]()
-    var menuColor = UIColor.systemBackground
-    var textColor = NCBrandColor.shared.textColor
+    var menuColor: UIColor = NCBrandColor.shared.appBackgroundColor
+	var textColor = UIColor(resource: .FileMenu.text)
 
     static func makeNCMenu(with actions: [NCMenuAction], menuColor: UIColor, textColor: UIColor) -> NCMenu? {
         let menuViewController = UIStoryboard(name: "NCMenu", bundle: nil).instantiateInitialViewController() as? NCMenu
@@ -78,7 +79,7 @@ class NCMenu: UITableViewController {
         let action = actions[indexPath.row]
         guard action.title != NCMenuAction.seperatorIdentifier else {
             let cell = UITableViewCell()
-            cell.backgroundColor = .separator
+			cell.backgroundColor = UIColor(resource: .ListCell.separator)
             return cell
         }
 
@@ -86,10 +87,17 @@ class NCMenu: UITableViewController {
         cell.accessibilityIdentifier = action.accessibilityIdentifier
         cell.tintColor = NCBrandColor.shared.customer
         cell.backgroundColor = menuColor
-
+		
+		cell.selectedBackgroundView = UIView()
+		cell.selectedBackgroundView?.backgroundColor =  UIColor(resource: .FileMenu.selectedRow)
+		
         let actionIconView = cell.viewWithTag(1) as? UIImageView
         let actionNameLabel = cell.viewWithTag(2) as? UILabel
         let actionDetailLabel = cell.viewWithTag(3) as? UILabel
+		
+		let iconWidthHeight = action.isHeader ? 36.0 : 20.0
+		actionIconView?.widthAnchor.constraint(equalToConstant: iconWidthHeight).isActive = true
+		actionIconView?.heightAnchor.constraint(equalToConstant: iconWidthHeight).isActive = true
 
         if action.action == nil {
             cell.selectionStyle = .none
@@ -111,19 +119,34 @@ class NCMenu: UITableViewController {
             actionNameLabel?.lineBreakMode = .byTruncatingMiddle
 
             if action.boldTitle {
-                actionNameLabel?.font = .systemFont(ofSize: 18, weight: .medium)
+                actionNameLabel?.font = .systemFont(ofSize: 16, weight: .medium)
             } else {
-                actionNameLabel?.font = .systemFont(ofSize: 18, weight: .regular)
+                actionNameLabel?.font = .systemFont(ofSize: 16, weight: .regular)
             }
         }
 
-        if action.destructive {
+        if !action.isHeader {
             actionIconView?.image = actionIconView?.image?.withRenderingMode(.alwaysTemplate)
-            actionIconView?.tintColor = .red
-            actionNameLabel?.textColor = .red
         }
-
-        cell.accessoryType = action.selectable && action.selected ? .checkmark : .none
+		
+        if action.destructive {
+			let color = UIColor(resource: .destructiveAction)
+			actionIconView?.tintColor = color
+            actionNameLabel?.textColor = color
+		} else {
+			actionIconView?.tintColor = UIColor(resource: .FileMenu.icon)
+		}
+        
+        if (action.selectable && action.selected) {
+            let checkmarkImage = UIImage(named: "checkmarkIcon")
+            let checkmarkImageView = UIImageView(image: checkmarkImage)
+            checkmarkImageView.frame = CGRect(x: 0, y: 0, width: 19, height: 19)
+            checkmarkImageView.contentMode = .scaleAspectFit
+            
+            cell.accessoryView = checkmarkImageView
+        } else {
+            cell.accessoryView = .none
+        }
 
         return cell
     }

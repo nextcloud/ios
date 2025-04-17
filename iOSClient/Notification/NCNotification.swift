@@ -43,12 +43,12 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
         super.viewDidLoad()
 
         title = NSLocalizedString("_notifications_", comment: "")
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = NCBrandColor.shared.appBackgroundColor
 
         tableView.tableFooterView = UIView()
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 50.0
-        tableView.backgroundColor = .systemBackground
+        tableView.backgroundColor = NCBrandColor.shared.appBackgroundColor
 
         refreshControl?.addTarget(self, action: #selector(getNetwokingNotification), for: .valueChanged)
 

@@ -4,6 +4,7 @@
 //
 //  Created by Henrik Storch on 16.03.22.
 //  Copyright © 2022 Henrik Storch. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Henrik Storch <henrik.storch@nextcloud.com>
 //
@@ -34,7 +35,7 @@ extension NCShare {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_share_add_sharelink_", comment: ""),
-                    icon: utility.loadImage(named: "plus", colors: [NCBrandColor.shared.iconImageColor]),
+                    icon: NCImagesRepository.menuIconAdd,
                     action: { _ in
                         self.makeNewLinkShare()
                     }
@@ -45,7 +46,7 @@ extension NCShare {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_details_", comment: ""),
-                icon: utility.loadImage(named: "pencil", colors: [NCBrandColor.shared.iconImageColor]),
+                icon: NCImagesRepository.menuIconDetails,
                 accessibilityIdentifier: "shareMenu/details",
                 action: { _ in
                     guard
@@ -69,7 +70,7 @@ extension NCShare {
             NCMenuAction(
                 title: NSLocalizedString("_share_unshare_", comment: ""),
                 destructive: true,
-                icon: utility.loadImage(named: "person.2.slash"),
+                icon: NCImagesRepository.menuIconUnshare,
                 action: { _ in
                     Task {
                         if share.shareType != NCShareCommon().SHARE_TYPE_LINK, let metadata = self.metadata, metadata.e2eEncrypted && capabilities.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
@@ -99,7 +100,7 @@ extension NCShare {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_share_read_only_", comment: ""),
-                icon: utility.loadImage(named: "eye", colors: [NCBrandColor.shared.iconImageColor]),
+                icon: NCImagesRepository.menuIconReadOnly,
                 selected: tableShare.permissions == (permissions.permissionReadShare + permissions.permissionShareShare) || tableShare.permissions == permissions.permissionReadShare,
                 on: false,
                 action: { _ in
@@ -113,7 +114,7 @@ extension NCShare {
         actions.append(
             NCMenuAction(
                 title: isDirectory ? NSLocalizedString("_share_allow_upload_", comment: "") : NSLocalizedString("_share_editing_", comment: ""),
-                icon: utility.loadImage(named: "pencil", colors: [NCBrandColor.shared.iconImageColor]),
+                icon:  NCImagesRepository.menuIconEdit,
                 selected: hasUploadPermission(tableShare: tableShare),
                 on: false,
                 action: { _ in

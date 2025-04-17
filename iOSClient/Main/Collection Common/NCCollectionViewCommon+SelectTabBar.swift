@@ -4,6 +4,7 @@
 //
 //  Created by Milen on 01.03.24.
 //  Copyright © 2024 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -25,7 +26,7 @@ import UIKit
 import Foundation
 import NextcloudKit
 
-extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
+extension NCCollectionViewCommon: HiDriveCollectionViewCommonSelectToolbarDelegate {
     func selectAll() {
         if !fileSelect.isEmpty, self.dataSource.getMetadatas().count == fileSelect.count {
             fileSelect = []
@@ -40,6 +41,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         var alertStyle = UIAlertController.Style.actionSheet
         if UIDevice.current.userInterfaceIdiom == .pad { alertStyle = .alert }
         let alertController = UIAlertController(title: NSLocalizedString("_confirm_delete_selected_", comment: ""), message: nil, preferredStyle: alertStyle)
+        alertController.view.backgroundColor = NCBrandColor.shared.appBackgroundColor
         let metadatas = getSelectedMetadatas()
         let canDeleteServer = metadatas.allSatisfy { !$0.lock }
 
@@ -132,22 +134,18 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         if editMode {
             navigationItem.leftBarButtonItems = nil
         } else {
-            (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
+            (self.navigationController as? HiDriveMainNavigationController)?.setNavigationLeftItems()
         }
-        (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
+        (self.navigationController as? HiDriveMainNavigationController)?.setNavigationRightItems()
 
         self.collectionView.reloadData()
     }
-
-    func convertLivePhoto(metadataFirst: tableMetadata?, metadataLast: tableMetadata?) {
-        if let metadataFirst, let metadataLast {
-            Task {
-                let userInfo: [String: Any] = ["serverUrl": metadataFirst.serverUrl,
-                                               "account": metadataFirst.account]
-
-                await NCNetworking.shared.setLivePhoto(metadataFirst: metadataFirst, metadataLast: metadataLast, userInfo: userInfo)
-            }
-        }
-        setEditMode(false)
+    
+    func toolbarWillAppear() {
+        self.tabBarController?.tabBar.isHidden = true
+    }
+    
+    func toolbarWillDisappear() {
+        self.tabBarController?.tabBar.isHidden = false
     }
 }

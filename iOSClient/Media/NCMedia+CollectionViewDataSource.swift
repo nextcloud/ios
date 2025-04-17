@@ -49,30 +49,8 @@ extension NCMedia: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let numberOfItemsInSection = dataSource.metadatas.count
-        let assistantEnabled = NCCapabilities.shared.getCapabilities(account: session.account).capabilityAssistantEnabled
-        if assistantEnabled {
-            assistantButton.isHidden = false
-        } else {
-            assistantButton.isHidden = true
-        }
-
         self.numberOfColumns = getColumnCount()
-
-        if numberOfItemsInSection == 0 || NCNetworking.shared.isOffline {
-            selectOrCancelButton.isHidden = true
-            menuButton.isHidden = false
-            gradientView.alpha = 0
-        } else if isEditMode {
-            selectOrCancelButton.isHidden = false
-        } else {
-            selectOrCancelButton.isHidden = false
-            menuButton.isHidden = false
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            self.setTitleDate()
-        }
-        return numberOfItemsInSection
+        return dataSource.metadatas.count
     }
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {

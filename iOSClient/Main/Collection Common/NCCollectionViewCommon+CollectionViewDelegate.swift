@@ -44,6 +44,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
         if metadata.directory {
             pushMetadata(metadata)
+        } else if metadata.isURL,
+                  let url = URL(string: metadata.serverUrl)?.appendingPathComponent(metadata.url),
+                  UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url)
         } else {
             let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
 
@@ -114,6 +118,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             }
             collectionView.reloadItems(at: [indexPath])
             tabBarSelect?.update(fileSelect: fileSelect, metadatas: getSelectedMetadatas(), userId: metadata.userId)
+            fileActionsHeader?.setSelectionState(selectionState: selectionState)
             return
         }
 
@@ -155,4 +160,8 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             }
         }
     }
+	
+	func scrollViewDidScroll(_ scrollView: UIScrollView) {
+		headerTop?.constant = max(0, -scrollView.contentOffset.y)
+	}
 }

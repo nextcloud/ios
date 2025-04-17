@@ -236,7 +236,6 @@ final class NCGlobal: Sendable {
     let selectorLoadFileQuickLook               = "loadFileQuickLook"
     let selectorOpenIn                          = "openIn"
     let selectorUploadAutoUpload                = "uploadAutoUpload"
-    let selectorUploadAutoUploadAll             = "uploadAutoUploadAll"
     let selectorUploadFile                      = "uploadFile"
     let selectorUploadFileNODelete              = "UploadFileNODelete"
     let selectorUploadFileShareExtension        = "uploadFileShareExtension"
@@ -289,7 +288,7 @@ final class NCGlobal: Sendable {
     let notificationCenterReloadDataNCShare                     = "reloadDataNCShare"
     let notificationCenterCloseRichWorkspaceWebView             = "closeRichWorkspaceWebView"
     let notificationCenterReloadAvatar                          = "reloadAvatar"
-    let notificationCenterReloadHeader                          = "reloadHeader"
+	let notificationCenterReloadHeader                          = "reloadHeader"
     let notificationCenterClearCache                            = "clearCache"
     let notificationCenterChangeLayout                          = "changeLayout"                    // userInfo: account, serverUrl, layoutForView
     let notificationCenterCheckUserDelaultErrorDone             = "checkUserDelaultErrorDone"       // userInfo: account, controller
@@ -355,7 +354,6 @@ final class NCGlobal: Sendable {
     let widgetActionNoAction                                    = "nextcloud://open-action?action=no-action"
     let widgetActionUploadAsset                                 = "nextcloud://open-action?action=upload-asset"
     let widgetActionScanDocument                                = "nextcloud://open-action?action=add-scan-document"
-    let widgetActionTextDocument                                = "nextcloud://open-action?action=create-text-document"
     let widgetActionVoiceMemo                                   = "nextcloud://open-action?action=create-voice-memo"
 
     // APPCONFIG
