@@ -4,4 +4,8 @@
 
 import UIKit
 
-class NCActivityNavigationController: NCMainNavigationController { }
+class NCActivityNavigationController: NCMainNavigationController {
+    override func createRightMenu() -> UIMenu? {
+        return nil
+    }
+}

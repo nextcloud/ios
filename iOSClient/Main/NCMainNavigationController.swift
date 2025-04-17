@@ -146,7 +146,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     func updateRightBarButtonItems() {
         let capabilities = NCCapabilities.shared.getCapabilities(account: session.account)
         let resultsCount = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal))?.count ?? 0
-        var tempRightBarButtonItems = [self.menuBarButtonItem]
+        var tempRightBarButtonItems: [UIBarButtonItem] = createRightMenu() == nil ? [] : [self.menuBarButtonItem]
         var tempTotalTags = self.menuBarButtonItem.tag
         var totalTags = 0
 
