@@ -34,6 +34,10 @@ class NCFiles: NCCollectionViewCommon {
     internal var matadatasHash: String = ""
     internal var semaphoreReloadDataSource = DispatchSemaphore(value: 1)
 
+    internal var lastOffsetY: CGFloat = 0
+    internal var lastScrollTime: TimeInterval = 0
+    internal var accumulatedScrollDown: CGFloat = 0
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
