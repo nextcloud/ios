@@ -30,18 +30,18 @@ let userAgent: String = {
 }()
 
 class NCBrandOptions: @unchecked Sendable {
-    static let shared = NCBrandOptionsIONOS()
+    static let shared = NCBrandOptions()
 
-    var brand: String = "Nextcloud"
-    var textCopyrightNextcloudiOS: String = "Nextcloud Hydrogen for iOS %@ © 2025"
+    var brand: String = "IONOS HiDrive Next"
+    var textCopyrightNextcloudiOS: String = "HiDrive Next iOS %@ © 2024"
     var textCopyrightNextcloudServer: String = "Nextcloud Server %@"
-    var loginBaseUrl: String = "https://cloud.nextcloud.com"
+    var loginBaseUrl: String = "https://storage.ionos.fr"
     var pushNotificationServerProxy: String = "https://push-notifications.nextcloud.com"
     var linkLoginHost: String = "https://nextcloud.com/install"
     var linkloginPreferredProviders: String = "https://nextcloud.com/signup-ios"
     var webLoginAutenticationProtocol: String = "nc://"                                        // example "abc://"
-    var privacy: String = "https://nextcloud.com/privacy"
-    var sourceCode: String = "https://github.com/nextcloud/ios"
+    var privacy: String = "https://wl.hidrive.com/easy/ios/privacy.html"
+    var sourceCode: String = "https://wl.hidrive.com/easy/0181"
     var mobileconfig: String = "/remote.php/dav/provisioning/apple-provisioning.mobileconfig"
     var appStoreUrl: String = "https://apps.apple.com/in/app/nextcloud/id1125420102"
 
@@ -59,7 +59,7 @@ class NCBrandOptions: @unchecked Sendable {
     var use_themingColor: Bool = true
 
     var disable_intro: Bool = false
-    var disable_request_login_url: Bool = false
+    var disable_request_login_url: Bool = true
     var disable_multiaccount: Bool = false
     var disable_more_external_site: Bool = false
     var disable_openin_file: Bool = false                                                       // Don't touch me !!
@@ -123,16 +123,37 @@ class NCBrandOptions: @unchecked Sendable {
 #if DEBUG
         pushNotificationServerProxy = "https://c0004.customerpush.nextcloud.com"
 #endif
+		
+		disable_intro = true
+		disable_crash_service = true
+
+#if BETA
+		capabilitiesGroup = "group.de.strato.ionos.easystorage.beta"
+#elseif APPSTORE
+		capabilitiesGroup = "group.com.ionos.hidrivenext"
+#else
+		capabilitiesGroup = "group.com.viseven.ionos.easystorage"
+#endif
     }
 
     @objc func getUserAgent() -> String {
         return userAgent
     }
+	
+	var acknowloedgements: String {
+		"https://wl.hidrive.com/easy/0171"
+	}
 }
 
 class NCBrandColor: @unchecked Sendable {
-    static let shared = NCBrandColorIONOS()
+    static let shared = NCBrandColor()
 
+	static let ionosBrand = UIColor(red: 20.0 / 255.0, green: 116.0 / 255.0, blue: 196.0 / 255.0, alpha: 1.0) // BLUE IONOS : #1474C4
+	
+	func getElement(account: String?) -> UIColor {
+		return NCBrandColor.ionosBrand
+	}
+	
     /// This is rewrited from customet theme, default is Nextcloud color
     ///
     let customer: UIColor = UIColor(red: 0.0 / 255.0, green: 130.0 / 255.0, blue: 201.0 / 255.0, alpha: 1.0)         // BLU NC : #0082c9
@@ -321,17 +342,50 @@ class NCBrandColor: @unchecked Sendable {
         return customer
     }
 
-    public func getElement(account: String?) -> UIColor {
-        if let account, let color = self.themingColorElement[account] {
-            return color
-        }
-        return customer
-    }
-
     public func getText(account: String?) -> UIColor {
         if let account, let color = self.themingColorText[account] {
             return color
         }
         return .white
     }
+}
+
+extension NCBrandColor {
+	var brandElement: UIColor {
+		return NCBrandColor.ionosBrand
+	}
+	
+#if !EXTENSION || EXTENSION_SHARE
+	var menuIconColor: UIColor {
+		UIColor(resource: .FileMenu.icon)
+	}
+	
+	var menuFolderIconColor: UIColor {
+		UIColor(resource: .FileMenu.folderIcon)
+	}
+	
+	var appBackgroundColor: UIColor {
+		UIColor(resource: .AppBackground.main)
+	}
+	
+	var formBackgroundColor: UIColor {
+		UIColor(resource: .AppBackground.form)
+	}
+	
+	var formRowBackgroundColor: UIColor {
+		UIColor(resource: .AppBackground.formRow)
+	}
+	
+	var formSeparatorColor: UIColor {
+		UIColor(resource: .formSeparator)
+	}
+#endif
+	
+	var switchColor: UIColor {
+		return UIColor { traits in
+			let light = self.brandElement
+			let dark = UIColor(red: 17.0 / 255.0, green: 199.0 / 255.0, blue: 230.0 / 255.0, alpha: 1.0)
+			return traits.userInterfaceStyle == .dark ? dark : light
+		}
+	}
 }

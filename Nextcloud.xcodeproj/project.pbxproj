@@ -130,13 +130,6 @@
 		AFCE353527E4ED5900FEA6C2 /* DateFormatter+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCE353427E4ED5900FEA6C2 /* DateFormatter+Extension.swift */; };
 		AFCE353727E4ED7B00FEA6C2 /* NCShareCells.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCE353627E4ED7B00FEA6C2 /* NCShareCells.swift */; };
 		AFCE353927E5DE0500FEA6C2 /* Shareable.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFCE353827E5DE0400FEA6C2 /* Shareable.swift */; };
-		D51C00412C2C1B4D00A04554 /* NCBrand-IONOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C00402C2C1B4D00A04554 /* NCBrand-IONOS.swift */; };
-		D51C00422C2C1C1B00A04554 /* NCBrand-IONOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C00402C2C1B4D00A04554 /* NCBrand-IONOS.swift */; };
-		D51C00432C2C1C1B00A04554 /* NCBrand-IONOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C00402C2C1B4D00A04554 /* NCBrand-IONOS.swift */; };
-		D51C00442C2C1C1C00A04554 /* NCBrand-IONOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C00402C2C1B4D00A04554 /* NCBrand-IONOS.swift */; };
-		D51C00452C2C1C1D00A04554 /* NCBrand-IONOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C00402C2C1B4D00A04554 /* NCBrand-IONOS.swift */; };
-		D51C00462C2C1C1D00A04554 /* NCBrand-IONOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C00402C2C1B4D00A04554 /* NCBrand-IONOS.swift */; };
-		D51C00472C2C1C1E00A04554 /* NCBrand-IONOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C00402C2C1B4D00A04554 /* NCBrand-IONOS.swift */; };
 		D575039F27146F93008DC9DC /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		D59793B62CF7A73A00C44F4E /* DataProtectionAgreementManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59793B52CF7A73A00C44F4E /* DataProtectionAgreementManager.swift */; };
 		D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */; };
@@ -1398,7 +1391,6 @@
 		AFCE353827E5DE0400FEA6C2 /* Shareable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shareable.swift; sourceTree = "<group>"; };
 		C0046CDA2A17B98400D87C9D /* NextcloudUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NextcloudUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C04E2F202A17BB4D001BAD85 /* NextcloudIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NextcloudIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D51C00402C2C1B4D00A04554 /* NCBrand-IONOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCBrand-IONOS.swift"; sourceTree = "<group>"; };
 		D59793B52CF7A73A00C44F4E /* DataProtectionAgreementManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataProtectionAgreementManager.swift; sourceTree = "<group>"; };
 		D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityTableViewCell.swift; sourceTree = "<group>"; };
 		D5C2D21E2C9DC0EF00E7579D /* PrimaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrimaryButton.swift; sourceTree = "<group>"; };
@@ -3074,7 +3066,6 @@
 				F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */,
 				F78E2D6429AF02DB0024D4F3 /* Database.swift */,
 				F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */,
-				D51C00402C2C1B4D00A04554 /* NCBrand-IONOS.swift */,
 			);
 			path = Brand;
 			sourceTree = "<group>";
@@ -4189,7 +4180,6 @@
 				F359D86D2A7D03420023F405 /* NCUtility+Exif.swift in Sources */,
 				F73EF7AD2B0223900087E6E9 /* NCManageDatabase+Comments.swift in Sources */,
 				F7C9B9232B582F550064EA91 /* NCManageDatabase+SecurityGuard.swift in Sources */,
-				D51C00472C2C1C1E00A04554 /* NCBrand-IONOS.swift in Sources */,
 				F73EF7CD2B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift in Sources */,
 				F33918CA2C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift in Sources */,
 				D575039F27146F93008DC9DC /* String+Extension.swift in Sources */,
@@ -4263,7 +4253,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F74B6D9A2A7E239A00F03C5F /* NCManageDatabase+Chunk.swift in Sources */,
-				D51C00462C2C1C1D00A04554 /* NCBrand-IONOS.swift in Sources */,
 				F7490E8329882C84009DCE94 /* NCManageDatabase+LayoutForView.swift in Sources */,
 				AA8D31582D41052300FE2775 /* NCManageDatabase+DownloadLimit.swift in Sources */,
 				F73EF7DC2B0226080087E6E9 /* NCManageDatabase+Tip.swift in Sources */,
@@ -4423,7 +4412,6 @@
 				F768823A2C0DD230001CF441 /* NCKeychain.swift in Sources */,
 				F737DA9E2B7B893C0063BAFC /* NCPasscode.swift in Sources */,
 				4232DC0B2C9D7C44008D546D /* UIView+GridSelection.swift in Sources */,
-				D51C00442C2C1C1C00A04554 /* NCBrand-IONOS.swift in Sources */,
 				F7817D0129802D5F00FFBC65 /* NCViewCertificateDetails.swift in Sources */,
 				F7D57C8B26317BDE00DE301D /* NCAccountRequest.swift in Sources */,
 				F7C30DF7291BC0D30017149B /* NCNetworkingE2EEUpload.swift in Sources */,
@@ -4467,7 +4455,6 @@
 				F77ED59128C9CE9D00E24ED0 /* ToolbarData.swift in Sources */,
 				F78302F728B4C3C900B84583 /* NCManageDatabase.swift in Sources */,
 				F359D8682A7D03420023F405 /* NCUtility+Exif.swift in Sources */,
-				D51C00422C2C1C1B00A04554 /* NCBrand-IONOS.swift in Sources */,
 				F7346E1628B0EF5C006CE2D2 /* Widget.swift in Sources */,
 				F78302F828B4C3E100B84583 /* NCManageDatabase+Activity.swift in Sources */,
 				F713FBE62C31646400F10760 /* NCNetworking+AsyncAwait.swift in Sources */,
@@ -4617,7 +4604,6 @@
 				F74AF3A6247FB6AE00AC767B /* NCUtilityFileSystem.swift in Sources */,
 				F7B769AC2B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift in Sources */,
 				F73EF7E32B02266D0087E6E9 /* NCManageDatabase+Trash.swift in Sources */,
-				D51C00452C2C1C1D00A04554 /* NCBrand-IONOS.swift in Sources */,
 				AA8D31542D41052300FE2775 /* NCManageDatabase+DownloadLimit.swift in Sources */,
 				F73EF7BB2B0224AB0087E6E9 /* NCManageDatabase+ExternalSites.swift in Sources */,
 				F7817CFC29801A3500FFBC65 /* Data+Extension.swift in Sources */,
@@ -4718,7 +4704,6 @@
 				426D0F892D2826D600F76A65 /* HiDriveCollectionViewCommonSelectToolbar.swift in Sources */,
 				426D0F8A2D2826D600F76A65 /* HiDriveCollectionViewCommonSelectToolbarView.swift in Sources */,
 				F73EF7B72B0224AB0087E6E9 /* NCManageDatabase+ExternalSites.swift in Sources */,
-				D51C00412C2C1B4D00A04554 /* NCBrand-IONOS.swift in Sources */,
 				AF4BF61927562A4B0081CEEF /* NCManageDatabase+Metadata.swift in Sources */,
 				F73EF7E72B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift in Sources */,
 				F78A18B623CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift in Sources */,
@@ -5048,7 +5033,6 @@
 				F7401C172C75E6F300649E87 /* NCCapabilities.swift in Sources */,
 				F33EE6F42BF4C9B200CA1A51 /* PKCS12.swift in Sources */,
 				F33918C62C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift in Sources */,
-				D51C00432C2C1C1B00A04554 /* NCBrand-IONOS.swift in Sources */,
 				F757CC8429E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */,
 				F78E2D6729AF02DB0024D4F3 /* Database.swift in Sources */,
 				F77DD6AA2C5CC093009448FB /* NCSession.swift in Sources */,
