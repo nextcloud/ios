@@ -109,9 +109,9 @@ class NCMainTabBarController: UITabBarController {
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { _ in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 if UIApplication.shared.applicationState == .active {
-                    self.timerCheckServerError()
+                    self.timerCheck()
                 }
             }
         }
@@ -129,10 +129,13 @@ class NCMainTabBarController: UITabBarController {
         }
     }
 
-    private func timerCheckServerError() {
+    private func timerCheck() {
         self.timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: false, block: { _ in
             NCNetworking.shared.checkServerError(account: self.account, controller: self) {
-                self.timerCheckServerError()
+                if let navigationController = self.selectedViewController as? NCMainNavigationController {
+                    navigationController.updateRightBarButtonItems()
+                }
+                self.timerCheck()
             }
         })
     }

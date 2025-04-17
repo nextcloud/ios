@@ -12,7 +12,6 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     let utility = NCUtility()
     let utilityFileSystem = NCUtilityFileSystem()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    private var timer: Timer?
 
     var controller: NCMainTabBarController? {
         self.tabBarController as? NCMainTabBarController
@@ -102,21 +101,6 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
         navigationBar.prefersLargeTitles = true
         setNavigationBarHidden(false, animated: true)
-
-        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
-            self.timer?.invalidate()
-            self.timer = nil
-        }
-
-        NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { _ in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                if UIApplication.shared.applicationState == .active {
-                    self.timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
-                        self.updateRightBarButtonItems()
-                    })
-                }
-            }
-        }
     }
 
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
