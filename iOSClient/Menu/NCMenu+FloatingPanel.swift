@@ -81,7 +81,7 @@ class NCMenuPanelController: FloatingPanelController {
         surfaceView.grabberHandle.accessibilityLabel = NSLocalizedString("_cart_controller_", comment: "")
 
         let collapseName = NSLocalizedString("_dismiss_menu_", comment: "")
-        let collapseAction = UIAccessibilityCustomAction(name: collapseName, target: self, selector: #selector(accessibilityActionCollapsePanel))
+        let collapseAction = UIAccessibilityCustomAction(name: collapseName, target: self, selector: #selector(accessibilityActionCollapsePanel(_:)))
 
         surfaceView.grabberHandle.accessibilityCustomActions = [collapseAction]
         surfaceView.grabberHandle.isAccessibilityElement = true
@@ -89,7 +89,7 @@ class NCMenuPanelController: FloatingPanelController {
         contentInsetAdjustmentBehavior = .never
     }
 
-    @objc private func accessibilityActionCollapsePanel() {
+    @objc private func accessibilityActionCollapsePanel(_ sender: Any?) {
         self.dismiss(animated: true)
      }
 }

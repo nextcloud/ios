@@ -26,7 +26,7 @@ import UIKit
 import NextcloudKit
 
 extension NCShare {
-    func toggleShareMenu(for share: tableShare) {
+    func toggleShareMenu(for share: tableShare, sender: Any?) {
         let capabilities = NCCapabilities.shared.getCapabilities(account: self.metadata.account)
         var actions = [NCMenuAction]()
 
@@ -35,6 +35,7 @@ extension NCShare {
                 NCMenuAction(
                     title: NSLocalizedString("_share_add_sharelink_", comment: ""),
                     icon: utility.loadImage(named: "plus", colors: [NCBrandColor.shared.iconImageColor]),
+                    sender: sender,
                     action: { _ in
                         self.makeNewLinkShare()
                     }
@@ -47,6 +48,7 @@ extension NCShare {
                 title: NSLocalizedString("_details_", comment: ""),
                 icon: utility.loadImage(named: "pencil", colors: [NCBrandColor.shared.iconImageColor]),
                 accessibilityIdentifier: "shareMenu/details",
+                sender: sender,
                 action: { _ in
                     guard
                         let advancePermission = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "NCShareAdvancePermission") as? NCShareAdvancePermission,
@@ -70,6 +72,7 @@ extension NCShare {
                 title: NSLocalizedString("_share_unshare_", comment: ""),
                 destructive: true,
                 icon: utility.loadImage(named: "person.2.slash"),
+                sender: sender,
                 action: { _ in
                     Task {
                         if share.shareType != NCShareCommon().SHARE_TYPE_LINK, let metadata = self.metadata, metadata.e2eEncrypted && capabilities.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
@@ -89,10 +92,10 @@ extension NCShare {
             )
         )
 
-        self.presentMenu(with: actions)
+        self.presentMenu(with: actions, sender: sender)
     }
 
-    func toggleUserPermissionMenu(isDirectory: Bool, tableShare: tableShare) {
+    func toggleUserPermissionMenu(isDirectory: Bool, tableShare: tableShare, sender: Any?) {
         var actions = [NCMenuAction]()
         let permissions = NCPermissions()
 
@@ -102,6 +105,7 @@ extension NCShare {
                 icon: utility.loadImage(named: "eye", colors: [NCBrandColor.shared.iconImageColor]),
                 selected: tableShare.permissions == (permissions.permissionReadShare + permissions.permissionShareShare) || tableShare.permissions == permissions.permissionReadShare,
                 on: false,
+                sender: sender,
                 action: { _ in
                     let canShare = permissions.isPermissionToCanShare(tableShare.permissions)
                     let permissions = permissions.getPermission(canEdit: false, canCreate: false, canChange: false, canDelete: false, canShare: canShare, isDirectory: isDirectory)
@@ -116,6 +120,7 @@ extension NCShare {
                 icon: utility.loadImage(named: "pencil", colors: [NCBrandColor.shared.iconImageColor]),
                 selected: hasUploadPermission(tableShare: tableShare),
                 on: false,
+                sender: sender,
                 action: { _ in
                     let canShare = permissions.isPermissionToCanShare(tableShare.permissions)
                     let permissions = permissions.getPermission(canEdit: true, canCreate: true, canChange: true, canDelete: true, canShare: canShare, isDirectory: isDirectory)
@@ -124,7 +129,7 @@ extension NCShare {
             )
         )
 
-        self.presentMenu(with: actions)
+        self.presentMenu(with: actions, sender: sender)
     }
 
     fileprivate func hasUploadPermission(tableShare: tableShare) -> Bool {

@@ -344,18 +344,15 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     // MARK: - Open in ...
 
     func openDocumentController(metadata: tableMetadata, controller: NCMainTabBarController?) {
-
-        guard let mainTabBarController = controller,
-              let mainTabBar = mainTabBarController.tabBar as? NCMainTabBar else { return }
+        guard let controller else { return }
         let fileURL = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
 
         documentController = UIDocumentInteractionController(url: fileURL)
-        documentController?.presentOptionsMenu(from: mainTabBar.menuRect, in: mainTabBar, animated: true)
+        documentController?.presentOptionsMenu(from: controller.view.frame, in: controller.view, animated: true)
     }
 
-    func openActivityViewController(selectedMetadata: [tableMetadata], controller: NCMainTabBarController?) {
-        guard let controller,
-              let mainTabBar = controller.tabBar as? NCMainTabBar else { return }
+    func openActivityViewController(selectedMetadata: [tableMetadata], controller: NCMainTabBarController?, sender: Any?) {
+        guard let controller else { return }
         let metadatas = selectedMetadata.filter({ !$0.directory })
         var items: [URL] = []
         var downloadMetadata: [(tableMetadata, URL)] = []
@@ -390,8 +387,8 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             guard !items.isEmpty else { return }
             let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
             activityViewController.popoverPresentationController?.permittedArrowDirections = .any
-            activityViewController.popoverPresentationController?.sourceView = mainTabBar
-            activityViewController.popoverPresentationController?.sourceRect = mainTabBar.menuRect
+            activityViewController.popoverPresentationController?.sourceView = controller.view
+            activityViewController.popoverPresentationController?.sourceRect = controller.view.frame
             controller.present(activityViewController, animated: true)
         }
     }
@@ -460,7 +457,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     func pastePasteboard(serverUrl: String, account: String, controller: NCMainTabBarController?) {
         var fractionCompleted: Float = 0
-        let processor = ParallelWorker(n: 5, titleKey: "_uploading_", totalTasks: nil, controller: controller)
+        let processor = ParallelWorker(n: 5, titleKey: "_status_uploading_", totalTasks: nil, controller: controller)
 
         func uploadPastePasteboard(fileName: String, serverUrlFileName: String, fileNameLocalPath: String, serverUrl: String, completion: @escaping () -> Void) {
             NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: account) { _ in

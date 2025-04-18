@@ -148,9 +148,9 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
 
     // MARK: - Action
 
-    @objc func openMenuMore() {
+    @objc private func openMenuMore(_ sender: Any?) {
         if imageIcon == nil { imageIcon = NCUtility().loadImage(named: "doc.text", colors: [NCBrandColor.shared.iconImageColor]) }
-        NCViewer().toggleMenu(controller: (self.tabBarController as? NCMainTabBarController), metadata: metadata, webView: true, imageIcon: imageIcon)
+        NCViewer().toggleMenu(controller: (self.tabBarController as? NCMainTabBarController), metadata: metadata, webView: true, imageIcon: imageIcon, sender: nil)
     }
 
     // MARK: -

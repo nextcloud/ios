@@ -370,9 +370,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
 
-        if let frame = tabBarController?.tabBar.frame {
-            tabBarSelect?.hostingController?.view.frame = frame
-        }
+        tabBarSelect?.setFrame()
     }
 
     // MARK: - NotificationCenter
@@ -743,7 +741,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func tapMoreGridItem(with ocId: String, ocIdTransfer: String, image: UIImage?, sender: Any) {
         guard let metadata = self.database.getMetadataFromOcId(ocId) else { return }
-        toggleMenu(metadata: metadata, image: image)
+        toggleMenu(metadata: metadata, image: image, sender: sender)
     }
 
     func tapRichWorkspace(_ sender: Any) {
@@ -759,8 +757,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    func tapRecommendationsButtonMenu(with metadata: tableMetadata, image: UIImage?) {
-        toggleMenu(metadata: metadata, image: image)
+    func tapRecommendationsButtonMenu(with metadata: tableMetadata, image: UIImage?, sender: Any?) {
+        toggleMenu(metadata: metadata, image: image, sender: sender)
     }
 
     func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?) {
@@ -802,7 +800,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         becomeFirstResponder()
 
         if !serverUrl.isEmpty {
-            listMenuItems.append(UIMenuItem(title: NSLocalizedString("_paste_file_", comment: ""), action: #selector(pasteFilesMenu)))
+            listMenuItems.append(UIMenuItem(title: NSLocalizedString("_paste_file_", comment: ""), action: #selector(pasteFilesMenu(_:))))
         }
 
         if !listMenuItems.isEmpty {
@@ -814,21 +812,20 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - Menu Item
 
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-
-        if #selector(pasteFilesMenu) == action {
+        if #selector(pasteFilesMenu(_:)) == action {
             if !UIPasteboard.general.items.isEmpty, !(metadataFolder?.e2eEncrypted ?? false) {
                 return true
             }
-        } else if #selector(copyMenuFile) == action {
+        } else if #selector(copyMenuFile(_:)) == action {
             return true
-        } else if #selector(moveMenuFile) == action {
+        } else if #selector(moveMenuFile(_:)) == action {
             return true
         }
 
         return false
     }
 
-    @objc func pasteFilesMenu() {
+    @objc func pasteFilesMenu(_ sender: Any?) {
         NCActionCenter.shared.pastePasteboard(serverUrl: serverUrl, account: session.account, controller: self.controller)
     }
 

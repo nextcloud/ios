@@ -33,7 +33,6 @@ extension Array where Element == NCMenuAction {
 }
 
 class NCMenu: UITableViewController {
-
     var actions = [NCMenuAction]()
     var menuColor = UIColor.systemBackground
     var textColor = NCBrandColor.shared.textColor

@@ -1,22 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="FkP-Lh-8zt">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="FkP-Lh-8zt">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--NCMedia.storyboard-->
-        <scene sceneID="udp-lL-CYh">
-            <objects>
-                <viewControllerPlaceholder storyboardName="NCMedia" referencedIdentifier="NCMedia.storyboard" id="kO6-hz-Gsq" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="3mJ-L2-Cmt"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="6gG-SV-Hvv" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="7770" y="899"/>
-        </scene>
         <!--Main Tab Bar Controller-->
         <scene sceneID="gY3-Ur-rTC">
             <objects>
@@ -25,7 +15,7 @@
                     <navigationItem key="navigationItem" id="ozb-fg-0GE">
                         <barButtonItem key="backBarButtonItem" title="Back" id="oUu-2v-gUF"/>
                     </navigationItem>
-                    <tabBar key="tabBar" contentMode="scaleToFill" id="72f-jP-cei" customClass="NCMainTabBar" customModule="Nextcloud" customModuleProvider="target">
+                    <tabBar key="tabBar" contentMode="scaleToFill" id="72f-jP-cei">
                         <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -33,8 +23,8 @@
                     <connections>
                         <segue destination="bSZ-tE-FEj" kind="relationship" relationship="viewControllers" id="qbu-nX-qCk"/>
                         <segue destination="hwM-4d-Afb" kind="relationship" relationship="viewControllers" id="tds-0Q-7Zf"/>
-                        <segue destination="Cc7-4O-z6Q" kind="relationship" relationship="viewControllers" id="YKg-LH-tor"/>
                         <segue destination="Npr-vu-PSD" kind="relationship" relationship="viewControllers" id="XeU-GF-etm"/>
+                        <segue destination="cJk-3t-NeM" kind="relationship" relationship="viewControllers" id="2WL-hY-2Cp"/>
                         <segue destination="1Z8-Bx-Dqo" kind="relationship" relationship="viewControllers" id="z6l-ei-IMY"/>
                     </connections>
                 </tabBarController>
@@ -49,7 +39,7 @@
                     <tabBarItem key="tabBarItem" title="File" id="Zxv-aS-HGF"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="cj6-rT-wnB">
-                        <rect key="frame" x="0.0" y="48" width="414" height="96"/>
+                        <rect key="frame" x="0.0" y="96" width="414" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -59,7 +49,17 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="k95-tV-JJx" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5662" y="327"/>
+            <point key="canvasLocation" x="5707" y="327"/>
+        </scene>
+        <!--NCFiles.storyboard-->
+        <scene sceneID="xwl-IR-lkD">
+            <objects>
+                <viewControllerPlaceholder storyboardName="NCFiles" referencedIdentifier="NCFiles.storyboard" id="fdj-aV-gGf" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="Jvo-0f-hQ4"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Vst-OD-Y5z" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="5706" y="943"/>
         </scene>
         <!--Favorites-->
         <scene sceneID="YSr-JF-a0V">
@@ -68,7 +68,7 @@
                     <tabBarItem key="tabBarItem" title="Favorites" id="o09-67-hwf"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="MJw-Bn-5le">
-                        <rect key="frame" x="0.0" y="48" width="414" height="96"/>
+                        <rect key="frame" x="0.0" y="96" width="414" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -78,7 +78,17 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NME-vT-pfd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="6367" y="327"/>
+            <point key="canvasLocation" x="6384" y="327"/>
+        </scene>
+        <!--NCFavorite.storyboard-->
+        <scene sceneID="zqD-Jj-h2w">
+            <objects>
+                <viewControllerPlaceholder storyboardName="NCFavorite" referencedIdentifier="NCFavorite.storyboard" id="NEf-S4-8q5" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="dts-Zz-Gfr"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="gnf-oc-B60" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="6383" y="943"/>
         </scene>
         <!--Media-->
         <scene sceneID="IuY-Iu-oAm">
@@ -87,7 +97,7 @@
                     <tabBarItem key="tabBarItem" title="Media" id="5cw-bP-7It"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="ixg-Pw-TNO">
-                        <rect key="frame" x="0.0" y="48" width="414" height="96"/>
+                        <rect key="frame" x="0.0" y="96" width="414" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -97,23 +107,44 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cZf-pk-3Bd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="7771" y="327"/>
+            <point key="canvasLocation" x="7070" y="327"/>
         </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="cip-AF-Ks2">
+        <!--NCMedia.storyboard-->
+        <scene sceneID="udp-lL-CYh">
             <objects>
-                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="Cc7-4O-z6Q" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" enabled="NO" title="" image="tabBarPlus" id="vIy-cM-ojV"/>
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="jCU-so-Np6">
-                        <rect key="frame" x="0.0" y="48" width="414" height="96"/>
+                <viewControllerPlaceholder storyboardName="NCMedia" referencedIdentifier="NCMedia.storyboard" id="kO6-hz-Gsq" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="3mJ-L2-Cmt"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="6gG-SV-Hvv" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="7070" y="943"/>
+        </scene>
+        <!--Activity-->
+        <scene sceneID="ZMV-5S-PnW">
+            <objects>
+                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="cJk-3t-NeM" customClass="NCActivityNavigationController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Activity" id="tc3-kx-Dca" userLabel="Activity"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="Qkh-XJ-mse">
+                        <rect key="frame" x="0.0" y="96" width="414" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
-                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="JYK-Wc-E2H" kind="relationship" relationship="rootViewController" id="Pnz-Ta-J9r"/>
+                    </connections>
                 </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="ohd-Sv-ssv" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="EWw-ZD-t7f" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="7072" y="327"/>
+            <point key="canvasLocation" x="7748" y="327"/>
+        </scene>
+        <!--NCActivity.storyboard-->
+        <scene sceneID="qVw-FD-Xlf">
+            <objects>
+                <viewControllerPlaceholder storyboardName="NCActivity" referencedIdentifier="NCActivity.storyboard" id="JYK-Wc-E2H" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="K08-lC-hxS"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Kzs-im-JZu" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="7749" y="943"/>
         </scene>
         <!--More-->
         <scene sceneID="4RE-f1-SKU">
@@ -122,7 +153,7 @@
                     <tabBarItem key="tabBarItem" title="More" id="U4f-qS-cgh"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="yVo-p8-ApS">
-                        <rect key="frame" x="0.0" y="48" width="414" height="96"/>
+                        <rect key="frame" x="0.0" y="96" width="414" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -140,6 +171,16 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="D7n-Z1-9wU" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="8458" y="327"/>
+        </scene>
+        <!--NCMore.storyboard-->
+        <scene sceneID="OXv-NF-UnP">
+            <objects>
+                <viewControllerPlaceholder storyboardName="NCMore" referencedIdentifier="NCMore.storyboard" id="3YH-o1-17m" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="kVD-Ed-Voa"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="CL1-x1-23E" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="8458" y="943"/>
         </scene>
         <!--NCTrash.storyboard-->
         <scene sceneID="361-ZH-Lss">
@@ -211,38 +252,5 @@
             </objects>
             <point key="canvasLocation" x="10209" y="348"/>
         </scene>
-        <!--NCFiles.storyboard-->
-        <scene sceneID="xwl-IR-lkD">
-            <objects>
-                <viewControllerPlaceholder storyboardName="NCFiles" referencedIdentifier="NCFiles.storyboard" id="fdj-aV-gGf" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="Jvo-0f-hQ4"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Vst-OD-Y5z" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="5661" y="899"/>
-        </scene>
-        <!--NCFavorite.storyboard-->
-        <scene sceneID="zqD-Jj-h2w">
-            <objects>
-                <viewControllerPlaceholder storyboardName="NCFavorite" referencedIdentifier="NCFavorite.storyboard" id="NEf-S4-8q5" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="dts-Zz-Gfr"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="gnf-oc-B60" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="6367" y="899"/>
-        </scene>
-        <!--NCMore.storyboard-->
-        <scene sceneID="OXv-NF-UnP">
-            <objects>
-                <viewControllerPlaceholder storyboardName="NCMore" referencedIdentifier="NCMore.storyboard" id="3YH-o1-17m" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="kVD-Ed-Voa"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="CL1-x1-23E" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="8458" y="899"/>
-        </scene>
     </scenes>
-    <resources>
-        <image name="tabBarPlus" width="80" height="80"/>
-    </resources>
 </document>

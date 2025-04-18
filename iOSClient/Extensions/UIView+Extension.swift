@@ -69,4 +69,15 @@ extension UIView {
         self.layer.cornerRadius = self.frame.size.width / 2
         self.layer.masksToBounds = true
     }
+
+    var parentTabBarController: UITabBarController? {
+        var responder: UIResponder? = self
+        while let nextResponder = responder?.next {
+            if let tabBarController = nextResponder as? UITabBarController {
+                return tabBarController
+            }
+            responder = nextResponder
+        }
+        return nil
+    }
 }

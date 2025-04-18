@@ -60,7 +60,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         self.accessibilityCustomActions = [UIAccessibilityCustomAction(
             name: NSLocalizedString("_show_profile_", comment: ""),
             target: self,
-            selector: #selector(tapAvatarImage))]
+            selector: #selector(tapAvatarImage(_:)))]
         let permissions = NCPermissions()
         labelTitle.text = tableShare.shareWithDisplayname
         labelTitle.textColor = NCBrandColor.shared.textColor
@@ -101,7 +101,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapAvatarImage))
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapAvatarImage(_:)))
         imageItem?.addGestureRecognizer(tapGesture)
 
         labelQuickStatus.textColor = NCBrandColor.shared.customer

@@ -71,7 +71,7 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
         self.navigationController?.navigationBar.tintColor = textColor
 
         if !NCManageDatabase.shared.getAllTableAccount().isEmpty {
-            let navigationItemCancel = UIBarButtonItem(image: UIImage(systemName: "xmark"), style: .done, target: self, action: #selector(self.actionCancel))
+            let navigationItemCancel = UIBarButtonItem(image: UIImage(systemName: "xmark"), style: .done, target: self, action: #selector(actionCancel(_:)))
             navigationItemCancel.tintColor = textColor
             navigationItem.leftBarButtonItem = navigationItemCancel
         }
@@ -105,14 +105,7 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
 
         view.backgroundColor = NCBrandColor.shared.customer
 
-        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
-            self.timer?.invalidate()
-            self.timer = nil
-        }
-
-        NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { _ in
-            self.timer = Timer.scheduledTimer(timeInterval: 4, target: self, selector: (#selector(NCIntroViewController.autoScroll)), userInfo: nil, repeats: true)
-        }
+        self.timer = Timer.scheduledTimer(timeInterval: 4, target: self, selector: (#selector(self.autoScroll(_:))), userInfo: nil, repeats: true)
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -125,19 +118,21 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+
         timer?.invalidate()
         timer = nil
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
+
         coordinator.animate(alongsideTransition: nil) { _ in
             self.pageControl?.currentPage = 0
             self.introCollectionView?.collectionViewLayout.invalidateLayout()
         }
     }
 
-    @objc func autoScroll() {
+    @objc func autoScroll(_ sender: Any?) {
         if pageControl.currentPage + 1 >= titles.count {
             pageControl.currentPage = 0
         } else {
@@ -169,7 +164,7 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        timer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: (#selector(NCIntroViewController.autoScroll)), userInfo: nil, repeats: true)
+        timer = Timer.scheduledTimer(timeInterval: 4, target: self, selector: (#selector(autoScroll(_:))), userInfo: nil, repeats: true)
         pageControl.currentPage = Int(scrollView.contentOffset.x) / Int(scrollView.frame.width)
     }
 
@@ -180,7 +175,7 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
 
     // MARK: - Action
 
-    @objc func actionCancel() {
+    @objc func actionCancel(_ sender: Any?) {
         dismiss(animated: true) { }
     }
 

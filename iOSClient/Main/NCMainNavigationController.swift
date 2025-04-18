@@ -12,7 +12,6 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     let utility = NCUtility()
     let utilityFileSystem = NCUtilityFileSystem()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    private var timer: Timer?
 
     var controller: NCMainTabBarController? {
         self.tabBarController as? NCMainTabBarController
@@ -102,21 +101,6 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
         navigationBar.prefersLargeTitles = true
         setNavigationBarHidden(false, animated: true)
-
-        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
-            self.timer?.invalidate()
-            self.timer = nil
-        }
-
-        NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { _ in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                if UIApplication.shared.applicationState == .active {
-                    self.timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
-                        self.updateRightBarButtonItems()
-                    })
-                }
-            }
-        }
     }
 
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
@@ -127,12 +111,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     // MARK: - Right
 
     func setNavigationRightItems() {
-        guard let collectionViewCommon
-        else {
-            return
-        }
-
-        if collectionViewCommon.isEditMode {
+        if let collectionViewCommon,
+           collectionViewCommon.isEditMode {
             collectionViewCommon.tabBarSelect?.update(fileSelect: collectionViewCommon.fileSelect, metadatas: collectionViewCommon.getSelectedMetadatas(), userId: session.userId)
             collectionViewCommon.tabBarSelect?.show()
 
@@ -140,42 +120,32 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 collectionViewCommon.setEditMode(false)
                 collectionViewCommon.collectionView.reloadData()
             }
-
-            self.collectionViewCommon?.navigationItem.rightBarButtonItems = [select]
-
+            collectionViewCommon.navigationItem.rightBarButtonItems = [select]
         } else {
-
-            collectionViewCommon.tabBarSelect?.hide()
+            collectionViewCommon?.tabBarSelect?.hide()
             self.updateRightBarButtonItems()
-        }
-
-        // fix, if the tabbar was hidden before the update, set it in hidden
-        if self.tabBarController?.tabBar.isHidden ?? true,
-           collectionViewCommon.tabBarSelect?.isHidden() ?? true {
-            self.tabBarController?.tabBar.isHidden = true
         }
     }
 
     func updateRightBarButtonItems() {
-        guard let collectionViewCommon,
-              !collectionViewCommon.isEditMode,
-              let controller
-        else {
-            return
-        }
         let capabilities = NCCapabilities.shared.getCapabilities(account: session.account)
         let resultsCount = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal))?.count ?? 0
-        var tempRightBarButtonItems = [self.menuBarButtonItem]
+        var tempRightBarButtonItems: [UIBarButtonItem] = createRightMenu() == nil ? [] : [self.menuBarButtonItem]
         var tempTotalTags = self.menuBarButtonItem.tag
         var totalTags = 0
 
-        if let rightBarButtonItems = self.collectionViewCommon?.navigationItem.rightBarButtonItems,
+        if let collectionViewCommon,
+           collectionViewCommon.isEditMode {
+            return
+        }
+
+        if let rightBarButtonItems = topViewController?.navigationItem.rightBarButtonItems,
             let menuBarButtonItem = rightBarButtonItems.first(where: { $0.tag == menuButtonTag }),
             let menuButton = menuBarButtonItem.customView as? UIButton {
             menuButton.menu = createRightMenu()
         }
 
-        if let rightBarButtonItems = collectionViewCommon.navigationItem.rightBarButtonItems {
+        if let rightBarButtonItems = topViewController?.navigationItem.rightBarButtonItems {
             for item in rightBarButtonItems {
                 totalTags = totalTags + item.tag
             }
@@ -186,7 +156,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             tempTotalTags = tempTotalTags + self.assistantButtonItem.tag
         }
 
-        if controller.availableNotifications {
+        if let controller, controller.availableNotifications {
             tempRightBarButtonItems.append(self.notificationsButtonItem)
             tempTotalTags = tempTotalTags + self.notificationsButtonItem.tag
         }
@@ -197,7 +167,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
 
         if totalTags != tempTotalTags {
-            collectionViewCommon.navigationItem.rightBarButtonItems = tempRightBarButtonItems
+            topViewController?.navigationItem.rightBarButtonItems = tempRightBarButtonItems
         }
     }
 

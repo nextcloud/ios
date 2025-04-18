@@ -27,10 +27,16 @@ import RealmSwift
 import SwiftUI
 
 class NCFiles: NCCollectionViewCommon {
+    @IBOutlet weak var plusButton: UIButton!
+
     internal var fileNameBlink: String?
     internal var fileNameOpen: String?
     internal var matadatasHash: String = ""
     internal var semaphoreReloadDataSource = DispatchSemaphore(value: 1)
+
+    internal var lastOffsetY: CGFloat = 0
+    internal var lastScrollTime: TimeInterval = 0
+    internal var accumulatedScrollDown: CGFloat = 0
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -47,6 +53,28 @@ class NCFiles: NCCollectionViewCommon {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        /// Plus Button
+        let image = UIImage(systemName: "plus", withConfiguration: UIImage.SymbolConfiguration(scale: .large))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [.white]))
+
+        plusButton.setTitle("", for: .normal)
+        plusButton.setImage(image, for: .normal)
+        plusButton.backgroundColor = NCBrandColor.shared.customer
+        if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
+            self.plusButton.backgroundColor = NCBrandColor.shared.getElement(account: activeTableAccount.account)
+        }
+        plusButton.accessibilityLabel = NSLocalizedString("_accessibility_add_upload_", comment: "")
+        plusButton.layer.cornerRadius = plusButton.frame.size.width / 2.0
+        plusButton.layer.masksToBounds = false
+        plusButton.layer.shadowOffset = CGSize(width: 0, height: 0)
+        plusButton.layer.shadowRadius = 3.0
+        plusButton.layer.shadowOpacity = 0.5
+
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil, queue: nil) { _ in
+            if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
+                self.plusButton.backgroundColor = NCBrandColor.shared.getElement(account: activeTableAccount.account)
+            }
+        }
 
         if self.serverUrl.isEmpty {
 
@@ -121,6 +149,29 @@ class NCFiles: NCCollectionViewCommon {
 
         fileNameBlink = nil
         fileNameOpen = nil
+    }
+
+    // MARK: - Action
+
+    @IBAction func plusButtonAction(_ sender: UIButton) {
+        guard let controller else { return }
+        let fileFolderPath = NCUtilityFileSystem().getFileNamePath("", serverUrl: serverUrl, session: NCSession.shared.getSession(controller: controller))
+        let fileFolderName = (serverUrl as NSString).lastPathComponent
+
+        if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", controller.account, serverUrl)) {
+            if !directory.permissions.contains("CK") {
+                let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_add_file_")
+                NCContentPresenter().showWarning(error: error)
+                return
+            }
+        }
+
+        if !FileNameValidator.checkFolderPath(fileFolderPath, account: controller.account) {
+            controller.present(UIAlertController.warning(message: "\(String(format: NSLocalizedString("_file_name_validator_error_reserved_name_", comment: ""), fileFolderName)) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+            return
+        }
+
+        self.appDelegate.toggleMenu(controller: controller, sender: sender)
     }
 
     // MARK: - DataSource

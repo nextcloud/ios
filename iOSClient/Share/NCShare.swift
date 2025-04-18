@@ -142,9 +142,9 @@ class NCShare: UIViewController, NCSharePagingContent {
         sharedWithYouByImage.image = utility.loadUserImage(for: metadata.ownerId, displayName: metadata.ownerDisplayName, urlBase: session.urlBase)
         sharedWithYouByLabel.accessibilityHint = NSLocalizedString("_show_profile_", comment: "")
 
-        let shareAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile))
+        let shareAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile(_:)))
         sharedWithYouByImage.addGestureRecognizer(shareAction)
-        let shareLabelAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile))
+        let shareLabelAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile(_:)))
         sharedWithYouByLabel.addGestureRecognizer(shareLabelAction)
 
         let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: metadata.ownerId)
@@ -172,8 +172,8 @@ class NCShare: UIViewController, NCSharePagingContent {
 
     // MARK: - Notification Center
 
-    @objc func openShareProfile() {
-        self.showProfileMenu(userId: metadata.ownerId, session: session)
+    @objc func openShareProfile(_ sender: UITapGestureRecognizer) {
+        self.showProfileMenu(userId: metadata.ownerId, session: session, sender: sender.view)
     }
 
     // MARK: -
@@ -399,14 +399,14 @@ extension NCShare: UITableViewDataSource {
 extension NCShare: CNContactPickerDelegate {
     func contactPicker(_ picker: CNContactPickerViewController, didSelect contact: CNContact) {
         if  contact.emailAddresses.count > 1 {
-            showEmailList(arrEmail: contact.emailAddresses.map({$0.value as String}))
+            showEmailList(arrEmail: contact.emailAddresses.map({$0.value as String}), sender: picker)
         } else if let email = contact.emailAddresses.first?.value as? String {
             searchField?.text = email
             networking?.getSharees(searchString: email)
         }
     }
 
-    func showEmailList(arrEmail: [String]) {
+    func showEmailList(arrEmail: [String], sender: Any?) {
         var actions = [NCMenuAction]()
         for email in arrEmail {
             actions.append(
@@ -415,6 +415,7 @@ extension NCShare: CNContactPickerDelegate {
                     icon: utility.loadImage(named: "email", colors: [NCBrandColor.shared.iconImageColor]),
                     selected: false,
                     on: false,
+                    sender: sender,
                     action: { _ in
                         self.searchField?.text = email
                         self.networking?.getSharees(searchString: email)
@@ -423,7 +424,7 @@ extension NCShare: CNContactPickerDelegate {
             )
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.presentMenu(with: actions)
+            self.presentMenu(with: actions, sender: sender)
         }
     }
 }
@@ -432,16 +433,16 @@ extension NCShare: CNContactPickerDelegate {
 
 extension NCShare: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(searchSharees), object: nil)
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(searchSharees(_:)), object: nil)
 
         if searchText.isEmpty {
             dropDown.hide()
         } else {
-            perform(#selector(searchSharees), with: nil, afterDelay: 0.5)
+            perform(#selector(searchSharees(_:)), with: nil, afterDelay: 0.5)
         }
     }
 
-    @objc private func searchSharees() {
+    @objc private func searchSharees(_ sender: Any?) {
         // https://stackoverflow.com/questions/25471114/how-to-validate-an-e-mail-address-in-swift
         func isValidEmail(_ email: String) -> Bool {
 
