@@ -14,16 +14,16 @@ extension NCFiles {
             // Scroll down → accumulate
 
             accumulatedScrollDown += deltaY
-            if accumulatedScrollDown > 70 {             // threshold before decreasing alpha
+            if accumulatedScrollDown > 150 {             // threshold before decreasing alpha
                 UIView.animate(withDuration: 0.2) {
-                    self.plusButton.alpha = max(0.5, self.plusButton.alpha - 0.02)
+                    self.plusButton.alpha = max(0.4, self.plusButton.alpha - 0.02)
                 }
             }
         } else if deltaY < 0 {
             // Scroll up → reset and maybe increase alpha
 
             accumulatedScrollDown = 0
-            if abs(velocity) > 500 {                    // speed before increasing alpha
+            if abs(velocity) > 700 {                    // speed before increasing alpha
                 UIView.animate(withDuration: 0.2) {
                     self.plusButton.alpha = min(1.0, self.plusButton.alpha + 0.1)
                 }
