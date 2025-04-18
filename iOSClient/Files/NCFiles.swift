@@ -238,7 +238,7 @@ class NCFiles: NCCollectionViewCommon {
         DispatchQueue.global().async {
             self.networkReadFolder { metadatas, isChanged, error in
                 DispatchQueue.main.async {
-                    self.refreshControl.endRefreshing()
+                    self.refreshControlEndRefreshing()
 
                     if isChanged || self.isNumberOfItemsInAllSectionsNull {
                         self.reloadDataSource()
@@ -390,6 +390,23 @@ class NCFiles: NCCollectionViewCommon {
                 }
             }
         }
+    }
+
+    override func resetPlusButtonAlpha(animated: Bool = true) {
+        accumulatedScrollDown = 0
+        let update = {
+            self.plusButton.alpha = 1.0
+        }
+
+        if animated {
+            UIView.animate(withDuration: 0.2, animations: update)
+        } else {
+            update()
+        }
+    }
+
+    override func isHiddenPlusButton(_ isHidden: Bool) {
+        plusButton.isHidden = isHidden
     }
 
     // MARK: - NCAccountSettingsModelDelegate

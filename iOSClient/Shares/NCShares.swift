@@ -103,7 +103,7 @@ class NCShares: NCCollectionViewCommon {
                 }
                 self.reloadDataSource()
             }
-            self.refreshControl.endRefreshing()
+            self.refreshControlEndRefreshing()
         }
     }
 }
