@@ -136,7 +136,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     override var canBecomeFirstResponder: Bool { return true }
 
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-        if action == #selector(pasteImage) {
+        if action == #selector(pasteImage(_:)) {
             return true
         }
         return false
@@ -289,7 +289,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
             self.becomeFirstResponder()
             let pasteboard = UIPasteboard.general
             if let recognizerView = recognizer.view, let recognizerSuperView = recognizerView.superview, pasteboard.hasImages {
-                UIMenuController.shared.menuItems = [UIMenuItem(title: "Paste", action: #selector(pasteImage))]
+                UIMenuController.shared.menuItems = [UIMenuItem(title: "Paste", action: #selector(pasteImage(_:)))]
                 UIMenuController.shared.showMenu(from: recognizerSuperView, rect: recognizerView.frame)
             }
             // TIP
@@ -297,7 +297,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         }
     }
 
-    @objc func pasteImage() {
+    @objc func pasteImage(_ sender: Any?) {
         let pasteboard = UIPasteboard.general
         if pasteboard.hasImages {
             guard let image = pasteboard.image?.fixedOrientation() else { return }

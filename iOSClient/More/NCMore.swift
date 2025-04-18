@@ -77,7 +77,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         tableView.register(NCMoreAppSuggestionsCell.fromNib(), forCellReuseIdentifier: NCMoreAppSuggestionsCell.reuseIdentifier)
 
         // create tap gesture recognizer
-        let tapQuota = UITapGestureRecognizer(target: self, action: #selector(tapLabelQuotaExternalSite))
+        let tapQuota = UITapGestureRecognizer(target: self, action: #selector(tapLabelQuotaExternalSite(_:)))
         labelQuotaExternalSite.isUserInteractionEnabled = true
         labelQuotaExternalSite.addGestureRecognizer(tapQuota)
     }
@@ -262,7 +262,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     // MARK: - Action
 
-    @objc func tapLabelQuotaExternalSite() {
+    @objc func tapLabelQuotaExternalSite(_ sender: Any?) {
         if !quotaMenu.isEmpty {
             let item = quotaMenu[0]
             if let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as? NCBrowserWeb {

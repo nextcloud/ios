@@ -171,7 +171,7 @@ class NCFiles: NCCollectionViewCommon {
             return
         }
 
-        self.appDelegate.toggleMenu(controller: controller)
+        self.appDelegate.toggleMenu(controller: controller, sender: sender)
     }
 
     // MARK: - DataSource

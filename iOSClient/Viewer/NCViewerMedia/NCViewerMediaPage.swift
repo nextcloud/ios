@@ -64,8 +64,8 @@ class NCViewerMediaPage: UIViewController {
     var timerAutoHide: Timer?
     private var timerAutoHideSeconds: Double = 4
 
-    private lazy var moreNavigationItem = UIBarButtonItem(image: NCImageCache.shared.getImageButtonMore(), style: .plain, target: self, action: #selector(openMenuMore))
-    private lazy var imageDetailNavigationItem = UIBarButtonItem(image: NCUtility().loadImage(named: "info.circle", colors: [NCBrandColor.shared.iconImageColor]), style: .plain, target: self, action: #selector(toggleDetail))
+    private lazy var moreNavigationItem = UIBarButtonItem(image: NCImageCache.shared.getImageButtonMore(), style: .plain, target: self, action: #selector(openMenuMore(_:)))
+    private lazy var imageDetailNavigationItem = UIBarButtonItem(image: NCUtility().loadImage(named: "info.circle", colors: [NCBrandColor.shared.iconImageColor]), style: .plain, target: self, action: #selector(toggleDetail(_:)))
 
     // swiftlint:disable force_cast
     var pageViewController: UIPageViewController {
@@ -233,13 +233,13 @@ class NCViewerMediaPage: UIViewController {
         navigationController?.popViewController(animated: true)
     }
 
-    @objc private func openMenuMore() {
+    @objc private func openMenuMore(_ sender: Any?) {
         let imageIcon = NCUtility().getImage(ocId: currentViewController.metadata.ocId, etag: currentViewController.metadata.etag, ext: NCGlobal.shared.previewExt512)
 
-        NCViewer().toggleMenu(controller: self.tabBarController as? NCMainTabBarController, metadata: currentViewController.metadata, webView: false, imageIcon: imageIcon, sender: nil)
+        NCViewer().toggleMenu(controller: self.tabBarController as? NCMainTabBarController, metadata: currentViewController.metadata, webView: false, imageIcon: imageIcon, sender: sender)
     }
 
-    @objc private func toggleDetail() {
+    @objc private func toggleDetail(_ sender: Any?) {
         currentViewController.toggleDetail()
     }
 

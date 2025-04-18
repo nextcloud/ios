@@ -438,7 +438,7 @@ extension NCViewerMedia {
         }
     }
 
-    func toggleDetail () {
+    func toggleDetail() {
         detailView.isShown ? closeDetail() : openDetail()
     }
 

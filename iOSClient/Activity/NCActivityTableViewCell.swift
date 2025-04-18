@@ -67,13 +67,13 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        let avatarRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapAvatarImage))
+        let avatarRecognizer = UITapGestureRecognizer(target: self, action: #selector(tapAvatarImage(_:)))
         avatar.addGestureRecognizer(avatarRecognizer)
     }
 
-    @objc func tapAvatarImage() {
+    @objc func tapAvatarImage(_ sender: Any?) {
         guard let fileUser = fileUser else { return }
-        viewController.showProfileMenu(userId: fileUser, session: NCSession.shared.getSession(account: account))
+        viewController.showProfileMenu(userId: fileUser, session: NCSession.shared.getSession(account: account), sender: sender)
     }
 }
 

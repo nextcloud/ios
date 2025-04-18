@@ -182,11 +182,11 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             UIAccessibilityCustomAction(
                 name: NSLocalizedString("_share_", comment: ""),
                 target: self,
-                selector: #selector(touchUpInsideShare)),
+                selector: #selector(touchUpInsideShare(_:))),
             UIAccessibilityCustomAction(
                 name: NSLocalizedString("_more_", comment: ""),
                 target: self,
-                selector: #selector(touchUpInsideMore))
+                selector: #selector(touchUpInsideMore(_:)))
         ]
     }
 

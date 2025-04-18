@@ -71,7 +71,7 @@ extension NCCollectionViewCommon {
             )
         )
 
-        actions.append(.seperator(order: 1))
+        actions.append(.seperator(order: 1, sender: sender))
 
         //
         // DETAILS
@@ -150,7 +150,7 @@ extension NCCollectionViewCommon {
            !metadata.directory,
            metadata.canUnlock(as: metadata.userId),
            !NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityFilesLockVersion.isEmpty {
-            actions.append(NCMenuAction.lockUnlockFiles(shouldLock: !metadata.lock, metadatas: [metadata], order: 30))
+            actions.append(NCMenuAction.lockUnlockFiles(shouldLock: !metadata.lock, metadatas: [metadata], order: 30, sender: sender))
         }
 
         //
@@ -338,7 +338,7 @@ extension NCCollectionViewCommon {
         // COPY - MOVE
         //
         if metadata.isCopyableMovable {
-            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], viewController: self, order: 130))
+            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], viewController: self, order: 130, sender: sender))
         }
 
         //
@@ -402,12 +402,12 @@ extension NCCollectionViewCommon {
         // DELETE
         //
         if metadata.isDeletable {
-            actions.append(.deleteAction(selectedMetadatas: [metadata], metadataFolder: metadataFolder, controller: self.controller, order: 170))
+            actions.append(.deleteAction(selectedMetadatas: [metadata], metadataFolder: metadataFolder, controller: self.controller, order: 170, sender: sender))
         }
 
         applicationHandle.addCollectionViewCommonMenu(metadata: metadata, image: image, actions: &actions)
 
-        presentMenu(with: actions)
+        presentMenu(with: actions, sender: sender)
     }
 }
 

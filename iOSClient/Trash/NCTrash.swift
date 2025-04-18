@@ -76,7 +76,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         // Add Refresh Control
         collectionView.refreshControl = refreshControl
         refreshControl.tintColor = NCBrandColor.shared.textColor2
-        refreshControl.addTarget(self, action: #selector(loadListingTrash), for: .valueChanged)
+        refreshControl.addTarget(self, action: #selector(loadListingTrash(_:)), for: .valueChanged)
 
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSource), object: nil)
     }
@@ -99,7 +99,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         setNavigationRightItems()
 
         reloadDataSource()
-        loadListingTrash()
+        loadListingTrash(nil)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -168,7 +168,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     func tapMoreListItem(with objectId: String, image: UIImage?, sender: Any) {
         if !isEditMode {
-            toggleMenuMore(with: objectId, image: image, isGridCell: false)
+            toggleMenuMore(with: objectId, image: image, isGridCell: false, sender: sender)
         } else if let button = sender as? UIView {
             let buttonPosition = button.convert(CGPoint.zero, to: collectionView)
             let indexPath = collectionView.indexPathForItem(at: buttonPosition)
@@ -178,7 +178,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     func tapMoreGridItem(with objectId: String, image: UIImage?, sender: Any) {
         if !isEditMode {
-            toggleMenuMore(with: objectId, image: image, isGridCell: true)
+            toggleMenuMore(with: objectId, image: image, isGridCell: true, sender: sender)
         } else if let button = sender as? UIView {
             let buttonPosition = button.convert(CGPoint.zero, to: collectionView)
             let indexPath = collectionView.indexPathForItem(at: buttonPosition)

@@ -61,7 +61,7 @@ extension NCMedia {
 
         switch gestureRecognizer.state {
         case .began:
-            networkRemoveAll()
+            networkRemoveAll(nil)
             lastScale = gestureRecognizer.scale
             lastNumberOfColumns = numberOfColumns
         case .changed:

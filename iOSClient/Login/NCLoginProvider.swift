@@ -34,7 +34,7 @@ class NCLoginProvider: UIViewController {
             webView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
         }
 
-        let navigationItemBack = UIBarButtonItem(image: UIImage(systemName: "arrow.left"), style: .done, target: self, action: #selector(goBack))
+        let navigationItemBack = UIBarButtonItem(image: UIImage(systemName: "arrow.left"), style: .done, target: self, action: #selector(goBack(_:)))
         navigationItemBack.tintColor = uiColor
         navigationItem.leftBarButtonItem = navigationItemBack
     }
@@ -91,7 +91,7 @@ class NCLoginProvider: UIViewController {
         webView.load(request)
     }
 
-    @objc func goBack() {
+    @objc func goBack(_ sender: Any?) {
         delegate?.onBack()
 
         if isModal {

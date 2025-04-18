@@ -75,7 +75,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
             filePath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
             pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
             if NCNetworking.shared.isOnline {
-                navigationItem.rightBarButtonItem = UIBarButtonItem(image: NCImageCache.shared.getImageButtonMore(), style: .plain, target: self, action: #selector(self.openMenuMore))
+                navigationItem.rightBarButtonItem = UIBarButtonItem(image: NCImageCache.shared.getImageButtonMore(), style: .plain, target: self, action: #selector(openMenuMore(_:)))
             }
         }
         defaultBackgroundColor = pdfView.backgroundColor
@@ -223,7 +223,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         // GESTURE
 
-        let tapPdfView = UITapGestureRecognizer(target: self, action: #selector(tapPdfView))
+        let tapPdfView = UITapGestureRecognizer(target: self, action: #selector(tapPdfView(_:)))
         tapPdfView.numberOfTapsRequired = 1
         pdfView.addGestureRecognizer(tapPdfView)
 
@@ -232,17 +232,17 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
             tapPdfView.require(toFail: gesture)
         }
 
-        let swipePdfView = UISwipeGestureRecognizer(target: self, action: #selector(gestureClosePdfThumbnail))
+        let swipePdfView = UISwipeGestureRecognizer(target: self, action: #selector(gestureClosePdfThumbnail(_:)))
         swipePdfView.direction = .right
         swipePdfView.delegate = self
         pdfView.addGestureRecognizer(swipePdfView)
 
-        let edgePdfView = UIScreenEdgePanGestureRecognizer(target: self, action: #selector(gestureOpenPdfThumbnail))
+        let edgePdfView = UIScreenEdgePanGestureRecognizer(target: self, action: #selector(gestureOpenPdfThumbnail(_:)))
         edgePdfView.edges = .right
         edgePdfView.delegate = self
         pdfView.addGestureRecognizer(edgePdfView)
 
-        let swipePdfThumbnailScrollView = UISwipeGestureRecognizer(target: self, action: #selector(gestureClosePdfThumbnail))
+        let swipePdfThumbnailScrollView = UISwipeGestureRecognizer(target: self, action: #selector(gestureClosePdfThumbnail(_:)))
         swipePdfThumbnailScrollView.direction = .right
         pdfThumbnailScrollView.addGestureRecognizer(swipePdfThumbnailScrollView)
 
@@ -368,13 +368,13 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
     // MARK: - Action
 
-    @objc func openMenuMore() {
+    @objc private func openMenuMore(_ sender: Any?) {
         guard let metadata = self.metadata else { return }
         if imageIcon == nil {
             imageIcon = UIImage(named: "file_pdf")
         }
 
-        NCViewer().toggleMenu(controller: (self.tabBarController as? NCMainTabBarController), metadata: metadata, webView: false, imageIcon: imageIcon, sender: nil)
+        NCViewer().toggleMenu(controller: (self.tabBarController as? NCMainTabBarController), metadata: metadata, webView: false, imageIcon: imageIcon, sender: sender)
     }
 
     // MARK: - Gesture Recognizer

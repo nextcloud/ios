@@ -122,13 +122,13 @@ extension NCMedia {
                 self.showOnlyImages = true
                 self.showOnlyVideos = false
                 self.loadDataSource()
-                self.networkRemoveAll()
+                self.networkRemoveAll(nil)
             },
             UIAction(title: NSLocalizedString("_media_viewvideo_show_", comment: ""), image: utility.loadImage(named: "video")) { _ in
                 self.showOnlyImages = false
                 self.showOnlyVideos = true
                 self.loadDataSource()
-                self.networkRemoveAll()
+                self.networkRemoveAll(nil)
             },
             UIAction(title: NSLocalizedString("_media_show_all_", comment: ""), image: utility.loadImage(named: "photo.on.rectangle")) { _ in
                 self.showOnlyImages = false

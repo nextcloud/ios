@@ -141,12 +141,12 @@ class NCViewerPDFSearch: UITableViewController, UISearchBarDelegate, PDFDocument
 
     func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
 
-        let cancelBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .plain, target: self, action: #selector(cancelBarButtonItemClicked))
+        let cancelBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .plain, target: self, action: #selector(cancelBarButtonItemClicked(_:)))
         navigationItem.setRightBarButton(cancelBarButtonItem, animated: true)
         return true
     }
 
-    @objc func cancelBarButtonItemClicked() {
+    @objc func cancelBarButtonItemClicked(_ sender: Any?) {
         searchBarCancelButtonClicked(searchBar)
     }
 }

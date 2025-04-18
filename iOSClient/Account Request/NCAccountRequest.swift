@@ -67,8 +67,8 @@ class NCAccountRequest: UIViewController {
             progressView.isHidden = true
         }
 
-        NotificationCenter.default.addObserver(self, selector: #selector(startTimer), name: UIApplication.didBecomeActiveNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(startTimer(_:)), name: UIApplication.didBecomeActiveNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: UIApplication.didEnterBackgroundNotification, object: nil)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -91,7 +91,7 @@ class NCAccountRequest: UIViewController {
 
     // MARK: - NotificationCenter
 
-    @objc func applicationDidEnterBackground() {
+    @objc func applicationDidEnterBackground(_ sender: Any?) {
         if dismissDidEnterBackground {
             dismiss(animated: false)
         }
@@ -99,18 +99,18 @@ class NCAccountRequest: UIViewController {
 
     // MARK: - Progress
 
-    @objc func startTimer() {
+    @objc func startTimer(_ sender: Any?) {
         if enableTimerProgress {
             time = 0
             timer?.invalidate()
-            timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(updateProgress), userInfo: nil, repeats: true)
+            timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(updateProgress(_:)), userInfo: nil, repeats: true)
             progressView?.isHidden = false
         } else {
             progressView?.isHidden = true
         }
     }
 
-    @objc func updateProgress() {
+    @objc func updateProgress(_ sender: Any?) {
         time += 0.1
         if time >= secondsAutoDismiss {
             dismiss(animated: true)

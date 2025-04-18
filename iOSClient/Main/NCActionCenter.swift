@@ -457,7 +457,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     func pastePasteboard(serverUrl: String, account: String, controller: NCMainTabBarController?) {
         var fractionCompleted: Float = 0
-        let processor = ParallelWorker(n: 5, titleKey: "_uploading_", totalTasks: nil, controller: controller)
+        let processor = ParallelWorker(n: 5, titleKey: "_status_uploading_", totalTasks: nil, controller: controller)
 
         func uploadPastePasteboard(fileName: String, serverUrlFileName: String, fileNameLocalPath: String, serverUrl: String, completion: @escaping () -> Void) {
             NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: account) { _ in

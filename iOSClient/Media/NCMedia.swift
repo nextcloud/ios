@@ -179,7 +179,7 @@ class NCMedia: UIViewController {
 
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource(_:)), name: NSNotification.Name(rawValue: global.notificationCenterReloadDataSource), object: nil)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(networkRemoveAll), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(networkRemoveAll(_:)), name: UIApplication.didEnterBackgroundNotification, object: nil)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -209,7 +209,7 @@ class NCMedia: UIViewController {
 
         NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
 
-        networkRemoveAll()
+        networkRemoveAll(nil)
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -236,7 +236,7 @@ class NCMedia: UIViewController {
 
     // MARK: - NotificationCenter
 
-    @objc func networkRemoveAll() {
+    @objc func networkRemoveAll(_ sender: Any?) {
         timerSearchNewMedia?.invalidate()
         timerSearchNewMedia = nil
         filesExists.removeAll()

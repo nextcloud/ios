@@ -392,7 +392,7 @@ extension SceneDelegate: NCPasscodeDelegate {
             accountRequestVC.enableAddAccount = false
             accountRequestVC.dismissDidEnterBackground = false
             accountRequestVC.delegate = self
-            accountRequestVC.startTimer()
+            accountRequestVC.startTimer(nil)
 
             let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height / 5)
             let numberCell = tableAccounts.count

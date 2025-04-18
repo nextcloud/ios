@@ -39,18 +39,18 @@ extension UIBarButtonItem {
     }
 
     convenience init(title: String?, style: UIBarButtonItem.Style, action: @escaping () -> Void) {
-        self.init(title: title, style: style, target: nil, action: #selector(pressed))
+        self.init(title: title, style: style, target: nil, action: #selector(pressed(_:)))
         self.target = self
         self._action = action
     }
 
     convenience init(image: UIImage?, style: UIBarButtonItem.Style, action: @escaping () -> Void) {
-        self.init(image: image, style: style, target: nil, action: #selector(pressed))
+        self.init(image: image, style: style, target: nil, action: #selector(pressed(_:)))
         self.target = self
         self._action = action
     }
 
-    @objc private func pressed(sender: UIBarButtonItem) {
+    @objc private func pressed(_ sender: UIBarButtonItem) {
         _action()
     }
 }

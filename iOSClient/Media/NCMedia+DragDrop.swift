@@ -71,13 +71,13 @@ extension NCMedia: UICollectionViewDropDelegate {
     private func openMenu(collectionView: UICollectionView, location: CGPoint) {
         var listMenuItems: [UIMenuItem] = []
 
-        listMenuItems.append(UIMenuItem(title: NSLocalizedString("_copy_", comment: ""), action: #selector(copyMenuFile)))
-        listMenuItems.append(UIMenuItem(title: NSLocalizedString("_move_", comment: ""), action: #selector(moveMenuFile)))
+        listMenuItems.append(UIMenuItem(title: NSLocalizedString("_copy_", comment: ""), action: #selector(copyMenuFile(_:))))
+        listMenuItems.append(UIMenuItem(title: NSLocalizedString("_move_", comment: ""), action: #selector(moveMenuFile(_:))))
         UIMenuController.shared.menuItems = listMenuItems
         UIMenuController.shared.showMenu(from: collectionView, rect: CGRect(x: location.x, y: location.y, width: 0, height: 0))
     }
 
-    @objc func copyMenuFile() {
+    @objc func copyMenuFile(_ sender: Any?) {
         guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas else { return }
 
         if let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) {
@@ -86,7 +86,7 @@ extension NCMedia: UICollectionViewDropDelegate {
         }
     }
 
-    @objc func moveMenuFile() {
+    @objc func moveMenuFile(_ sender: Any?) {
         guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas else { return }
 
         if let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) {

@@ -51,7 +51,7 @@ class NCSharePaging: UIViewController {
         title = NSLocalizedString("_details_", comment: "")
 
         navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .done, target: self, action: #selector(exitTapped))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .done, target: self, action: #selector(exitTapped(_:)))
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -155,7 +155,7 @@ class NCSharePaging: UIViewController {
         view.frame.origin.y = 0
     }
 
-    @objc func exitTapped() {
+    @objc func exitTapped(_ sender: Any?) {
         self.dismiss(animated: true, completion: nil)
     }
 
@@ -313,7 +313,7 @@ class NCShareHeaderView: UIView {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        let longGesture = UILongPressGestureRecognizer(target: self, action: #selector(self.longTap))
+        let longGesture = UILongPressGestureRecognizer(target: self, action: #selector(longTap(_:)))
         path.addGestureRecognizer(longGesture)
     }
 
@@ -337,7 +337,7 @@ class NCShareHeaderView: UIView {
         upload.isHidden = !upload.isHidden
     }
 
-    @objc func longTap(sender: UIGestureRecognizer) {
+    @objc func longTap(_ sender: UIGestureRecognizer) {
         UIPasteboard.general.string = path.text
         let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_copied_path_")
         NCContentPresenter().showInfo(error: error)

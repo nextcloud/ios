@@ -515,7 +515,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
         guard let tableComment = tableComment else {
             return
         }
-        self.showProfileMenu(userId: tableComment.actorId, session: session)
+        self.showProfileMenu(userId: tableComment.actorId, session: session, sender: sender)
     }
 
     func tapMenu(with tableComments: tableComments?, sender: Any) {
@@ -577,6 +577,6 @@ extension NCActivity: NCShareCommentsCellDelegate {
             )
         )
 
-        presentMenu(with: actions)
+        presentMenu(with: actions, sender: sender)
     }
 }
