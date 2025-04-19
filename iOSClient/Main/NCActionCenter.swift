@@ -129,9 +129,9 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
             guard UIApplication.shared.applicationState == .active else { return }
             if metadata.contentType.contains("opendocument") && !self.utility.isTypeFileRichDocument(metadata) {
-                self.openDocumentController(metadata: metadata, controller: controller)
+                self.openActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
             } else if metadata.classFile == NKCommon.TypeClassFile.compress.rawValue || metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
-                self.openDocumentController(metadata: metadata, controller: controller)
+                self.openActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
             } else {
                 if let viewController = controller.currentViewController() {
                     let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
@@ -142,7 +142,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         case NCGlobal.shared.selectorOpenIn:
 
             if UIApplication.shared.applicationState == .active {
-                self.openDocumentController(metadata: metadata, controller: controller)
+                self.openActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
             }
 
         case NCGlobal.shared.selectorSaveAlbum:
@@ -341,26 +341,18 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         }
     }
 
-    // MARK: - Open in ...
-
-    func openDocumentController(metadata: tableMetadata, controller: NCMainTabBarController?) {
-        guard let controller else { return }
-        let fileURL = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-
-        documentController = UIDocumentInteractionController(url: fileURL)
-        documentController?.presentOptionsMenu(from: controller.view.frame, in: controller.view, animated: true)
-    }
+    // MARK: - Open Activity [Share] ...
 
     func openActivityViewController(selectedMetadata: [tableMetadata], controller: NCMainTabBarController?, sender: Any?) {
         guard let controller else { return }
         let metadatas = selectedMetadata.filter({ !$0.directory })
-        var items: [URL] = []
+        var urls: [URL] = []
         var downloadMetadata: [(tableMetadata, URL)] = []
 
         for metadata in metadatas {
             let fileURL = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
             if utilityFileSystem.fileProviderStorageExists(metadata) {
-                items.append(fileURL)
+                urls.append(fileURL)
             } else {
                 downloadMetadata.append((metadata, fileURL))
             }
@@ -377,15 +369,15 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 } progressHandler: { progress in
                     processor.hud.progress(progress.fractionCompleted)
                 } completion: { _, _ in
-                    if self.utilityFileSystem.fileProviderStorageExists(metadata) { items.append(url) }
+                    if self.utilityFileSystem.fileProviderStorageExists(metadata) { urls.append(url) }
                     completion()
                 }
             }
         }
 
         processor.completeWork {
-            guard !items.isEmpty else { return }
-            let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
+            guard !urls.isEmpty else { return }
+            let activityViewController = UIActivityViewController(activityItems: urls, applicationActivities: nil)
 
             // iPad
             if let popover = activityViewController.popoverPresentationController {
