@@ -98,7 +98,7 @@ class NCGroupfolders: NCCollectionViewCommon {
                     self.reloadDataSource()
                 }
             }
-            self.refreshControl.endRefreshing()
+            self.refreshControlEndRefreshing()
         }
     }
 }

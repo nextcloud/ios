@@ -376,7 +376,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - NotificationCenter
 
     @objc func applicationWillResignActive(_ notification: NSNotification) {
-        self.refreshControl.endRefreshing()
+        refreshControlEndRefreshing()
     }
 
     @objc func changeTheming(_ notification: NSNotification) {
@@ -682,6 +682,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func accountSettingsDidDismiss(tableAccount: tableAccount?, controller: NCMainTabBarController?) { }
 
+    func resetPlusButtonAlpha(animated: Bool = true) { }
+
+    func isHiddenPlusButton(_ isHidden: Bool) { }
+
+    func refreshControlEndRefreshing() {
+        refreshControl.endRefreshing()
+        resetPlusButtonAlpha()
+    }
+
     // MARK: - SEARCH
 
     func searchController(enabled: Bool) {
@@ -706,6 +715,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.reloadDataSource()
         // TIP
         dismissTip()
+        //
+        isHiddenPlusButton(true)
     }
 
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
@@ -721,6 +732,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.providers?.removeAll()
         self.dataSource.removeAll()
         self.reloadDataSource()
+        //
+        isHiddenPlusButton(false)
     }
 
     // MARK: - TAP EVENT
@@ -846,7 +859,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                               completion: nil)
 
             (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
-            self.refreshControl.endRefreshing()
+            self.refreshControlEndRefreshing()
         }
     }
 
@@ -860,7 +873,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard !session.account.isEmpty,
               let literalSearch = literalSearch,
               !literalSearch.isEmpty else {
-            return self.refreshControl.endRefreshing()
+            return self.refreshControlEndRefreshing()
         }
 
         self.networkSearchInProgress = true
@@ -880,7 +893,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 guard let metadatas, !metadatas.isEmpty, self.isSearchingMode, let searchResult else { return }
                 NCNetworking.shared.unifiedSearchQueue.addOperation(NCCollectionViewUnifiedSearch(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult))
             } completion: { _, _ in
-                self.refreshControl.endRefreshing()
+                self.refreshControlEndRefreshing()
                 self.reloadDataSource()
                 self.networkSearchInProgress = false
             }
@@ -890,7 +903,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.reloadDataSource()
             } completion: { metadatasSearch, error in
                 DispatchQueue.main.async {
-                    self.refreshControl.endRefreshing()
+                    self.refreshControlEndRefreshing()
                     self.reloadDataSource()
                 }
                 guard let metadatasSearch, error == .success, self.isSearchingMode else { return }

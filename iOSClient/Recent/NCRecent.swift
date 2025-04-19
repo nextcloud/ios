@@ -154,7 +154,7 @@ class NCRecent: NCCollectionViewCommon {
                     self.reloadDataSource()
                 }
             }
-            self.refreshControl.endRefreshing()
+            self.refreshControlEndRefreshing()
         }
     }
 }
