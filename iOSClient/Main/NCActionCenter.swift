@@ -386,9 +386,22 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         processor.completeWork {
             guard !items.isEmpty else { return }
             let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
-            activityViewController.popoverPresentationController?.permittedArrowDirections = .any
-            activityViewController.popoverPresentationController?.sourceView = controller.view
-            activityViewController.popoverPresentationController?.sourceRect = controller.view.frame
+
+            // iPad
+            if let popover = activityViewController.popoverPresentationController {
+                if let view = sender as? UIView {
+                    popover.sourceView = view
+                    popover.sourceRect = view.bounds
+                } else {
+                    popover.sourceView = controller.view
+                    popover.sourceRect = CGRect(x: controller.view.bounds.midX,
+                                                y: controller.view.bounds.midY,
+                                                width: 0,
+                                                height: 0)
+                    popover.permittedArrowDirections = []
+                }
+            }
+
             controller.present(activityViewController, animated: true)
         }
     }

@@ -124,6 +124,7 @@ class NCFiles: NCCollectionViewCommon {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        resetPlusButtonAlpha()
         reloadDataSource()
     }
 
