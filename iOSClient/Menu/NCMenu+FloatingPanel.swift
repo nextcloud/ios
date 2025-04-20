@@ -42,14 +42,15 @@ class NCMenuFloatingPanelLayout: FloatingPanelLayout {
             topInset = 48
             return
         }
-        let screenHeight = UIDevice.current.orientation.isLandscape
-        ? min(window.frame.size.width, window.frame.size.height)
-        : max(window.frame.size.width, window.frame.size.height)
+
+        let isLandscape = UIDevice.current.orientation.isLandscape
+        let screenHeight = isLandscape ? min(window.frame.size.width, window.frame.size.height) : max(window.frame.size.width, window.frame.size.height)
         let bottomInset = window.rootViewController?.view.safeAreaInsets.bottom ?? 0
         let panelHeight = actionsHeight + bottomInset
 
         topInset = max(48, screenHeight - panelHeight)
      }
+
 
     func prepareLayout(surfaceView: UIView, in view: UIView) -> [NSLayoutConstraint] {
         return [
