@@ -29,9 +29,7 @@ class NCMenuFloatingPanelLayout: FloatingPanelLayout {
     var position: FloatingPanelPosition = .bottom
     var initialState: FloatingPanelState = .full
     var anchors: [FloatingPanelState: FloatingPanelLayoutAnchoring] {
-        [
-            .full: FloatingPanelLayoutAnchor(absoluteInset: topInset, edge: .top, referenceGuide: .superview)
-        ]
+        [.full: FloatingPanelLayoutAnchor(absoluteInset: topInset, edge: .top, referenceGuide: .superview)]
     }
     let topInset: CGFloat
 
@@ -50,7 +48,6 @@ class NCMenuFloatingPanelLayout: FloatingPanelLayout {
 
         topInset = max(48, screenHeight - panelHeight)
      }
-
 
     func prepareLayout(surfaceView: UIView, in view: UIView) -> [NSLayoutConstraint] {
         return [
