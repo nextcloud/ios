@@ -295,6 +295,6 @@ extension AppDelegate {
             }
         }
 
-        controller.presentMenu(with: actions, sender: sender)
+        controller.presentMenu(with: actions, controller: controller, sender: sender)
     }
 }

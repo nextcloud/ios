@@ -33,9 +33,16 @@ class NCMenuFloatingPanelLayout: FloatingPanelLayout {
     }
     let topInset: CGFloat
 
-    init(actionsHeight: CGFloat) {
-        guard let windowScene = UIApplication.shared.connectedScenes.first(where: { $0 is UIWindowScene }) as? UIWindowScene,
-              let window = windowScene.windows.first(where: { $0.isKeyWindow })
+    init(actionsHeight: CGFloat, controller: NCMainTabBarController?) {
+        var window: UIWindow?
+
+        if let controller {
+            window = controller.window
+        } else if let windowScene = UIApplication.shared.connectedScenes.first(where: { $0 is UIWindowScene }) as? UIWindowScene {
+            window = windowScene.windows.first(where: { $0.isKeyWindow })
+        }
+
+        guard let window
         else {
             topInset = 48
             return
