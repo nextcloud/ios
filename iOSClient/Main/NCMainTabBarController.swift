@@ -42,6 +42,10 @@ class NCMainTabBarController: UITabBarController {
     private var checkUserDelaultErrorInProgress: Bool = false
     private var timer: Timer?
 
+    var window: UIWindow? {
+        return SceneManager.shared.getWindow(controller: self)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         delegate = self

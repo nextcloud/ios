@@ -36,8 +36,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private let database = NCManageDatabase.shared
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        guard let windowScene = (scene as? UIWindowScene),
-              let appDelegate else { return }
+        guard let windowScene = (scene as? UIWindowScene)
+        else {
+            return
+        }
 
         self.window = UIWindow(windowScene: windowScene)
         if !NCKeychain().appearanceAutomatic {
