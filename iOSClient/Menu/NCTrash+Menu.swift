@@ -86,6 +86,6 @@ extension NCTrash {
             )
         )
 
-        presentMenu(with: actions, sender: sender)
+        presentMenu(with: actions, controller: controller, sender: sender)
     }
 }

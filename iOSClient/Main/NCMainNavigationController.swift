@@ -21,6 +21,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         topViewController as? NCCollectionViewCommon
     }
 
+    var trashViewController: NCTrash? {
+        topViewController as? NCTrash
+    }
+
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
     }
@@ -118,10 +122,19 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
             let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
                 collectionViewCommon.setEditMode(false)
-                collectionViewCommon.collectionView.reloadData()
             }
             collectionViewCommon.navigationItem.rightBarButtonItems = [select]
+        } else if let trashViewController,
+                    trashViewController.isEditMode {
+            trashViewController.tabBarSelect.update(selectOcId: [])
+            trashViewController.tabBarSelect.show()
+
+            let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
+                trashViewController.setEditMode(false)
+            }
+            trashViewController.navigationItem.rightBarButtonItems = [select]
         } else {
+            trashViewController?.tabBarSelect?.hide()
             collectionViewCommon?.tabBarSelect?.hide()
             self.updateRightBarButtonItems()
         }
@@ -131,11 +144,16 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         let capabilities = NCCapabilities.shared.getCapabilities(account: session.account)
         let resultsCount = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal))?.count ?? 0
         var tempRightBarButtonItems: [UIBarButtonItem] = createRightMenu() == nil ? [] : [self.menuBarButtonItem]
-        var tempTotalTags = self.menuBarButtonItem.tag
+        var tempTotalTags = tempRightBarButtonItems.count == 0 ? 0 : self.menuBarButtonItem.tag
         var totalTags = 0
 
         if let collectionViewCommon,
            collectionViewCommon.isEditMode {
+            return
+        }
+
+        if let trashViewController,
+           trashViewController.isEditMode {
             return
         }
 
@@ -175,7 +193,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
     func createRightMenuActions() -> (select: UIAction, viewStyleSubmenu: UIMenu, sortSubmenu: UIMenu, personalFilesOnlyAction: UIAction, showDescription: UIAction, showRecommendedFiles: UIAction)? {
         guard let collectionViewCommon,
-              let layoutForView = database.getLayoutForView(account: session.account, key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl) else { return nil }
+              let layoutForView = database.getLayoutForView(account: session.account, key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl)
+        else {
+            return nil
+        }
 
         let select = UIAction(title: NSLocalizedString("_select_", comment: ""),
                               image: utility.loadImage(named: "checkmark.circle"),
@@ -309,6 +330,29 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
 
         return (select, viewStyleSubmenu, sortSubmenu, personalFilesOnlyAction, showDescription, showRecommendedFiles)
+    }
+
+    func createTrashRightMenuActions() -> [UIMenuElement]? {
+        guard let trashViewController,
+              let layoutForView = self.database.getLayoutForView(account: session.account, key: trashViewController.layoutKey, serverUrl: ""),
+              let datasource = trashViewController.datasource
+        else {
+            return nil
+        }
+        let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: utility.loadImage(named: "checkmark.circle", colors: [NCBrandColor.shared.iconImageColor]), attributes: datasource.isEmpty ? .disabled : []) { _ in
+            trashViewController.setEditMode(true)
+        }
+        let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: utility.loadImage(named: "list.bullet", colors: [NCBrandColor.shared.iconImageColor]), state: layoutForView.layout == NCGlobal.shared.layoutList ? .on : .off) { _ in
+            trashViewController.onListSelected()
+            self.setNavigationRightItems()
+        }
+        let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: utility.loadImage(named: "square.grid.2x2", colors: [NCBrandColor.shared.iconImageColor]), state: layoutForView.layout == NCGlobal.shared.layoutGrid ? .on : .off) { _ in
+            trashViewController.onGridSelected()
+            self.setNavigationRightItems()
+        }
+        let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid])
+
+        return [select, viewStyleSubmenu]
     }
 
     // MARK: - Left

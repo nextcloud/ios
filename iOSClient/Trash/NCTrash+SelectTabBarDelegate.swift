@@ -68,11 +68,11 @@ extension NCTrash: NCTrashSelectTabBarDelegate {
         isEditMode = editMode
         selectOcId.removeAll()
 
-        setNavigationRightItems()
-
-        navigationController?.interactivePopGestureRecognizer?.isEnabled = !editMode
         navigationItem.hidesBackButton = editMode
-        collectionView.reloadData()
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = !editMode
 
+        (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
+
+        collectionView.reloadData()
     }
 }
