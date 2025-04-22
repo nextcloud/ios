@@ -1125,13 +1125,14 @@ extension NCManageDatabase {
         return nil
     }
 
-    func getResultsMetadatasFromGroupfolders(session: NCSession.Session) -> Results<tableMetadata>? {
+    func getResultsMetadatasFromGroupfolders(session: NCSession.Session, layoutForView: NCDBLayoutForView?, directoryOnTop: Bool = true) -> [tableMetadata] {
         var ocId: [String] = []
         let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
+        let layout: NCDBLayoutForView = layoutForView ?? NCDBLayoutForView()
 
         do {
             let realm = try Realm()
-            let groupfolders = realm.objects(TableGroupfolders.self).filter("account == %@", session.account).sorted(byKeyPath: "mountPoint", ascending: true)
+            let groupfolders = realm.objects(TableGroupfolders.self).filter("account == %@", session.account).sorted(byKeyPath: "mountPoint", ascending: true).freeze()
 
             for groupfolder in groupfolders {
                 let mountPoint = groupfolder.mountPoint.hasPrefix("/") ? groupfolder.mountPoint : "/" + groupfolder.mountPoint
@@ -1143,12 +1144,43 @@ extension NCManageDatabase {
                 }
             }
 
-            return realm.objects(tableMetadata.self).filter("ocId IN %@", ocId)
+            var results = realm.objects(tableMetadata.self).filter("ocId IN %@", ocId).freeze()
+
+            if layout.sort == "fileName" {
+                let sortedResults = results.sorted {
+                    let ordered = layout.ascending ? ComparisonResult.orderedAscending : ComparisonResult.orderedDescending
+                    // 1. favorite order
+                    if $0.favorite == $1.favorite {
+                        // 2. directory order TOP
+                        if directoryOnTop {
+                            if $0.directory == $1.directory {
+                                // 3. natural fileName
+                                return $0.fileNameView.localizedStandardCompare($1.fileNameView) == ordered
+                            } else {
+                                return $0.directory && !$1.directory
+                            }
+                        } else {
+                            return $0.fileNameView.localizedStandardCompare($1.fileNameView) == ordered
+                        }
+                    } else {
+                        return $0.favorite && !$1.favorite
+                    }
+                }
+                return sortedResults
+            } else {
+                if directoryOnTop {
+                    results = results.sorted(byKeyPath: layout.sort, ascending: layout.ascending).sorted(byKeyPath: "favorite", ascending: false).sorted(byKeyPath: "directory", ascending: false)
+                } else {
+                    results = results.sorted(byKeyPath: layout.sort, ascending: layout.ascending).sorted(byKeyPath: "favorite", ascending: false)
+                }
+            }
+            return Array(results)
+
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
 
-        return nil
+        return []
     }
 
     func getTableMetadatasDirectoryFavoriteIdentifierRank(account: String) -> [String: NSNumber] {
