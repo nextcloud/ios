@@ -6,6 +6,17 @@
 	<dict>
 		<key>NSStringLocalizedFormatKey</key>
 		<string>%#@downloads@</string>
+		<key>downloads</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>one</key>
+			<string>Lubatud on veel %d allalaadimine</string>
+			<key>other</key>
+			<string>Lubatud on veel %d allalaadimist</string>
+		</dict>
 	</dict>
 </dict>
 </plist>
