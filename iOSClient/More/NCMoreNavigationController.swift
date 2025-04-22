@@ -25,8 +25,9 @@ class NCMoreNavigationController: NCMainNavigationController {
             return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu])
         } else if collectionViewCommon?.layoutKey == global.layoutViewGroupfolders, let items = self.createRightMenuActions() {
             return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu])
-        } else if let trashViewController = visibleViewController as? NCTrash {
-            return nil // UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu])
+        } else if visibleViewController as? NCTrash != nil {
+            let items = self.createTrashRightMenuActions()
+            return UIMenu(children: items)
         }
 
         return nil

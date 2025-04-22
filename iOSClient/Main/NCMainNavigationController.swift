@@ -21,6 +21,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         topViewController as? NCCollectionViewCommon
     }
 
+    var trashViewController: NCTrash? {
+        topViewController as? NCTrash
+    }
+
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
     }
@@ -309,6 +313,26 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
 
         return (select, viewStyleSubmenu, sortSubmenu, personalFilesOnlyAction, showDescription, showRecommendedFiles)
+    }
+
+    func createTrashRightMenuActions() -> [UIMenuElement] {
+        guard let trashViewController,
+              let layoutForView = self.database.getLayoutForView(account: session.account, key: trashViewController.layoutKey, serverUrl: ""),
+              let datasource = trashViewController.datasource else { return [] }
+        let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: utility.loadImage(named: "checkmark.circle", colors: [NCBrandColor.shared.iconImageColor]), attributes: datasource.isEmpty ? .disabled : []) { _ in
+            trashViewController.setEditMode(true)
+        }
+        let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: utility.loadImage(named: "list.bullet", colors: [NCBrandColor.shared.iconImageColor]), state: layoutForView.layout == NCGlobal.shared.layoutList ? .on : .off) { _ in
+            trashViewController.onListSelected()
+            self.setNavigationRightItems()
+        }
+        let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: utility.loadImage(named: "square.grid.2x2", colors: [NCBrandColor.shared.iconImageColor]), state: layoutForView.layout == NCGlobal.shared.layoutGrid ? .on : .off) { _ in
+            trashViewController.onGridSelected()
+            self.setNavigationRightItems()
+        }
+        let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid])
+
+        return [select, viewStyleSubmenu]
     }
 
     // MARK: - Left
