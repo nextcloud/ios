@@ -122,10 +122,19 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
             let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
                 collectionViewCommon.setEditMode(false)
-                collectionViewCommon.collectionView.reloadData()
             }
             collectionViewCommon.navigationItem.rightBarButtonItems = [select]
+        } else if let trashViewController,
+                    trashViewController.isEditMode {
+            trashViewController.tabBarSelect.update(selectOcId: [])
+            trashViewController.tabBarSelect.show()
+
+            let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
+                trashViewController.setEditMode(false)
+            }
+            trashViewController.navigationItem.rightBarButtonItems = [select]
         } else {
+            trashViewController?.tabBarSelect?.hide()
             collectionViewCommon?.tabBarSelect?.hide()
             self.updateRightBarButtonItems()
         }
@@ -135,11 +144,16 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         let capabilities = NCCapabilities.shared.getCapabilities(account: session.account)
         let resultsCount = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal))?.count ?? 0
         var tempRightBarButtonItems: [UIBarButtonItem] = createRightMenu() == nil ? [] : [self.menuBarButtonItem]
-        var tempTotalTags = tempRightBarButtonItems.count == 0 ? 0 : self.menuBarButtonItem.tag 
+        var tempTotalTags = tempRightBarButtonItems.count == 0 ? 0 : self.menuBarButtonItem.tag
         var totalTags = 0
 
         if let collectionViewCommon,
            collectionViewCommon.isEditMode {
+            return
+        }
+
+        if let trashViewController,
+           trashViewController.isEditMode {
             return
         }
 
