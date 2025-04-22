@@ -135,7 +135,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         let capabilities = NCCapabilities.shared.getCapabilities(account: session.account)
         let resultsCount = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal))?.count ?? 0
         var tempRightBarButtonItems: [UIBarButtonItem] = createRightMenu() == nil ? [] : [self.menuBarButtonItem]
-        var tempTotalTags = self.menuBarButtonItem.tag
+        var tempTotalTags = tempRightBarButtonItems.count == 0 ? 0 : self.menuBarButtonItem.tag 
         var totalTags = 0
 
         if let collectionViewCommon,
@@ -179,7 +179,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
     func createRightMenuActions() -> (select: UIAction, viewStyleSubmenu: UIMenu, sortSubmenu: UIMenu, personalFilesOnlyAction: UIAction, showDescription: UIAction, showRecommendedFiles: UIAction)? {
         guard let collectionViewCommon,
-              let layoutForView = database.getLayoutForView(account: session.account, key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl) else { return nil }
+              let layoutForView = database.getLayoutForView(account: session.account, key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl)
+        else {
+            return nil
+        }
 
         let select = UIAction(title: NSLocalizedString("_select_", comment: ""),
                               image: utility.loadImage(named: "checkmark.circle"),
@@ -315,10 +318,13 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         return (select, viewStyleSubmenu, sortSubmenu, personalFilesOnlyAction, showDescription, showRecommendedFiles)
     }
 
-    func createTrashRightMenuActions() -> [UIMenuElement] {
+    func createTrashRightMenuActions() -> [UIMenuElement]? {
         guard let trashViewController,
               let layoutForView = self.database.getLayoutForView(account: session.account, key: trashViewController.layoutKey, serverUrl: ""),
-              let datasource = trashViewController.datasource else { return [] }
+              let datasource = trashViewController.datasource
+        else {
+            return nil
+        }
         let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: utility.loadImage(named: "checkmark.circle", colors: [NCBrandColor.shared.iconImageColor]), attributes: datasource.isEmpty ? .disabled : []) { _ in
             trashViewController.setEditMode(true)
         }
