@@ -87,6 +87,8 @@ class NCAccount: NSObject {
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
                 viewController.present(alertController, animated: true)
             }
+
+            completion()
         }
     }
 
