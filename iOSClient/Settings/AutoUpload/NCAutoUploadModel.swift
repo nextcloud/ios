@@ -248,9 +248,8 @@ extension NCAutoUploadModel: EasyTipViewDelegate {
         preferences.drawing.foregroundColor = .white
         preferences.drawing.backgroundColor = .lightGray
         preferences.drawing.textAlignment = .left
-        preferences.drawing.arrowPosition = .top
+        preferences.drawing.arrowPosition = .any
         preferences.drawing.cornerRadius = 10
-        //preferences.positioning.bubbleInsets = UIEdgeInsets(top: 100, left: 0, bottom: 0, right: 0)
 
         preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: 100)
         preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -100)
@@ -260,7 +259,7 @@ extension NCAutoUploadModel: EasyTipViewDelegate {
 
         if tip == nil {
             tip = EasyTipView(text: NSLocalizedString("_tip_autoupload_button_", comment: ""), preferences: preferences, delegate: self, tip: NCGlobal.shared.tipAutoUploadButton)
-            if let view = controller?.view {
+            if let view = controller?.tabBar {
                 tip?.show(forView: view)
             }
         }
