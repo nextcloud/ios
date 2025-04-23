@@ -47,6 +47,9 @@ struct NCAutoUploadView: View {
         .onAppear {
             model.onViewAppear()
         }
+        .onDisappear {
+            model.onViewDisappear()
+        }
         .alert(model.error, isPresented: $model.showErrorAlert) {
             Button(NSLocalizedString("_ok_", comment: ""), role: .cancel) { }
         }
