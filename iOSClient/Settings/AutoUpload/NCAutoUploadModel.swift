@@ -26,6 +26,7 @@ import Foundation
 import UIKit
 import Photos
 import NextcloudKit
+import EasyTipView
 
 enum AutoUploadTimespan: String, CaseIterable, Identifiable {
     case allPhotos = "_all_photos_"
@@ -67,6 +68,8 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     let database = NCManageDatabase.shared
     @Published var autoUploadPath = "\(NCManageDatabase.shared.getAccountAutoUploadFileName())"
 
+    /// Tip
+    var tip: EasyTipView?
     /// Root View Controller
     var controller: NCMainTabBarController?
     /// A variable user for change the auto upload directory
@@ -100,6 +103,13 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         requestAuthorization()
 
         if !autoUploadImage && !autoUploadVideo { autoUploadImage = true }
+
+        showTip()
+    }
+
+    func onViewDisappear() {
+        tip?.dismiss()
+        tip = nil
     }
 
     // MARK: - All functions
@@ -172,7 +182,6 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     func resetAutoUploadLastUploadedDate() {
         guard let activeAccount = database.getTableAccount(account: session.account) else { return }
-//        activeAccount[keyPath: keyPath] = value
         activeAccount.autoUploadLastUploadedDate = nil
         database.updateAccount(activeAccount)
     }
@@ -212,6 +221,50 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         } else {
             return NSLocalizedString("_multiple_albums_", comment: "")
         }
+    }
+}
+
+extension NCAutoUploadModel: EasyTipViewDelegate {
+    func showTip() {
+        guard !session.account.isEmpty,
+              !database.tipExists(NCGlobal.shared.tipAutoUploadButton)
+        else {
+            return
+        }
+
+        var preferences = EasyTipView.Preferences()
+
+        preferences.drawing.foregroundColor = .white
+        preferences.drawing.backgroundColor = .lightGray
+        preferences.drawing.textAlignment = .left
+        preferences.drawing.arrowPosition = .top
+        preferences.drawing.cornerRadius = 10
+        preferences.drawing.arrowPosition = EasyTipView.ArrowPosition.bottom
+
+        preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: 100)
+        preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -100)
+        preferences.animating.showInitialAlpha = 0
+        preferences.animating.showDuration = 1.5
+        preferences.animating.dismissDuration = 1.5
+
+        if tip == nil {
+            tip = EasyTipView(text: NSLocalizedString("_tip_autoupload_button_", comment: ""), preferences: preferences, delegate: self, tip: NCGlobal.shared.tipAutoUploadButton)
+            if let view = controller?.view {
+                tip?.show(forView: view)
+            }
+        }
+    }
+
+    func easyTipViewDidTap(_ tipView: EasyTipView) {
+        database.addTip(NCGlobal.shared.tipAutoUploadButton)
+    }
+
+    func easyTipViewDidDismiss(_ tipView: EasyTipView) {
+        if !database.tipExists(NCGlobal.shared.tipAutoUploadButton) {
+            database.addTip(NCGlobal.shared.tipAutoUploadButton)
+        }
+        tip?.dismiss()
+        tip = nil
     }
 }
 
