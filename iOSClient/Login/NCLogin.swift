@@ -332,7 +332,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                         safariVC.urlBase = login
                         safariVC.uiColor = textColor
                         safariVC.delegate = self
-                        safariVC.poll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
+                        safariVC.startPolling(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
                         navigationController?.pushViewController(safariVC, animated: true)
                     }
                 }
