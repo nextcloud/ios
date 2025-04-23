@@ -82,6 +82,17 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// Initialization code to set up the ViewModel with the active account
     init(controller: NCMainTabBarController?) {
         self.controller = controller
+
+        NotificationCenter.default.addObserver(forName: UIDevice.orientationDidChangeNotification,
+                                               object: nil,
+                                               queue: .main) { _ in
+            self.tip?.dismiss()
+            self.tip = nil
+        }
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 
     /// Triggered when the view appears.
@@ -237,15 +248,16 @@ extension NCAutoUploadModel: EasyTipViewDelegate {
         preferences.drawing.foregroundColor = .white
         preferences.drawing.backgroundColor = .lightGray
         preferences.drawing.textAlignment = .left
-        preferences.drawing.arrowPosition = .top
+        preferences.drawing.arrowPosition = .any
         preferences.drawing.cornerRadius = 10
         preferences.drawing.arrowPosition = EasyTipView.ArrowPosition.bottom
+        preferences.positioning.bubbleInsets = UIEdgeInsets(top: 100, left: 0, bottom: 0, right: 0)
 
         preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: 100)
         preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -100)
         preferences.animating.showInitialAlpha = 0
-        preferences.animating.showDuration = 1.5
-        preferences.animating.dismissDuration = 1.5
+        preferences.animating.showDuration = 0.5
+        preferences.animating.dismissDuration = 0.5
 
         if tip == nil {
             tip = EasyTipView(text: NSLocalizedString("_tip_autoupload_button_", comment: ""), preferences: preferences, delegate: self, tip: NCGlobal.shared.tipAutoUploadButton)
@@ -260,10 +272,6 @@ extension NCAutoUploadModel: EasyTipViewDelegate {
     }
 
     func easyTipViewDidDismiss(_ tipView: EasyTipView) {
-        if !database.tipExists(NCGlobal.shared.tipAutoUploadButton) {
-            database.addTip(NCGlobal.shared.tipAutoUploadButton)
-        }
-        tip?.dismiss()
         tip = nil
     }
 }
