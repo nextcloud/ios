@@ -248,10 +248,9 @@ extension NCAutoUploadModel: EasyTipViewDelegate {
         preferences.drawing.foregroundColor = .white
         preferences.drawing.backgroundColor = .lightGray
         preferences.drawing.textAlignment = .left
-        preferences.drawing.arrowPosition = .any
+        preferences.drawing.arrowPosition = .top
         preferences.drawing.cornerRadius = 10
-        preferences.drawing.arrowPosition = EasyTipView.ArrowPosition.bottom
-        preferences.positioning.bubbleInsets = UIEdgeInsets(top: 100, left: 0, bottom: 0, right: 0)
+        //preferences.positioning.bubbleInsets = UIEdgeInsets(top: 100, left: 0, bottom: 0, right: 0)
 
         preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: 100)
         preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -100)

@@ -58,6 +58,7 @@ class NCMainTabBarController: UITabBarController {
             item.title = NSLocalizedString("_home_", comment: "")
             item.image = UIImage(systemName: "folder.fill")
             item.selectedImage = item.image
+            item.tag = 100
         }
 
         // Favorite
@@ -65,6 +66,7 @@ class NCMainTabBarController: UITabBarController {
             item.title = NSLocalizedString("_favorites_", comment: "")
             item.image = UIImage(systemName: "star.fill")
             item.selectedImage = item.image
+            item.tag = 101
         }
 
         // Media
@@ -72,6 +74,7 @@ class NCMainTabBarController: UITabBarController {
             item.title = NSLocalizedString("_media_", comment: "")
             item.image = UIImage(systemName: "photo")
             item.selectedImage = item.image
+            item.tag = 102
         }
 
         // Activity
@@ -80,6 +83,7 @@ class NCMainTabBarController: UITabBarController {
             item.image = UIImage(systemName: "bolt")
             item.selectedImage = item.image
             item.isEnabled = capabilities.capabilityActivityEnabled
+            item.tag = 103
         }
 
         // More
@@ -87,6 +91,7 @@ class NCMainTabBarController: UITabBarController {
             item.title = NSLocalizedString("_more_", comment: "")
             item.image = UIImage(systemName: "ellipsis")
             item.selectedImage = item.image
+            item.tag = 104
         }
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil, queue: .main) { [weak self] notification in

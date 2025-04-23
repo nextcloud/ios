@@ -35,47 +35,45 @@ struct NCAutoUploadView: View {
     @State private var startAutoUpload = false
 
     var body: some View {
-        GeometryReader { geometry in
-            ZStack {
-                if model.photosPermissionsGranted {
-                    autoUploadOnView
-                } else {
-                    noPermissionsView
-                }
+        ZStack {
+            if model.photosPermissionsGranted {
+                autoUploadOnView
+            } else {
+                noPermissionsView
             }
-            .navigationBarTitle(NSLocalizedString("_auto_upload_folder_", comment: ""))
-            .navigationBarTitleDisplayMode(.inline)
-            .onAppear {
-                model.onViewAppear()
-            }
-            .onDisappear {
-                model.onViewDisappear()
-            }
-            .alert(model.error, isPresented: $model.showErrorAlert) {
-                Button(NSLocalizedString("_ok_", comment: ""), role: .cancel) { }
-            }
-            .sheet(isPresented: $showUploadFolder) {
-                SelectView(serverUrl: $model.serverUrl, session: model.session)
-                    .onDisappear {
-                        model.setAutoUploadDirectory(serverUrl: model.serverUrl)
-                        model.resetAutoUploadLastUploadedDate()
-                    }
-            }
-            .sheet(isPresented: $showSelectAlbums) {
-                SelectAlbumView(model: albumModel)
-            }
-            .alert(NSLocalizedString("_auto_upload_all_photos_warning_title_", comment: ""), isPresented: $showUploadAllPhotosWarning, actions: {
-                Button("_confirm_") {
-                    model.autoUploadStart = true
-                }
-                Button("_cancel_", role: .cancel) {
-                    model.autoUploadStart = false
-                }
-            }, message: {
-                Text("_auto_upload_all_photos_warning_message_")
-            })
-            .tint(.primary)
         }
+        .navigationBarTitle(NSLocalizedString("_auto_upload_folder_", comment: ""))
+        .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            model.onViewAppear()
+        }
+        .onDisappear {
+            model.onViewDisappear()
+        }
+        .alert(model.error, isPresented: $model.showErrorAlert) {
+            Button(NSLocalizedString("_ok_", comment: ""), role: .cancel) { }
+        }
+        .sheet(isPresented: $showUploadFolder) {
+            SelectView(serverUrl: $model.serverUrl, session: model.session)
+                .onDisappear {
+                    model.setAutoUploadDirectory(serverUrl: model.serverUrl)
+                    model.resetAutoUploadLastUploadedDate()
+                }
+        }
+        .sheet(isPresented: $showSelectAlbums) {
+            SelectAlbumView(model: albumModel)
+        }
+        .alert(NSLocalizedString("_auto_upload_all_photos_warning_title_", comment: ""), isPresented: $showUploadAllPhotosWarning, actions: {
+            Button("_confirm_") {
+                model.autoUploadStart = true
+            }
+            Button("_cancel_", role: .cancel) {
+                model.autoUploadStart = false
+            }
+        }, message: {
+            Text("_auto_upload_all_photos_warning_message_")
+        })
+        .tint(.primary)
     }
 
     @ViewBuilder
