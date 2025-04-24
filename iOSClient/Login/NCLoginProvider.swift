@@ -120,8 +120,8 @@ class NCLoginProvider: UIViewController {
 
     private func handleGrant(urlBase: String, loginName: String, appPassword: String) async {
         await withCheckedContinuation { continuation in
-            if self.controller == nil {
-                self.controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+            if controller == nil {
+                controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
             }
 
             NCAccount().createAccount(viewController: self, urlBase: urlBase, user: loginName, password: appPassword, controller: controller) {
