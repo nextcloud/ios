@@ -54,6 +54,7 @@ class NCAccount: NSObject {
                                           httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
                                           groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
+        let options = NKRequestOptions(checkInterceptor: false)
         NextcloudKit.shared.getUserProfile(account: account) { account, userProfile, _, error in
             if error == .success, let userProfile {
                 NextcloudKit.shared.updateSession(account: account, userId: userProfile.userId)
