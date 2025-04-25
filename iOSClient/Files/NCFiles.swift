@@ -140,8 +140,6 @@ class NCFiles: NCCollectionViewCommon {
         if !isSearchingMode {
             getServerData()
         }
-
-        self.showTipAutoUpload()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
