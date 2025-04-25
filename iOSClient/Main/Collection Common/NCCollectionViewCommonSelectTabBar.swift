@@ -87,11 +87,12 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
         guard let controller, let hostingController else { return }
 
         controller.hide()
+
         if hostingController.view.isHidden {
             hostingController.view.isHidden = false
             hostingController.view.transform = .init(translationX: 0, y: hostingController.view.frame.height)
-            UIView.animate(withDuration: 0.2) {
-                hostingController.view.transform = .init(translationX: 0, y: 0)
+            UIView.animate(withDuration: 0.3) {
+                hostingController.view.transform = .identity
             }
         }
     }

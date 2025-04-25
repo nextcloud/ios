@@ -218,14 +218,17 @@ class NCService: NSObject {
             }
 
             // Notifications
-            controller?.availableNotifications = false
             if capability.capabilityNotification.count > 0 {
                 NextcloudKit.shared.getNotifications(account: account) { _ in
                 } completion: { _, notifications, _, error in
                     if error == .success, let notifications = notifications, notifications.count > 0 {
                         controller?.availableNotifications = true
+                    } else {
+                        controller?.availableNotifications = false
                     }
                 }
+            } else {
+                controller?.availableNotifications = false
             }
 
             // Added UTI for Collabora

@@ -89,7 +89,6 @@ class NCFiles: NCCollectionViewCommon {
                     if let controller = userInfo["controller"] as? NCMainTabBarController,
                        controller == self.controller {
                         controller.account = account
-                        controller.availableNotifications = false
                     } else {
                         return
                     }
@@ -141,8 +140,6 @@ class NCFiles: NCCollectionViewCommon {
         if !isSearchingMode {
             getServerData()
         }
-
-        self.showTipAutoUpload()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -407,7 +404,20 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     override func isHiddenPlusButton(_ isHidden: Bool) {
-        plusButton.isHidden = isHidden
+        if isHidden {
+            UIView.animate(withDuration: 0.5, delay: 0.0, options: [], animations: {
+                self.plusButton.transform = CGAffineTransform(translationX: 100, y: 0)
+                self.plusButton.alpha = 0
+            })
+        } else {
+            plusButton.transform = CGAffineTransform(translationX: 100, y: 0)
+            plusButton.alpha = 0
+
+            UIView.animate(withDuration: 0.5, delay: 0.3, options: [], animations: {
+                self.plusButton.transform = .identity
+                self.plusButton.alpha = 1
+            })
+        }
     }
 
     // MARK: - NCAccountSettingsModelDelegate

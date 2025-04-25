@@ -340,7 +340,6 @@ final class NCGlobal: Sendable {
     let tipAccountRequest                                       = "tipAccountRequest"
     let tipScanAddImage                                         = "tipScanAddImage"
     let tipMediaDetailView                                      = "tipMediaDetailView"
-    let tipAutoUpload                                           = "tipAutoUpload"
     let tipAutoUploadButton                                     = "tipAutoUploadButton"
 
     // ACTION

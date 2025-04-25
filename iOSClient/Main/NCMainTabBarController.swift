@@ -82,7 +82,6 @@ class NCMainTabBarController: UITabBarController {
             item.title = NSLocalizedString("_activity_", comment: "")
             item.image = UIImage(systemName: "bolt")
             item.selectedImage = item.image
-            item.isEnabled = capabilities.capabilityActivityEnabled
             item.tag = 103
         }
 
@@ -140,10 +139,18 @@ class NCMainTabBarController: UITabBarController {
 
     private func timerCheck() {
         self.timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: false, block: { _ in
+            /// Check error
             NCNetworking.shared.checkServerError(account: self.account, controller: self) {
+                /// Update right bar button item
                 if let navigationController = self.selectedViewController as? NCMainNavigationController {
                     navigationController.updateRightBarButtonItems()
                 }
+                /// Update Activity tab bar
+                if let item = self.tabBar.items?[3] {
+                    let capabilities = NCCapabilities.shared.getCapabilities(account: self.account)
+                    item.isEnabled = capabilities.capabilityActivityEnabled
+                }
+
                 self.timerCheck()
             }
         })

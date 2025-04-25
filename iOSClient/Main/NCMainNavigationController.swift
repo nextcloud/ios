@@ -141,21 +141,15 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     }
 
     func updateRightBarButtonItems() {
+        if collectionViewCommon?.isEditMode ?? false || trashViewController?.isEditMode ?? false {
+            return
+        }
+
         let capabilities = NCCapabilities.shared.getCapabilities(account: session.account)
         let resultsCount = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal))?.count ?? 0
         var tempRightBarButtonItems: [UIBarButtonItem] = createRightMenu() == nil ? [] : [self.menuBarButtonItem]
         var tempTotalTags = tempRightBarButtonItems.count == 0 ? 0 : self.menuBarButtonItem.tag
         var totalTags = 0
-
-        if let collectionViewCommon,
-           collectionViewCommon.isEditMode {
-            return
-        }
-
-        if let trashViewController,
-           trashViewController.isEditMode {
-            return
-        }
 
         if let rightBarButtonItems = topViewController?.navigationItem.rightBarButtonItems,
             let menuBarButtonItem = rightBarButtonItems.first(where: { $0.tag == menuButtonTag }),
