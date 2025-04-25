@@ -89,7 +89,6 @@ class NCFiles: NCCollectionViewCommon {
                     if let controller = userInfo["controller"] as? NCMainTabBarController,
                        controller == self.controller {
                         controller.account = account
-                        controller.availableNotifications = false
                     } else {
                         return
                     }
