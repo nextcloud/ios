@@ -12,6 +12,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     let utility = NCUtility()
     let utilityFileSystem = NCUtilityFileSystem()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    var availableNotifications: Bool = false
 
     var controller: NCMainTabBarController? {
         self.tabBarController as? NCMainTabBarController
@@ -103,6 +104,33 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             }
         }), for: .touchUpInside)
 
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateNotification), object: nil, queue: nil) { _ in
+            let capabilities = NCCapabilities.shared.getCapabilities(account: self.session.account)
+            if capabilities.capabilityNotification.count > 0 {
+                NextcloudKit.shared.getNotifications(account: self.session.account) { _ in
+                } completion: { _, notifications, _, error in
+                    if error == .success,
+                       let notifications,
+                       notifications.count > 0 {
+                        if !self.isNotificationsButtonVisible() {
+                            self.availableNotifications = true
+                            self.updateRightBarButtonItems()
+                        }
+                    } else {
+                        if self.isNotificationsButtonVisible() {
+                            self.availableNotifications = false
+                            self.updateRightBarButtonItems()
+                        }
+                    }
+                }
+            } else {
+                if self.isNotificationsButtonVisible() {
+                    self.availableNotifications = false
+                    self.updateRightBarButtonItems()
+                }
+            }
+        }
+
         navigationBar.prefersLargeTitles = true
         setNavigationBarHidden(false, animated: true)
     }
@@ -162,7 +190,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             tempTotalTags = tempTotalTags + self.assistantButtonItem.tag
         }
 
-        if let controller, controller.availableNotifications {
+        if availableNotifications {
             tempRightBarButtonItems.append(self.notificationsButtonItem)
             tempTotalTags = tempTotalTags + self.notificationsButtonItem.tag
         }
@@ -349,6 +377,13 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid])
 
         return [select, viewStyleSubmenu]
+    }
+
+    func isNotificationsButtonVisible() -> Bool {
+        if topViewController?.navigationItem.rightBarButtonItems?.first(where: { $0.tag == notificationsButtonTag }) != nil {
+            return true
+        }
+        return false
     }
 
     // MARK: - Left

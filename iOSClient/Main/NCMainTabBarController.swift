@@ -34,7 +34,6 @@ struct NavigationCollectionViewCommon {
 class NCMainTabBarController: UITabBarController {
     var sceneIdentifier: String = UUID().uuidString
     var account = ""
-    var availableNotifications: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?
     let navigationCollectionViewCommon = ThreadSafeArray<NavigationCollectionViewCommon>()
     private var previousIndex: Int?
@@ -51,7 +50,6 @@ class NCMainTabBarController: UITabBarController {
         delegate = self
 
         tabBar.tintColor = NCBrandColor.shared.getElement(account: account)
-        let capabilities = NCCapabilities.shared.getCapabilities(account: account)
 
         // File
         if let item = tabBar.items?[0] {
