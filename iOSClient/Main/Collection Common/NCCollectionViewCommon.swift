@@ -415,7 +415,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         self.collectionView.collectionViewLayout.invalidateLayout()
 
-        (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
+        (self.navigationController as? NCMainNavigationController)?.updateMenu()
     }
 
     @objc func reloadDataSource(_ notification: NSNotification) {
@@ -856,7 +856,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                               animations: { self.collectionView.reloadData() },
                               completion: nil)
 
-            (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
+            (self.navigationController as? NCMainNavigationController)?.updateMenu()
             self.refreshControlEndRefreshing()
         }
     }

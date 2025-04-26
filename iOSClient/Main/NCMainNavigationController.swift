@@ -151,12 +151,6 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         var tempTotalTags = tempRightBarButtonItems.count == 0 ? 0 : self.menuBarButtonItem.tag
         var totalTags = 0
 
-        if let rightBarButtonItems = topViewController?.navigationItem.rightBarButtonItems,
-            let menuBarButtonItem = rightBarButtonItems.first(where: { $0.tag == menuButtonTag }),
-            let menuButton = menuBarButtonItem.customView as? UIButton {
-            menuButton.menu = createRightMenu()
-        }
-
         if let rightBarButtonItems = topViewController?.navigationItem.rightBarButtonItems {
             for item in rightBarButtonItems {
                 totalTags = totalTags + item.tag
@@ -180,6 +174,14 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
         if totalTags != tempTotalTags {
             topViewController?.navigationItem.rightBarButtonItems = tempRightBarButtonItems
+        }
+    }
+
+    func updateMenu() {
+        if let rightBarButtonItems = topViewController?.navigationItem.rightBarButtonItems,
+            let menuBarButtonItem = rightBarButtonItems.first(where: { $0.tag == menuButtonTag }),
+            let menuButton = menuBarButtonItem.customView as? UIButton {
+            menuButton.menu = createRightMenu()
         }
     }
 
@@ -301,7 +303,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             NCKeychain().setPersonalFilesOnly(account: self.session.account, value: !personalFilesOnly)
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": collectionViewCommon.serverUrl, "clearDataSource": true])
-            self.setNavigationRightItems()
+            self.updateMenu()
         }
 
         let showDescriptionKeychain = NCKeychain().showDescription
@@ -310,7 +312,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             NCKeychain().showDescription = !showDescriptionKeychain
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": collectionViewCommon.serverUrl, "clearDataSource": true])
-            self.setNavigationRightItems()
+            self.updateMenu()
         }
 
         let showRecommendedFilesKeychain = NCKeychain().showRecommendedFiles
@@ -320,7 +322,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             NCKeychain().showRecommendedFiles = !showRecommendedFilesKeychain
 
             collectionViewCommon.collectionView.reloadData()
-            self.setNavigationRightItems()
+            self.updateMenu()
         }
 
         return (select, viewStyleSubmenu, sortSubmenu, personalFilesOnlyAction, showDescription, showRecommendedFiles)
@@ -338,11 +340,11 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
         let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: utility.loadImage(named: "list.bullet", colors: [NCBrandColor.shared.iconImageColor]), state: layoutForView.layout == NCGlobal.shared.layoutList ? .on : .off) { _ in
             trashViewController.onListSelected()
-            self.setNavigationRightItems()
+            self.updateMenu()
         }
         let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: utility.loadImage(named: "square.grid.2x2", colors: [NCBrandColor.shared.iconImageColor]), state: layoutForView.layout == NCGlobal.shared.layoutGrid ? .on : .off) { _ in
             trashViewController.onGridSelected()
-            self.setNavigationRightItems()
+            self.updateMenu()
         }
         let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid])
 

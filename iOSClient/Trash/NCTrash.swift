@@ -121,33 +121,6 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         tabBarSelect?.setFrame()
     }
 
-    // MARK: - Layout
-
-    /*
-    func setNavigationRightItems() {
-        func createMenuActions() -> [UIMenuElement] {
-            guard let layoutForView = self.database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: ""),
-                  let datasource else { return [] }
-            let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: utility.loadImage(named: "checkmark.circle", colors: [NCBrandColor.shared.iconImageColor]), attributes: datasource.isEmpty ? .disabled : []) { _ in
-                self.setEditMode(true)
-            }
-            let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: utility.loadImage(named: "list.bullet", colors: [NCBrandColor.shared.iconImageColor]), state: layoutForView.layout == NCGlobal.shared.layoutList ? .on : .off) { _ in
-                self.onListSelected()
-                self.setNavigationRightItems()
-            }
-            let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: utility.loadImage(named: "square.grid.2x2", colors: [NCBrandColor.shared.iconImageColor]), state: layoutForView.layout == NCGlobal.shared.layoutGrid ? .on : .off) { _ in
-                self.onGridSelected()
-                self.setNavigationRightItems()
-            }
-            let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid])
-
-            return [select, viewStyleSubmenu]
-        }
-
-        
-    }
-    */
-
     // MARK: TAP EVENT
 
     func tapRestoreListItem(with ocId: String, image: UIImage?, sender: Any) {
@@ -189,7 +162,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     @objc func reloadDataSource(withQueryDB: Bool = true) {
         datasource = self.database.getResultsTrash(filePath: getFilePath(), account: session.account)
         collectionView.reloadData()
-        (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
+        (self.navigationController as? NCMainNavigationController)?.updateMenu()
 
         guard let blinkFileId, let datasource else { return }
         for itemIx in 0..<datasource.count where datasource[itemIx].fileId.contains(blinkFileId) {
