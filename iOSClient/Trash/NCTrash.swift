@@ -162,7 +162,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     @objc func reloadDataSource(withQueryDB: Bool = true) {
         datasource = self.database.getResultsTrash(filePath: getFilePath(), account: session.account)
         collectionView.reloadData()
-        (self.navigationController as? NCMainNavigationController)?.updateMenu()
+        (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
 
         guard let blinkFileId, let datasource else { return }
         for itemIx in 0..<datasource.count where datasource[itemIx].fileId.contains(blinkFileId) {
