@@ -357,12 +357,17 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
     func createTrashRightMenuActions() -> [UIMenuElement]? {
         guard let trashViewController,
-              let layoutForView = self.database.getLayoutForView(account: session.account, key: trashViewController.layoutKey, serverUrl: ""),
-              let datasource = trashViewController.datasource
+              let layoutForView = self.database.getLayoutForView(account: session.account, key: trashViewController.layoutKey, serverUrl: "")
         else {
             return nil
         }
-        let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: utility.loadImage(named: "checkmark.circle", colors: [NCBrandColor.shared.iconImageColor]), attributes: datasource.isEmpty ? .disabled : []) { _ in
+        var isSelectAvailable: Bool = false
+
+        if let datasource = trashViewController.datasource, !datasource.isEmpty {
+            isSelectAvailable = true
+        }
+
+        let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: utility.loadImage(named: "checkmark.circle", colors: [NCBrandColor.shared.iconImageColor]), attributes: isSelectAvailable ? [] : .disabled) { _ in
             trashViewController.setEditMode(true)
         }
         let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: utility.loadImage(named: "list.bullet", colors: [NCBrandColor.shared.iconImageColor]), state: layoutForView.layout == NCGlobal.shared.layoutList ? .on : .off) { _ in
