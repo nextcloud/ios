@@ -12,7 +12,6 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     let utility = NCUtility()
     let utilityFileSystem = NCUtilityFileSystem()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    var availableNotifications: Bool = false
 
     var controller: NCMainTabBarController? {
         self.tabBarController as? NCMainTabBarController
@@ -113,19 +112,19 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                        let notifications,
                        notifications.count > 0 {
                         if !self.isNotificationsButtonVisible() {
-                            self.availableNotifications = true
+                            self.controller?.availableNotifications = true
                             self.updateRightBarButtonItems()
                         }
                     } else {
                         if self.isNotificationsButtonVisible() {
-                            self.availableNotifications = false
+                            self.controller?.availableNotifications = false
                             self.updateRightBarButtonItems()
                         }
                     }
                 }
             } else {
                 if self.isNotificationsButtonVisible() {
-                    self.availableNotifications = false
+                    self.controller?.availableNotifications = false
                     self.updateRightBarButtonItems()
                 }
             }
@@ -190,7 +189,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             tempTotalTags = tempTotalTags + self.assistantButtonItem.tag
         }
 
-        if availableNotifications {
+        if let controller, controller.availableNotifications {
             tempRightBarButtonItems.append(self.notificationsButtonItem)
             tempTotalTags = tempTotalTags + self.notificationsButtonItem.tag
         }
