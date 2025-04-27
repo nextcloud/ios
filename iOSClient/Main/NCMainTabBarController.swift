@@ -51,7 +51,6 @@ class NCMainTabBarController: UITabBarController {
         delegate = self
 
         tabBar.tintColor = NCBrandColor.shared.getElement(account: account)
-        let capabilities = NCCapabilities.shared.getCapabilities(account: account)
 
         // File
         if let item = tabBar.items?[0] {
