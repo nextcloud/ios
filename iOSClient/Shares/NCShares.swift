@@ -27,6 +27,9 @@ import NextcloudKit
 class NCShares: NCCollectionViewCommon {
     private var task: Task<Void, Never>?
 
+    @MainActor
+    private var ocId: [String] = []
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
@@ -62,31 +65,11 @@ class NCShares: NCCollectionViewCommon {
     // MARK: - DataSource
 
     override func reloadDataSource() {
-        var ocId: [String] = []
-        let sharess = self.database.getTableShares(account: session.account)
 
-        for share in sharess {
-            if let result = self.database.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", session.account, share.serverUrl, share.fileName)) {
-                if !(ocId.contains { $0 == result.ocId }) {
-                    ocId.append(result.ocId)
-                }
-            } else {
-                let serverUrlFileName = share.serverUrl + "/" + share.fileName
-                NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: session.account) { task in
-                    self.dataSourceTask = task
-                    if self.dataSource.isEmpty() {
-                        self.collectionView.reloadData()
-                    }
-                } completion: { _, metadata, _ in
-                    if let metadata {
-                        self.database.addMetadata(metadata)
-                        if !(ocId.contains { $0 == metadata.ocId }) {
-                            ocId.append(metadata.ocId)
-                        }
-                    }
-                }
-            }
-        }
+        let metadatas = self.database.getResultsMetadatasPredicate(NSPredicate(format: "ocId IN %@", ocId), layoutForView: layoutForView)
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
+
+        super.reloadDataSource()
     }
 
     override func getServerData() {
@@ -102,9 +85,45 @@ class NCShares: NCCollectionViewCommon {
                     let home = self.utilityFileSystem.getHomeServer(session: self.session)
                     self.database.addShare(account: account, home: home, shares: shares)
                 }
+                self.task = Task.detached(priority: .background) { [weak self] in
+                    guard let self = self else {
+                        return
+                    }
+                    let sharess = await self.database.getTableShares(account: self.session.account)
+
+                    for share in sharess {
+                        if let result = await self.database.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", session.account, share.serverUrl, share.fileName)) {
+                            await MainActor.run {
+                                if !(self.ocId.contains { $0 == result.ocId }) {
+                                    self.ocId.append(result.ocId)
+                                }
+                            }
+                        } else {
+                            let serverUrlFileName = share.serverUrl + "/" + share.fileName
+                            let result = await NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: session.account)
+                            if result.error == .success, let metadata = result.metadata {
+                                self.database.addMetadata(metadata)
+                                await MainActor.run {
+                                    if !(self.ocId.contains { $0 == metadata.ocId }) {
+                                        self.ocId.append(metadata.ocId)
+                                    }
+                                }
+                            }
+                        }
+                        if Task.isCancelled {
+                            return
+                        }
+                    }
+
+                    await MainActor.run {
+                        self.reloadDataSource()
+                        self.refreshControlEndRefreshing()
+                    }
+                }
+            } else {
                 self.reloadDataSource()
+                self.refreshControlEndRefreshing()
             }
-            self.refreshControlEndRefreshing()
         }
     }
 }
