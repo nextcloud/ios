@@ -25,6 +25,7 @@ import UIKit
 import NextcloudKit
 
 class NCShares: NCCollectionViewCommon {
+    private var task: Task<Void, Never>?
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -50,6 +51,12 @@ class NCShares: NCCollectionViewCommon {
         super.viewDidAppear(animated)
 
         getServerData()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        task?.cancel()
     }
 
     // MARK: - DataSource
@@ -80,12 +87,6 @@ class NCShares: NCCollectionViewCommon {
                 }
             }
         }
-
-        let metadatas = self.database.getResultsMetadatasPredicate(NSPredicate(format: "ocId IN %@", ocId), layoutForView: layoutForView)
-
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
-
-        super.reloadDataSource()
     }
 
     override func getServerData() {
