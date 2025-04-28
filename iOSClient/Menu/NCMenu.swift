@@ -136,9 +136,14 @@ class NCMenu: UITableViewController {
     }
 }
 extension NCMenu: FloatingPanelControllerDelegate {
-
     func floatingPanel(_ fpc: FloatingPanelController, layoutFor size: CGSize) -> FloatingPanelLayout {
-        return NCMenuFloatingPanelLayout(actionsHeight: self.actions.listHeight, controller: controller)
+        let layout = NCMenuFloatingPanelLayout(actionsHeight: self.actions.listHeight, controller: controller)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            fpc.invalidateLayout()
+        }
+
+        return layout
     }
 
     func floatingPanel(_ fpc: FloatingPanelController, layoutFor newCollection: UITraitCollection) -> FloatingPanelLayout {
