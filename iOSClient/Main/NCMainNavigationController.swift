@@ -202,6 +202,11 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         if totalTags != tempTotalTags {
             topViewController?.navigationItem.rightBarButtonItems = tempRightBarButtonItems
         }
+
+        // Update App Icon badge
+        if UIApplication.shared.applicationIconBadgeNumber != resultsCount {
+            UIApplication.shared.applicationIconBadgeNumber = resultsCount
+        }
     }
 
     func createRightMenu() -> UIMenu? { return nil }
