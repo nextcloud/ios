@@ -2279,7 +2279,6 @@
 				F7603298252F0E550015A421 /* Collection Common */,
 				F7DFB7E9219C5A0500680748 /* Create cloud */,
 				F7226EDB1EE4089300EBECB1 /* Main.storyboard */,
-				F75B0ABC244C4DBB00E58DCA /* NCActionCenter.swift */,
 				F7B934FD2BDCFE1E002B2FC9 /* NCDragDrop.swift */,
 				F794E13C2BBBFF2E003693D7 /* NCMainTabBarController.swift */,
 				F737DA9C2B7B893C0063BAFC /* NCPasscode.swift */,
@@ -2477,6 +2476,7 @@
 			children = (
 				F7C30DF8291BCBF00017149B /* E2EE */,
 				F72CD63925C19EBF00F46F9A /* NCAutoUpload.swift */,
+				F75B0ABC244C4DBB00E58DCA /* NCActionCenter.swift */,
 				F77BC3EC293E528A005F2B08 /* NCConfigServer.swift */,
 				F75A9EE523796C6F0044CFCE /* NCNetworking.swift */,
 				F7411C532D7B26C600F57358 /* NCNetworking+ServerError.swift */,
@@ -5877,7 +5877,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 0;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -5904,7 +5904,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 6.6.1;
+				MARKETING_VERSION = 6.6.2;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-v";
 				OTHER_LDFLAGS = "";
@@ -5943,7 +5943,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 0;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -5967,7 +5967,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 6.6.1;
+				MARKETING_VERSION = 6.6.2;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-v";
 				OTHER_LDFLAGS = "";
