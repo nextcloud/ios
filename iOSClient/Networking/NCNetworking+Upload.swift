@@ -421,29 +421,9 @@ extension NCNetworking {
                     }
                 } else {
                     if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
-                        NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
-                        self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-                        self.database.deleteMetadataOcId(metadata.ocId)
-                        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadCancelFile,
-                                                                    object: nil,
-                                                                    userInfo: ["ocId": metadata.ocId,
-                                                                               "ocIdTransfer": metadata.ocIdTransfer,
-                                                                               "session": metadata.session,
-                                                                               "serverUrl": metadata.serverUrl,
-                                                                               "account": metadata.account],
-                                                                    second: 0.5)
+                        self.cancelTransfer(metadata: metadata)
                     } else if error.errorCode == self.global.errorBadRequest || error.errorCode == self.global.errorUnsupportedMediaType {
-                        NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
-                        self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-                        self.database.deleteMetadataOcId(metadata.ocId)
-                        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadCancelFile,
-                                                                    object: nil,
-                                                                    userInfo: ["ocId": metadata.ocId,
-                                                                               "ocIdTransfer": metadata.ocIdTransfer,
-                                                                               "session": metadata.session,
-                                                                               "serverUrl": metadata.serverUrl,
-                                                                               "account": metadata.account],
-                                                                    second: 0.5)
+                        self.cancelTransfer(metadata: metadata)
                         if isApplicationStateActive {
                             NCContentPresenter().showError(error: NKError(errorCode: error.errorCode, errorDescription: "_virus_detect_"))
                         }
@@ -455,7 +435,7 @@ extension NCNetworking {
 #if !EXTENSION
                         NextcloudKit.shared.getTermsOfService(account: metadata.account, options: NKRequestOptions(checkInterceptor: false)) { _, tos, _, error in
                             if error == .success, let tos, !tos.hasUserSigned() {
-                                // it's a ToS not signed
+                                self.cancelTransfer(metadata: metadata)
                             } else {
                                 let newFileName = self.utilityFileSystem.createFileName(metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account)
                                 let alertController = UIAlertController(title: error.errorDescription, message: NSLocalizedString("_change_upload_filename_", comment: ""), preferredStyle: .alert)
@@ -471,16 +451,7 @@ extension NCNetworking {
                                                                      errorCode: error.errorCode)
                                 }))
                                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive, handler: { _ in
-                                    self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-                                    self.database.deleteMetadataOcId(metadata.ocId)
-                                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadCancelFile,
-                                                                                object: nil,
-                                                                                userInfo: ["ocId": metadata.ocId,
-                                                                                           "ocIdTransfer": metadata.ocIdTransfer,
-                                                                                           "session": metadata.session,
-                                                                                           "serverUrl": metadata.serverUrl,
-                                                                                           "account": metadata.account],
-                                                                                second: 0.5)
+                                    self.cancelTransfer(metadata: metadata)
                                 }))
 
                                 // Select UIWindowScene active in serverUrl
@@ -566,5 +537,19 @@ extension NCNetworking {
                                                                        "totalBytesExpected": NSNumber(value: totalBytesExpected)])
             }
         }
+    }
+
+    func cancelTransfer(metadata: tableMetadata) {
+        NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
+        self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+        self.database.deleteMetadataOcId(metadata.ocId)
+        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadCancelFile,
+                                                    object: nil,
+                                                    userInfo: ["ocId": metadata.ocId,
+                                                               "ocIdTransfer": metadata.ocIdTransfer,
+                                                               "session": metadata.session,
+                                                               "serverUrl": metadata.serverUrl,
+                                                               "account": metadata.account],
+                                                    second: 0.5)
     }
 }
