@@ -122,105 +122,114 @@ class NCCameraRoll: NSObject {
             return callCompletionWithError()
         }
 
-        let extensionAsset = (asset.originalFilename as NSString).pathExtension.lowercased()
-        let creationDate = asset.creationDate ?? Date()
-        let modificationDate = asset.modificationDate ?? Date()
-
-        if asset.mediaType == PHAssetMediaType.image && (extensionAsset == "heic" || extensionAsset == "dng") && !metadata.nativeFormat {
-            let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".jpg"
-            metadata.contentType = "image/jpeg"
-            fileNamePath = NSTemporaryDirectory() + fileName
-            metadata.fileNameView = fileName
-            metadata.fileName = fileName
-            compatibilityFormat = true
-        } else {
-            fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
-        }
-
-        guard let fileNamePath = fileNamePath
-        else {
-            return callCompletionWithError()
-        }
-
-        if asset.mediaType == PHAssetMediaType.image {
-            let options = PHImageRequestOptions()
-
-            options.isNetworkAccessAllowed = true
-            if compatibilityFormat {
-                options.deliveryMode = .opportunistic
-            } else {
-                options.deliveryMode = .highQualityFormat
-            }
-            options.isSynchronous = true
-            if extensionAsset == "DNG" {
-                options.version = PHImageRequestOptionsVersion.original
-            }
-            options.progressHandler = { progress, error, _, _ in
-                print(progress)
-                if error != nil { return callCompletionWithError() }
-            }
-
+        DispatchQueue.main.async {
             // Must be in primary Task
             //
-            PHImageManager.default().requestImageDataAndOrientation(for: asset, options: options) { data, _, _, _ in
-                guard var data = data
-                else {
-                    return callCompletionWithError()
-                }
+            let extensionAsset = (asset.originalFilename as NSString).pathExtension.lowercased()
+            let creationDate = asset.creationDate ?? Date()
+            let modificationDate = asset.modificationDate ?? Date()
 
+            if asset.mediaType == PHAssetMediaType.image && (extensionAsset == "heic" || extensionAsset == "dng") && !metadata.nativeFormat {
+                let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".jpg"
+                metadata.contentType = "image/jpeg"
+                fileNamePath = NSTemporaryDirectory() + fileName
+                metadata.fileNameView = fileName
+                metadata.fileName = fileName
+                compatibilityFormat = true
+            } else {
+                fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
+            }
+
+            guard let fileNamePath
+            else {
+                return callCompletionWithError()
+            }
+
+            if asset.mediaType == PHAssetMediaType.image {
+                let options = PHImageRequestOptions()
+
+                options.isNetworkAccessAllowed = true
                 if compatibilityFormat {
-                    guard let ciImage = CIImage(data: data), let colorSpace = ciImage.colorSpace, let dataJPEG = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace) else { return callCompletionWithError() }
-                    data = dataJPEG
+                    options.deliveryMode = .opportunistic
+                } else {
+                    options.deliveryMode = .highQualityFormat
                 }
-                self.utilityFileSystem.removeFile(atPath: fileNamePath)
-                do {
-                    try data.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
-                } catch { return callCompletionWithError() }
-                metadata.creationDate = creationDate as NSDate
-                metadata.date = modificationDate as NSDate
-                metadata.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
+                options.isSynchronous = true
+                if extensionAsset == "DNG" {
+                    options.version = PHImageRequestOptionsVersion.original
+                }
+                options.progressHandler = { progress, error, _, _ in
+                    print(progress)
+                    if error != nil { return callCompletionWithError() }
+                }
 
-                return callCompletionWithError(false)
-            }
+                // Must be in primary Task
+                //
+                PHImageManager.default().requestImageDataAndOrientation(for: asset, options: options) { data, _, _, _ in
+                    guard var data
+                    else {
+                        return callCompletionWithError()
+                    }
 
-        } else if asset.mediaType == PHAssetMediaType.video {
-            let options = PHVideoRequestOptions()
+                    DispatchQueue.global().async {
+                        if compatibilityFormat {
+                            guard let ciImage = CIImage(data: data), let colorSpace = ciImage.colorSpace, let dataJPEG = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace) else { return callCompletionWithError() }
+                            data = dataJPEG
+                        }
+                        self.utilityFileSystem.removeFile(atPath: fileNamePath)
+                        do {
+                            try data.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
+                        } catch {
+                            return callCompletionWithError()
+                        }
 
-            options.isNetworkAccessAllowed = true
-            options.version = PHVideoRequestOptionsVersion.current
-            options.progressHandler = { progress, error, _, _ in
-                print(progress)
-                if error != nil { return callCompletionWithError() }
-            }
-
-            PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { asset, _, _ in
-                if let asset = asset as? AVURLAsset {
-                    self.utilityFileSystem.removeFile(atPath: fileNamePath)
-                    do {
-                        try FileManager.default.copyItem(at: asset.url, to: URL(fileURLWithPath: fileNamePath))
                         metadata.creationDate = creationDate as NSDate
                         metadata.date = modificationDate as NSDate
                         metadata.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
+
                         return callCompletionWithError(false)
-                    } catch { return callCompletionWithError() }
-                } else if let asset = asset as? AVComposition, asset.tracks.count > 1, let exporter = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetPassthrough) {
-                    exporter.outputURL = URL(fileURLWithPath: fileNamePath)
-                    exporter.outputFileType = AVFileType.mp4
-                    exporter.shouldOptimizeForNetworkUse = true
-                    exporter.exportAsynchronously {
-                        if exporter.status == .completed {
+                    }
+                }
+
+            } else if asset.mediaType == PHAssetMediaType.video {
+                let options = PHVideoRequestOptions()
+
+                options.isNetworkAccessAllowed = true
+                options.version = PHVideoRequestOptionsVersion.current
+                options.progressHandler = { progress, error, _, _ in
+                    print(progress)
+                    if error != nil { return callCompletionWithError() }
+                }
+
+                PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { asset, _, _ in
+                    if let asset = asset as? AVURLAsset {
+                        self.utilityFileSystem.removeFile(atPath: fileNamePath)
+                        do {
+                            try FileManager.default.copyItem(at: asset.url, to: URL(fileURLWithPath: fileNamePath))
                             metadata.creationDate = creationDate as NSDate
                             metadata.date = modificationDate as NSDate
                             metadata.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
                             return callCompletionWithError(false)
-                        } else { return callCompletionWithError() }
+                        } catch { return callCompletionWithError() }
+                    } else if let asset = asset as? AVComposition, asset.tracks.count > 1, let exporter = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetPassthrough) {
+                        exporter.outputURL = URL(fileURLWithPath: fileNamePath)
+                        exporter.outputFileType = AVFileType.mp4
+                        exporter.shouldOptimizeForNetworkUse = true
+                        exporter.exportAsynchronously {
+                            if exporter.status == .completed {
+                                metadata.creationDate = creationDate as NSDate
+                                metadata.date = modificationDate as NSDate
+                                metadata.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
+                                return callCompletionWithError(false)
+                            } else { return callCompletionWithError() }
+                        }
+                    } else {
+                        return callCompletionWithError()
                     }
-                } else {
-                    return callCompletionWithError()
                 }
+            } else {
+                return callCompletionWithError()
             }
-        } else {
-            return callCompletionWithError()
         }
     }
 
