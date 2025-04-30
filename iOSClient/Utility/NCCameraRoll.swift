@@ -173,10 +173,16 @@ class NCCameraRoll: NSObject {
 
                     DispatchQueue.global().async {
                         if compatibilityFormat {
-                            guard let ciImage = CIImage(data: data), let colorSpace = ciImage.colorSpace, let dataJPEG = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace) else { return callCompletionWithError() }
+                            guard let ciImage = CIImage(data: data),
+                                  let colorSpace = ciImage.colorSpace,
+                                  let dataJPEG = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace)
+                            else {
+                                return callCompletionWithError()
+                            }
                             data = dataJPEG
                         }
                         self.utilityFileSystem.removeFile(atPath: fileNamePath)
+
                         do {
                             try data.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
                         } catch {
