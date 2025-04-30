@@ -12,21 +12,26 @@ class NCCameraRoll: NSObject {
     let database = NCManageDatabase.shared
 
     func extractCameraRoll(from metadata: tableMetadata, completition: @escaping (_ metadatas: [tableMetadata]) -> Void) {
+        guard !metadata.isExtractFile else {
+            return completition([metadata])
+        }
         var metadatas: [tableMetadata] = []
         let metadataSource = tableMetadata.init(value: metadata)
         var chunkSize = NCGlobal.shared.chunkSizeMBCellular
+
         if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
             chunkSize = NCGlobal.shared.chunkSizeMBEthernetOrWiFi
         }
-        guard !metadata.isExtractFile else { return  completition([metadataSource]) }
 
         guard !metadataSource.assetLocalIdentifier.isEmpty else {
             let filePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadataSource.ocId, fileNameView: metadataSource.fileName)
-            metadataSource.size = utilityFileSystem.getFileSize(filePath: filePath)
             let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadataSource.fileNameView, mimeType: metadataSource.contentType, directory: false, account: metadataSource.account)
+
+            metadataSource.size = utilityFileSystem.getFileSize(filePath: filePath)
             metadataSource.contentType = results.mimeType
             metadataSource.iconName = results.iconName
             metadataSource.classFile = results.classFile
+
             if let date = utilityFileSystem.getFileCreationDate(filePath: filePath) {
                 metadataSource.creationDate = date
             }
@@ -82,7 +87,6 @@ class NCCameraRoll: NSObject {
     func extractImageVideoFromAssetLocalIdentifier(metadata: tableMetadata,
                                                    modifyMetadataForUpload: Bool,
                                                    completion: @escaping (_ metadata: tableMetadata?, _ fileNamePath: String?, _ error: Bool) -> Void) {
-
         var fileNamePath: String?
         var metadata = metadata
         var compatibilityFormat: Bool = false
@@ -113,7 +117,8 @@ class NCCameraRoll: NSObject {
         }
 
         let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadata.assetLocalIdentifier], options: nil)
-        guard fetchAssets.count > 0, let asset = fetchAssets.firstObject else {
+        guard fetchAssets.count > 0,
+              let asset = fetchAssets.firstObject else {
             return callCompletionWithError()
         }
 
@@ -132,11 +137,14 @@ class NCCameraRoll: NSObject {
             fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
         }
 
-        guard let fileNamePath = fileNamePath else { return callCompletionWithError() }
+        guard let fileNamePath = fileNamePath
+        else {
+            return callCompletionWithError()
+        }
 
         if asset.mediaType == PHAssetMediaType.image {
-
             let options = PHImageRequestOptions()
+
             options.isNetworkAccessAllowed = true
             if compatibilityFormat {
                 options.deliveryMode = .opportunistic
@@ -155,7 +163,11 @@ class NCCameraRoll: NSObject {
             // Must be in primary Task
             //
             PHImageManager.default().requestImageDataAndOrientation(for: asset, options: options) { data, _, _, _ in
-                guard var data = data else { return callCompletionWithError() }
+                guard var data = data
+                else {
+                    return callCompletionWithError()
+                }
+
                 if compatibilityFormat {
                     guard let ciImage = CIImage(data: data), let colorSpace = ciImage.colorSpace, let dataJPEG = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace) else { return callCompletionWithError() }
                     data = dataJPEG
@@ -167,12 +179,13 @@ class NCCameraRoll: NSObject {
                 metadata.creationDate = creationDate as NSDate
                 metadata.date = modificationDate as NSDate
                 metadata.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
+
                 return callCompletionWithError(false)
             }
 
         } else if asset.mediaType == PHAssetMediaType.video {
-
             let options = PHVideoRequestOptions()
+
             options.isNetworkAccessAllowed = true
             options.version = PHVideoRequestOptionsVersion.current
             options.progressHandler = { progress, error, _, _ in
@@ -214,21 +227,28 @@ class NCCameraRoll: NSObject {
     private func createMetadataLivePhoto(metadata: tableMetadata,
                                          asset: PHAsset?,
                                          completion: @escaping (_ metadata: tableMetadata?) -> Void) {
-
-        guard let asset = asset else { return completion(nil) }
+        guard let asset = asset
+        else {
+            return completion(nil)
+        }
         let options = PHLivePhotoRequestOptions()
-        options.deliveryMode = PHImageRequestOptionsDeliveryMode.fastFormat
-        options.isNetworkAccessAllowed = true
         let ocId = NSUUID().uuidString
         let fileName = (metadata.fileName as NSString).deletingPathExtension + ".mov"
         let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
         var chunkSize = NCGlobal.shared.chunkSizeMBCellular
+
         if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
             chunkSize = NCGlobal.shared.chunkSizeMBEthernetOrWiFi
         }
 
+        options.deliveryMode = PHImageRequestOptionsDeliveryMode.fastFormat
+        options.isNetworkAccessAllowed = true
+
         PHImageManager.default().requestLivePhoto(for: asset, targetSize: UIScreen.main.bounds.size, contentMode: PHImageContentMode.default, options: options) { livePhoto, _ in
-            guard let livePhoto = livePhoto else { return completion(nil) }
+            guard let livePhoto
+            else {
+                return completion(nil)
+            }
             var videoResource: PHAssetResource?
             // Must be in primary Task
             //
@@ -236,8 +256,13 @@ class NCCameraRoll: NSObject {
                 videoResource = resource
                 break
             }
-            guard let videoResource = videoResource else { return completion(nil) }
+            guard let videoResource
+            else {
+                return completion(nil)
+            }
+
             self.utilityFileSystem.removeFile(atPath: fileNamePath)
+
             PHAssetResourceManager.default().writeData(for: videoResource, toFile: URL(fileURLWithPath: fileNamePath), options: nil) { error in
                 guard error == nil else { return completion(nil) }
                 let session = NCSession.shared.getSession(account: metadata.account)
