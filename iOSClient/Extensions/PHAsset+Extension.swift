@@ -7,6 +7,8 @@ import UIKit
 import Photos
 
 extension PHAsset {
+    // Must be in primary Task
+    //
     var originalFilename: String {
         if let resource = PHAssetResource.assetResources(for: self).first {
             return resource.originalFilename

@@ -51,6 +51,8 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
         for asset in self.assets {
             var uti: String?
 
+            // Must be in primary Task
+            //
             if let phAsset = asset.phAsset,
                let resource = PHAssetResource.assetResources(for: phAsset).first(where: { $0.type == .photo }) {
                 uti = resource.uniformTypeIdentifier
@@ -86,6 +88,8 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
         let targetSize = CGSize(width: 80, height: 80)
         var thumbnail: UIImage?
 
+        // Must be in primary Task
+        //
         imageManager.requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFill, options: options) { result, _ in
             thumbnail = result
         }

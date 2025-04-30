@@ -152,6 +152,8 @@ class NCCameraRoll: NSObject {
                 if error != nil { return callCompletionWithError() }
             }
 
+            // Must be in primary Task
+            //
             PHImageManager.default().requestImageDataAndOrientation(for: asset, options: options) { data, _, _, _ in
                 guard var data = data else { return callCompletionWithError() }
                 if compatibilityFormat {
@@ -228,6 +230,8 @@ class NCCameraRoll: NSObject {
         PHImageManager.default().requestLivePhoto(for: asset, targetSize: UIScreen.main.bounds.size, contentMode: PHImageContentMode.default, options: options) { livePhoto, _ in
             guard let livePhoto = livePhoto else { return completion(nil) }
             var videoResource: PHAssetResource?
+            // Must be in primary Task
+            //
             for resource in PHAssetResource.assetResources(for: livePhoto) where resource.type == PHAssetResourceType.pairedVideo {
                 videoResource = resource
                 break
