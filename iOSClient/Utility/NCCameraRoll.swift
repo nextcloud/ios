@@ -242,7 +242,7 @@ class NCCameraRoll: NSObject {
     private func createMetadataLivePhoto(metadata: tableMetadata,
                                          asset: PHAsset?,
                                          completion: @escaping (_ metadata: tableMetadata?) -> Void) {
-        guard let asset = asset
+        guard let asset
         else {
             return completion(nil)
         }
@@ -279,7 +279,10 @@ class NCCameraRoll: NSObject {
             self.utilityFileSystem.removeFile(atPath: fileNamePath)
 
             PHAssetResourceManager.default().writeData(for: videoResource, toFile: URL(fileURLWithPath: fileNamePath), options: nil) { error in
-                guard error == nil else { return completion(nil) }
+                guard error == nil
+                else {
+                    return completion(nil)
+                }
                 let session = NCSession.shared.getSession(account: metadata.account)
                 let metadataLivePhoto = self.database.createMetadata(fileName: fileName,
                                                                      fileNameView: fileName,
