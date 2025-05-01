@@ -1,10 +1,7 @@
-//
-//  LivePhoto.swift
-//  NCLivePhoto
-//
-//  Created by Alexander Pagliaro on 7/25/18.
-//  Copyright © 2018 Limit Point LLC. All rights reserved.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2018 Alexander Pagliaro
+// SPDX-FileCopyrightText: 2022 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 import AVFoundation
@@ -120,6 +117,8 @@ class NCLivePhoto {
     }
 
     private func extractResources(from livePhoto: PHLivePhoto, to directoryURL: URL, completion: @escaping (LivePhotoResources?) -> Void) {
+        // Must be in primary Task
+        //
         let assetResources = PHAssetResource.assetResources(for: livePhoto)
         let group = DispatchGroup()
         var keyPhotoURL: URL?
