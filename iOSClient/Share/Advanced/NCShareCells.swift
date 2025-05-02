@@ -50,7 +50,7 @@ protocol NCPermission: NCToggleCellConfig {
     static var forFile: [Self] { get }
     static func forDirectoryE2EE(account: String) -> [NCPermission]
     func hasPermission(for parentPermission: Int) -> Bool
-    func hasReadPermission(isDirectory: Bool) -> Bool
+    func hasReadPermission() -> Bool
 }
 
 enum NCUserPermission: CaseIterable, NCPermission {
@@ -58,7 +58,7 @@ enum NCUserPermission: CaseIterable, NCPermission {
         return ((permissionBitFlag & parentPermission) != 0)
     }
 
-    func hasReadPermission(isDirectory: Bool) -> Bool {
+    func hasReadPermission() -> Bool {
         return self == .read
     }
 
@@ -103,8 +103,8 @@ enum NCUserPermission: CaseIterable, NCPermission {
 }
 
 enum NCLinkPermission: NCPermission {
-    func hasReadPermission(isDirectory: Bool) -> Bool {
-        return isDirectory ? self == .read : false
+    func hasReadPermission() -> Bool {
+        return self == .read
     }
 
 //    func didChange(_ share: Shareable, to newValue: Bool) {
@@ -308,8 +308,14 @@ struct NCShareConfig {
             cell?.textLabel?.isEnabled = false
         }
 
-        // Read permission is always enabled and we show it as a non-interactable permissoin for brevity.
-        if let cellConfig = cellConfig as? NCUserPermission, cellConfig.hasReadPermission(isDirectory: isDirectory) {
+        // For user permissions: Read permission is always enabled and we show it as a non-interactable permission for brevity.
+        if let cellConfig = cellConfig as? NCUserPermission, cellConfig.hasReadPermission() {
+            cell?.isUserInteractionEnabled = false
+            cell?.textLabel?.isEnabled = false
+        }
+
+        // For link permissions: Read permission is always enabled and we show it as a non-interactable permission in files only for brevity.
+        if let cellConfig = cellConfig as? NCLinkPermission, cellConfig.hasReadPermission(), !isDirectory {
             cell?.isUserInteractionEnabled = false
             cell?.textLabel?.isEnabled = false
         }
