@@ -217,17 +217,6 @@ class NCService: NSObject {
                 }
             }
 
-            // Notifications
-            controller?.availableNotifications = false
-            if capability.capabilityNotification.count > 0 {
-                NextcloudKit.shared.getNotifications(account: account) { _ in
-                } completion: { _, notifications, _, error in
-                    if error == .success, let notifications = notifications, notifications.count > 0 {
-                        controller?.availableNotifications = true
-                    }
-                }
-            }
-
             // Added UTI for Collabora
             capability.capabilityRichDocumentsMimetypes.forEach { mimeType in
                 NextcloudKit.shared.nkCommonInstance.addInternalTypeIdentifier(typeIdentifier: mimeType, classFile: NKCommon.TypeClassFile.document.rawValue, editor: NCGlobal.shared.editorCollabora, iconName: NKCommon.TypeIconFile.document.rawValue, name: "document", account: account)
@@ -239,6 +228,8 @@ class NCService: NSObject {
                     NextcloudKit.shared.nkCommonInstance.addInternalTypeIdentifier(typeIdentifier: directEditing.mimetype, classFile: NKCommon.TypeClassFile.document.rawValue, editor: directEditing.editor, iconName: NKCommon.TypeIconFile.document.rawValue, name: "document", account: account)
                 }
             }
+
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateNotification)
         }
     }
 

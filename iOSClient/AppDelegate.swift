@@ -228,12 +228,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 }
             }
 
-            let counter = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND (session == %@ || session == %@) AND status != %d",
-                                                                                   account,
-                                                                                   NCNetworking.shared.sessionDownloadBackground,
-                                                                                   NCNetworking.shared.sessionUploadBackground,
-                                                                                   NCGlobal.shared.metadataStatusNormal))?.count ?? 0
-            UIApplication.shared.applicationIconBadgeNumber = counter
+            let resultsCount = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal))?.count ?? 0
+            if UIApplication.shared.applicationIconBadgeNumber != resultsCount {
+                UIApplication.shared.applicationIconBadgeNumber = resultsCount
+            }
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) completion handle")
             completion()

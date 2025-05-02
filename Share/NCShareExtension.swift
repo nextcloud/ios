@@ -110,14 +110,14 @@ class NCShareExtension: UIViewController {
         createFolderView.layer.cornerRadius = 10
         createFolderImage.image = utility.loadImage(named: "folder.badge.plus", colors: [NCBrandColor.shared.iconImageColor])
         createFolderLabel.text = NSLocalizedString("_create_folder_", comment: "")
-        let createFolderGesture = UITapGestureRecognizer(target: self, action: #selector(actionCreateFolder))
+        let createFolderGesture = UITapGestureRecognizer(target: self, action: #selector(actionCreateFolder(_:)))
         createFolderView.addGestureRecognizer(createFolderGesture)
 
         uploadView.layer.cornerRadius = 10
 
         uploadLabel.text = NSLocalizedString("_upload_", comment: "")
         uploadLabel.textColor = .systemBlue
-        let uploadGesture = UITapGestureRecognizer(target: self, action: #selector(actionUpload))
+        let uploadGesture = UITapGestureRecognizer(target: self, action: #selector(actionUpload(_:)))
         uploadView.addGestureRecognizer(uploadGesture)
 
         // LOG
@@ -265,7 +265,7 @@ class NCShareExtension: UIViewController {
         cancel(with: .cancel)
     }
 
-    @objc func actionCreateFolder() {
+    @objc func actionCreateFolder(_ sender: Any?) {
         let alertController = UIAlertController.createFolder(serverUrl: serverUrl, session: session) { error in
             guard error != .success else { return }
             self.showAlert(title: "_error_createsubfolders_upload_", description: error.errorDescription)
@@ -276,7 +276,7 @@ class NCShareExtension: UIViewController {
 
 // MARK: - Upload
 extension NCShareExtension {
-    @objc func actionUpload() {
+    @objc func actionUpload(_ sender: Any?) {
         guard !uploadStarted else { return }
         guard !filesName.isEmpty else { return showAlert(description: "_files_no_files_") }
 

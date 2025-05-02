@@ -29,22 +29,27 @@ class NCMenuFloatingPanelLayout: FloatingPanelLayout {
     var position: FloatingPanelPosition = .bottom
     var initialState: FloatingPanelState = .full
     var anchors: [FloatingPanelState: FloatingPanelLayoutAnchoring] {
-        [
-            .full: FloatingPanelLayoutAnchor(absoluteInset: topInset, edge: .top, referenceGuide: .superview)
-        ]
+        [.full: FloatingPanelLayoutAnchor(absoluteInset: topInset, edge: .top, referenceGuide: .superview)]
     }
     let topInset: CGFloat
 
-    init(actionsHeight: CGFloat) {
-        guard let windowScene = UIApplication.shared.connectedScenes.first(where: { $0 is UIWindowScene }) as? UIWindowScene,
-              let window = windowScene.windows.first(where: { $0.isKeyWindow })
+    init(actionsHeight: CGFloat, controller: NCMainTabBarController?) {
+        var window: UIWindow?
+
+        if let controller {
+            window = controller.window
+        } else if let windowScene = UIApplication.shared.connectedScenes.first(where: { $0 is UIWindowScene }) as? UIWindowScene {
+            window = windowScene.windows.first(where: { $0.isKeyWindow })
+        }
+
+        guard let window
         else {
             topInset = 48
             return
         }
-        let screenHeight = UIDevice.current.orientation.isLandscape
-        ? min(window.frame.size.width, window.frame.size.height)
-        : max(window.frame.size.width, window.frame.size.height)
+
+        let isLandscape = UIDevice.current.orientation.isLandscape
+        let screenHeight = isLandscape ? min(window.frame.size.width, window.frame.size.height) : max(window.frame.size.width, window.frame.size.height)
         let bottomInset = window.rootViewController?.view.safeAreaInsets.bottom ?? 0
         let panelHeight = actionsHeight + bottomInset
 
@@ -81,7 +86,7 @@ class NCMenuPanelController: FloatingPanelController {
         surfaceView.grabberHandle.accessibilityLabel = NSLocalizedString("_cart_controller_", comment: "")
 
         let collapseName = NSLocalizedString("_dismiss_menu_", comment: "")
-        let collapseAction = UIAccessibilityCustomAction(name: collapseName, target: self, selector: #selector(accessibilityActionCollapsePanel))
+        let collapseAction = UIAccessibilityCustomAction(name: collapseName, target: self, selector: #selector(accessibilityActionCollapsePanel(_:)))
 
         surfaceView.grabberHandle.accessibilityCustomActions = [collapseAction]
         surfaceView.grabberHandle.isAccessibilityElement = true
@@ -89,7 +94,7 @@ class NCMenuPanelController: FloatingPanelController {
         contentInsetAdjustmentBehavior = .never
     }
 
-    @objc private func accessibilityActionCollapsePanel() {
+    @objc private func accessibilityActionCollapsePanel(_ sender: Any?) {
         self.dismiss(animated: true)
      }
 }

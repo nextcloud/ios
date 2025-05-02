@@ -25,7 +25,7 @@ import Queuer
 import RealmSwift
 
 extension NCTrash {
-    @objc func loadListingTrash() {
+    @objc func loadListingTrash(_ sender: Any?) {
         NextcloudKit.shared.listingTrash(filename: filename, showHiddenFiles: false, account: session.account) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()

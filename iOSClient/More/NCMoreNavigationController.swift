@@ -17,21 +17,21 @@ class NCMoreNavigationController: NCMainNavigationController {
     // MARK: - Right
 
     override func createRightMenu() -> UIMenu? {
-        guard let items = self.createRightMenuActions(),
-              let collectionViewCommon
-        else {
-            return nil
-        }
-
-        if collectionViewCommon.layoutKey == global.layoutViewRecent {
+        if collectionViewCommon?.layoutKey == global.layoutViewRecent, let items = self.createRightMenuActions() {
             return UIMenu(children: [items.select, items.viewStyleSubmenu])
-        } else if collectionViewCommon.layoutKey == global.layoutViewOffline {
+        } else if collectionViewCommon?.layoutKey == global.layoutViewOffline, let items = self.createRightMenuActions() {
             return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu])
-        } else if collectionViewCommon.layoutKey == global.layoutViewShares {
+        } else if collectionViewCommon?.layoutKey == global.layoutViewShares, let items = self.createRightMenuActions() {
             return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu])
-        } else {
+        } else if collectionViewCommon?.layoutKey == global.layoutViewGroupfolders, let items = self.createRightMenuActions() {
+            return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu])
+        } else if collectionViewCommon?.layoutKey == global.layoutViewFiles, let items = self.createRightMenuActions() {
             let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.showDescription])
             return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu])
+        } else if trashViewController != nil, let items = self.createTrashRightMenuActions() {
+            return UIMenu(children: items)
         }
+
+        return nil
     }
 }

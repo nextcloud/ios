@@ -37,7 +37,6 @@ class NCFilesNavigationController: NCMainNavigationController {
         if collectionViewCommon.serverUrl == utilityFileSystem.getHomeServer(session: session) {
             let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.personalFilesOnlyAction, items.showDescription, items.showRecommendedFiles])
             return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu])
-
         } else {
             let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.showDescription])
             return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu])

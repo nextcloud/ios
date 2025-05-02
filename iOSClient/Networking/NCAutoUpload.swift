@@ -1,25 +1,6 @@
-//
-//  NCAutoUpload.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 27/01/21.
-//  Copyright © 2021 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2021 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 import CoreLocation
@@ -91,12 +72,17 @@ class NCAutoUpload: NSObject {
         let autoUploadPath = self.database.getAccountAutoUploadPath(session: session)
         var metadatas: [tableMetadata] = []
 
-        self.getCameraRollAssets(controller: controller, assetCollections: assetCollections, account: account) { assets in
-            guard let assets, !assets.isEmpty else {
+        self.getCameraRollAssets(controller: controller, assetCollections: assetCollections, account: account) { assets, fileNames in
+            guard let assets,
+                  let fileNames,
+                  !assets.isEmpty,
+                  assets.count == fileNames.count
+            else {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload, no new assets found [" + log + "]")
                 return completion(0)
             }
-            var num: Float = 0
+            var index: Int = 0
+            var lastUploadDate = Date()
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload, new \(assets.count) assets found [" + log + "]")
 
@@ -106,15 +92,12 @@ class NCAutoUpload: NSObject {
             self.hud.progress(0.0)
             self.endForAssetToUpload = false
 
-            var lastUploadDate = Date()
-
             for asset in assets {
                 var isLivePhoto = false
                 var uploadSession: String = ""
-                let assetDate = asset.creationDate ?? Date()
                 let assetMediaType = asset.mediaType
                 var serverUrl: String = ""
-                let fileName = NCUtilityFileSystem().createFileName(asset.originalFilename as String, fileDate: assetDate, fileType: assetMediaType)
+                let fileName = fileNames[index]
 
                 if tableAccount.autoUploadCreateSubfolder {
                     serverUrl = NCUtilityFileSystem().createGranularityPath(asset: asset, serverUrl: autoUploadPath)
@@ -179,8 +162,8 @@ class NCAutoUpload: NSObject {
                     metadatas.append(metadata)
                 }
 
-                num += 1
-                self.hud.progress(num: num, total: Float(assets.count))
+                index += 1
+                self.hud.progress(num: Float(index), total: Float(assets.count))
             }
 
             self.endForAssetToUpload = true
@@ -203,11 +186,11 @@ class NCAutoUpload: NSObject {
         return assetResult
     }
 
-    private func getCameraRollAssets(controller: NCMainTabBarController?, assetCollections: [PHAssetCollection] = [], account: String, completion: @escaping (_ assets: [PHAsset]?) -> Void) {
+    private func getCameraRollAssets(controller: NCMainTabBarController?, assetCollections: [PHAssetCollection] = [], account: String, completion: @escaping (_ assets: [PHAsset]?, _ fileNames: [String]?) -> Void) {
         NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { [self] hasPermission in
             guard hasPermission,
                   let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
-                return completion(nil)
+                return completion(nil, nil)
             }
             var newAssets: OrderedSet<PHAsset> = []
             let fetchOptions = PHFetchOptions()
@@ -250,7 +233,10 @@ class NCAutoUpload: NSObject {
             // Add assets into a set to avoid duplicate photos (same photo in multiple albums)
             if assetCollections.isEmpty {
                 let assetCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: PHAssetCollectionSubtype.smartAlbumUserLibrary, options: nil)
-                guard let assetCollection = assetCollection.firstObject else { return completion(nil) }
+                guard let assetCollection = assetCollection.firstObject
+                else {
+                    return completion(nil, nil)
+                }
                 let allAssets = processAssets(assetCollection, fetchOptions, tableAccount, account)
                 print(allAssets)
                 newAssets = OrderedSet(allAssets)
@@ -264,7 +250,18 @@ class NCAutoUpload: NSObject {
                 newAssets = OrderedSet(allAssets)
             }
 
-            completion(Array(newAssets))
+            DispatchQueue.main.async {
+                var fileNames: [String] = []
+                for asset in newAssets {
+                    let assetDate = asset.creationDate ?? Date()
+                    let assetMediaType = asset.mediaType
+                    let fileName = NCUtilityFileSystem().createFileName(asset.originalFilename as String, fileDate: assetDate, fileType: assetMediaType)
+                    fileNames.append(fileName)
+                }
+                DispatchQueue.global().async {
+                    completion(Array(newAssets), fileNames)
+                }
+            }
         }
     }
 }

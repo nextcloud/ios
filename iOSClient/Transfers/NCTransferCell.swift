@@ -152,7 +152,7 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
             UIAccessibilityCustomAction(
                 name: NSLocalizedString("_cancel_", comment: ""),
                 target: self,
-                selector: #selector(touchUpInsideMore))
+                selector: #selector(touchUpInsideMore(_:)))
         ]
     }
 

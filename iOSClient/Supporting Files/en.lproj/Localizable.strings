@@ -633,7 +633,8 @@
 "_tip_accountrequest_"      = "Touch here to change account or to add a new one";
 "_tip_addcopyimage_"        = "Long press to paste a copied image";
 "_tip_open_mediadetail_"    = "Swipe up to show the details";
-"_tip_autoupload_"          = "You can now Auto Upload specific Albums from your Photos. You can enable Auto Upload here";
+"_tip_autoupload_button_"   = "Configure the options as you prefer (folder, Wi-Fi, new content, subfolders) and tap ‘Turn on auto uploading’.
+You can stop it at any time, adjust the settings, and enable it again.";
 
 // MARK: Accessibility
 

@@ -90,8 +90,8 @@ private var hasChangesQuickLook: Bool = false
         }
 
         if let metadata = metadata, metadata.isImage {
-            let buttonDone = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissView))
-            let buttonCrop = UIBarButtonItem(image: NCUtility().loadImage(named: "crop"), style: .plain, target: self, action: #selector(crop))
+            let buttonDone = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissView(_:)))
+            let buttonCrop = UIBarButtonItem(image: NCUtility().loadImage(named: "crop"), style: .plain, target: self, action: #selector(crop(_:)))
             navigationItem.leftBarButtonItems = [buttonDone, buttonCrop]
             startTimer(navigationItem: navigationItem)
         }
@@ -106,7 +106,7 @@ private var hasChangesQuickLook: Bool = false
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         if let metadata = metadata, metadata.classFile != NKCommon.TypeClassFile.image.rawValue {
-            dismissView()
+            dismissView(nil)
         }
     }
 
@@ -128,7 +128,7 @@ private var hasChangesQuickLook: Bool = false
         })
     }
 
-    @objc private func dismissView() {
+    @objc private func dismissView(_ sender: Any?) {
         guard isEditingEnabled, hasChangesQuickLook, let metadata = metadata else {
             dismiss(animated: true)
             return
@@ -168,7 +168,7 @@ private var hasChangesQuickLook: Bool = false
         }
     }
 
-    @objc private func crop() {
+    @objc private func crop(_ sender: Any?) {
         guard let image = UIImage(contentsOfFile: url.path) else { return }
         var toolbarConfig = CropToolbarConfig()
 

@@ -54,7 +54,7 @@ class NCShareCommentsCell: UITableViewCell, NCCellProtocol {
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapAvatarImage))
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapAvatarImage(_:)))
         imageItem?.addGestureRecognizer(tapGesture)
     }
 

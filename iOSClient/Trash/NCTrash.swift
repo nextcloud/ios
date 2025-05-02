@@ -47,8 +47,13 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     var layoutKey = NCGlobal.shared.layoutViewTrash
     let refreshControl = UIRefreshControl()
     var filename: String?
+
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)
+    }
+
+    var controller: NCMainTabBarController? {
+        self.tabBarController as? NCMainTabBarController
     }
 
     // MARK: - View Life Cycle
@@ -56,7 +61,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        tabBarSelect = NCTrashSelectTabBar(tabBarController: tabBarController, delegate: self)
+        tabBarSelect = NCTrashSelectTabBar(controller: tabBarController, delegate: self)
 
         view.backgroundColor = .systemBackground
         self.navigationController?.navigationBar.prefersLargeTitles = true
@@ -76,7 +81,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         // Add Refresh Control
         collectionView.refreshControl = refreshControl
         refreshControl.tintColor = NCBrandColor.shared.textColor2
-        refreshControl.addTarget(self, action: #selector(loadListingTrash), for: .valueChanged)
+        refreshControl.addTarget(self, action: #selector(loadListingTrash(_:)), for: .valueChanged)
 
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSource), object: nil)
     }
@@ -96,10 +101,10 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         }
 
         isEditMode = false
-        setNavigationRightItems()
+        (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
 
         reloadDataSource()
-        loadListingTrash()
+        loadListingTrash(nil)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -113,47 +118,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
 
-        if let frame = tabBarController?.tabBar.frame {
-            tabBarSelect.hostingController?.view.frame = frame
-        }
-    }
-
-    // MARK: - Layout
-
-    func setNavigationRightItems() {
-        func createMenuActions() -> [UIMenuElement] {
-            guard let layoutForView = self.database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: ""),
-                  let datasource else { return [] }
-            let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: utility.loadImage(named: "checkmark.circle", colors: [NCBrandColor.shared.iconImageColor]), attributes: datasource.isEmpty ? .disabled : []) { _ in
-                self.setEditMode(true)
-            }
-            let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: utility.loadImage(named: "list.bullet", colors: [NCBrandColor.shared.iconImageColor]), state: layoutForView.layout == NCGlobal.shared.layoutList ? .on : .off) { _ in
-                self.onListSelected()
-                self.setNavigationRightItems()
-            }
-            let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: utility.loadImage(named: "square.grid.2x2", colors: [NCBrandColor.shared.iconImageColor]), state: layoutForView.layout == NCGlobal.shared.layoutGrid ? .on : .off) { _ in
-                self.onGridSelected()
-                self.setNavigationRightItems()
-            }
-            let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid])
-
-            return [select, viewStyleSubmenu]
-        }
-
-        if isEditMode {
-            tabBarSelect.update(selectOcId: selectOcId)
-            tabBarSelect.show()
-            let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
-                self.setEditMode(false)
-            }
-            navigationItem.rightBarButtonItems = [select]
-        } else if navigationItem.rightBarButtonItems == nil || (!isEditMode && !tabBarSelect.isHidden()) {
-            tabBarSelect.hide()
-            let menu = UIBarButtonItem(image: utility.loadImage(named: "ellipsis.circle", colors: [NCBrandColor.shared.iconImageColor]), menu: UIMenu(children: createMenuActions()))
-            navigationItem.rightBarButtonItems = [menu]
-        } else {
-            navigationItem.rightBarButtonItems?.first?.menu = navigationItem.rightBarButtonItems?.first?.menu?.replacingChildren(createMenuActions())
-        }
+        tabBarSelect?.setFrame()
     }
 
     // MARK: TAP EVENT
@@ -170,7 +135,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     func tapMoreListItem(with objectId: String, image: UIImage?, sender: Any) {
         if !isEditMode {
-            toggleMenuMore(with: objectId, image: image, isGridCell: false)
+            toggleMenuMore(with: objectId, image: image, isGridCell: false, sender: sender)
         } else if let button = sender as? UIView {
             let buttonPosition = button.convert(CGPoint.zero, to: collectionView)
             let indexPath = collectionView.indexPathForItem(at: buttonPosition)
@@ -180,7 +145,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     func tapMoreGridItem(with objectId: String, image: UIImage?, sender: Any) {
         if !isEditMode {
-            toggleMenuMore(with: objectId, image: image, isGridCell: true)
+            toggleMenuMore(with: objectId, image: image, isGridCell: true, sender: sender)
         } else if let button = sender as? UIView {
             let buttonPosition = button.convert(CGPoint.zero, to: collectionView)
             let indexPath = collectionView.indexPathForItem(at: buttonPosition)
@@ -197,7 +162,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     @objc func reloadDataSource(withQueryDB: Bool = true) {
         datasource = self.database.getResultsTrash(filePath: getFilePath(), account: session.account)
         collectionView.reloadData()
-        setNavigationRightItems()
+        (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
 
         guard let blinkFileId, let datasource else { return }
         for itemIx in 0..<datasource.count where datasource[itemIx].fileId.contains(blinkFileId) {

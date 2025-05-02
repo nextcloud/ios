@@ -59,9 +59,7 @@ class NCGroupfolders: NCCollectionViewCommon {
         var metadatas: [tableMetadata] = []
 
         if self.serverUrl.isEmpty {
-            if let results = database.getResultsMetadatasFromGroupfolders(session: session) {
-                metadatas = Array(results.freeze())
-            }
+            metadatas = database.getResultsMetadatasFromGroupfolders(session: session, layoutForView: layoutForView)
         } else {
             metadatas = self.database.getResultsMetadatasPredicate(self.defaultPredicate, layoutForView: layoutForView)
         }
@@ -98,7 +96,7 @@ class NCGroupfolders: NCCollectionViewCommon {
                     self.reloadDataSource()
                 }
             }
-            self.refreshControl.endRefreshing()
+            self.refreshControlEndRefreshing()
         }
     }
 }

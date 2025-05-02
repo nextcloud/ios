@@ -26,6 +26,8 @@ import Photos
         let options = PHImageRequestOptions()
         options.isNetworkAccessAllowed = true
 
+        // Must be in primary Task
+        //
         PHImageManager.default().requestImage(for: asset, targetSize: .zero, contentMode: .aspectFill, options: options) { [weak self] image, _ in
             self?.image = image
         }

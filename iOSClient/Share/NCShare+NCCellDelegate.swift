@@ -49,7 +49,7 @@ extension NCShare: NCShareLinkCellDelegate, NCShareUserCellDelegate {
 
     func tapMenu(with tableShare: tableShare?, sender: Any) {
         if let tableShare = tableShare {
-            self.toggleShareMenu(for: tableShare)
+            self.toggleShareMenu(for: tableShare, sender: sender)
         } else {
             self.makeNewLinkShare()
         }
@@ -57,11 +57,11 @@ extension NCShare: NCShareLinkCellDelegate, NCShareUserCellDelegate {
 
     func showProfile(with tableShare: tableShare?, sender: Any) {
         guard let tableShare else { return }
-        showProfileMenu(userId: tableShare.shareWith, session: session)
+        showProfileMenu(userId: tableShare.shareWith, session: session, sender: sender)
     }
 
     func quickStatus(with tableShare: tableShare?, sender: Any) {
         guard let tableShare, let metadata else { return }
-        self.toggleQuickPermissionsMenu(isDirectory: metadata.directory, share: tableShare)
+        self.toggleQuickPermissionsMenu(isDirectory: metadata.directory, share: tableShare, sender: sender)
     }
 }

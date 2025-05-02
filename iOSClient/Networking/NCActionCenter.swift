@@ -129,9 +129,9 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
             guard UIApplication.shared.applicationState == .active else { return }
             if metadata.contentType.contains("opendocument") && !self.utility.isTypeFileRichDocument(metadata) {
-                self.openDocumentController(metadata: metadata, controller: controller)
+                self.openActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
             } else if metadata.classFile == NKCommon.TypeClassFile.compress.rawValue || metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
-                self.openDocumentController(metadata: metadata, controller: controller)
+                self.openActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
             } else {
                 if let viewController = controller.currentViewController() {
                     let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
@@ -142,7 +142,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         case NCGlobal.shared.selectorOpenIn:
 
             if UIApplication.shared.applicationState == .active {
-                self.openDocumentController(metadata: metadata, controller: controller)
+                self.openActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
             }
 
         case NCGlobal.shared.selectorSaveAlbum:
@@ -341,29 +341,18 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         }
     }
 
-    // MARK: - Open in ...
+    // MARK: - Open Activity [Share] ...
 
-    func openDocumentController(metadata: tableMetadata, controller: NCMainTabBarController?) {
-
-        guard let mainTabBarController = controller,
-              let mainTabBar = mainTabBarController.tabBar as? NCMainTabBar else { return }
-        let fileURL = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-
-        documentController = UIDocumentInteractionController(url: fileURL)
-        documentController?.presentOptionsMenu(from: mainTabBar.menuRect, in: mainTabBar, animated: true)
-    }
-
-    func openActivityViewController(selectedMetadata: [tableMetadata], controller: NCMainTabBarController?) {
-        guard let controller,
-              let mainTabBar = controller.tabBar as? NCMainTabBar else { return }
+    func openActivityViewController(selectedMetadata: [tableMetadata], controller: NCMainTabBarController?, sender: Any?) {
+        guard let controller else { return }
         let metadatas = selectedMetadata.filter({ !$0.directory })
-        var items: [URL] = []
+        var urls: [URL] = []
         var downloadMetadata: [(tableMetadata, URL)] = []
 
         for metadata in metadatas {
             let fileURL = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
             if utilityFileSystem.fileProviderStorageExists(metadata) {
-                items.append(fileURL)
+                urls.append(fileURL)
             } else {
                 downloadMetadata.append((metadata, fileURL))
             }
@@ -380,18 +369,31 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 } progressHandler: { progress in
                     processor.hud.progress(progress.fractionCompleted)
                 } completion: { _, _ in
-                    if self.utilityFileSystem.fileProviderStorageExists(metadata) { items.append(url) }
+                    if self.utilityFileSystem.fileProviderStorageExists(metadata) { urls.append(url) }
                     completion()
                 }
             }
         }
 
         processor.completeWork {
-            guard !items.isEmpty else { return }
-            let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
-            activityViewController.popoverPresentationController?.permittedArrowDirections = .any
-            activityViewController.popoverPresentationController?.sourceView = mainTabBar
-            activityViewController.popoverPresentationController?.sourceRect = mainTabBar.menuRect
+            guard !urls.isEmpty else { return }
+            let activityViewController = UIActivityViewController(activityItems: urls, applicationActivities: nil)
+
+            // iPad
+            if let popover = activityViewController.popoverPresentationController {
+                if let view = sender as? UIView {
+                    popover.sourceView = view
+                    popover.sourceRect = view.bounds
+                } else {
+                    popover.sourceView = controller.view
+                    popover.sourceRect = CGRect(x: controller.view.bounds.midX,
+                                                y: controller.view.bounds.midY,
+                                                width: 0,
+                                                height: 0)
+                    popover.permittedArrowDirections = []
+                }
+            }
+
             controller.present(activityViewController, animated: true)
         }
     }
@@ -460,7 +462,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     func pastePasteboard(serverUrl: String, account: String, controller: NCMainTabBarController?) {
         var fractionCompleted: Float = 0
-        let processor = ParallelWorker(n: 5, titleKey: "_uploading_", totalTasks: nil, controller: controller)
+        let processor = ParallelWorker(n: 5, titleKey: "_status_uploading_", totalTasks: nil, controller: controller)
 
         func uploadPastePasteboard(fileName: String, serverUrlFileName: String, fileNameLocalPath: String, serverUrl: String, completion: @escaping () -> Void) {
             NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: account) { _ in

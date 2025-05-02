@@ -292,6 +292,7 @@ final class NCGlobal: Sendable {
     let notificationCenterClearCache                            = "clearCache"
     let notificationCenterChangeLayout                          = "changeLayout"                    // userInfo: account, serverUrl, layoutForView
     let notificationCenterCheckUserDelaultErrorDone             = "checkUserDelaultErrorDone"       // userInfo: account, controller
+    let notificationCenterUpdateNotification                    = "updateNotification"
 
     let notificationCenterReloadDataSource                      = "reloadDataSource"                // userInfo: serverUrl?, clearDataSource
     let notificationCenterGetServerData                         = "getServerData"                   // userInfo: serverUrl?
@@ -340,7 +341,7 @@ final class NCGlobal: Sendable {
     let tipAccountRequest                                       = "tipAccountRequest"
     let tipScanAddImage                                         = "tipScanAddImage"
     let tipMediaDetailView                                      = "tipMediaDetailView"
-    let tipAutoUpload                                           = "tipAutoUpload"    
+    let tipAutoUploadButton                                     = "tipAutoUploadButton"
 
     // ACTION
     //

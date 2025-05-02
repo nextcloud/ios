@@ -13,9 +13,10 @@ class NCLoginProvider: UIViewController {
     var titleView: String = ""
     var urlBase = ""
     var uiColor: UIColor = .white
-    var pollTimer: DispatchSourceTimer?
     weak var delegate: NCLoginProviderDelegate?
     var controller: NCMainTabBarController?
+
+    var pollingTask: Task<Void, any Error>?
 
     // MARK: - View Life Cycle
 
@@ -34,7 +35,7 @@ class NCLoginProvider: UIViewController {
             webView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
         }
 
-        let navigationItemBack = UIBarButtonItem(image: UIImage(systemName: "arrow.left"), style: .done, target: self, action: #selector(goBack))
+        let navigationItemBack = UIBarButtonItem(image: UIImage(systemName: "arrow.left"), style: .done, target: self, action: #selector(goBack(_:)))
         navigationItemBack.tintColor = uiColor
         navigationItem.leftBarButtonItem = navigationItemBack
     }
@@ -70,8 +71,8 @@ class NCLoginProvider: UIViewController {
         super.viewDidDisappear(animated)
         NCActivityIndicator.shared.stop()
 
-        pollTimer?.cancel()
-        pollTimer = nil
+        pollingTask?.cancel()
+        pollingTask = nil
     }
 
     func loadWebPage(webView: WKWebView, url: URL) {
@@ -91,7 +92,7 @@ class NCLoginProvider: UIViewController {
         webView.load(request)
     }
 
-    @objc func goBack() {
+    @objc func goBack(_ sender: Any?) {
         delegate?.onBack()
 
         if isModal {
@@ -101,7 +102,11 @@ class NCLoginProvider: UIViewController {
         }
     }
 
-    func getPollResponse(loginFlowV2Token: String, loginFlowV2Endpoint: String, loginOptions: NKRequestOptions) async -> (urlBase: String, loginName: String, appPassword: String)? {
+    func startPolling(loginFlowV2Token: String, loginFlowV2Endpoint: String, loginFlowV2Login: String) {
+        pollingTask = poll(loginFlowV2Token: loginFlowV2Token, loginFlowV2Endpoint: loginFlowV2Endpoint, loginFlowV2Login: loginFlowV2Login)
+    }
+
+    private func getPollResponse(loginFlowV2Token: String, loginFlowV2Endpoint: String, loginOptions: NKRequestOptions) async -> (urlBase: String, loginName: String, appPassword: String)? {
         await withCheckedContinuation { continuation in
             NextcloudKit.shared.getLoginFlowV2Poll(token: loginFlowV2Token, endpoint: loginFlowV2Endpoint, options: loginOptions) { server, loginName, appPassword, _, error in
                 if error == .success, let urlBase = server, let user = loginName, let appPassword {
@@ -113,10 +118,10 @@ class NCLoginProvider: UIViewController {
         }
     }
 
-    func handleGrant(urlBase: String, loginName: String, appPassword: String) async {
+    private func handleGrant(urlBase: String, loginName: String, appPassword: String) async {
         await withCheckedContinuation { continuation in
-            if self.controller == nil {
-                self.controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+            if controller == nil {
+                controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
             }
 
             NCAccount().createAccount(viewController: self, urlBase: urlBase, user: loginName, password: appPassword, controller: controller) {
@@ -125,11 +130,11 @@ class NCLoginProvider: UIViewController {
         }
     }
 
-    func poll(loginFlowV2Token: String, loginFlowV2Endpoint: String, loginFlowV2Login: String) {
+    private func poll(loginFlowV2Token: String, loginFlowV2Endpoint: String, loginFlowV2Login: String) -> Task<Void, any Error> {
         let loginOptions = NKRequestOptions(customUserAgent: userAgent)
         var grantValues: (urlBase: String, loginName: String, appPassword: String)?
 
-        Task { @MainActor in
+        return Task { @MainActor in
             repeat {
                 grantValues = await getPollResponse(loginFlowV2Token: loginFlowV2Token, loginFlowV2Endpoint: loginFlowV2Endpoint, loginOptions: loginOptions)
                 try await Task.sleep(nanoseconds: 1_000_000_000) // .seconds() is not supported on iOS 15 yet.

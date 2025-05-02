@@ -123,7 +123,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 if !accountTemp.isEmpty {
                     self.shareAccounts = accountTemp
                     let image = NCUtility().loadImage(named: "person.badge.plus")
-                    let navigationItem = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(openShareAccountsViewController))
+                    let navigationItem = UIBarButtonItem(image: image, style: .plain, target: self, action: #selector(openShareAccountsViewController(_:)))
                     navigationItem.tintColor = textColor
                     self.navigationItem.rightBarButtonItem = navigationItem
                 }
@@ -174,7 +174,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
         if !NCManageDatabase.shared.getAllTableAccount().isEmpty,
            self.navigationController?.viewControllers.count ?? 0 == 1 {
-            let navigationItemCancel = UIBarButtonItem(image: UIImage(systemName: "xmark"), style: .done, target: self, action: #selector(self.actionCancel))
+            let navigationItemCancel = UIBarButtonItem(image: UIImage(systemName: "xmark"), style: .done, target: self, action: #selector(actionCancel(_:)))
             navigationItemCancel.tintColor = textColor
             navigationItem.leftBarButtonItem = navigationItemCancel
         }
@@ -188,7 +188,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             let description = String(format: NSLocalizedString("_add_existing_account_", comment: ""), NCBrandOptions.shared.brand)
             NCContentPresenter().alertAction(image: image, contentModeImage: .scaleAspectFit, sizeImage: CGSize(width: 45, height: 45), backgroundColor: backgroundColor, textColor: textColor, title: title, description: description, textCancelButton: "_cancel_", textOkButton: "_ok_", attributes: EKAttributes.topFloat) { identifier in
                 if identifier == "ok" {
-                    self.openShareAccountsViewController()
+                    self.openShareAccountsViewController(nil)
                 }
             }
         }
@@ -262,7 +262,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     // MARK: - Action
 
-    @objc func actionCancel() {
+    @objc func actionCancel(_ sender: Any?) {
         dismiss(animated: true) { }
     }
 
@@ -283,7 +283,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     // MARK: - Share accounts View Controller
 
-    @objc func openShareAccountsViewController() {
+    @objc func openShareAccountsViewController(_ sender: Any?) {
         if let shareAccounts = self.shareAccounts, let vc = UIStoryboard(name: "NCShareAccounts", bundle: nil).instantiateInitialViewController() as? NCShareAccounts {
             vc.accounts = shareAccounts
             vc.enableTimerProgress = false
@@ -332,7 +332,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                         safariVC.urlBase = login
                         safariVC.uiColor = textColor
                         safariVC.delegate = self
-                        safariVC.poll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
+                        safariVC.startPolling(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
                         navigationController?.pushViewController(safariVC, animated: true)
                     }
                 }
