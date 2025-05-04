@@ -85,7 +85,7 @@ class NCFilesNavigationController: NCMainNavigationController {
 
                 let action = UIAction(title: name, image: image, state: account.account == controller.account ? .on : .off) { _ in
                     if !account.active {
-                        NCAccount().changeAccount(account.account, userProfile: nil, controller: self.controller) { }
+                        NCAccount().changeAccount(account.account, controller: self.controller)
                         self.collectionViewCommon?.setEditMode(false)
                     }
                 }

@@ -313,9 +313,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             openNotification(controller: controller)
         } else if let tableAccount = NCManageDatabase.shared.getAllTableAccount().first(where: { $0.account == account }),
                   let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController {
-            NCAccount().changeAccount(tableAccount.account, userProfile: nil, controller: controller) {
-                openNotification(controller: controller)
-            }
+            NCAccount().changeAccount(tableAccount.account, controller: controller)
+            openNotification(controller: controller)
         } else {
             let message = NSLocalizedString("_the_account_", comment: "") + " " + account + " " + NSLocalizedString("_does_not_exist_", comment: "")
             let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
