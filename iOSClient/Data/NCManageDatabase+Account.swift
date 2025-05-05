@@ -224,94 +224,77 @@ extension NCManageDatabase {
     }
 
     func getActiveTableAccount() -> tableAccount? {
-        do {
-            let realm = try Realm()
-            guard let result = realm.objects(tableAccount.self).filter("active == true").first else { return nil }
-            return tableAccount.init(value: result)
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
+        if let result = performRealmRead(sync: true, { realm in
+            realm.objects(tableAccount.self).filter("active == true").first
+        }) {
+            return tableAccount(value: result)
         }
         return nil
     }
 
     func getTableAccount(account: String) -> tableAccount? {
-        do {
-            let realm = try Realm()
-            guard let result = realm.objects(tableAccount.self).filter("account == %@", account).first else { return nil }
-            return tableAccount.init(value: result)
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
+        if let result = performRealmRead(sync: true, { realm in
+            realm.objects(tableAccount.self).filter("account == %@", account).first
+        }) {
+            return tableAccount(value: result)
         }
         return nil
     }
 
     func getAccounts() -> [String]? {
-        do {
-            let realm = try Realm()
-            let results = realm.objects(tableAccount.self).sorted(byKeyPath: "account", ascending: true)
-            if !results.isEmpty {
-                return Array(results.map { $0.account })
-            }
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
+        if let result = performRealmRead(sync: true, { realm in
+            realm.objects(tableAccount.self).sorted(byKeyPath: "account", ascending: true)
+        }) {
+            return Array(result.map { $0.account })
         }
         return nil
     }
 
     func getTableAccount(predicate: NSPredicate) -> tableAccount? {
-        do {
-            let realm = try Realm()
-            guard let result = realm.objects(tableAccount.self).filter(predicate).first else { return nil }
-            return tableAccount.init(value: result)
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
+        if let result = performRealmRead(sync: true, { realm in
+            realm.objects(tableAccount.self).filter(predicate).first
+        }) {
+            return tableAccount(value: result)
         }
         return nil
     }
 
     func getAllTableAccount() -> [tableAccount] {
-        do {
-            let realm = try Realm()
-            let sorted = [SortDescriptor(keyPath: "active", ascending: false), SortDescriptor(keyPath: "user", ascending: true)]
-            let results = realm.objects(tableAccount.self).sorted(by: sorted)
-            return Array(results.map { tableAccount.init(value: $0) })
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
-        }
-        return []
+        return performRealmRead(sync: true) { realm in
+                let sorted = [SortDescriptor(keyPath: "active", ascending: false),
+                              SortDescriptor(keyPath: "user", ascending: true)]
+                let results = realm.objects(tableAccount.self).sorted(by: sorted)
+                return results.map { tableAccount(value: $0) }
+        } ?? []
     }
 
     func getAllAccountOrderAlias() -> [tableAccount] {
-        do {
-            let realm = try Realm()
-            let sorted = [SortDescriptor(keyPath: "active", ascending: false), SortDescriptor(keyPath: "alias", ascending: true), SortDescriptor(keyPath: "user", ascending: true)]
-            let results = realm.objects(tableAccount.self).sorted(by: sorted)
-            return Array(results.map { tableAccount.init(value: $0) })
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
-        }
-        return []
+        return performRealmRead(sync: true) { realm in
+            let sorted = [SortDescriptor(keyPath: "active", ascending: false),
+                          SortDescriptor(keyPath: "alias", ascending: true),
+                          SortDescriptor(keyPath: "user", ascending: true)]
+                let results = realm.objects(tableAccount.self).sorted(by: sorted)
+                return results.map { tableAccount(value: $0) }
+        } ?? []
     }
 
     func getAccountAutoUploadFileName() -> String {
-        do {
-            let realm = try Realm()
-            guard let result = realm.objects(tableAccount.self).filter("active == true").first else { return "" }
+        if let result = performRealmRead(sync: true, { realm in
+            realm.objects(tableAccount.self).filter("active == true").first
+        }) {
             if result.autoUploadFileName.isEmpty {
                 return NCBrandOptions.shared.folderDefaultAutoUpload
             } else {
                 return result.autoUploadFileName
             }
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
         return ""
     }
 
     func getAccountAutoUploadDirectory(session: NCSession.Session) -> String {
-        do {
-            let realm = try Realm()
-            guard let result = realm.objects(tableAccount.self).filter("active == true").first else { return "" }
+        if let result = performRealmRead(sync: true, { realm in
+            realm.objects(tableAccount.self).filter("active == true").first
+        }) {
             if result.autoUploadDirectory.isEmpty {
                 return utilityFileSystem.getHomeServer(session: session)
             } else {
@@ -322,8 +305,6 @@ extension NCManageDatabase {
                     return result.autoUploadDirectory
                 }
             }
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
         return ""
     }
@@ -336,200 +317,146 @@ extension NCManageDatabase {
     }
 
     func getAccountAutoUploadSubfolderGranularity() -> Int {
-        do {
-            let realm = try Realm()
-            guard let result = realm.objects(tableAccount.self).filter("active == true").first else { return NCGlobal.shared.subfolderGranularityMonthly }
+        if let result = performRealmRead(sync: true, { realm in
+            realm.objects(tableAccount.self).filter("active == true").first
+        }) {
             return result.autoUploadSubfolderGranularity
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
         return NCGlobal.shared.subfolderGranularityMonthly
     }
 
     func getAccountAutoUploadFromFromDate() -> Date? {
-        do {
-            let realm = try Realm()
-            guard let result = realm.objects(tableAccount.self).filter("active == true").first else { return .distantPast }
+        if let result = performRealmRead(sync: true, { realm in
+            realm.objects(tableAccount.self).filter("active == true").first
+        }) {
             return result.autoUploadSinceDate
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return nil
     }
 
     @discardableResult
     func setAccountActive(_ account: String) -> tableAccount? {
         var tblAccount: tableAccount?
-        do {
-            let realm = try Realm()
-            try realm.write {
-                let results = realm.objects(tableAccount.self)
-                for result in results {
-                    if result.account == account {
-                        result.active = true
-                        tblAccount = tableAccount(value: result)
-                    } else {
-                        result.active = false
-                    }
+
+        performRealmWrite { realm in
+            let results = realm.objects(tableAccount.self)
+            for result in results {
+                if result.account == account {
+                    result.active = true
+                    tblAccount = tableAccount(value: result)
+                } else {
+                    result.active = false
                 }
-
             }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
-
         return tblAccount
     }
 
     func setAccountAutoUploadProperty(_ property: String, state: Bool) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                if let result = realm.objects(tableAccount.self).filter("active == true").first {
-                    if (tableAccount().objectSchema.properties.contains { $0.name == property }) {
-                        result[property] = state
-                    }
+        performRealmWrite { realm in
+            if let result = realm.objects(tableAccount.self).filter("active == true").first {
+                if (tableAccount().objectSchema.properties.contains { $0.name == property }) {
+                    result[property] = state
                 }
             }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
     }
 
     func setAccountAutoUploadGranularity(_ property: String, state: Int) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                if let result = realm.objects(tableAccount.self).filter("active == true").first {
-                    result.autoUploadSubfolderGranularity = state
-                }
+        performRealmWrite { realm in
+            if let result = realm.objects(tableAccount.self).filter("active == true").first {
+                result.autoUploadSubfolderGranularity = state
             }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
     }
 
     func setAccountAutoUploadFileName(_ fileName: String) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                if let result = realm.objects(tableAccount.self).filter("active == true").first {
-                    result.autoUploadFileName = fileName
-                }
+        performRealmWrite { realm in
+            if let result = realm.objects(tableAccount.self).filter("active == true").first {
+                result.autoUploadFileName = fileName
             }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
     }
 
     func setAccountAutoUploadDirectory(_ serverUrl: String?, session: NCSession.Session) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                if let result = realm.objects(tableAccount.self).filter("active == true").first {
-                    if let serverUrl = serverUrl {
-                        result.autoUploadDirectory = serverUrl
-                    } else {
-                        result.autoUploadDirectory = self.getAccountAutoUploadDirectory(session: session)
-                    }
+        performRealmWrite { realm in
+            if let result = realm.objects(tableAccount.self).filter("active == true").first {
+                if let serverUrl {
+                    result.autoUploadDirectory = serverUrl
+                } else {
+                    result.autoUploadDirectory = self.getAccountAutoUploadDirectory(session: session)
                 }
             }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
     }
 
     func setAccountUserProfile(account: String, userProfile: NKUserProfile) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
-                    result.address = userProfile.address
-                    result.backend = userProfile.backend
-                    result.backendCapabilitiesSetDisplayName = userProfile.backendCapabilitiesSetDisplayName
-                    result.backendCapabilitiesSetPassword = userProfile.backendCapabilitiesSetPassword
-                    result.displayName = userProfile.displayName
-                    result.email = userProfile.email
-                    result.enabled = userProfile.enabled
-                    result.groups = userProfile.groups.joined(separator: ",")
-                    result.language = userProfile.language
-                    result.lastLogin = userProfile.lastLogin
-                    result.locale = userProfile.locale
-                    result.organisation = userProfile.organisation
-                    result.phone = userProfile.phone
-                    result.quota = userProfile.quota
-                    result.quotaFree = userProfile.quotaFree
-                    result.quotaRelative = userProfile.quotaRelative
-                    result.quotaTotal = userProfile.quotaTotal
-                    result.quotaUsed = userProfile.quotaUsed
-                    result.storageLocation = userProfile.storageLocation
-                    result.subadmin = userProfile.subadmin.joined(separator: ",")
-                    result.twitter = userProfile.twitter
-                    result.userId = userProfile.userId
-                    result.website = userProfile.website
-                }
+        performRealmWrite { realm in
+            if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
+                result.address = userProfile.address
+                result.backend = userProfile.backend
+                result.backendCapabilitiesSetDisplayName = userProfile.backendCapabilitiesSetDisplayName
+                result.backendCapabilitiesSetPassword = userProfile.backendCapabilitiesSetPassword
+                result.displayName = userProfile.displayName
+                result.email = userProfile.email
+                result.enabled = userProfile.enabled
+                result.groups = userProfile.groups.joined(separator: ",")
+                result.language = userProfile.language
+                result.lastLogin = userProfile.lastLogin
+                result.locale = userProfile.locale
+                result.organisation = userProfile.organisation
+                result.phone = userProfile.phone
+                result.quota = userProfile.quota
+                result.quotaFree = userProfile.quotaFree
+                result.quotaRelative = userProfile.quotaRelative
+                result.quotaTotal = userProfile.quotaTotal
+                result.quotaUsed = userProfile.quotaUsed
+                result.storageLocation = userProfile.storageLocation
+                result.subadmin = userProfile.subadmin.joined(separator: ",")
+                result.twitter = userProfile.twitter
+                result.userId = userProfile.userId
+                result.website = userProfile.website
             }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
     }
 
     func setAccountMediaPath(_ path: String, account: String) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
-                    result.mediaPath = path
-                }
+        performRealmWrite { realm in
+            if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
+                result.mediaPath = path
             }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
     }
 
     func setAccountUserStatus(userStatusClearAt: Date?, userStatusIcon: String?, userStatusMessage: String?, userStatusMessageId: String?, userStatusMessageIsPredefined: Bool, userStatusStatus: String?, userStatusStatusIsUserDefined: Bool, account: String) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
-                    result.userStatusClearAt = userStatusClearAt as? NSDate
-                    result.userStatusIcon = userStatusIcon
-                    result.userStatusMessage = userStatusMessage
-                    result.userStatusMessageId = userStatusMessageId
-                    result.userStatusMessageIsPredefined = userStatusMessageIsPredefined
-                    result.userStatusStatus = userStatusStatus
-                    result.userStatusStatusIsUserDefined = userStatusStatusIsUserDefined
-                }
+        performRealmWrite { realm in
+            if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
+                result.userStatusClearAt = userStatusClearAt as? NSDate
+                result.userStatusIcon = userStatusIcon
+                result.userStatusMessage = userStatusMessage
+                result.userStatusMessageId = userStatusMessageId
+                result.userStatusMessageIsPredefined = userStatusMessageIsPredefined
+                result.userStatusStatus = userStatusStatus
+                result.userStatusStatusIsUserDefined = userStatusStatusIsUserDefined
             }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
     }
 
     func setAccountAlias(_ account: String, alias: String) {
         let alias = alias.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        do {
-            let realm = try Realm()
-            try realm.write {
-                if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
-                    result.alias = alias
-                }
+        performRealmWrite { realm in
+            if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
+                result.alias = alias
             }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
     }
 
     func getAccountGroups(account: String) -> [String] {
-        do {
-            let realm = try Realm()
-            if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
-                return result.groups.components(separatedBy: ",")
-            }
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
+        if let result = performRealmRead(sync: true, { realm in
+            realm.objects(tableAccount.self).filter("account == %@", account).first
+        }) {
+            return result.groups.components(separatedBy: ",")
         }
         return []
     }
