@@ -36,6 +36,7 @@ protocol DateCompareable {
 final class NCManageDatabase: Sendable {
     static let shared = NCManageDatabase()
 
+    let realmQueue = DispatchQueue(label: "com.nextcloud.realmQueue")
     let utilityFileSystem = NCUtilityFileSystem()
 
     init() {
@@ -174,23 +175,67 @@ final class NCManageDatabase: Sendable {
     }
 
     // MARK: -
-    // MARK: Utility Database
+    // MARK: Util Database
+
+    func performRealmRead<T>(sync: Bool = true, _ block: @escaping (Realm) throws -> T?, completion: ((T?) -> Void)? = nil) -> T? {
+        let executionBlock = {
+            do {
+                let realm = try Realm()
+                let result = try block(realm)
+                if !sync {
+                    completion?(result)
+                }
+                return result
+            } catch {
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm read error: \(error)")
+                if !sync {
+                    completion?(nil)
+                }
+                return nil
+            }
+        }
+
+        if sync {
+            return realmQueue.sync {
+                executionBlock()
+            }
+        } else {
+            realmQueue.async {
+                _ = executionBlock()
+            }
+            return nil
+        }
+    }
+
+    func performRealmWrite(sync: Bool = true, _ block: @escaping (Realm) throws -> Void) {
+        let executionBlock = {
+            do {
+                let realm = try Realm()
+                try realm.write {
+                    try block(realm)
+                }
+            } catch {
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm write error: \(error)")
+            }
+        }
+
+        if sync {
+            realmQueue.sync(execute: executionBlock)
+        } else {
+            realmQueue.async(execute: executionBlock)
+        }
+    }
 
     func clearTable(_ table: Object.Type, account: String? = nil) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                var results: Results<Object>
-                if let account = account {
-                    results = realm.objects(table).filter("account == %@", account)
-                } else {
-                    results = realm.objects(table)
-                }
-
-                realm.delete(results)
+        performRealmWrite { realm in
+            var results: Results<Object>
+            if let account = account {
+                results = realm.objects(table).filter("account == %@", account)
+            } else {
+                results = realm.objects(table)
             }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+
+            realm.delete(results)
         }
     }
 
@@ -257,11 +302,13 @@ final class NCManageDatabase: Sendable {
     }
 
     func realmRefresh() {
-        do {
-            let realm = try Realm()
-            realm.refresh()
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not refresh database: \(error)")
+        realmQueue.sync {
+            do {
+                let realm = try Realm()
+                realm.refresh()
+            } catch let error as NSError {
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not refresh database: \(error)")
+            }
         }
     }
 
