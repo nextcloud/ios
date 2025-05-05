@@ -91,6 +91,7 @@ class NCService: NSObject {
 
     private func requestServerStatus(account: String, controller: NCMainTabBarController?) async -> Bool {
         let serverUrl = NCSession.shared.getSession(account: account).urlBase
+        let userId = NCSession.shared.getSession(account: account).userId
         switch await NCNetworking.shared.getServerStatus(serverUrl: serverUrl, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) {
         case .success(let serverInfo):
             if serverInfo.maintenance {
@@ -107,10 +108,12 @@ class NCService: NSObject {
             return false
         }
 
-        let resultUserProfile = await NCNetworking.shared.getUserProfile(account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue))
+        let resultUserProfile = await NCNetworking.shared.getUserMetadata(account: account, userId: userId, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue))
         if resultUserProfile.error == .success,
            let userProfile = resultUserProfile.userProfile {
-            self.database.setAccountUserProfile(account: resultUserProfile.account, userProfile: userProfile)
+            if userId == userProfile.userId {
+                self.database.setAccountUserProfile(account: resultUserProfile.account, userProfile: userProfile)
+            }
             return true
         } else {
             return false
