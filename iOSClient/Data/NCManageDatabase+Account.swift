@@ -192,22 +192,22 @@ extension NCManageDatabase {
     }
 
     func addAccount(_ account: String, urlBase: String, user: String, userId: String, password: String) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
-                    realm.delete(result)
-                }
-                let tableAccount = tableAccount()
-                tableAccount.account = account
-                NCKeychain().setPassword(account: account, password: password)
-                tableAccount.urlBase = urlBase
-                tableAccount.user = user
-                tableAccount.userId = userId
-                realm.add(tableAccount, update: .all)
+        performRealmWrite { realm in
+            if let existing = realm.object(ofType: tableAccount.self, forPrimaryKey: account) {
+                realm.delete(existing)
             }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+
+            // Save password in Keychain
+            NCKeychain().setPassword(account: account, password: password)
+
+            let newAccount = tableAccount()
+
+            newAccount.account = account
+            newAccount.urlBase = urlBase
+            newAccount.user = user
+            newAccount.userId = userId
+
+            realm.add(newAccount, update: .all)
         }
     }
 
