@@ -144,26 +144,17 @@ extension NCShare {
             )]
         )
 
-        actions.insert(NCMenuAction(
-                   title: NSLocalizedString("_custom_permissions_", comment: ""),
-                   icon: utility.loadImage(named: "ellipsis", colors: [NCBrandColor.shared.iconImageColor]),
-                   sender: sender,
-                   action: { _ in
-                       guard
-                        let advancePermission = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "NCShareAdvancePermission") as? NCShareAdvancePermission,
-                        let navigationController = self.navigationController, !share.isInvalidated else { return }
-                       advancePermission.networking = self.networking
-                       advancePermission.share = tableShare(value: share)
-                       advancePermission.oldTableShare = tableShare(value: share)
-                       advancePermission.metadata = self.metadata
-
-                       if let downloadLimit = try? self.database.getDownloadLimit(byAccount: self.metadata.account, shareToken: share.token) {
-                           advancePermission.downloadLimit = .limited(limit: downloadLimit.limit, count: downloadLimit.count)
+        if isDirectory && (share.shareType == 3 /* public link */ || share.shareType == 4 /* email */) {
+            actions.insert(NCMenuAction(
+                       title: NSLocalizedString("_share_file_drop_", comment: ""),
+                       icon: utility.loadImage(named: "arrow.up.document", colors: [NCBrandColor.shared.iconImageColor]),
+                       sender: sender,
+                       action: { _ in
+                           let permissions = permissions.getPermissionValue(canRead: false, canCreate: true, canEdit: false, canDelete: false, canShare: false, isDirectory: isDirectory)
+                           self.updateSharePermissions(share: share, permissions: permissions)
                        }
-
-                       navigationController.pushViewController(advancePermission, animated: true)
-                   }
-               ), at: 2)
+                   ), at: 2)
+        }
 
         self.presentMenu(with: actions, sender: sender)
     }

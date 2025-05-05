@@ -121,6 +121,7 @@
             <connections>
                 <outlet property="copyButton" destination="xaz-vY-Jzu" id="pMt-Zu-ORX"/>
                 <outlet property="descriptionLabel" destination="WJj-9P-3bn" id="QC7-SX-O3M"/>
+                <outlet property="imageDownArrow" destination="AuV-M5-NJl" id="LzO-Sj-euf"/>
                 <outlet property="imageItem" destination="qDs-UG-Mn7" id="jxL-r7-BVs"/>
                 <outlet property="labelQuickStatus" destination="jPw-cb-4gO" id="d04-3F-WYS"/>
                 <outlet property="labelTitle" destination="otH-mT-7Z4" id="f9z-Oa-OiR"/>
@@ -139,10 +140,10 @@
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="secondaryLabelColor">
-            <color red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="tertiaryLabelColor">
-            <color red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.29803921570000003" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.29803921568627451" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

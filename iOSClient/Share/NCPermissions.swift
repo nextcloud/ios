@@ -92,8 +92,12 @@ class NCPermissions: NSObject {
     }
 
     /// Read permission is always true for a share, hence why it's not here.
-    func getPermissionValue(canCreate: Bool, canEdit: Bool, canDelete: Bool, canShare: Bool, isDirectory: Bool) -> Int {
-        var permission = permissionReadShare
+    func getPermissionValue(canRead: Bool = true, canCreate: Bool, canEdit: Bool, canDelete: Bool, canShare: Bool, isDirectory: Bool) -> Int {
+        var permission = 0
+
+        if canRead {
+            permission = permission + permissionReadShare
+        }
 
         if canCreate && isDirectory {
             permission = permission + permissionCreateShare

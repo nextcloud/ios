@@ -102,70 +102,29 @@ enum NCUserPermission: CaseIterable, NCPermission {
     }
 }
 
-enum NCLinkPermission: NCPermission {
+enum NCLinkPermission: CaseIterable, NCPermission {
+    static func forDirectoryE2EE(account: String) -> [any NCPermission] {
+        if NCCapabilities.shared.getCapabilities(account: account).capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
+            return NCUserPermission.allCases
+        }
+        return []
+    }
+    
     func hasReadPermission() -> Bool {
         return self == .read
     }
 
-//    func didChange(_ share: Shareable, to newValue: Bool) {
-//        guard self != .edit || newValue else {
-//            share.permissions = NCPermissions().permissionReadShare
-//            return
-//        }
-//        share.permissions = permissionValue
-//    }
-
     func hasPermission(for parentPermission: Int) -> Bool {
-        permissionValue & parentPermission == permissionValue
-    }
-
-    var permissionValue: Int {
-        switch self {
-        case .edit:
-            return NCPermissions().getPermissionValue(
-                canCreate: true,
-                canEdit: true,
-                canDelete: true,
-                canShare: false,
-                isDirectory: false)
-        case .read:
-            return NCPermissions().getPermissionValue(
-                canCreate: false,
-                canEdit: false,
-                canDelete: false,
-                // not possible to create "read-only" shares without reshare option
-                // https://github.com/nextcloud/server/blame/f99876997a9119518fe5f7ad3a3a51d33459d4cc/apps/files_sharing/lib/Controller/ShareAPIController.php#L1104-L1107
-                canShare: true,
-                isDirectory: true)
-        case .uploadEdit:
-            return NCPermissions().getPermissionValue(
-                canCreate: true,
-                canEdit: true,
-                canDelete: true,
-                canShare: false,
-                isDirectory: true)
-        case .fileDrop:
-            return NCPermissions().permissionCreateShare
-        case .secureFileDrop:
-            return NCPermissions().permissionCreateShare
-        }
+        return ((permissionBitFlag & parentPermission) != 0)
     }
 
     var permissionBitFlag: Int {
         switch self {
         case .read: return NCPermissions().permissionReadShare
-//        case .reshare: return NCPermissions().permissionShareShare
+            //        case .reshare: return NCPermissions().permissionShareShare
         case .edit: return NCPermissions().permissionEditShare
-//        case .create: return NCPermissions().permissionCreateShare
-//        case .delete: return NCPermissions().permissionDeleteShare
-        case .uploadEdit:
-            return 0
-        case .fileDrop:
-            return 0
-
-        case .secureFileDrop:
-            return 0
-
+        case .create: return NCPermissions().permissionCreateShare
+        case .delete: return NCPermissions().permissionDeleteShare
         }
     }
 
@@ -177,33 +136,17 @@ enum NCLinkPermission: NCPermission {
         return (share.permissions & permissionBitFlag) != 0
     }
 
-//    func isOn(for share: Shareable) -> Bool {
-//        let permissions = NCPermissions()
-//        switch self {
-//        case .edit: return permissions.isAnyPermissionToEdit(share.permissions)
-//        case .read: return share.permissions == permissions.permissionReadShare
-//        case .uploadEdit: return permissions.isAnyPermissionToEdit(share.permissions) && share.permissions != permissions.permissionCreateShare
-//        case .fileDrop: return share.permissions == permissions.permissionCreateShare
-//        case .secureFileDrop: return share.permissions == permissions.permissionCreateShare
-//        }
-//    }
-
-    static func forDirectoryE2EE(account: String) -> [NCPermission] {
-        return [NCLinkPermission.secureFileDrop]
-    }
-
     var title: String {
         switch self {
-        case .edit: return NSLocalizedString("_share_can_change_", comment: "")
         case .read: return NSLocalizedString("_share_can_read_", comment: "")
-        case .uploadEdit: return NSLocalizedString("_share_allow_upload_", comment: "")
-        case .fileDrop: return NSLocalizedString("_share_file_drop_", comment: "")
-        case .secureFileDrop: return NSLocalizedString("_share_secure_file_drop_", comment: "")
+        case .edit: return NSLocalizedString("_share_can_change_", comment: "")
+        case .create: return NSLocalizedString("_share_can_create_", comment: "")
+        case .delete: return NSLocalizedString("_share_can_delete_", comment: "")
         }
     }
 
-    case edit, read, uploadEdit, fileDrop, secureFileDrop
-    static let forDirectory: [NCLinkPermission] = [.read, .uploadEdit, .fileDrop]
+    case edit, read, create, delete
+    static let forDirectory: [NCLinkPermission] = NCLinkPermission.allCases
     static let forFile: [NCLinkPermission] = [.read, .edit]
 }
 

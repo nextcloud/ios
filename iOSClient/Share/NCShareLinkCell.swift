@@ -32,11 +32,14 @@ class NCShareLinkCell: UITableViewCell {
     @IBOutlet weak var statusStackView: UIStackView!
     @IBOutlet private weak var menuButton: UIButton!
     @IBOutlet private weak var copyButton: UIButton!
+    @IBOutlet weak var imageDownArrow: UIImageView!
+
     var tableShare: tableShare?
     var isDirectory = false
     weak var delegate: NCShareLinkCellDelegate?
     var isInternalLink = false
     var indexPath = IndexPath()
+    let utility = NCUtility()
 
     override func prepareForReuse() {
         super.prepareForReuse()
@@ -83,18 +86,25 @@ class NCShareLinkCell: UITableViewCell {
         }
 
         labelTitle.textColor = NCBrandColor.shared.textColor
-
+        
         if let tableShare = tableShare {
+            labelQuickStatus.text = NSLocalizedString("_custom_permissions_", comment: "")
+
             if permissions.canEdit(tableShare.permissions, isDirectory: isDirectory) { // Can edit
                 labelQuickStatus.text = NSLocalizedString("_share_editing_", comment: "")
-            } else if tableShare.permissions == permissions.permissionReadShare { // Read only
+            }
+            if permissions.getPermissionValue(canRead: false, canCreate: true, canEdit: false, canDelete: false, canShare: false, isDirectory: isDirectory) == tableShare.permissions {
+                labelQuickStatus.text = NSLocalizedString("_share_file_drop_", comment: "")
+            }
+            if permissions.getPermissionValue(canCreate: false, canEdit: false, canDelete: false, canShare: true, isDirectory: isDirectory) == tableShare.permissions { // Read only
                 labelQuickStatus.text = NSLocalizedString("_share_read_only_", comment: "")
-            } else { // Custom permissions
-                labelQuickStatus.text = NSLocalizedString("_custom_permissions_", comment: "")
+//            } else { // Custom permissions
             }
         }
-
+        
         statusStackView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openQuickStatus)))
+        labelQuickStatus.textColor = NCBrandColor.shared.customer
+        imageDownArrow.image = utility.loadImage(named: "arrowtriangle.down.circle", colors: [NCBrandColor.shared.customer])
     }
 
     @IBAction func touchUpCopy(_ sender: Any) {

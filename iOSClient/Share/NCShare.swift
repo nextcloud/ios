@@ -336,7 +336,7 @@ extension NCShare: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        // Setup default share cells
+//        // Setup default share cells
         guard indexPath.section != 0 else {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell
             else { return UITableViewCell() }
@@ -350,6 +350,7 @@ extension NCShare: UITableViewDataSource {
                     cell.tableShare = shares.firstShareLink
                 }
             }
+            cell.isDirectory = metadata.directory
             cell.setupCellUI()
             return cell
         }
