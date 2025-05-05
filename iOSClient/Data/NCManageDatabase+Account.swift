@@ -224,89 +224,83 @@ extension NCManageDatabase {
     }
 
     func getActiveTableAccount() -> tableAccount? {
-        if let result = performRealmRead(sync: true, { realm in
-            realm.objects(tableAccount.self).filter("active == true").first
-        }) {
-            return tableAccount(value: result)
+        performRealmRead { realm in
+            realm.objects(tableAccount.self)
+                .filter("active == true")
+                .first
+                .map { tableAccount(value: $0) }
         }
-        return nil
     }
 
     func getTableAccount(account: String) -> tableAccount? {
-        if let result = performRealmRead(sync: true, { realm in
-            realm.objects(tableAccount.self).filter("account == %@", account).first
-        }) {
-            return tableAccount(value: result)
+        performRealmRead { realm in
+            realm.objects(tableAccount.self)
+                .filter("account == %@", account)
+                .first
+                .map { tableAccount(value: $0) }
         }
-        return nil
     }
 
     func getAccounts() -> [String]? {
-        if let result = performRealmRead(sync: true, { realm in
-            realm.objects(tableAccount.self).sorted(byKeyPath: "account", ascending: true)
-        }) {
-            return Array(result.map { $0.account })
+        performRealmRead { realm in
+            let results = realm.objects(tableAccount.self)
+                .sorted(byKeyPath: "account", ascending: true)
+            return results.map { $0.account }
         }
-        return nil
     }
 
     func getTableAccount(predicate: NSPredicate) -> tableAccount? {
-        if let result = performRealmRead(sync: true, { realm in
-            realm.objects(tableAccount.self).filter(predicate).first
-        }) {
-            return tableAccount(value: result)
+        performRealmRead { realm in
+            realm.objects(tableAccount.self)
+                .filter(predicate)
+                .first
+                .map { tableAccount(value: $0) }
         }
-        return nil
     }
 
     func getAllTableAccount() -> [tableAccount] {
-        return performRealmRead(sync: true) { realm in
-                let sorted = [SortDescriptor(keyPath: "active", ascending: false),
-                              SortDescriptor(keyPath: "user", ascending: true)]
-                let results = realm.objects(tableAccount.self).sorted(by: sorted)
-                return results.map { tableAccount(value: $0) }
+        performRealmRead { realm in
+            let sorted = [SortDescriptor(keyPath: "active", ascending: false),
+                          SortDescriptor(keyPath: "user", ascending: true)]
+            let results = realm.objects(tableAccount.self)
+                        .sorted(by: sorted)
+            return results.map { tableAccount(value: $0) }
         } ?? []
     }
 
     func getAllAccountOrderAlias() -> [tableAccount] {
-        return performRealmRead(sync: true) { realm in
+        performRealmRead { realm in
             let sorted = [SortDescriptor(keyPath: "active", ascending: false),
                           SortDescriptor(keyPath: "alias", ascending: true),
                           SortDescriptor(keyPath: "user", ascending: true)]
-                let results = realm.objects(tableAccount.self).sorted(by: sorted)
-                return results.map { tableAccount(value: $0) }
+            let results = realm.objects(tableAccount.self).sorted(by: sorted)
+            return results.map { tableAccount(value: $0) }
         } ?? []
     }
 
     func getAccountAutoUploadFileName() -> String {
-        if let result = performRealmRead(sync: true, { realm in
-            realm.objects(tableAccount.self).filter("active == true").first
-        }) {
-            if result.autoUploadFileName.isEmpty {
+        return performRealmRead { realm in
+            guard let result = realm.objects(tableAccount.self)
+                .filter("active == true")
+                .first
+            else {
                 return NCBrandOptions.shared.folderDefaultAutoUpload
-            } else {
-                return result.autoUploadFileName
             }
-        }
-        return ""
+            return result.autoUploadFileName.isEmpty ? NCBrandOptions.shared.folderDefaultAutoUpload : result.autoUploadFileName
+        } ?? NCBrandOptions.shared.folderDefaultAutoUpload
     }
 
     func getAccountAutoUploadDirectory(session: NCSession.Session) -> String {
-        if let result = performRealmRead(sync: true, { realm in
-            realm.objects(tableAccount.self).filter("active == true").first
-        }) {
-            if result.autoUploadDirectory.isEmpty {
-                return utilityFileSystem.getHomeServer(session: session)
-            } else {
-                // FIX change webdav -> /dav/files/
-                if result.autoUploadDirectory.contains("/webdav") {
-                    return utilityFileSystem.getHomeServer(session: session)
-                } else {
-                    return result.autoUploadDirectory
-                }
-            }
-        }
-        return ""
+        let homeServer = utilityFileSystem.getHomeServer(session: session)
+
+        return performRealmRead { realm in
+            realm.objects(tableAccount.self)
+                .filter("active == true")
+                .first?
+                .autoUploadDirectory
+        }.flatMap { directory in
+            (directory.isEmpty || directory.contains("/webdav")) ? homeServer : directory
+        } ?? homeServer
     }
 
     func getAccountAutoUploadPath(session: NCSession.Session) -> String {
@@ -317,21 +311,21 @@ extension NCManageDatabase {
     }
 
     func getAccountAutoUploadSubfolderGranularity() -> Int {
-        if let result = performRealmRead(sync: true, { realm in
-            realm.objects(tableAccount.self).filter("active == true").first
-        }) {
-            return result.autoUploadSubfolderGranularity
-        }
-        return NCGlobal.shared.subfolderGranularityMonthly
+        performRealmRead { realm in
+            realm.objects(tableAccount.self)
+                .filter("active == true")
+                .first?
+                .autoUploadSubfolderGranularity
+        } ?? NCGlobal.shared.subfolderGranularityMonthly
     }
 
     func getAccountAutoUploadFromFromDate() -> Date? {
-        if let result = performRealmRead(sync: true, { realm in
-            realm.objects(tableAccount.self).filter("active == true").first
-        }) {
-            return result.autoUploadSinceDate
+        return performRealmRead { realm in
+            realm.objects(tableAccount.self)
+                .filter("active == true")
+                .first?
+                .autoUploadSinceDate
         }
-        return nil
     }
 
     @discardableResult
@@ -453,11 +447,12 @@ extension NCManageDatabase {
     }
 
     func getAccountGroups(account: String) -> [String] {
-        if let result = performRealmRead(sync: true, { realm in
-            realm.objects(tableAccount.self).filter("account == %@", account).first
-        }) {
-            return result.groups.components(separatedBy: ",")
-        }
-        return []
+        return performRealmRead { realm in
+            return realm.objects(tableAccount.self)
+                .filter("account == %@", account)
+                .first?
+                .groups
+                .components(separatedBy: ",") ?? []
+        } ?? []
     }
 }

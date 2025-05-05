@@ -177,33 +177,15 @@ final class NCManageDatabase: Sendable {
     // MARK: -
     // MARK: Util Database
 
-    func performRealmRead<T>(sync: Bool = true, _ block: @escaping (Realm) throws -> T?, completion: ((T?) -> Void)? = nil) -> T? {
-        let executionBlock = {
+    func performRealmRead<T>(_ block: (Realm) throws -> T?) -> T? {
+        realmQueue.sync {
             do {
                 let realm = try Realm()
-                let result = try block(realm)
-                if !sync {
-                    completion?(result)
-                }
-                return result
+                return try block(realm)
             } catch {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm read error: \(error)")
-                if !sync {
-                    completion?(nil)
-                }
                 return nil
             }
-        }
-
-        if sync {
-            return realmQueue.sync {
-                executionBlock()
-            }
-        } else {
-            realmQueue.async {
-                _ = executionBlock()
-            }
-            return nil
         }
     }
 
