@@ -868,13 +868,10 @@ extension NCManageDatabase {
 
     func getMetadata(predicate: NSPredicate) -> tableMetadata? {
         return performRealmRead { realm in
-            guard let result = realm.objects(tableMetadata.self)
+            realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .first
-            else {
-                return nil
-            }
-            return tableMetadata(value: result)
+                .map { tableMetadata(value: $0) }
         }
     }
 
@@ -888,10 +885,10 @@ extension NCManageDatabase {
 
     func getMetadatas(predicate: NSPredicate, sortedByKeyPath: String, ascending: Bool = false) -> [tableMetadata]? {
         return performRealmRead { realm in
-            let results = realm.objects(tableMetadata.self)
+            realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .sorted(byKeyPath: sortedByKeyPath, ascending: ascending)
-            return results.map { tableMetadata(value: $0) }
+                .map { tableMetadata(value: $0) }
         }
     }
 
@@ -908,13 +905,10 @@ extension NCManageDatabase {
         guard let ocId else { return nil }
 
         return performRealmRead { realm in
-            guard let result = realm.objects(tableMetadata.self)
+            realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first
-            else {
-                return nil
-            }
-            return tableMetadata(value: result)
+                .map { tableMetadata(value: $0) }
         }
     }
 
@@ -922,12 +916,10 @@ extension NCManageDatabase {
         guard let ocId else { return nil }
 
         return performRealmRead { realm in
-            if let result = realm.objects(tableMetadata.self)
+            realm.objects(tableMetadata.self)
                 .filter("ocId == %@ OR ocIdTransfer == %@", ocId, ocId)
-                .first {
-                return tableMetadata(value: result)
-            }
-            return nil
+                .first
+                .map { tableMetadata(value: $0) }
         }
     }
 
@@ -947,13 +939,10 @@ extension NCManageDatabase {
         }
 
         return performRealmRead { realm in
-            guard let result = realm.objects(tableMetadata.self)
+            realm.objects(tableMetadata.self)
                 .filter("account == %@ AND serverUrl == %@ AND fileName == %@", session.account, serverUrl, fileName)
                 .first
-            else {
-                return nil
-            }
-            return tableMetadata(value: result)
+                .map { tableMetadata(value: $0) }
         }
     }
 
@@ -964,16 +953,13 @@ extension NCManageDatabase {
         }
 
         return performRealmRead { realm in
-            guard let result = realm.objects(tableMetadata.self)
-                    .filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileId == %@",
-                                        metadata.account,
-                                        metadata.serverUrl,
-                                        metadata.livePhotoFile))
-                    .first
-            else {
-                return nil
-            }
-            return tableMetadata(value: result)
+            realm.objects(tableMetadata.self)
+                .filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileId == %@",
+                                    metadata.account,
+                                    metadata.serverUrl,
+                                    metadata.livePhotoFile))
+                .first
+                .map { tableMetadata(value: $0) }
         }
     }
 
@@ -1185,9 +1171,8 @@ extension NCManageDatabase {
         return performRealmRead { realm in
             realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
-                .first.map {
-                    tableMetadata(value: $0)
-                }
+                .first?
+                .freeze()
         }
     }
 
