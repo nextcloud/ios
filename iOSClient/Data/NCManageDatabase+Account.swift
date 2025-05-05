@@ -218,13 +218,8 @@ extension NCManageDatabase {
     }
 
     func updateAccount(_ account: tableAccount) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                realm.add(account, update: .all)
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+        performRealmWrite { realm in
+            realm.add(account, update: .all)
         }
     }
 
