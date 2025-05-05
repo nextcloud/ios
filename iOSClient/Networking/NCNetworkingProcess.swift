@@ -266,7 +266,7 @@ class NCNetworkingProcess {
                 }
                 /// Check QUOTA
                 if metadata.sessionError.contains("\(global.errorQuota)") {
-                    NextcloudKit.shared.getUserProfile(account: metadata.account) { _, userProfile, _, error in
+                    NextcloudKit.shared.getUserMetadata(account: metadata.account, userId: metadata.userId) { _, userProfile, _, error in
                         if error == .success, let userProfile, userProfile.quotaFree > 0, userProfile.quotaFree > metadata.size {
                             self.database.setMetadataSession(ocId: metadata.ocId,
                                                              session: self.networking.sessionUploadBackground,
