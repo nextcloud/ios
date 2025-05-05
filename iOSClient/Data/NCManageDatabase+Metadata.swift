@@ -907,7 +907,7 @@ extension NCManageDatabase {
     func getMetadataFromOcId(_ ocId: String?) -> tableMetadata? {
         guard let ocId else { return nil }
 
-        return performRealmRead(sync: true) { realm in
+        return performRealmRead { realm in
             guard let result = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first
@@ -921,7 +921,7 @@ extension NCManageDatabase {
     func getMetadataFromOcIdAndocIdTransfer(_ ocId: String?) -> tableMetadata? {
         guard let ocId else { return nil }
 
-        return performRealmRead(sync: true) { realm in
+        return performRealmRead { realm in
             if let result = realm.objects(tableMetadata.self)
                 .filter("ocId == %@ OR ocIdTransfer == %@", ocId, ocId)
                 .first {
@@ -1066,7 +1066,7 @@ extension NCManageDatabase {
         let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
         let layout: NCDBLayoutForView = layoutForView ?? NCDBLayoutForView()
 
-        return performRealmRead(sync: true) { realm in
+        return performRealmRead { realm in
            var ocIds: [String] = []
 
            let groupfolders = realm.objects(TableGroupfolders.self)
@@ -1126,7 +1126,7 @@ extension NCManageDatabase {
     }
 
     func getTableMetadatasDirectoryFavoriteIdentifierRank(account: String) -> [String: NSNumber] {
-        return performRealmRead(sync: true) { realm in
+        return performRealmRead { realm in
             var listIdentifierRank: [String: NSNumber] = [:]
             var counter = 10 as Int64
 
