@@ -38,7 +38,6 @@ class NCAccount: NSObject {
         var urlBase = urlBase
         if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
         let account: String = "\(user) \(urlBase)"
-        var controller = controller
 
         /// Remove Account Server in Error
         NCNetworking.shared.removeServerErrorAccount(account)
@@ -59,62 +58,34 @@ class NCAccount: NSObject {
             if error == .success, let userProfile {
                 NextcloudKit.shared.updateSession(account: account, userId: userProfile.userId)
                 NCSession.shared.appendSession(account: account, urlBase: urlBase, user: user, userId: userProfile.userId)
-
                 self.database.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
-                self.database.setAccountActive(account)
+                self.changeAccount(account, userProfile: userProfile, controller: controller) {
+                    NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
+                    if let controller {
+                        controller.account = account
+                        viewController.dismiss(animated: true)
 
-                NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
+                        completion()
+                    } else if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                        controller.account = account
+                        controller.modalPresentationStyle = .fullScreen
+                        controller.view.alpha = 0
 
-                self.database.setCapabilities(account: account)
-                self.database.setAccountUserProfile(account: account, userProfile: userProfile)
+                        UIApplication.shared.firstWindow?.rootViewController = controller
+                        UIApplication.shared.firstWindow?.makeKeyAndVisible()
 
-                /// Subscribing Push Notification
-                self.appDelegate.subscribingPushNotification(account: account, urlBase: urlBase, user: user)
+                        if let scene = UIApplication.shared.firstWindow?.windowScene {
+                            SceneManager.shared.register(scene: scene, withRootViewController: controller)
+                        }
 
-                if let controller {
-                    controller.account = account
+                        UIView.animate(withDuration: 0.5) {
+                            controller.view.alpha = 1
+                        }
 
-                    viewController.dismiss(animated: true)
-                } else if let mainTabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
-                    controller = mainTabBarController
-                    mainTabBarController.account = account
-
-                    mainTabBarController.modalPresentationStyle = .fullScreen
-                    mainTabBarController.view.alpha = 0
-
-                    UIApplication.shared.firstWindow?.rootViewController = controller
-                    UIApplication.shared.firstWindow?.makeKeyAndVisible()
-
-                    if let scene = UIApplication.shared.firstWindow?.windowScene {
-                        SceneManager.shared.register(scene: scene, withRootViewController: mainTabBarController)
-                    }
-
-                    UIView.animate(withDuration: 0.5) {
-                        mainTabBarController.view.alpha = 1
+                        completion()
                     }
                 }
-
-                /// Start the service
-                NCService().startRequestServicesServer(account: account, controller: controller)
-
-                /// Start the auto upload
-                NCAutoUpload.shared.initAutoUpload(controller: nil, account: account) { num in
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(num) uploads")
-                }
-
-                /// Color
-                NCBrandColor.shared.settingThemingColor(account: account)
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": account])
-
-                /// Notification
-                if let controller {
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser, userInfo: ["account": account, "controller": controller])
-                }
-
-                completion()
-
             } else {
-
                 NextcloudKit.shared.removeSession(account: account)
                 let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
@@ -125,36 +96,39 @@ class NCAccount: NSObject {
         }
     }
 
-    func changeAccount(_ account: String, controller: NCMainTabBarController?) {
-        guard let controller,
-              let tblAccount = database.getTableAccount(account: account)
-        else {
-            return
+    func changeAccount(_ account: String,
+                       userProfile: NKUserProfile?,
+                       controller: NCMainTabBarController?,
+                       completion: () -> Void) {
+        if let tblAccount = database.setAccountActive(account) {
+            /// Set account
+            controller?.account = account
+            /// Set capabilities
+            database.setCapabilities(account: account)
+            /// Set User Profile
+            if let userProfile {
+                database.setAccountUserProfile(account: account, userProfile: userProfile)
+            }
+            /// Subscribing Push Notification
+            appDelegate.subscribingPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user)
+            /// Start the service
+            NCService().startRequestServicesServer(account: account, controller: controller)
+            /// Start the auto upload
+            NCAutoUpload.shared.initAutoUpload(controller: nil, account: account) { num in
+                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(num) uploads")
+            }
+            /// Color
+            NCBrandColor.shared.settingThemingColor(account: account)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": account])
+            /// Notification
+            if let controller {
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser, userInfo: ["account": account, "controller": controller])
+            } else {
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser, userInfo: ["account": account])
+            }
         }
 
-        database.setAccountActive(account)
-        controller.account = account
-
-        /// Set capabilities
-        database.setCapabilities(account: account)
-
-        /// Subscribing Push Notification
-        appDelegate.subscribingPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user)
-
-        /// Start the service
-        NCService().startRequestServicesServer(account: account, controller: controller)
-
-        /// Start the auto upload
-        NCAutoUpload.shared.initAutoUpload(controller: nil, account: account) { num in
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(num) uploads")
-        }
-
-        /// Color
-        NCBrandColor.shared.settingThemingColor(account: account)
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": account])
-
-        /// Notification
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser, userInfo: ["account": account, "controller": controller])
+        completion()
     }
 
     func deleteAccount(_ account: String, wipe: Bool = true, completion: () -> Void = {}) {
@@ -227,7 +201,7 @@ class NCAccount: NSObject {
             if let accounts = NCManageDatabase.shared.getAccounts(),
                account.count > 0,
                let account = accounts.first {
-                changeAccount(account, controller: controller)
+                changeAccount(account, userProfile: nil, controller: controller) { }
             } else {
                 if NCBrandOptions.shared.disable_intro {
                     if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin {

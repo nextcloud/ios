@@ -363,7 +363,9 @@ extension NCManageDatabase {
         return nil
     }
 
-    func setAccountActive(_ account: String) {
+    @discardableResult
+    func setAccountActive(_ account: String) -> tableAccount? {
+        var tblAccount: tableAccount?
         do {
             let realm = try Realm()
             try realm.write {
@@ -371,14 +373,18 @@ extension NCManageDatabase {
                 for result in results {
                     if result.account == account {
                         result.active = true
+                        tblAccount = tableAccount(value: result)
                     } else {
                         result.active = false
                     }
                 }
+
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
+
+        return tblAccount
     }
 
     func setAccountAutoUploadProperty(_ property: String, state: Bool) {

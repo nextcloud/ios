@@ -432,7 +432,7 @@ class NCFiles: NCCollectionViewCommon {
                 self.present(navigationController, animated: true)
             }
         } else if let account = tableAccount?.account, account != currentAccount {
-            NCAccount().changeAccount(account, controller: controller)
+            NCAccount().changeAccount(account, userProfile: nil, controller: controller) { }
         } else if self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session) {
             self.titleCurrentFolder = getNavigationTitle()
             navigationItem.title = self.titleCurrentFolder

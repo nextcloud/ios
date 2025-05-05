@@ -226,8 +226,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                         let urlBase = URL(string: tableAccount.urlBase)
                         if url.contains(urlBase?.host ?? "") && userId == tableAccount.userId {
                             match = true
-                            NCAccount().changeAccount(tableAccount.account, controller: controller)
-                            completion(tableAccount)
+                            NCAccount().changeAccount(tableAccount.account, userProfile: nil, controller: controller) {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                    completion(tableAccount)
+                                }
+                            }
                         }
                     }
                     if !match {
@@ -413,7 +416,7 @@ extension SceneDelegate: NCAccountRequestDelegate {
     func accountRequestAddAccount() { }
 
     func accountRequestChangeAccount(account: String, controller: UIViewController?) {
-        NCAccount().changeAccount(account, controller: controller as? NCMainTabBarController)
+        NCAccount().changeAccount(account, userProfile: nil, controller: controller as? NCMainTabBarController) { }
     }
 }
 
