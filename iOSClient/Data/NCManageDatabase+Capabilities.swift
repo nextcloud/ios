@@ -277,7 +277,8 @@ extension NCManageDatabase {
             }
         }
 
-        guard let jsonData else {
+        guard let jsonData
+        else {
             return nil
         }
 
