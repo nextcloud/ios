@@ -230,7 +230,6 @@ final class NCManageDatabase: Sendable {
         self.clearTable(TableSecurityGuardDiagnostics.self, account: account)
         self.clearTable(tableTag.self, account: account)
         self.clearTable(tableTrash.self, account: account)
-        self.clearTable(tableUserStatus.self, account: account)
         self.clearTable(tableVideo.self, account: account)
         self.clearTable(TableDownloadLimit.self, account: account)
         self.clearTable(tableRecommendedFiles.self, account: account)

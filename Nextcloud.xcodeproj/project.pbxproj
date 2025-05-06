@@ -451,13 +451,6 @@
 		F73EF7E32B02266D0087E6E9 /* NCManageDatabase+Trash.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73EF7DE2B02266C0087E6E9 /* NCManageDatabase+Trash.swift */; };
 		F73EF7E42B02266D0087E6E9 /* NCManageDatabase+Trash.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73EF7DE2B02266C0087E6E9 /* NCManageDatabase+Trash.swift */; };
 		F73EF7E52B02266D0087E6E9 /* NCManageDatabase+Trash.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73EF7DE2B02266C0087E6E9 /* NCManageDatabase+Trash.swift */; };
-		F73EF7E72B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73EF7E62B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift */; };
-		F73EF7E82B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73EF7E62B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift */; };
-		F73EF7E92B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73EF7E62B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift */; };
-		F73EF7EA2B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73EF7E62B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift */; };
-		F73EF7EB2B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73EF7E62B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift */; };
-		F73EF7EC2B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73EF7E62B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift */; };
-		F73EF7ED2B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73EF7E62B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift */; };
 		F73EFF9B2DB11EC900FD434C /* NCFiles+UIScrollViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73EFF9A2DB11EB900FD434C /* NCFiles+UIScrollViewDelegate.swift */; };
 		F73F537F1E929C8500F8678D /* NCMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73F537E1E929C8500F8678D /* NCMore.swift */; };
 		F7401C152C75E6F300649E87 /* NCCapabilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7401C142C75E6F300649E87 /* NCCapabilities.swift */; };
@@ -1470,7 +1463,6 @@
 		F73EF7CE2B0225BA0087E6E9 /* NCManageDatabase+Tag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+Tag.swift"; sourceTree = "<group>"; };
 		F73EF7D62B0226080087E6E9 /* NCManageDatabase+Tip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+Tip.swift"; sourceTree = "<group>"; };
 		F73EF7DE2B02266C0087E6E9 /* NCManageDatabase+Trash.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+Trash.swift"; sourceTree = "<group>"; };
-		F73EF7E62B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+UserStatus.swift"; sourceTree = "<group>"; };
 		F73EFF9A2DB11EB900FD434C /* NCFiles+UIScrollViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCFiles+UIScrollViewDelegate.swift"; sourceTree = "<group>"; };
 		F73F537E1E929C8500F8678D /* NCMore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCMore.swift; sourceTree = "<group>"; };
 		F7401C142C75E6F300649E87 /* NCCapabilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCapabilities.swift; sourceTree = "<group>"; };
@@ -2959,7 +2951,6 @@
 				F73EF7CE2B0225BA0087E6E9 /* NCManageDatabase+Tag.swift */,
 				F73EF7D62B0226080087E6E9 /* NCManageDatabase+Tip.swift */,
 				F73EF7DE2B02266C0087E6E9 /* NCManageDatabase+Trash.swift */,
-				F73EF7E62B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift */,
 				F7E98C1527E0D0FC001F9F19 /* NCManageDatabase+Video.swift */,
 			);
 			path = Data;
@@ -4089,7 +4080,6 @@
 				F72FD3BA297ED49A00075D28 /* NCManageDatabase+E2EE.swift in Sources */,
 				F3E173C62C9B1067006D177A /* AwakeMode.swift in Sources */,
 				F73EF7DD2B0226080087E6E9 /* NCManageDatabase+Tip.swift in Sources */,
-				F73EF7ED2B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift in Sources */,
 				F7E98C1927E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */,
 				2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */,
 				F7864AD22A78FE73004870E0 /* NCManageDatabase+LocalFile.swift in Sources */,
@@ -4217,7 +4207,6 @@
 				F7490E6B29882A92009DCE94 /* NCGlobal.swift in Sources */,
 				F7490E7529882BE2009DCE94 /* NCManageDatabase+Directory.swift in Sources */,
 				F7864AD12A78FE73004870E0 /* NCManageDatabase+LocalFile.swift in Sources */,
-				F73EF7EC2B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift in Sources */,
 				F7490E8729882CA8009DCE94 /* ThreadSafeDictionary.swift in Sources */,
 				F73EF7A42B021FAD0087E6E9 /* NCLivePhoto.swift in Sources */,
 				F757CC8729E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */,
@@ -4263,7 +4252,6 @@
 				F70460532499095400BB98A7 /* NotificationCenter+MainThread.swift in Sources */,
 				F70BFC7520E0FA7D00C67599 /* NCUtility.swift in Sources */,
 				AF22B20C277C6F4D00DAB0CC /* NCShareCell.swift in Sources */,
-				F73EF7EA2B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift in Sources */,
 				F359D86A2A7D03420023F405 /* NCUtility+Exif.swift in Sources */,
 				F7B769AB2B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift in Sources */,
 				F7E98C1727E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */,
@@ -4448,7 +4436,6 @@
 				F75DD766290ABB25002EB562 /* Intent.intentdefinition in Sources */,
 				F7D68FCD28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift in Sources */,
 				F73EF7E02B02266D0087E6E9 /* NCManageDatabase+Trash.swift in Sources */,
-				F73EF7E82B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift in Sources */,
 				F73EF7D82B0226080087E6E9 /* NCManageDatabase+Tip.swift in Sources */,
 				F7C9B91E2B582F550064EA91 /* NCManageDatabase+SecurityGuard.swift in Sources */,
 				F72FD3B6297ED49A00075D28 /* NCManageDatabase+E2EE.swift in Sources */,
@@ -4530,7 +4517,6 @@
 				F7A76DCD256A71CE00119AB3 /* UIImage+Extension.swift in Sources */,
 				F73EF7DB2B0226080087E6E9 /* NCManageDatabase+Tip.swift in Sources */,
 				F71F6D0B2B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */,
-				F73EF7EB2B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift in Sources */,
 				F7BFFD2C2C8854690029A201 /* NCHud.swift in Sources */,
 				F7386E4C2DA90E0F009A00F6 /* NCAppVersionManager.swift in Sources */,
 				F771E3F820E239B500AFB62D /* FileProviderExtension+Thumbnail.swift in Sources */,
@@ -4620,7 +4606,6 @@
 				F755CB402B8CB13C00CE27E9 /* NCMediaLayout.swift in Sources */,
 				F73EF7B72B0224AB0087E6E9 /* NCManageDatabase+ExternalSites.swift in Sources */,
 				AF4BF61927562A4B0081CEEF /* NCManageDatabase+Metadata.swift in Sources */,
-				F73EF7E72B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift in Sources */,
 				F78A18B623CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift in Sources */,
 				AFA2AC8527849604008E1EA7 /* NCActivityCommentView.swift in Sources */,
 				AFCE353727E4ED7B00FEA6C2 /* NCShareCells.swift in Sources */,
@@ -4910,7 +4895,6 @@
 				F7386E4B2DA90E0F009A00F6 /* NCAppVersionManager.swift in Sources */,
 				F7A8D73828F17E21008BBE1C /* NCManageDatabase+DashboardWidget.swift in Sources */,
 				F7A8D73928F17E25008BBE1C /* NCManageDatabase+Metadata.swift in Sources */,
-				F73EF7E92B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift in Sources */,
 				F73EF7B12B0224350087E6E9 /* NCManageDatabase+DirectEditing.swift in Sources */,
 				F343A4B52A1E084200DDA874 /* PHAsset+Extension.swift in Sources */,
 				F72FD3B7297ED49A00075D28 /* NCManageDatabase+E2EE.swift in Sources */,
