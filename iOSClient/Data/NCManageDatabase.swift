@@ -155,7 +155,6 @@ final class NCManageDatabase: Sendable {
     }
 
     // MARK: -
-    // MARK: Util Database
 
     func performRealmRead<T>(_ block: (Realm) throws -> T?) -> T? {
         realmQueue.sync {
@@ -187,6 +186,8 @@ final class NCManageDatabase: Sendable {
             realmQueue.async(execute: executionBlock)
         }
     }
+
+    // MARK: -
 
     func clearTable(_ table: Object.Type, account: String? = nil) {
         performRealmWrite { realm in

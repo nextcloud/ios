@@ -132,8 +132,6 @@ class NCNetworkingProcess {
         var counterDownloading = metadatasDownloading.count
         var counterUploading = metadatasUploading.count
 
-        database.realmRefresh()
-
         /// ------------------------ WEBDAV
         ///
         let metadatas = database.getMetadatas(predicate: NSPredicate(format: "status IN %@", global.metadataStatusWaitWebDav))
