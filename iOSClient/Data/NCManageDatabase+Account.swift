@@ -109,6 +109,9 @@ struct tableAccountCodable: Codable {
 }
 
 extension NCManageDatabase {
+
+    // MARK: - Automatic backup/restore accounts
+
     func backupTableAccountToFile() {
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         guard let fileURL = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + tableAccountBackup) else {

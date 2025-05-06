@@ -302,7 +302,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                         } else {
                             cell.filePreviewImageView?.image = results.image
                         }
-                        if !(results.tableAvatar?.loaded ?? false),
+                        if !(results.tblAvatar?.loaded ?? false),
                            NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
                             NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: ownerId, fileName: fileName, account: metadata.account, view: collectionView, isPreviewImageView: true))
                         }
@@ -393,7 +393,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.fileAvatarImageView?.image = results.image
             }
 
-            if !(results.tableAvatar?.loaded ?? false),
+            if !(results.tblAvatar?.loaded ?? false),
                NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
                 NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: metadata.ownerId, fileName: fileName, account: metadata.account, view: collectionView))
             }
