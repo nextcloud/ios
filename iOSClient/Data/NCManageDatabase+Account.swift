@@ -260,21 +260,21 @@ extension NCManageDatabase {
         }
     }
 
-    func setAccountAutoUploadDirectory(_ serverUrl: String?, session: NCSession.Session) {
+    func setAccountAutoUploadDirectory(_ serverUrl: String, session: NCSession.Session) {
         performRealmWrite { realm in
-            if let result = realm.objects(tableAccount.self).filter("active == true").first {
-                if let serverUrl {
-                    result.autoUploadDirectory = serverUrl
-                } else {
-                    result.autoUploadDirectory = self.getAccountAutoUploadDirectory(session: session)
-                }
+            if let result = realm.objects(tableAccount.self)
+                .filter("active == true")
+                .first {
+                result.autoUploadDirectory = serverUrl
             }
         }
     }
 
     func setAccountUserProfile(account: String, userProfile: NKUserProfile) {
         performRealmWrite { realm in
-            if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
+            if let result = realm.objects(tableAccount.self)
+                .filter("account == %@", account)
+                .first {
                 result.address = userProfile.address
                 result.backend = userProfile.backend
                 result.backendCapabilitiesSetDisplayName = userProfile.backendCapabilitiesSetDisplayName
@@ -312,7 +312,9 @@ extension NCManageDatabase {
 
     func setAccountUserStatus(userStatusClearAt: Date?, userStatusIcon: String?, userStatusMessage: String?, userStatusMessageId: String?, userStatusMessageIsPredefined: Bool, userStatusStatus: String?, userStatusStatusIsUserDefined: Bool, account: String) {
         performRealmWrite { realm in
-            if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
+            if let result = realm.objects(tableAccount.self)
+                .filter("account == %@", account)
+                .first {
                 result.userStatusClearAt = userStatusClearAt as? NSDate
                 result.userStatusIcon = userStatusIcon
                 result.userStatusMessage = userStatusMessage
