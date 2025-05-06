@@ -106,8 +106,9 @@ extension NCManageDatabase {
                 let metadatas = realm.objects(tableMetadata.self)
                     .filter("account == %@ AND serverUrl == %@", account, directory.serverUrl)
 
+                let ocIds = Array(metadatas.map(\.ocId))
                 let localFiles = realm.objects(tableLocalFile.self)
-                    .filter("ocId IN %@", metadatas.map(\.ocId))
+                    .filter("ocId IN %@", ocIds)
 
                 realm.delete(localFiles)
                 realm.delete(metadatas)
