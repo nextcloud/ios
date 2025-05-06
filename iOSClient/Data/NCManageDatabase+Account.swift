@@ -191,6 +191,8 @@ extension NCManageDatabase {
         }
     }
 
+    // MARK: - Realm write
+
     func addAccount(_ account: String, urlBase: String, user: String, userId: String, password: String) {
         performRealmWrite { realm in
             if let existing = realm.object(ofType: tableAccount.self, forPrimaryKey: account) {
@@ -223,108 +225,13 @@ extension NCManageDatabase {
         }
     }
 
-    func getActiveTableAccount() -> tableAccount? {
-        performRealmRead { realm in
-            realm.objects(tableAccount.self)
-                .filter("active == true")
-                .first
-                .map { tableAccount(value: $0) }
-        }
-    }
+    func setAccountAlias(_ account: String, alias: String) {
+        let alias = alias.trimmingCharacters(in: .whitespacesAndNewlines)
 
-    func getTableAccount(account: String) -> tableAccount? {
-        performRealmRead { realm in
-            realm.objects(tableAccount.self)
-                .filter("account == %@", account)
-                .first
-                .map { tableAccount(value: $0) }
-        }
-    }
-
-    func getAccounts() -> [String]? {
-        performRealmRead { realm in
-            let results = realm.objects(tableAccount.self)
-                .sorted(byKeyPath: "account", ascending: true)
-            return results.map { $0.account }
-        }
-    }
-
-    func getTableAccount(predicate: NSPredicate) -> tableAccount? {
-        performRealmRead { realm in
-            realm.objects(tableAccount.self)
-                .filter(predicate)
-                .first
-                .map { tableAccount(value: $0) }
-        }
-    }
-
-    func getAllTableAccount() -> [tableAccount] {
-        performRealmRead { realm in
-            let sorted = [SortDescriptor(keyPath: "active", ascending: false),
-                          SortDescriptor(keyPath: "user", ascending: true)]
-            let results = realm.objects(tableAccount.self)
-                        .sorted(by: sorted)
-            return results.map { tableAccount(value: $0) }
-        } ?? []
-    }
-
-    func getAllAccountOrderAlias() -> [tableAccount] {
-        performRealmRead { realm in
-            let sorted = [SortDescriptor(keyPath: "active", ascending: false),
-                          SortDescriptor(keyPath: "alias", ascending: true),
-                          SortDescriptor(keyPath: "user", ascending: true)]
-            let results = realm.objects(tableAccount.self).sorted(by: sorted)
-            return results.map { tableAccount(value: $0) }
-        } ?? []
-    }
-
-    func getAccountAutoUploadFileName() -> String {
-        return performRealmRead { realm in
-            guard let result = realm.objects(tableAccount.self)
-                .filter("active == true")
-                .first
-            else {
-                return NCBrandOptions.shared.folderDefaultAutoUpload
+        performRealmWrite { realm in
+            if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
+                result.alias = alias
             }
-            return result.autoUploadFileName.isEmpty ? NCBrandOptions.shared.folderDefaultAutoUpload : result.autoUploadFileName
-        } ?? NCBrandOptions.shared.folderDefaultAutoUpload
-    }
-
-    func getAccountAutoUploadDirectory(session: NCSession.Session) -> String {
-        let homeServer = utilityFileSystem.getHomeServer(session: session)
-
-        return performRealmRead { realm in
-            realm.objects(tableAccount.self)
-                .filter("active == true")
-                .first?
-                .autoUploadDirectory
-        }.flatMap { directory in
-            (directory.isEmpty || directory.contains("/webdav")) ? homeServer : directory
-        } ?? homeServer
-    }
-
-    func getAccountAutoUploadPath(session: NCSession.Session) -> String {
-        let cameraFileName = self.getAccountAutoUploadFileName()
-        let cameraDirectory = self.getAccountAutoUploadDirectory(session: session)
-        let folderPhotos = utilityFileSystem.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)
-        return folderPhotos
-    }
-
-    func getAccountAutoUploadSubfolderGranularity() -> Int {
-        performRealmRead { realm in
-            realm.objects(tableAccount.self)
-                .filter("active == true")
-                .first?
-                .autoUploadSubfolderGranularity
-        } ?? NCGlobal.shared.subfolderGranularityMonthly
-    }
-
-    func getAccountAutoUploadFromFromDate() -> Date? {
-        return performRealmRead { realm in
-            realm.objects(tableAccount.self)
-                .filter("active == true")
-                .first?
-                .autoUploadSinceDate
         }
     }
 
@@ -436,13 +343,110 @@ extension NCManageDatabase {
         }
     }
 
-    func setAccountAlias(_ account: String, alias: String) {
-        let alias = alias.trimmingCharacters(in: .whitespacesAndNewlines)
+    // MARK: - Realm Read
 
-        performRealmWrite { realm in
-            if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
-                result.alias = alias
+    func getTableAccount(predicate: NSPredicate) -> tableAccount? {
+        performRealmRead { realm in
+            realm.objects(tableAccount.self)
+                .filter(predicate)
+                .first
+                .map { tableAccount(value: $0) }
+        }
+    }
+
+    func getAllTableAccount() -> [tableAccount] {
+        performRealmRead { realm in
+            let sorted = [SortDescriptor(keyPath: "active", ascending: false),
+                          SortDescriptor(keyPath: "user", ascending: true)]
+            let results = realm.objects(tableAccount.self)
+                        .sorted(by: sorted)
+            return results.map { tableAccount(value: $0) }
+        } ?? []
+    }
+
+    func getAllAccountOrderAlias() -> [tableAccount] {
+        performRealmRead { realm in
+            let sorted = [SortDescriptor(keyPath: "active", ascending: false),
+                          SortDescriptor(keyPath: "alias", ascending: true),
+                          SortDescriptor(keyPath: "user", ascending: true)]
+            let results = realm.objects(tableAccount.self).sorted(by: sorted)
+            return results.map { tableAccount(value: $0) }
+        } ?? []
+    }
+
+    func getAccountAutoUploadFileName() -> String {
+        return performRealmRead { realm in
+            guard let result = realm.objects(tableAccount.self)
+                .filter("active == true")
+                .first
+            else {
+                return NCBrandOptions.shared.folderDefaultAutoUpload
             }
+            return result.autoUploadFileName.isEmpty ? NCBrandOptions.shared.folderDefaultAutoUpload : result.autoUploadFileName
+        } ?? NCBrandOptions.shared.folderDefaultAutoUpload
+    }
+
+    func getAccountAutoUploadDirectory(session: NCSession.Session) -> String {
+        let homeServer = utilityFileSystem.getHomeServer(session: session)
+
+        return performRealmRead { realm in
+            realm.objects(tableAccount.self)
+                .filter("active == true")
+                .first?
+                .autoUploadDirectory
+        }.flatMap { directory in
+            (directory.isEmpty || directory.contains("/webdav")) ? homeServer : directory
+        } ?? homeServer
+    }
+
+    func getAccountAutoUploadPath(session: NCSession.Session) -> String {
+        let cameraFileName = self.getAccountAutoUploadFileName()
+        let cameraDirectory = self.getAccountAutoUploadDirectory(session: session)
+        let folderPhotos = utilityFileSystem.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)
+        return folderPhotos
+    }
+
+    func getAccountAutoUploadSubfolderGranularity() -> Int {
+        performRealmRead { realm in
+            realm.objects(tableAccount.self)
+                .filter("active == true")
+                .first?
+                .autoUploadSubfolderGranularity
+        } ?? NCGlobal.shared.subfolderGranularityMonthly
+    }
+
+    func getAccountAutoUploadFromFromDate() -> Date? {
+        return performRealmRead { realm in
+            realm.objects(tableAccount.self)
+                .filter("active == true")
+                .first?
+                .autoUploadSinceDate
+        }
+    }
+
+    func getActiveTableAccount() -> tableAccount? {
+        performRealmRead { realm in
+            realm.objects(tableAccount.self)
+                .filter("active == true")
+                .first
+                .map { tableAccount(value: $0) }
+        }
+    }
+
+    func getTableAccount(account: String) -> tableAccount? {
+        performRealmRead { realm in
+            realm.objects(tableAccount.self)
+                .filter("account == %@", account)
+                .first
+                .map { tableAccount(value: $0) }
+        }
+    }
+
+    func getAccounts() -> [String]? {
+        performRealmRead { realm in
+            let results = realm.objects(tableAccount.self)
+                .sorted(byKeyPath: "account", ascending: true)
+            return results.map { $0.account }
         }
     }
 

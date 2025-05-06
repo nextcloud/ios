@@ -41,7 +41,7 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
 
     override func start() {
         guard !isCancelled,
-              let tblMetadata = NCManageDatabase.shared.getResultMetadataFromOcId(self.metadata.ocId)
+              let tblMetadata = NCManageDatabase.shared.getResultFreezeMetadataFromOcId(self.metadata.ocId)
         else {
             return self.finish()
         }

@@ -333,6 +333,9 @@ extension tableMetadata {
 }
 
 extension NCManageDatabase {
+
+    // MARK: - Create Metadata
+
     func convertFileToMetadata(_ file: NKFile, isDirectoryE2EE: Bool) -> tableMetadata {
         let metadata = tableMetadata()
 
@@ -560,7 +563,7 @@ extension NCManageDatabase {
         }
     }
 
-    // MARK: - Set
+    // MARK: - Realm Write
 
     @discardableResult
     func addMetadata(_ metadata: tableMetadata) -> tableMetadata {
@@ -864,7 +867,7 @@ extension NCManageDatabase {
         }
     }
 
-    // MARK: - GetMetadata
+    // MARK: - Realm Read
 
     func getMetadata(predicate: NSPredicate) -> tableMetadata? {
         return performRealmRead { realm in
@@ -977,7 +980,7 @@ extension NCManageDatabase {
                                                   fileNameConflict))
     }
 
-    // MARK: - GetResult(s)Metadata
+    // // MARK: - Realm Read (result)
 
     func getResultsMetadatasPredicate(_ predicate: NSPredicate, layoutForView: NCDBLayoutForView?, directoryOnTop: Bool = true) -> [tableMetadata] {
         return performRealmRead { realm in
@@ -1162,7 +1165,7 @@ extension NCManageDatabase {
         }
     }
 
-    func getResultMetadataFromOcId(_ ocId: String?) -> tableMetadata? {
+    func getResultFreezeMetadataFromOcId(_ ocId: String?) -> tableMetadata? {
         guard let ocId
         else {
             return nil
@@ -1189,10 +1192,5 @@ extension NCManageDatabase {
 
             return freeze ? results.freeze() : results
         }
-    }
-
-    func getCalculateCumulativeHash(for metadatas: [tableMetadata], account: String, serverUrl: String) -> String {
-        let concatenatedEtags = metadatas.map { $0.etag }.joined(separator: "-")
-        return sha256Hash(concatenatedEtags)
     }
 }
