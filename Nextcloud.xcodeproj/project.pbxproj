@@ -430,13 +430,6 @@
 		F73EF7C32B02250B0087E6E9 /* NCManageDatabase+GPS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73EF7BE2B02250B0087E6E9 /* NCManageDatabase+GPS.swift */; };
 		F73EF7C42B02250B0087E6E9 /* NCManageDatabase+GPS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73EF7BE2B02250B0087E6E9 /* NCManageDatabase+GPS.swift */; };
 		F73EF7C52B02250B0087E6E9 /* NCManageDatabase+GPS.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73EF7BE2B02250B0087E6E9 /* NCManageDatabase+GPS.swift */; };
-		F73EF7C72B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73EF7C62B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift */; };
-		F73EF7C82B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73EF7C62B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift */; };
-		F73EF7C92B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73EF7C62B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift */; };
-		F73EF7CA2B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73EF7C62B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift */; };
-		F73EF7CB2B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73EF7C62B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift */; };
-		F73EF7CC2B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73EF7C62B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift */; };
-		F73EF7CD2B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73EF7C62B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift */; };
 		F73EF7CF2B0225BA0087E6E9 /* NCManageDatabase+Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73EF7CE2B0225BA0087E6E9 /* NCManageDatabase+Tag.swift */; };
 		F73EF7D02B0225BA0087E6E9 /* NCManageDatabase+Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73EF7CE2B0225BA0087E6E9 /* NCManageDatabase+Tag.swift */; };
 		F73EF7D12B0225BA0087E6E9 /* NCManageDatabase+Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73EF7CE2B0225BA0087E6E9 /* NCManageDatabase+Tag.swift */; };
@@ -1474,7 +1467,6 @@
 		F73EF7AE2B0224350087E6E9 /* NCManageDatabase+DirectEditing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+DirectEditing.swift"; sourceTree = "<group>"; };
 		F73EF7B62B0224AB0087E6E9 /* NCManageDatabase+ExternalSites.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+ExternalSites.swift"; sourceTree = "<group>"; };
 		F73EF7BE2B02250B0087E6E9 /* NCManageDatabase+GPS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+GPS.swift"; sourceTree = "<group>"; };
-		F73EF7C62B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+PhotoLibrary.swift"; sourceTree = "<group>"; };
 		F73EF7CE2B0225BA0087E6E9 /* NCManageDatabase+Tag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+Tag.swift"; sourceTree = "<group>"; };
 		F73EF7D62B0226080087E6E9 /* NCManageDatabase+Tip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+Tip.swift"; sourceTree = "<group>"; };
 		F73EF7DE2B02266C0087E6E9 /* NCManageDatabase+Trash.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+Trash.swift"; sourceTree = "<group>"; };
@@ -2961,7 +2953,6 @@
 				F7864ACB2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift */,
 				AF4BF61827562A4B0081CEEF /* NCManageDatabase+Metadata.swift */,
 				F7B769A72B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift */,
-				F73EF7C62B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift */,
 				F7C687E82D22BD46004757BC /* NCManageDatabase+RecommendedFiles.swift */,
 				F7C9B91C2B582F550064EA91 /* NCManageDatabase+SecurityGuard.swift */,
 				F749B649297B0CBB00087535 /* NCManageDatabase+Share.swift */,
@@ -4118,7 +4109,6 @@
 				F73EF7AD2B0223900087E6E9 /* NCManageDatabase+Comments.swift in Sources */,
 				F7C9B9232B582F550064EA91 /* NCManageDatabase+SecurityGuard.swift in Sources */,
 				F7386E462DA90E0F009A00F6 /* NCAppVersionManager.swift in Sources */,
-				F73EF7CD2B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift in Sources */,
 				F33918CA2C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift in Sources */,
 				D575039F27146F93008DC9DC /* String+Extension.swift in Sources */,
 				F757CC8829E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */,
@@ -4200,7 +4190,6 @@
 				F7C687EE2D22BDE5004757BC /* NCManageDatabase+RecommendedFiles.swift in Sources */,
 				F7490E7429882BCC009DCE94 /* NCManageDatabase.swift in Sources */,
 				F7490E6E29882B56009DCE94 /* NCBrand.swift in Sources */,
-				F73EF7CC2B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift in Sources */,
 				F7490E8129882C79009DCE94 /* NCManageDatabase+DashboardWidget.swift in Sources */,
 				F73EF7D42B0225BA0087E6E9 /* NCManageDatabase+Tag.swift in Sources */,
 				F71F6D0C2B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */,
@@ -4361,7 +4350,6 @@
 				F33EE6F52BF4C9B200CA1A51 /* PKCS12.swift in Sources */,
 				F77DD6AB2C5CC093009448FB /* NCSession.swift in Sources */,
 				F76D364728A4F8BF00214537 /* NCActivityIndicator.swift in Sources */,
-				F73EF7CA2B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift in Sources */,
 				F7BFFD2A2C8854200029A201 /* NCHud.swift in Sources */,
 				F749B654297B0F2400087535 /* NCManageDatabase+Avatar.swift in Sources */,
 				AF22B208277B4E4C00DAB0CC /* NCCreateFormUploadConflictCell.swift in Sources */,
@@ -4417,7 +4405,6 @@
 				F78E2D6629AF02DB0024D4F3 /* Database.swift in Sources */,
 				F7327E3E2B73B92800A462C7 /* NCNetworking+Synchronization.swift in Sources */,
 				F77DD6A92C5CC093009448FB /* NCSession.swift in Sources */,
-				F73EF7C82B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift in Sources */,
 				F783030728B4C52800B84583 /* UIColor+Extension.swift in Sources */,
 				F783030028B4C45800B84583 /* NCGlobal.swift in Sources */,
 				F793E59D28B761E7005E4B02 /* NCNetworking.swift in Sources */,
@@ -4506,7 +4493,6 @@
 				F74B6D992A7E239A00F03C5F /* NCManageDatabase+Chunk.swift in Sources */,
 				F7327E2C2B73A53400A462C7 /* NCNetworking+Upload.swift in Sources */,
 				F7D68FCF28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift in Sources */,
-				F73EF7CB2B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift in Sources */,
 				F33EE6F62BF4C9B200CA1A51 /* PKCS12.swift in Sources */,
 				F7F3E58B2D3BB65600A32B14 /* NCNetworking+Recommendations.swift in Sources */,
 				F73EF7C32B02250B0087E6E9 /* NCManageDatabase+GPS.swift in Sources */,
@@ -4712,7 +4698,6 @@
 				F78F74362163781100C2ADAD /* NCTrash.swift in Sources */,
 				F39298972A3B12CB00509762 /* BaseNCMoreCell.swift in Sources */,
 				AF2D7C7C2742556F00ADF566 /* NCShareLinkCell.swift in Sources */,
-				F73EF7C72B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift in Sources */,
 				F7E41316294A19B300839300 /* UIView+Extension.swift in Sources */,
 				F7C30E00291BD2610017149B /* NCNetworkingE2EERename.swift in Sources */,
 				F74AF3A4247FB6AE00AC767B /* NCUtilityFileSystem.swift in Sources */,
@@ -4937,7 +4922,6 @@
 				F7A8D74028F18212008BBE1C /* UIImage+Extension.swift in Sources */,
 				F73EF7D12B0225BA0087E6E9 /* NCManageDatabase+Tag.swift in Sources */,
 				F71433E52C778FFA00E20B5A /* NotificationCenter+MainThread.swift in Sources */,
-				F73EF7C92B0225610087E6E9 /* NCManageDatabase+PhotoLibrary.swift in Sources */,
 				F73EF7B92B0224AB0087E6E9 /* NCManageDatabase+ExternalSites.swift in Sources */,
 				F71F6D092B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */,
 				F7401C172C75E6F300649E87 /* NCCapabilities.swift in Sources */,
