@@ -148,6 +148,8 @@ extension NCShare {
             actions.insert(NCMenuAction(
                        title: NSLocalizedString("_share_file_drop_", comment: ""),
                        icon: utility.loadImage(named: "arrow.up.document", colors: [NCBrandColor.shared.iconImageColor]),
+                       selected: share.permissions == permissions.permissionCreateShare,
+                       on: false,
                        sender: sender,
                        action: { _ in
                            let permissions = permissions.getPermissionValue(canRead: false, canCreate: true, canEdit: false, canDelete: false, canShare: false, isDirectory: isDirectory)
