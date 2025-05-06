@@ -45,26 +45,97 @@ class tableLocalFile: Object {
 }
 
 extension NCManageDatabase {
-    // MARK: -
-    // MARK: Table LocalFile - return RESULT
-    func getTableLocalFile(ocId: String) -> tableLocalFile? {
-        do {
-            let realm = try Realm()
-            return realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
-        }
-        return nil
-    }
 
-    // MARK: -
-    // MARK: Table LocalFile
+    // MARK: - Realm Write
 
     func addLocalFile(metadata: tableMetadata, offline: Bool? = nil) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                let addObject = getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) ?? tableLocalFile()
+        performRealmWrite { realm in
+            let addObject = self.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) ?? tableLocalFile()
+            addObject.account = metadata.account
+            addObject.etag = metadata.etag
+            addObject.exifDate = NSDate()
+            addObject.exifLatitude = "-1"
+            addObject.exifLongitude = "-1"
+            addObject.ocId = metadata.ocId
+            addObject.fileName = metadata.fileName
+            if let offline {
+                addObject.offline = offline
+            }
+            realm.add(addObject, update: .all)
+        }
+    }
+
+    func addLocalFile(account: String, etag: String, ocId: String, fileName: String) {
+        performRealmWrite { realm in
+           let addObject = tableLocalFile()
+           addObject.account = account
+           addObject.etag = etag
+           addObject.exifDate = NSDate()
+           addObject.exifLatitude = "-1"
+           addObject.exifLongitude = "-1"
+           addObject.ocId = ocId
+           addObject.fileName = fileName
+           realm.add(addObject, update: .all)
+       }
+    }
+
+    func deleteLocalFileOcId(_ ocId: String?) {
+        guard let ocId
+        else {
+            return
+        }
+
+        performRealmWrite { realm in
+            let results = realm.objects(tableLocalFile.self)
+                .filter("ocId == %@", ocId)
+            realm.delete(results)
+        }
+    }
+
+    func setLocalFile(ocId: String, fileName: String?) {
+        performRealmWrite { realm in
+            if let result = realm.objects(tableLocalFile.self)
+                .filter("ocId == %@", ocId)
+                .first,
+               let fileName {
+                result.fileName = fileName
+            }
+        }
+    }
+
+    func setLocalFile(ocId: String, exifDate: NSDate?, exifLatitude: String, exifLongitude: String, exifLensModel: String?) {
+        performRealmWrite { realm in
+            if let result = realm.objects(tableLocalFile.self)
+                .filter("ocId == %@", ocId)
+                .first {
+                result.exifDate = exifDate
+                result.exifLatitude = exifLatitude
+                result.exifLongitude = exifLongitude
+                if let lensModel = exifLensModel, !lensModel.isEmpty {
+                    result.exifLensModel = lensModel
+                }
+            }
+        }
+    }
+
+    func setOffLocalFile(ocId: String) {
+        performRealmWrite { realm in
+            if let result = realm.objects(tableLocalFile.self)
+                .filter("ocId == %@", ocId)
+                .first {
+                result.offline = false
+            }
+        }
+    }
+
+    func setLastOpeningDate(metadata: tableMetadata) {
+        performRealmWrite { realm in
+            if let result = realm.objects(tableLocalFile.self)
+                .filter("ocId == %@", metadata.ocId)
+                .first {
+                result.lastOpeningDate = NSDate()
+            } else {
+                let addObject = tableLocalFile()
                 addObject.account = metadata.account
                 addObject.etag = metadata.etag
                 addObject.exifDate = NSDate()
@@ -72,166 +143,60 @@ extension NCManageDatabase {
                 addObject.exifLongitude = "-1"
                 addObject.ocId = metadata.ocId
                 addObject.fileName = metadata.fileName
-                if let offline {
-                    addObject.offline = offline
-                }
                 realm.add(addObject, update: .all)
             }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
     }
 
-    func addLocalFile(account: String, etag: String, ocId: String, fileName: String) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                let addObject = tableLocalFile()
-                addObject.account = account
-                addObject.etag = etag
-                addObject.exifDate = NSDate()
-                addObject.exifLatitude = "-1"
-                addObject.exifLongitude = "-1"
-                addObject.ocId = ocId
-                addObject.fileName = fileName
-                realm.add(addObject, update: .all)
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
-        }
-    }
-
-    func deleteLocalFileOcId(_ ocId: String?) {
-        guard let ocId else { return }
-
-        do {
-            let realm = try Realm()
-            try realm.write {
-                let results = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId)
-                realm.delete(results)
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
-        }
-    }
-
-    func setLocalFile(ocId: String, fileName: String?) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first
-                if let fileName {
-                    result?.fileName = fileName
-                }
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
-        }
-    }
-
-    @objc func setLocalFile(ocId: String, exifDate: NSDate?, exifLatitude: String, exifLongitude: String, exifLensModel: String?) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                if let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first {
-                    result.exifDate = exifDate
-                    result.exifLatitude = exifLatitude
-                    result.exifLongitude = exifLongitude
-                    if exifLensModel?.count ?? 0 > 0 {
-                        result.exifLensModel = exifLensModel
-                    }
-                }
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
-        }
-    }
-
-    func setOffLocalFile(ocId: String) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                let result = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first
-                result?.offline = false
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
-        }
-    }
+    // MARK: - Realm Read
 
     func getTableLocalFile(account: String) -> [tableLocalFile] {
-        do {
-            let realm = try Realm()
-            let results = realm.objects(tableLocalFile.self).filter("account == %@", account)
-            return Array(results.map { tableLocalFile.init(value: $0) })
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
-        }
-        return []
+        return performRealmRead { realm in
+                let results = realm.objects(tableLocalFile.self)
+                .filter("account == %@", account)
+                return Array(results.map { tableLocalFile(value: $0) })
+        } ?? []
     }
 
     func getTableLocalFile(predicate: NSPredicate) -> tableLocalFile? {
-        do {
-            let realm = try Realm()
-            guard let result = realm.objects(tableLocalFile.self).filter(predicate).first else { return nil }
-            return tableLocalFile.init(value: result)
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
+        return performRealmRead { realm in
+            realm.objects(tableLocalFile.self)
+                .filter(predicate)
+                .first
+                .map { tableLocalFile(value: $0) }
         }
-        return nil
     }
 
     func getResultsTableLocalFile(predicate: NSPredicate) -> Results<tableLocalFile>? {
-        do {
-            let realm = try Realm()
-            return realm.objects(tableLocalFile.self).filter(predicate)
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
+        return performRealmRead { realm in
+            realm.objects(tableLocalFile.self).filter(predicate)
         }
-        return nil
     }
 
     func getTableLocalFiles(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableLocalFile] {
-        do {
-            let realm = try Realm()
-            let results = realm.objects(tableLocalFile.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
-            return Array(results.map { tableLocalFile.init(value: $0) })
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
-        }
-        return []
+        return performRealmRead { realm in
+            Array(
+                realm.objects(tableLocalFile.self)
+                    .filter(predicate)
+                    .sorted(byKeyPath: sorted, ascending: ascending)
+                    .map { tableLocalFile(value: $0) }
+            )
+        } ?? []
     }
 
     func getResultsTableLocalFile(predicate: NSPredicate, sorted: String, ascending: Bool) -> Results<tableLocalFile>? {
-        do {
-            let realm = try Realm()
-            return realm.objects(tableLocalFile.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
+        return performRealmRead { realm in
+            realm.objects(tableLocalFile.self)
+                .filter(predicate)
+                .sorted(byKeyPath: sorted, ascending: ascending)
         }
-        return nil
     }
 
-    func setLastOpeningDate(metadata: tableMetadata) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                if let result = realm.objects(tableLocalFile.self).filter("ocId == %@", metadata.ocId).first {
-                    result.lastOpeningDate = NSDate()
-                } else {
-                    let addObject = tableLocalFile()
-                    addObject.account = metadata.account
-                    addObject.etag = metadata.etag
-                    addObject.exifDate = NSDate()
-                    addObject.exifLatitude = "-1"
-                    addObject.exifLongitude = "-1"
-                    addObject.ocId = metadata.ocId
-                    addObject.fileName = metadata.fileName
-                    realm.add(addObject, update: .all)
-                }
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+    func getResultTableLocalFile(ocId: String) -> tableLocalFile? {
+        return performRealmRead { realm in
+            realm.objects(tableLocalFile.self)
+                .filter("ocId == %@", ocId)
+                .first
         }
     }
 }
