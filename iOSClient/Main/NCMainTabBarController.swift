@@ -142,7 +142,7 @@ class NCMainTabBarController: UITabBarController {
             NCNetworking.shared.checkServerError(account: self.account, controller: self) {
                 /// Update right bar button item
                 if let navigationController = self.selectedViewController as? NCMainNavigationController {
-                    navigationController.updateRightBarButtonItems()
+                    navigationController.updateRightBarButtonItems(self.tabBar.items?[0])
                 }
                 /// Update Activity tab bar
                 if let item = self.tabBar.items?[3] {

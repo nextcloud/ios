@@ -104,10 +104,6 @@ class NCNetworkingProcess {
                     } else {
                         self.hasRun = false
                     }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber,
-                                                                object: nil,
-                                                                userInfo: ["counterDownload": 0,
-                                                                           "counterUpload": 0])
                 } else {
                     Task { [weak self] in
                         guard let self else { return }

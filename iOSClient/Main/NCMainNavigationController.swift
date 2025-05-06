@@ -167,7 +167,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
     }
 
-    func updateRightBarButtonItems() {
+    func updateRightBarButtonItems(_ fileItem: UITabBarItem? = nil) {
         if collectionViewCommon?.isEditMode ?? false || trashViewController?.isEditMode ?? false {
             return
         }
@@ -207,6 +207,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         if UIApplication.shared.applicationIconBadgeNumber != resultsCount {
             UIApplication.shared.applicationIconBadgeNumber = resultsCount
         }
+        // Update File Icon badge
+        fileItem?.badgeValue = resultsCount == 0 ? nil : "\(resultsCount)"
     }
 
     func createRightMenu() -> UIMenu? { return nil }
