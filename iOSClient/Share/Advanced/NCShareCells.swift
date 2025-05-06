@@ -102,7 +102,7 @@ enum NCUserPermission: CaseIterable, NCPermission {
     }
 }
 
-enum NCLinkPermission: CaseIterable, NCPermission {
+enum NCLinkEmailPermission: CaseIterable, NCPermission {
     static func forDirectoryE2EE(account: String) -> [any NCPermission] {
         if NCCapabilities.shared.getCapabilities(account: account).capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
             return NCUserPermission.allCases
@@ -145,8 +145,8 @@ enum NCLinkPermission: CaseIterable, NCPermission {
     }
 
     case edit, read, create, delete
-    static let forDirectory: [NCLinkPermission] = NCLinkPermission.allCases
-    static let forFile: [NCLinkPermission] = [.read, .edit]
+    static let forDirectory: [NCLinkEmailPermission] = NCLinkEmailPermission.allCases
+    static let forFile: [NCLinkEmailPermission] = [.read, .edit]
 }
 
 ///
@@ -215,14 +215,14 @@ struct NCShareConfig {
     let sharePermission: Int
     let isDirectory: Bool
 
+    /// There are many share types, but we only classify them as a link share (link type, email type) and a user share (every other share type).
     init(parentMetadata: tableMetadata, share: Shareable) {
         self.shareable = share
         self.sharePermission = parentMetadata.sharePermissionsCollaborationServices
         self.isDirectory = parentMetadata.directory
-        let type: NCPermission.Type = share.shareType == NCShareCommon().SHARE_TYPE_LINK ? NCLinkPermission.self : NCUserPermission.self
+        let type: NCPermission.Type = (share.shareType == NCShareCommon().SHARE_TYPE_LINK || share.shareType == NCShareCommon().SHARE_TYPE_EMAIL) ? NCLinkEmailPermission.self : NCUserPermission.self
         self.permissions = parentMetadata.directory ? (parentMetadata.e2eEncrypted ? type.forDirectoryE2EE(account: parentMetadata.account) : type.forDirectory) : type.forFile
 
-        // There are many share types, but we only classify them as a link share (link type) and a user share (every other share type).
         if share.shareType == NCShareCommon().SHARE_TYPE_LINK {
             let hasDownloadLimitCapability = NCCapabilities
                 .shared
@@ -257,7 +257,7 @@ struct NCShareConfig {
         }
 
         // For link permissions: Read permission is always enabled and we show it as a non-interactable permission in files only for brevity.
-        if let cellConfig = cellConfig as? NCLinkPermission, cellConfig.hasReadPermission(), !isDirectory {
+        if let cellConfig = cellConfig as? NCLinkEmailPermission, cellConfig.hasReadPermission(), !isDirectory {
             cell?.isUserInteractionEnabled = false
             cell?.textLabel?.isEnabled = false
         }
