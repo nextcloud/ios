@@ -109,7 +109,7 @@ enum NCLinkPermission: CaseIterable, NCPermission {
         }
         return []
     }
-    
+
     func hasReadPermission() -> Bool {
         return self == .read
     }
@@ -121,7 +121,6 @@ enum NCLinkPermission: CaseIterable, NCPermission {
     var permissionBitFlag: Int {
         switch self {
         case .read: return NCPermissions().permissionReadShare
-            //        case .reshare: return NCPermissions().permissionShareShare
         case .edit: return NCPermissions().permissionEditShare
         case .create: return NCPermissions().permissionCreateShare
         case .delete: return NCPermissions().permissionDeleteShare

@@ -23,7 +23,6 @@
 import UIKit
 
 class NCShareLinkCell: UITableViewCell {
-
     @IBOutlet private weak var imageItem: UIImageView!
     @IBOutlet private weak var labelTitle: UILabel!
     @IBOutlet private weak var descriptionLabel: UILabel!
@@ -86,8 +85,11 @@ class NCShareLinkCell: UITableViewCell {
         }
 
         labelTitle.textColor = NCBrandColor.shared.textColor
-        
-        if let tableShare = tableShare {
+
+        statusStackView.isHidden = true
+
+        if let tableShare {
+            statusStackView.isHidden = false
             labelQuickStatus.text = NSLocalizedString("_custom_permissions_", comment: "")
 
             if permissions.canEdit(tableShare.permissions, isDirectory: isDirectory) { // Can edit
@@ -98,10 +100,14 @@ class NCShareLinkCell: UITableViewCell {
             }
             if permissions.getPermissionValue(canCreate: false, canEdit: false, canDelete: false, canShare: true, isDirectory: isDirectory) == tableShare.permissions { // Read only
                 labelQuickStatus.text = NSLocalizedString("_share_read_only_", comment: "")
-//            } else { // Custom permissions
+            }
+
+            if tableShare.shareType == NCShareCommon().SHARE_TYPE_EMAIL {
+                labelTitle.text = tableShare.shareWithDisplayname
+                imageItem.image = NCUtility().loadImage(named: "envelope.circle.fill", colors: [NCBrandColor.shared.getElement(account: tableShare.account)])
             }
         }
-        
+
         statusStackView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(openQuickStatus)))
         labelQuickStatus.textColor = NCBrandColor.shared.customer
         imageDownArrow.image = utility.loadImage(named: "arrowtriangle.down.circle", colors: [NCBrandColor.shared.customer])

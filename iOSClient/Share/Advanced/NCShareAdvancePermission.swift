@@ -27,59 +27,6 @@ import SVGKit
 import CloudKit
 
 class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDelegate, NCShareNavigationTitleSetting {
-    func dismissShareAdvanceView(shouldSave: Bool) {
-        guard shouldSave else {
-            guard oldTableShare?.hasChanges(comparedTo: share) != false else {
-                navigationController?.popViewController(animated: true)
-                return
-            }
-
-            let alert = UIAlertController(
-                title: NSLocalizedString("_cancel_request_", comment: ""),
-                message: NSLocalizedString("_discard_changes_info_", comment: ""),
-                preferredStyle: .alert)
-
-            alert.addAction(UIAlertAction(
-                title: NSLocalizedString("_discard_changes_", comment: ""),
-                style: .destructive,
-                handler: { _ in self.navigationController?.popViewController(animated: true) }))
-
-            alert.addAction(UIAlertAction(title: NSLocalizedString("_continue_editing_", comment: ""), style: .default))
-            self.present(alert, animated: true)
-
-            return
-        }
-
-        Task {
-            // TODO: Apply share token to download limit object
-
-            if isNewShare {
-                let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-
-                if share.shareType != NCShareCommon().SHARE_TYPE_LINK, metadata.e2eEncrypted,
-                   NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
-
-                    if NCNetworkingE2EE().isInUpload(account: metadata.account, serverUrl: serverUrl) {
-                        let error = NKError(errorCode: NCGlobal.shared.errorE2EEUploadInProgress, errorDescription: NSLocalizedString("_e2e_in_upload_", comment: ""))
-                        return NCContentPresenter().showInfo(error: error)
-                    }
-
-                    let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, addUserId: share.shareWith, removeUserId: nil, account: metadata.account)
-
-                    if error != .success {
-                        return NCContentPresenter().showError(error: error)
-                    }
-                }
-
-                networking?.createShare(share, downloadLimit: self.downloadLimit)
-            } else {
-                networking?.updateShare(share, downloadLimit: self.downloadLimit)
-            }
-        }
-
-        navigationController?.popViewController(animated: true)
-    }
-
     let database = NCManageDatabase.shared
 
     var oldTableShare: tableShare?
@@ -263,6 +210,63 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
             share.downloadAndSync.toggle()
             tableView.reloadData()
         }
+    }
+
+    func dismissShareAdvanceView(shouldSave: Bool) {
+        guard shouldSave else {
+            guard oldTableShare?.hasChanges(comparedTo: share) != false else {
+                navigationController?.popViewController(animated: true)
+                return
+            }
+
+            let alert = UIAlertController(
+                title: NSLocalizedString("_cancel_request_", comment: ""),
+                message: NSLocalizedString("_discard_changes_info_", comment: ""),
+                preferredStyle: .alert)
+
+            alert.addAction(UIAlertAction(
+                title: NSLocalizedString("_discard_changes_", comment: ""),
+                style: .destructive,
+                handler: { _ in self.navigationController?.popViewController(animated: true) }))
+
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_continue_editing_", comment: ""), style: .default))
+            self.present(alert, animated: true)
+
+            return
+        }
+
+        Task {
+            // TODO: Apply share token to download limit object
+
+            if (share.shareType == NCShareCommon().SHARE_TYPE_LINK || share.shareType == NCShareCommon().SHARE_TYPE_EMAIL) && NCPermissions().isPermissionToCanShare(share.permissions) {
+                share.permissions = share.permissions - NCPermissions().permissionShareShare
+            }
+
+            if isNewShare {
+                let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+
+                if share.shareType != NCShareCommon().SHARE_TYPE_LINK, metadata.e2eEncrypted,
+                   NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
+
+                    if NCNetworkingE2EE().isInUpload(account: metadata.account, serverUrl: serverUrl) {
+                        let error = NKError(errorCode: NCGlobal.shared.errorE2EEUploadInProgress, errorDescription: NSLocalizedString("_e2e_in_upload_", comment: ""))
+                        return NCContentPresenter().showInfo(error: error)
+                    }
+
+                    let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, addUserId: share.shareWith, removeUserId: nil, account: metadata.account)
+
+                    if error != .success {
+                        return NCContentPresenter().showError(error: error)
+                    }
+                }
+
+                networking?.createShare(share, downloadLimit: self.downloadLimit)
+            } else {
+                networking?.updateShare(share, downloadLimit: self.downloadLimit)
+            }
+        }
+
+        navigationController?.popViewController(animated: true)
     }
 }
 

@@ -30,7 +30,7 @@ extension NCShare {
         let capabilities = NCCapabilities.shared.getCapabilities(account: self.metadata.account)
         var actions = [NCMenuAction]()
 
-        if share.shareType == 3, canReshare {
+        if share.shareType == NCShareCommon().SHARE_TYPE_LINK, canReshare {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_share_add_sharelink_", comment: ""),
@@ -144,7 +144,7 @@ extension NCShare {
             )]
         )
 
-        if isDirectory && (share.shareType == 3 /* public link */ || share.shareType == 4 /* email */) {
+        if isDirectory && (share.shareType == NCShareCommon().SHARE_TYPE_LINK /* public link */ || share.shareType == NCShareCommon().SHARE_TYPE_EMAIL) {
             actions.insert(NCMenuAction(
                        title: NSLocalizedString("_share_file_drop_", comment: ""),
                        icon: utility.loadImage(named: "arrow.up.document", colors: [NCBrandColor.shared.iconImageColor]),
