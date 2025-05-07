@@ -230,5 +230,5 @@ class NCOperationDownloadThumbnailActivity: ConcurrentOperation, @unchecked Send
             }
             self.finish()
         }
-            }
+    }
 }
