@@ -63,7 +63,7 @@ extension NCManageDatabase {
         }
     }
 
-    // MARK: - Realm write
+    // MARK: - Realm read
 
     func getDirectEditingCreators(account: String) -> [tableDirectEditingCreators]? {
         performRealmRead { realm in
