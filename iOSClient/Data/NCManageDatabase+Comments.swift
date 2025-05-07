@@ -1,25 +1,6 @@
-//
-//  NCManageDatabase+Comments.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 13/11/23.
-//  Copyright © 2023 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2023 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
 import UIKit
@@ -48,42 +29,44 @@ class tableComments: Object, DateCompareable {
 }
 
 extension NCManageDatabase {
+
+    // MARK: - Realm write
+
     func addComments(_ comments: [NKComments], account: String, objectId: String) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                let results = realm.objects(tableComments.self).filter("account == %@ AND objectId == %@", account, objectId)
-                realm.delete(results)
-                for comment in comments {
-                    let object = tableComments()
-                    object.account = account
-                    object.actorDisplayName = comment.actorDisplayName
-                    object.actorId = comment.actorId
-                    object.actorType = comment.actorType
-                    object.creationDateTime = comment.creationDateTime as NSDate
-                    object.isUnread = comment.isUnread
-                    object.message = comment.message
-                    object.messageId = comment.messageId
-                    object.objectId = comment.objectId
-                    object.objectType = comment.objectType
-                    object.path = comment.path
-                    object.verb = comment.verb
-                    realm.add(object, update: .all)
-                }
+        performRealmWrite { realm in
+            let existing = realm.objects(tableComments.self)
+                .filter("account == %@ AND objectId == %@", account, objectId)
+            realm.delete(existing)
+
+            let newComments = comments.map { comment -> tableComments in
+                let obj = tableComments()
+                obj.account = account
+                obj.actorDisplayName = comment.actorDisplayName
+                obj.actorId = comment.actorId
+                obj.actorType = comment.actorType
+                obj.creationDateTime = comment.creationDateTime as NSDate
+                obj.isUnread = comment.isUnread
+                obj.message = comment.message
+                obj.messageId = comment.messageId
+                obj.objectId = comment.objectId
+                obj.objectType = comment.objectType
+                obj.path = comment.path
+                obj.verb = comment.verb
+                return obj
             }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+
+            realm.add(newComments, update: .all)
         }
     }
 
+    // MARK: - Realm read
+
     func getComments(account: String, objectId: String) -> [tableComments] {
-        do {
-            let realm = try Realm()
-            let results = realm.objects(tableComments.self).filter("account == %@ AND objectId == %@", account, objectId).sorted(byKeyPath: "creationDateTime", ascending: false)
-            return Array(results.map(tableComments.init))
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
-        }
-        return []
+        performRealmRead { realm in
+           let results = realm.objects(tableComments.self)
+               .filter("account == %@ AND objectId == %@", account, objectId)
+               .sorted(byKeyPath: "creationDateTime", ascending: false)
+           return results.map(tableComments.init)
+       } ?? []
     }
 }
