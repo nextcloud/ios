@@ -1,25 +1,6 @@
-//
-//  NCManageDatabase+Activity.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 13/11/23.
-//  Copyright © 2021 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2023 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
 import UIKit
@@ -100,178 +81,150 @@ class tableActivitySubjectRich: Object {
 }
 
 extension NCManageDatabase {
+
+    // MARK: - Realm write
+
     func addActivity(_ activities: [NKActivity], account: String) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                for activity in activities {
-                    let addObjectActivity = tableActivity()
+        performRealmWrite { realm in
+            for activity in activities {
+                let addObjectActivity = tableActivity()
 
-                    addObjectActivity.account = account
-                    addObjectActivity.idActivity = activity.idActivity
-                    addObjectActivity.idPrimaryKey = account + String(activity.idActivity)
-                    addObjectActivity.date = activity.date as NSDate
-                    addObjectActivity.app = activity.app
-                    addObjectActivity.type = activity.type
-                    addObjectActivity.user = activity.user
-                    addObjectActivity.subject = activity.subject
+                addObjectActivity.account = account
+                addObjectActivity.idActivity = activity.idActivity
+                addObjectActivity.idPrimaryKey = account + String(activity.idActivity)
+                addObjectActivity.date = activity.date as NSDate
+                addObjectActivity.app = activity.app
+                addObjectActivity.type = activity.type
+                addObjectActivity.user = activity.user
+                addObjectActivity.subject = activity.subject
 
-                    if let subjectRich = activity.subjectRich,
-                       let json = JSON(subjectRich).array {
+                if let subjectRich = activity.subjectRich,
+                   let json = JSON(subjectRich).array {
 
-                        addObjectActivity.subjectRich = json[0].stringValue
-                        if json.count > 1,
-                           let dict = json[1].dictionary {
+                    addObjectActivity.subjectRich = json[0].stringValue
+                    if json.count > 1,
+                       let dict = json[1].dictionary {
 
-                            for (key, value) in dict {
-                                let addObjectActivitySubjectRich = tableActivitySubjectRich()
-                                let dict = value as JSON
-                                addObjectActivitySubjectRich.account = account
+                        for (key, value) in dict {
+                            let addObjectActivitySubjectRich = tableActivitySubjectRich()
+                            let dict = value as JSON
+                            addObjectActivitySubjectRich.account = account
 
-                                if dict["id"].intValue > 0 {
-                                    addObjectActivitySubjectRich.id = String(dict["id"].intValue)
-                                } else {
-                                    addObjectActivitySubjectRich.id = dict["id"].stringValue
-                                }
-
-                                addObjectActivitySubjectRich.name = dict["name"].stringValue
-                                addObjectActivitySubjectRich.idPrimaryKey = account
-                                + String(activity.idActivity)
-                                + addObjectActivitySubjectRich.id
-                                + addObjectActivitySubjectRich.name
-
-                                addObjectActivitySubjectRich.key = key
-                                addObjectActivitySubjectRich.idActivity = activity.idActivity
-                                addObjectActivitySubjectRich.link = dict["link"].stringValue
-                                addObjectActivitySubjectRich.path = dict["path"].stringValue
-                                addObjectActivitySubjectRich.type = dict["type"].stringValue
-
-                                realm.add(addObjectActivitySubjectRich, update: .all)
+                            if dict["id"].intValue > 0 {
+                                addObjectActivitySubjectRich.id = String(dict["id"].intValue)
+                            } else {
+                                addObjectActivitySubjectRich.id = dict["id"].stringValue
                             }
+
+                            addObjectActivitySubjectRich.name = dict["name"].stringValue
+                            addObjectActivitySubjectRich.idPrimaryKey = account
+                            + String(activity.idActivity)
+                            + addObjectActivitySubjectRich.id
+                            + addObjectActivitySubjectRich.name
+
+                            addObjectActivitySubjectRich.key = key
+                            addObjectActivitySubjectRich.idActivity = activity.idActivity
+                            addObjectActivitySubjectRich.link = dict["link"].stringValue
+                            addObjectActivitySubjectRich.path = dict["path"].stringValue
+                            addObjectActivitySubjectRich.type = dict["type"].stringValue
+
+                            realm.add(addObjectActivitySubjectRich, update: .all)
                         }
                     }
-
-                    if let previews = activity.previews,
-                       let json = JSON(previews).array {
-                        for preview in json {
-                            let addObjectActivityPreview = tableActivityPreview()
-
-                            addObjectActivityPreview.account = account
-                            addObjectActivityPreview.idActivity = activity.idActivity
-                            addObjectActivityPreview.fileId = preview["fileId"].intValue
-                            addObjectActivityPreview.filename = preview["filename"].stringValue
-                            addObjectActivityPreview.idPrimaryKey = account + String(activity.idActivity) + String(addObjectActivityPreview.fileId)
-                            addObjectActivityPreview.source = preview["source"].stringValue
-                            addObjectActivityPreview.link = preview["link"].stringValue
-                            addObjectActivityPreview.mimeType = preview["mimeType"].stringValue
-                            addObjectActivityPreview.view = preview["view"].stringValue
-                            addObjectActivityPreview.isMimeTypeIcon = preview["isMimeTypeIcon"].boolValue
-
-                            realm.add(addObjectActivityPreview, update: .all)
-                        }
-                    }
-
-                    addObjectActivity.icon = activity.icon
-                    addObjectActivity.link = activity.link
-                    addObjectActivity.message = activity.message
-                    addObjectActivity.objectType = activity.objectType
-                    addObjectActivity.objectId = activity.objectId
-                    addObjectActivity.objectName = activity.objectName
-
-                    realm.add(addObjectActivity, update: .all)
                 }
+
+                if let previews = activity.previews,
+                   let json = JSON(previews).array {
+                    for preview in json {
+                        let addObjectActivityPreview = tableActivityPreview()
+
+                        addObjectActivityPreview.account = account
+                        addObjectActivityPreview.idActivity = activity.idActivity
+                        addObjectActivityPreview.fileId = preview["fileId"].intValue
+                        addObjectActivityPreview.filename = preview["filename"].stringValue
+                        addObjectActivityPreview.idPrimaryKey = account + String(activity.idActivity) + String(addObjectActivityPreview.fileId)
+                        addObjectActivityPreview.source = preview["source"].stringValue
+                        addObjectActivityPreview.link = preview["link"].stringValue
+                        addObjectActivityPreview.mimeType = preview["mimeType"].stringValue
+                        addObjectActivityPreview.view = preview["view"].stringValue
+                        addObjectActivityPreview.isMimeTypeIcon = preview["isMimeTypeIcon"].boolValue
+
+                        realm.add(addObjectActivityPreview, update: .all)
+                    }
+                }
+
+                addObjectActivity.icon = activity.icon
+                addObjectActivity.link = activity.link
+                addObjectActivity.message = activity.message
+                addObjectActivity.objectType = activity.objectType
+                addObjectActivity.objectId = activity.objectId
+                addObjectActivity.objectName = activity.objectName
+
+                realm.add(addObjectActivity, update: .all)
             }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
     }
 
-    func getActivity(predicate: NSPredicate, filterFileId: String?) -> (all: [tableActivity], filter: [tableActivity]) {
-        do {
-            let realm = try Realm()
-            let results = realm.objects(tableActivity.self).filter(predicate).sorted(byKeyPath: "idActivity", ascending: false)
-            let allActivity = Array(results.map(tableActivity.init))
-            guard let filterFileId = filterFileId else {
-                return (all: allActivity, filter: allActivity)
-            }
-            // comments are loaded seperately, see NCManageDatabase.getComments
-            let filtered = allActivity.filter({ String($0.objectId) == filterFileId && $0.type != "comments" })
-            return (all: allActivity, filter: filtered)
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
+    func updateLatestActivityId(activityFirstKnown: Int, activityLastGiven: Int, account: String) {
+        performRealmWrite { realm in
+            let object = tableActivityLatestId()
+            object.activityFirstKnown = activityFirstKnown
+            object.activityLastGiven = activityLastGiven
+            object.account = account
+            realm.add(object, update: .all)
         }
-        return([], [])
+    }
+
+    // MARK: - Realm read
+
+    func getActivity(predicate: NSPredicate, filterFileId: String?) -> (all: [tableActivity], filter: [tableActivity]) {
+        var allActivity: [tableActivity] = []
+        var filteredActivity: [tableActivity] = []
+
+        performRealmRead { realm in
+            let results = realm.objects(tableActivity.self)
+                .filter(predicate)
+                .sorted(byKeyPath: "idActivity", ascending: false)
+
+            allActivity = Array(results.map { tableActivity.init(value: $0) })
+
+            if let filterFileId = filterFileId {
+                filteredActivity = allActivity.filter {
+                    String($0.objectId) == filterFileId && $0.type != "comments"
+                }
+            } else {
+                filteredActivity = allActivity
+            }
+        }
+
+        return (all: allActivity, filter: filteredActivity)
     }
 
     func getActivitySubjectRich(account: String, idActivity: Int, key: String) -> tableActivitySubjectRich? {
-        do {
-            let realm = try Realm()
-            let results = realm.objects(tableActivitySubjectRich.self).filter("account == %@ && idActivity == %d && key == %@", account, idActivity, key).first
-            return results.map { tableActivitySubjectRich.init(value: $0) }
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
+        performRealmRead { realm in
+            realm.objects(tableActivitySubjectRich.self)
+                .filter("account == %@ AND idActivity == %d AND key == %@", account, idActivity, key)
+                .first
+                .map { .init(value: $0) }
         }
-        return nil
     }
 
     func getActivitySubjectRich(account: String, idActivity: Int, id: String) -> tableActivitySubjectRich? {
-        do {
-            let realm = try Realm()
-            let results = realm.objects(tableActivitySubjectRich.self).filter("account == %@ && idActivity == %d && id == %@", account, idActivity, id)
-            var activitySubjectRich = results.first
-            if results.count == 2 {
-                for result in results {
-                    if result.key == "newfile" {
-                        activitySubjectRich = result
-                    }
-                }
-            }
-            return activitySubjectRich.map { tableActivitySubjectRich.init(value: $0) }
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
-        }
-        return nil
-    }
+        performRealmRead { realm in
+            let results = realm.objects(tableActivitySubjectRich.self)
+                .filter("account == %@ && idActivity == %d && id == %@", account, idActivity, id)
 
-    func getActivityPreview(account: String, idActivity: Int, orderKeysId: [String]) -> [tableActivityPreview] {
-        var results: [tableActivityPreview] = []
+            let selected = (results.count == 2) ? results.first(where: { $0.key == "newfile" }) ?? results.first : results.first
 
-        do {
-            let realm = try Realm()
-            for id in orderKeysId {
-                if let result = realm.objects(tableActivityPreview.self).filter("account == %@ && idActivity == %d && fileId == %d", account, idActivity, Int(id) ?? 0).first {
-                    results.append(result)
-                }
-            }
-            return results
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
-        }
-        return []
-    }
-
-   func updateLatestActivityId(activityFirstKnown: Int, activityLastGiven: Int, account: String) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                let newRecentActivity = tableActivityLatestId()
-                newRecentActivity.activityFirstKnown = activityFirstKnown
-                newRecentActivity.activityLastGiven = activityLastGiven
-                newRecentActivity.account = account
-                realm.add(newRecentActivity, update: .all)
-            }
-        } catch {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+            return selected.map { .init(value: $0) }
         }
     }
 
     func getLatestActivityId(account: String) -> tableActivityLatestId? {
-        do {
-            let realm = try Realm()
-            return realm.objects(tableActivityLatestId.self).filter("account == %@", account).first
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
+        performRealmRead { realm in
+            realm.objects(tableActivityLatestId.self)
+                .filter("account == %@", account)
+                .first
         }
-        return nil
     }
 }
