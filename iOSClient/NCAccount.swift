@@ -61,24 +61,28 @@ class NCAccount: NSObject {
                 self.database.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
                 self.changeAccount(account, userProfile: userProfile, controller: controller) {
                     NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
-                }
-                if let controller {
-                    controller.account = account
-                    viewController.dismiss(animated: true)
-                } else if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
-                    controller.account = account
-                    controller.modalPresentationStyle = .fullScreen
-                    controller.view.alpha = 0
+                    if let controller {
+                        controller.account = account
+                        viewController.dismiss(animated: true)
 
-                    UIApplication.shared.firstWindow?.rootViewController = controller
-                    UIApplication.shared.firstWindow?.makeKeyAndVisible()
+                        completion()
+                    } else if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                        controller.account = account
+                        controller.modalPresentationStyle = .fullScreen
+                        controller.view.alpha = 0
 
-                    if let scene = UIApplication.shared.firstWindow?.windowScene {
-                        SceneManager.shared.register(scene: scene, withRootViewController: controller)
-                    }
+                        UIApplication.shared.firstWindow?.rootViewController = controller
+                        UIApplication.shared.firstWindow?.makeKeyAndVisible()
 
-                    UIView.animate(withDuration: 0.5) {
-                        controller.view.alpha = 1
+                        if let scene = UIApplication.shared.firstWindow?.windowScene {
+                            SceneManager.shared.register(scene: scene, withRootViewController: controller)
+                        }
+
+                        UIView.animate(withDuration: 0.5) {
+                            controller.view.alpha = 1
+                        }
+
+                        completion()
                     }
                 }
             } else {
@@ -86,9 +90,9 @@ class NCAccount: NSObject {
                 let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
                 viewController.present(alertController, animated: true)
-            }
 
-            completion()
+                completion()
+            }
         }
     }
 

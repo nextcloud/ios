@@ -47,10 +47,11 @@ extension NCNetworking {
         })
     }
 
-    func getUserProfile(account: String,
-                        options: NKRequestOptions = NKRequestOptions()) async -> (account: String, userProfile: NKUserProfile?, responseData: AFDataResponse<Data>?, error: NKError) {
+    func getUserMetadata(account: String,
+                         userId: String,
+                         options: NKRequestOptions = NKRequestOptions()) async -> (account: String, userProfile: NKUserProfile?, responseData: AFDataResponse<Data>?, error: NKError) {
         await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.getUserProfile(account: account, options: options) { account, userProfile, responseData, error in
+            NextcloudKit.shared.getUserMetadata(account: account, userId: userId) { account, userProfile, responseData, error in
                 continuation.resume(returning: (account: account, userProfile: userProfile, responseData: responseData, error: error))
             }
         })
