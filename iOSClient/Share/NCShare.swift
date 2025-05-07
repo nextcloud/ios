@@ -45,7 +45,6 @@ class NCShare: UIViewController, NCSharePagingContent {
     weak var appDelegate = UIApplication.shared.delegate as? AppDelegate
 
     public var metadata: tableMetadata!
-    public var sharingEnabled = true
     public var height: CGFloat = 0
     let shareCommon = NCShareCommon()
     let utilityFileSystem = NCUtilityFileSystem()
@@ -105,7 +104,7 @@ class NCShare: UIViewController, NCSharePagingContent {
         reloadData()
 
         networking = NCShareNetworking(metadata: metadata, view: self.view, delegate: self, session: session)
-        if sharingEnabled {
+        if metadata.canShare {
             let isVisible = (self.navigationController?.topViewController as? NCSharePaging)?.page == .sharing
             networking?.readShare(showLoadingIndicator: isVisible)
         }
