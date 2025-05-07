@@ -12,6 +12,7 @@ import CommonCrypto
 protocol DateCompareable {
     var dateKey: Date { get }
 }
+var isAppActive: Bool = true
 
 final class NCManageDatabase: Sendable {
     static let shared = NCManageDatabase()
@@ -20,6 +21,14 @@ final class NCManageDatabase: Sendable {
     let utilityFileSystem = NCUtilityFileSystem()
 
     init() {
+        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
+            isAppActive = false
+        }
+
+        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { _ in
+            isAppActive = true
+        }
+
         func migrationSchema(_ migration: Migration, _ oldSchemaVersion: UInt64) {
             if oldSchemaVersion < 365 {
                 migration.deleteData(forType: tableMetadata.className())
@@ -169,19 +178,25 @@ final class NCManageDatabase: Sendable {
     }
 
     func performRealmWrite(sync: Bool = true, _ block: @escaping (Realm) throws -> Void) {
-        let executionBlock = {
-            do {
-                let realm = try Realm()
-                try realm.write {
-                    try block(realm)
+        let executionBlock: @Sendable () -> Void = {
+            autoreleasepool {
+                do {
+                    let realm = try Realm()
+                    try realm.write {
+                        try block(realm)
+                    }
+                } catch {
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm write error: \(error)")
                 }
-            } catch {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm write error: \(error)")
             }
         }
 
-        if sync {
-            realmQueue.sync(execute: executionBlock)
+        if isAppActive {
+            if sync {
+                realmQueue.sync(execute: executionBlock)
+            } else {
+                realmQueue.async(execute: executionBlock)
+            }
         } else {
             realmQueue.async(execute: executionBlock)
         }
