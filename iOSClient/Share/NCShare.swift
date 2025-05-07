@@ -104,10 +104,8 @@ class NCShare: UIViewController, NCSharePagingContent {
         reloadData()
 
         networking = NCShareNetworking(metadata: metadata, view: self.view, delegate: self, session: session)
-        if metadata.canShare {
-            let isVisible = (self.navigationController?.topViewController as? NCSharePaging)?.page == .sharing
-            networking?.readShare(showLoadingIndicator: isVisible)
-        }
+        let isVisible = (self.navigationController?.topViewController as? NCSharePaging)?.page == .sharing
+        networking?.readShare(showLoadingIndicator: isVisible)
 
         searchField.searchTextField.font = .systemFont(ofSize: 14)
         searchField.delegate = self
