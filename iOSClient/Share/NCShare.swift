@@ -341,7 +341,7 @@ extension NCShare: UITableViewDataSource {
             if metadata.e2eEncrypted, NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 {
                 cell.tableShare = shares.firstShareLink
             } else {
-                if indexPath.row == 1 {
+                if indexPath.row == 0 {
                     cell.isInternalLink = true
                 } else if shares.firstShareLink?.isInvalidated != true {
                     cell.tableShare = shares.firstShareLink
