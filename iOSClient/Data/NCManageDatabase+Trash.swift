@@ -93,7 +93,7 @@ extension NCManageDatabase {
         }
     }
 
-    func getResultTrashItem(fileId: String, account: String) -> tableTrash? {
+    func getResultTrash(fileId: String, account: String) -> tableTrash? {
         performRealmRead { realm in
             realm.objects(tableTrash.self)
                 .filter("account == %@ AND fileId == %@", account, fileId)
