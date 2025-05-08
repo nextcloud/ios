@@ -121,15 +121,24 @@ class NCAutoUpload: NSObject {
                     uploadSession = NCNetworking.shared.sessionUploadBackground
                 }
 
-                // MOST COMPATIBLE SEARCH --> HEIC --> JPG
-                var fileNameSearchMetadata = fileName
-                let ext = (fileNameSearchMetadata as NSString).pathExtension.lowercased()
+                // MOST COMPATIBLE --> HEIC --> JPG
+                var fileNameCompatible = fileName
+                let ext = (fileNameCompatible as NSString).pathExtension.lowercased()
 
                 if ext == "heic", NCKeychain().formatCompatibility {
-                    fileNameSearchMetadata = (fileNameSearchMetadata as NSString).deletingPathExtension + ".jpg"
+                    fileNameCompatible = (fileNameCompatible as NSString).deletingPathExtension + ".jpg"
                 }
 
-                if self.database.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", session.account, serverUrl, fileNameSearchMetadata)) == nil {
+                index += 1
+                self.hud.progress(num: Float(index), total: Float(assets.count))
+
+                // Verify if already exists the metadata
+                if let existsMetadata = self.database.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (assetLocalIdentifier == %@ || fileNameView == %@)", session.account, serverUrl, asset.localIdentifier, fileNameCompatible)) {
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Autoupload skip \(asset.localIdentifier) \(existsMetadata.fileNameView)")
+                    continue
+                }
+
+                if self.database.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", session.account, serverUrl, fileNameCompatible)) == nil {
                     let metadata = self.database.createMetadata(fileName: fileName,
                                                                 fileNameView: fileName,
                                                                 ocId: NSUUID().uuidString,
@@ -161,9 +170,6 @@ class NCAutoUpload: NSObject {
 
                     metadatas.append(metadata)
                 }
-
-                index += 1
-                self.hud.progress(num: Float(index), total: Float(assets.count))
             }
 
             self.endForAssetToUpload = true
