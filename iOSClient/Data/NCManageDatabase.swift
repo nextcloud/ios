@@ -17,10 +17,14 @@ var isAppActive: Bool = true
 final class NCManageDatabase: Sendable {
     static let shared = NCManageDatabase()
 
-    let realmQueue = DispatchQueue(label: "com.nextcloud.realmQueue")
+    private let realmQueue = DispatchQueue(label: "com.nextcloud.realmQueue")
+    private let realmQueueKey = DispatchSpecificKey<Bool>()
+
     let utilityFileSystem = NCUtilityFileSystem()
 
     init() {
+        realmQueue.setSpecific(key: realmQueueKey, value: true)
+
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
             isAppActive = false
         }
@@ -166,13 +170,25 @@ final class NCManageDatabase: Sendable {
     // MARK: -
 
     func performRealmRead<T>(_ block: (Realm) throws -> T?) -> T? {
-        realmQueue.sync {
+        if DispatchQueue.getSpecific(key: realmQueueKey) == true {
+            // Already on realmQueue: execute directly to avoid deadlocks
             do {
                 let realm = try Realm()
                 return try block(realm)
             } catch {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm read error: \(error)")
                 return nil
+            }
+        } else {
+            // Not on realmQueue: go with sync
+            return realmQueue.sync {
+                do {
+                    let realm = try Realm()
+                    return try block(realm)
+                } catch {
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm read error: \(error)")
+                    return nil
+                }
             }
         }
     }
