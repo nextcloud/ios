@@ -192,6 +192,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func handleAppRefreshProcessingTask(taskText: String, completion: @escaping () -> Void = {}) {
+        isAppSuspending = false
+
         Task {
             var numAutoUpload = 0
             guard let account = NCManageDatabase.shared.getActiveTableAccount()?.account else {
