@@ -394,6 +394,7 @@ extension NCNetworking {
                 self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer))
             }
 
+            /// Update the auto upload data
             if selector == self.global.selectorUploadAutoUpload {
                 self.database.addAutoUpload(account: metadata.account,
                                             serverUrl: metadata.serverUrl,
