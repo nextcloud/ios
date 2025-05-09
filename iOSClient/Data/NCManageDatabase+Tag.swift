@@ -52,7 +52,7 @@ extension NCManageDatabase {
     }
 
     func getTag(predicate: NSPredicate) -> tableTag? {
-        var tag: tableTag? = nil
+        var tag: tableTag?
         performRealmRead { realm in
             tag = realm.objects(tableTag.self)
                 .filter(predicate)
