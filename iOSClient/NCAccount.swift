@@ -153,7 +153,7 @@ class NCAccount: NSObject {
             /// Remove account
             database.clearTable(tableAccount.self, account: account)
             /// Remove autoupload
-            database.clearTable(tableAutoUpload.self, account: account)
+            database.clearTable(tableAutoUploadTransfer.self, account: account)
         }
         /// Remove session in NextcloudKit
         NextcloudKit.shared.removeSession(account: account)

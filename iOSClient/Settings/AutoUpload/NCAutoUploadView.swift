@@ -203,7 +203,7 @@ struct NCAutoUploadView: View {
 #if DEBUG
                 Button("[DEBUG] Reset last uploaded date") {
                     model.resetAutoUploadLastUploadedDate()
-                    NCManageDatabase.shared.clearTable(tableAutoUpload.self, account: model.session.account)
+                    NCManageDatabase.shared.clearTable(tableAutoUploadTransfer.self, account: model.session.account)
                 }.buttonStyle(.borderedProminent)
 #endif
                 Toggle(isOn: model.autoUploadNewPhotosOnly || model.autoUploadStart ? $model.autoUploadStart : $showUploadAllPhotosWarning) {
