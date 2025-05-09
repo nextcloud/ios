@@ -193,7 +193,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     func resetAutoUploadLastUploadedDate() {
         guard let activeAccount = database.getTableAccount(account: session.account) else { return }
-        activeAccount.autoUploadLastUploadedDate = nil
+        //activeAccount.autoUploadLastUploadedDate = nil
         database.updateAccount(activeAccount)
     }
 
