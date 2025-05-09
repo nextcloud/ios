@@ -29,8 +29,5 @@ extension NCManageDatabase {
 
     // MARK: - Realm Write
 
-
-
     // MARK: - Realm Read
-
 }
