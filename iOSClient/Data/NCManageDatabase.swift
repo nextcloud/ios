@@ -235,7 +235,7 @@ final class NCManageDatabase: Sendable {
             self.clearTable(tableAccount.self, account: account)
         }
         if removeAutoUpload {
-            self.clearTable(tableAutoUploadTransfer.self, account: account)
+            self.clearTable(tableAutoUpload.self, account: account)
         }
 
         self.clearTable(tableActivity.self, account: account)
