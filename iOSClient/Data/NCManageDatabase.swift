@@ -230,9 +230,12 @@ final class NCManageDatabase: Sendable {
         }
     }
 
-    func clearDatabase(account: String? = nil, removeAccount: Bool = false) {
+    func clearDatabase(account: String? = nil, removeAccount: Bool = false, removeAutoUpload: Bool = false) {
         if removeAccount {
             self.clearTable(tableAccount.self, account: account)
+        }
+        if removeAutoUpload {
+            self.clearTable(tableAutoUpload.self, account: account)
         }
 
         self.clearTable(tableActivity.self, account: account)
