@@ -29,5 +29,12 @@ extension NCManageDatabase {
 
     // MARK: - Realm Write
 
+    func addAutoUpload(_ account: String, serverUrl: String, fileName: String, date: Date? = nil) {
+        performRealmWrite { realm in
+            let newAutoUpload = tableAutoUpload(account: account, serverUrl: serverUrl, fileName: fileName, date: date)
+            realm.add(newAutoUpload, update: .all)
+        }
+    }
+
     // MARK: - Realm Read
 }
