@@ -23,8 +23,6 @@ class tableAccount: Object {
     @objc dynamic var autoUploadWWAnVideo: Bool = false
     /// The Date from which new photos should be uploaded
     @objc dynamic var autoUploadSinceDate: Date?
-    /// The date of the most recently uploaded asset
-    @objc dynamic var autoUploadLastUploadedDate: Date?
     @objc dynamic var backend = ""
     @objc dynamic var backendCapabilitiesSetDisplayName: Bool = false
     @objc dynamic var backendCapabilitiesSetPassword: Bool = false
@@ -390,6 +388,22 @@ extension NCManageDatabase {
         let cameraDirectory = self.getAccountAutoUploadDirectory(session: session)
         let folderPhotos = utilityFileSystem.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)
         return folderPhotos
+    }
+
+    func getAccountAutoUploadServerUrl(account: String) -> String? {
+        var autoAccountServerUrl: String?
+
+        performRealmRead { realm in
+            if let result = realm.objects(tableAccount.self)
+                .filter("account == %@", account)
+                .first {
+                let homeServer = NCUtilityFileSystem().getHomeServer(urlBase: result.urlBase, userId: result.userId)
+                let autoUploadFileName = result.autoUploadFileName.isEmpty ? NCBrandOptions.shared.folderDefaultAutoUpload : result.autoUploadFileName
+                autoAccountServerUrl = utilityFileSystem.stringAppendServerUrl(homeServer, addFileName: autoUploadFileName)
+            }
+        }
+
+        return autoAccountServerUrl
     }
 
     func getAccountAutoUploadSubfolderGranularity() -> Int {
