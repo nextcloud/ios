@@ -68,7 +68,7 @@ class NCAutoUpload: NSObject {
         let autoUploadServerUrl = self.database.getAccountAutoUploadPath(session: session)
         var metadatas: [tableMetadata] = []
 
-        self.getCameraRollAssets(controller: controller, assetCollections: assetCollections, account: account, autoUploadServerUrl: autoUploadServerUrl, autoUploadOnlyNew: tblAccount.autoUploadOnlyNew) { assets, fileNames in
+        self.getCameraRollAssets(controller: controller, assetCollections: assetCollections, account: account, autoUploadServerUrl: autoUploadServerUrl) { assets, fileNames in
             guard let assets,
                   let fileNames,
                   !assets.isEmpty,
@@ -183,10 +183,10 @@ class NCAutoUpload: NSObject {
         return assetResult
     }
 
-    private func getCameraRollAssets(controller: NCMainTabBarController?, assetCollections: [PHAssetCollection] = [], account: String, autoUploadServerUrl: String, autoUploadOnlyNew: Bool, completion: @escaping (_ assets: [PHAsset]?, _ fileNames: [String]?) -> Void) {
+    private func getCameraRollAssets(controller: NCMainTabBarController?, assetCollections: [PHAssetCollection] = [], account: String, autoUploadServerUrl: String, completion: @escaping (_ assets: [PHAsset]?, _ fileNames: [String]?) -> Void) {
         NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { [self] hasPermission in
             guard hasPermission,
-                  let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
+                  let tblAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
                 return completion(nil, nil)
             }
             var newAssets: OrderedSet<PHAsset> = []
@@ -194,18 +194,18 @@ class NCAutoUpload: NSObject {
             var mediaPredicates: [NSPredicate] = []
             let autoUploadLastUploadedDate = self.database.fetchLastAutoUploadedDate(account: account, autoUploadServerUrl: autoUploadServerUrl)
 
-            if tableAccount.autoUploadImage {
+            if tblAccount.autoUploadImage {
                 mediaPredicates.append(NSPredicate(format: "mediaType == %i", PHAssetMediaType.image.rawValue))
             }
 
-            if tableAccount.autoUploadVideo {
+            if tblAccount.autoUploadVideo {
                 mediaPredicates.append(NSPredicate(format: "mediaType == %i", PHAssetMediaType.video.rawValue))
             }
 
             var datePredicates: [NSPredicate] = []
 
-            if autoUploadOnlyNew {
-                datePredicates.append(NSPredicate(format: "creationDate > %@", tableAccount.autoUploadOnlyNewSinceDate as NSDate))
+            if tblAccount.autoUploadOnlyNew {
+                datePredicates.append(NSPredicate(format: "creationDate > %@", tblAccount.autoUploadOnlyNewSinceDate as NSDate))
             } else if let autoUploadLastUploadedDate = self.database.fetchLastAutoUploadedDate(account: account, autoUploadServerUrl: autoUploadServerUrl) {
                 datePredicates.append(NSPredicate(format: "creationDate > %@", autoUploadLastUploadedDate as NSDate))
             }
@@ -233,14 +233,14 @@ class NCAutoUpload: NSObject {
                 else {
                     return completion(nil, nil)
                 }
-                let allAssets = processAssets(assetCollection, fetchOptions, tableAccount, account)
+                let allAssets = processAssets(assetCollection, fetchOptions, tblAccount, account)
                 print(allAssets)
                 newAssets = OrderedSet(allAssets)
                 print(newAssets)
             } else {
                 var allAssets: [PHAsset] = []
                 for assetCollection in assetCollections {
-                    allAssets += processAssets(assetCollection, fetchOptions, tableAccount, account)
+                    allAssets += processAssets(assetCollection, fetchOptions, tblAccount, account)
                 }
 
                 newAssets = OrderedSet(allAssets)
