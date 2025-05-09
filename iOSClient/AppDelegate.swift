@@ -45,6 +45,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var loginFlowV2Endpoint = ""
     var loginFlowV2Login = ""
 
+    /// Init 
+    let global = NCGlobal.shared
     let database = NCManageDatabase.shared
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -98,10 +100,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 #endif
 
         /// Background task register
-        BGTaskScheduler.shared.register(forTaskWithIdentifier: NCGlobal.shared.refreshTask, using: nil) { task in
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: global.refreshTask, using: nil) { task in
             self.handleAppRefresh(task)
         }
-        BGTaskScheduler.shared.register(forTaskWithIdentifier: NCGlobal.shared.processingTask, using: nil) { task in
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: global.processingTask, using: nil) { task in
             self.handleProcessingTask(task)
         }
 
