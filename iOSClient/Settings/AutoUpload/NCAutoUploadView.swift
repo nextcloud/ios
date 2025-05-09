@@ -57,7 +57,6 @@ struct NCAutoUploadView: View {
             SelectView(serverUrl: $model.serverUrl, session: model.session)
                 .onDisappear {
                     model.setAutoUploadDirectory(serverUrl: model.serverUrl)
-                    model.resetAutoUploadLastUploadedDate()
                 }
         }
         .sheet(isPresented: $showSelectAlbums) {
@@ -119,15 +118,15 @@ struct NCAutoUploadView: View {
                         })
                     }
 
-                    Toggle(NSLocalizedString("_back_up_new_photos_only_", comment: ""), isOn: $model.autoUploadNewPhotosOnly)
+                    Toggle(NSLocalizedString("_back_up_new_photos_only_", comment: ""), isOn: $model.autoUploadOnlyNew)
                         .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                         .opacity(model.autoUploadStart ? 0.15 : 1)
-                        .onChange(of: model.autoUploadNewPhotosOnly) { newValue in
-                            model.handleAutoUploadNewPhotosOnly(newValue: newValue)
+                        .onChange(of: model.autoUploadOnlyNew) { newValue in
+                            model.handleAutoUploadOnlyNew(newValue: newValue)
                         }
                         .accessibilityIdentifier("NewPhotosToggle")
                 }, footer: {
-                    if model.autoUploadNewPhotosOnly == true, let date = model.autoUploadSinceDate {
+                    if model.autoUploadOnlyNew == true, let date = model.autoUploadOnlyNewSinceDate {
                         Text(String(format: NSLocalizedString("_new_photos_starting_", comment: ""), NCUtility().longDate(date)))
                     }
                 })
@@ -201,12 +200,11 @@ struct NCAutoUploadView: View {
             /// Auto Upload Full
             Section(content: {
 #if DEBUG
-                Button("[DEBUG] Reset last uploaded date") {
-                    model.resetAutoUploadLastUploadedDate()
+                Button("[DEBUG] Clear tableAutoUploadTransfer") {
                     NCManageDatabase.shared.clearTable(tableAutoUploadTransfer.self, account: model.session.account)
                 }.buttonStyle(.borderedProminent)
 #endif
-                Toggle(isOn: model.autoUploadNewPhotosOnly || model.autoUploadStart ? $model.autoUploadStart : $showUploadAllPhotosWarning) {
+                Toggle(isOn: model.autoUploadOnlyNew || model.autoUploadStart ? $model.autoUploadStart : $showUploadAllPhotosWarning) {
                     Text(model.autoUploadStart ? "_stop_autoupload_" : "_start_autoupload_")
                         .padding(.horizontal, 20)
                         .padding(.vertical, 10)
