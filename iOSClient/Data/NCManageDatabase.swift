@@ -13,9 +13,6 @@ protocol DateCompareable {
     var dateKey: Date { get }
 }
 
-var isAppSuspending: Bool = false
-var isAppInBackground: Bool = false
-
 final class NCManageDatabase: Sendable {
     static let shared = NCManageDatabase()
 
@@ -26,16 +23,6 @@ final class NCManageDatabase: Sendable {
 
     init() {
         realmQueue.setSpecific(key: realmQueueKey, value: true)
-
-        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
-            isAppSuspending = true
-            isAppInBackground = true
-        }
-
-        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { _ in
-            isAppSuspending = false
-            isAppInBackground = false
-        }
 
         func migrationSchema(_ migration: Migration, _ oldSchemaVersion: UInt64) {
             if oldSchemaVersion < 365 {

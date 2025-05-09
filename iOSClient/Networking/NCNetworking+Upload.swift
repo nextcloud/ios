@@ -364,10 +364,6 @@ extension NCNetworking {
                         error: NKError) {
 
         DispatchQueue.main.async {
-            var isApplicationStateActive = false
-#if !EXTENSION
-            isApplicationStateActive = UIApplication.shared.applicationState == .active
-#endif
             DispatchQueue.global().async {
                 NextcloudKit.shared.nkCommonInstance.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
 
@@ -426,13 +422,11 @@ extension NCNetworking {
                         self.uploadCancelFile(metadata: metadata)
                     } else if error.errorCode == self.global.errorBadRequest || error.errorCode == self.global.errorUnsupportedMediaType {
                         self.uploadCancelFile(metadata: metadata)
-                        if isApplicationStateActive {
-                            NCContentPresenter().showError(error: NKError(errorCode: error.errorCode, errorDescription: "_virus_detect_"))
-                        }
+                        NCContentPresenter().showError(error: NKError(errorCode: error.errorCode, errorDescription: "_virus_detect_"))
 
                         // Client Diagnostic
                         self.database.addDiagnostic(account: metadata.account, issue: self.global.diagnosticIssueVirusDetected)
-                    } else if error.errorCode == self.global.errorForbidden && isApplicationStateActive {
+                    } else if error.errorCode == self.global.errorForbidden && !isAppInBackground {
                         NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
 #if !EXTENSION
                         NextcloudKit.shared.getTermsOfService(account: metadata.account, options: NKRequestOptions(checkInterceptor: false)) { _, tos, _, error in
