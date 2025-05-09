@@ -21,8 +21,8 @@ class tableAccount: Object {
     @objc dynamic var autoUploadVideo: Bool = false
     @objc dynamic var autoUploadWWAnPhoto: Bool = false
     @objc dynamic var autoUploadWWAnVideo: Bool = false
-    @objc dynamic var autoUploadOnlyNew: Bool = true
-    @objc dynamic var autoUploadOnlyNewSinceDate: Date = Date()
+    /// The Date from which new photos should be uploaded
+    @objc dynamic var autoUploadSinceDate: Date?
     @objc dynamic var backend = ""
     @objc dynamic var backendCapabilitiesSetDisplayName: Bool = false
     @objc dynamic var backendCapabilitiesSetPassword: Bool = false
@@ -271,16 +271,6 @@ extension NCManageDatabase {
         }
     }
 
-    func setAutoUploadOnlyNewSinceDate(account: String, date: Date) {
-        performRealmWrite { realm in
-            if let result = realm.objects(tableAccount.self)
-                .filter("acccount == %@", account)
-                .first {
-                result.autoUploadOnlyNewSinceDate = date
-            }
-        }
-    }
-
     func setAccountUserProfile(account: String, userProfile: NKUserProfile) {
         performRealmWrite { realm in
             if let result = realm.objects(tableAccount.self)
@@ -401,7 +391,7 @@ extension NCManageDatabase {
     }
 
     func getAccountAutoUploadServerUrl(account: String) -> String? {
-        var autoUploadServerUrl: String?
+        var autoAccountServerUrl: String?
 
         performRealmRead { realm in
             if let result = realm.objects(tableAccount.self)
@@ -409,11 +399,11 @@ extension NCManageDatabase {
                 .first {
                 let homeServer = NCUtilityFileSystem().getHomeServer(urlBase: result.urlBase, userId: result.userId)
                 let autoUploadFileName = result.autoUploadFileName.isEmpty ? NCBrandOptions.shared.folderDefaultAutoUpload : result.autoUploadFileName
-                autoUploadServerUrl = utilityFileSystem.stringAppendServerUrl(homeServer, addFileName: autoUploadFileName)
+                autoAccountServerUrl = utilityFileSystem.stringAppendServerUrl(homeServer, addFileName: autoUploadFileName)
             }
         }
 
-        return autoUploadServerUrl
+        return autoAccountServerUrl
     }
 
     func getAccountAutoUploadSubfolderGranularity() -> Int {
@@ -425,12 +415,12 @@ extension NCManageDatabase {
         } ?? NCGlobal.shared.subfolderGranularityMonthly
     }
 
-    func getAccountAutoUploadOnlyNewSinceDate() -> Date? {
+    func getAccountAutoUploadFromFromDate() -> Date? {
         return performRealmRead { realm in
             realm.objects(tableAccount.self)
                 .filter("active == true")
                 .first?
-                .autoUploadOnlyNewSinceDate
+                .autoUploadSinceDate
         }
     }
 
