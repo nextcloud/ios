@@ -117,7 +117,7 @@ class NCMainTabBarController: UITabBarController {
 
         NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { _ in
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                if UIApplication.shared.applicationState == .active {
+                if !isAppInBackground {
                     self.timerCheck()
                 }
             }
