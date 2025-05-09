@@ -13,13 +13,11 @@ class NCAutoUpload: NSObject {
 
     private let database = NCManageDatabase.shared
     private var endForAssetToUpload: Bool = false
-    private var applicationState = UIApplication.shared.applicationState
     private let hud = NCHud()
 
     // MARK: -
 
     func initAutoUpload(controller: NCMainTabBarController?, account: String, completion: @escaping (_ num: Int) -> Void) {
-        applicationState = UIApplication.shared.applicationState
         DispatchQueue.global().async {
             guard NCNetworking.shared.isOnline,
                   let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
@@ -51,7 +49,6 @@ class NCAutoUpload: NSObject {
     }
 
     func autoUploadSelectedAlbums(controller: NCMainTabBarController?, assetCollections: [PHAssetCollection], log: String, account: String) {
-        applicationState = UIApplication.shared.applicationState
         hud.initHudRing(view: controller?.view, text: NSLocalizedString("_creating_db_photo_progress", comment: ""))
         NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
             guard hasPermission else { return }
