@@ -38,6 +38,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
     private var index = IndexPath()
 
     var tableShare: tableShare?
+    var isDirectory = false
     let utility = NCUtility()
     weak var delegate: NCShareUserCellDelegate?
 
@@ -87,16 +88,17 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         btnQuickStatus.setTitle("", for: .normal)
         btnQuickStatus.contentHorizontalAlignment = .left
 
-        if tableShare.permissions == permissions.permissionCreateShare {
-            labelQuickStatus.text = NSLocalizedString("_share_file_drop_", comment: "")
-        } else {
-            // Read Only
-            if permissions.isAnyPermissionToEdit(tableShare.permissions) {
-                labelQuickStatus.text = NSLocalizedString("_share_editing_", comment: "")
-            } else {
-                labelQuickStatus.text = NSLocalizedString("_share_read_only_", comment: "")
-            }
+//        if tableShare.permissions == permissions.permissionCreateShare {
+        //            labelQuickStatus.text = NSLocalizedString("_share_file_drop_", comment: "")
+        //        } else {
+        if permissions.canEdit(tableShare.permissions, isDirectory: isDirectory) { // Can edit
+            labelQuickStatus.text = NSLocalizedString("_share_editing_", comment: "")
+        } else if tableShare.permissions == permissions.permissionReadShare { // Read only
+            labelQuickStatus.text = NSLocalizedString("_share_read_only_", comment: "")
+        } else { // Custom permissions
+            labelQuickStatus.text = NSLocalizedString("_custom_permissions_", comment: "")
         }
+        //        }
     }
 
     override func awakeFromNib() {

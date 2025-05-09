@@ -45,7 +45,6 @@ class NCShare: UIViewController, NCSharePagingContent {
     weak var appDelegate = UIApplication.shared.delegate as? AppDelegate
 
     public var metadata: tableMetadata!
-    public var sharingEnabled = true
     public var height: CGFloat = 0
     let shareCommon = NCShareCommon()
     let utilityFileSystem = NCUtilityFileSystem()
@@ -105,10 +104,8 @@ class NCShare: UIViewController, NCSharePagingContent {
         reloadData()
 
         networking = NCShareNetworking(metadata: metadata, view: self.view, delegate: self, session: session)
-        if sharingEnabled {
-            let isVisible = (self.navigationController?.topViewController as? NCSharePaging)?.page == .sharing
-            networking?.readShare(showLoadingIndicator: isVisible)
-        }
+        let isVisible = (self.navigationController?.topViewController as? NCSharePaging)?.page == .sharing
+        networking?.readShare(showLoadingIndicator: isVisible)
 
         searchField.searchTextField.font = .systemFont(ofSize: 14)
         searchField.delegate = self
@@ -163,11 +160,14 @@ class NCShare: UIViewController, NCSharePagingContent {
                     if error == .success, let etag = etag, let imageAvatar = imageAvatar {
                         self.database.addAvatar(fileName: fileName, etag: etag)
                         self.sharedWithYouByImage.image = imageAvatar
+                        self.reloadData()
                     } else if error.errorCode == NCGlobal.shared.errorNotModified, let imageAvatar = self.database.setAvatarLoaded(fileName: fileName) {
                         self.sharedWithYouByImage.image = imageAvatar
                     }
                 }
         }
+
+        reloadData()
     }
 
     // MARK: - Notification Center
@@ -221,18 +221,20 @@ class NCShare: UIViewController, NCSharePagingContent {
 extension NCShare: NCShareNetworkingDelegate {
     func readShareCompleted() {
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataNCShare)
+        reloadData()
     }
 
     func shareCompleted() {
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataNCShare)
+        reloadData()
     }
 
     func unShareCompleted() {
-        self.reloadData()
+        reloadData()
     }
 
     func updateShareWithError(idShare: Int) {
-        self.reloadData()
+        reloadData()
     }
 
     func getSharees(sharees: [NKSharee]?) {
@@ -305,10 +307,6 @@ extension NCShare: NCShareNetworkingDelegate {
 extension NCShare: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if indexPath.section == 0, indexPath.row == 0 {
-            // internal cell has description
-            return 40
-        }
         return 60
     }
 }
@@ -343,23 +341,25 @@ extension NCShare: UITableViewDataSource {
             if metadata.e2eEncrypted, NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 {
                 cell.tableShare = shares.firstShareLink
             } else {
-                if indexPath.row == 1 {
+                if indexPath.row == 0 {
                     cell.isInternalLink = true
                 } else if shares.firstShareLink?.isInvalidated != true {
                     cell.tableShare = shares.firstShareLink
                 }
             }
+            cell.isDirectory = metadata.directory
             cell.setupCellUI()
             return cell
         }
 
         guard let tableShare = shares.share?[indexPath.row] else { return UITableViewCell() }
 
-        // LINK
-        if tableShare.shareType == shareCommon.SHARE_TYPE_LINK {
+        // LINK, EMAIL
+        if tableShare.shareType == shareCommon.SHARE_TYPE_LINK || tableShare.shareType == shareCommon.SHARE_TYPE_EMAIL {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell {
                 cell.indexPath = indexPath
                 cell.tableShare = tableShare
+                cell.isDirectory = metadata.directory
                 cell.delegate = self
                 cell.setupCellUI()
                 return cell
@@ -369,6 +369,7 @@ extension NCShare: UITableViewDataSource {
             if let cell = tableView.dequeueReusableCell(withIdentifier: "cellUser", for: indexPath) as? NCShareUserCell {
                 cell.indexPath = indexPath
                 cell.tableShare = tableShare
+                cell.isDirectory = metadata.directory
                 cell.delegate = self
                 cell.setupCellUI(userId: session.userId)
 
