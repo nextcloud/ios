@@ -52,8 +52,7 @@ class NCAutoUpload: NSObject {
 
     func autoUploadSelectedAlbums(controller: NCMainTabBarController?, assetCollections: [PHAssetCollection], log: String, account: String) {
         applicationState = UIApplication.shared.applicationState
-        hud.initHudRing(view: controller?.view, text: nil, detailText: nil, tapToCancelDetailText: false)
-
+        hud.initHudRing(view: controller?.view, text: NSLocalizedString("_creating_db_photo_progress", comment: ""))
         NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
             guard hasPermission else { return }
             DispatchQueue.global().async {
