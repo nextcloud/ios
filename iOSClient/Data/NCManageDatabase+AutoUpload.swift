@@ -43,15 +43,15 @@ extension NCManageDatabase {
     func shouldSkipAutoUpload(account: String, serverUrl: String, fileName: String) -> Bool {
         var shouldSkip = false
         performRealmRead { realm in
-            let metadataExists = realm.objects(tableMetadata.self)
-                .filter("account == %@ AND serverUrl == %@ AND fileNameView == %@)", account, serverUrl, fileName)
-                .first != nil
-
-            let autoUploadExists = realm.objects(tableAutoUpload.self)
-                .filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName)
-                .first != nil
-
-            shouldSkip = metadataExists || autoUploadExists
+            if realm.objects(tableMetadata.self)
+                .filter("account == %@ AND serverUrl == %@ AND fileNameView == %@", account, serverUrl, fileName)
+                .first != nil {
+                shouldSkip = true
+            } else if realm.objects(tableAutoUpload.self)
+                        .filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName)
+                        .first != nil {
+                shouldSkip = true
+            }
         }
         return shouldSkip
     }
