@@ -61,14 +61,14 @@ class NCAutoUpload: NSObject {
     }
 
     private func uploadAssets(controller: NCMainTabBarController?, assetCollections: [PHAssetCollection] = [], log: String, account: String, completion: @escaping (_ num: Int) -> Void) {
-        guard let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
+        guard let tblAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
             return completion(0)
         }
         let session = NCSession.shared.getSession(account: account)
         let autoUploadServerUrl = self.database.getAccountAutoUploadPath(session: session)
         var metadatas: [tableMetadata] = []
 
-        self.getCameraRollAssets(controller: controller, assetCollections: assetCollections, account: account, autoUploadServerUrl: autoUploadServerUrl) { assets, fileNames in
+        self.getCameraRollAssets(controller: controller, assetCollections: assetCollections, account: account, autoUploadServerUrl: autoUploadServerUrl, autoUploadOnlyNew: tblAccount.autoUploadOnlyNew) { assets, fileNames in
             guard let assets,
                   let fileNames,
                   !assets.isEmpty,
@@ -82,7 +82,7 @@ class NCAutoUpload: NSObject {
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload, new \(assets.count) assets found [" + log + "]")
 
-            NCNetworking.shared.createFolder(assets: assets, useSubFolder: tableAccount.autoUploadCreateSubfolder, session: session)
+            NCNetworking.shared.createFolder(assets: assets, useSubFolder: tblAccount.autoUploadCreateSubfolder, session: session)
 
             self.hud.setText(text: NSLocalizedString("_creating_db_photo_progress", comment: ""))
             self.hud.progress(0.0)
@@ -95,7 +95,7 @@ class NCAutoUpload: NSObject {
                 var serverUrl: String = ""
                 let fileName = fileNames[index]
 
-                if tableAccount.autoUploadCreateSubfolder {
+                if tblAccount.autoUploadCreateSubfolder {
                     serverUrl = NCUtilityFileSystem().createGranularityPath(asset: asset, serverUrl: autoUploadServerUrl)
                 } else {
                     serverUrl = autoUploadServerUrl
@@ -105,13 +105,13 @@ class NCAutoUpload: NSObject {
                     isLivePhoto = true
                 }
 
-                if assetMediaType == PHAssetMediaType.image && tableAccount.autoUploadWWAnPhoto == false {
+                if assetMediaType == PHAssetMediaType.image && tblAccount.autoUploadWWAnPhoto == false {
                     uploadSession = NCNetworking.shared.sessionUploadBackground
-                } else if assetMediaType == PHAssetMediaType.video && tableAccount.autoUploadWWAnVideo == false {
+                } else if assetMediaType == PHAssetMediaType.video && tblAccount.autoUploadWWAnVideo == false {
                     uploadSession = NCNetworking.shared.sessionUploadBackground
-                } else if assetMediaType == PHAssetMediaType.image && tableAccount.autoUploadWWAnPhoto {
+                } else if assetMediaType == PHAssetMediaType.image && tblAccount.autoUploadWWAnPhoto {
                     uploadSession = NCNetworking.shared.sessionUploadBackgroundWWan
-                } else if assetMediaType == PHAssetMediaType.video && tableAccount.autoUploadWWAnVideo {
+                } else if assetMediaType == PHAssetMediaType.video && tblAccount.autoUploadWWAnVideo {
                     uploadSession = NCNetworking.shared.sessionUploadBackgroundWWan
                 } else {
                     uploadSession = NCNetworking.shared.sessionUploadBackground
@@ -183,7 +183,7 @@ class NCAutoUpload: NSObject {
         return assetResult
     }
 
-    private func getCameraRollAssets(controller: NCMainTabBarController?, assetCollections: [PHAssetCollection] = [], account: String, autoUploadServerUrl: String, completion: @escaping (_ assets: [PHAsset]?, _ fileNames: [String]?) -> Void) {
+    private func getCameraRollAssets(controller: NCMainTabBarController?, assetCollections: [PHAssetCollection] = [], account: String, autoUploadServerUrl: String, autoUploadOnlyNew: Bool, completion: @escaping (_ assets: [PHAsset]?, _ fileNames: [String]?) -> Void) {
         NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { [self] hasPermission in
             guard hasPermission,
                   let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
@@ -204,11 +204,9 @@ class NCAutoUpload: NSObject {
 
             var datePredicates: [NSPredicate] = []
 
-            if let autoUploadSinceDate = tableAccount.autoUploadSinceDate {
-                datePredicates.append(NSPredicate(format: "creationDate > %@", autoUploadSinceDate as NSDate))
-            }
-
-            if let autoUploadLastUploadedDate {
+            if autoUploadOnlyNew {
+                datePredicates.append(NSPredicate(format: "creationDate > %@", tableAccount.autoUploadOnlyNewSinceDate as NSDate))
+            } else if let autoUploadLastUploadedDate = self.database.fetchLastAutoUploadedDate(account: account, autoUploadServerUrl: autoUploadServerUrl) {
                 datePredicates.append(NSPredicate(format: "creationDate > %@", autoUploadLastUploadedDate as NSDate))
             }
 

@@ -21,8 +21,8 @@ class tableAccount: Object {
     @objc dynamic var autoUploadVideo: Bool = false
     @objc dynamic var autoUploadWWAnPhoto: Bool = false
     @objc dynamic var autoUploadWWAnVideo: Bool = false
-    /// The Date from which new photos should be uploaded
-    @objc dynamic var autoUploadSinceDate: Date?
+    @objc dynamic var autoUploadOnlyNew: Bool = true
+    @objc dynamic var autoUploadOnlyNewSinceDate: Date = Date()
     @objc dynamic var backend = ""
     @objc dynamic var backendCapabilitiesSetDisplayName: Bool = false
     @objc dynamic var backendCapabilitiesSetPassword: Bool = false
@@ -415,12 +415,12 @@ extension NCManageDatabase {
         } ?? NCGlobal.shared.subfolderGranularityMonthly
     }
 
-    func getAccountAutoUploadFromFromDate() -> Date? {
+    func getAccountAutoUploadOnlyNewSinceDate() -> Date? {
         return performRealmRead { realm in
             realm.objects(tableAccount.self)
                 .filter("active == true")
                 .first?
-                .autoUploadSinceDate
+                .autoUploadOnlyNewSinceDate
         }
     }
 
