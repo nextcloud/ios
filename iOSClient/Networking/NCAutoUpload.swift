@@ -128,9 +128,8 @@ class NCAutoUpload: NSObject {
                 index += 1
                 self.hud.progress(num: Float(index), total: Float(assets.count))
 
-                // Verify if already exists the metadata
-                if let existsMetadata = self.database.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (assetLocalIdentifier == %@ || fileNameView == %@)", session.account, serverUrl, asset.localIdentifier, fileNameCompatible)) {
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Autoupload skip \(asset.localIdentifier) \(existsMetadata.fileNameView)")
+                // Verify if already exists
+                if self.database.shouldSkipAutoUpload(account: session.account, serverUrl: serverUrl, fileName: fileNameCompatible) {
                     continue
                 }
 
