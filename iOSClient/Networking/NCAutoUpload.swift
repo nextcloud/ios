@@ -192,7 +192,7 @@ class NCAutoUpload: NSObject {
             var newAssets: OrderedSet<PHAsset> = []
             let fetchOptions = PHFetchOptions()
             var mediaPredicates: [NSPredicate] = []
-            let autoUploadLastUploadedDate = self.database.fetchLastAutoUploadedDate(account: account, autoUploadServerUrl: autoUploadServerUrl)
+            var datePredicates: [NSPredicate] = []
 
             if tblAccount.autoUploadImage {
                 mediaPredicates.append(NSPredicate(format: "mediaType == %i", PHAssetMediaType.image.rawValue))
@@ -201,8 +201,6 @@ class NCAutoUpload: NSObject {
             if tblAccount.autoUploadVideo {
                 mediaPredicates.append(NSPredicate(format: "mediaType == %i", PHAssetMediaType.video.rawValue))
             }
-
-            var datePredicates: [NSPredicate] = []
 
             if tblAccount.autoUploadOnlyNew {
                 datePredicates.append(NSPredicate(format: "creationDate > %@", tblAccount.autoUploadOnlyNewSinceDate as NSDate))
@@ -242,7 +240,6 @@ class NCAutoUpload: NSObject {
                 for assetCollection in assetCollections {
                     allAssets += processAssets(assetCollection, fetchOptions, tblAccount, account)
                 }
-
                 newAssets = OrderedSet(allAssets)
             }
 
