@@ -394,6 +394,14 @@ extension NCNetworking {
                 self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer))
             }
 
+            if selector == self.global.selectorUploadAutoUpload {
+                self.database.addAutoUpload(account: metadata.account,
+                                            serverUrl: metadata.serverUrl,
+                                            fileName: metadata.fileNameView,
+                                            assetLocalIdentifier: metadata.assetLocalIdentifier,
+                                            date: metadata.creationDate as Date)
+            }
+
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload complete " + metadata.serverUrl + "/" + metadata.fileName + ", result: success(\(size) bytes)")
 
             let userInfo: [String: Any] = ["ocId": metadata.ocId,
