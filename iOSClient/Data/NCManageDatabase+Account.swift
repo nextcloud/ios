@@ -271,6 +271,16 @@ extension NCManageDatabase {
         }
     }
 
+    func setAutoUploadOnlyNewSinceDate(account: String, date: Date) {
+        performRealmWrite { realm in
+            if let result = realm.objects(tableAccount.self)
+                .filter("acccount == %@", account)
+                .first {
+                result.autoUploadOnlyNewSinceDate = date
+            }
+        }
+    }
+
     func setAccountUserProfile(account: String, userProfile: NKUserProfile) {
         performRealmWrite { realm in
             if let result = realm.objects(tableAccount.self)
@@ -391,7 +401,7 @@ extension NCManageDatabase {
     }
 
     func getAccountAutoUploadServerUrl(account: String) -> String? {
-        var autoAccountServerUrl: String?
+        var autoUploadServerUrl: String?
 
         performRealmRead { realm in
             if let result = realm.objects(tableAccount.self)
@@ -399,11 +409,11 @@ extension NCManageDatabase {
                 .first {
                 let homeServer = NCUtilityFileSystem().getHomeServer(urlBase: result.urlBase, userId: result.userId)
                 let autoUploadFileName = result.autoUploadFileName.isEmpty ? NCBrandOptions.shared.folderDefaultAutoUpload : result.autoUploadFileName
-                autoAccountServerUrl = utilityFileSystem.stringAppendServerUrl(homeServer, addFileName: autoUploadFileName)
+                autoUploadServerUrl = utilityFileSystem.stringAppendServerUrl(homeServer, addFileName: autoUploadFileName)
             }
         }
 
-        return autoAccountServerUrl
+        return autoUploadServerUrl
     }
 
     func getAccountAutoUploadSubfolderGranularity() -> Int {

@@ -161,6 +161,11 @@ class NCAutoUpload: NSObject {
                 if lastUploadDate < metadataCreationDate {
                     lastUploadDate = metadataCreationDate
                 }
+                /*
+                 if result.autoUploadOnlyNew {
+                     self.database.setAutoUploadOnlyNewSinceDate(account: metadata.account, date: metadata.creationDate as Date)
+                 }
+                 */
 
                 metadatas.append(metadata)
             }
