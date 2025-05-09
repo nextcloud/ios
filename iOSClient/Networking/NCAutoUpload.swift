@@ -129,7 +129,7 @@ class NCAutoUpload: NSObject {
                 self.hud.progress(num: Float(index), total: Float(assets.count))
 
                 // Verify if already exists
-                if self.database.shouldSkipAutoUpload(account: session.account, serverUrl: serverUrl, fileName: fileNameCompatible) {
+                if self.database.shouldSkipAutoUploadTransfer(account: session.account, serverUrl: serverUrl, fileName: fileNameCompatible) {
                     continue
                 }
 
