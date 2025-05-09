@@ -568,40 +568,40 @@ extension NCManageDatabase {
         }
     }
 
-    func deleteMetadata(predicate: NSPredicate) {
-        performRealmWrite { realm in
+    func deleteMetadata(predicate: NSPredicate, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             let result = realm.objects(tableMetadata.self)
                 .filter(predicate)
             realm.delete(result)
         }
     }
 
-    func deleteMetadataOcId(_ ocId: String?) {
+    func deleteMetadataOcId(_ ocId: String?, sync: Bool = true) {
         guard let ocId else { return }
 
-        performRealmWrite { realm in
+        performRealmWrite(sync: sync) { realm in
             let result = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
             realm.delete(result)
         }
     }
 
-    func deleteMetadataOcIds(_ ocIds: [String]) {
-        performRealmWrite { realm in
+    func deleteMetadataOcIds(_ ocIds: [String], sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             let result = realm.objects(tableMetadata.self)
                 .filter("ocId IN %@", ocIds)
             realm.delete(result)
         }
     }
 
-    func deleteMetadatas(_ metadatas: [tableMetadata]) {
-        performRealmWrite { realm in
+    func deleteMetadatas(_ metadatas: [tableMetadata], sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             realm.delete(metadatas)
         }
     }
 
-    func renameMetadata(fileNameNew: String, ocId: String, status: Int = NCGlobal.shared.metadataStatusNormal) {
-        performRealmWrite { realm in
+    func renameMetadata(fileNameNew: String, ocId: String, status: Int = NCGlobal.shared.metadataStatusNormal, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             if let result = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first {
@@ -652,8 +652,8 @@ extension NCManageDatabase {
         }
     }
 
-    func restoreMetadataFileName(ocId: String) {
-        performRealmWrite { realm in
+    func restoreMetadataFileName(ocId: String, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             if let result = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first,
@@ -699,8 +699,8 @@ extension NCManageDatabase {
         }
     }
 
-    func setMetadataServeUrlFileNameStatusNormal(ocId: String) {
-        performRealmWrite { realm in
+    func setMetadataServeUrlFileNameStatusNormal(ocId: String, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             if let result = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first {
@@ -711,10 +711,10 @@ extension NCManageDatabase {
         }
     }
 
-    func setMetadataEtagResource(ocId: String, etagResource: String?) {
+    func setMetadataEtagResource(ocId: String, etagResource: String?, sync: Bool = true) {
         guard let etagResource else { return }
 
-        performRealmWrite { realm in
+        performRealmWrite(sync: sync) { realm in
             let result = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first
@@ -722,8 +722,8 @@ extension NCManageDatabase {
         }
     }
 
-    func setMetadataLivePhotoByServer(account: String, ocId: String, livePhotoFile: String) {
-        performRealmWrite { realm in
+    func setMetadataLivePhotoByServer(account: String, ocId: String, livePhotoFile: String, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             if let result = realm.objects(tableMetadata.self)
                 .filter("account == %@ AND ocId == %@", account, ocId)
                 .first {
@@ -733,13 +733,13 @@ extension NCManageDatabase {
         }
     }
 
-    func updateMetadatasFavorite(account: String, metadatas: [tableMetadata]) {
+    func updateMetadatasFavorite(account: String, metadatas: [tableMetadata], sync: Bool = true) {
         guard !metadatas.isEmpty
         else {
             return
         }
 
-        performRealmWrite { realm in
+        performRealmWrite(sync: sync) { realm in
             let oldFavorites = realm.objects(tableMetadata.self)
                 .filter("account == %@ AND favorite == true", account)
             for item in oldFavorites {
@@ -749,8 +749,8 @@ extension NCManageDatabase {
         }
     }
 
-    func updateMetadatasFiles(_ metadatas: [tableMetadata], serverUrl: String, account: String) {
-        performRealmWrite { realm in
+    func updateMetadatasFiles(_ metadatas: [tableMetadata], serverUrl: String, account: String, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             let resultsToDelete = realm.objects(tableMetadata.self)
                 .filter("account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
             realm.delete(resultsToDelete)
@@ -768,8 +768,8 @@ extension NCManageDatabase {
         }
     }
 
-    func setMetadataEncrypted(ocId: String, encrypted: Bool) {
-        performRealmWrite { realm in
+    func setMetadataEncrypted(ocId: String, encrypted: Bool, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             let result = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first
@@ -777,8 +777,8 @@ extension NCManageDatabase {
         }
     }
 
-    func setMetadataFileNameView(serverUrl: String, fileName: String, newFileNameView: String, account: String) {
-        performRealmWrite { realm in
+    func setMetadataFileNameView(serverUrl: String, fileName: String, newFileNameView: String, account: String, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             let result = realm.objects(tableMetadata.self)
                 .filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName)
                 .first
@@ -786,8 +786,8 @@ extension NCManageDatabase {
         }
     }
 
-    func moveMetadata(ocId: String, serverUrlTo: String) {
-        performRealmWrite { realm in
+    func moveMetadata(ocId: String, serverUrlTo: String, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             if let result = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first {
@@ -796,8 +796,8 @@ extension NCManageDatabase {
         }
     }
 
-    func clearAssetLocalIdentifiers(_ assetLocalIdentifiers: [String]) {
-        performRealmWrite { realm in
+    func clearAssetLocalIdentifiers(_ assetLocalIdentifiers: [String], sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             let results = realm.objects(tableMetadata.self)
                 .filter("assetLocalIdentifier IN %@", assetLocalIdentifiers)
             for result in results {
@@ -806,8 +806,8 @@ extension NCManageDatabase {
         }
     }
 
-    func setMetadataFavorite(ocId: String, favorite: Bool?, saveOldFavorite: String?, status: Int) {
-        performRealmWrite { realm in
+    func setMetadataFavorite(ocId: String, favorite: Bool?, saveOldFavorite: String?, status: Int, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             let result = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first
@@ -825,8 +825,8 @@ extension NCManageDatabase {
         }
     }
 
-    func setMetadataCopyMove(ocId: String, serverUrlTo: String, overwrite: String?, status: Int) {
-        performRealmWrite { realm in
+    func setMetadataCopyMove(ocId: String, serverUrlTo: String, overwrite: String?, status: Int, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             if let result = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first {
@@ -843,8 +843,8 @@ extension NCManageDatabase {
         }
     }
 
-    func clearMetadatasUpload(account: String) {
-        performRealmWrite { realm in
+    func clearMetadatasUpload(account: String, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             let results = realm.objects(tableMetadata.self)
                 .filter("account == %@ AND (status == %d OR status == %d)", account, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusUploadError)
             realm.delete(results)
