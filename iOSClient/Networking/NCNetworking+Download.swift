@@ -66,7 +66,7 @@ extension NCNetworking {
         if let metadataExists = database.getMetadataFromOcId(metadata.ocId) {
             metadata = metadataExists
         } else {
-            metadata = database.addMetadata(metadata)
+            metadata = database.addMetadataAndReturn(metadata)
         }
 
         if metadata.status == global.metadataStatusDownloading || metadata.status == global.metadataStatusUploading {

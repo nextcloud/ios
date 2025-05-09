@@ -546,22 +546,25 @@ extension NCManageDatabase {
 
     // MARK: - Realm Write
 
-    @discardableResult
-    func addMetadata(_ metadata: tableMetadata) -> tableMetadata {
+    func addMetadata(_ metadata: tableMetadata, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
+            realm.add(metadata, update: .all)
+        }
+    }
+
+    func addMetadataAndReturn(_ metadata: tableMetadata, sync: Bool = true) -> tableMetadata {
         var addedMetadata = tableMetadata(value: metadata)
 
-        performRealmWrite { realm in
+        performRealmWrite(sync: sync) { realm in
             let created = realm.create(tableMetadata.self, value: metadata, update: .all)
             addedMetadata = tableMetadata(value: created)
         }
         return addedMetadata
     }
 
-    func addMetadatas(_ metadatas: [tableMetadata]) {
-        performRealmWrite { realm in
-            for metadata in metadatas {
-                realm.create(tableMetadata.self, value: metadata, update: .all)
-            }
+    func addMetadatas(_ metadatas: [tableMetadata], sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
+            realm.add(metadatas, update: .all)
         }
     }
 
