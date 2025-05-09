@@ -234,8 +234,8 @@ extension NCActivity: UITableViewDataSource {
             cell.fileAvatarImageView?.image = results.image
         }
 
-        if let tableAvatar = results.tableAvatar,
-           !tableAvatar.loaded,
+        if let tblAvatar = results.tblAvatar,
+           !tblAvatar.loaded,
            NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
             NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: comment.actorId, fileName: fileName, account: account, view: tableView))
         }
@@ -315,7 +315,7 @@ extension NCActivity: UITableViewDataSource {
                 cell.fileAvatarImageView?.image = results.image
             }
 
-            if !(results.tableAvatar?.loaded ?? false),
+            if !(results.tblAvatar?.loaded ?? false),
                NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
                 NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: activity.user, fileName: fileName, account: session.account, view: tableView))
             }

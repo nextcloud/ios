@@ -35,56 +35,50 @@ class tableRecommendedFiles: Object {
 }
 
 extension NCManageDatabase {
+
+    // MARK: - Realm write
+
     func createRecommendedFiles(account: String, recommendations: [NKRecommendation]) {
-        do {
-            let realm = try Realm()
+        performRealmWrite { realm in
+            // Removed all objct for account
+            let results = realm.objects(tableRecommendedFiles.self).filter("account == %@", account)
+            realm.delete(results)
 
-            try realm.write {
-                // Removed all objct for account
-                let results = realm.objects(tableRecommendedFiles.self).filter("account == %@", account)
-
-                realm.delete(results)
-
-                // Added the new recommendations
-                for recommendation in recommendations {
-                    let recommendedFile = tableRecommendedFiles(account: account, id: recommendation.id, timestamp: recommendation.timestamp, name: recommendation.name, directory: recommendation.directory, extensionType: recommendation.extensionType, mimeType: recommendation.mimeType, hasPreview: recommendation.hasPreview, reason: recommendation.reason)
-                    realm.add(recommendedFile)
-                }
+            // Added the new recommendations
+            for recommendation in recommendations {
+                let recommendedFile = tableRecommendedFiles(account: account, id: recommendation.id, timestamp: recommendation.timestamp, name: recommendation.name, directory: recommendation.directory, extensionType: recommendation.extensionType, mimeType: recommendation.mimeType, hasPreview: recommendation.hasPreview, reason: recommendation.reason)
+                realm.add(recommendedFile)
             }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
-    }
-
-    func getRecommendedFiles(account: String) -> [tableRecommendedFiles] {
-        var recommendedFiles: [tableRecommendedFiles] = []
-
-        do {
-            let realm = try Realm()
-            let results = realm.objects(tableRecommendedFiles.self).filter("account == %@", account).sorted(byKeyPath: "timestamp", ascending: false)
-            for result in results {
-                if let metadata = realm.objects(tableMetadata.self).filter("fileId == %@", result.id).first {
-                    if metadata.status == NCGlobal.shared.metadataStatusWaitDelete { continue }
-                    recommendedFiles.append(tableRecommendedFiles.init(value: result))
-                }
-            }
-            return recommendedFiles
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
-        }
-
-        return []
     }
 
     func deleteAllRecommendedFiles(account: String) {
-        do {
-            let realm = try Realm()
-
-            try realm.write {
-                realm.delete(realm.objects(tableRecommendedFiles.self).filter("account == %@", account))
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
+        performRealmWrite { realm in
+            let results = realm.objects(tableRecommendedFiles.self)
+                .filter("account == %@", account)
+            realm.delete(results)
         }
+    }
+
+    // MARK: - Realm read
+
+    func getRecommendedFiles(account: String) -> [tableRecommendedFiles] {
+        performRealmRead { realm in
+            let results = realm.objects(tableRecommendedFiles.self)
+                .filter("account == %@", account)
+                .sorted(byKeyPath: "timestamp", ascending: false)
+
+            return results.compactMap { result in
+                let metadata = realm.objects(tableMetadata.self)
+                    .filter("fileId == %@", result.id)
+                    .first
+
+                guard let metadata, metadata.status != NCGlobal.shared.metadataStatusWaitDelete else {
+                    return nil
+                }
+
+                return tableRecommendedFiles(value: result)
+            }
+        } ?? []
     }
 }

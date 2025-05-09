@@ -1,25 +1,6 @@
-//
-//  NCManageDatabase+DirectEditing.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 13/11/23.
-//  Copyright © 2023 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2023 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
 import UIKit
@@ -46,95 +27,65 @@ class tableDirectEditingEditors: Object {
 }
 
 extension NCManageDatabase {
+
+    // MARK: - Realm write
+
     func addDirectEditing(account: String, editors: [NKEditorDetailsEditors], creators: [NKEditorDetailsCreators]) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                let resultsCreators = realm.objects(tableDirectEditingCreators.self).filter("account == %@", account)
-                realm.delete(resultsCreators)
-                let resultsEditors = realm.objects(tableDirectEditingEditors.self).filter("account == %@", account)
-                realm.delete(resultsEditors)
+        performRealmWrite { realm in
+            let resultsCreators = realm.objects(tableDirectEditingCreators.self).filter("account == %@", account)
+            realm.delete(resultsCreators)
 
-                for creator in creators {
-                    let addObject = tableDirectEditingCreators()
+            let resultsEditors = realm.objects(tableDirectEditingEditors.self).filter("account == %@", account)
+            realm.delete(resultsEditors)
 
-                    addObject.account = account
-                    addObject.editor = creator.editor
-                    addObject.ext = creator.ext
-                    addObject.identifier = creator.identifier
-                    addObject.mimetype = creator.mimetype
-                    addObject.name = creator.name
-                    addObject.templates = creator.templates
-                    realm.add(addObject)
-                }
-
-                for editor in editors {
-                    let addObject = tableDirectEditingEditors()
-
-                    addObject.account = account
-                    for mimeType in editor.mimetypes {
-                        addObject.mimetypes.append(mimeType)
-                    }
-                    addObject.name = editor.name
-                    if editor.name.lowercased() == NCGlobal.shared.editorOnlyoffice {
-                        addObject.editor = NCGlobal.shared.editorOnlyoffice
-                    } else {
-                        addObject.editor = NCGlobal.shared.editorText
-                    }
-                    for mimeType in editor.optionalMimetypes {
-                        addObject.optionalMimetypes.append(mimeType)
-                    }
-                    addObject.secure = editor.secure
-                    realm.add(addObject)
-                }
+            creators.forEach { creator in
+                let object = tableDirectEditingCreators()
+                object.account = account
+                object.editor = creator.editor
+                object.ext = creator.ext
+                object.identifier = creator.identifier
+                object.mimetype = creator.mimetype
+                object.name = creator.name
+                object.templates = creator.templates
+                realm.add(object)
             }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+
+            editors.forEach { editor in
+                let object = tableDirectEditingEditors()
+                object.account = account
+                object.name = editor.name
+                object.editor = editor.name.lowercased() == NCGlobal.shared.editorOnlyoffice ? NCGlobal.shared.editorOnlyoffice : NCGlobal.shared.editorText
+                object.mimetypes.append(objectsIn: editor.mimetypes)
+                object.optionalMimetypes.append(objectsIn: editor.optionalMimetypes)
+                object.secure = editor.secure
+                realm.add(object)
+            }
         }
     }
 
+    // MARK: - Realm read
+
     func getDirectEditingCreators(account: String) -> [tableDirectEditingCreators]? {
-        do {
-            let realm = try Realm()
-            let results = realm.objects(tableDirectEditingCreators.self).filter("account == %@", account)
-            if results.isEmpty {
-                return nil
-            } else {
-                return Array(results.map { tableDirectEditingCreators.init(value: $0) })
-            }
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access to database: \(error)")
+        performRealmRead { realm in
+            let results = realm.objects(tableDirectEditingCreators.self)
+                .filter("account == %@", account)
+            return results.isEmpty ? nil : results.map { tableDirectEditingCreators(value: $0) }
         }
-        return nil
     }
 
     func getDirectEditingCreators(predicate: NSPredicate) -> [tableDirectEditingCreators]? {
-        do {
-            let realm = try Realm()
-            let results = realm.objects(tableDirectEditingCreators.self).filter(predicate)
-            if results.isEmpty {
-                return nil
-            } else {
-                return Array(results.map { tableDirectEditingCreators.init(value: $0) })
-            }
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access to database: \(error)")
+        performRealmRead { realm in
+            let results = realm.objects(tableDirectEditingCreators.self)
+                .filter(predicate)
+            return results.isEmpty ? nil : results.map { tableDirectEditingCreators(value: $0) }
         }
-        return nil
     }
 
     func getDirectEditingEditors(account: String) -> [tableDirectEditingEditors]? {
-        do {
-            let realm = try Realm()
-            let results = realm.objects(tableDirectEditingEditors.self).filter("account == %@", account)
-            if results.isEmpty {
-                return nil
-            } else {
-                return Array(results.map { tableDirectEditingEditors.init(value: $0) })
-            }
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access to database: \(error)")
+        performRealmRead { realm in
+            let results = realm.objects(tableDirectEditingEditors.self)
+                .filter("account == %@", account)
+            return results.isEmpty ? nil : results.map { tableDirectEditingEditors.init(value: $0) }
         }
-        return nil
     }
 }

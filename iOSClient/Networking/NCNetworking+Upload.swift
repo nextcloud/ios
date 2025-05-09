@@ -297,6 +297,7 @@ extension NCNetworking {
                         size: Int64,
                         task: URLSessionTask,
                         error: NKError) {
+        isAppSuspending = false
 
 #if EXTENSION_FILE_PROVIDER_EXTENSION
 
@@ -361,6 +362,7 @@ extension NCNetworking {
                         date: Date?,
                         size: Int64,
                         error: NKError) {
+
         DispatchQueue.main.async {
             var isApplicationStateActive = false
 #if !EXTENSION

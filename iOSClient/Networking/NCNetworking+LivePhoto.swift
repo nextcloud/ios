@@ -28,7 +28,6 @@ import Queuer
 
 extension NCNetworking {
     func createLivePhoto(metadata: tableMetadata, userInfo aUserInfo: [AnyHashable: Any]? = nil) {
-        database.realmRefresh()
         guard let metadataLast = database.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileNameView == %@",
                                                                              metadata.account,
                                                                              metadata.urlBase,

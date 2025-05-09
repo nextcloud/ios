@@ -63,9 +63,6 @@ extension NCNetworking {
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
         let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
-        /// Test metadata exists ?
-        database.realmRefresh()
-        ///
         if let metadataExists = database.getMetadataFromOcId(metadata.ocId) {
             metadata = metadataExists
         } else {
@@ -186,6 +183,7 @@ extension NCNetworking {
                           length: Int64,
                           task: URLSessionTask,
                           error: NKError) {
+        isAppSuspending = false
 
         DispatchQueue.global().async {
             guard let url = task.currentRequest?.url,

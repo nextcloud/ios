@@ -368,7 +368,7 @@ extension NCSelect: UICollectionViewDataSource {
             cell.labelInfo.text = utility.getRelativeDateTitle(metadata.date as Date) + " · " + utilityFileSystem.transformedSize(metadata.size)
 
             // image local
-            if self.database.getTableLocalFile(ocId: metadata.ocId) != nil {
+            if self.database.getResultTableLocalFile(ocId: metadata.ocId) != nil {
                 cell.imageLocal.image = NCImageCache.shared.getImageOfflineFlag()
             } else if utilityFileSystem.fileProviderStorageExists(metadata) {
                 cell.imageLocal.image = NCImageCache.shared.getImageLocal()

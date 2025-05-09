@@ -1,25 +1,6 @@
-//
-//  NCManageDatabase+DashboardWidget.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 09/09/22.
-//  Copyright © 2022 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2022 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
 import UIKit
@@ -48,67 +29,77 @@ class tableDashboardWidgetButton: Object {
 }
 
 extension NCManageDatabase {
-    func getDashboardWidget(account: String, id: String) -> (tableDashboardWidget?, [tableDashboardWidgetButton]?) {
-        do {
-            let realm = try Realm()
-            guard let resultDashboard = realm.objects(tableDashboardWidget.self).filter("account == %@ AND id == %@", account, id).first else { return (nil, nil) }
-            let resultsButton = realm.objects(tableDashboardWidgetButton.self).filter("account == %@ AND id == %@", account, id).sorted(byKeyPath: "type", ascending: true)
-            return (tableDashboardWidget.init(value: resultDashboard), Array(resultsButton.map { tableDashboardWidgetButton.init(value: $0) }))
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
+
+    // MARK: - Realm Write
+
+    func addDashboardWidget(account: String, dashboardWidgets: [NCCDashboardWidget]) {
+        performRealmWrite { realm in
+            realm.delete(realm.objects(tableDashboardWidget.self).filter("account == %@", account))
+            realm.delete(realm.objects(tableDashboardWidgetButton.self).filter("account == %@", account))
+
+            for widget in dashboardWidgets {
+                let widgetObject = tableDashboardWidget()
+                widgetObject.index = "\(account) \(widget.id)"
+                widgetObject.account = account
+                widgetObject.id = widget.id
+                widgetObject.title = widget.title
+                widgetObject.order = widget.order
+                widgetObject.iconClass = widget.iconClass
+                widgetObject.iconUrl = widget.iconUrl
+                widgetObject.widgetUrl = widget.widgetUrl
+                widgetObject.itemIconsRound = widget.itemIconsRound
+
+                realm.add(widgetObject, update: .all)
+
+                widget.button?.forEach { button in
+                    let buttonObject = tableDashboardWidgetButton()
+                    buttonObject.account = account
+                    buttonObject.id = widget.id
+                    buttonObject.type = button.type
+                    buttonObject.text = button.text
+                    buttonObject.link = button.link
+                    buttonObject.index = "\(account) \(widget.id) \(button.type)"
+
+                    realm.add(buttonObject, update: .all)
+                }
+            }
         }
-        return (nil, nil)
+    }
+
+    // MARK: - Realm Read
+
+    func getDashboardWidget(account: String, id: String) -> (tableDashboardWidget?, [tableDashboardWidgetButton]?) {
+        var widget: tableDashboardWidget?
+        var buttons: [tableDashboardWidgetButton]?
+
+        performRealmRead { realm in
+            if let result = realm.objects(tableDashboardWidget.self)
+                .filter("account == %@ AND id == %@", account, id)
+                .first {
+                widget = tableDashboardWidget(value: result)
+            }
+
+            let resultButtons = realm.objects(tableDashboardWidgetButton.self)
+                .filter("account == %@ AND id == %@", account, id)
+                .sorted(byKeyPath: "type", ascending: true)
+
+            if !resultButtons.isEmpty {
+                buttons = resultButtons.map { tableDashboardWidgetButton(value: $0) }
+            }
+        }
+
+        return (widget, buttons)
     }
 
     func getDashboardWidgetApplications(account: String) -> [tableDashboardWidget] {
-        do {
-            let realm = try Realm()
-            let sortProperties = [SortDescriptor(keyPath: "order", ascending: true), SortDescriptor(keyPath: "title", ascending: true)]
-            let results = realm.objects(tableDashboardWidget.self).filter("account == %@", account).sorted(by: sortProperties)
-            return Array(results.map { tableDashboardWidget.init(value: $0) })
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
-        }
-        return []
-    }
-
-    func addDashboardWidget(account: String, dashboardWidgets: [NCCDashboardWidget]) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                let resultDashboard = realm.objects(tableDashboardWidget.self).filter("account == %@", account)
-                realm.delete(resultDashboard)
-                let resultDashboardButton = realm.objects(tableDashboardWidgetButton.self).filter("account == %@", account)
-                realm.delete(resultDashboardButton)
-
-                for widget in dashboardWidgets {
-                    let addObject = tableDashboardWidget()
-                    addObject.index = account + " " + widget.id
-                    addObject.account = account
-                    addObject.id = widget.id
-                    addObject.title = widget.title
-                    addObject.order = widget.order
-                    addObject.iconClass = widget.iconClass
-                    addObject.iconUrl = widget.iconUrl
-                    addObject.widgetUrl = widget.widgetUrl
-                    addObject.itemIconsRound = widget.itemIconsRound
-                    if let buttons = widget.button {
-                        for button in buttons {
-                            let addObject = tableDashboardWidgetButton()
-                            addObject.account = account
-                            addObject.id = widget.id
-                            addObject.type = button.type
-                            addObject.text = button.text
-                            addObject.link = button.link
-                            addObject.index = account + " " + widget.id + " " + button.type
-                            realm.add(addObject, update: .all)
-                        }
-                    }
-                    realm.add(addObject, update: .all)
-                }
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
-        }
+        performRealmRead { realm in
+            realm.objects(tableDashboardWidget.self)
+                .filter("account == %@", account)
+                .sorted(by: [
+                    SortDescriptor(keyPath: "order", ascending: true),
+                    SortDescriptor(keyPath: "title", ascending: true)
+                ])
+                .map { tableDashboardWidget(value: $0) }
+        } ?? []
     }
 }

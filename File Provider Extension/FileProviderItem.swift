@@ -77,7 +77,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         return metadata.etag.data(using: .utf8)
     }
     var isMostRecentVersionDownloaded: Bool {
-        if NCManageDatabase.shared.getTableLocalFile(ocId: metadata.ocId) == nil {
+        if NCManageDatabase.shared.getResultTableLocalFile(ocId: metadata.ocId) == nil {
             return false
         } else {
             return true

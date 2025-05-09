@@ -122,7 +122,6 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     func updateSelectedLogLevel() {
         keychain.logLevel = selectedLogLevel.rawValue
         NextcloudKit.shared.nkCommonInstance.levelLog = selectedLogLevel.rawValue
-        exit(0)
     }
 
     /// Updates the value of `selectedInterval` in the keychain.

@@ -1,5 +1,6 @@
 // SPDX-FileCopyrightText: Nextcloud GmbH
 // SPDX-FileCopyrightText: 2025 Iva Horn
+// SPDX-FileCopyrightText: 2025 Marino Faggiana
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
@@ -49,6 +50,8 @@ extension NCManageDatabase {
         "\(account) \(token)"
     }
 
+    // MARK: - Realm write
+
     ///
     /// Create a new download limit object in the database.
     ///
@@ -61,14 +64,8 @@ extension NCManageDatabase {
         downloadLimit.limit = limit
         downloadLimit.token = token
 
-        do {
-            let realm = try Realm()
-
-            try realm.write {
-                realm.add(downloadLimit, update: .all)
-            }
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+        performRealmWrite { realm in
+            realm.add(downloadLimit, update: .all)
         }
 
         return downloadLimit
@@ -82,17 +79,14 @@ extension NCManageDatabase {
     ///     - token: The `token` of the associated ``Nextcloud/tableShare/token``.
     ///
     func deleteDownloadLimit(byAccount account: String, shareToken token: String) {
-        do {
-            let realm = try Realm()
-
-            try realm.write {
-                let result = realm.objects(TableDownloadLimit.self).filter("id == %@", formatId(by: account, token: token))
-                realm.delete(result)
+        performRealmWrite { realm in
+            if let object = realm.object(ofType: TableDownloadLimit.self, forPrimaryKey: self.formatId(by: account, token: token)) {
+                realm.delete(object)
             }
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
     }
+
+    // MARK: - Realm read
 
     ///
     /// Retrieve a download limit by the token of the associated ``Nextcloud/tableShare/token``.
@@ -102,19 +96,10 @@ extension NCManageDatabase {
     ///     - token: The `token` of the associated ``tableShare``.
     ///
     func getDownloadLimit(byAccount account: String, shareToken token: String) throws -> TableDownloadLimit? {
-        do {
-            let realm = try Realm()
-            let predicate = NSPredicate(format: "id == %@", formatId(by: account, token: token))
-
-            guard let result = realm.objects(TableDownloadLimit.self).filter(predicate).first else {
-                return nil
-            }
-
-            return result
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
+        var limit: TableDownloadLimit?
+        performRealmRead { realm in
+            limit = realm.object(ofType: TableDownloadLimit.self, forPrimaryKey: self.formatId(by: account, token: token))
         }
-
-        return nil
+        return limit
     }
 }

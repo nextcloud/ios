@@ -104,10 +104,6 @@ class NCNetworkingProcess {
                     } else {
                         self.hasRun = false
                     }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber,
-                                                                object: nil,
-                                                                userInfo: ["counterDownload": 0,
-                                                                           "counterUpload": 0])
                 } else {
                     Task { [weak self] in
                         guard let self else { return }
@@ -131,8 +127,6 @@ class NCNetworkingProcess {
         let isWiFi = networking.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi
         var counterDownloading = metadatasDownloading.count
         var counterUploading = metadatasUploading.count
-
-        database.realmRefresh()
 
         /// ------------------------ WEBDAV
         ///
