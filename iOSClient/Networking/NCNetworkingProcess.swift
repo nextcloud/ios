@@ -54,7 +54,7 @@ class NCNetworkingProcess {
 
         NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { _ in
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                if UIApplication.shared.applicationState == .active {
+                if !isAppInBackground {
                     self.startTimer()
                 }
             }
@@ -63,7 +63,6 @@ class NCNetworkingProcess {
 
     private func startTimer() {
         self.timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: { _ in
-            let applicationState = UIApplication.shared.applicationState
             self.lockQueue.async {
                 guard !self.hasRun,
                       self.networking.isOnline,
@@ -92,7 +91,7 @@ class NCNetworkingProcess {
                     /// Remove Photo CameraRoll
                     ///
                     if NCKeychain().removePhotoCameraRoll,
-                       applicationState == .active,
+                       !isAppInBackground,
                        let localIdentifiers = self.database.getAssetLocalIdentifiersUploaded(),
                        !localIdentifiers.isEmpty {
                         PHPhotoLibrary.shared().performChanges({
@@ -117,7 +116,6 @@ class NCNetworkingProcess {
 
     @discardableResult
     private func start() async -> (counterDownloading: Int, counterUploading: Int) {
-        let applicationState = await checkApplicationState()
         let httpMaximumConnectionsPerHostInDownload = NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload
         var httpMaximumConnectionsPerHostInUpload = NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload
         let sessionUploadSelectors = [global.selectorUploadFileNODelete, global.selectorUploadFile, global.selectorUploadAutoUpload]
@@ -169,7 +167,7 @@ class NCNetworkingProcess {
         ///
 
         /// In background max 2 upload otherwise iOS Termination Reason: RUNNINGBOARD 0xdead10cc
-        if applicationState == .background {
+        if isAppInBackground {
             httpMaximumConnectionsPerHostInUpload = 2
         }
 
@@ -215,7 +213,7 @@ class NCNetworkingProcess {
                     let isInDirectoryE2EE = metadata.isDirectoryE2EE
                     /// NO WiFi
                     if !isWiFi && metadata.session == networking.sessionUploadBackgroundWWan { continue }
-                    if applicationState != .active && (isInDirectoryE2EE || metadata.chunk > 0) { continue }
+                    if isAppInBackground && (isInDirectoryE2EE || metadata.chunk > 0) { continue }
                     if let metadata = self.database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusUploading) {
                         /// find controller
                         var controller: NCMainTabBarController?
@@ -278,15 +276,6 @@ class NCNetworkingProcess {
         }
 
         return (counterDownloading, counterUploading)
-    }
-
-    private func checkApplicationState() async -> UIApplication.State {
-        await withCheckedContinuation { continuation in
-            DispatchQueue.main.async {
-                let appState = UIApplication.shared.applicationState
-                continuation.resume(returning: appState)
-            }
-        }
     }
 
     private func metadataStatusWaitWebDav() async -> Bool {
