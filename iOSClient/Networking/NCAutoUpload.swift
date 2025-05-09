@@ -133,42 +133,40 @@ class NCAutoUpload: NSObject {
                     continue
                 }
 
-                if self.database.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", session.account, serverUrl, fileNameCompatible)) == nil {
-                    let metadata = self.database.createMetadata(fileName: fileName,
-                                                                fileNameView: fileName,
-                                                                ocId: NSUUID().uuidString,
-                                                                serverUrl: serverUrl,
-                                                                url: "",
-                                                                contentType: "",
-                                                                session: session,
-                                                                sceneIdentifier: controller?.sceneIdentifier)
+                let metadata = self.database.createMetadata(fileName: fileName,
+                                                            fileNameView: fileName,
+                                                            ocId: NSUUID().uuidString,
+                                                            serverUrl: serverUrl,
+                                                            url: "",
+                                                            contentType: "",
+                                                            session: session,
+                                                            sceneIdentifier: controller?.sceneIdentifier)
 
-                    if isLivePhoto {
-                        metadata.livePhotoFile = (metadata.fileName as NSString).deletingPathExtension + ".mov"
-                    }
-                    metadata.assetLocalIdentifier = asset.localIdentifier
-                    metadata.session = uploadSession
-                    metadata.sessionSelector = NCGlobal.shared.selectorUploadAutoUpload
-                    metadata.status = NCGlobal.shared.metadataStatusWaitUpload
-                    metadata.sessionDate = Date()
-                    if assetMediaType == PHAssetMediaType.video {
-                        metadata.classFile = NKCommon.TypeClassFile.video.rawValue
-                    } else if assetMediaType == PHAssetMediaType.image {
-                        metadata.classFile = NKCommon.TypeClassFile.image.rawValue
-                    }
-
-                    let metadataCreationDate = metadata.creationDate as Date
-
-                    if lastUploadDate < metadataCreationDate {
-                        lastUploadDate = metadataCreationDate
-                    }
-
-                    metadatas.append(metadata)
+                if isLivePhoto {
+                    metadata.livePhotoFile = (metadata.fileName as NSString).deletingPathExtension + ".mov"
                 }
+                metadata.assetLocalIdentifier = asset.localIdentifier
+                metadata.session = uploadSession
+                metadata.sessionSelector = NCGlobal.shared.selectorUploadAutoUpload
+                metadata.status = NCGlobal.shared.metadataStatusWaitUpload
+                metadata.sessionDate = Date()
+                if assetMediaType == PHAssetMediaType.video {
+                    metadata.classFile = NKCommon.TypeClassFile.video.rawValue
+                } else if assetMediaType == PHAssetMediaType.image {
+                    metadata.classFile = NKCommon.TypeClassFile.image.rawValue
+                }
+
+                let metadataCreationDate = metadata.creationDate as Date
+
+                if lastUploadDate < metadataCreationDate {
+                    lastUploadDate = metadataCreationDate
+                }
+
+                metadatas.append(metadata)
             }
 
             self.endForAssetToUpload = true
-            self.database.addMetadatas(metadatas)
+            self.database.addMetadatas(metadatas, sync: false)
         }
     }
 
