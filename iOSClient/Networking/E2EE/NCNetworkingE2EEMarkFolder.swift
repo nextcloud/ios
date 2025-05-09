@@ -38,7 +38,7 @@ class NCNetworkingE2EEMarkFolder: NSObject {
 
         file.e2eEncrypted = true
 
-        let metadata = self.database.addMetadata(self.database.convertFileToMetadata(file, isDirectoryE2EE: false))
+        let metadata = self.database.addMetadataAndReturn(self.database.convertFileToMetadata(file, isDirectoryE2EE: false))
 
         self.database.addDirectory(e2eEncrypted: true, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
         self.database.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrlFileName))
