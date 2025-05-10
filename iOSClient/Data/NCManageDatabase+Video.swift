@@ -33,43 +33,52 @@ extension NCManageDatabase {
         if metadata.isLivePhoto { return }
 
         performRealmWrite { realm in
-            let video = realm.objects(tableVideo.self)
-                .filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId)
-                .first ?? tableVideo()
+            if let result = realm.objects(tableVideo.self).filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId).first {
+                if let position {
+                    result.position = position
+                }
+                if let width {
+                    result.width = width
+                }
+                if let height {
+                    result.height = height
+                }
+                if let length {
+                    result.length = length
+                }
+                if let currentAudioTrackIndex {
+                    result.currentAudioTrackIndex = currentAudioTrackIndex
+                }
+                if let currentVideoSubTitleIndex {
+                    result.currentVideoSubTitleIndex = currentVideoSubTitleIndex
+                }
+                realm.add(result, update: .all)
+            } else {
+                let video = tableVideo()
 
-            video.account = metadata.account
-            video.ocId = metadata.ocId
-            position.map { video.position = $0 }
-            width.map { video.width = $0 }
-            height.map { video.height = $0 }
-            length.map { video.length = $0 }
-            currentAudioTrackIndex.map { video.currentAudioTrackIndex = $0 }
-            currentVideoSubTitleIndex.map { video.currentVideoSubTitleIndex = $0 }
-
-            realm.add(video, update: .all)
+                video.account = metadata.account
+                video.ocId = metadata.ocId
+                if let position {
+                    video.position = position
+                }
+                if let width {
+                    video.width = width
+                }
+                if let height {
+                    video.height = height
+                }
+                if let length {
+                    video.length = length
+                }
+                if let currentAudioTrackIndex {
+                    video.currentAudioTrackIndex = currentAudioTrackIndex
+                }
+                if let currentVideoSubTitleIndex {
+                    video.currentVideoSubTitleIndex = currentVideoSubTitleIndex
+                }
+                realm.add(video, update: .all)
+            }
         }
-    }
-
-    func addVideoCodec(metadata: tableMetadata, codecNameVideo: String?, codecNameAudio: String?, codecAudioChannelLayout: String?, codecAudioLanguage: String?, codecMaxCompatibility: Bool, codecQuality: String?) {
-        performRealmWrite { realm in
-           let video = realm.objects(tableVideo.self)
-               .filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId)
-               .first ?? {
-                   let new = tableVideo()
-                   new.account = metadata.account
-                   new.ocId = metadata.ocId
-                   return new
-               }()
-
-           codecNameVideo.map { video.codecNameVideo = $0 }
-           codecNameAudio.map { video.codecNameAudio = $0 }
-           codecAudioChannelLayout.map { video.codecAudioChannelLayout = $0 }
-           codecAudioLanguage.map { video.codecAudioLanguage = $0 }
-           codecQuality.map { video.codecQuality = $0 }
-
-           video.codecMaxCompatibility = codecMaxCompatibility
-           realm.add(video, update: .all)
-       }
     }
 
     func deleteVideo(metadata: tableMetadata) {
