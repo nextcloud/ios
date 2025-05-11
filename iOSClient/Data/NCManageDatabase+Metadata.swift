@@ -1177,4 +1177,51 @@ extension NCManageDatabase {
             return freeze ? results.freeze() : results
         }
     }
+
+    func fetchNetworkingProcessState() -> (counterDownloading: Int, counterUploading: Int) {
+        return performRealmRead { realm in
+            let downloading = realm.objects(tableMetadata.self)
+                .filter("status == %d", NCGlobal.shared.metadataStatusDownloading)
+            let uploading = realm.objects(tableMetadata.self)
+                .filter("status == %d", NCGlobal.shared.metadataStatusUploading)
+
+            return (
+                counterDownloading: downloading.count,
+                counterUploading: uploading.count
+            )
+        } ?? (
+            counterDownloading: 0,
+            counterUploading: 0
+        )
+    }
+
+    func fetchNetworkingProcessDownload(limit: Int, session: String) -> [tableMetadata] {
+        return performRealmRead { realm in
+            let metadatas = realm.objects(tableMetadata.self)
+                .filter("session == %@ AND status == %d", session, NCGlobal.shared.metadataStatusWaitDownload)
+                .sorted(byKeyPath: "sessionDate")
+                .prefix(limit)
+
+            return metadatas.map { tableMetadata(value: $0) }
+        } ?? []
+    }
+
+    func fetchNetworkingProcessUpload(limit: Int, sessionSelector: String) -> [tableMetadata] {
+        return performRealmRead { realm in
+            let metadatas = realm.objects(tableMetadata.self)
+                .filter("sessionSelector == %@ AND status == %d", sessionSelector, NCGlobal.shared.metadataStatusWaitUpload)
+                .sorted(byKeyPath: "sessionDate")
+                .prefix(limit)
+
+            return metadatas.map { tableMetadata(value: $0) }
+        } ?? []
+    }
+
+    func hasUploadingMetadataWithChunksOrE2EE() -> Bool {
+        return performRealmRead { realm in
+            realm.objects(tableMetadata.self)
+                .filter("status == %d AND (chunk > 0 OR isDirectoryE2EE == true)", NCGlobal.shared.metadataStatusUploading)
+                .first != nil
+        } ?? false
+    }
 }

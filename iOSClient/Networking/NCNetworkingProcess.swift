@@ -118,13 +118,13 @@ class NCNetworkingProcess {
     private func start() async -> (counterDownloading: Int, counterUploading: Int) {
         let httpMaximumConnectionsPerHostInDownload = NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload
         var httpMaximumConnectionsPerHostInUpload = NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload
+        let result = self.database.fetchNetworkingProcessState()
+        var counterDownloading = result.counterDownloading
+        var counterUploading = result.counterUploading
         let sessionUploadSelectors = [global.selectorUploadFileNODelete, global.selectorUploadFile, global.selectorUploadAutoUpload]
-        let metadatasDownloading = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusDownloading))
-        let metadatasUploading = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusUploading))
         let metadatasUploadError: [tableMetadata] = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusUploadError), sortedByKeyPath: "sessionDate", ascending: true) ?? []
+
         let isWiFi = networking.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi
-        var counterDownloading = metadatasDownloading.count
-        var counterUploading = metadatasUploading.count
 
         /// ------------------------ WEBDAV
         ///
@@ -139,7 +139,8 @@ class NCNetworkingProcess {
         /// ------------------------ DOWNLOAD
         ///
         let limitDownload = httpMaximumConnectionsPerHostInDownload - counterDownloading
-        let metadatasWaitDownload = self.database.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d", networking.sessionDownloadBackground, global.metadataStatusWaitDownload), numItems: limitDownload, sorted: "sessionDate", ascending: true)
+        let metadatasWaitDownload = self.database.fetchNetworkingProcessDownload(limit: limitDownload, session: networking.sessionDownloadBackground)
+
         for metadata in metadatasWaitDownload where counterDownloading < httpMaximumConnectionsPerHostInDownload {
             /// Check Server Error
             guard networking.noServerErrorAccount(metadata.account) else {
@@ -171,21 +172,14 @@ class NCNetworkingProcess {
             httpMaximumConnectionsPerHostInUpload = 2
         }
 
-        /// E2EE - only one for time
-        for metadata in metadatasUploading.unique(map: { $0.serverUrl }) {
-            if metadata.isDirectoryE2EE {
-                return (counterDownloading, counterUploading)
-            }
-        }
-
-        /// CHUNK - only one for time
-        if !metadatasUploading.filter({ $0.chunk > 0 }).isEmpty {
+        /// CHUNK or  E2EE - only one for time
+        if self.database.hasUploadingMetadataWithChunksOrE2EE() {
             return (counterDownloading, counterUploading)
         }
 
         for sessionSelector in sessionUploadSelectors where counterUploading < httpMaximumConnectionsPerHostInUpload {
             let limitUpload = httpMaximumConnectionsPerHostInUpload - counterUploading
-            let metadatasWaitUpload = self.database.getMetadatas(predicate: NSPredicate(format: "sessionSelector == %@ AND status == %d", sessionSelector, global.metadataStatusWaitUpload), numItems: limitUpload, sorted: "sessionDate", ascending: true)
+            let metadatasWaitUpload = self.database.fetchNetworkingProcessUpload(limit: limitUpload, sessionSelector: sessionSelector)
 
             if !metadatasWaitUpload.isEmpty {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] PROCESS (UPLOAD) find \(metadatasWaitUpload.count) items")
