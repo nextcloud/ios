@@ -31,6 +31,16 @@ final class NCManageDatabase: Sendable {
                     newObject?["etag"] = ""
                 }
             }
+            if oldSchemaVersion < 383 {
+                migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
+                    if let oldDate = oldObject?["autoUploadSinceDate"] as? Date {
+                        newObject?["autoUploadOnlyNewSinceDate"] = oldDate
+                    } else {
+                        newObject?["autoUploadOnlyNewSinceDate"] = Date()
+                    }
+                    newObject?["autoUploadOnlyNew"] = true
+                }
+            }
             if oldSchemaVersion < databaseSchemaVersion {
                 // automatic conversion for delete object / properties
             }
