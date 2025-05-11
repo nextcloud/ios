@@ -40,20 +40,23 @@ extension NCManageDatabase {
 
     // MARK: - Realm Read
 
-    func shouldSkipAutoUploadTransfer(account: String, serverUrl: String, autoUploadServerUrl: String, fileName: String) -> Bool {
-        var shouldSkip = false
+    func fetchSkipFileNames(account: String, autoUploadServerUrl: String) -> Set<String> {
+        var skipFileNames = Set<String>()
+
         performRealmRead { realm in
-            if realm.objects(tableMetadata.self)
-                .filter("account == %@ AND serverUrl == %@ AND fileNameView == %@", account, serverUrl, fileName)
-                .first != nil {
-                shouldSkip = true
-            } else if realm.objects(tableAutoUploadTransfer.self)
-                        .filter("account == %@ AND autoUploadServerUrl == %@ AND fileName == %@", account, autoUploadServerUrl, fileName)
-                        .first != nil {
-                shouldSkip = true
-            }
+            let metadatas = realm.objects(tableMetadata.self)
+                .filter("account == %@ AND serverUrl == %@", account, autoUploadServerUrl)
+                .map(\.fileNameView)
+
+            let transfers = realm.objects(tableAutoUploadTransfer.self)
+                .filter("account == %@ AND autoUploadServerUrl == %@", account, autoUploadServerUrl)
+                .map(\.fileName)
+
+            skipFileNames.formUnion(metadatas)
+            skipFileNames.formUnion(transfers)
         }
-        return shouldSkip
+
+        return skipFileNames
     }
 
     func fetchLastAutoUploadedDate(account: String, autoUploadServerUrl: String) -> Date? {

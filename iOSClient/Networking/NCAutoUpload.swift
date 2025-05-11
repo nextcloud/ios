@@ -67,16 +67,17 @@ class NCAutoUpload: NSObject {
         let session = NCSession.shared.getSession(account: account)
         let autoUploadServerUrl = self.database.getAccountAutoUploadPath(session: session)
         var metadatas: [tableMetadata] = []
+        let formatCompatibility = NCKeychain().formatCompatibility
 
         self.getCameraRollAssets(controller: controller, assetCollections: assetCollections, account: account, autoUploadServerUrl: autoUploadServerUrl) { assets, fileNames in
             guard let assets,
                   let fileNames,
-                  !assets.isEmpty,
-                  assets.count == fileNames.count
+                  !assets.isEmpty
             else {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload, no new assets found [" + log + "]")
                 return completion(0)
             }
+            let skipFileNames = self.database.fetchSkipFileNames(account: account, autoUploadServerUrl: autoUploadServerUrl)
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload, new \(assets.count) assets found [" + log + "]")
 
@@ -87,32 +88,22 @@ class NCAutoUpload: NSObject {
             self.endForAssetToUpload = false
 
             for (index, asset) in assets.enumerated() {
+                self.hud.progress(num: Float(index + 1), total: Float(assets.count))
                 let fileName = fileNames[index]
+
+                // Convert HEIC if compatibility mode is on
+                let fileNameCompatible = formatCompatibility && (fileName as NSString).pathExtension.lowercased() == "heic" ? (fileName as NSString).deletingPathExtension + ".jpg" : fileName
+
+                guard !skipFileNames.contains(fileNameCompatible)
+                else {
+                    continue
+                }
+
                 let mediaType = asset.mediaType
                 let isLivePhoto = asset.mediaSubtypes.contains(.photoLive) && NCKeychain().livePhoto
                 let serverUrl = tblAccount.autoUploadCreateSubfolder ? NCUtilityFileSystem().createGranularityPath(asset: asset, serverUrl: autoUploadServerUrl) : autoUploadServerUrl
                 let onWWAN = (mediaType == .image && tblAccount.autoUploadWWAnPhoto) || (mediaType == .video && tblAccount.autoUploadWWAnVideo)
                 let uploadSession = onWWAN ? NCNetworking.shared.sessionUploadBackgroundWWan : NCNetworking.shared.sessionUploadBackground
-
-                // Convert HEIC if compatibility mode is on
-                let fileNameCompatible: String = {
-                    let ext = (fileName as NSString).pathExtension.lowercased()
-                    guard ext == "heic", NCKeychain().formatCompatibility else {
-                        return fileName
-                    }
-                    return ((fileName as NSString).deletingPathExtension + ".jpg")
-                }()
-
-                self.hud.progress(num: Float(index + 1), total: Float(assets.count))
-
-                guard !self.database.shouldSkipAutoUploadTransfer(
-                    account: session.account,
-                    serverUrl: serverUrl,
-                    autoUploadServerUrl: autoUploadServerUrl,
-                    fileName: fileNameCompatible
-                ) else {
-                    continue
-                }
 
                 let metadata = self.database.createMetadata(
                     fileName: fileName,
@@ -144,6 +135,13 @@ class NCAutoUpload: NSObject {
                 }()
 
                 metadatas.append(metadata)
+            }
+
+            /// Set last date in autoUploadOnlyNewSinceDate
+            if !metadatas.isEmpty,
+               let metadata = metadatas.last {
+                let date = metadata.creationDate as Date
+                self.database.updateAccountProperty(\.autoUploadOnlyNewSinceDate, value: date, account: session.account)
             }
 
             self.endForAssetToUpload = true
@@ -211,18 +209,13 @@ class NCAutoUpload: NSObject {
                 let result = PHAsset.fetchAssets(in: collection, options: fetchOptions)
                 return result.objects(at: IndexSet(0..<result.count))
             }
-
             let newAssets = OrderedSet(allAssets)
-
-            DispatchQueue.main.async {
-                let fileNames = newAssets.compactMap { asset -> String? in
-                    let date = asset.creationDate ?? Date()
-                    return NCUtilityFileSystem().createFileName(asset.originalFilename, fileDate: date, fileType: asset.mediaType)
-                }
-                DispatchQueue.global().async {
-                    completion(Array(newAssets), fileNames)
-                }
+            let fileNames = newAssets.compactMap { asset -> String? in
+                let date = asset.creationDate ?? Date()
+                return NCUtilityFileSystem().createFileName(asset.originalFilename, fileDate: date, fileType: asset.mediaType)
             }
+
+            completion(Array(newAssets), fileNames)
         }
     }
 }
