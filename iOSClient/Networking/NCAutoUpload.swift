@@ -40,7 +40,7 @@ class NCAutoUpload: NSObject {
         }
     }
 
-    func initAutoUpload(controller: NCMainTabBarController? = nil, account: String) async -> Int {
+    func initAutoUploadProcessingTask(controller: NCMainTabBarController? = nil, account: String) async -> Int {
         await withUnsafeContinuation({ continuation in
             initAutoUpload(controller: controller, account: account) { num in
                 continuation.resume(returning: num)
@@ -51,12 +51,11 @@ class NCAutoUpload: NSObject {
     func autoUploadSelectedAlbums(controller: NCMainTabBarController?, assetCollections: [PHAssetCollection], log: String, account: String) {
         hud.initHudRing(view: controller?.view, text: NSLocalizedString("_creating_db_photo_progress", comment: ""))
         NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
-            guard hasPermission else { return }
-            DispatchQueue.global().async {
-                self.uploadAssets(controller: controller, assetCollections: assetCollections, log: log, account: account) { _ in
-                    self.hud.dismiss()
-                }
+            guard hasPermission
+            else {
+                return
             }
+            self.uploadAssets(controller: controller, assetCollections: assetCollections, log: log, account: account) { _ in }
         }
     }
 
@@ -68,6 +67,8 @@ class NCAutoUpload: NSObject {
         let autoUploadServerUrl = self.database.getAccountAutoUploadPath(session: session)
         var metadatas: [tableMetadata] = []
         let formatCompatibility = NCKeychain().formatCompatibility
+        let keychainLivePhoto = NCKeychain().livePhoto
+        let fileSystem = NCUtilityFileSystem()
 
         self.getCameraRollAssets(controller: controller, assetCollections: assetCollections, account: account, autoUploadServerUrl: autoUploadServerUrl) { assets, fileNames in
             guard let assets,
@@ -100,8 +101,8 @@ class NCAutoUpload: NSObject {
                 }
 
                 let mediaType = asset.mediaType
-                let isLivePhoto = asset.mediaSubtypes.contains(.photoLive) && NCKeychain().livePhoto
-                let serverUrl = tblAccount.autoUploadCreateSubfolder ? NCUtilityFileSystem().createGranularityPath(asset: asset, serverUrl: autoUploadServerUrl) : autoUploadServerUrl
+                let isLivePhoto = asset.mediaSubtypes.contains(.photoLive) && keychainLivePhoto
+                let serverUrl = tblAccount.autoUploadCreateSubfolder ? fileSystem.createGranularityPath(asset: asset, serverUrl: autoUploadServerUrl) : autoUploadServerUrl
                 let onWWAN = (mediaType == .image && tblAccount.autoUploadWWAnPhoto) || (mediaType == .video && tblAccount.autoUploadWWAnVideo)
                 let uploadSession = onWWAN ? NCNetworking.shared.sessionUploadBackgroundWWan : NCNetworking.shared.sessionUploadBackground
 
@@ -144,6 +145,7 @@ class NCAutoUpload: NSObject {
                 self.database.updateAccountProperty(\.autoUploadOnlyNewSinceDate, value: date, account: session.account)
             }
 
+            self.hud.dismiss()
             self.endForAssetToUpload = true
             self.database.addMetadatas(metadatas, sync: false)
         }

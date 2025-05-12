@@ -207,7 +207,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             // Test every > 1 min
             if Date() > self.taskAutoUploadDate.addingTimeInterval(60) {
                 self.taskAutoUploadDate = Date()
-                numAutoUpload = await NCAutoUpload.shared.initAutoUpload(account: account)
+                numAutoUpload = await NCAutoUpload.shared.initAutoUploadProcessingTask(account: account)
                 NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) auto upload with \(numAutoUpload) uploads")
             } else {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) disabled auto upload")
