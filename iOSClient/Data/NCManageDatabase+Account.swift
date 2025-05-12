@@ -368,10 +368,10 @@ extension NCManageDatabase {
         } ?? []
     }
 
-    func getAccountAutoUploadFileName() -> String {
+    func getAccountAutoUploadFileName(account: String) -> String {
         return performRealmRead { realm in
             guard let result = realm.objects(tableAccount.self)
-                .filter("active == true")
+                .filter("account == %@", account)
                 .first
             else {
                 return NCBrandOptions.shared.folderDefaultAutoUpload
@@ -381,11 +381,15 @@ extension NCManageDatabase {
     }
 
     func getAccountAutoUploadDirectory(session: NCSession.Session) -> String {
-        let homeServer = utilityFileSystem.getHomeServer(session: session)
+        return getAccountAutoUploadDirectory(account: session.account, urlBase: session.urlBase, userId: session.userId)
+    }
+
+    func getAccountAutoUploadDirectory(account: String, urlBase: String, userId: String) -> String {
+        let homeServer = utilityFileSystem.getHomeServer(urlBase: urlBase, userId: userId)
 
         return performRealmRead { realm in
             realm.objects(tableAccount.self)
-                .filter("active == true")
+                .filter("account == %@", account)
                 .first?
                 .autoUploadDirectory
         }.flatMap { directory in
@@ -393,27 +397,15 @@ extension NCManageDatabase {
         } ?? homeServer
     }
 
-    func getAccountAutoUploadPath(session: NCSession.Session) -> String {
-        let cameraFileName = self.getAccountAutoUploadFileName()
-        let cameraDirectory = self.getAccountAutoUploadDirectory(session: session)
-        let folderPhotos = utilityFileSystem.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)
-        return folderPhotos
+    func getAccountAutoUploadServerUrl(session: NCSession.Session) -> String {
+        return getAccountAutoUploadServerUrl(account: session.account, urlBase: session.urlBase, userId: session.userId)
     }
 
-    func getAccountAutoUploadServerUrl(account: String) -> String? {
-        var autoUploadServerUrl: String?
-
-        performRealmRead { realm in
-            if let result = realm.objects(tableAccount.self)
-                .filter("account == %@", account)
-                .first {
-                let homeServer = NCUtilityFileSystem().getHomeServer(urlBase: result.urlBase, userId: result.userId)
-                let autoUploadFileName = result.autoUploadFileName.isEmpty ? NCBrandOptions.shared.folderDefaultAutoUpload : result.autoUploadFileName
-                autoUploadServerUrl = utilityFileSystem.stringAppendServerUrl(homeServer, addFileName: autoUploadFileName)
-            }
-        }
-
-        return autoUploadServerUrl
+    func getAccountAutoUploadServerUrl(account: String, urlBase: String, userId: String) -> String {
+        let cameraFileName = self.getAccountAutoUploadFileName(account: account)
+        let cameraDirectory = self.getAccountAutoUploadDirectory(account: account, urlBase: urlBase, userId: userId)
+        let folderPhotos = utilityFileSystem.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)
+        return folderPhotos
     }
 
     func getAccountAutoUploadSubfolderGranularity() -> Int {

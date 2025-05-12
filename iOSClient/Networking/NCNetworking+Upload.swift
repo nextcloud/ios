@@ -402,8 +402,8 @@ extension NCNetworking {
             }
 
             /// Update the auto upload data
-            if selector == self.global.selectorUploadAutoUpload,
-                let autoUploadServerUrl = self.database.getAccountAutoUploadServerUrl(account: metadata.account) {
+            if selector == self.global.selectorUploadAutoUpload {
+                let autoUploadServerUrl = self.database.getAccountAutoUploadServerUrl(account: metadata.account, urlBase: metadata.urlBase, userId: metadata.userId)
                 self.database.addAutoUploadTransfer(account: metadata.account,
                                                     autoUploadServerUrl: autoUploadServerUrl,
                                                     fileName: metadata.fileNameView,

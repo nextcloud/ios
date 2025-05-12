@@ -66,7 +66,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// A string variable that contains error text
     @Published var error: String = ""
     let database = NCManageDatabase.shared
-    @Published var autoUploadPath = "\(NCManageDatabase.shared.getAccountAutoUploadFileName())"
+    @Published var autoUploadPath: String = ""
 
     /// Tip
     var tip: EasyTipView?
@@ -82,6 +82,9 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// Initialization code to set up the ViewModel with the active account
     init(controller: NCMainTabBarController?) {
         self.controller = controller
+        if let account = controller?.account {
+            self.autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadFileName(account: account)
+        }
 
         NotificationCenter.default.addObserver(forName: UIDevice.orientationDidChangeNotification,
                                                object: nil,
@@ -193,7 +196,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     ///
     /// - Returns: The path for auto-upload.
     func returnPath() -> String {
-        let autoUploadPath = self.database.getAccountAutoUploadDirectory(session: session) + "/" + self.database.getAccountAutoUploadFileName()
+        let autoUploadPath = self.database.getAccountAutoUploadDirectory(session: session) + "/" + self.database.getAccountAutoUploadFileName(account: session.account)
         let homeServer = NCUtilityFileSystem().getHomeServer(session: session)
         let path = autoUploadPath.replacingOccurrences(of: homeServer, with: "")
         return path

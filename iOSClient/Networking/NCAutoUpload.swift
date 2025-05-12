@@ -20,21 +20,20 @@ class NCAutoUpload: NSObject {
         DispatchQueue.global().async {
             guard NCNetworking.shared.isOnline,
                   let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
-                  tableAccount.autoUploadStart,
-                  let autoUploadServerUrl = self.database.getAccountAutoUploadServerUrl(account: account)
+                  tableAccount.autoUploadStart
             else {
                 return completion(0)
             }
             let albumIds = NCKeychain().getAutoUploadAlbumIds(account: account)
             let selectedAlbums = PHAssetCollection.allAlbums.filter({albumIds.contains($0.localIdentifier)})
 
-            self.getCameraRollAssets(controller: controller, assetCollections: selectedAlbums, account: account, autoUploadServerUrl: autoUploadServerUrl) { assets, fileNames in
+            self.getCameraRollAssets(controller: controller, assetCollections: selectedAlbums, account: account) { assets, fileNames in
                 guard let assets,
                       !assets.isEmpty,
                       let fileNames else {
                     return completion(0)
                 }
-                self.uploadAssets(controller: controller, tblAccount: tableAccount, assets: assets, fileNames: fileNames, account: account) { num in
+                self.uploadAssets(controller: controller, tblAccount: tableAccount, assets: assets, fileNames: fileNames) { num in
                     completion(num)
                 }
             }
@@ -50,31 +49,30 @@ class NCAutoUpload: NSObject {
     }
 
     func autoUploadSelectedAlbums(controller: NCMainTabBarController?, assetCollections: [PHAssetCollection], log: String, account: String) {
-        guard let tblAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
-              let autoUploadServerUrl = self.database.getAccountAutoUploadServerUrl(account: account)
+        guard let tblAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account))
         else {
             return
         }
         DispatchQueue.global().async {
-            self.getCameraRollAssets(controller: controller, assetCollections: assetCollections, account: account, autoUploadServerUrl: autoUploadServerUrl) { assets, fileNames in
+            self.getCameraRollAssets(controller: controller, assetCollections: assetCollections, account: account) { assets, fileNames in
                 guard let assets,
                       !assets.isEmpty,
                       let fileNames else {
                     return
                 }
-                self.uploadAssets(controller: controller, tblAccount: tblAccount, assets: assets, fileNames: fileNames, account: account)
+                self.uploadAssets(controller: controller, tblAccount: tblAccount, assets: assets, fileNames: fileNames)
             }
         }
     }
 
-    private func uploadAssets(controller: NCMainTabBarController?, tblAccount: tableAccount, assets: [PHAsset], fileNames: [String], account: String, completion: @escaping (_ num: Int) -> Void = { _ in }) {
-        let session = NCSession.shared.getSession(account: account)
-        let autoUploadServerUrl = self.database.getAccountAutoUploadPath(session: session)
+    private func uploadAssets(controller: NCMainTabBarController?, tblAccount: tableAccount, assets: [PHAsset], fileNames: [String], completion: @escaping (_ num: Int) -> Void = { _ in }) {
+        let session = NCSession.shared.getSession(account: tblAccount.account)
+        let autoUploadServerUrl = self.database.getAccountAutoUploadServerUrl(account: tblAccount.account, urlBase: tblAccount.urlBase, userId: tblAccount.userId)
         var metadatas: [tableMetadata] = []
         let formatCompatibility = NCKeychain().formatCompatibility
         let keychainLivePhoto = NCKeychain().livePhoto
         let fileSystem = NCUtilityFileSystem()
-        let skipFileNames = self.database.fetchSkipFileNames(account: account, autoUploadServerUrl: autoUploadServerUrl)
+        let skipFileNames = self.database.fetchSkipFileNames(account: tblAccount.account, autoUploadServerUrl: autoUploadServerUrl)
 
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload, new \(assets.count) assets found")
 
@@ -142,13 +140,14 @@ class NCAutoUpload: NSObject {
 
     // MARK: -
 
-    private func getCameraRollAssets(controller: NCMainTabBarController?, assetCollections: [PHAssetCollection] = [], account: String, autoUploadServerUrl: String, completion: @escaping (_ assets: [PHAsset]?, _ fileNames: [String]?) -> Void) {
+    private func getCameraRollAssets(controller: NCMainTabBarController?, assetCollections: [PHAssetCollection] = [], account: String, completion: @escaping (_ assets: [PHAsset]?, _ fileNames: [String]?) -> Void) {
         NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { [self] hasPermission in
             guard hasPermission,
                   let tblAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account))
             else {
                 return completion(nil, nil)
             }
+            let autoUploadServerUrl = self.database.getAccountAutoUploadServerUrl(account: tblAccount.account, urlBase: tblAccount.urlBase, userId: tblAccount.userId)
             var mediaPredicates: [NSPredicate] = []
             var datePredicates: [NSPredicate] = []
             let fetchOptions = PHFetchOptions()

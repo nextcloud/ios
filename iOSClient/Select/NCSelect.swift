@@ -152,7 +152,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
             titleCurrentFolder = NCBrandOptions.shared.brand
         }
 
-        autoUploadFileName = self.database.getAccountAutoUploadFileName()
+        autoUploadFileName = self.database.getAccountAutoUploadFileName(account: session.account)
         autoUploadDirectory = self.database.getAccountAutoUploadDirectory(session: session)
 
         self.navigationItem.title = titleCurrentFolder
