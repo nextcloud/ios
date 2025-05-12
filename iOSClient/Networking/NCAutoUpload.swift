@@ -84,9 +84,10 @@ class NCAutoUpload: NSObject {
             // Convert HEIC if compatibility mode is on
             let fileNameCompatible = formatCompatibility && (fileName as NSString).pathExtension.lowercased() == "heic" ? (fileName as NSString).deletingPathExtension + ".jpg" : fileName
 
-            guard !skipFileNames.contains(fileNameCompatible)
-            else {
+            if skipFileNames.contains(fileNameCompatible) || skipFileNames.contains(fileName) {
                 continue
+            } else {
+                print("DEBUG")
             }
 
             let mediaType = asset.mediaType
