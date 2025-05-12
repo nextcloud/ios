@@ -56,6 +56,9 @@ class NCAccount: NSObject {
 
         NextcloudKit.shared.getUserProfile(account: account) { account, userProfile, _, error in
             if error == .success, let userProfile {
+                /// Login log debug
+                NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Create new account \(account) with user \(user) and userId \(userProfile.userId)")
+                ///
                 NextcloudKit.shared.updateSession(account: account, userId: userProfile.userId)
                 NCSession.shared.appendSession(account: account, urlBase: urlBase, user: user, userId: userProfile.userId)
                 self.database.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
