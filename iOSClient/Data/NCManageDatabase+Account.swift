@@ -397,11 +397,11 @@ extension NCManageDatabase {
         } ?? homeServer
     }
 
-    func getAccountAutoUploadServerUrl(session: NCSession.Session) -> String {
-        return getAccountAutoUploadServerUrl(account: session.account, urlBase: session.urlBase, userId: session.userId)
+    func getAccountAutoUploadServerUrlBase(session: NCSession.Session) -> String {
+        return getAccountAutoUploadServerUrlBase(account: session.account, urlBase: session.urlBase, userId: session.userId)
     }
 
-    func getAccountAutoUploadServerUrl(account: String, urlBase: String, userId: String) -> String {
+    func getAccountAutoUploadServerUrlBase(account: String, urlBase: String, userId: String) -> String {
         let cameraFileName = self.getAccountAutoUploadFileName(account: account)
         let cameraDirectory = self.getAccountAutoUploadDirectory(account: account, urlBase: urlBase, userId: userId)
         let folderPhotos = utilityFileSystem.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)

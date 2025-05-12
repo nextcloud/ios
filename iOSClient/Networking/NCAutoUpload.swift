@@ -67,12 +67,12 @@ class NCAutoUpload: NSObject {
 
     private func uploadAssets(controller: NCMainTabBarController?, tblAccount: tableAccount, assets: [PHAsset], fileNames: [String], completion: @escaping (_ num: Int) -> Void = { _ in }) {
         let session = NCSession.shared.getSession(account: tblAccount.account)
-        let autoUploadServerUrl = self.database.getAccountAutoUploadServerUrl(account: tblAccount.account, urlBase: tblAccount.urlBase, userId: tblAccount.userId)
+        let autoUploadServerUrlBase = self.database.getAccountAutoUploadServerUrlBase(account: tblAccount.account, urlBase: tblAccount.urlBase, userId: tblAccount.userId)
         var metadatas: [tableMetadata] = []
         let formatCompatibility = NCKeychain().formatCompatibility
         let keychainLivePhoto = NCKeychain().livePhoto
         let fileSystem = NCUtilityFileSystem()
-        let skipFileNames = self.database.fetchSkipFileNames(account: tblAccount.account, autoUploadServerUrl: autoUploadServerUrl)
+        let skipFileNames = self.database.fetchSkipFileNames(account: tblAccount.account, serverUrl: "", autoUploadServerUrlBase: autoUploadServerUrlBase)
 
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload, new \(assets.count) assets found")
 
@@ -92,7 +92,7 @@ class NCAutoUpload: NSObject {
 
             let mediaType = asset.mediaType
             let isLivePhoto = asset.mediaSubtypes.contains(.photoLive) && keychainLivePhoto
-            let serverUrl = tblAccount.autoUploadCreateSubfolder ? fileSystem.createGranularityPath(asset: asset, serverUrl: autoUploadServerUrl) : autoUploadServerUrl
+            let serverUrl = tblAccount.autoUploadCreateSubfolder ? fileSystem.createGranularityPath(asset: asset, serverUrl: autoUploadServerUrlBase) : autoUploadServerUrlBase
             let onWWAN = (mediaType == .image && tblAccount.autoUploadWWAnPhoto) || (mediaType == .video && tblAccount.autoUploadWWAnVideo)
             let uploadSession = onWWAN ? NCNetworking.shared.sessionUploadBackgroundWWan : NCNetworking.shared.sessionUploadBackground
 
@@ -148,7 +148,7 @@ class NCAutoUpload: NSObject {
             else {
                 return completion(nil, nil)
             }
-            let autoUploadServerUrl = self.database.getAccountAutoUploadServerUrl(account: tblAccount.account, urlBase: tblAccount.urlBase, userId: tblAccount.userId)
+            let autoUploadServerUrlBase = self.database.getAccountAutoUploadServerUrlBase(account: tblAccount.account, urlBase: tblAccount.urlBase, userId: tblAccount.userId)
             var mediaPredicates: [NSPredicate] = []
             var datePredicates: [NSPredicate] = []
             let fetchOptions = PHFetchOptions()
@@ -162,7 +162,7 @@ class NCAutoUpload: NSObject {
 
             if tblAccount.autoUploadOnlyNew {
                 datePredicates.append(NSPredicate(format: "creationDate > %@", tblAccount.autoUploadOnlyNewSinceDate as NSDate))
-            } else if let lastDate = self.database.fetchLastAutoUploadedDate(account: account, autoUploadServerUrl: autoUploadServerUrl) {
+            } else if let lastDate = self.database.fetchLastAutoUploadedDate(account: account, autoUploadServerUrlBase: autoUploadServerUrlBase) {
                 datePredicates.append(NSPredicate(format: "creationDate > %@", lastDate as NSDate))
             }
 

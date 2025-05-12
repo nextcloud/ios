@@ -679,7 +679,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         }
     }
 
-    func createGranularityPath(asset: PHAsset? = nil, serverUrl: String? = nil) -> String {
+    func createGranularityPath(asset: PHAsset? = nil, serverUrlBase: String? = nil) -> String {
         let autoUploadSubfolderGranularity = NCManageDatabase.shared.getAccountAutoUploadSubfolderGranularity()
         let dateFormatter = DateFormatter()
         let date = asset?.creationDate ?? Date()
@@ -699,8 +699,8 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
             path = "\(year)/\(month)"
         }
 
-        if let serverUrl {
-            return serverUrl + "/" + path
+        if let serverUrlBase {
+            return serverUrlBase + "/" + path
         } else {
             return path
         }

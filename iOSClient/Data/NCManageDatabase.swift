@@ -170,39 +170,10 @@ final class NCManageDatabase: Sendable {
 
     // MARK: -
 
-    func performRealmRead<T>(_ block: (Realm) throws -> T?) -> T? {
-        guard !isAppSuspending
-        else {
-            return nil
-        }
-
-        if DispatchQueue.getSpecific(key: realmQueueKey) == true {
-            // Already on realmQueue: execute directly to avoid deadlocks
-            do {
-                let realm = try Realm()
-                return try block(realm)
-            } catch {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm read error: \(error)")
-                return nil
-            }
-        } else {
-            // Not on realmQueue: go with sync
-            return realmQueue.sync {
-                do {
-                    let realm = try Realm()
-                    return try block(realm)
-                } catch {
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm read error: \(error)")
-                    return nil
-                }
-            }
-        }
-    }
-
-    func performRealmRead<T>(_ block: @escaping (Realm) throws -> T?, completion: @escaping (T?) -> Void) {
-        guard !isAppSuspending
-        else {
-            return completion(nil)
+    func performRealmRead<T>(_ block: @escaping (Realm) throws -> T?, sync: Bool = true, completion: ((T?) -> Void)? = nil) -> T? {
+        guard !isAppSuspending else {
+            completion?(nil)
+            return nil // Return nil because the result is handled asynchronously
         }
 
         if DispatchQueue.getSpecific(key: realmQueueKey) == true {
@@ -210,22 +181,42 @@ final class NCManageDatabase: Sendable {
             do {
                 let realm = try Realm()
                 let result = try block(realm)
-                completion(result)
+                if sync {
+                    return result
+                } else {
+                    completion?(result)
+                    return nil // Return nil because the result is handled asynchronously
+                }
             } catch {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm read error: \(error)")
-                completion(nil)
+                completion?(nil)
+                return nil // Return nil because the result is handled asynchronously
             }
         } else {
-            // Not on realmQueue: go with async
-            realmQueue.async {
-                do {
-                    let realm = try Realm()
-                    let result = try block(realm)
-                    completion(result)
-                } catch {
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm read error: \(error)")
-                    completion(nil)
+            if sync {
+                // Synchronous execution
+                return realmQueue.sync {
+                    do {
+                        let realm = try Realm()
+                        return try block(realm)
+                    } catch {
+                        NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm read error: \(error)")
+                        return nil 
+                    }
                 }
+            } else {
+                // Asynchronous execution
+                realmQueue.async {
+                    do {
+                        let realm = try Realm()
+                        let result = try block(realm)
+                        completion?(result)
+                    } catch {
+                        NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm read error: \(error)")
+                        completion?(nil)
+                    }
+                }
+                return nil // Return nil because the result will be handled asynchronously
             }
         }
     }

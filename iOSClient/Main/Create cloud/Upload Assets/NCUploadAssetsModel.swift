@@ -177,8 +177,8 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
         let utilityFileSystem = NCUtilityFileSystem()
         var metadatasNOConflict: [tableMetadata] = []
         var metadatasUploadInConflict: [tableMetadata] = []
-        let autoUploadServerUrl = database.getAccountAutoUploadServerUrl(session: self.session)
-        var serverUrl = useAutoUploadFolder ? autoUploadServerUrl : serverUrl
+        let autoUploadServerUrlBase = database.getAccountAutoUploadServerUrlBase(session: self.session)
+        var serverUrl = useAutoUploadFolder ? autoUploadServerUrlBase : serverUrl
 
         for tlAsset in assets {
             guard let asset = tlAsset.phAsset, let previewStore = previewStore.first(where: { $0.id == asset.localIdentifier }) else { continue }
@@ -195,7 +195,7 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
 
             // Auto upload with subfolder
             if useAutoUploadSubFolder {
-                serverUrl = utilityFileSystem.createGranularityPath(asset: asset, serverUrl: autoUploadServerUrl)
+                serverUrl = utilityFileSystem.createGranularityPath(asset: asset, serverUrlBase: autoUploadServerUrlBase)
             }
 
             // Check if is in upload

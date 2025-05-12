@@ -10,17 +10,17 @@ import NextcloudKit
 class tableAutoUploadTransfer: Object {
     @Persisted(primaryKey: true) var primaryKey: String
     @Persisted var account: String
-    @Persisted var autoUploadServerUrl: String
+    @Persisted var serverUrlBase: String
     @Persisted var fileName: String
     @Persisted var assetLocalIdentifier: String
     @Persisted var date: Date
 
-    convenience init(account: String, autoUploadServerUrl: String, fileName: String, assetLocalIdentifier: String, date: Date) {
+    convenience init(account: String, serverUrlBase: String, fileName: String, assetLocalIdentifier: String, date: Date) {
         self.init()
 
-        self.primaryKey = account + autoUploadServerUrl + fileName
+        self.primaryKey = account + serverUrlBase + fileName
         self.account = account
-        self.autoUploadServerUrl = autoUploadServerUrl
+        self.serverUrlBase = serverUrlBase
         self.fileName = fileName
         self.assetLocalIdentifier = assetLocalIdentifier
         self.date = date
@@ -31,25 +31,25 @@ extension NCManageDatabase {
 
     // MARK: - Realm Write
 
-    func addAutoUploadTransfer(account: String, autoUploadServerUrl: String, fileName: String, assetLocalIdentifier: String, date: Date, sync: Bool = false) {
+    func addAutoUploadTransfer(account: String, serverUrlBase: String, fileName: String, assetLocalIdentifier: String, date: Date, sync: Bool = false) {
         performRealmWrite(sync: sync) { realm in
-            let newAutoUpload = tableAutoUploadTransfer(account: account, autoUploadServerUrl: autoUploadServerUrl, fileName: fileName, assetLocalIdentifier: assetLocalIdentifier, date: date)
+            let newAutoUpload = tableAutoUploadTransfer(account: account, serverUrlBase: serverUrlBase, fileName: fileName, assetLocalIdentifier: assetLocalIdentifier, date: date)
             realm.add(newAutoUpload, update: .all)
         }
     }
 
     // MARK: - Realm Read
 
-    func fetchSkipFileNames(account: String, autoUploadServerUrl: String) -> Set<String> {
+    func fetchSkipFileNames(account: String, serverUrl: String, autoUploadServerUrlBase: String) -> Set<String> {
         var skipFileNames = Set<String>()
 
         performRealmRead { realm in
             let metadatas = realm.objects(tableMetadata.self)
-                .filter("account == %@ AND serverUrl == %@", account, autoUploadServerUrl)
+                .filter("account == %@ AND serverUrl == %@", account, serverUrl)
                 .map(\.fileNameView)
 
             let transfers = realm.objects(tableAutoUploadTransfer.self)
-                .filter("account == %@ AND autoUploadServerUrl == %@", account, autoUploadServerUrl)
+                .filter("account == %@ AND serverUrlBase == %@", account, autoUploadServerUrlBase)
                 .map(\.fileName)
 
             skipFileNames.formUnion(metadatas)
@@ -59,10 +59,10 @@ extension NCManageDatabase {
         return skipFileNames
     }
 
-    func fetchLastAutoUploadedDate(account: String, autoUploadServerUrl: String) -> Date? {
+    func fetchLastAutoUploadedDate(account: String, autoUploadServerUrlBase: String) -> Date? {
         performRealmRead { realm in
             realm.objects(tableAutoUploadTransfer.self)
-                .filter("account == %@ AND autoUploadServerUrl == %@", account, autoUploadServerUrl)
+                .filter("account == %@ AND serverUrlBase == %@", account, autoUploadServerUrlBase)
                 .sorted(byKeyPath: "date", ascending: false)
                 .first?.date
         }

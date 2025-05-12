@@ -82,7 +82,7 @@ extension NCManageDatabase {
             if let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first {
                 tblAvatar = tableAvatar(value: result)
             } else {
-                utilityFileSystem.removeFile(atPath: fileNameLocalPath)
+                self.utilityFileSystem.removeFile(atPath: fileNameLocalPath)
             }
         }
 

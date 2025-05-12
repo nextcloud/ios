@@ -298,26 +298,26 @@ extension NCNetworking {
         createMetadata(fileName: self.database.getAccountAutoUploadFileName(account: session.account), serverUrl: self.database.getAccountAutoUploadDirectory(session: session))
 
         if useSubFolder {
-            let autoUploadServerUrl = self.database.getAccountAutoUploadServerUrl(session: session)
+            let autoUploadServerUrlBase = self.database.getAccountAutoUploadServerUrlBase(session: session)
             let autoUploadSubfolderGranularity = self.database.getAccountAutoUploadSubfolderGranularity()
             let folders = Set(assets.map { utilityFileSystem.createGranularityPath(asset: $0) }).sorted()
 
             for folder in folders {
                 let componentsDate = folder.split(separator: "/")
                 let year = componentsDate[0]
-                let serverUrlYear = autoUploadServerUrl
+                let serverUrlYear = autoUploadServerUrlBase
 
                 createMetadata(fileName: String(year), serverUrl: serverUrlYear)
 
                 if autoUploadSubfolderGranularity >= self.global.subfolderGranularityMonthly {
                     let month = componentsDate[1]
-                    let serverUrlMonth = autoUploadServerUrl + "/" + year
+                    let serverUrlMonth = autoUploadServerUrlBase + "/" + year
 
                     createMetadata(fileName: String(month), serverUrl: serverUrlMonth)
 
                     if autoUploadSubfolderGranularity == self.global.subfolderGranularityDaily {
                         let day = componentsDate[2]
-                        let serverUrlDay = autoUploadServerUrl + "/" + year + "/" + month
+                        let serverUrlDay = autoUploadServerUrlBase + "/" + year + "/" + month
 
                         createMetadata(fileName: String(day), serverUrl: serverUrlDay)
                     }
@@ -334,26 +334,26 @@ extension NCNetworking {
         var result = await createFolder(serverUrlFileName: serverUrlFileName, account: session.account)
 
         if (result.error == .success || result.error.errorCode == 405), useSubFolder {
-            let autoUploadServerUrl = self.database.getAccountAutoUploadServerUrl(session: session)
+            let autoUploadServerUrlBase = self.database.getAccountAutoUploadServerUrlBase(session: session)
             let autoUploadSubfolderGranularity = self.database.getAccountAutoUploadSubfolderGranularity()
             let folders = Set(assets.map { utilityFileSystem.createGranularityPath(asset: $0) }).sorted()
 
             for folder in folders {
                 let componentsDate = folder.split(separator: "/")
                 let year = componentsDate[0]
-                let serverUrlYear = autoUploadServerUrl
+                let serverUrlYear = autoUploadServerUrlBase
 
                 result = await createFolder(serverUrlFileName: serverUrlYear + "/" + String(year), account: session.account)
 
                 if (result.error == .success || result.error.errorCode == 405), autoUploadSubfolderGranularity >= self.global.subfolderGranularityMonthly {
                     let month = componentsDate[1]
-                    let serverUrlMonth = autoUploadServerUrl + "/" + year
+                    let serverUrlMonth = autoUploadServerUrlBase + "/" + year
 
                     result = await createFolder(serverUrlFileName: serverUrlMonth + "/" + String(month), account: session.account)
 
                     if (result.error == .success || result.error.errorCode == 405), autoUploadSubfolderGranularity == self.global.subfolderGranularityDaily {
                         let day = componentsDate[2]
-                        let serverUrlDay = autoUploadServerUrl + "/" + year + "/" + month
+                        let serverUrlDay = autoUploadServerUrlBase + "/" + year + "/" + month
 
                         result = await createFolder(serverUrlFileName: serverUrlDay + "/" + String(day), account: session.account)
                     }
