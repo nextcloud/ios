@@ -19,9 +19,10 @@ extension NCManageDatabase {
                             selector: String? = nil,
                             status: Int? = nil,
                             etag: String? = nil,
-                            errorCode: Int? = nil) {
+                            errorCode: Int? = nil,
+                            sync: Bool = true) {
 
-        performRealmWrite { realm in
+        performRealmWrite(sync: sync) { realm in
             if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
                 if let newFileName = newFileName {
                     result.fileName = newFileName
@@ -61,14 +62,18 @@ extension NCManageDatabase {
     }
 
     @discardableResult
-    func setMetadatasSessionInWaitDownload(metadatas: [tableMetadata], session: String, selector: String, sceneIdentifier: String? = nil) -> tableMetadata? {
+    func setMetadatasSessionInWaitDownload(metadatas: [tableMetadata],
+                                           session: String,
+                                           selector: String,
+                                           sceneIdentifier: String? = nil,
+                                           sync: Bool = true) -> tableMetadata? {
         guard !metadatas.isEmpty
         else {
             return nil
         }
         var lastUpdated: tableMetadata?
 
-        performRealmWrite { realm in
+        performRealmWrite(sync: sync) { realm in
             for metadata in metadatas {
                 let object = realm.objects(tableMetadata.self)
                     .filter("ocId == %@", metadata.ocId)
@@ -93,14 +98,14 @@ extension NCManageDatabase {
         return lastUpdated
     }
 
-    func clearMetadataSession(metadatas: [tableMetadata]) {
+    func clearMetadataSession(metadatas: [tableMetadata], sync: Bool = true) {
         guard !metadatas.isEmpty
         else {
             return
         }
         let ocIds = Set(metadatas.map(\.ocId))
 
-        performRealmWrite { realm in
+        performRealmWrite(sync: sync) { realm in
             let results = realm.objects(tableMetadata.self)
                 .filter("ocId IN %@", ocIds)
 
@@ -116,8 +121,8 @@ extension NCManageDatabase {
         }
     }
 
-    func clearMetadataSession(metadata: tableMetadata) {
-        performRealmWrite { realm in
+    func clearMetadataSession(metadata: tableMetadata, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             guard let result = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", metadata.ocId)
                 .first
@@ -136,10 +141,10 @@ extension NCManageDatabase {
     }
 
     @discardableResult
-    func setMetadataStatus(ocId: String, status: Int) -> tableMetadata? {
+    func setMetadataStatus(ocId: String, status: Int, sync: Bool = true) -> tableMetadata? {
         var updated: tableMetadata?
 
-        performRealmWrite { realm in
+        performRealmWrite(sync: sync) { realm in
             guard let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
             else {
                 return

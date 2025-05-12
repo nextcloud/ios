@@ -391,12 +391,12 @@ extension NCNetworking {
             metadata.sessionTaskIdentifier = 0
             metadata.status = self.global.metadataStatusNormal
 
-            self.database.deleteMetadata(predicate: NSPredicate(format: "ocIdTransfer == %@", metadata.ocIdTransfer))
-            metadata = self.database.addMetadataAndReturn(metadata)
+            self.database.deleteMetadata(predicate: NSPredicate(format: "ocIdTransfer == %@", metadata.ocIdTransfer), sync: false)
+            metadata = self.database.addMetadataAndReturn(metadata, sync: false)
 
             if selector == self.global.selectorUploadFileNODelete {
                 self.utilityFileSystem.moveFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer), toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
-                self.database.addLocalFile(metadata: metadata)
+                self.database.addLocalFile(metadata: metadata, sync: false)
             } else {
                 self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer))
             }
@@ -439,7 +439,7 @@ extension NCNetworking {
                 NCContentPresenter().showError(error: NKError(errorCode: error.errorCode, errorDescription: "_virus_detect_"))
 
                 // Client Diagnostic
-                self.database.addDiagnostic(account: metadata.account, issue: self.global.diagnosticIssueVirusDetected)
+                self.database.addDiagnostic(account: metadata.account, issue: self.global.diagnosticIssueVirusDetected, sync: false)
             } else if error.errorCode == self.global.errorForbidden && !isAppInBackground {
                 NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
 #if !EXTENSION
@@ -458,7 +458,8 @@ extension NCNetworking {
                                                              sessionTaskIdentifier: 0,
                                                              sessionError: "",
                                                              status: self.global.metadataStatusWaitUpload,
-                                                             errorCode: error.errorCode)
+                                                             errorCode: error.errorCode,
+                                                             sync: false)
                         }))
                         alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive, handler: { _ in
                             self.uploadCancelFile(metadata: metadata)
@@ -479,7 +480,8 @@ extension NCNetworking {
                         // Client Diagnostic
                         self.database.addDiagnostic(account: metadata.account,
                                                     issue: self.global.diagnosticIssueProblems,
-                                                    error: self.global.diagnosticProblemsForbidden)
+                                                    error: self.global.diagnosticProblemsForbidden,
+                                                    sync: false)
                     }
                 }
 #endif
@@ -490,7 +492,8 @@ extension NCNetworking {
                                                  sessionTaskIdentifier: 0,
                                                  sessionError: error.errorDescription,
                                                  status: self.global.metadataStatusUploadError,
-                                                 errorCode: error.errorCode)
+                                                 errorCode: error.errorCode,
+                                                 sync: false)
 
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadedFile,
                                                             object: nil,
@@ -506,11 +509,13 @@ extension NCNetworking {
                 if error.errorCode == self.global.errorInternalServerError {
                     self.database.addDiagnostic(account: metadata.account,
                                                 issue: self.global.diagnosticIssueProblems,
-                                                error: self.global.diagnosticProblemsBadResponse)
+                                                error: self.global.diagnosticProblemsBadResponse,
+                                                sync: false)
                 } else {
                     self.database.addDiagnostic(account: metadata.account,
                                                 issue: self.global.diagnosticIssueProblems,
-                                                error: self.global.diagnosticProblemsUploadServerError)
+                                                error: self.global.diagnosticProblemsUploadServerError,
+                                                sync: false)
                 }
             }
         }

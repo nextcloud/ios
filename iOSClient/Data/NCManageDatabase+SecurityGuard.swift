@@ -32,8 +32,8 @@ extension NCManageDatabase {
 
     // MARK: - Realm write
 
-    func addDiagnostic(account: String, issue: String, error: String? = nil) {
-        performRealmWrite { realm in
+    func addDiagnostic(account: String, issue: String, error: String? = nil, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             let primaryKey = account + issue + (error ?? "")
 
             if let result = realm.object(ofType: TableSecurityGuardDiagnostics.self, forPrimaryKey: primaryKey) {
