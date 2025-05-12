@@ -1220,7 +1220,7 @@ extension NCManageDatabase {
     func hasUploadingMetadataWithChunksOrE2EE() -> Bool {
         return performRealmRead { realm in
             realm.objects(tableMetadata.self)
-                .filter("status == %d AND (chunk > 0 OR isDirectoryE2EE == true)", NCGlobal.shared.metadataStatusUploading)
+                .filter("status == %d AND (chunk > 0 OR e2eEncrypted == true)", NCGlobal.shared.metadataStatusUploading)
                 .first != nil
         } ?? false
     }

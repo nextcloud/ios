@@ -376,7 +376,7 @@ extension NCNetworking {
         if error == .success, let ocId = ocId, size == metadata.size {
             NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
 
-            let metadata = tableMetadata.init(value: metadata)
+            var metadata = tableMetadata(value: metadata)
             metadata.uploadDate = (date as? NSDate) ?? NSDate()
             metadata.etag = etag ?? ""
             metadata.ocId = ocId
@@ -392,7 +392,7 @@ extension NCNetworking {
             metadata.status = self.global.metadataStatusNormal
 
             self.database.deleteMetadata(predicate: NSPredicate(format: "ocIdTransfer == %@", metadata.ocIdTransfer))
-            self.database.addMetadata(metadata)
+            metadata = self.database.addMetadataAndReturn(metadata)
 
             if selector == self.global.selectorUploadFileNODelete {
                 self.utilityFileSystem.moveFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer), toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
