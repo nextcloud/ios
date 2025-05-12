@@ -199,6 +199,37 @@ final class NCManageDatabase: Sendable {
         }
     }
 
+    func performRealmRead<T>(_ block: @escaping (Realm) throws -> T?, completion: @escaping (T?) -> Void) {
+        guard !isAppSuspending
+        else {
+            return completion(nil)
+        }
+
+        if DispatchQueue.getSpecific(key: realmQueueKey) == true {
+            // Already on realmQueue: execute directly to avoid deadlocks
+            do {
+                let realm = try Realm()
+                let result = try block(realm)
+                completion(result)
+            } catch {
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm read error: \(error)")
+                completion(nil)
+            }
+        } else {
+            // Not on realmQueue: go with async
+            realmQueue.async {
+                do {
+                    let realm = try Realm()
+                    let result = try block(realm)
+                    completion(result)
+                } catch {
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm read error: \(error)")
+                    completion(nil)
+                }
+            }
+        }
+    }
+
     func performRealmWrite(sync: Bool = true, _ block: @escaping (Realm) throws -> Void) {
         guard !isAppSuspending
         else {

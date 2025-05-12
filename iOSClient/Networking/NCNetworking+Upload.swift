@@ -408,7 +408,8 @@ extension NCNetworking {
                                                     autoUploadServerUrl: autoUploadServerUrl,
                                                     fileName: metadata.fileNameView,
                                                     assetLocalIdentifier: metadata.assetLocalIdentifier,
-                                                    date: metadata.creationDate as Date)
+                                                    date: metadata.creationDate as Date,
+                                                    sync: false)
             }
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload complete " + metadata.serverUrl + "/" + metadata.fileName + ", result: success(\(size) bytes)")
