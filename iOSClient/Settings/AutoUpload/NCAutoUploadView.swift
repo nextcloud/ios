@@ -200,8 +200,9 @@ struct NCAutoUploadView: View {
             /// Auto Upload Full
             Section(content: {
 #if DEBUG
-                Button("[DEBUG] Clear tableAutoUploadTransfer") {
+                Button("[DEBUG] Clear all") {
                     NCManageDatabase.shared.clearTable(tableAutoUploadTransfer.self, account: model.session.account)
+                    NCManageDatabase.shared.clearTable(tableMetadata.self, account: model.session.account)
                 }.buttonStyle(.borderedProminent)
 #endif
                 Toggle(isOn: model.autoUploadOnlyNew || model.autoUploadStart ? $model.autoUploadStart : $showUploadAllPhotosWarning) {
