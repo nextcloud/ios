@@ -170,6 +170,7 @@ final class NCManageDatabase: Sendable {
 
     // MARK: -
 
+    @discardableResult
     func performRealmRead<T>(_ block: @escaping (Realm) throws -> T?, sync: Bool = true, completion: ((T?) -> Void)? = nil) -> T? {
         guard !isAppSuspending else {
             completion?(nil)
@@ -201,7 +202,7 @@ final class NCManageDatabase: Sendable {
                         return try block(realm)
                     } catch {
                         NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm read error: \(error)")
-                        return nil 
+                        return nil
                     }
                 }
             } else {

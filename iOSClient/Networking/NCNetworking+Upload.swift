@@ -534,6 +534,8 @@ extension NCNetworking {
         return
 #endif
 
+        return
+        
         DispatchQueue.global().async {
             if let metadata = self.database.getResultMetadataFromFileName(fileName, serverUrl: serverUrl, sessionTaskIdentifier: task.taskIdentifier) {
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterProgressTask,
