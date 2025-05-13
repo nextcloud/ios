@@ -34,7 +34,6 @@ import SwiftUI
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     var backgroundSessionCompletionHandler: (() -> Void)?
-    var taskAutoUploadDate: Date = Date()
     var isUiTestingEnabled: Bool {
         return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
     }
@@ -197,27 +196,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         isAppSuspending = false
 
         Task {
-            var numAutoUpload = 0
-            guard let account = NCManageDatabase.shared.getActiveTableAccount()?.account else {
+            guard let account = NCManageDatabase.shared.getActiveTableAccount()?.account
+            else {
                 return
             }
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) start handle")
 
-            // Test every > 1 min
-            if Date() > self.taskAutoUploadDate.addingTimeInterval(60) {
-                self.taskAutoUploadDate = Date()
-                numAutoUpload = await NCAutoUpload.shared.initAutoUploadProcessingTask(account: account)
-                NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) auto upload with \(numAutoUpload) uploads")
-            } else {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) disabled auto upload")
-            }
-
             let results = await NCNetworkingProcess.shared.refreshProcessingTask()
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) networking process with download: \(results.counterDownloading) upload: \(results.counterUploading)")
 
+            let newAutoUpload = await NCAutoUpload.shared.initAutoUploadProcessingTask(account: account)
+            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) auto upload with \(newAutoUpload) uploads")
+
             if taskText == "ProcessingTask",
-               numAutoUpload == 0,
+               newAutoUpload == 0,
                results.counterDownloading == 0,
                results.counterUploading == 0,
                let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "offlineDate", ascending: true) {
