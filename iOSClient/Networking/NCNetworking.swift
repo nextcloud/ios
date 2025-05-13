@@ -37,6 +37,14 @@ import SwiftUI
     func didAskForClientCertificate()
 }
 
+protocol TransferProgressDelegate: AnyObject {
+    func transferProgressDidUpdate(progress: Float,
+                                   totalBytes: Int64,
+                                   totalBytesExpected: Int64,
+                                   fileName: String,
+                                   serverUrl: String)
+}
+
 class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     static let shared = NCNetworking()
 
@@ -63,8 +71,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     var p12Data: Data?
     var p12Password: String?
     var tapHudStopDelete = false
-    weak var delegateUploadProgress: UploadProgressDelegate?
-    weak var delegateDownloadProgress: DownloadProgressDelegate?
+    weak var delegateTransferProgress: TransferProgressDelegate?
 
     var isOffline: Bool {
         return networkReachability == NKCommon.TypeReachability.notReachable || networkReachability == NKCommon.TypeReachability.unknown

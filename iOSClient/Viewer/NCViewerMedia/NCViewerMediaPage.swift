@@ -155,8 +155,7 @@ class NCViewerMediaPage: UIViewController {
             }
         }
 
-        NCNetworking.shared.delegateUploadProgress = self
-        NCNetworking.shared.delegateDownloadProgress = self
+        NCNetworking.shared.delegateTransferProgress = self
     }
 
     deinit {
@@ -674,12 +673,8 @@ extension NCViewerMediaPage: UIScrollViewDelegate {
     }
 }
 
-extension NCViewerMediaPage: DownloadProgressDelegate, UploadProgressDelegate {
-    func downloadProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) {
-        self.uploadProgressDidUpdate(progress: progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl)
-    }
-
-    func uploadProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) {
+extension NCViewerMediaPage: TransferProgressDelegate {
+    func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) {
         DispatchQueue.main.async {
             if progress == 1 {
                 self.progressView.progress = 0

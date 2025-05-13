@@ -27,14 +27,6 @@ import Alamofire
 import Queuer
 import RealmSwift
 
-protocol DownloadProgressDelegate: AnyObject {
-    func downloadProgressDidUpdate(progress: Float,
-                                 totalBytes: Int64,
-                                 totalBytesExpected: Int64,
-                                 fileName: String,
-                                 serverUrl: String)
-}
-
 extension NCNetworking {
     func download(metadata: tableMetadata,
                   withNotificationProgressTask: Bool,
@@ -99,7 +91,7 @@ extension NCNetworking {
                                                                    "account": metadata.account])
             start()
         }, progressHandler: { progress in
-            self.delegateDownloadProgress?.downloadProgressDidUpdate(progress: Float(progress.fractionCompleted),
+            self.delegateTransferProgress?.transferProgressDidUpdate(progress: Float(progress.fractionCompleted),
                                                                      totalBytes: progress.totalUnitCount,
                                                                      totalBytesExpected: progress.completedUnitCount,
                                                                      fileName: metadata.fileName,
@@ -263,7 +255,7 @@ extension NCNetworking {
                           session: URLSession,
                           task: URLSessionTask) {
 
-        delegateDownloadProgress?.downloadProgressDidUpdate(progress: progress,
+        delegateTransferProgress?.transferProgressDidUpdate(progress: progress,
                                                             totalBytes: totalBytes,
                                                             totalBytesExpected: totalBytesExpected,
                                                             fileName: fileName,

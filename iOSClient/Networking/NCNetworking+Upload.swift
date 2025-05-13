@@ -163,11 +163,11 @@ extension NCNetworking {
                                                                    "sessionSelector": metadata.sessionSelector])
             start()
         }, progressHandler: { progress in
-            self.delegateUploadProgress?.uploadProgressDidUpdate(progress: Float(progress.fractionCompleted),
-                                                                 totalBytes: progress.totalUnitCount,
-                                                                 totalBytesExpected: progress.completedUnitCount,
-                                                                 fileName: metadata.fileName,
-                                                                 serverUrl: metadata.serverUrl)
+            self.delegateTransferProgress?.transferProgressDidUpdate(progress: Float(progress.fractionCompleted),
+                                                                     totalBytes: progress.totalUnitCount,
+                                                                     totalBytesExpected: progress.completedUnitCount,
+                                                                     fileName: metadata.fileName,
+                                                                     serverUrl: metadata.serverUrl)
             progressHandler(progress.completedUnitCount, progress.totalUnitCount, progress.fractionCompleted)
         }) { account, ocId, etag, date, size, responseData, afError, error in
             var error = error
@@ -225,11 +225,11 @@ extension NCNetworking {
             self.database.setMetadataSession(ocId: metadata.ocId,
                                              sessionTaskIdentifier: task.taskIdentifier)
         } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
-            self.delegateUploadProgress?.uploadProgressDidUpdate(progress: Float(fractionCompleted),
-                                                                 totalBytes: totalBytes,
-                                                                 totalBytesExpected: totalBytesExpected,
-                                                                 fileName: metadata.fileName,
-                                                                 serverUrl: metadata.serverUrl)
+            self.delegateTransferProgress?.transferProgressDidUpdate(progress: Float(fractionCompleted),
+                                                                     totalBytes: totalBytes,
+                                                                     totalBytesExpected: totalBytesExpected,
+                                                                     fileName: metadata.fileName,
+                                                                     serverUrl: metadata.serverUrl)
             progressHandler(totalBytesExpected, totalBytes, fractionCompleted)
         } uploaded: { fileChunk in
             self.database.deleteChunk(account: metadata.account,
@@ -520,11 +520,11 @@ extension NCNetworking {
                         serverUrl: String,
                         session: URLSession,
                         task: URLSessionTask) {
-        delegateUploadProgress?.uploadProgressDidUpdate(progress: progress,
-                                                        totalBytes: totalBytes,
-                                                        totalBytesExpected: totalBytesExpected,
-                                                        fileName: fileName,
-                                                        serverUrl: serverUrl)
+        delegateTransferProgress?.transferProgressDidUpdate(progress: progress,
+                                                            totalBytes: totalBytes,
+                                                            totalBytesExpected: totalBytesExpected,
+                                                            fileName: fileName,
+                                                            serverUrl: serverUrl)
     }
 
     func uploadCancelFile(metadata: tableMetadata) {
