@@ -65,7 +65,10 @@ extension NCNetworking {
 
             let isResponseDataChanged = self.isResponseDataChanged(account: account, responseData: responseData)
             if checkResponseDataChanged, !isResponseDataChanged {
-                let metadataFolder = self.database.getMetadataDirectoryFrom(files: files)
+                var metadataFolder: tableMetadata?
+                if let result = self.database.getMetadataDirectoryFrom(files: files) {
+                    metadataFolder = tableMetadata(value: result)
+                }
                 storeFolder(metadataFolder)
                 return completion(account, metadataFolder, nil, false, error)
             }
