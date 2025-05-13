@@ -63,6 +63,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     var p12Data: Data?
     var p12Password: String?
     var tapHudStopDelete = false
+    weak var delegateUploadProgress: UploadProgressDelegate?
 
     var isOffline: Bool {
         return networkReachability == NKCommon.TypeReachability.notReachable || networkReachability == NKCommon.TypeReachability.unknown

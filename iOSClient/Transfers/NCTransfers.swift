@@ -54,24 +54,13 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         }
 
         self.navigationItem.leftBarButtonItems = [close]
+        NCNetworking.shared.delegateUploadProgress = self
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         reloadDataSource()
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: global.notificationCenterProgressTask), object: nil)
-    }
-
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterProgressTask), object: nil)
     }
 
     // MARK: - NotificationCenter
@@ -126,29 +115,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     override func uploadCancelFile(_ notification: NSNotification) {
         reloadDataSource()
-    }
-
-    @objc func triggerProgressTask(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let progressNumber = userInfo["progress"] as? NSNumber,
-              let totalBytes = userInfo["totalBytes"] as? Int64,
-              let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64,
-              let ocId = userInfo["ocId"] as? String,
-              let ocIdTransfer = userInfo["ocIdTransfer"] as? String,
-              let session = userInfo["session"] as? String
-        else { return }
-        let chunk: Int = userInfo["chunk"] as? Int ?? 0
-        let e2eEncrypted: Bool = userInfo["e2eEncrypted"] as? Bool ?? false
-        NCTransferProgress.shared.append(NCTransferProgress.Transfer(ocId: ocId, ocIdTransfer: ocIdTransfer, session: session, chunk: chunk, e2eEncrypted: e2eEncrypted, progressNumber: progressNumber, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected))
-
-        DispatchQueue.main.async {
-            for case let cell as NCTransferCell in self.collectionView.visibleCells {
-                if cell.fileOcIdTransfer == ocIdTransfer {
-                    cell.setProgress(progress: progressNumber.floatValue)
-                    cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - " + self.utilityFileSystem.transformedSize(totalBytes)
-                }
-            }
-        }
     }
 
     // MARK: TAP EVENT
@@ -349,5 +315,55 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     override func getServerData() {
         reloadDataSource()
+    }
+}
+
+extension NCTransfers: UploadProgressDelegate {
+    func uploadProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) {
+        /*
+        DispatchQueue.global().async {
+            if let metadata = self.database.getResultMetadataFromFileName(fileName, serverUrl: serverUrl, sessionTaskIdentifier: task.taskIdentifier) {
+                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterProgressTask,
+                                                            object: nil,
+                                                            userInfo: ["account": metadata.account,
+                                                                       "ocId": metadata.ocId,
+                                                                       "ocIdTransfer": metadata.ocIdTransfer,
+                                                                       "session": metadata.session,
+                                                                       "fileName": metadata.fileName,
+                                                                       "serverUrl": serverUrl,
+                                                                       "status": NSNumber(value: self.global.metadataStatusUploading),
+                                                                       "chunk": metadata.chunk,
+                                                                       "e2eEncrypted": metadata.e2eEncrypted,
+                                                                       "progress": NSNumber(value: progress),
+                                                                       "totalBytes": NSNumber(value: totalBytes),
+                                                                       "totalBytesExpected": NSNumber(value: totalBytesExpected)])
+            }
+        }
+        */
+        
+        /*
+         @objc func triggerProgressTask(_ notification: NSNotification) {
+             guard let userInfo = notification.userInfo as NSDictionary?,
+                   let progressNumber = userInfo["progress"] as? NSNumber,
+                   let totalBytes = userInfo["totalBytes"] as? Int64,
+                   let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64,
+                   let ocId = userInfo["ocId"] as? String,
+                   let ocIdTransfer = userInfo["ocIdTransfer"] as? String,
+                   let session = userInfo["session"] as? String
+             else { return }
+             let chunk: Int = userInfo["chunk"] as? Int ?? 0
+             let e2eEncrypted: Bool = userInfo["e2eEncrypted"] as? Bool ?? false
+             NCTransferProgress.shared.append(NCTransferProgress.Transfer(ocId: ocId, ocIdTransfer: ocIdTransfer, session: session, chunk: chunk, e2eEncrypted: e2eEncrypted, progressNumber: progressNumber, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected))
+
+             DispatchQueue.main.async {
+                 for case let cell as NCTransferCell in self.collectionView.visibleCells {
+                     if cell.fileOcIdTransfer == ocIdTransfer {
+                         cell.setProgress(progress: progressNumber.floatValue)
+                         cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - " + self.utilityFileSystem.transformedSize(totalBytes)
+                     }
+                 }
+             }
+         }
+         */
     }
 }

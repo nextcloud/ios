@@ -25,6 +25,14 @@ import UIKit
 import NextcloudKit
 import Alamofire
 
+protocol UploadProgressDelegate: AnyObject {
+    func uploadProgressDidUpdate(progress: Float,
+                                 totalBytes: Int64,
+                                 totalBytesExpected: Int64,
+                                 fileName: String,
+                                 serverUrl: String)
+}
+
 extension NCNetworking {
     func upload(metadata: tableMetadata,
                 uploadE2EEDelegate: uploadE2EEDelegate? = nil,
@@ -529,31 +537,11 @@ extension NCNetworking {
                         serverUrl: String,
                         session: URLSession,
                         task: URLSessionTask) {
-
-#if EXTENSION_FILE_PROVIDER_EXTENSION
-        return
-#endif
-
-        return
-        
-        DispatchQueue.global().async {
-            if let metadata = self.database.getResultMetadataFromFileName(fileName, serverUrl: serverUrl, sessionTaskIdentifier: task.taskIdentifier) {
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterProgressTask,
-                                                            object: nil,
-                                                            userInfo: ["account": metadata.account,
-                                                                       "ocId": metadata.ocId,
-                                                                       "ocIdTransfer": metadata.ocIdTransfer,
-                                                                       "session": metadata.session,
-                                                                       "fileName": metadata.fileName,
-                                                                       "serverUrl": serverUrl,
-                                                                       "status": NSNumber(value: self.global.metadataStatusUploading),
-                                                                       "chunk": metadata.chunk,
-                                                                       "e2eEncrypted": metadata.e2eEncrypted,
-                                                                       "progress": NSNumber(value: progress),
-                                                                       "totalBytes": NSNumber(value: totalBytes),
-                                                                       "totalBytesExpected": NSNumber(value: totalBytesExpected)])
-            }
-        }
+        delegateUploadProgress?.uploadProgressDidUpdate(progress: progress,
+                                                        totalBytes: totalBytes,
+                                                        totalBytesExpected: totalBytesExpected,
+                                                        fileName: fileName,
+                                                        serverUrl: serverUrl)
     }
 
     func uploadCancelFile(metadata: tableMetadata) {
