@@ -23,7 +23,7 @@
 
 import UIKit
 
-class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
+class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate {
 
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
@@ -37,48 +37,14 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
 
-    private var ocId = ""
-    private var ocIdTransfer = ""
-    private var user = ""
+    var ocId = ""
+    var ocIdTransfer = ""
+    var user = ""
+
+    var serverUrl: String = ""
+    var fileName: String = ""
 
     weak var delegate: NCTransferCellDelegate?
-
-    var fileOcId: String? {
-        get { return ocId }
-        set { ocId = newValue ?? "" }
-    }
-    var fileOcIdTransfer: String? {
-        get { return ocIdTransfer }
-        set { ocIdTransfer = newValue ?? "" }
-    }
-    var filePreviewImageView: UIImageView? {
-        get { return imageItem }
-        set { imageItem = newValue }
-    }
-    var fileStatusImage: UIImageView? {
-        get { return imageStatus }
-        set { imageStatus = newValue }
-    }
-    var fileUser: String? {
-        get { return user }
-        set { user = newValue ?? "" }
-    }
-    var fileTitleLabel: UILabel? {
-        get { return labelTitle }
-        set { labelTitle = newValue }
-    }
-    var fileInfoLabel: UILabel? {
-        get { return labelInfo }
-        set { labelInfo = newValue }
-    }
-    var fileProgressView: UIProgressView? {
-        get { return progressView }
-        set { progressView = newValue }
-    }
-    var fileMoreImage: UIImageView? {
-        get { return imageMore }
-        set { imageMore = newValue }
-    }
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -132,11 +98,6 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
         delegate?.longPressListItem(with: ocId, ocIdTransfer: ocIdTransfer, gestureRecognizer: gestureRecognizer)
     }
 
-    func hideButtonMore(_ status: Bool) {
-        imageMore.isHidden = status
-        buttonMore.isHidden = status
-    }
-
     func setProgress(progress: Float) {
         progressView.progress = progress
         if progress > 0.0 {
@@ -156,17 +117,9 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
         ]
     }
 
-    func writeInfoDateSize(date: NSDate, size: Int64) {
-        labelInfo.text = NCUtility().getRelativeDateTitle(date as Date) + " · " + NCUtilityFileSystem().transformedSize(size)
-    }
 
-    func setIconOutlines() {
-        if imageStatus.image != nil {
-            imageStatus.makeCircularBackground(withColor: .systemBackground)
-        } else {
-            imageStatus.backgroundColor = .clear
-        }
-    }
+
+
 }
 
 protocol NCTransferCellDelegate: AnyObject {
