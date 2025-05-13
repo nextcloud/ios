@@ -163,18 +163,11 @@ extension NCNetworking {
                                                                    "sessionSelector": metadata.sessionSelector])
             start()
         }, progressHandler: { progress in
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterProgressTask,
-                                                        object: nil,
-                                                        userInfo: ["account": metadata.account,
-                                                                   "ocId": metadata.ocId,
-                                                                   "ocIdTransfer": metadata.ocIdTransfer,
-                                                                   "session": metadata.session,
-                                                                   "fileName": metadata.fileName,
-                                                                   "serverUrl": metadata.serverUrl,
-                                                                   "status": NSNumber(value: self.global.metadataStatusUploading),
-                                                                   "progress": NSNumber(value: progress.fractionCompleted),
-                                                                   "totalBytes": NSNumber(value: progress.totalUnitCount),
-                                                                   "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
+            self.delegateUploadProgress?.uploadProgressDidUpdate(progress: Float(progress.fractionCompleted),
+                                                                 totalBytes: progress.totalUnitCount,
+                                                                 totalBytesExpected: progress.completedUnitCount,
+                                                                 fileName: metadata.fileName,
+                                                                 serverUrl: metadata.serverUrl)
             progressHandler(progress.completedUnitCount, progress.totalUnitCount, progress.fractionCompleted)
         }) { account, ocId, etag, date, size, responseData, afError, error in
             var error = error
@@ -232,21 +225,11 @@ extension NCNetworking {
             self.database.setMetadataSession(ocId: metadata.ocId,
                                              sessionTaskIdentifier: task.taskIdentifier)
         } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterProgressTask,
-                                                        object: nil,
-                                                        userInfo: ["account": metadata.account,
-                                                                   "ocId": metadata.ocId,
-                                                                   "ocIdTransfer": metadata.ocIdTransfer,
-                                                                   "session": metadata.session,
-                                                                   "fileName": metadata.fileName,
-                                                                   "serverUrl": metadata.serverUrl,
-                                                                   "status": NSNumber(value: self.global.metadataStatusUploading),
-                                                                   "chunk": metadata.chunk,
-                                                                   "e2eEncrypted": metadata.e2eEncrypted,
-                                                                   "progress": NSNumber(value: fractionCompleted),
-                                                                   "totalBytes": NSNumber(value: totalBytes),
-                                                                   "totalBytesExpected": NSNumber(value: totalBytesExpected)])
-
+            self.delegateUploadProgress?.uploadProgressDidUpdate(progress: Float(fractionCompleted),
+                                                                 totalBytes: totalBytes,
+                                                                 totalBytesExpected: totalBytesExpected,
+                                                                 fileName: metadata.fileName,
+                                                                 serverUrl: metadata.serverUrl)
             progressHandler(totalBytesExpected, totalBytes, fractionCompleted)
         } uploaded: { fileChunk in
             self.database.deleteChunk(account: metadata.account,

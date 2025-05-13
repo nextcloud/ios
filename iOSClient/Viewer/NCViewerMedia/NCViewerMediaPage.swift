@@ -135,7 +135,6 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(uploadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
@@ -155,6 +154,9 @@ class NCViewerMediaPage: UIViewController {
                 scrollView.delegate = self
             }
         }
+
+        NCNetworking.shared.delegateUploadProgress = self
+        NCNetworking.shared.delegateDownloadProgress = self
     }
 
     deinit {
@@ -167,7 +169,6 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
@@ -365,19 +366,6 @@ class NCViewerMediaPage: UIViewController {
             }
         } else if metadata.isImage {
             self.currentViewController.loadImage()
-        }
-    }
-
-    @objc func triggerProgressTask(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let progressNumber = userInfo["progress"] as? NSNumber
-        else { return }
-
-        let progress = progressNumber.floatValue
-        if progress == 1 {
-            self.progressView.progress = 0
-        } else {
-            self.progressView.progress = progress
         }
     }
 
@@ -683,5 +671,21 @@ extension NCViewerMediaPage: UIScrollViewDelegate {
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         preventScrollOnDragAndDrop = true
+    }
+}
+
+extension NCViewerMediaPage: DownloadProgressDelegate, UploadProgressDelegate {
+    func downloadProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) {
+        self.uploadProgressDidUpdate(progress: progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl)
+    }
+
+    func uploadProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) {
+        DispatchQueue.main.async {
+            if progress == 1 {
+                self.progressView.progress = 0
+            } else {
+                self.progressView.progress = progress
+            }
+        }
     }
 }

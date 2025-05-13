@@ -116,10 +116,6 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate {
                 selector: #selector(touchUpInsideMore(_:)))
         ]
     }
-
-
-
-
 }
 
 protocol NCTransferCellDelegate: AnyObject {
