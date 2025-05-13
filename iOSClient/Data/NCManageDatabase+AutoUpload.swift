@@ -40,12 +40,12 @@ extension NCManageDatabase {
 
     // MARK: - Realm Read
 
-    func fetchSkipFileNames(account: String, serverUrl: String, autoUploadServerUrlBase: String) -> Set<String> {
+    func fetchSkipFileNames(account: String, autoUploadServerUrlBase: String) -> Set<String> {
         var skipFileNames = Set<String>()
 
         performRealmRead { realm in
             let metadatas = realm.objects(tableMetadata.self)
-                .filter("account == %@ AND serverUrl == %@", account, serverUrl)
+                .filter("account == %@ AND autoUploadServerUrlBase == %@", account, autoUploadServerUrlBase)
                 .map(\.fileNameView)
 
             let transfers = realm.objects(tableAutoUploadTransfer.self)

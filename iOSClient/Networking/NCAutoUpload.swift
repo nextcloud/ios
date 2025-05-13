@@ -72,7 +72,7 @@ class NCAutoUpload: NSObject {
         let formatCompatibility = NCKeychain().formatCompatibility
         let keychainLivePhoto = NCKeychain().livePhoto
         let fileSystem = NCUtilityFileSystem()
-        let skipFileNames = self.database.fetchSkipFileNames(account: tblAccount.account, serverUrl: "", autoUploadServerUrlBase: autoUploadServerUrlBase)
+        let skipFileNames = self.database.fetchSkipFileNames(account: tblAccount.account, autoUploadServerUrlBase: autoUploadServerUrlBase)
 
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload, new \(assets.count) assets found")
 
