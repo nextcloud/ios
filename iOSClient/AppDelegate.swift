@@ -201,13 +201,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 return
             }
 
-            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) start handle")
-
             let results = await NCNetworkingProcess.shared.refreshProcessingTask()
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) networking process with download: \(results.counterDownloading) upload: \(results.counterUploading)")
 
             let newAutoUpload = await NCAutoUpload.shared.initAutoUploadProcessingTask(account: account)
-            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) auto upload with \(newAutoUpload) uploads")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) new auto upload with \(newAutoUpload) uploads")
 
             if taskText == "ProcessingTask",
                newAutoUpload == 0,
