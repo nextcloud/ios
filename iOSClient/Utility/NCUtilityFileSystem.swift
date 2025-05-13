@@ -256,13 +256,18 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     // MARK: -
 
     func getFileSize(filePath: String) -> Int64 {
+        guard FileManager.default.fileExists(atPath: filePath)
+        else {
+            return 0
+        }
+
         do {
             let attributes = try fileManager.attributesOfItem(atPath: filePath)
             return attributes[FileAttributeKey.size] as? Int64 ?? 0
         } catch {
             print(error)
+            return 0
         }
-        return 0
     }
 
     func getFileModificationDate(filePath: String) -> NSDate? {

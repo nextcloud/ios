@@ -52,26 +52,6 @@ extension NCNetworking {
             NotificationCenter.default.postOnMainThread(name: NextcloudKit.shared.nkCommonInstance.notificationCenterChunkedFileStop.rawValue)
         }
 
-        /*
-        let metadataCreationDate = metadata.creationDate as Date
-
-        // Update last uploaded date for auto uploaded photos
-        if metadata.sessionSelector == NCGlobal.shared.selectorUploadAutoUpload,
-           let tblAccount = self.database.getTableAccount(account: metadata.account) {
-
-        }
-
-        if database.getTableAccount(account: metadata.account)?.autoUploadLastUploadedDate == nil {
-            self.database.updateAccountProperty(\.autoUploadLastUploadedDate, value: metadataCreationDate, account: metadata.account)
-        } else if metadata.sessionSelector == NCGlobal.shared.selectorUploadAutoUpload,
-           let autoUploadLastUploadedDate = database.getTableAccount(account: metadata.account)?.autoUploadLastUploadedDate {
-
-            if autoUploadLastUploadedDate < metadataCreationDate {
-                self.database.updateAccountProperty(\.autoUploadLastUploadedDate, value: metadataCreationDate, account: metadata.account)
-            }
-        }
-        */
-
         if metadata.isDirectoryE2EE {
 #if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_WIDGET
             Task {
@@ -261,7 +241,7 @@ extension NCNetworking {
 
         // Check file dim > 0
         if utilityFileSystem.getFileSize(filePath: fileNameLocalPath) == 0 && metadata.size != 0 {
-            self.database.deleteMetadataOcId(metadata.ocId)
+            self.database.deleteMetadataOcId(metadata.ocId, sync: false)
             completion(NKError(errorCode: self.global.errorResourceNotFound, errorDescription: NSLocalizedString("_error_not_found_", value: "The requested resource could not be found", comment: "")))
         } else {
             let (task, error) = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, account: metadata.account, sessionIdentifier: metadata.session)
@@ -386,10 +366,21 @@ extension NCNetworking {
             metadata = self.database.addMetadataAndReturn(metadata, sync: false)
 
             if selector == self.global.selectorUploadFileNODelete {
-                self.utilityFileSystem.moveFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer), toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
+#if EXTENSION
+                self.utilityFileSystem.moveFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer),
+                                                toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
+#else
+                moveFileSafely(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer),
+                               toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
+#endif
                 self.database.addLocalFile(metadata: metadata, sync: false)
             } else {
+#if EXTENSION
                 self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer))
+#else
+                removeFileInBackgroundSafe(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer))
+#endif
+
             }
 
             /// Update the auto upload data
@@ -529,8 +520,12 @@ extension NCNetworking {
 
     func uploadCancelFile(metadata: tableMetadata) {
         NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
-        self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-        self.database.deleteMetadataOcId(metadata.ocId)
+#if EXTENSION
+                self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer))
+#else
+                removeFileInBackgroundSafe(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer))
+#endif
+        self.database.deleteMetadataOcId(metadata.ocIdTransfer, sync: false)
         NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadCancelFile,
                                                     object: nil,
                                                     userInfo: ["ocId": metadata.ocId,
@@ -538,6 +533,6 @@ extension NCNetworking {
                                                                "session": metadata.session,
                                                                "serverUrl": metadata.serverUrl,
                                                                "account": metadata.account],
-                                                    second: 0.5)
+                                                    second: 1)
     }
 }
