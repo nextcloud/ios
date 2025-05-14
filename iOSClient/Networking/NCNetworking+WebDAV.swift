@@ -37,9 +37,7 @@ extension NCNetworking {
                     taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                     completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ isDataChanged: Bool, _ error: NKError) -> Void) {
 
-        func storeFolder(_ metadataFolder: tableMetadata?) {
-            guard let metadataFolder else { return }
-
+        func storeFolder(_ metadataFolder: tableMetadata) {
             self.database.addMetadata(metadataFolder)
             self.database.addDirectory(e2eEncrypted: metadataFolder.e2eEncrypted,
                                        favorite: metadataFolder.favorite,
@@ -58,19 +56,10 @@ extension NCNetworking {
                                              account: account,
                                              options: NKRequestOptions(queue: queue)) { task in
             taskHandler(task)
-        } completion: { account, files, responseData, error in
-            guard error == .success, let files else {
+        } completion: { account, files, _, error in
+            guard error == .success, let files
+            else {
                 return completion(account, nil, nil, false, error)
-            }
-
-            let isResponseDataChanged = self.isResponseDataChanged(account: account, responseData: responseData)
-            if checkResponseDataChanged, !isResponseDataChanged {
-                var metadataFolder: tableMetadata?
-                if let result = self.database.getMetadataDirectoryFrom(files: files) {
-                    metadataFolder = tableMetadata(value: result)
-                }
-                storeFolder(metadataFolder)
-                return completion(account, metadataFolder, nil, false, error)
             }
 
             self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { metadataFolder, metadatas in
