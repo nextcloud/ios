@@ -370,7 +370,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         utilityFileSystem.removeTemporaryDirectory()
 
         NCKeychain().removeAll()
-        NCNetworking.shared.removeAllKeyUserDefaultsData(account: nil)
 
         exit(0)
     }
