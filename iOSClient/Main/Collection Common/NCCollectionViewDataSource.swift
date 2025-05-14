@@ -155,7 +155,10 @@ class NCCollectionViewDataSource: NSObject {
     // MARK: -
 
     func appendMetadatasToSection(_ metadatas: [tableMetadata], metadataForSection: NCMetadataForSection, lastSearchResult: NKSearchResult) {
-        guard let sectionIndex = getSectionIndex(metadataForSection.sectionValue) else { return }
+        guard let sectionIndex = getSectionIndex(metadataForSection.sectionValue)
+        else {
+            return
+        }
         var indexPaths: [IndexPath] = []
 
         self.metadatas.append(contentsOf: metadatas)
@@ -204,13 +207,19 @@ class NCCollectionViewDataSource: NSObject {
         }
         guard !self.metadatas.isEmpty,
               let metadataForSection = getMetadataForSection(section)
-        else { return 0}
+        else {
+            return 0
+        }
 
         return metadataForSection.metadatas.count
     }
 
     func getSectionValueLocalization(indexPath: IndexPath) -> String {
-        guard !metadatasForSection.isEmpty, let metadataForSection = self.getMetadataForSection(indexPath.section) else { return ""}
+        guard !metadatasForSection.isEmpty,
+              let metadataForSection = self.getMetadataForSection(indexPath.section)
+        else {
+            return ""
+        }
 
         if let searchResults = self.searchResults, let searchResult = searchResults.filter({ $0.id == metadataForSection.sectionValue}).first {
             return searchResult.name

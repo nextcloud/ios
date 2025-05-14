@@ -533,7 +533,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                         }
                         emptyTitle = NSLocalizedString(self.emptyTitle, comment: "")
                         emptyDescription = NSLocalizedString(emptyDescription, comment: "")
-                    } else if metadataFolder?.status == global.metadataStatusWaitCreateFolder {
+                    } else if self.metadataFolder?.status == global.metadataStatusWaitCreateFolder {
                         emptyImage = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: [NCBrandColor.shared.getElement(account: session.account)])
                         emptyTitle = NSLocalizedString("_files_no_files_", comment: "")
                         emptyDescription = NSLocalizedString("_folder_offline_desc_", comment: "")

@@ -442,14 +442,14 @@ extension NCManageDatabase {
             let metadata = convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
 
             if counter == 0 && useFirstAsMetadataFolder {
-                metadataFolder = tableMetadata(value: metadata)
+                metadataFolder = metadata
             } else {
                 metadatas.append(metadata)
             }
 
             counter += 1
         }
-        completion(metadataFolder, metadatas)
+        completion(tableMetadata(value: metadataFolder), metadatas)
     }
 
     func getMetadataDirectoryFrom(files: [NKFile]) -> tableMetadata? {
