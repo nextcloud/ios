@@ -32,10 +32,9 @@ extension NCNetworking {
 
     func readFolder(serverUrl: String,
                     account: String,
-                    checkResponseDataChanged: Bool,
                     queue: DispatchQueue,
                     taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
-                    completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ isDataChanged: Bool, _ error: NKError) -> Void) {
+                    completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
 
         func storeFolder(_ metadataFolder: tableMetadata) {
             self.database.addMetadata(metadataFolder)
@@ -59,13 +58,13 @@ extension NCNetworking {
         } completion: { account, files, _, error in
             guard error == .success, let files
             else {
-                return completion(account, nil, nil, false, error)
+                return completion(account, nil, nil, error)
             }
 
             self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { metadataFolder, metadatas in
                 storeFolder(metadataFolder)
                 self.database.updateMetadatasFiles(metadatas, serverUrl: serverUrl, account: account)
-                completion(account, metadataFolder, metadatas, true, error)
+                completion(account, metadataFolder, metadatas, error)
             }
         }
     }

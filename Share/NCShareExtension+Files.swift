@@ -56,11 +56,10 @@ extension NCShareExtension {
     func loadFolder() {
         NCNetworking.shared.readFolder(serverUrl: serverUrl,
                                        account: session.account,
-                                       checkResponseDataChanged: false,
                                        queue: .main) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
-        } completion: { _, metadataFolder, _, _, error in
+        } completion: { _, metadataFolder, _, error in
             DispatchQueue.main.async {
                 if error != .success {
                     self.showAlert(description: error.errorDescription)

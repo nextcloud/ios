@@ -750,20 +750,25 @@ extension NCManageDatabase {
         }
     }
 
-    func updateMetadatasFiles(_ metadatas: [tableMetadata], serverUrl: String, account: String, sync: Bool = true) {
-        performRealmWrite(sync: sync) { realm in
-            let resultsToDelete = realm.objects(tableMetadata.self)
-                .filter("account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
-            realm.delete(resultsToDelete)
-
+    func updateMetadatasFiles(_ metadatas: [tableMetadata], serverUrl: String, account: String) {
+        performRealmWrite(sync: false) { realm in
             let ocIdsToSkip = Set(
                 realm.objects(tableMetadata.self)
                     .filter("status != %d", NCGlobal.shared.metadataStatusNormal)
                     .map(\.ocId)
-            )
+                )
+
+            let resultsToDelete = realm.objects(tableMetadata.self)
+                .filter("account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
+                .filter { !ocIdsToSkip.contains($0.ocId) }
+
+            realm.delete(resultsToDelete)
 
             for metadata in metadatas {
-                guard !ocIdsToSkip.contains(metadata.ocId) else { continue }
+                guard !ocIdsToSkip.contains(metadata.ocId)
+                else {
+                    continue
+                }
                 realm.add(tableMetadata(value: metadata), update: .all)
             }
         }
