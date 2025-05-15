@@ -155,7 +155,7 @@ class NCViewerMediaPage: UIViewController {
             }
         }
 
-        NCNetworking.shared.delegateTransferProgress = self
+        NCNetworking.shared.delegateTransfer = self
     }
 
     deinit {
@@ -673,7 +673,10 @@ extension NCViewerMediaPage: UIScrollViewDelegate {
     }
 }
 
-extension NCViewerMediaPage: TransferProgressDelegate {
+extension NCViewerMediaPage: TransferDelegate {
+    func tranferChange(status: String, metadata: tableMetadata, error: NKError) {
+    }
+
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) {
         DispatchQueue.main.async {
             if progress == 1 {

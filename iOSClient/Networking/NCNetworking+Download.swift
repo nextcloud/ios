@@ -91,11 +91,11 @@ extension NCNetworking {
                                                                    "account": metadata.account])
             start()
         }, progressHandler: { progress in
-            self.delegateTransferProgress?.transferProgressDidUpdate(progress: Float(progress.fractionCompleted),
-                                                                     totalBytes: progress.totalUnitCount,
-                                                                     totalBytesExpected: progress.completedUnitCount,
-                                                                     fileName: metadata.fileName,
-                                                                     serverUrl: metadata.serverUrl)
+            self.delegateTransfer?.transferProgressDidUpdate(progress: Float(progress.fractionCompleted),
+                                                             totalBytes: progress.totalUnitCount,
+                                                             totalBytesExpected: progress.completedUnitCount,
+                                                             fileName: metadata.fileName,
+                                                             serverUrl: metadata.serverUrl)
             progressHandler(progress)
         }) { _, etag, date, length, responseData, afError, error in
             var error = error
@@ -255,10 +255,10 @@ extension NCNetworking {
                           session: URLSession,
                           task: URLSessionTask) {
 
-        delegateTransferProgress?.transferProgressDidUpdate(progress: progress,
-                                                            totalBytes: totalBytes,
-                                                            totalBytesExpected: totalBytesExpected,
-                                                            fileName: fileName,
-                                                            serverUrl: serverUrl)
+        self.delegateTransfer?.transferProgressDidUpdate(progress: progress,
+                                                         totalBytes: totalBytes,
+                                                         totalBytesExpected: totalBytesExpected,
+                                                         fileName: fileName,
+                                                         serverUrl: serverUrl)
     }
 }

@@ -55,7 +55,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         self.navigationItem.leftBarButtonItems = [close]
 
-        NCNetworking.shared.delegateTransferProgress = self
+        NCNetworking.shared.delegateTransfer = self
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -321,7 +321,10 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     }
 }
 
-extension NCTransfers: TransferProgressDelegate {
+extension NCTransfers: TransferDelegate {
+    func tranferChange(status: String, metadata: tableMetadata, error: NKError) {
+    }
+
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) {
         DispatchQueue.main.async {
             for case let cell as NCTransferCell in self.collectionView.visibleCells {
