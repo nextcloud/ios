@@ -54,7 +54,7 @@ class NCNetworkingProcess {
 
         NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { _ in
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                if UIApplication.shared.applicationState == .active {
+                if !isAppInBackground {
                     self.startTimer()
                 }
             }
@@ -63,7 +63,6 @@ class NCNetworkingProcess {
 
     private func startTimer() {
         self.timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: { _ in
-            let applicationState = UIApplication.shared.applicationState
             self.lockQueue.async {
                 guard !self.hasRun,
                       self.networking.isOnline,
@@ -92,7 +91,7 @@ class NCNetworkingProcess {
                     /// Remove Photo CameraRoll
                     ///
                     if NCKeychain().removePhotoCameraRoll,
-                       applicationState == .active,
+                       !isAppInBackground,
                        let localIdentifiers = self.database.getAssetLocalIdentifiersUploaded(),
                        !localIdentifiers.isEmpty {
                         PHPhotoLibrary.shared().performChanges({
@@ -117,16 +116,15 @@ class NCNetworkingProcess {
 
     @discardableResult
     private func start() async -> (counterDownloading: Int, counterUploading: Int) {
-        let applicationState = await checkApplicationState()
         let httpMaximumConnectionsPerHostInDownload = NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload
         var httpMaximumConnectionsPerHostInUpload = NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload
+        let result = self.database.fetchNetworkingProcessState()
+        var counterDownloading = result.counterDownloading
+        var counterUploading = result.counterUploading
         let sessionUploadSelectors = [global.selectorUploadFileNODelete, global.selectorUploadFile, global.selectorUploadAutoUpload]
-        let metadatasDownloading = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusDownloading))
-        let metadatasUploading = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusUploading))
         let metadatasUploadError: [tableMetadata] = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusUploadError), sortedByKeyPath: "sessionDate", ascending: true) ?? []
+
         let isWiFi = networking.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi
-        var counterDownloading = metadatasDownloading.count
-        var counterUploading = metadatasUploading.count
 
         /// ------------------------ WEBDAV
         ///
@@ -141,7 +139,8 @@ class NCNetworkingProcess {
         /// ------------------------ DOWNLOAD
         ///
         let limitDownload = httpMaximumConnectionsPerHostInDownload - counterDownloading
-        let metadatasWaitDownload = self.database.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d", networking.sessionDownloadBackground, global.metadataStatusWaitDownload), numItems: limitDownload, sorted: "sessionDate", ascending: true)
+        let metadatasWaitDownload = self.database.fetchNetworkingProcessDownload(limit: limitDownload, session: networking.sessionDownloadBackground)
+
         for metadata in metadatasWaitDownload where counterDownloading < httpMaximumConnectionsPerHostInDownload {
             /// Check Server Error
             guard networking.noServerErrorAccount(metadata.account) else {
@@ -169,25 +168,18 @@ class NCNetworkingProcess {
         ///
 
         /// In background max 2 upload otherwise iOS Termination Reason: RUNNINGBOARD 0xdead10cc
-        if applicationState == .background {
+        if isAppInBackground {
             httpMaximumConnectionsPerHostInUpload = 2
         }
 
-        /// E2EE - only one for time
-        for metadata in metadatasUploading.unique(map: { $0.serverUrl }) {
-            if metadata.isDirectoryE2EE {
-                return (counterDownloading, counterUploading)
-            }
-        }
-
-        /// CHUNK - only one for time
-        if !metadatasUploading.filter({ $0.chunk > 0 }).isEmpty {
+        /// CHUNK or  E2EE - only one for time
+        if self.database.hasUploadingMetadataWithChunksOrE2EE() {
             return (counterDownloading, counterUploading)
         }
 
         for sessionSelector in sessionUploadSelectors where counterUploading < httpMaximumConnectionsPerHostInUpload {
             let limitUpload = httpMaximumConnectionsPerHostInUpload - counterUploading
-            let metadatasWaitUpload = self.database.getMetadatas(predicate: NSPredicate(format: "sessionSelector == %@ AND status == %d", sessionSelector, global.metadataStatusWaitUpload), numItems: limitUpload, sorted: "sessionDate", ascending: true)
+            let metadatasWaitUpload = self.database.fetchNetworkingProcessUpload(limit: limitUpload, sessionSelector: sessionSelector)
 
             if !metadatasWaitUpload.isEmpty {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] PROCESS (UPLOAD) find \(metadatasWaitUpload.count) items")
@@ -215,7 +207,7 @@ class NCNetworkingProcess {
                     let isInDirectoryE2EE = metadata.isDirectoryE2EE
                     /// NO WiFi
                     if !isWiFi && metadata.session == networking.sessionUploadBackgroundWWan { continue }
-                    if applicationState != .active && (isInDirectoryE2EE || metadata.chunk > 0) { continue }
+                    if isAppInBackground && (isInDirectoryE2EE || metadata.chunk > 0) { continue }
                     if let metadata = self.database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusUploading) {
                         /// find controller
                         var controller: NCMainTabBarController?
@@ -278,15 +270,6 @@ class NCNetworkingProcess {
         }
 
         return (counterDownloading, counterUploading)
-    }
-
-    private func checkApplicationState() async -> UIApplication.State {
-        await withCheckedContinuation { continuation in
-            DispatchQueue.main.async {
-                let appState = UIApplication.shared.applicationState
-                continuation.resume(returning: appState)
-            }
-        }
     }
 
     private func metadataStatusWaitWebDav() async -> Bool {

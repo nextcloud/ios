@@ -37,6 +37,14 @@ import SwiftUI
     func didAskForClientCertificate()
 }
 
+protocol TransferProgressDelegate: AnyObject {
+    func transferProgressDidUpdate(progress: Float,
+                                   totalBytes: Int64,
+                                   totalBytesExpected: Int64,
+                                   fileName: String,
+                                   serverUrl: String)
+}
+
 class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     static let shared = NCNetworking()
 
@@ -63,6 +71,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     var p12Data: Data?
     var p12Password: String?
     var tapHudStopDelete = false
+    weak var delegateTransferProgress: TransferProgressDelegate?
 
     var isOffline: Bool {
         return networkReachability == NKCommon.TypeReachability.notReachable || networkReachability == NKCommon.TypeReachability.unknown
@@ -282,49 +291,57 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         (self.p12Data, self.p12Password) = NCKeychain().getClientCertificate(account: account)
     }
 
-    // MARK: - User Default Data Request
+    // MARK: - Util FileSystem Safe
+#if !EXTENSION
+    func removeFileInBackgroundSafe(atPath: String) {
+        var bgTask: UIBackgroundTaskIdentifier = .invalid
 
-    func isResponseDataChanged<T>(account: String, responseData: AFDataResponse<T>?) -> Bool {
-        guard let responseData,
-              let request = responseData.request else { return true }
-        let key = getResponseDataKey(account: account, request: request)
-        let retrievedData = UserDefaults.standard.data(forKey: key)
-
-        switch responseData.result {
-        case .success(let data):
-            if let data = data as? Data {
-                if retrievedData != data, let request = responseData.request {
-                    let key = getResponseDataKey(account: account, request: request)
-                    UserDefaults.standard.set(data, forKey: key)
-                }
-                return retrievedData != data
-            } else {
-                return true
-            }
-        case .failure(let error):
-            print("Errore: \(error.localizedDescription)")
-            return true
+        bgTask = UIApplication.shared.beginBackgroundTask(withName: "SafeRemove") {
+            UIApplication.shared.endBackgroundTask(bgTask)
+            bgTask = .invalid
         }
-    }
 
-    func removeAllKeyUserDefaultsData(account: String?) {
-        let userDefaults = UserDefaults.standard
+        DispatchQueue.global().async {
+            defer {
+                UIApplication.shared.endBackgroundTask(bgTask)
+                bgTask = .invalid
+            }
 
-        for key in userDefaults.dictionaryRepresentation().keys {
-            if let account {
-                if key.hasPrefix(account) {
-                    userDefaults.removeObject(forKey: key)
-                }
-            } else {
-                userDefaults.removeObject(forKey: key)
+            do {
+                try FileManager.default.removeItem(atPath: atPath)
+            } catch {
+                print("Errore nella rimozione file:", error)
             }
         }
     }
 
-    private func getResponseDataKey(account: String, request: URLRequest) -> String {
-        let depth = request.allHTTPHeaderFields?["Depth"] ?? "none"
-        let key = account + "|" + (request.url?.absoluteString ?? "") + "|Depth=\(depth)|" + (request.httpMethod ?? "")
+    func moveFileSafely(atPath: String, toPath: String) {
+        if atPath == toPath { return }
 
-        return key
+        var bgTask: UIBackgroundTaskIdentifier = .invalid
+        bgTask = UIApplication.shared.beginBackgroundTask(withName: "MoveFile") {
+            UIApplication.shared.endBackgroundTask(bgTask)
+            bgTask = .invalid
+        }
+
+        DispatchQueue.global().async {
+            defer {
+                UIApplication.shared.endBackgroundTask(bgTask)
+                bgTask = .invalid
+            }
+
+            do {
+                if FileManager.default.fileExists(atPath: toPath) {
+                    try FileManager.default.removeItem(atPath: toPath)
+                }
+
+                try FileManager.default.copyItem(atPath: atPath, toPath: toPath)
+                try FileManager.default.removeItem(atPath: atPath)
+
+            } catch {
+                print("Errore nello spostamento file:", error)
+            }
+        }
     }
+#endif
 }

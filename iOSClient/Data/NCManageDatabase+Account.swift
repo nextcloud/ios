@@ -21,10 +21,8 @@ class tableAccount: Object {
     @objc dynamic var autoUploadVideo: Bool = false
     @objc dynamic var autoUploadWWAnPhoto: Bool = false
     @objc dynamic var autoUploadWWAnVideo: Bool = false
-    /// The Date from which new photos should be uploaded
-    @objc dynamic var autoUploadSinceDate: Date?
-    /// The date of the most recently uploaded asset
-    @objc dynamic var autoUploadLastUploadedDate: Date?
+    @objc dynamic var autoUploadOnlyNew: Bool = true
+    @objc dynamic var autoUploadOnlyNewSinceDate: Date = Date()
     @objc dynamic var backend = ""
     @objc dynamic var backendCapabilitiesSetDisplayName: Bool = false
     @objc dynamic var backendCapabilitiesSetPassword: Bool = false
@@ -273,6 +271,16 @@ extension NCManageDatabase {
         }
     }
 
+    func setAutoUploadOnlyNewSinceDate(account: String, date: Date) {
+        performRealmWrite { realm in
+            if let result = realm.objects(tableAccount.self)
+                .filter("acccount == %@", account)
+                .first {
+                result.autoUploadOnlyNewSinceDate = date
+            }
+        }
+    }
+
     func setAccountUserProfile(account: String, userProfile: NKUserProfile) {
         performRealmWrite { realm in
             if let result = realm.objects(tableAccount.self)
@@ -360,10 +368,10 @@ extension NCManageDatabase {
         } ?? []
     }
 
-    func getAccountAutoUploadFileName() -> String {
+    func getAccountAutoUploadFileName(account: String) -> String {
         return performRealmRead { realm in
             guard let result = realm.objects(tableAccount.self)
-                .filter("active == true")
+                .filter("account == %@", account)
                 .first
             else {
                 return NCBrandOptions.shared.folderDefaultAutoUpload
@@ -373,11 +381,15 @@ extension NCManageDatabase {
     }
 
     func getAccountAutoUploadDirectory(session: NCSession.Session) -> String {
-        let homeServer = utilityFileSystem.getHomeServer(session: session)
+        return getAccountAutoUploadDirectory(account: session.account, urlBase: session.urlBase, userId: session.userId)
+    }
+
+    func getAccountAutoUploadDirectory(account: String, urlBase: String, userId: String) -> String {
+        let homeServer = utilityFileSystem.getHomeServer(urlBase: urlBase, userId: userId)
 
         return performRealmRead { realm in
             realm.objects(tableAccount.self)
-                .filter("active == true")
+                .filter("account == %@", account)
                 .first?
                 .autoUploadDirectory
         }.flatMap { directory in
@@ -385,9 +397,13 @@ extension NCManageDatabase {
         } ?? homeServer
     }
 
-    func getAccountAutoUploadPath(session: NCSession.Session) -> String {
-        let cameraFileName = self.getAccountAutoUploadFileName()
-        let cameraDirectory = self.getAccountAutoUploadDirectory(session: session)
+    func getAccountAutoUploadServerUrlBase(session: NCSession.Session) -> String {
+        return getAccountAutoUploadServerUrlBase(account: session.account, urlBase: session.urlBase, userId: session.userId)
+    }
+
+    func getAccountAutoUploadServerUrlBase(account: String, urlBase: String, userId: String) -> String {
+        let cameraFileName = self.getAccountAutoUploadFileName(account: account)
+        let cameraDirectory = self.getAccountAutoUploadDirectory(account: account, urlBase: urlBase, userId: userId)
         let folderPhotos = utilityFileSystem.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)
         return folderPhotos
     }
@@ -401,12 +417,12 @@ extension NCManageDatabase {
         } ?? NCGlobal.shared.subfolderGranularityMonthly
     }
 
-    func getAccountAutoUploadFromFromDate() -> Date? {
+    func getAccountAutoUploadOnlyNewSinceDate() -> Date? {
         return performRealmRead { realm in
             realm.objects(tableAccount.self)
                 .filter("active == true")
                 .first?
-                .autoUploadSinceDate
+                .autoUploadOnlyNewSinceDate
         }
     }
 

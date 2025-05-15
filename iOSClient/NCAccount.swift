@@ -151,10 +151,12 @@ class NCAccount: NSObject {
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId))
             }
             /// Remove account in all database
-            database.clearDatabase(account: account, removeAccount: true)
+            database.clearDatabase(account: account, removeAccount: true, removeAutoUpload: true)
         } else {
             /// Remove account
             database.clearTable(tableAccount.self, account: account)
+            /// Remove autoupload
+            database.clearTable(tableAutoUploadTransfer.self, account: account)
         }
         /// Remove session in NextcloudKit
         NextcloudKit.shared.removeSession(account: account)
@@ -164,8 +166,6 @@ class NCAccount: NSObject {
         NCKeychain().setPassword(account: account, password: nil)
         NCKeychain().clearAllKeysEndToEnd(account: account)
         NCKeychain().clearAllKeysPushNotification(account: account)
-        /// Remove User Default Data
-        NCNetworking.shared.removeAllKeyUserDefaultsData(account: account)
         /// Remove Account Server in Error
         NCNetworking.shared.removeServerErrorAccount(account)
 

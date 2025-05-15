@@ -27,7 +27,7 @@ extension NCUtility {
     func longDate(_ date: Date) -> String {
         return DateFormatter.localizedString(from: date, dateStyle: .long, timeStyle: .none)
     }
-    
+
     /// Returns a localized string representing the given date in a user-friendly format.
     /// The function handles the following cases:
     /// - If the date is today: Returns "Today".

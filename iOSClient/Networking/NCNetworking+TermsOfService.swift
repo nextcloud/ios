@@ -11,7 +11,8 @@ extension NCNetworking {
     func termsOfService(account: String, completion: @escaping () -> Void = {}) {
         guard let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier),
               let controller = SceneManager.shared.getControllers().first(where: { $0.account == account }),
-              controller.presentedViewController as? UIHostingController<NCTermOfServiceModelView> == nil else {
+              controller.presentedViewController as? UIHostingController<NCTermOfServiceModelView> == nil
+        else {
             return completion()
         }
 
@@ -35,7 +36,8 @@ extension NCNetworking {
     }
 
     func signTermsOfService(account: String, termId: Int, completion: @escaping (NKError) -> Void) {
-        guard let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier) else {
+        guard let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier)
+        else {
             return
         }
         var tosArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []

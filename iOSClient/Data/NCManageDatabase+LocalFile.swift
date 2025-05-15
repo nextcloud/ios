@@ -29,10 +29,10 @@ extension NCManageDatabase {
 
     // MARK: - Realm Write
 
-    func addLocalFile(metadata: tableMetadata, offline: Bool? = nil) {
+    func addLocalFile(metadata: tableMetadata, offline: Bool? = nil, sync: Bool = true) {
         let addObject = getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) ?? tableLocalFile()
 
-        performRealmWrite { realm in
+        performRealmWrite(sync: sync) { realm in
             addObject.account = metadata.account
             addObject.etag = metadata.etag
             addObject.exifDate = NSDate()

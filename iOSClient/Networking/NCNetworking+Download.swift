@@ -66,7 +66,7 @@ extension NCNetworking {
         if let metadataExists = database.getMetadataFromOcId(metadata.ocId) {
             metadata = metadataExists
         } else {
-            metadata = database.addMetadata(metadata)
+            metadata = database.addMetadataAndReturn(metadata)
         }
 
         if metadata.status == global.metadataStatusDownloading || metadata.status == global.metadataStatusUploading {
@@ -91,18 +91,11 @@ extension NCNetworking {
                                                                    "account": metadata.account])
             start()
         }, progressHandler: { progress in
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterProgressTask,
-                                                        object: nil,
-                                                        userInfo: ["account": metadata.account,
-                                                                   "ocId": metadata.ocId,
-                                                                   "ocIdTransfer": metadata.ocIdTransfer,
-                                                                   "session": metadata.session,
-                                                                   "fileName": metadata.fileName,
-                                                                   "serverUrl": metadata.serverUrl,
-                                                                   "status": NSNumber(value: self.global.metadataStatusDownloading),
-                                                                   "progress": NSNumber(value: progress.fractionCompleted),
-                                                                   "totalBytes": NSNumber(value: progress.totalUnitCount),
-                                                                   "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
+            self.delegateTransferProgress?.transferProgressDidUpdate(progress: Float(progress.fractionCompleted),
+                                                                     totalBytes: progress.totalUnitCount,
+                                                                     totalBytesExpected: progress.completedUnitCount,
+                                                                     fileName: metadata.fileName,
+                                                                     serverUrl: metadata.serverUrl)
             progressHandler(progress)
         }) { _, etag, date, length, responseData, afError, error in
             var error = error
@@ -262,21 +255,10 @@ extension NCNetworking {
                           session: URLSession,
                           task: URLSessionTask) {
 
-        DispatchQueue.global().async {
-            if let metadata = self.database.getResultMetadataFromFileName(fileName, serverUrl: serverUrl, sessionTaskIdentifier: task.taskIdentifier) {
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterProgressTask,
-                                                            object: nil,
-                                                            userInfo: ["account": metadata.account,
-                                                                       "ocId": metadata.ocId,
-                                                                       "ocIdTransfer": metadata.ocIdTransfer,
-                                                                       "session": metadata.session,
-                                                                       "fileName": metadata.fileName,
-                                                                       "serverUrl": metadata.serverUrl,
-                                                                       "status": NSNumber(value: self.global.metadataStatusDownloading),
-                                                                       "progress": NSNumber(value: progress),
-                                                                       "totalBytes": NSNumber(value: totalBytes),
-                                                                       "totalBytesExpected": NSNumber(value: totalBytesExpected)])
-            }
-        }
+        delegateTransferProgress?.transferProgressDidUpdate(progress: progress,
+                                                            totalBytes: totalBytes,
+                                                            totalBytesExpected: totalBytesExpected,
+                                                            fileName: fileName,
+                                                            serverUrl: serverUrl)
     }
 }

@@ -13,9 +13,6 @@ protocol DateCompareable {
     var dateKey: Date { get }
 }
 
-var isAppSuspending: Bool = false
-var isAppInBackground: Bool = false
-
 final class NCManageDatabase: Sendable {
     static let shared = NCManageDatabase()
 
@@ -27,21 +24,21 @@ final class NCManageDatabase: Sendable {
     init() {
         realmQueue.setSpecific(key: realmQueueKey, value: true)
 
-        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
-            isAppSuspending = true
-            isAppInBackground = true
-        }
-
-        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { _ in
-            isAppSuspending = false
-            isAppInBackground = false
-        }
-
         func migrationSchema(_ migration: Migration, _ oldSchemaVersion: UInt64) {
             if oldSchemaVersion < 365 {
                 migration.deleteData(forType: tableMetadata.className())
                 migration.enumerateObjects(ofType: tableDirectory.className()) { _, newObject in
                     newObject?["etag"] = ""
+                }
+            }
+            if oldSchemaVersion < 383 {
+                migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
+                    if let oldDate = oldObject?["autoUploadSinceDate"] as? Date {
+                        newObject?["autoUploadOnlyNewSinceDate"] = oldDate
+                    } else {
+                        newObject?["autoUploadOnlyNewSinceDate"] = Date()
+                    }
+                    newObject?["autoUploadOnlyNew"] = true
                 }
             }
             if oldSchemaVersion < databaseSchemaVersion {
@@ -173,31 +170,54 @@ final class NCManageDatabase: Sendable {
 
     // MARK: -
 
-    func performRealmRead<T>(_ block: (Realm) throws -> T?) -> T? {
-        guard !isAppSuspending
-        else {
-            return nil
+    @discardableResult
+    func performRealmRead<T>(_ block: @escaping (Realm) throws -> T?, sync: Bool = true, completion: ((T?) -> Void)? = nil) -> T? {
+        guard !isAppSuspending else {
+            completion?(nil)
+            return nil // Return nil because the result is handled asynchronously
         }
 
         if DispatchQueue.getSpecific(key: realmQueueKey) == true {
             // Already on realmQueue: execute directly to avoid deadlocks
             do {
                 let realm = try Realm()
-                return try block(realm)
+                let result = try block(realm)
+                if sync {
+                    return result
+                } else {
+                    completion?(result)
+                    return nil // Return nil because the result is handled asynchronously
+                }
             } catch {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm read error: \(error)")
-                return nil
+                completion?(nil)
+                return nil // Return nil because the result is handled asynchronously
             }
         } else {
-            // Not on realmQueue: go with sync
-            return realmQueue.sync {
-                do {
-                    let realm = try Realm()
-                    return try block(realm)
-                } catch {
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm read error: \(error)")
-                    return nil
+            if sync {
+                // Synchronous execution
+                return realmQueue.sync {
+                    do {
+                        let realm = try Realm()
+                        return try block(realm)
+                    } catch {
+                        NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm read error: \(error)")
+                        return nil
+                    }
                 }
+            } else {
+                // Asynchronous execution
+                realmQueue.async {
+                    do {
+                        let realm = try Realm()
+                        let result = try block(realm)
+                        completion?(result)
+                    } catch {
+                        NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm read error: \(error)")
+                        completion?(nil)
+                    }
+                }
+                return nil // Return nil because the result will be handled asynchronously
             }
         }
     }
@@ -243,9 +263,12 @@ final class NCManageDatabase: Sendable {
         }
     }
 
-    func clearDatabase(account: String? = nil, removeAccount: Bool = false) {
+    func clearDatabase(account: String? = nil, removeAccount: Bool = false, removeAutoUpload: Bool = false) {
         if removeAccount {
             self.clearTable(tableAccount.self, account: account)
+        }
+        if removeAutoUpload {
+            self.clearTable(tableAutoUploadTransfer.self, account: account)
         }
 
         self.clearTable(tableActivity.self, account: account)
