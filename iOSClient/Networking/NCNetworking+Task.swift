@@ -155,6 +155,7 @@ extension NCNetworking {
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account],
                                                         second: 0.5)
+            self.delegateTransfer?.tranferChange(status: self.global.notificationCenterUploadCancelFile, metadata: tableMetadata(value: metadata), error: .success)
         }
     }
 

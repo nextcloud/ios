@@ -43,6 +43,7 @@ extension NCNetworking {
             } else {
                 metadata.livePhotoFile = ""
                 self.database.addMetadata(metadata, sync: false)
+                self.delegateTransfer?.tranferChange(status: self.global.notificationCenterUploadedLivePhoto, metadata: tableMetadata(value: metadata), error: .success)
                 return NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadedLivePhoto,
                                                                    object: nil,
                                                                    userInfo: aUserInfo,
@@ -77,6 +78,7 @@ extension NCNetworking {
 
         if resultsMetadataFirst.error == .success, resultsMetadataLast.error == .success {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload set LivePhoto for files " + (metadataFirst.fileName as NSString).deletingPathExtension)
+            self.delegateTransfer?.tranferChange(status: self.global.notificationCenterUploadedLivePhoto, metadata: tableMetadata(value: metadataFirst), error: .success)
         } else {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Upload set LivePhoto with error \(resultsMetadataFirst.error.errorCode) - \(resultsMetadataLast.error.errorCode)")
         }
