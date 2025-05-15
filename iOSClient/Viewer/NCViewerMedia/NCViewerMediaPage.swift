@@ -100,6 +100,8 @@ class NCViewerMediaPage: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        NCNetworking.shared.transferDelegate = self
+
         prefersLargeTitles = navigationController?.navigationBar.prefersLargeTitles
 
         navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
@@ -154,13 +156,13 @@ class NCViewerMediaPage: UIViewController {
                 scrollView.delegate = self
             }
         }
-
-        NCNetworking.shared.transferDelegate = self
     }
 
     deinit {
         timerAutoHide?.invalidate()
         timerAutoHide = nil
+
+        NCNetworking.shared.transferDelegate = nil
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterEnableSwipeGesture), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDisableSwipeGesture), object: nil)
