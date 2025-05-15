@@ -168,7 +168,13 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     }
 
     func updateRightBarButtonItems(_ fileItem: UITabBarItem? = nil) {
-        if collectionViewCommon?.isEditMode ?? false || trashViewController?.isEditMode ?? false {
+        guard !(collectionViewCommon?.isEditMode ?? false),
+              !(trashViewController?.isEditMode ?? false),
+              !(topViewController is NCViewerMediaPage),
+              !(topViewController is NCViewerPDF),
+              !(topViewController is NCViewerRichDocument),
+              !(topViewController is NCViewerNextcloudText)
+        else {
             return
         }
 
