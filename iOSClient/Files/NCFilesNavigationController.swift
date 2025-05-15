@@ -132,6 +132,8 @@ class NCFilesNavigationController: NCMainNavigationController {
             return menu
         }
 
+        if self.topViewController != self.viewControllers.first { return }
+
         if self.collectionViewCommon?.navigationItem.leftBarButtonItems == nil {
             let accountButton = AccountSwitcherButton(type: .custom)
 
@@ -147,7 +149,6 @@ class NCFilesNavigationController: NCMainNavigationController {
                 self.collectionViewCommon?.dismissTip()
             }
 
-            self.collectionViewCommon?.navigationItem.leftItemsSupplementBackButton = true
             self.collectionViewCommon?.navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: accountButton)], animated: true)
 
         } else {
