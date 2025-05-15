@@ -167,8 +167,14 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
     }
 
-    func updateRightBarButtonItems() {
-        if collectionViewCommon?.isEditMode ?? false || trashViewController?.isEditMode ?? false {
+    func updateRightBarButtonItems(_ fileItem: UITabBarItem? = nil) {
+        guard !(collectionViewCommon?.isEditMode ?? false),
+              !(trashViewController?.isEditMode ?? false),
+              !(topViewController is NCViewerMediaPage),
+              !(topViewController is NCViewerPDF),
+              !(topViewController is NCViewerRichDocument),
+              !(topViewController is NCViewerNextcloudText)
+        else {
             return
         }
 
@@ -203,10 +209,23 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             topViewController?.navigationItem.rightBarButtonItems = tempRightBarButtonItems
         }
 
-        // Update App Icon badge
+        // Update App Icon badge / File Icon badge
+#if DEBUG
         if UIApplication.shared.applicationIconBadgeNumber != resultsCount {
             UIApplication.shared.applicationIconBadgeNumber = resultsCount
         }
+        fileItem?.badgeValue = resultsCount == 0 ? nil : "\(resultsCount)"
+#else
+        if resultsCount > 999 {
+            UIApplication.shared.applicationIconBadgeNumber = 999
+            fileItem?.badgeValue = "999+"
+        } else {
+            if UIApplication.shared.applicationIconBadgeNumber != resultsCount {
+                UIApplication.shared.applicationIconBadgeNumber = resultsCount
+            }
+            fileItem?.badgeValue = resultsCount == 0 ? nil : "\(resultsCount)"
+        }
+#endif
     }
 
     func createRightMenu() -> UIMenu? { return nil }

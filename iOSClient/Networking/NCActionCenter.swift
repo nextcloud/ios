@@ -126,8 +126,11 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             }
 
         case NCGlobal.shared.selectorLoadFileView:
+            guard !isAppInBackground
+            else {
+                return
+            }
 
-            guard UIApplication.shared.applicationState == .active else { return }
             if metadata.contentType.contains("opendocument") && !self.utility.isTypeFileRichDocument(metadata) {
                 self.openActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
             } else if metadata.classFile == NKCommon.TypeClassFile.compress.rawValue || metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
@@ -140,10 +143,12 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             }
 
         case NCGlobal.shared.selectorOpenIn:
-
-            if UIApplication.shared.applicationState == .active {
-                self.openActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
+            guard !isAppInBackground
+            else {
+                return
             }
+
+            self.openActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
 
         case NCGlobal.shared.selectorSaveAlbum:
 

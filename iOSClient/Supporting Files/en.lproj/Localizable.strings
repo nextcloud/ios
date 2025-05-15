@@ -110,6 +110,8 @@
 "_retry_"                   = "Retry";
 "_images_"                  = "Images";
 "_confirm_"                 = "Confirm";
+"_confirm_continue_"        = "Confirm by continuing the previous uploading";
+"_confirm_resetting_"       = "confirm ignoring previous uploading ";
 
 /* MARK: Files lock */
 

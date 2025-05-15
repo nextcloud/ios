@@ -58,7 +58,7 @@ struct NCAssistantCreateNewTask: View {
 
 #Preview {
     let model = NCAssistantModel(controller: nil)
-    
+
     NCAssistantCreateNewTask()
         .environmentObject(model)
         .onAppear {

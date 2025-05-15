@@ -33,7 +33,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // get auto upload folder
-        self.autoUploadFileName = self.database.getAccountAutoUploadFileName()
+        self.autoUploadFileName = self.database.getAccountAutoUploadFileName(account: self.session.account)
         self.autoUploadDirectory = self.database.getAccountAutoUploadDirectory(session: self.session)
         // get layout for view
         self.layoutForView = self.database.getLayoutForView(account: self.session.account, key: self.layoutKey, serverUrl: self.serverUrl)
@@ -302,7 +302,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                         } else {
                             cell.filePreviewImageView?.image = results.image
                         }
-                        if !(results.tableAvatar?.loaded ?? false),
+                        if !(results.tblAvatar?.loaded ?? false),
                            NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
                             NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: ownerId, fileName: fileName, account: metadata.account, view: collectionView, isPreviewImageView: true))
                         }
@@ -393,7 +393,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.fileAvatarImageView?.image = results.image
             }
 
-            if !(results.tableAvatar?.loaded ?? false),
+            if !(results.tblAvatar?.loaded ?? false),
                NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
                 NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: metadata.ownerId, fileName: fileName, account: metadata.account, view: collectionView))
             }
@@ -533,7 +533,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                         }
                         emptyTitle = NSLocalizedString(self.emptyTitle, comment: "")
                         emptyDescription = NSLocalizedString(emptyDescription, comment: "")
-                    } else if metadataFolder?.status == global.metadataStatusWaitCreateFolder {
+                    } else if self.metadataFolder?.status == global.metadataStatusWaitCreateFolder {
                         emptyImage = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: [NCBrandColor.shared.getElement(account: session.account)])
                         emptyTitle = NSLocalizedString("_files_no_files_", comment: "")
                         emptyDescription = NSLocalizedString("_folder_offline_desc_", comment: "")

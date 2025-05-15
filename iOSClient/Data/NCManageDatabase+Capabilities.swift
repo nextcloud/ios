@@ -1,25 +1,6 @@
-//
-//  NCManageDatabase+Capabilities.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 29/05/23.
-//  Copyright © 2023 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2023 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
 import UIKit
@@ -36,30 +17,16 @@ class tableCapabilities: Object {
 }
 
 extension NCManageDatabase {
+
+    // MARK: - Realm write
+
     func addCapabilitiesJSon(_ data: Data, account: String) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                let addObject = tableCapabilities()
-                addObject.account = account
-                addObject.jsondata = data
-                realm.add(addObject, update: .all)
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+        performRealmWrite { realm in
+            let addObject = tableCapabilities()
+            addObject.account = account
+            addObject.jsondata = data
+            realm.add(addObject, update: .all)
         }
-    }
-
-    func getCapabilities(account: String) -> Data? {
-        do {
-            let realm = try Realm()
-            guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first else { return nil }
-            return result.jsondata
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
-        }
-
-        return nil
     }
 
     @discardableResult
@@ -302,19 +269,16 @@ extension NCManageDatabase {
         if let data {
             jsonData = data
         } else {
-            do {
-                let realm = try Realm()
-                guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first,
-                      let data = result.jsondata else {
-                    return nil
-                }
-                jsonData = data
-            } catch let error as NSError {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
-                return nil
+            jsonData = performRealmRead { realm in
+                realm.objects(tableCapabilities.self)
+                    .filter("account == %@", account)
+                    .first?
+                    .jsondata
             }
         }
-        guard let jsonData = jsonData else {
+
+        guard let jsonData
+        else {
             return nil
         }
 
@@ -405,7 +369,7 @@ extension NCManageDatabase {
 
             return capabilities
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not decode json capabilities: \(error)")
             return nil
         }
     }

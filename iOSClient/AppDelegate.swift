@@ -34,7 +34,6 @@ import SwiftUI
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     var backgroundSessionCompletionHandler: (() -> Void)?
-    var taskAutoUploadDate: Date = Date()
     var isUiTestingEnabled: Bool {
         return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
     }
@@ -45,6 +44,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var loginFlowV2Endpoint = ""
     var loginFlowV2Login = ""
 
+    /// Init 
+    let global = NCGlobal.shared
     let database = NCManageDatabase.shared
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -98,10 +99,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 #endif
 
         /// Background task register
-        BGTaskScheduler.shared.register(forTaskWithIdentifier: NCGlobal.shared.refreshTask, using: nil) { task in
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: global.refreshTask, using: nil) { task in
             self.handleAppRefresh(task)
         }
-        BGTaskScheduler.shared.register(forTaskWithIdentifier: NCGlobal.shared.processingTask, using: nil) { task in
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: global.processingTask, using: nil) { task in
             self.handleProcessingTask(task)
         }
 
@@ -192,28 +193,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func handleAppRefreshProcessingTask(taskText: String, completion: @escaping () -> Void = {}) {
+        isAppSuspending = false
+
         Task {
-            var numAutoUpload = 0
-            guard let account = NCManageDatabase.shared.getActiveTableAccount()?.account else {
+            guard let account = NCManageDatabase.shared.getActiveTableAccount()?.account
+            else {
                 return
-            }
-
-            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) start handle")
-
-            // Test every > 1 min
-            if Date() > self.taskAutoUploadDate.addingTimeInterval(60) {
-                self.taskAutoUploadDate = Date()
-                numAutoUpload = await NCAutoUpload.shared.initAutoUpload(account: account)
-                NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) auto upload with \(numAutoUpload) uploads")
-            } else {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) disabled auto upload")
             }
 
             let results = await NCNetworkingProcess.shared.refreshProcessingTask()
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) networking process with download: \(results.counterDownloading) upload: \(results.counterUploading)")
 
+            let newAutoUpload = await NCAutoUpload.shared.initAutoUploadProcessingTask(account: account)
+            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) new auto upload with \(newAutoUpload) uploads")
+
             if taskText == "ProcessingTask",
-               numAutoUpload == 0,
+               newAutoUpload == 0,
                results.counterDownloading == 0,
                results.counterUploading == 0,
                let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "offlineDate", ascending: true) {
@@ -229,9 +224,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
 
             let resultsCount = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal))?.count ?? 0
+#if DEBUG
             if UIApplication.shared.applicationIconBadgeNumber != resultsCount {
                 UIApplication.shared.applicationIconBadgeNumber = resultsCount
             }
+#else
+            if resultsCount > 999 {
+                UIApplication.shared.applicationIconBadgeNumber = 999
+            } else {
+                if UIApplication.shared.applicationIconBadgeNumber != resultsCount {
+                    UIApplication.shared.applicationIconBadgeNumber = resultsCount
+                }
+            }
+#endif
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) completion handle")
             completion()
@@ -375,7 +380,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         utilityFileSystem.removeTemporaryDirectory()
 
         NCKeychain().removeAll()
-        NCNetworking.shared.removeAllKeyUserDefaultsData(account: nil)
 
         exit(0)
     }
