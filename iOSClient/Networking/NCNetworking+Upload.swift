@@ -249,7 +249,8 @@ extension NCNetworking {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
                 self.database.setMetadataSession(ocId: metadata.ocId,
                                                  sessionTaskIdentifier: task.taskIdentifier,
-                                                 status: self.global.metadataStatusUploading)
+                                                 status: self.global.metadataStatusUploading,
+                                                 sync: false)
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadStartFile,
                                                             object: nil,
                                                             userInfo: ["ocId": metadata.ocId,
@@ -260,7 +261,7 @@ extension NCNetworking {
                                                                        "fileName": metadata.fileName,
                                                                        "sessionSelector": metadata.sessionSelector])
             } else {
-                self.database.deleteMetadataOcId(metadata.ocId)
+                self.database.deleteMetadataOcId(metadata.ocId, sync: false)
             }
 
             completion(error)
