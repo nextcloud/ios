@@ -89,6 +89,7 @@ extension NCNetworking {
                                                                    "session": metadata.session,
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account])
+            self.delegateTransfer?.tranferChange(status: self.global.notificationCenterDownloadStartFile, metadata: tableMetadata(value: metadata), error: .success)
             start()
         }, progressHandler: { progress in
             self.delegateTransfer?.transferProgressDidUpdate(progress: Float(progress.fractionCompleted),
@@ -141,6 +142,7 @@ extension NCNetworking {
                                                                    "session": metadata.session,
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account])
+            self.delegateTransfer?.tranferChange(status: self.global.notificationCenterDownloadStartFile, metadata: tableMetadata(value: metadata), error: .success)
         } else {
             database.setMetadataSession(ocId: metadata.ocId,
                                         session: "",
@@ -208,6 +210,7 @@ extension NCNetworking {
                                                                        "selector": metadata.sessionSelector,
                                                                        "error": error],
                                                             second: 0.5)
+                self.delegateTransfer?.tranferChange(status: self.global.notificationCenterDownloadedFile, metadata: tableMetadata(value: metadata), error: error)
             } else if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
                 NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
                 self.database.setMetadataSession(ocId: metadata.ocId,
@@ -224,6 +227,7 @@ extension NCNetworking {
                                                                        "serverUrl": metadata.serverUrl,
                                                                        "account": metadata.account],
                                                             second: 0.5)
+                self.delegateTransfer?.tranferChange(status: self.global.notificationCenterDownloadCancelFile, metadata: tableMetadata(value: metadata), error: .success)
             } else {
                 NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
 
@@ -243,6 +247,7 @@ extension NCNetworking {
                                                                        "selector": metadata.sessionSelector,
                                                                        "error": error],
                                                             second: 0.5)
+                self.delegateTransfer?.tranferChange(status: NCGlobal.shared.notificationCenterDownloadedFile, metadata: tableMetadata(value: metadata), error: error)
             }
         }
     }
