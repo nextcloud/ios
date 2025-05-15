@@ -31,7 +31,7 @@ final class NCManageDatabase: Sendable {
                     newObject?["etag"] = ""
                 }
             }
-            if oldSchemaVersion < 383 {
+            if oldSchemaVersion < 384 {
                 migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
                     if let oldDate = oldObject?["autoUploadSinceDate"] as? Date {
                         newObject?["autoUploadOnlyNewSinceDate"] = oldDate
