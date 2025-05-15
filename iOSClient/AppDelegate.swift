@@ -224,9 +224,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
 
             let resultsCount = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal))?.count ?? 0
+#if DEBUG
             if UIApplication.shared.applicationIconBadgeNumber != resultsCount {
                 UIApplication.shared.applicationIconBadgeNumber = resultsCount
             }
+#else
+            if resultsCount > 999 {
+                UIApplication.shared.applicationIconBadgeNumber = 999
+            } else {
+                if UIApplication.shared.applicationIconBadgeNumber != resultsCount {
+                    UIApplication.shared.applicationIconBadgeNumber = resultsCount
+                }
+            }
+#endif
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) completion handle")
             completion()
