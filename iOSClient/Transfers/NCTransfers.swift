@@ -91,31 +91,24 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     }
 
     override func downloadStartFile(_ notification: NSNotification) {
-        reloadDataSource()
     }
 
     override func downloadedFile(_ notification: NSNotification) {
-        reloadDataSource()
     }
 
     override func downloadCancelFile(_ notification: NSNotification) {
-        reloadDataSource()
     }
 
     override func uploadStartFile(_ notification: NSNotification) {
-        reloadDataSource()
     }
 
     override func uploadedFile(_ notification: NSNotification) {
-        reloadDataSource()
     }
 
     override func uploadedLivePhoto(_ notification: NSNotification) {
-        reloadDataSource()
     }
 
     override func uploadCancelFile(_ notification: NSNotification) {
-        reloadDataSource()
     }
 
     // MARK: TAP EVENT
@@ -321,10 +314,17 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     }
 
     override func tranferChange(status: String, metadata: tableMetadata, error: NKError) {
-        super.tranferChange(status: status, metadata: metadata, error: error)
+        reloadDataSource()
     }
 
     override func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) {
-        super.transferProgressDidUpdate(progress: progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl)
+        DispatchQueue.main.async {
+            for case let cell as NCTransferCell in self.collectionView.visibleCells {
+                if cell.serverUrl == serverUrl && cell.fileName == fileName {
+                    cell.setProgress(progress: progress)
+                    cell.labelInfo?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - " + self.utilityFileSystem.transformedSize(totalBytes)
+                }
+            }
+        }
     }
 }
