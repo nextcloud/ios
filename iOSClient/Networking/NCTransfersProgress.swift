@@ -24,7 +24,7 @@
 import Foundation
 import NextcloudKit
 
-public class NCTransferProgress: NSObject {
+public class NCTransferProgress: NSObject, NCTransferDelegate {
     static let shared = NCTransferProgress()
 
     public class Transfer {
@@ -53,6 +53,10 @@ public class NCTransferProgress: NSObject {
     private var lastOcIdTransferInForeground: String = ""
 
     override private init() {}
+
+    func setup() {
+        NCNetworking.shared.transferDelegate = self
+    }
 
     @discardableResult
     func append(_ transfer: Transfer) -> Transfer {
@@ -122,4 +126,8 @@ public class NCTransferProgress: NSObject {
             transfer.countError = 0
         }
     }
+
+    func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
+
+    func tranferChange(status: String, metadata: tableMetadata, error: NKError) { }
 }

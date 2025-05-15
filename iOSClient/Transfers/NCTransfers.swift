@@ -319,20 +319,12 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func getServerData() {
         reloadDataSource()
     }
-}
 
-extension NCTransfers: NCTransferDelegate {
-    func tranferChange(status: String, metadata: tableMetadata, error: NKError) {
+    override func tranferChange(status: String, metadata: tableMetadata, error: NKError) {
+        super.tranferChange(status: status, metadata: metadata, error: error)
     }
 
-    func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) {
-        DispatchQueue.main.async {
-            for case let cell as NCTransferCell in self.collectionView.visibleCells {
-                if cell.serverUrl == serverUrl && cell.fileName == fileName {
-                    cell.setProgress(progress: progress)
-                    cell.labelInfo?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - " + self.utilityFileSystem.transformedSize(totalBytes)
-                }
-            }
-        }
+    override func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) {
+        super.transferProgressDidUpdate(progress: progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl)
     }
 }
