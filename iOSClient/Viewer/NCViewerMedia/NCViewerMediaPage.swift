@@ -155,7 +155,7 @@ class NCViewerMediaPage: UIViewController {
             }
         }
 
-        NCNetworking.shared.delegateTransfer = self
+        NCNetworking.shared.transferDelegate = self
     }
 
     deinit {
@@ -673,7 +673,7 @@ extension NCViewerMediaPage: UIScrollViewDelegate {
     }
 }
 
-extension NCViewerMediaPage: TransferDelegate {
+extension NCViewerMediaPage: NCTransferDelegate {
     func tranferChange(status: String, metadata: tableMetadata, error: NKError) {
     }
 

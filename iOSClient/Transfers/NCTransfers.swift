@@ -55,7 +55,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         self.navigationItem.leftBarButtonItems = [close]
 
-        NCNetworking.shared.delegateTransfer = self
+        NCNetworking.shared.transferDelegate = self
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -321,7 +321,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     }
 }
 
-extension NCTransfers: TransferDelegate {
+extension NCTransfers: NCTransferDelegate {
     func tranferChange(status: String, metadata: tableMetadata, error: NKError) {
     }
 
