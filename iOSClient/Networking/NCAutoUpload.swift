@@ -86,8 +86,6 @@ class NCAutoUpload: NSObject {
 
             if skipFileNames.contains(fileNameCompatible) || skipFileNames.contains(fileName) {
                 continue
-            } else {
-                print("DEBUG")
             }
 
             let mediaType = asset.mediaType

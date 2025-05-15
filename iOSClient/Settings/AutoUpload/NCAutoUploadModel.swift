@@ -66,7 +66,6 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// A string variable that contains error text
     @Published var error: String = ""
     let database = NCManageDatabase.shared
-    @Published var autoUploadPath: String = ""
 
     /// Tip
     var tip: EasyTipView?
@@ -82,9 +81,6 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// Initialization code to set up the ViewModel with the active account
     init(controller: NCMainTabBarController?) {
         self.controller = controller
-        if let account = controller?.account {
-            self.autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadFileName(account: account)
-        }
 
         NotificationCenter.default.addObserver(forName: UIDevice.orientationDidChangeNotification,
                                                object: nil,
@@ -227,6 +223,17 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         } else {
             return NSLocalizedString("_multiple_albums_", comment: "")
         }
+    }
+
+    func existsAutoUpload() -> Bool {
+        let autoUploadServerUrlBase = NCManageDatabase.shared.getAccountAutoUploadServerUrlBase(session: session)
+        return NCManageDatabase.shared.existsAutoUpload(account: session.account, autoUploadServerUrlBase: autoUploadServerUrlBase)
+    }
+
+
+    func deleteAutoUploadTransfer() {
+        let autoUploadServerUrlBase = NCManageDatabase.shared.getAccountAutoUploadServerUrlBase(session: session)
+        NCManageDatabase.shared.deleteAutoUploadTransfer(account: session.account, autoUploadServerUrlBase: autoUploadServerUrlBase)
     }
 }
 

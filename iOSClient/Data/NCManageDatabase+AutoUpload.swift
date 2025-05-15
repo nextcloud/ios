@@ -38,6 +38,14 @@ extension NCManageDatabase {
         }
     }
 
+    func deleteAutoUploadTransfer(account: String, autoUploadServerUrlBase: String, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
+            let result = realm.objects(tableAutoUploadTransfer.self)
+                .filter("account == %@ AND serverUrlBase == %@", account, autoUploadServerUrlBase)
+            realm.delete(result)
+        }
+    }
+
     // MARK: - Realm Read
 
     func fetchSkipFileNames(account: String, autoUploadServerUrlBase: String) -> Set<String> {
@@ -45,7 +53,7 @@ extension NCManageDatabase {
 
         performRealmRead { realm in
             let metadatas = realm.objects(tableMetadata.self)
-                .filter("account == %@ AND autoUploadServerUrlBase == %@", account, autoUploadServerUrlBase)
+                .filter("account == %@ AND autoUploadServerUrlBase == %@ AND status IN %@", account, autoUploadServerUrlBase, NCGlobal.shared.metadataStatusUploadingAllMode)
                 .map(\.fileNameView)
 
             let transfers = realm.objects(tableAutoUploadTransfer.self)
@@ -66,5 +74,13 @@ extension NCManageDatabase {
                 .sorted(byKeyPath: "date", ascending: false)
                 .first?.date
         }
+    }
+
+    func existsAutoUpload(account: String, autoUploadServerUrlBase: String) -> Bool {
+        return performRealmRead { realm in
+            realm.objects(tableAutoUploadTransfer.self)
+                .filter("account == %@ AND serverUrlBase == %@", account, autoUploadServerUrlBase)
+                .first != nil
+        } ?? false
     }
 }
