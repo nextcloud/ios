@@ -64,7 +64,7 @@ class NCRecent: NCCollectionViewCommon {
         layoutForView?.sort = "date"
         layoutForView?.ascending = false
 
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, directoryOnTop: NCKeychain().getDirectoryOnTop(account: session.account))
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
 
         super.reloadDataSource()
     }

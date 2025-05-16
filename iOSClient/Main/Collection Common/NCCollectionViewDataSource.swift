@@ -37,6 +37,7 @@ class NCCollectionViewDataSource: NSObject {
     private var layoutForView: NCDBLayoutForView?
     private var metadataIndexPath = ThreadSafeDictionary<IndexPath, tableMetadata>()
     private var directoryOnTop: Bool = true
+    private var favoriteOnTop: Bool = true
 
     override init() { super.init() }
 
@@ -44,13 +45,16 @@ class NCCollectionViewDataSource: NSObject {
          layoutForView: NCDBLayoutForView? = nil,
          providers: [NKSearchProvider]? = nil,
          searchResults: [NKSearchResult]? = nil,
-         directoryOnTop: Bool = true) {
+         account: String? = nil) {
         super.init()
         removeAll()
 
         self.metadatas = metadatas
         self.layoutForView = layoutForView
-        self.directoryOnTop = directoryOnTop
+        if let account {
+            self.directoryOnTop = NCKeychain().getDirectoryOnTop(account: account)
+            self.favoriteOnTop = NCKeychain().getFavoriteOnTop(account: account)
+        }
         /// unified search
         self.providers = providers
         self.searchResults = searchResults
@@ -112,21 +116,33 @@ class NCCollectionViewDataSource: NSObject {
             }
         } else {
             /// normal
+            let favorite = NSLocalizedString("favorite", comment: "").lowercased().firstUppercased
             let directory = NSLocalizedString("directory", comment: "").lowercased().firstUppercased
-            self.sectionsValue = self.sectionsValue.sorted {
-                if self.directoryOnTop,
-                   $0 == directory {
-                    return true
-                } else if self.directoryOnTop,
-                          $1 == directory {
-                    return false
+
+            self.sectionsValue = self.sectionsValue.sorted { lhs, rhs in
+                // 1. favorite on top
+                if favoriteOnTop {
+                    if lhs == favorite && rhs != favorite {
+                        return true
+                    }
+                    if rhs == favorite && lhs != favorite {
+                        return false
+                    }
                 }
-                if let ascending = layoutForView?.ascending,
-                    ascending {
-                    return $0 < $1
-                } else {
-                    return $0 > $1
+
+                // 2. directory on top
+                if directoryOnTop {
+                    if lhs == directory && rhs != directory {
+                        return true
+                    }
+                    if rhs == directory && lhs != directory {
+                        return false
+                    }
                 }
+
+                // 3. alphabetical
+                let ascending = layoutForView?.ascending ?? true
+                return ascending ? lhs < rhs : lhs > rhs
             }
         }
 
@@ -148,6 +164,7 @@ class NCCollectionViewDataSource: NSObject {
                                                       metadatas: metadatas,
                                                       lastSearchResult: searchResult,
                                                       layoutForView: self.layoutForView,
+                                                      favoriteOnTop: self.favoriteOnTop,
                                                       directoryOnTop: self.directoryOnTop)
         metadatasForSection.append(metadataForSection)
     }
@@ -354,6 +371,7 @@ class NCMetadataForSection: NSObject {
     var unifiedSearchInProgress: Bool = false
     var layoutForView: NCDBLayoutForView?
     var directoryOnTop: Bool
+    var favoriteOnTop: Bool
 
     private var metadatasSorted: [tableMetadata] = []
     private var metadatasFavoriteDirectory: [tableMetadata] = []
@@ -365,11 +383,12 @@ class NCMetadataForSection: NSObject {
     public var numFile: Int = 0
     public var totalSize: Int64 = 0
 
-    init(sectionValue: String, metadatas: [tableMetadata], lastSearchResult: NKSearchResult?, layoutForView: NCDBLayoutForView?, directoryOnTop: Bool) {
+    init(sectionValue: String, metadatas: [tableMetadata], lastSearchResult: NKSearchResult?, layoutForView: NCDBLayoutForView?, favoriteOnTop: Bool, directoryOnTop: Bool) {
         self.sectionValue = sectionValue
         self.metadatas = metadatas
         self.lastSearchResult = lastSearchResult
         self.layoutForView = layoutForView
+        self.favoriteOnTop = favoriteOnTop
         self.directoryOnTop = directoryOnTop
 
         super.init()
@@ -447,14 +466,14 @@ class NCMetadataForSection: NSObject {
                 continue
             }
 
-            // Organized the metadata
-            if metadata.favorite {
+            // Organize the metadata based on favoriteOnTop and directoryOnTop
+            if favoriteOnTop && metadata.favorite {
                 if metadata.directory {
                     metadatasFavoriteDirectory.append(metadata)
                 } else {
                     metadatasFavoriteFile.append(metadata)
                 }
-            } else if metadata.directory && self.directoryOnTop {
+            } else if directoryOnTop && metadata.directory {
                 metadatasDirectory.append(metadata)
             } else {
                 metadatasFile.append(metadata)

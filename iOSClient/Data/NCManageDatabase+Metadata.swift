@@ -993,38 +993,36 @@ extension NCManageDatabase {
             let favoriteOnTop = NCKeychain().getFavoriteOnTop(account: account)
 
             if layout.sort == "fileName" {
-                let orderedResults = results.sorted {
-                    let ordered = layout.ascending ? ComparisonResult.orderedAscending : ComparisonResult.orderedDescending
-                    // 1. favorite order
-                    if $0.favorite == $1.favorite {
-                        // 2. directory order TOP
-                        if directoryOnTop {
-                            if $0.directory == $1.directory {
-                                // 3. natural fileName
-                                return $0.fileNameView.localizedStandardCompare($1.fileNameView) == ordered
-                            } else {
-                                return $0.directory && !$1.directory
-                            }
-                        } else {
-                            return $0.fileNameView.localizedStandardCompare($1.fileNameView) == ordered
-                        }
-                    } else {
-                        return $0.favorite && !$1.favorite
-                    }
-                }
-                return Array(orderedResults)
-            } else {
-                if directoryOnTop {
-                    results = results.sorted(byKeyPath: layout.sort, ascending: layout.ascending)
-                        .sorted(byKeyPath: "favorite", ascending: false)
-                        .sorted(byKeyPath: "directory", ascending: false)
-                } else {
-                    results = results.sorted(byKeyPath: layout.sort, ascending: layout.ascending)
-                        .sorted(byKeyPath: "favorite", ascending: false)
-                }
-            }
+                let ordered = layout.ascending ? ComparisonResult.orderedAscending : .orderedDescending
 
-            return Array(results)
+                return results.sorted { lhs, rhs in
+                    // 1. favorite always has top priority if enabled
+                    if favoriteOnTop, lhs.favorite != rhs.favorite {
+                        return lhs.favorite && !rhs.favorite
+                    }
+
+                    // 2. directory on top (only if enabled)
+                    if directoryOnTop, lhs.directory != rhs.directory {
+                        return lhs.directory && !rhs.directory
+                    }
+
+                    // 3. fileNameView comparison
+                    return lhs.fileNameView.localizedStandardCompare(rhs.fileNameView) == ordered
+                }
+            } else {
+                // favorite always first if enabled
+                if favoriteOnTop {
+                    results = results.sorted(byKeyPath: "favorite", ascending: false)
+                }
+
+                if directoryOnTop {
+                    results = results.sorted(byKeyPath: "directory", ascending: false)
+                }
+
+                results = results.sorted(byKeyPath: layout.sort, ascending: layout.ascending)
+
+                return Array(results)
+            }
         } ?? []
     }
 
@@ -1054,9 +1052,11 @@ extension NCManageDatabase {
         }
     }
 
-    func getResultsMetadatasFromGroupfolders(session: NCSession.Session, layoutForView: NCDBLayoutForView?, directoryOnTop: Bool = true) -> [tableMetadata] {
+    func getResultsMetadatasFromGroupfolders(session: NCSession.Session, layoutForView: NCDBLayoutForView?) -> [tableMetadata] {
         let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
         let layout: NCDBLayoutForView = layoutForView ?? NCDBLayoutForView()
+        let directoryOnTop = NCKeychain().getDirectoryOnTop(account: session.account)
+        let favoriteOnTop = NCKeychain().getFavoriteOnTop(account: session.account)
 
         return performRealmRead { realm in
            var ocIds: [String] = []
@@ -1084,36 +1084,38 @@ extension NCManageDatabase {
                .filter("ocId IN %@", ocIds)
                .freeze()
 
-           if layout.sort == "fileName" {
-               let ordered = layout.ascending ? ComparisonResult.orderedAscending : .orderedDescending
-               return results.sorted {
-                   if $0.favorite == $1.favorite {
-                       if directoryOnTop {
-                           if $0.directory == $1.directory {
-                               return $0.fileNameView.localizedStandardCompare($1.fileNameView) == ordered
-                           } else {
-                               return $0.directory && !$1.directory
-                           }
-                       } else {
-                           return $0.fileNameView.localizedStandardCompare($1.fileNameView) == ordered
-                       }
-                   } else {
-                       return $0.favorite && !$1.favorite
-                   }
-               }
-           } else {
-               if directoryOnTop {
-                   results = results
-                       .sorted(byKeyPath: layout.sort, ascending: layout.ascending)
-                       .sorted(byKeyPath: "favorite", ascending: false)
-                       .sorted(byKeyPath: "directory", ascending: false)
-               } else {
-                   results = results
-                       .sorted(byKeyPath: layout.sort, ascending: layout.ascending)
-                       .sorted(byKeyPath: "favorite", ascending: false)
-               }
-               return Array(results)
-           }
+            if layout.sort == "fileName" {
+                let ordered = layout.ascending ? ComparisonResult.orderedAscending : .orderedDescending
+                return results.sorted { lhs, rhs in
+                    // 1. favorite on top (always takes priority if enabled)
+                    if favoriteOnTop, lhs.favorite != rhs.favorite {
+                        return lhs.favorite && !rhs.favorite
+                    }
+
+                    // 2. directory on top
+                    if directoryOnTop, lhs.directory != rhs.directory {
+                        return lhs.directory && !rhs.directory
+                    }
+
+                    // 3. file name comparison
+                    return lhs.fileNameView.localizedStandardCompare(rhs.fileNameView) == ordered
+                }
+            } else {
+                // Realm sorting (applied in reverse-priority order)
+                var sorted = results
+
+                if favoriteOnTop {
+                    sorted = sorted.sorted(byKeyPath: "favorite", ascending: false)
+                }
+
+                if directoryOnTop {
+                    sorted = sorted.sorted(byKeyPath: "directory", ascending: false)
+                }
+
+                sorted = sorted.sorted(byKeyPath: layout.sort, ascending: layout.ascending)
+
+                return Array(sorted)
+            }
         } ?? []
     }
 
