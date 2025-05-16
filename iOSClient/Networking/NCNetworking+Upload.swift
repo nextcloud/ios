@@ -45,8 +45,6 @@ extension NCNetworking {
         var numChunks: Int = 0
         var hud: NCHud?
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload file \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier) with size \(metadata.size) [CHUNK \(metadata.chunk), E2EE \(metadata.isDirectoryE2EE)]")
-        let transfer = NCTransferProgress.Transfer(ocId: metadata.ocId, ocIdTransfer: metadata.ocIdTransfer, session: metadata.session, chunk: metadata.chunk, e2eEncrypted: metadata.e2eEncrypted, progressNumber: 0, totalBytes: 0, totalBytesExpected: 0)
-        NCTransferProgress.shared.append(transfer)
 
         func tapOperation() {
             NotificationCenter.default.postOnMainThread(name: NextcloudKit.shared.nkCommonInstance.notificationCenterChunkedFileStop.rawValue)
@@ -355,7 +353,6 @@ extension NCNetworking {
         let selector = metadata.sessionSelector
 
         if error == .success, let ocId = ocId, size == metadata.size {
-            NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
 
             var metadata = tableMetadata(value: metadata)
             metadata.uploadDate = (date as? NSDate) ?? NSDate()
@@ -437,7 +434,6 @@ extension NCNetworking {
                 // Client Diagnostic
                 self.database.addDiagnostic(account: metadata.account, issue: self.global.diagnosticIssueVirusDetected, sync: false)
             } else if error.errorCode == self.global.errorForbidden && !isAppInBackground {
-                NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
 #if !EXTENSION
                 NextcloudKit.shared.getTermsOfService(account: metadata.account, options: NKRequestOptions(checkInterceptor: false)) { _, tos, _, error in
                     if error == .success, let tos, !tos.hasUserSigned() {
@@ -482,8 +478,6 @@ extension NCNetworking {
                 }
 #endif
             } else {
-                NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
-
                 self.database.setMetadataSession(ocId: metadata.ocId,
                                                  sessionTaskIdentifier: 0,
                                                  sessionError: error.errorDescription,
@@ -535,7 +529,6 @@ extension NCNetworking {
     }
 
     func uploadCancelFile(metadata: tableMetadata) {
-        NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
 #if EXTENSION
                 self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer))
 #else

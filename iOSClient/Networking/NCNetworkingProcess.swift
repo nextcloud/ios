@@ -152,6 +152,7 @@ class NCNetworkingProcess {
         }
         if counterDownloading == 0 {
             let metadatasDownloadError: [tableMetadata] = self.database.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d", networking.sessionDownloadBackground, global.metadataStatusDownloadError), sortedByKeyPath: "sessionDate", ascending: true) ?? []
+            /*
             for metadata in metadatasDownloadError {
                 // Verify COUNTER ERROR
                 if let transfer = NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer),
@@ -162,6 +163,7 @@ class NCNetworkingProcess {
                                                  sessionError: "",
                                                  status: global.metadataStatusWaitDownload)
             }
+            */
         }
 
         /// ------------------------ UPLOAD
@@ -191,10 +193,12 @@ class NCNetworkingProcess {
                     continue
                 }
 
+                /*
                 if NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer) != nil {
                     NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Process auto upload skipped file: \(metadata.serverUrl)/\(metadata.fileNameView), because is already in session.")
                     continue
                 }
+                */
 
                 let metadatas = await NCCameraRoll().extractCameraRoll(from: metadata)
 
@@ -245,11 +249,13 @@ class NCNetworkingProcess {
                     continue
                 }
 
+                /*
                 // VeriCheckfy COUNTER ERROR
                 if let transfer = NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer),
                    transfer.countError > 3 {
                     continue
                 }
+                */
                 /// Check QUOTA
                 if metadata.sessionError.contains("\(global.errorQuota)") {
                     NextcloudKit.shared.getUserMetadata(account: metadata.account, userId: metadata.userId) { _, userProfile, _, error in

@@ -43,14 +43,9 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     func setup() {
         NCNetworking.shared.transferDelegate = self
 
-        NotificationCenter.default.addObserver(self, selector: #selector(downloadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadStartFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(downloadCancelFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile), object: nil)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(uploadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(uploadedLivePhoto(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedLivePhoto), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(uploadCancelFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile), object: nil)
     }
 
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
@@ -59,23 +54,12 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     // MARK: - Download
 
-    @objc func downloadStartFile(_ notification: NSNotification) { }
-    @objc func downloadCancelFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocIdTransfer = userInfo["ocIdTransfer"] as? String
-        else { return }
-
-        NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
-    }
     @objc func downloadedFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let selector = userInfo["selector"] as? String,
-              let error = userInfo["error"] as? NKError,
-              let ocIdTransfer = userInfo["ocIdTransfer"] as? String
+              let error = userInfo["error"] as? NKError
         else { return }
-
-        NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
 
         guard error == .success else {
             // File do not exists on server, remove in local
@@ -278,28 +262,10 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     // MARK: - Upload
 
-    @objc func uploadStartFile(_ notification: NSNotification) { }
-    @objc func uploadedLivePhoto(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocIdTransfer = userInfo["ocIdTransfer"] as? String
-        else { return }
-
-        NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
-    }
-    @objc func uploadCancelFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocIdTransfer = userInfo["ocIdTransfer"] as? String
-        else { return }
-
-        NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
-    }
     @objc func uploadedFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let error = userInfo["error"] as? NKError,
-              let ocIdTransfer = userInfo["ocIdTransfer"] as? String
+              let error = userInfo["error"] as? NKError
         else { return }
-
-        NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
 
         if error != .success, error.errorCode != NSURLErrorCancelled, error.errorCode != NCGlobal.shared.errorRequestExplicityCancelled {
             NCContentPresenter().messageNotification("_upload_file_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
