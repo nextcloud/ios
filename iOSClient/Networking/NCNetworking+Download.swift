@@ -191,7 +191,6 @@ extension NCNetworking {
             NextcloudKit.shared.nkCommonInstance.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
 
             if error == .success {
-                NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
 #if !EXTENSION
                 if let result = self.database.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
                     NCEndToEndEncryption.shared().decryptFile(metadata.fileName, fileNameView: metadata.fileNameView, ocId: metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
@@ -218,7 +217,6 @@ extension NCNetworking {
                                                      metadata: tableMetadata(value: metadata),
                                                      error: error)
             } else if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
-                NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
                 self.database.setMetadataSession(ocId: metadata.ocId,
                                                  session: "",
                                                  sessionTaskIdentifier: 0,
@@ -237,8 +235,6 @@ extension NCNetworking {
                                                      metadata: tableMetadata(value: metadata),
                                                      error: .success)
             } else {
-                NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
-
                 self.database.setMetadataSession(ocId: metadata.ocId,
                                                  session: "",
                                                  sessionTaskIdentifier: 0,
