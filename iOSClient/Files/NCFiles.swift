@@ -190,6 +190,7 @@ class NCFiles: NCCollectionViewCommon {
         var predicate = self.defaultPredicate
         let predicateDirectory = NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl)
         let dataSourceMetadatas = self.dataSource.getMetadatas()
+        let directoryOnTop = NCKeychain().getDirectoryOnTop(account: session.account)
 
         if NCKeychain().getPersonalFilesOnly(account: session.account) {
             predicate = self.personalFilesOnlyPredicate
@@ -198,9 +199,9 @@ class NCFiles: NCCollectionViewCommon {
         self.metadataFolder = database.getMetadataFolder(session: session, serverUrl: self.serverUrl)
         self.richWorkspaceText = database.getTableDirectory(predicate: predicateDirectory)?.richWorkspace
 
-        let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView)
+        let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView, directoryOnTop: directoryOnTop)
 
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, directoryOnTop: directoryOnTop)
 
         if metadatas.isEmpty {
             self.semaphoreReloadDataSource.signal()
@@ -261,7 +262,6 @@ class NCFiles: NCCollectionViewCommon {
         func returnFunc(metadataFolder: tableMetadata?, metadatas: [tableMetadata]) {
 
         }
-
 
         NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: session.account) { task in
             self.dataSourceTask = task
