@@ -16,10 +16,10 @@ class NCFavoriteNavigationController: NCMainNavigationController {
         }
 
         if collectionViewCommon.layoutKey == global.layoutViewFavorite {
-            let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.directoryOnTopAction])
+            let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.directoryOnTop, items.hiddenFiles])
             return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu])
         } else {
-            let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.directoryOnTopAction, items.showDescription])
+            let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.directoryOnTop, items.hiddenFiles, items.showDescription])
             return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu])
         }
     }

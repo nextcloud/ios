@@ -238,7 +238,15 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
     }
 
-    func createRightMenuActions() -> (select: UIAction, viewStyleSubmenu: UIMenu, sortSubmenu: UIMenu, directoryOnTopAction: UIAction, personalFilesOnlyAction: UIAction, showDescription: UIAction, showRecommendedFiles: UIAction)? {
+    func createRightMenuActions() -> (select: UIAction,
+                                      viewStyleSubmenu: UIMenu,
+                                      sortSubmenu: UIMenu,
+                                      favoriteOnTop: UIAction,
+                                      directoryOnTop: UIAction,
+                                      hiddenFiles: UIAction,
+                                      personalFilesOnly: UIAction,
+                                      showDescription: UIAction,
+                                      showRecommendedFiles: UIAction)? {
         guard let collectionViewCommon,
               let layoutForView = database.getLayoutForView(account: session.account, key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl)
         else {
@@ -334,10 +342,24 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
         let sortSubmenu = UIMenu(title: NSLocalizedString("_order_by_", comment: ""), options: .displayInline, children: [byName, byNewest, byLargest])
 
+        let favoriteOnTop = NCKeychain().getFavoriteOnTop(account: self.session.account)
+        let favoriteOnTopAction = UIAction(title: NSLocalizedString("_favorite_on_top_", comment: ""), state: favoriteOnTop ? .on : .off) { _ in
+            NCKeychain().setFavoriteOnTop(account: self.session.account, value: !favoriteOnTop)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": collectionViewCommon.serverUrl, "clearDataSource": true])
+            self.updateRightMenu()
+        }
+
         let directoryOnTop = NCKeychain().getDirectoryOnTop(account: self.session.account)
-        let directoryOnTopAction = UIAction(title: NSLocalizedString("_directory_on_top_no_", comment: ""), state: directoryOnTop ? .on : .off) { _ in
+        let directoryOnTopAction = UIAction(title: NSLocalizedString("_directory_on_top_", comment: ""), state: directoryOnTop ? .on : .off) { _ in
             NCKeychain().setDirectoryOnTop(account: self.session.account, value: !directoryOnTop)
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": collectionViewCommon.serverUrl, "clearDataSource": true])
+            self.updateRightMenu()
+        }
+
+        let hiddenFiles = NCKeychain().getShowHiddenFiles(account: self.session.account)
+        let hiddenFilesAction = UIAction(title: NSLocalizedString("_show_hidden_files_", comment: ""), state: hiddenFiles ? .on : .off) { _ in
+            NCKeychain().setShowHiddenFiles(account: self.session.account, value: !hiddenFiles)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterGetServerData, userInfo: ["serverUrl": collectionViewCommon.serverUrl])
             self.updateRightMenu()
         }
 
@@ -363,7 +385,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             self.updateRightMenu()
         }
 
-        return (select, viewStyleSubmenu, sortSubmenu, directoryOnTopAction, personalFilesOnlyAction, showDescription, showRecommendedFiles)
+        return (select, viewStyleSubmenu, sortSubmenu, favoriteOnTopAction, directoryOnTopAction, hiddenFilesAction, personalFilesOnlyAction, showDescription, showRecommendedFiles)
     }
 
     func createTrashRightMenuActions() -> [UIMenuElement]? {
