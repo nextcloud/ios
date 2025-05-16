@@ -63,7 +63,9 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
             target: self,
             selector: #selector(tapAvatarImage(_:)))]
         let permissions = NCPermissions()
-        labelTitle.text = tableShare.shareWithDisplayname
+        let typeText: String
+        labelTitle.text = (tableShare.shareWithDisplayname.isEmpty ? tableShare.shareWith : tableShare.shareWithDisplayname) + " (\(getType(tableShare)))"
+        labelTitle.lineBreakMode = .byTruncatingMiddle
         labelTitle.textColor = NCBrandColor.shared.textColor
         isUserInteractionEnabled = true
         labelQuickStatus.isHidden = false
@@ -88,9 +90,6 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         btnQuickStatus.setTitle("", for: .normal)
         btnQuickStatus.contentHorizontalAlignment = .left
 
-//        if tableShare.permissions == permissions.permissionCreateShare {
-        //            labelQuickStatus.text = NSLocalizedString("_share_file_drop_", comment: "")
-        //        } else {
         if permissions.canEdit(tableShare.permissions, isDirectory: isDirectory) { // Can edit
             labelQuickStatus.text = NSLocalizedString("_share_editing_", comment: "")
         } else if tableShare.permissions == permissions.permissionReadShare { // Read only
@@ -98,7 +97,15 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         } else { // Custom permissions
             labelQuickStatus.text = NSLocalizedString("_custom_permissions_", comment: "")
         }
-        //        }
+    }
+
+    private func getType(_ tableShare: tableShareV2) -> String {
+        switch tableShare.shareType {
+        case NCShareCommon().SHARE_TYPE_FEDERATED:
+            return NSLocalizedString("_remote_", comment: "")
+        default:
+            return ""
+        }
     }
 
     override func awakeFromNib() {

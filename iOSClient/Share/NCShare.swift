@@ -51,6 +51,8 @@ class NCShare: UIViewController, NCSharePagingContent {
     let utility = NCUtility()
     let database = NCManageDatabase.shared
 
+    var shareLinksCount = 0
+
     var canReshare: Bool {
         return ((metadata.sharePermissionsCollaborationServices & NCPermissions().permissionShareShare) != 0)
     }
@@ -180,6 +182,7 @@ class NCShare: UIViewController, NCSharePagingContent {
 
     @objc func reloadData() {
         shares = self.database.getTableShares(metadata: metadata)
+        shareLinksCount = 0
         tableView.reloadData()
     }
 
@@ -349,6 +352,7 @@ extension NCShare: UITableViewDataSource {
             }
             cell.isDirectory = metadata.directory
             cell.setupCellUI()
+            shareLinksCount += 1
             return cell
         }
 
@@ -361,7 +365,8 @@ extension NCShare: UITableViewDataSource {
                 cell.tableShare = tableShare
                 cell.isDirectory = metadata.directory
                 cell.delegate = self
-                cell.setupCellUI()
+                cell.setupCellUI(titleAppendString: String(shareLinksCount))
+                if tableShare.shareType == shareCommon.SHARE_TYPE_LINK { shareLinksCount += 1 }
                 return cell
             }
         } else {

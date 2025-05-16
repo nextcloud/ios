@@ -236,8 +236,6 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
         }
 
         Task {
-            // TODO: Apply share token to download limit object
-
             if (share.shareType == NCShareCommon().SHARE_TYPE_LINK || share.shareType == NCShareCommon().SHARE_TYPE_EMAIL) && NCPermissions().isPermissionToCanShare(share.permissions) {
                 share.permissions = share.permissions - NCPermissions().permissionShareShare
             }
