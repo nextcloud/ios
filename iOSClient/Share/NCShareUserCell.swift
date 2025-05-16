@@ -54,7 +54,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         set {}
     }
 
-    func setupCellUI(userId: String) {
+    func setupCellUI(userId: String, session: NCSession.Session, metadata: tableMetadata) {
         guard let tableShare = tableShare else {
             return
         }
@@ -63,8 +63,13 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
             target: self,
             selector: #selector(tapAvatarImage(_:)))]
         let permissions = NCPermissions()
-        let typeText: String
-        labelTitle.text = (tableShare.shareWithDisplayname.isEmpty ? tableShare.shareWith : tableShare.shareWithDisplayname) + " (\(getType(tableShare)))"
+        labelTitle.text = (tableShare.shareWithDisplayname.isEmpty ? tableShare.shareWith : tableShare.shareWithDisplayname)
+
+        let type = getType(tableShare)
+        if !type.isEmpty {
+            labelTitle.text?.append(" (\(type))")
+        }
+
         labelTitle.lineBreakMode = .byTruncatingMiddle
         labelTitle.textColor = NCBrandColor.shared.textColor
         isUserInteractionEnabled = true
@@ -96,6 +101,22 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
             labelQuickStatus.text = NSLocalizedString("_share_read_only_", comment: "")
         } else { // Custom permissions
             labelQuickStatus.text = NSLocalizedString("_custom_permissions_", comment: "")
+        }
+
+        let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: tableShare.shareWith)
+        let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)
+
+        if tableShare.shareType == NCShareCommon().SHARE_TYPE_CIRCLE {
+            fileAvatarImageView?.image = utility.loadImage(named: "person.crop.circle.dashed.circle", colors: [NCBrandColor.shared.iconImageColor])
+        } else if results.image == nil {
+            fileAvatarImageView?.image = utility.loadUserImage(for: tableShare.shareWith, displayName: tableShare.shareWithDisplayname, urlBase: metadata.urlBase)
+        } else {
+            fileAvatarImageView?.image = results.image
+        }
+
+        if !(results.tblAvatar?.loaded ?? false),
+           NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
+            NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: tableShare.shareWith, fileName: fileName, account: metadata.account, view: self))
         }
     }
 

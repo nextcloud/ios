@@ -70,7 +70,7 @@ class NCShareLinkCell: UITableViewCell {
             imageItem.image = NCUtility().loadImage(named: "square.and.arrow.up.circle.fill", colors: [NCBrandColor.shared.iconImageColor2])
         } else {
             labelTitle.text = NSLocalizedString("_share_link_", comment: "")
-            
+
             if let titleAppendString {
                 labelTitle.text?.append(" (\(titleAppendString))")
             }

@@ -376,21 +376,7 @@ extension NCShare: UITableViewDataSource {
                 cell.tableShare = tableShare
                 cell.isDirectory = metadata.directory
                 cell.delegate = self
-                cell.setupCellUI(userId: session.userId)
-
-                let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: tableShare.shareWith)
-                let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)
-
-                if results.image == nil {
-                    cell.fileAvatarImageView?.image = utility.loadUserImage(for: tableShare.shareWith, displayName: tableShare.shareWithDisplayname, urlBase: metadata.urlBase)
-                } else {
-                    cell.fileAvatarImageView?.image = results.image
-                }
-
-                if !(results.tblAvatar?.loaded ?? false),
-                   NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
-                    NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: tableShare.shareWith, fileName: fileName, account: metadata.account, view: tableView))
-                }
+                cell.setupCellUI(userId: session.userId, session: session, metadata: metadata)
 
                 return cell
             }
