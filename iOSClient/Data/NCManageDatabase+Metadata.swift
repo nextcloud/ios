@@ -983,12 +983,14 @@ extension NCManageDatabase {
 
     // // MARK: - Realm Read (result)
 
-    func getResultsMetadatasPredicate(_ predicate: NSPredicate, layoutForView: NCDBLayoutForView?, directoryOnTop: Bool = true) -> [tableMetadata] {
+    func getResultsMetadatasPredicate(_ predicate: NSPredicate, layoutForView: NCDBLayoutForView?, account: String) -> [tableMetadata] {
         return performRealmRead { realm in
             var results = realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .freeze()
             let layout: NCDBLayoutForView = layoutForView ?? NCDBLayoutForView()
+            let directoryOnTop = NCKeychain().getDirectoryOnTop(account: account)
+            let favoriteOnTop = NCKeychain().getFavoriteOnTop(account: account)
 
             if layout.sort == "fileName" {
                 let orderedResults = results.sorted {

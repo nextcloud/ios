@@ -71,7 +71,9 @@ class NCFavorite: NCCollectionViewCommon {
     }
 
     override func getServerData() {
-        NextcloudKit.shared.listingFavorites(showHiddenFiles: NCKeychain().showHiddenFiles, account: session.account) { task in
+        let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: session.account)
+
+        NextcloudKit.shared.listingFavorites(showHiddenFiles: showHiddenFiles, account: session.account) { task in
             self.dataSourceTask = task
             if self.dataSource.isEmpty() {
                 self.collectionView.reloadData()

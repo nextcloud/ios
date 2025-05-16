@@ -322,7 +322,8 @@
 "_save_selected_files_"         = "Save to photo gallery";
 "_file_not_saved_cameraroll_"   = "Error: File not saved in photo album";
 "_file_saved_cameraroll_"       = "File saved in photo album";
-"_directory_on_top_no_"         = "Sort folders before files";
+"_favorite_on_top_"             = "Sort favorite first";
+"_directory_on_top_"            = "Sort folders before files";
 "_show_description_"            = "Show folder description";
 "_show_recommended_files_"      = "Show recommendations";
 "_search_no_record_found_"      = "No result";

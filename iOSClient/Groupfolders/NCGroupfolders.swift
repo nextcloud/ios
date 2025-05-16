@@ -71,6 +71,7 @@ class NCGroupfolders: NCCollectionViewCommon {
 
     override func getServerData() {
         let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
+        let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: session.account)
 
         NextcloudKit.shared.getGroupfolders(account: session.account) { task in
             self.dataSourceTask = task
@@ -84,7 +85,7 @@ class NCGroupfolders: NCCollectionViewCommon {
                     for groupfolder in groupfolders {
                         let mountPoint = groupfolder.mountPoint.hasPrefix("/") ? groupfolder.mountPoint : "/" + groupfolder.mountPoint
                         let serverUrlFileName = homeServerUrl + mountPoint
-                        let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: account)
+                        let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, account: account)
 
                         if results.error == .success, let file = results.files?.first {
                             let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)

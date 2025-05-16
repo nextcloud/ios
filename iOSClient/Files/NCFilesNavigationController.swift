@@ -35,10 +35,10 @@ class NCFilesNavigationController: NCMainNavigationController {
         }
 
         if collectionViewCommon.serverUrl == utilityFileSystem.getHomeServer(session: session) {
-            let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.personalFilesOnlyAction, items.directoryOnTopAction, items.showDescription, items.showRecommendedFiles])
+            let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.personalFilesOnly, items.favoriteOnTop, items.directoryOnTop, items.hiddenFiles, items.showDescription, items.showRecommendedFiles])
             return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu])
         } else {
-            let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.directoryOnTopAction, items.showDescription])
+            let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.favoriteOnTop, items.directoryOnTop, items.hiddenFiles, items.showDescription])
             return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu])
         }
     }
