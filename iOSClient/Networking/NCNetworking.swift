@@ -105,10 +105,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
                 }
             }
         }
-
-        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
-            NCTransferProgress.shared.clearAllCountError()
-        }
     }
 
     // MARK: - Communication Delegate
