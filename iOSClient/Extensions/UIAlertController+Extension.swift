@@ -32,7 +32,12 @@ extension UIAlertController {
     ///   - urlBase: UrlBase object
     ///   - completion: If not` nil` it overrides the default behavior which shows an error using `NCContentPresenter`
     /// - Returns: The presentable alert controller
-    static func createFolder(serverUrl: String, session: NCSession.Session, markE2ee: Bool = false, sceneIdentifier: String? = nil, completion: ((_ error: NKError) -> Void)? = nil) -> UIAlertController {
+    static func createFolder(serverUrl: String,
+                             session: NCSession.Session,
+                             markE2ee: Bool = false,
+                             sceneIdentifier: String? = nil,
+                             transferDelegate: NCTransferDelegate? = nil,
+                             completion: ((_ error: NKError) -> Void)? = nil) -> UIAlertController {
         let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message: nil, preferredStyle: .alert)
         let isDirectoryEncrypted = NCUtilityFileSystem().isDirectoryE2EE(session: session, serverUrl: serverUrl)
 
@@ -89,6 +94,10 @@ extension UIAlertController {
                 NCManageDatabase.shared.addMetadata(metadata)
 
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "withPush": true, "sceneIdentifier": sceneIdentifier as Any])
+
+                transferDelegate?.tranferChange(status: NCGlobal.shared.notificationCenterCreateFolder,
+                                                metadata: tableMetadata(value: metadata),
+                                                error: .success)
 #endif
             }
         })

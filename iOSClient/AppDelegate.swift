@@ -111,8 +111,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         /// Activation singleton
+        _ = NCNetworking.shared
         _ = NCActionCenter.shared
         _ = NCNetworkingProcess.shared
+        _ = NCTransferProgress.shared
+        _ = NCActionCenter.shared
+
+        NCTransferProgress.shared.setup()
+        NCActionCenter.shared.setup()
 
         return true
     }

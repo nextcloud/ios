@@ -54,8 +54,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         }
 
         self.navigationItem.leftBarButtonItems = [close]
-
-        NCNetworking.shared.delegateTransferProgress = self
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -91,31 +89,24 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     }
 
     override func downloadStartFile(_ notification: NSNotification) {
-        reloadDataSource()
     }
 
     override func downloadedFile(_ notification: NSNotification) {
-        reloadDataSource()
     }
 
     override func downloadCancelFile(_ notification: NSNotification) {
-        reloadDataSource()
     }
 
     override func uploadStartFile(_ notification: NSNotification) {
-        reloadDataSource()
     }
 
     override func uploadedFile(_ notification: NSNotification) {
-        reloadDataSource()
     }
 
     override func uploadedLivePhoto(_ notification: NSNotification) {
-        reloadDataSource()
     }
 
     override func uploadCancelFile(_ notification: NSNotification) {
-        reloadDataSource()
     }
 
     // MARK: TAP EVENT
@@ -319,10 +310,12 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func getServerData() {
         reloadDataSource()
     }
-}
 
-extension NCTransfers: TransferProgressDelegate {
-    func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) {
+    override func tranferChange(status: String, metadata: tableMetadata, error: NKError) {
+        reloadDataSource()
+    }
+
+    override func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) {
         DispatchQueue.main.async {
             for case let cell as NCTransferCell in self.collectionView.visibleCells {
                 if cell.serverUrl == serverUrl && cell.fileName == fileName {

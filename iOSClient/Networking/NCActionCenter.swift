@@ -28,20 +28,8 @@ import SVGKit
 import Photos
 import Alamofire
 
-class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelectDelegate {
-    public static let shared: NCActionCenter = {
-        let instance = NCActionCenter()
-        NotificationCenter.default.addObserver(instance, selector: #selector(downloadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadStartFile), object: nil)
-        NotificationCenter.default.addObserver(instance, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
-        NotificationCenter.default.addObserver(instance, selector: #selector(downloadCancelFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile), object: nil)
-
-        NotificationCenter.default.addObserver(instance, selector: #selector(uploadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
-        NotificationCenter.default.addObserver(instance, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
-        NotificationCenter.default.addObserver(instance, selector: #selector(uploadedLivePhoto(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedLivePhoto), object: nil)
-        NotificationCenter.default.addObserver(instance, selector: #selector(uploadCancelFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile), object: nil)
-
-        return instance
-    }()
+class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelectDelegate, NCTransferDelegate {
+    static let shared = NCActionCenter()
 
     var viewerQuickLook: NCViewerQuickLook?
     var documentController: UIDocumentInteractionController?
@@ -49,6 +37,27 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     let utility = NCUtility()
     let database = NCManageDatabase.shared
     let global = NCGlobal.shared
+
+    override private init() { }
+
+    func setup() {
+        NCNetworking.shared.transferDelegate = self
+
+        NotificationCenter.default.addObserver(self, selector: #selector(downloadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadStartFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(downloadCancelFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile), object: nil)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadedLivePhoto(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedLivePhoto), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadCancelFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile), object: nil)
+    }
+
+    func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
+
+    func tranferChange(status: String, metadata: tableMetadata, error: NKError) {
+
+    }
 
     // MARK: - Download
 
