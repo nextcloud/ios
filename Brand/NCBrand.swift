@@ -52,7 +52,7 @@ final class NCBrandOptions: @unchecked Sendable {
     var disable_source_code_in_settings: Bool = false
     var enforce_passcode_lock = false
 
-    // (name: "Name 1", url: "https://cloud.nextcloud.com"),(name: "Name 2", url: "https://cloud.nextcloud.com")
+    // Example: (name: "Name 1", url: "https://cloud.nextcloud.com"),(name: "Name 2", url: "https://cloud.nextcloud.com")
     var enforce_servers: [(name: String, url: String)] = []
 
     // Internal option behaviour
