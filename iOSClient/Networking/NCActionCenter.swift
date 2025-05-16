@@ -37,15 +37,15 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     let utility = NCUtility()
     let database = NCManageDatabase.shared
     let global = NCGlobal.shared
-    var sceneIdentifier: String = ""
 
     override private init() { }
 
-    func setup(sceneIdentifier: String) {
-        self.sceneIdentifier = sceneIdentifier
-        NCNetworking.shared.addDelegate(self)
+    func setup() {
+        NCNetworking.shared.transferDelegate = self
 
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
     }
 
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
@@ -257,6 +257,18 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_file_not_found_")
                 NCContentPresenter().showError(error: error)
             }
+        }
+    }
+
+    // MARK: - Upload
+
+    @objc func uploadedFile(_ notification: NSNotification) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let error = userInfo["error"] as? NKError
+        else { return }
+
+        if error != .success, error.errorCode != NSURLErrorCancelled, error.errorCode != NCGlobal.shared.errorRequestExplicityCancelled {
+            NCContentPresenter().messageNotification("_upload_file_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
         }
     }
 

@@ -116,6 +116,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         _ = NCNetworkingProcess.shared
         _ = NCActionCenter.shared
 
+        NCActionCenter.shared.setup()
+
         return true
     }
 

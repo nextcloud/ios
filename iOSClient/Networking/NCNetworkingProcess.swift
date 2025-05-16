@@ -150,6 +150,21 @@ class NCNetworkingProcess {
             counterDownloading += 1
             networking.download(metadata: metadata, withNotificationProgressTask: true)
         }
+        if counterDownloading == 0 {
+            let metadatasDownloadError: [tableMetadata] = self.database.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d", networking.sessionDownloadBackground, global.metadataStatusDownloadError), sortedByKeyPath: "sessionDate", ascending: true) ?? []
+            /*
+            for metadata in metadatasDownloadError {
+                // Verify COUNTER ERROR
+                if let transfer = NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer),
+                   transfer.countError > 3 {
+                    continue
+                }
+                self.database.setMetadataSession(ocId: metadata.ocId,
+                                                 sessionError: "",
+                                                 status: global.metadataStatusWaitDownload)
+            }
+            */
+        }
 
         /// ------------------------ UPLOAD
         ///
@@ -177,6 +192,13 @@ class NCNetworkingProcess {
                 guard networking.noServerErrorAccount(metadata.account) else {
                     continue
                 }
+
+                /*
+                if NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer) != nil {
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Process auto upload skipped file: \(metadata.serverUrl)/\(metadata.fileNameView), because is already in session.")
+                    continue
+                }
+                */
 
                 let metadatas = await NCCameraRoll().extractCameraRoll(from: metadata)
 
@@ -227,6 +249,13 @@ class NCNetworkingProcess {
                     continue
                 }
 
+                /*
+                // VeriCheckfy COUNTER ERROR
+                if let transfer = NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer),
+                   transfer.countError > 3 {
+                    continue
+                }
+                */
                 /// Check QUOTA
                 if metadata.sessionError.contains("\(global.errorQuota)") {
                     NextcloudKit.shared.getUserMetadata(account: metadata.account, userId: metadata.userId) { _, userProfile, _, error in
@@ -262,12 +291,7 @@ class NCNetworkingProcess {
                     continue
                 }
 
-                let error = await networking.createFolder(fileName: metadata.fileName,
-                                                          serverUrl: metadata.serverUrl,
-                                                          overwrite: true,
-                                                          sceneIdentifier: metadata.sceneIdentifier,
-                                                          session: NCSession.shared.getSession(account: metadata.account),
-                                                          options: options)
+                let error = await networking.createFolder(fileName: metadata.fileName, serverUrl: metadata.serverUrl, overwrite: true, withPush: false, sceneIdentifier: nil, session: NCSession.shared.getSession(account: metadata.account), options: options)
                 if error != .success {
                     if metadata.sessionError.isEmpty {
                         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
@@ -443,11 +467,7 @@ class NCNetworkingProcess {
                     self.database.setMetadataStatus(ocId: metadata.ocId, status: self.global.metadataStatusNormal)
                 }
 
-                NCNetworking.shared.notifyAllDelegates { delegate in
-                    delegate.tranferChange(status: self.global.networkingStatusDelete,
-                                           metadata: tableMetadata(value: metadata),
-                                           error: result.error)
-                }
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": [metadata.ocId], "error": result.error])
             }
         }
 
