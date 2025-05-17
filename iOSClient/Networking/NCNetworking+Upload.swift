@@ -130,16 +130,7 @@ extension NCNetworking {
             self.database.setMetadataSession(ocId: metadata.ocId,
                                              sessionTaskIdentifier: task.taskIdentifier)
 
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadStartFile,
-                                                        object: nil,
-                                                        userInfo: ["ocId": metadata.ocId,
-                                                                   "ocIdTransfer": metadata.ocIdTransfer,
-                                                                   "session": metadata.session,
-                                                                   "serverUrl": metadata.serverUrl,
-                                                                   "account": metadata.account,
-                                                                   "fileName": metadata.fileName,
-                                                                   "sessionSelector": metadata.sessionSelector])
-            self.transferDelegate?.tranferChange(status: self.global.notificationCenterUploadStartFile,
+            self.transferDelegate?.tranferChange(status: self.global.networkingStatusUploadStart,
                                                  metadata: tableMetadata(value: metadata),
                                                  error: .success)
             start()
@@ -189,17 +180,7 @@ extension NCNetworking {
                                     ocId: metadata.ocId,
                                     chunkFolder: chunkFolder,
                                     filesChunk: filesChunk)
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadStartFile,
-                                                        object: nil,
-                                                        userInfo: ["ocId": metadata.ocId,
-                                                                   "ocIdTransfer": metadata.ocIdTransfer,
-                                                                   "session": metadata.session,
-                                                                   "serverUrl": metadata.serverUrl,
-                                                                   "account": metadata.account,
-                                                                   "fileName": metadata.fileName,
-                                                                   "sessionSelector": metadata.sessionSelector],
-                                                        second: 0.2)
-            self.transferDelegate?.tranferChange(status: self.global.notificationCenterUploadStartFile,
+            self.transferDelegate?.tranferChange(status: self.global.networkingStatusUploadStart,
                                                  metadata: tableMetadata(value: metadata),
                                                  error: .success)
         } requestHandler: { _ in
@@ -255,16 +236,7 @@ extension NCNetworking {
                                                  sessionTaskIdentifier: task.taskIdentifier,
                                                  status: self.global.metadataStatusUploading,
                                                  sync: false)
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadStartFile,
-                                                            object: nil,
-                                                            userInfo: ["ocId": metadata.ocId,
-                                                                       "ocIdTransfer": metadata.ocIdTransfer,
-                                                                       "session": metadata.session,
-                                                                       "serverUrl": metadata.serverUrl,
-                                                                       "account": metadata.account,
-                                                                       "fileName": metadata.fileName,
-                                                                       "sessionSelector": metadata.sessionSelector])
-                self.transferDelegate?.tranferChange(status: self.global.notificationCenterUploadStartFile,
+                self.transferDelegate?.tranferChange(status: self.global.networkingStatusUploadStart,
                                                      metadata: tableMetadata(value: metadata),
                                                      error: .success)
             } else {
