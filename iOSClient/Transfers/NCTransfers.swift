@@ -68,11 +68,19 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         reloadDataSource()
     }
 
+    override func deleteFile(_ notification: NSNotification) {
+        reloadDataSource()
+    }
+
     override func copyMoveFile(_ notification: NSNotification) {
         reloadDataSource()
     }
 
     override func renameFile(_ notification: NSNotification) {
+        reloadDataSource()
+    }
+
+    override func createFolder(_ notification: NSNotification) {
         reloadDataSource()
     }
 
@@ -87,6 +95,15 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     }
 
     override func downloadCancelFile(_ notification: NSNotification) {
+    }
+
+    override func uploadedFile(_ notification: NSNotification) {
+    }
+
+    override func uploadedLivePhoto(_ notification: NSNotification) {
+    }
+
+    override func uploadCancelFile(_ notification: NSNotification) {
     }
 
     // MARK: TAP EVENT
@@ -276,7 +293,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         reloadDataSource()
     }
 
-    // MARK: - Transfers Delegate
     override func tranferChange(status: String, metadata: tableMetadata, error: NKError) {
         reloadDataSource()
     }

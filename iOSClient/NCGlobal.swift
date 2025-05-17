@@ -319,6 +319,11 @@ final class NCGlobal: Sendable {
     let notificationCenterDownloadedFile                        = "downloadedFile"                  // userInfo: ocId, ocIdTransfer, session, session, serverUrl, account, selector, error
     let notificationCenterDownloadCancelFile                    = "downloadCancelFile"              // userInfo: ocId, ocIdTransfer, session, serverUrl, account
 
+    let notificationCenterUploadedFile                          = "uploadedFile"                    // userInfo: ocId, ocIdTransfer, session, serverUrl, account, fileName, ocIdTransfer, error
+    let notificationCenterUploadedLivePhoto                     = "uploadedLivePhoto"               // userInfo: ocId, ocIdTransfer, session, serverUrl, account, fileName, ocIdTransfer, error
+    let notificationCenterUploadCancelFile                      = "uploadCancelFile"                // userInfo: ocId, ocIdTransfer, session, serverUrl, account
+
+    let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, withPush, sceneIdentifier
     let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: [ocId], error
     let notificationCenterCopyMoveFile                          = "copyMoveFile"                    // userInfo: [ocId] serverUrl, account, dragdrop, type (copy, move)
     let notificationCenterRenameFile                            = "renameFile"                      // userInfo: serverUrl, account, error
@@ -342,15 +347,7 @@ final class NCGlobal: Sendable {
     let notificationCenterUpdateShare                           = "updateShare"
 
     // Networking Status
-    let networkingStatusReloadDataSource                        = "statusReloadDataSource"
-
-    let networkingStatusCreateFolder                            = "statusCreateFolder"
-    let networkingStatusDelete                                  = "statusDelete"
-
-    let networkingStatusUploadStart                             = "statusUploadStart"
-    let networkingStatusUploaded                                = "statusUploaded"
-    let networkingStatusUploadedLivePhoto                       = "statusUploadedLivePhoto"
-    let networkingStatusUploadCancel                            = "statusUploadCancel"
+    let networkingStatusUploadStart                             = "uploadStart"
 
     // TIP
     //
