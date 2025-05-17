@@ -97,9 +97,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func downloadCancelFile(_ notification: NSNotification) {
     }
 
-    override func uploadCancelFile(_ notification: NSNotification) {
-    }
-
     // MARK: TAP EVENT
 
     override func tapMoreGridItem(with ocId: String, ocIdTransfer: String, image: UIImage?, sender: Any) {
