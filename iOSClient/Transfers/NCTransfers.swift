@@ -97,9 +97,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func downloadCancelFile(_ notification: NSNotification) {
     }
 
-    override func uploadStartFile(_ notification: NSNotification) {
-    }
-
     override func uploadedFile(_ notification: NSNotification) {
     }
 
