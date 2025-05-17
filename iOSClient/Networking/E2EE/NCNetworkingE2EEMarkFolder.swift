@@ -48,7 +48,7 @@ class NCNetworkingE2EEMarkFolder: NSObject {
 
         //NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": serverUrl, "account": account, "withPush": true])
         NCNetworking.shared.notifyAllDelegates { delegate in
-            delegate.tranferChange(status: NCGlobal.shared.networkingStatusCreateFolder,
+            delegate.tranferChange(status: NCGlobal.shared.networkingStatusCreateFolderWithPush,
                                    metadata: tableMetadata(value: metadata),
                                    error: .success)
         }
