@@ -379,7 +379,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         DispatchQueue.main.async {
             switch status {
-            case self.global.networkingStatusUploaded, self.global.networkingStatusUploadedLivePhoto:
+            case self.global.networkingStatusUploaded, self.global.networkingStatusUploadedLivePhoto, self.global.networkingStatusReloadDataSource:
                 guard self.serverUrl == metadata.serverUrl
                 else {
                     return
