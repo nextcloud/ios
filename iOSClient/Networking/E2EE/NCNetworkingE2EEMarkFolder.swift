@@ -46,7 +46,12 @@ class NCNetworkingE2EEMarkFolder: NSObject {
             self.database.updateCounterE2eMetadata(account: account, ocIdServerUrl: metadata.ocId, counter: 0)
         }
 
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": serverUrl, "account": account, "withPush": true])
+        //NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": serverUrl, "account": account, "withPush": true])
+        NCNetworking.shared.notifyAllDelegates { delegate in
+            delegate.tranferChange(status: NCGlobal.shared.networkingStatusCreateFolder,
+                                   metadata: tableMetadata(value: metadata),
+                                   error: .success)
+        }
 
         return NKError()
     }

@@ -319,7 +319,6 @@ final class NCGlobal: Sendable {
     let notificationCenterDownloadedFile                        = "downloadedFile"                  // userInfo: ocId, ocIdTransfer, session, session, serverUrl, account, selector, error
     let notificationCenterDownloadCancelFile                    = "downloadCancelFile"              // userInfo: ocId, ocIdTransfer, session, serverUrl, account
 
-    let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, withPush, sceneIdentifier
     let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: [ocId], error
     let notificationCenterCopyMoveFile                          = "copyMoveFile"                    // userInfo: [ocId] serverUrl, account, dragdrop, type (copy, move)
     let notificationCenterRenameFile                            = "renameFile"                      // userInfo: serverUrl, account, error
@@ -343,6 +342,7 @@ final class NCGlobal: Sendable {
     let notificationCenterUpdateShare                           = "updateShare"
 
     // Networking Status
+    let networkingStatusCreateFolder                            = "createFolder"
     let networkingStatusUploadStart                             = "uploadStart"
     let networkingStatusUploaded                                = "uploaded"
     let networkingStatusUploadedLivePhoto                       = "uploadedLivePhoto"
