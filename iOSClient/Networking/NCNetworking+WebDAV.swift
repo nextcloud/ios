@@ -201,6 +201,7 @@ extension NCNetworking {
     func createFolder(fileName: String,
                       serverUrl: String,
                       overwrite: Bool,
+                      withPush: Bool,
                       sceneIdentifier: String?,
                       session: NCSession.Session,
                       options: NKRequestOptions = NKRequestOptions()) async -> NKError {
@@ -224,16 +225,14 @@ extension NCNetworking {
                                        serverUrl: fileNameFolderUrl,
                                        account: session.account)
 
-            if let sceneIdentifier {
-                self.notifyDelegates(forScene: sceneIdentifier) { delegate in
-                    delegate.tranferChange(status: self.global.networkingStatusCreateFolder,
-                                           metadata: tableMetadata(value: metadata),
-                                           error: .success)
-                } others: { delegate in
-                    delegate.tranferChange(status: self.global.networkingStatusReloadDataSource,
-                                           metadata: tableMetadata(value: metadata),
-                                           error: .success)
-                }
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": serverUrl])
+
+            //NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
+
+            self.notifyAllDelegates { delegate in
+                delegate.tranferChange(status: self.global.networkingStatusCreateFolder,
+                                       metadata: tableMetadata(value: metadata),
+                                       error: .success)
             }
         }
 
@@ -457,19 +456,20 @@ extension NCNetworking {
                     }
                 }
 
+                var ocIdDeleted: [String] = []
                 var error = NKError()
                 for metadata in metadatasE2EE where error == .success {
                     error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
-                    self.notifyAllDelegates { delegate in
-                        delegate.tranferChange(status: self.global.networkingStatusDelete,
-                                               metadata: tableMetadata(value: metadata),
-                                               error: error)
+                    if error == .success {
+                        ocIdDeleted.append(metadata.ocId)
                     }
                     let num = numIncrement()
                     ncHud.progress(num: num, total: total)
                     if tapHudStopDelete { break }
                 }
+
                 ncHud.dismiss()
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocIdDeleted, "error": error])
             }
         }
 #endif

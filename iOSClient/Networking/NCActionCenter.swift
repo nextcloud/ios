@@ -37,11 +37,13 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     let utility = NCUtility()
     let database = NCManageDatabase.shared
     let global = NCGlobal.shared
+    var sceneIdentifier: String = ""
 
     override private init() { }
 
-    func setup() {
-        NCNetworking.shared.transferDelegate = self
+    func setup(sceneIdentifier: String) {
+        self.sceneIdentifier = sceneIdentifier
+        NCNetworking.shared.addDelegate(self)
 
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
     }

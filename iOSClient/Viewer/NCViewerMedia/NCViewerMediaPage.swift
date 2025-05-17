@@ -83,6 +83,10 @@ class NCViewerMediaPage: UIViewController {
         }
     }
 
+    var sceneIdentifier: String {
+        (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
+    }
+
     // MARK: - View Life Cycle
 
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -157,7 +161,7 @@ class NCViewerMediaPage: UIViewController {
         timerAutoHide?.invalidate()
         timerAutoHide = nil
 
-        NCNetworking.shared.transferDelegate = nil
+        NCNetworking.shared.removeDelegate(self)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterEnableSwipeGesture), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDisableSwipeGesture), object: nil)
@@ -172,7 +176,7 @@ class NCViewerMediaPage: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        NCNetworking.shared.transferDelegate = self
+        NCNetworking.shared.addDelegate(self)
 
         startTimerAutoHide()
     }

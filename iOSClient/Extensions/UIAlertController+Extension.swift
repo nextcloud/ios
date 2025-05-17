@@ -62,12 +62,12 @@ extension UIAlertController {
                     return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_offline_not_allowed_"))
                 }
                 Task {
-                    await NCNetworkingE2EECreateFolder().createFolder(fileName: fileNameFolder, serverUrl: serverUrl, sceneIdentifier: sceneIdentifier, session: session)
+                    await NCNetworkingE2EECreateFolder().createFolder(fileName: fileNameFolder, serverUrl: serverUrl, withPush: true, sceneIdentifier: sceneIdentifier, session: session)
                 }
             } else {
 #if EXTENSION
                 Task {
-                    let error = await NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, overwrite: false, sceneIdentifier: sceneIdentifier, session: session)
+                    let error = await NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, overwrite: false, withPush: true, sceneIdentifier: sceneIdentifier, session: session)
                     completion?(error)
                 }
 #else
@@ -91,6 +91,12 @@ extension UIAlertController {
                 metadata.sessionDate = Date()
 
                 NCManageDatabase.shared.addMetadata(metadata)
+
+                NCNetworking.shared.notifyAllDelegates { delegate in
+                    delegate.tranferChange(status: NCGlobal.shared.networkingStatusCreateFolder,
+                                           metadata: tableMetadata(value: metadata),
+                                           error: .success)
+                }
 #endif
             }
         })
@@ -175,15 +181,14 @@ extension UIAlertController {
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
             Task {
                 var error = NKError()
+                var ocId: [String] = []
                 for metadata in selectedMetadatas where error == .success {
                     error = await NCNetworking.shared.deleteCache(metadata, sceneIdentifier: sceneIdentifier)
-                    NCNetworking.shared.notifyAllDelegates { delegate in
-                        delegate.tranferChange(status: NCGlobal.shared.networkingStatusDelete,
-                                               metadata: tableMetadata(value: metadata),
-                                               error: error)
+                    if error == .success {
+                        ocId.append(metadata.ocId)
                     }
-
                 }
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "error": error])
             }
             completion(false)
         })

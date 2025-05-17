@@ -109,22 +109,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         }
     }
 
-    func notifyDelegates(forScene sceneIdentifier: String,
-                         matching: (NCTransferDelegate) -> Void,
-                         others: (NCTransferDelegate) -> Void) {
-        for delegate in transferDelegates.allObjects {
-            guard let delegate = delegate as? NCTransferDelegate
-            else {
-                continue
-            }
-            if delegate.sceneIdentifier == sceneIdentifier {
-                matching(delegate)
-            } else {
-                others(delegate)
-            }
-        }
-    }
-
     // OPERATIONQUEUE
     let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     let downloadThumbnailActivityQueue = Queuer(name: "downloadThumbnailActivityQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)

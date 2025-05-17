@@ -30,29 +30,28 @@ class NCNetworkingE2EECreateFolder: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     let database = NCManageDatabase.shared
-    let global = NCGlobal.shared
 
-    func createFolder(fileName: String, serverUrl: String, sceneIdentifier: String?, session: NCSession.Session) async -> NKError {
+    func createFolder(fileName: String, serverUrl: String, withPush: Bool, sceneIdentifier: String?, session: NCSession.Session) async -> NKError {
         var fileNameFolder = utility.removeForbiddenCharacters(fileName)
         if fileName != fileNameFolder {
-            let errorDescription = String(format: NSLocalizedString("_forbidden_characters_", comment: ""), global.forbiddenCharacters.joined(separator: " "))
-            let error = NKError(errorCode: global.errorConflict, errorDescription: errorDescription)
+            let errorDescription = String(format: NSLocalizedString("_forbidden_characters_", comment: ""), NCGlobal.shared.forbiddenCharacters.joined(separator: " "))
+            let error = NKError(errorCode: NCGlobal.shared.errorConflict, errorDescription: errorDescription)
             return error
         }
         let fileNameIdentifier = networkingE2EE.generateRandomIdentifier()
         let serverUrlFileName = serverUrl + "/" + fileNameIdentifier
         fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: session.account)
         if fileNameFolder.isEmpty {
-            return NKError(errorCode: global.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+            return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
         }
         guard let directory = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) else {
-            return NKError(errorCode: global.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+            return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
         }
 
         // TEST UPLOAD IN PROGRESS
         //
         if networkingE2EE.isInUpload(account: session.account, serverUrl: serverUrl) {
-            return NKError(errorCode: global.errorE2EEUploadInProgress, errorDescription: NSLocalizedString("_e2e_in_upload_", comment: ""))
+            return NKError(errorCode: NCGlobal.shared.errorE2EEUploadInProgress, errorDescription: NSLocalizedString("_e2e_in_upload_", comment: ""))
         }
 
         func sendE2ee(e2eToken: String, fileId: String, session: NCSession.Session) async -> NKError {
@@ -65,13 +64,13 @@ class NCNetworkingE2EECreateFolder: NSObject {
             let errorDownloadMetadata = await networkingE2EE.downloadMetadata(serverUrl: serverUrl, fileId: fileId, e2eToken: e2eToken, session: session)
             if errorDownloadMetadata == .success {
                 method = "PUT"
-            } else if errorDownloadMetadata.errorCode != global.errorResourceNotFound {
+            } else if errorDownloadMetadata.errorCode != NCGlobal.shared.errorResourceNotFound {
                 return errorDownloadMetadata
             }
 
             NCEndToEndEncryption.shared().encodedkey(&key, initializationVector: &initializationVector)
             guard let key = key as? String, let initializationVector = initializationVector as? String else {
-                return NKError(errorCode: global.errorE2EEEncodedKey, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+                return NKError(errorCode: NCGlobal.shared.errorE2EEEncodedKey, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
             }
 
             let object = tableE2eEncryption.init(account: session.account, ocIdServerUrl: directory.ocId, fileNameIdentifier: fileNameIdentifier)
@@ -81,7 +80,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
                 object.metadataKeyIndex = results.metadataKeyIndex
             } else {
                 guard let key = NCEndToEndEncryption.shared().generateKey() as NSData? else {
-                    return NKError(errorCode: global.errorE2EEGenerateKey, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+                    return NKError(errorCode: NCGlobal.shared.errorE2EEGenerateKey, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
                 }
                 object.metadataKey = key.base64EncodedString()
                 object.metadataKeyIndex = 0
@@ -110,7 +109,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         //
         let resultsLock = await networkingE2EE.lock(account: session.account, serverUrl: serverUrl)
         guard let e2eToken = resultsLock.e2eToken, let fileId = resultsLock.fileId, resultsLock.error == .success else {
-            return NKError(errorCode: global.errorE2EELock, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+            return NKError(errorCode: NCGlobal.shared.errorE2EELock, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
         }
 
         // SEND NEW METADATA
@@ -153,10 +152,13 @@ class NCNetworkingE2EECreateFolder: NSObject {
         self.database.addDirectory(e2eEncrypted: true, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
 
         NCNetworking.shared.notifyAllDelegates { delegate in
-            delegate.tranferChange(status: self.global.networkingStatusCreateFolder,
+            delegate.tranferChange(status: NCGlobal.shared.networkingStatusCreateFolder,
                                    metadata: tableMetadata(value: metadata),
                                    error: .success)
         }
+
+        
+       // NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": ocId, "serverUrl": serverUrl, "account": session.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
 
         return NKError()
     }
