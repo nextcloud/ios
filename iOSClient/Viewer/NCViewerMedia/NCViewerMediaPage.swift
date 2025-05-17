@@ -100,8 +100,6 @@ class NCViewerMediaPage: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        NCNetworking.shared.transferDelegate = self
-
         prefersLargeTitles = navigationController?.navigationBar.prefersLargeTitles
 
         navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
@@ -179,6 +177,8 @@ class NCViewerMediaPage: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+
+        NCNetworking.shared.transferDelegate = self
 
         startTimerAutoHide()
     }
@@ -676,8 +676,7 @@ extension NCViewerMediaPage: UIScrollViewDelegate {
 }
 
 extension NCViewerMediaPage: NCTransferDelegate {
-    func tranferChange(status: String, metadata: tableMetadata, error: NKError) {
-    }
+    func tranferChange(status: String, metadata: tableMetadata, error: NKError) { }
 
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) {
         DispatchQueue.main.async {

@@ -35,6 +35,7 @@ extension NCNetworking {
                     queue: DispatchQueue,
                     taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                     completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
+        let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: account)
 
         func storeFolder(_ metadataFolder: tableMetadata) {
             self.database.addMetadata(metadataFolder)
@@ -51,7 +52,7 @@ extension NCNetworking {
 
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "1",
-                                             showHiddenFiles: NCKeychain().showHiddenFiles,
+                                             showHiddenFiles: showHiddenFiles,
                                              account: account,
                                              options: NKRequestOptions(queue: queue)) { task in
             taskHandler(task)
@@ -70,12 +71,12 @@ extension NCNetworking {
     }
 
     func readFile(serverUrlFileName: String,
-                  showHiddenFiles: Bool = NCKeychain().showHiddenFiles,
                   account: String,
                   queue: DispatchQueue = NextcloudKit.shared.nkCommonInstance.backgroundQueue,
                   taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                   completion: @escaping (_ account: String, _ metadata: tableMetadata?, _ error: NKError) -> Void) {
         let options = NKRequestOptions(queue: queue)
+        let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: account)
 
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, account: account, options: options) { task in
             taskHandler(task)
@@ -105,11 +106,10 @@ extension NCNetworking {
     }
 
     func readFile(serverUrlFileName: String,
-                  showHiddenFiles: Bool = NCKeychain().showHiddenFiles,
                   account: String,
                   queue: DispatchQueue = NextcloudKit.shared.nkCommonInstance.backgroundQueue) async -> (account: String, metadata: tableMetadata?, error: NKError) {
         return await withCheckedContinuation { continuation in
-            readFile(serverUrlFileName: serverUrlFileName, showHiddenFiles: showHiddenFiles, account: account, queue: queue) { _ in
+            readFile(serverUrlFileName: serverUrlFileName, account: account, queue: queue) { _ in
             } completion: { account, metadata, error in
                 continuation.resume(returning: (account, metadata, error))
             }
@@ -607,10 +607,12 @@ extension NCNetworking {
                      account: String,
                      taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                      completion: @escaping (_ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
+        let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: account)
+
         NextcloudKit.shared.searchLiteral(serverUrl: NCSession.shared.getSession(account: account).urlBase,
                                           depth: "infinity",
                                           literal: literal,
-                                          showHiddenFiles: NCKeychain().showHiddenFiles,
+                                          showHiddenFiles: showHiddenFiles,
                                           account: account,
                                           options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
             taskHandler(task)

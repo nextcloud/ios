@@ -55,9 +55,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
 
-    func tranferChange(status: String, metadata: tableMetadata, error: NKError) {
-
-    }
+    func tranferChange(status: String, metadata: tableMetadata, error: NKError) { }
 
     // MARK: - Download
 

@@ -33,8 +33,6 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     var keychain = NCKeychain()
     /// State variable for indicating if the user is in Admin group
     @Published var isAdminGroup: Bool = false
-    /// State variable for indicating whether hidden files are shown.
-    @Published var showHiddenFiles: Bool = false
     /// State variable for indicating the most compatible format.
     @Published var mostCompatible: Bool = false
     /// State variable for enabling live photo uploads.
@@ -71,7 +69,6 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     func onViewAppear() {
         let groups = NCManageDatabase.shared.getAccountGroups(account: session.account)
         isAdminGroup = groups.contains(NCGlobal.shared.groupAdmin)
-        showHiddenFiles = keychain.showHiddenFiles
         mostCompatible = keychain.formatCompatibility
         livePhoto = keychain.livePhoto
         removeFromCameraRoll = keychain.removePhotoCameraRoll
@@ -86,11 +83,6 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     }
 
     // MARK: - All functions
-
-    /// Updates the value of `showHiddenFiles` in the keychain.
-    func updateShowHiddenFiles() {
-        keychain.showHiddenFiles = showHiddenFiles
-    }
 
     /// Updates the value of `mostCompatible` in the keychain.
     func updateMostCompatible() {

@@ -172,6 +172,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         if pageNumber > 0 {
             offset += 1
         }
+        let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: fileProviderData.shared.session.account)
         let options = NKRequestOptions(paginate: true,
                                        paginateToken: self.paginateToken,
                                        paginateOffset: offset,
@@ -180,7 +181,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
         print("PAGINATE OFFSET: \(offset) COUNT: \(paginateCount) TOTAL: \(self.paginatedTotal)")
 
-        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: NCKeychain().showHiddenFiles, account: fileProviderData.shared.session.account, options: options) { _, files, responseData, error in
+        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: showHiddenFiles, account: fileProviderData.shared.session.account, options: options) { _, files, responseData, error in
             if let headers = responseData?.response?.allHeaderFields as? [String: String] {
                 let normalizedHeaders = Dictionary(uniqueKeysWithValues: headers.map { ($0.key.lowercased(), $0.value) })
                 isPaginated = Bool(normalizedHeaders["x-nc-paginate"] ?? "false") ?? false

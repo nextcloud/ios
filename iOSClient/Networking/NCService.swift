@@ -125,7 +125,8 @@ class NCService: NSObject {
     }
 
     func synchronize(account: String) {
-        NextcloudKit.shared.listingFavorites(showHiddenFiles: NCKeychain().showHiddenFiles,
+        let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: account)
+        NextcloudKit.shared.listingFavorites(showHiddenFiles: showHiddenFiles,
                                              account: account,
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
             guard error == .success, let files else { return }
