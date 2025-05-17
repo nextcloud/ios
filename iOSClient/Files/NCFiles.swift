@@ -258,10 +258,6 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     private func networkReadFolder(completion: @escaping (_ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
-        func returnFunc(metadataFolder: tableMetadata?, metadatas: [tableMetadata]) {
-
-        }
-
         NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: session.account) { task in
             self.dataSourceTask = task
             if self.dataSource.isEmpty() {
@@ -307,10 +303,8 @@ class NCFiles: NCCollectionViewCommon {
                 /// E2EE
                 let lock = self.database.getE2ETokenLock(account: account, serverUrl: self.serverUrl)
                 NCNetworkingE2EE().getMetadata(fileId: metadataFolder.ocId, e2eToken: lock?.e2eToken, account: account) { account, version, e2eMetadata, signature, _, error in
-
-                    if error == .success, let e2eMetadata = e2eMetadata {
+                    if error == .success, let e2eMetadata {
                         let error = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: signature, serverUrl: self.serverUrl, session: self.session)
-
                         if error == .success {
                             if version == "v1", NCCapabilities.shared.getCapabilities(account: account).capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
                                 NextcloudKit.shared.nkCommonInstance.writeLog("[E2EE] Conversion v1 to v2")
@@ -331,8 +325,8 @@ class NCFiles: NCCollectionViewCommon {
                         }
                     } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
                         // no metadata found, send a new metadata
+                        let serverUrl = metadataFolder.serverUrl + "/" + metadataFolder.fileName
                         Task {
-                            let serverUrl = metadataFolder.serverUrl + "/" + metadataFolder.fileName
                             let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, account: account)
                             if error != .success {
                                 NCContentPresenter().showError(error: error)
