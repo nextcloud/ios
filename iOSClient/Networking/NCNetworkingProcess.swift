@@ -262,7 +262,12 @@ class NCNetworkingProcess {
                     continue
                 }
 
-                let error = await networking.createFolder(fileName: metadata.fileName, serverUrl: metadata.serverUrl, overwrite: true, withPush: false, sceneIdentifier: nil, session: NCSession.shared.getSession(account: metadata.account), options: options)
+                let error = await networking.createFolder(fileName: metadata.fileName,
+                                                          serverUrl: metadata.serverUrl,
+                                                          overwrite: true,
+                                                          sceneIdentifier: metadata.sceneIdentifier,
+                                                          session: NCSession.shared.getSession(account: metadata.account),
+                                                          options: options)
                 if error != .success {
                     if metadata.sessionError.isEmpty {
                         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
