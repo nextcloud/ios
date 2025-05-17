@@ -388,11 +388,7 @@ extension NCNetworking {
                     self.createLivePhoto(metadata: metadata, userInfo: userInfo)
                 }
             } else {
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadedFile,
-                                                            object: nil,
-                                                            userInfo: userInfo,
-                                                            second: 0.5)
-                self.transferDelegate?.tranferChange(status: self.global.notificationCenterUploadedFile,
+                self.transferDelegate?.tranferChange(status: self.global.networkingStatusUploaded,
                                                      metadata: tableMetadata(value: metadata),
                                                      error: error)
             }
@@ -456,18 +452,7 @@ extension NCNetworking {
                                                  status: self.global.metadataStatusUploadError,
                                                  errorCode: error.errorCode,
                                                  sync: false)
-
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadedFile,
-                                                            object: nil,
-                                                            userInfo: ["ocId": metadata.ocId,
-                                                                       "ocIdTransfer": metadata.ocIdTransfer,
-                                                                       "session": metadata.session,
-                                                                       "serverUrl": metadata.serverUrl,
-                                                                       "account": metadata.account,
-                                                                       "fileName": metadata.fileName,
-                                                                       "error": error],
-                                                            second: 0.5)
-                self.transferDelegate?.tranferChange(status: self.global.notificationCenterUploadedFile,
+                self.transferDelegate?.tranferChange(status: self.global.networkingStatusUploaded,
                                                      metadata: tableMetadata(value: metadata),
                                                      error: error)
                 // Client Diagnostic
