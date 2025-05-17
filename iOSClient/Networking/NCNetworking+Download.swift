@@ -89,16 +89,21 @@ extension NCNetworking {
                                                                    "session": metadata.session,
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account])
-            self.transferDelegate?.tranferChange(status: self.global.notificationCenterDownloadStartFile,
-                                                 metadata: tableMetadata(value: metadata),
-                                                 error: .success)
+
+            self.notifyAllDelegates { delegate in
+                delegate.tranferChange(status: self.global.notificationCenterDownloadStartFile,
+                                       metadata: tableMetadata(value: metadata),
+                                       error: .success)
+            }
             start()
         }, progressHandler: { progress in
-            self.transferDelegate?.transferProgressDidUpdate(progress: Float(progress.fractionCompleted),
-                                                             totalBytes: progress.totalUnitCount,
-                                                             totalBytesExpected: progress.completedUnitCount,
-                                                             fileName: metadata.fileName,
-                                                             serverUrl: metadata.serverUrl)
+            self.notifyAllDelegates { delegate in
+                delegate.transferProgressDidUpdate(progress: Float(progress.fractionCompleted),
+                                                   totalBytes: progress.totalUnitCount,
+                                                   totalBytesExpected: progress.completedUnitCount,
+                                                   fileName: metadata.fileName,
+                                                   serverUrl: metadata.serverUrl)
+            }
             progressHandler(progress)
         }) { _, etag, date, length, responseData, afError, error in
             var error = error
@@ -144,9 +149,11 @@ extension NCNetworking {
                                                                    "session": metadata.session,
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account])
-            self.transferDelegate?.tranferChange(status: self.global.notificationCenterDownloadStartFile,
-                                                 metadata: tableMetadata(value: metadata),
-                                                 error: .success)
+            self.notifyAllDelegates { delegate in
+                delegate.tranferChange(status: self.global.notificationCenterDownloadStartFile,
+                                       metadata: tableMetadata(value: metadata),
+                                       error: .success)
+            }
         } else {
             database.setMetadataSession(ocId: metadata.ocId,
                                         session: "",
@@ -213,9 +220,11 @@ extension NCNetworking {
                                                                        "selector": metadata.sessionSelector,
                                                                        "error": error],
                                                             second: 0.5)
-                self.transferDelegate?.tranferChange(status: self.global.notificationCenterDownloadedFile,
-                                                     metadata: tableMetadata(value: metadata),
-                                                     error: error)
+                self.notifyAllDelegates { delegate in
+                    delegate.tranferChange(status: self.global.notificationCenterDownloadedFile,
+                                           metadata: tableMetadata(value: metadata),
+                                           error: error)
+                }
             } else if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
                 self.database.setMetadataSession(ocId: metadata.ocId,
                                                  session: "",
@@ -231,9 +240,11 @@ extension NCNetworking {
                                                                        "serverUrl": metadata.serverUrl,
                                                                        "account": metadata.account],
                                                             second: 0.5)
-                self.transferDelegate?.tranferChange(status: self.global.notificationCenterDownloadCancelFile,
-                                                     metadata: tableMetadata(value: metadata),
-                                                     error: .success)
+                self.notifyAllDelegates { delegate in
+                    delegate.tranferChange(status: self.global.notificationCenterDownloadCancelFile,
+                                           metadata: tableMetadata(value: metadata),
+                                           error: .success)
+                }
             } else {
                 self.database.setMetadataSession(ocId: metadata.ocId,
                                                  session: "",
@@ -251,9 +262,11 @@ extension NCNetworking {
                                                                        "selector": metadata.sessionSelector,
                                                                        "error": error],
                                                             second: 0.5)
-                self.transferDelegate?.tranferChange(status: NCGlobal.shared.notificationCenterDownloadedFile,
-                                                     metadata: tableMetadata(value: metadata),
-                                                     error: error)
+                self.notifyAllDelegates { delegate in
+                    delegate.tranferChange(status: NCGlobal.shared.notificationCenterDownloadedFile,
+                                           metadata: tableMetadata(value: metadata),
+                                           error: error)
+                }
             }
         }
     }
@@ -265,11 +278,12 @@ extension NCNetworking {
                           serverUrl: String,
                           session: URLSession,
                           task: URLSessionTask) {
-
-        self.transferDelegate?.transferProgressDidUpdate(progress: progress,
-                                                         totalBytes: totalBytes,
-                                                         totalBytesExpected: totalBytesExpected,
-                                                         fileName: fileName,
-                                                         serverUrl: serverUrl)
+        notifyAllDelegates { delegate in
+            delegate.transferProgressDidUpdate(progress: progress,
+                                               totalBytes: totalBytes,
+                                               totalBytesExpected: totalBytesExpected,
+                                               fileName: fileName,
+                                               serverUrl: serverUrl)
+        }
     }
 }

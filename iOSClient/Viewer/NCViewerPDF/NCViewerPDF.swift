@@ -60,6 +60,10 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
     private var tipView: EasyTipView?
 
+    var sceneIdentifier: String {
+        (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
+    }
+
     // MARK: - View Life Cycle
 
     required init?(coder aDecoder: NSCoder) {
@@ -248,13 +252,16 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        NCNetworking.shared.transferDelegate = self
+        NCNetworking.shared.addDelegate(self)
 
         showTip()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+
+        NCNetworking.shared.removeDelegate(self)
+
         dismissTip()
     }
 

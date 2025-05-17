@@ -183,9 +183,12 @@ class NCNetworkingE2EEUpload: NSObject {
             self.database.addLocalFile(metadata: metadata)
             utility.createImageFileFrom(metadata: metadata)
 
-            NCNetworking.shared.transferDelegate?.tranferChange(status: global.networkingStatusUploaded,
-                                                                metadata: tableMetadata(value: metadata),
-                                                                error: .success)
+            NCNetworking.shared.notifyAllDelegates { delegate in
+                delegate.tranferChange(status: global.networkingStatusUploaded,
+                                       metadata: tableMetadata(value: metadata),
+                                       error: .success)
+            }
+
             // LIVE PHOTO
             if metadata.isLivePhoto,
                NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable {
