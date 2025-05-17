@@ -557,7 +557,7 @@ extension NCViewerPDF: NCTransferDelegate {
             switch status {
             case NCGlobal.shared.networkingStatusUploadStart:
                 NCActivityIndicator.shared.start()
-            case NCGlobal.shared.notificationCenterUploadedFile:
+            case NCGlobal.shared.networkingStatusUploaded:
                 NCActivityIndicator.shared.stop()
                 if error == .success {
                     self.pdfDocument = PDFDocument(url: URL(fileURLWithPath: self.filePath))
