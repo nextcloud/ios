@@ -93,7 +93,7 @@ extension UIAlertController {
                 NCManageDatabase.shared.addMetadata(metadata)
 
                 NCNetworking.shared.notifyAllDelegates { delegate in
-                    delegate.tranferChange(status: NCGlobal.shared.networkingStatusCreateFolder,
+                    delegate.tranferChange(status: NCGlobal.shared.networkingStatusCreateFolderWithPush,
                                            metadata: tableMetadata(value: metadata),
                                            error: .success)
                 }

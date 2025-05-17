@@ -343,6 +343,8 @@ final class NCGlobal: Sendable {
 
     // Networking Status
     let networkingStatusCreateFolder                            = "createFolder"
+    let networkingStatusCreateFolderWithPush                    = "createFolderWithPush"
+
     let networkingStatusUploadStart                             = "uploadStart"
     let networkingStatusUploaded                                = "uploaded"
     let networkingStatusUploadedLivePhoto                       = "uploadedLivePhoto"

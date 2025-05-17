@@ -372,8 +372,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
 
     func tranferChange(status: String, metadata: tableMetadata, error: NKError) {
-        guard session.account == metadata.account,
-              self.serverUrl == metadata.serverUrl
+        guard session.account == metadata.account
         else {
             return
         }
@@ -381,7 +380,28 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         DispatchQueue.main.async {
             switch status {
             case self.global.networkingStatusUploaded, self.global.networkingStatusUploadedLivePhoto:
+                guard self.serverUrl == metadata.serverUrl
+                else {
+                    return
+                }
                 self.reloadDataSource()
+            case self.global.networkingStatusCreateFolder:
+                if self.isSearchingMode {
+                    return self.networkSearch()
+                }
+                if metadata.serverUrl + "/" + metadata.fileName == self.serverUrl {
+                    self.reloadDataSource()
+                }
+            case self.global.networkingStatusCreateFolderWithPush:
+                if self.isSearchingMode {
+                    return self.networkSearch()
+                }
+                if metadata.serverUrl == self.serverUrl {
+                    self.reloadDataSource()
+                    if self.sceneIdentifier == self.controller?.sceneIdentifier {
+                        self.pushMetadata(metadata)
+                    }
+                }
             default:
                 break
             }
@@ -546,33 +566,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 NCContentPresenter().showError(error: error)
             }
             reloadDataSource()
-        }
-    }
-
-    @objc func createFolder(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
-              let account = userInfo["account"] as? String,
-              account == session.account,
-              let withPush = userInfo["withPush"] as? Bool,
-              let metadata = database.getMetadataFromOcId(ocId)
-        else { return }
-
-        if isSearchingMode {
-            return networkSearch()
-        }
-
-        if metadata.serverUrl + "/" + metadata.fileName == self.serverUrl {
-            reloadDataSource()
-        } else if withPush, metadata.serverUrl == self.serverUrl {
-            reloadDataSource()
-            if let sceneIdentifier = userInfo["sceneIdentifier"] as? String {
-                if sceneIdentifier == controller?.sceneIdentifier {
-                    pushMetadata(metadata)
-                }
-            } else {
-                pushMetadata(metadata)
-            }
         }
     }
 
