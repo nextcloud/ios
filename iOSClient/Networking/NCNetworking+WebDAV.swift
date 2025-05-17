@@ -230,7 +230,8 @@ extension NCNetworking {
             //NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
 
             self.notifyAllDelegates { delegate in
-                delegate.tranferChange(status: self.global.networkingStatusCreateFolder,
+                let status = withPush ? self.global.networkingStatusCreateFolderWithPush : self.global.networkingStatusCreateFolder
+                delegate.tranferChange(status: status,
                                        metadata: tableMetadata(value: metadata),
                                        error: .success)
             }
