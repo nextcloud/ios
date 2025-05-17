@@ -201,7 +201,6 @@ extension NCNetworking {
     func createFolder(fileName: String,
                       serverUrl: String,
                       overwrite: Bool,
-                      withPush: Bool,
                       sceneIdentifier: String?,
                       session: NCSession.Session,
                       options: NKRequestOptions = NKRequestOptions()) async -> NKError {
@@ -225,15 +224,12 @@ extension NCNetworking {
                                        serverUrl: fileNameFolderUrl,
                                        account: session.account)
 
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": serverUrl])
-
-            //NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
-
-            self.notifyAllDelegates { delegate in
-                let status = withPush ? self.global.networkingStatusCreateFolderWithPush : self.global.networkingStatusCreateFolder
-                delegate.tranferChange(status: status,
-                                       metadata: tableMetadata(value: metadata),
-                                       error: .success)
+            if let sceneIdentifier {
+                self.notifyDelegate(forScene: sceneIdentifier) { delegate in
+                    delegate.tranferChange(status: self.global.networkingStatusCreateFolder,
+                                           metadata: tableMetadata(value: metadata),
+                                           error: .success)
+                }
             }
         }
 
