@@ -225,8 +225,12 @@ extension NCNetworking {
                                        account: session.account)
 
             if let sceneIdentifier {
-                self.notifyDelegate(forScene: sceneIdentifier) { delegate in
+                self.notifyDelegates(forScene: sceneIdentifier) { delegate in
                     delegate.tranferChange(status: self.global.networkingStatusCreateFolder,
+                                           metadata: tableMetadata(value: metadata),
+                                           error: .success)
+                } others: { delegate in
+                    delegate.tranferChange(status: self.global.networkingStatusReloadDataSource,
                                            metadata: tableMetadata(value: metadata),
                                            error: .success)
                 }
