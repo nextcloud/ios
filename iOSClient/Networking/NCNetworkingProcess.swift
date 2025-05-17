@@ -178,13 +178,6 @@ class NCNetworkingProcess {
                     continue
                 }
 
-                /*
-                if NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer) != nil {
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Process auto upload skipped file: \(metadata.serverUrl)/\(metadata.fileNameView), because is already in session.")
-                    continue
-                }
-                */
-
                 let metadatas = await NCCameraRoll().extractCameraRoll(from: metadata)
 
                 if metadatas.isEmpty {
