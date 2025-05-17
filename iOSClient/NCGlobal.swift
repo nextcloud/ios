@@ -342,12 +342,13 @@ final class NCGlobal: Sendable {
     let notificationCenterUpdateShare                           = "updateShare"
 
     // Networking Status
-    let networkingStatusCreateFolder                            = "createFolder"
+    let networkingStatusReloadDataSource                        = "statusReloadDataSource"
+    let networkingStatusCreateFolder                            = "statusCreateFolder"
 
-    let networkingStatusUploadStart                             = "uploadStart"
-    let networkingStatusUploaded                                = "uploaded"
-    let networkingStatusUploadedLivePhoto                       = "uploadedLivePhoto"
-    let networkingStatusUploadCancel                            = "uploadCancel"
+    let networkingStatusUploadStart                             = "statusUploadStart"
+    let networkingStatusUploaded                                = "statusUploaded"
+    let networkingStatusUploadedLivePhoto                       = "statusUploadedLivePhoto"
+    let networkingStatusUploadCancel                            = "statusUploadCancel"
 
     // TIP
     //
