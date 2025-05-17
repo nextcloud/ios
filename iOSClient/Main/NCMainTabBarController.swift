@@ -49,6 +49,8 @@ class NCMainTabBarController: UITabBarController {
         super.viewDidLoad()
         delegate = self
 
+        NCActionCenter.shared.setup(sceneIdentifier: sceneIdentifier)
+
         tabBar.tintColor = NCBrandColor.shared.getElement(account: account)
 
         // File

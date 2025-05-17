@@ -227,11 +227,13 @@ extension NCNetworking {
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": serverUrl])
 
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
+            //NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
 
-            self.transferDelegate?.tranferChange(status: self.global.notificationCenterCreateFolder,
-                                                 metadata: tableMetadata(value: metadata),
-                                                 error: .success)
+            self.notifyAllDelegates { delegate in
+                delegate.tranferChange(status: self.global.networkingStatusCreateFolder,
+                                       metadata: tableMetadata(value: metadata),
+                                       error: .success)
+            }
         }
 
         /* check exists folder */

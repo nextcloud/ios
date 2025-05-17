@@ -134,9 +134,11 @@ extension NCNetworking {
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account],
                                                         second: 0.5)
-            self.transferDelegate?.tranferChange(status: self.global.notificationCenterDownloadCancelFile,
-                                                 metadata: tableMetadata(value: metadata),
-                                                 error: .success)
+            self.notifyAllDelegates { delegate in
+                delegate.tranferChange(status: self.global.notificationCenterDownloadCancelFile,
+                                       metadata: tableMetadata(value: metadata),
+                                       error: .success)
+            }
         }
 
         /// UPLOAD
@@ -148,9 +150,11 @@ extension NCNetworking {
                 cancelUploadBackgroundTask(metadata: metadata)
             }
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-            self.transferDelegate?.tranferChange(status: self.global.networkingStatusUploadCancel,
-                                                 metadata: tableMetadata(value: metadata),
-                                                 error: .success)
+            self.notifyAllDelegates { delegate in
+                delegate.tranferChange(status: self.global.networkingStatusUploadCancel,
+                                       metadata: tableMetadata(value: metadata),
+                                       error: .success)
+            }
         }
     }
 

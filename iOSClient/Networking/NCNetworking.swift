@@ -38,6 +38,7 @@ import SwiftUI
 }
 
 protocol NCTransferDelegate: AnyObject {
+    var sceneIdentifier: String { get }
     func transferProgressDidUpdate(progress: Float,
                                    totalBytes: Int64,
                                    totalBytesExpected: Int64,
@@ -73,13 +74,39 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     var p12Data: Data?
     var p12Password: String?
     var tapHudStopDelete = false
-    weak var transferDelegate: NCTransferDelegate?
 
     var isOffline: Bool {
         return networkReachability == NKCommon.TypeReachability.notReachable || networkReachability == NKCommon.TypeReachability.unknown
     }
     var isOnline: Bool {
         return networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi || networkReachability == NKCommon.TypeReachability.reachableCellular
+    }
+
+    /// Delegate for multi scene
+    private var transferDelegates = NSHashTable<AnyObject>.weakObjects()
+
+    func addDelegate(_ delegate: NCTransferDelegate) {
+        transferDelegates.add(delegate)
+    }
+
+    func removeDelegate(_ delegate: NCTransferDelegate) {
+        transferDelegates.remove(delegate)
+    }
+
+    func notifyAllDelegates(_ block: (NCTransferDelegate) -> Void) {
+        for delegate in transferDelegates.allObjects {
+            if let delegate = delegate as? NCTransferDelegate {
+                block(delegate)
+            }
+        }
+    }
+
+    func notifyDelegate(forScene sceneIdentifier: String, _ block: (NCTransferDelegate) -> Void) {
+        for delegate in transferDelegates.allObjects {
+            if let delegate = delegate as? NCTransferDelegate, delegate.sceneIdentifier == sceneIdentifier {
+                block(delegate)
+            }
+        }
     }
 
     // OPERATIONQUEUE

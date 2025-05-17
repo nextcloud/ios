@@ -151,7 +151,14 @@ class NCNetworkingE2EECreateFolder: NSObject {
         self.database.addMetadata(metadata)
         self.database.addDirectory(e2eEncrypted: true, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
 
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": ocId, "serverUrl": serverUrl, "account": session.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
+        NCNetworking.shared.notifyAllDelegates { delegate in
+            delegate.tranferChange(status: NCGlobal.shared.networkingStatusCreateFolder,
+                                   metadata: tableMetadata(value: metadata),
+                                   error: .success)
+        }
+
+        
+       // NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": ocId, "serverUrl": serverUrl, "account": session.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
 
         return NKError()
     }

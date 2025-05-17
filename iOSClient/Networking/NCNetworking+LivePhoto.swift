@@ -43,9 +43,11 @@ extension NCNetworking {
             } else {
                 metadata.livePhotoFile = ""
                 self.database.addMetadata(metadata, sync: false)
-                self.transferDelegate?.tranferChange(status: self.global.networkingStatusUploadedLivePhoto,
-                                                     metadata: tableMetadata(value: metadata),
-                                                     error: .success)
+                self.notifyAllDelegates { delegate in
+                    delegate.tranferChange(status: self.global.networkingStatusUploadedLivePhoto,
+                                           metadata: tableMetadata(value: metadata),
+                                           error: .success)
+                }
             }
         }
     }
@@ -76,9 +78,11 @@ extension NCNetworking {
 
         if resultsMetadataFirst.error == .success, resultsMetadataLast.error == .success {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload set LivePhoto for files " + (metadataFirst.fileName as NSString).deletingPathExtension)
-            self.transferDelegate?.tranferChange(status: self.global.networkingStatusUploadedLivePhoto,
-                                                 metadata: tableMetadata(value: metadataFirst),
-                                                 error: .success)
+            notifyAllDelegates { delegate in
+               delegate.tranferChange(status: self.global.networkingStatusUploadedLivePhoto,
+                                      metadata: tableMetadata(value: metadataFirst),
+                                      error: .success)
+            }
         } else {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Upload set LivePhoto with error \(resultsMetadataFirst.error.errorCode) - \(resultsMetadataLast.error.errorCode)")
         }
