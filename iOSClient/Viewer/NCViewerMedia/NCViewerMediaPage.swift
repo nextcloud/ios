@@ -136,8 +136,6 @@ class NCViewerMediaPage: UIViewController {
 
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
-
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: UIApplication.didBecomeActiveNotification, object: nil)
 
         if NCNetworking.shared.isOnline {
@@ -167,8 +165,6 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
-
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: UIApplication.didBecomeActiveNotification, object: nil)
     }
@@ -365,20 +361,6 @@ class NCViewerMediaPage: UIViewController {
             }
         } else if metadata.isImage {
             self.currentViewController.loadImage()
-        }
-    }
-
-    @objc func uploadedFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
-              let error = userInfo["error"] as? NKError,
-              error == .success
-        else { return }
-
-        if self.currentViewController.metadata.ocId == ocId {
-            self.currentViewController.loadImage()
-        } else {
-            self.modifiedOcId.append(ocId)
         }
     }
 
@@ -672,7 +654,15 @@ extension NCViewerMediaPage: UIScrollViewDelegate {
 }
 
 extension NCViewerMediaPage: NCTransferDelegate {
-    func tranferChange(status: String, metadata: tableMetadata, error: NKError) { }
+    func tranferChange(status: String, metadata: tableMetadata, error: NKError) {
+        DispatchQueue.main.async {
+            if self.currentViewController.metadata.ocId == metadata.ocId {
+                self.currentViewController.loadImage()
+            } else {
+                self.modifiedOcId.append(metadata.ocId)
+            }
+        }
+    }
 
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) {
         DispatchQueue.main.async {
