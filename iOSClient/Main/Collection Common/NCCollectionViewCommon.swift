@@ -389,18 +389,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 if self.isSearchingMode {
                     return self.networkSearch()
                 }
-                if metadata.serverUrl + "/" + metadata.fileName == self.serverUrl {
-                    self.reloadDataSource()
-                }
-            case self.global.networkingStatusCreateFolderWithPush:
-                if self.isSearchingMode {
-                    return self.networkSearch()
-                }
                 if metadata.serverUrl == self.serverUrl {
-                    self.reloadDataSource()
-                    if self.sceneIdentifier == self.controller?.sceneIdentifier {
-                        self.pushMetadata(metadata)
-                    }
+                    self.pushMetadata(metadata)
                 }
             default:
                 break

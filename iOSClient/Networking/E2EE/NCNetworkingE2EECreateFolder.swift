@@ -32,7 +32,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
     let database = NCManageDatabase.shared
     let global = NCGlobal.shared
 
-    func createFolder(fileName: String, serverUrl: String, withPush: Bool, sceneIdentifier: String?, session: NCSession.Session) async -> NKError {
+    func createFolder(fileName: String, serverUrl: String, sceneIdentifier: String?, session: NCSession.Session) async -> NKError {
         var fileNameFolder = utility.removeForbiddenCharacters(fileName)
         if fileName != fileNameFolder {
             let errorDescription = String(format: NSLocalizedString("_forbidden_characters_", comment: ""), global.forbiddenCharacters.joined(separator: " "))
@@ -153,8 +153,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         self.database.addDirectory(e2eEncrypted: true, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
 
         NCNetworking.shared.notifyAllDelegates { delegate in
-            let status = withPush ? self.global.networkingStatusCreateFolderWithPush : self.global.networkingStatusCreateFolder
-            delegate.tranferChange(status: status,
+            delegate.tranferChange(status: self.global.networkingStatusCreateFolder,
                                    metadata: tableMetadata(value: metadata),
                                    error: .success)
         }
