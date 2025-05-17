@@ -148,16 +148,7 @@ extension NCNetworking {
                 cancelUploadBackgroundTask(metadata: metadata)
             }
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadCancelFile,
-                                                        object: nil,
-                                                        userInfo: ["ocId": metadata.ocId,
-                                                                   "ocIdTransfer": metadata.ocIdTransfer,
-                                                                   "session": metadata.session,
-                                                                   "serverUrl": metadata.serverUrl,
-                                                                   "account": metadata.account],
-                                                        second: 0.5)
-            self.transferDelegate?.tranferChange(status: self.global.notificationCenterUploadCancelFile,
+            self.transferDelegate?.tranferChange(status: self.global.networkingStatusUploadCancel,
                                                  metadata: tableMetadata(value: metadata),
                                                  error: .success)
         }
