@@ -383,8 +383,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         DispatchQueue.main.async {
             switch status {
-            case self.global.networkingStatusUploadStart:
-                break
             case self.global.networkingStatusUploaded, self.global.networkingStatusUploadedLivePhoto:
                 self.reloadDataSource()
             default:
