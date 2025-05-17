@@ -80,10 +80,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         reloadDataSource()
     }
 
-    override func createFolder(_ notification: NSNotification) {
-        reloadDataSource()
-    }
-
     override func favoriteFile(_ notification: NSNotification) {
         reloadDataSource()
     }
