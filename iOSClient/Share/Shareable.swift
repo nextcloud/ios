@@ -16,6 +16,7 @@ protocol Shareable: AnyObject {
     var password: String { get set }
     var label: String { get set }
     var note: String { get set }
+    var downloadAndSync: Bool { get set }
     var expirationDate: NSDate? { get set }
     var shareWithDisplayname: String { get set }
     var attributes: String? { get set }
@@ -54,8 +55,44 @@ extension Shareable {
 
 // MARK: - tableShare Extension
 
-extension tableShare: Shareable {}
+extension tableShare: Shareable {
+    var downloadAndSync: Bool {
+        get {
+            NCManageDatabase.shared.isAttributeDownloadEnabled(attributes: attributes)
+        }
+        set {
+            attributes = NCManageDatabase.shared.setAttibuteDownload(state: newValue)
+        }
+    }    
+}
 
 // MARK: - NKShare Extension
 
-extension NKShare: Shareable {}
+extension NKShare: Shareable {
+    var downloadAndSync: Bool {
+        get {
+             NCManageDatabase.shared.isAttributeDownloadEnabled(attributes: attributes)
+        }
+        set {
+            attributes = NCManageDatabase.shared.setAttibuteDownload(state: newValue)
+        }
+    }
+}
+
+private func isAttributeDownloadEnabled(attributes: String?) -> Bool {
+    if let attributes = attributes, let data = attributes.data(using: .utf8) {
+        do {
+            if let json = try JSONSerialization.jsonObject(with: data) as? [Dictionary<String, Any>] {
+                for sub in json {
+                    let key = sub["key"] as? String
+                    let enabled = sub["enabled"] as? Bool
+                    let scope = sub["scope"] as? String
+                    if key == "download", scope == "permissions", let enabled = enabled {
+                        return enabled
+                    }
+                }
+            }
+        } catch let error as NSError { print(error) }
+    }
+    return true
+}

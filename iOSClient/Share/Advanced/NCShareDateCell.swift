@@ -68,8 +68,8 @@ class NCShareDateCell: UITableViewCell {
             shareCommon.SHARE_TYPE_CIRCLE,
             shareCommon.SHARE_TYPE_ROOM:
             return NCCapabilities.shared.getCapabilities(account: account).capabilityFileSharingInternalExpireDateEnforced
-        case shareCommon.SHARE_TYPE_REMOTE,
-            shareCommon.SHARE_TYPE_REMOTE_GROUP:
+        case shareCommon.SHARE_TYPE_FEDERATED,
+            shareCommon.SHARE_TYPE_FEDERATED_GROUP:
             return NCCapabilities.shared.getCapabilities(account: account).capabilityFileSharingRemoteExpireDateEnforced
         default:
             return false
@@ -87,8 +87,8 @@ class NCShareDateCell: UITableViewCell {
             shareCommon.SHARE_TYPE_CIRCLE,
             shareCommon.SHARE_TYPE_ROOM:
             return NCCapabilities.shared.getCapabilities(account: account).capabilityFileSharingInternalExpireDateDays
-        case shareCommon.SHARE_TYPE_REMOTE,
-            shareCommon.SHARE_TYPE_REMOTE_GROUP:
+        case shareCommon.SHARE_TYPE_FEDERATED,
+            shareCommon.SHARE_TYPE_FEDERATED_GROUP:
             return NCCapabilities.shared.getCapabilities(account: account).capabilityFileSharingRemoteExpireDateDays
         default:
             return 0
