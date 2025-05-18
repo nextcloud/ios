@@ -68,10 +68,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         reloadDataSource()
     }
 
-    override func deleteFile(_ notification: NSNotification) {
-        reloadDataSource()
-    }
-
     override func copyMoveFile(_ notification: NSNotification) {
         reloadDataSource()
     }
