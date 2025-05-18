@@ -457,20 +457,19 @@ extension NCNetworking {
                     }
                 }
 
-                var ocIdDeleted: [String] = []
                 var error = NKError()
                 for metadata in metadatasE2EE where error == .success {
                     error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
-                    if error == .success {
-                        ocIdDeleted.append(metadata.ocId)
+                    self.notifyAllDelegates { delegate in
+                        delegate.tranferChange(status: self.global.networkingStatusDelete,
+                                               metadata: tableMetadata(value: metadata),
+                                               error: error)
                     }
                     let num = numIncrement()
                     ncHud.progress(num: num, total: total)
                     if tapHudStopDelete { break }
                 }
-
                 ncHud.dismiss()
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocIdDeleted, "error": error])
             }
         }
 #endif
