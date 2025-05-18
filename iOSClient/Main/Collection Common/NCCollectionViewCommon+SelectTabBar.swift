@@ -56,14 +56,14 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
 
             Task {
                 var error = NKError()
-                var ocId: [String] = []
                 for metadata in copyMetadatas where error == .success {
                     error = await NCNetworking.shared.deleteCache(metadata, sceneIdentifier: self.controller?.sceneIdentifier)
-                    if error == .success {
-                        ocId.append(metadata.ocId)
+                    NCNetworking.shared.notifyAllDelegates { delegate in
+                        delegate.tranferChange(status: self.global.networkingStatusDelete,
+                                               metadata: tableMetadata(value: metadatas),
+                                               error: error)
                     }
                 }
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "error": error])
             }
             self.setEditMode(false)
         })

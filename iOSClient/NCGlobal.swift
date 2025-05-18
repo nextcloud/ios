@@ -343,7 +343,9 @@ final class NCGlobal: Sendable {
 
     // Networking Status
     let networkingStatusReloadDataSource                        = "statusReloadDataSource"
+
     let networkingStatusCreateFolder                            = "statusCreateFolder"
+    let networkingStatusDelete                                  = "statusDelete"
 
     let networkingStatusUploadStart                             = "statusUploadStart"
     let networkingStatusUploaded                                = "statusUploaded"

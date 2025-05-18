@@ -443,7 +443,11 @@ class NCNetworkingProcess {
                     self.database.setMetadataStatus(ocId: metadata.ocId, status: self.global.metadataStatusNormal)
                 }
 
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": [metadata.ocId], "error": result.error])
+                NCNetworking.shared.notifyAllDelegates { delegate in
+                    delegate.tranferChange(status: self.global.networkingStatusDelete,
+                                           metadata: tableMetadata(value: metadata),
+                                           error: result.error)
+                }
             }
         }
 
