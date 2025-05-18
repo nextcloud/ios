@@ -288,7 +288,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.addObserver(self, selector: #selector(changeStatusFolderE2EE(_:)), name: NSNotification.Name(rawValue: global.notificationCenterChangeStatusFolderE2EE), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changeLayout(_:)), name: NSNotification.Name(rawValue: global.notificationCenterChangeLayout), object: nil)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(copyMoveFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterCopyMoveFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(favoriteFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterFavoriteFile), object: nil)
@@ -322,7 +321,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterChangeStatusFolderE2EE), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterChangeLayout), object: nil)
 
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterCopyMoveFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterFavoriteFile), object: nil)
@@ -377,6 +375,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return
         }
 
+        if self.isSearchingMode {
+            return self.networkSearch()
+        }
+
         DispatchQueue.main.async {
             switch status {
             case self.global.networkingStatusUploaded, self.global.networkingStatusUploadedLivePhoto, self.global.networkingStatusReloadDataSource:
@@ -386,12 +388,20 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 }
                 self.reloadDataSource()
             case self.global.networkingStatusCreateFolder:
-                if self.isSearchingMode {
-                    return self.networkSearch()
-                }
                 if metadata.serverUrl == self.serverUrl {
                     self.pushMetadata(metadata)
                 }
+            case self.global.networkingStatusDelete:
+                if error == .success {
+                    if self.isRecommendationActived {
+                        Task.detached {
+                            await NCNetworking.shared.createRecommendations(session: self.session)
+                        }
+                    }
+                } else {
+                    NCContentPresenter().showError(error: error)
+                }
+                self.reloadDataSource()
             default:
                 break
             }
@@ -486,27 +496,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func closeRichWorkspaceWebView() {
-        reloadDataSource()
-    }
-
-    @objc func deleteFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let error = userInfo["error"] as? NKError else { return }
-
-        if error == .success {
-            if isSearchingMode {
-                return networkSearch()
-            }
-
-            if isRecommendationActived {
-                Task.detached {
-                    await NCNetworking.shared.createRecommendations(session: self.session)
-                }
-            }
-        } else {
-            NCContentPresenter().showError(error: error)
-        }
-
         reloadDataSource()
     }
 

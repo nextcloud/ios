@@ -175,14 +175,15 @@ extension UIAlertController {
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
             Task {
                 var error = NKError()
-                var ocId: [String] = []
                 for metadata in selectedMetadatas where error == .success {
                     error = await NCNetworking.shared.deleteCache(metadata, sceneIdentifier: sceneIdentifier)
-                    if error == .success {
-                        ocId.append(metadata.ocId)
+                    NCNetworking.shared.notifyAllDelegates { delegate in
+                        delegate.tranferChange(status: NCGlobal.shared.networkingStatusDelete,
+                                               metadata: tableMetadata(value: metadata),
+                                               error: error)
                     }
+
                 }
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "error": error])
             }
             completion(false)
         })

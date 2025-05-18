@@ -125,7 +125,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         // NOTIFIFICATION
 
         NotificationCenter.default.addObserver(self, selector: #selector(favoriteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(searchText), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuSearchTextPDF), object: nil)
@@ -137,7 +136,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     deinit {
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuSearchTextPDF), object: nil)
@@ -295,21 +293,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         else { return }
 
         self.metadata = metadata
-    }
-
-    @objc func deleteFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let error = userInfo["error"] as? NKError else { return }
-
-        if error != .success {
-            NCContentPresenter().showError(error: error)
-        }
-
-        if let ocId = userInfo["ocId"] as? [String],
-           let ocId = ocId.first,
-           metadata?.ocId == ocId {
-            viewUnload()
-        }
     }
 
     @objc func searchText() {
@@ -570,6 +553,16 @@ extension NCViewerPDF: NCTransferDelegate {
                     self.pdfDocument = PDFDocument(url: URL(fileURLWithPath: self.filePath))
                     self.pdfView.document = self.pdfDocument
                     self.pdfView.layoutDocumentView()
+                }
+            case NCGlobal.shared.networkingStatusDelete:
+                guard self.metadata?.ocId == metadata.ocId else {
+                    return
+                }
+
+                if error == .success {
+                    self.viewUnload()
+                } else {
+                    NCContentPresenter().showError(error: error)
                 }
             default:
                 break
