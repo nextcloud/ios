@@ -177,12 +177,6 @@ extension UIAlertController {
                 var error = NKError()
                 for metadata in selectedMetadatas where error == .success {
                     error = await NCNetworking.shared.deleteCache(metadata, sceneIdentifier: sceneIdentifier)
-                    NCNetworking.shared.notifyAllDelegates { delegate in
-                        delegate.tranferChange(status: NCGlobal.shared.networkingStatusDelete,
-                                               metadata: tableMetadata(value: metadata),
-                                               error: error)
-                    }
-
                 }
             }
             completion(false)
