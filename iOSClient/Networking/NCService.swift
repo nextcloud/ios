@@ -111,13 +111,9 @@ class NCService: NSObject {
 
         let resultUserProfile = await NCNetworking.shared.getUserMetadata(account: account, userId: userId, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue))
         if resultUserProfile.error == .success,
-           let userProfile = resultUserProfile.userProfile {
-            /// Login log debug
-            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Get user matadata account \(account) with user \(user) and userId \(user) : \(userProfile.userId)")
-            ///
-            if userId == userProfile.userId {
-                self.database.setAccountUserProfile(account: resultUserProfile.account, userProfile: userProfile)
-            }
+           let userProfile = resultUserProfile.userProfile,
+           userId == userProfile.userId {
+            self.database.setAccountUserProfile(account: resultUserProfile.account, userProfile: userProfile)
             return true
         } else {
             return false
@@ -125,7 +121,8 @@ class NCService: NSObject {
     }
 
     func synchronize(account: String) {
-        NextcloudKit.shared.listingFavorites(showHiddenFiles: NCKeychain().showHiddenFiles,
+        let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: account)
+        NextcloudKit.shared.listingFavorites(showHiddenFiles: showHiddenFiles,
                                              account: account,
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
             guard error == .success, let files else { return }

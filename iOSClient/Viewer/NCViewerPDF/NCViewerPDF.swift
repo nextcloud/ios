@@ -27,7 +27,6 @@ import EasyTipView
 import NextcloudKit
 
 class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
-
     @IBOutlet weak var pdfContainer: UIView!
 
     var metadata: tableMetadata?
@@ -123,8 +122,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         NotificationCenter.default.addObserver(self, selector: #selector(favoriteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(uploadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(searchText), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuSearchTextPDF), object: nil)
@@ -137,7 +134,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuSearchTextPDF), object: nil)
@@ -251,6 +247,9 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+
+        NCNetworking.shared.transferDelegate = self
+
         showTip()
     }
 
@@ -280,36 +279,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     }
 
     // MARK: - NotificationCenter
-
-    @objc func uploadStartFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let serverUrl = userInfo["serverUrl"] as? String,
-              serverUrl == self.metadata?.serverUrl,
-              let fileName = userInfo["fileName"] as? String,
-              fileName == self.metadata?.fileName
-        else { return }
-
-        NCActivityIndicator.shared.start()
-    }
-
-    @objc func uploadedFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let serverUrl = userInfo["serverUrl"] as? String,
-              serverUrl == self.metadata?.serverUrl,
-              let fileName = userInfo["fileName"] as? String,
-              fileName == self.metadata?.fileName,
-              let error = userInfo["error"] as? NKError
-        else {
-            return
-        }
-
-        NCActivityIndicator.shared.stop()
-        if error == .success {
-            self.pdfDocument = PDFDocument(url: URL(fileURLWithPath: self.filePath))
-            self.pdfView.document = self.pdfDocument
-            self.pdfView.layoutDocumentView()
-        }
-    }
 
     @objc func favoriteFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
@@ -571,5 +540,33 @@ extension NCViewerPDF: EasyTipViewDelegate {
         }
         tipView?.dismiss()
         tipView = nil
+    }
+}
+
+extension NCViewerPDF: NCTransferDelegate {
+    func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
+
+    func tranferChange(status: String, metadata: tableMetadata, error: NKError) {
+        guard self.metadata?.serverUrl == metadata.serverUrl,
+              self.metadata?.fileName == metadata.fileName
+        else {
+            return
+        }
+
+        DispatchQueue.main.async {
+            switch status {
+            case NCGlobal.shared.notificationCenterUploadStartFile:
+                NCActivityIndicator.shared.start()
+            case NCGlobal.shared.notificationCenterUploadedFile:
+                NCActivityIndicator.shared.stop()
+                if error == .success {
+                    self.pdfDocument = PDFDocument(url: URL(fileURLWithPath: self.filePath))
+                    self.pdfView.document = self.pdfDocument
+                    self.pdfView.layoutDocumentView()
+                }
+            default:
+                break
+            }
+        }
     }
 }

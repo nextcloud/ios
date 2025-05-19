@@ -35,14 +35,6 @@ struct NCSettingsAdvancedView: View {
 
     var body: some View {
         Form {
-            /// Show Hidden Files
-            Section(content: {
-                Toggle(NSLocalizedString("_show_hidden_files_", comment: ""), isOn: $model.showHiddenFiles)
-                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                    .onChange(of: model.showHiddenFiles) { _ in
-                        model.updateShowHiddenFiles()
-                }
-            })
             /// file name
             Section(content: {
                NavigationLink(destination: LazyView {

@@ -62,15 +62,17 @@ class NCFavorite: NCCollectionViewCommon {
            predicate = NSPredicate(format: "account == %@ AND favorite == true AND NOT (status IN %@)", session.account, global.metadataStatusHideInView)
         }
 
-        let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView)
+        let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView, account: session.account)
 
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
 
         super.reloadDataSource()
     }
 
     override func getServerData() {
-        NextcloudKit.shared.listingFavorites(showHiddenFiles: NCKeychain().showHiddenFiles, account: session.account) { task in
+        let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: session.account)
+
+        NextcloudKit.shared.listingFavorites(showHiddenFiles: showHiddenFiles, account: session.account) { task in
             self.dataSourceTask = task
             if self.dataSource.isEmpty() {
                 self.collectionView.reloadData()
