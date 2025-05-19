@@ -106,12 +106,14 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: tableShare.shareWith)
         let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)
 
+        imageItem.contentMode = .scaleAspectFill
+
         if tableShare.shareType == NCShareCommon().SHARE_TYPE_CIRCLE {
-            fileAvatarImageView?.image = utility.loadImage(named: "person.crop.circle.dashed.circle", colors: [NCBrandColor.shared.iconImageColor])
+            imageItem.image = utility.loadImage(named: "person.3.circle.fill", colors: [NCBrandColor.shared.iconImageColor])
         } else if results.image == nil {
-            fileAvatarImageView?.image = utility.loadUserImage(for: tableShare.shareWith, displayName: tableShare.shareWithDisplayname, urlBase: metadata.urlBase)
+            imageItem.image = utility.loadUserImage(for: tableShare.shareWith, displayName: tableShare.shareWithDisplayname, urlBase: metadata.urlBase)
         } else {
-            fileAvatarImageView?.image = results.image
+            imageItem.image = results.image
         }
 
         if !(results.tblAvatar?.loaded ?? false),
@@ -124,6 +126,8 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         switch tableShare.shareType {
         case NCShareCommon().SHARE_TYPE_FEDERATED:
             return NSLocalizedString("_remote_", comment: "")
+        case NCShareCommon().SHARE_TYPE_ROOM:
+            return NSLocalizedString("_conversation_", comment: "")
         default:
             return ""
         }

@@ -133,6 +133,7 @@ class NCShare: UIViewController, NCSharePagingContent {
             searchField.isUserInteractionEnabled = false
             searchField.alpha = 0.5
             searchField.placeholder = NSLocalizedString("_share_reshare_disabled_", comment: "")
+            btnContact.isEnabled = false
         }
 
         searchFieldTopConstraint.constant = 45
