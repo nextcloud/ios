@@ -359,7 +359,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         let hiddenFiles = NCKeychain().getShowHiddenFiles(account: self.session.account)
         let hiddenFilesAction = UIAction(title: NSLocalizedString("_show_hidden_files_", comment: ""), state: hiddenFiles ? .on : .off) { _ in
             NCKeychain().setShowHiddenFiles(account: self.session.account, value: !hiddenFiles)
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterGetServerData, userInfo: ["serverUrl": collectionViewCommon.serverUrl])
+            self.collectionViewCommon?.dataSource.removeAll()
+            self.collectionViewCommon?.getServerData()
             self.updateRightMenu()
         }
 
