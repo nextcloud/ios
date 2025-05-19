@@ -58,11 +58,6 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                 var error = NKError()
                 for metadata in copyMetadatas where error == .success {
                     error = await NCNetworking.shared.deleteCache(metadata, sceneIdentifier: self.controller?.sceneIdentifier)
-                    NCNetworking.shared.notifyAllDelegates { delegate in
-                        delegate.tranferChange(status: self.global.networkingStatusDelete,
-                                               metadata: tableMetadata(value: metadatas),
-                                               error: error)
-                    }
                 }
             }
             self.setEditMode(false)
