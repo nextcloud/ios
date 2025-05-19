@@ -415,10 +415,15 @@ class NCFiles: NCCollectionViewCommon {
         let currentAccount = session.account
 
         if database.getAllTableAccount().isEmpty {
-            if let navigationController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? UINavigationController {
-                navigationController.modalPresentationStyle = .fullScreen
-                self.present(navigationController, animated: true)
+            let navigationController: UINavigationController?
+
+            if NCBrandOptions.shared.disable_intro, let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin {
+                navigationController = UINavigationController(rootViewController: viewController)
+            } else {
+                navigationController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? UINavigationController
             }
+
+            UIApplication.shared.firstWindow?.rootViewController = navigationController
         } else if let account = tableAccount?.account, account != currentAccount {
             NCAccount().changeAccount(account, userProfile: nil, controller: controller) { }
         } else if self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session) {
