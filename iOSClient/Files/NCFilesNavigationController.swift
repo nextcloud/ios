@@ -36,7 +36,11 @@ class NCFilesNavigationController: NCMainNavigationController {
 
         if collectionViewCommon.serverUrl == utilityFileSystem.getHomeServer(session: session) {
             let fileSettings = UIMenu(title: "", options: .displayInline, children: [items.personalFilesOnly, items.favoriteOnTop, items.directoryOnTop, items.hiddenFiles])
-            let additionalSettings = UIMenu(title: "", options: .displayInline, children: [items.showRecommendedFiles, items.showDescription])
+            var children: [UIMenuElement] = [items.showDescription]
+            if let showRecommendedFiles = items.showRecommendedFiles {
+                children.insert(showRecommendedFiles, at: 0)
+            }
+            let additionalSettings = UIMenu(title: "", options: .displayInline, children: children)
 
             return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, fileSettings, additionalSettings])
         } else {

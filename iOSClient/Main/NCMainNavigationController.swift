@@ -246,7 +246,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                                       hiddenFiles: UIAction,
                                       personalFilesOnly: UIAction,
                                       showDescription: UIAction,
-                                      showRecommendedFiles: UIAction)? {
+                                      showRecommendedFiles: UIAction?)? {
+        var showRecommendedFiles: UIAction?
+
         guard let collectionViewCommon,
               let layoutForView = database.getLayoutForView(account: session.account, key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl)
         else {
@@ -380,10 +382,12 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
         let showRecommendedFilesKeychain = NCKeychain().showRecommendedFiles
         let capabilityRecommendations = NCCapabilities.shared.getCapabilities(account: session.account).capabilityRecommendations
-        let showRecommendedFiles = UIAction(title: NSLocalizedString("_show_recommended_files_", comment: ""), attributes: !capabilityRecommendations ? .disabled : [], state: showRecommendedFilesKeychain ? .on : .off) { _ in
-            NCKeychain().showRecommendedFiles = !showRecommendedFilesKeychain
-            collectionViewCommon.collectionView.reloadData()
-            self.updateRightMenu()
+        if capabilityRecommendations {
+            showRecommendedFiles = UIAction(title: NSLocalizedString("_show_recommended_files_", comment: ""), state: showRecommendedFilesKeychain ? .on : .off) { _ in
+                NCKeychain().showRecommendedFiles = !showRecommendedFilesKeychain
+                collectionViewCommon.collectionView.reloadData()
+                self.updateRightMenu()
+            }
         }
 
         return (select, viewStyleSubmenu, sortSubmenu, favoriteOnTopAction, directoryOnTopAction, hiddenFilesAction, personalFilesOnlyAction, showDescription, showRecommendedFiles)
