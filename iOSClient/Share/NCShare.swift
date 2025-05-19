@@ -261,10 +261,14 @@ extension NCShare: NCShareNetworkingDelegate {
         appearance.textColor = .darkGray
 
         for sharee in sharees {
+            let account = NCManageDatabase.shared.getTableAccount(account: metadata.account)
+            if sharee.shareWith == account?.user { continue }
+
             var label = sharee.label
             if sharee.shareType == shareCommon.SHARE_TYPE_CIRCLE {
                 label += " (\(sharee.circleInfo), \(sharee.circleOwner))"
             }
+            
             dropDown.dataSource.append(label)
         }
 
