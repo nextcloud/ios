@@ -416,7 +416,8 @@ class NCNetworkingProcess {
         /// ------------------------ DELETE
         ///
         if let metadatasWaitDelete = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitDelete), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitDelete.isEmpty {
-            var metadatasDelete: [tableMetadata] = []
+            var metadataInError = tableMetadata()
+            var error: NKError = .success
 
             for metadata in metadatasWaitDelete {
                 /// Check Server Error
@@ -428,7 +429,6 @@ class NCNetworkingProcess {
                 let result = await networking.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: metadata.account, options: options)
 
                 if result.error == .success || result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
-                    metadatasDelete.append(tableMetadata(value: metadata))
                     do {
                         try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
                     } catch { }
@@ -444,13 +444,15 @@ class NCNetworkingProcess {
                     }
                 } else {
                     self.database.setMetadataStatus(ocId: metadata.ocId, status: self.global.metadataStatusNormal)
+                    error = result.error
+                    metadataInError = tableMetadata(value: metadata)
                 }
             }
-            if !metadatasDelete.isEmpty {
+            if error != .success {
                 NCNetworking.shared.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusDelete,
-                                            metadatas: metadatasDelete,
-                                            error: .success)
+                    delegate.transferChange(status: self.global.networkingStatusReloadDataSource,
+                                            metadata: metadataInError,
+                                            error: error)
                 }
             }
         }
