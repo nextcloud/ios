@@ -457,9 +457,12 @@ extension NCNetworking {
                     }
                 }
 
+                var deleteMetadatas: [tableMetadata] = []
                 for metadata in metadatasE2EE {
                     let error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
-                    if error != .success {
+                    if error == .success {
+                        deleteMetadatas.append(tableMetadata(value: metadata))
+                    } else {
                         self.notifyAllDelegates { delegate in
                             delegate.transferChange(status: self.global.networkingStatusReloadDataSource,
                                                     metadata: tableMetadata(value: metadata),
@@ -469,6 +472,11 @@ extension NCNetworking {
                     let num = numIncrement()
                     ncHud.progress(num: num, total: total)
                     if tapHudStopDelete { break }
+                }
+                self.notifyAllDelegates { delegate in
+                    delegate.transferChange(status: self.global.networkingStatusDelete,
+                                            metadatas: deleteMetadatas,
+                                            error: .success)
                 }
                 ncHud.dismiss()
             }
