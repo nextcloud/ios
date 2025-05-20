@@ -981,7 +981,56 @@ extension NCManageDatabase {
                                                   fileNameConflict))
     }
 
-    // // MARK: - Realm Read (result)
+    // MARK: - Realm Read (result)
+
+    func getResultMetadatasPredicateAsync(_ predicate: NSPredicate, layoutForView: NCDBLayoutForView?, account: String, completion: @escaping ([tableMetadata]) -> Void) {
+        performRealmRead({ realm in
+            return realm.objects(tableMetadata.self)
+                .filter(predicate)
+                .freeze()
+        }, sync: false) { result in
+            guard var result else {
+                return completion([])
+            }
+            let layout: NCDBLayoutForView = layoutForView ?? NCDBLayoutForView()
+            let directoryOnTop = NCKeychain().getDirectoryOnTop(account: account)
+            let favoriteOnTop = NCKeychain().getFavoriteOnTop(account: account)
+
+            if layout.sort == "fileName" {
+                let ordered = layout.ascending ? ComparisonResult.orderedAscending : .orderedDescending
+
+                let result = result.sorted { lhs, rhs in
+                    // 1. favorite always has top priority if enabled
+                    if favoriteOnTop, lhs.favorite != rhs.favorite {
+                        return lhs.favorite && !rhs.favorite
+                    }
+
+                    // 2. directory on top (only if enabled)
+                    if directoryOnTop, lhs.directory != rhs.directory {
+                        return lhs.directory && !rhs.directory
+                    }
+
+                    // 3. fileNameView comparison
+                    return lhs.fileNameView.localizedStandardCompare(rhs.fileNameView) == ordered
+                }
+
+                return completion(Array(result))
+            } else {
+                // favorite always first if enabled
+                if favoriteOnTop {
+                    result = result.sorted(byKeyPath: "favorite", ascending: false)
+                }
+
+                if directoryOnTop {
+                    result = result.sorted(byKeyPath: "directory", ascending: false)
+                }
+
+                result = result.sorted(byKeyPath: layout.sort, ascending: layout.ascending)
+
+                return completion(Array(result))
+            }
+        }
+    }
 
     func getResultsMetadatasPredicate(_ predicate: NSPredicate, layoutForView: NCDBLayoutForView?, account: String) -> [tableMetadata] {
         return performRealmRead { realm in

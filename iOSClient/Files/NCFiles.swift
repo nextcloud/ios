@@ -189,7 +189,6 @@ class NCFiles: NCCollectionViewCommon {
 
         var predicate = self.defaultPredicate
         let predicateDirectory = NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl)
-        let dataSourceMetadatas = self.dataSource.getMetadatas()
 
         if NCKeychain().getPersonalFilesOnly(account: session.account) {
             predicate = self.personalFilesOnlyPredicate
@@ -198,18 +197,18 @@ class NCFiles: NCCollectionViewCommon {
         self.metadataFolder = database.getMetadataFolder(session: session, serverUrl: self.serverUrl)
         self.richWorkspaceText = database.getTableDirectory(predicate: predicateDirectory)?.richWorkspace
 
-        let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView, account: session.account)
+        self.database.getResultMetadatasPredicateAsync(predicate, layoutForView: layoutForView, account: session.account) { metadatas in
+            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: self.layoutForView, account: self.session.account)
 
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
+            if metadatas.isEmpty {
+                self.semaphoreReloadDataSource.signal()
+                return super.reloadDataSource()
+            }
 
-        if metadatas.isEmpty {
-            self.semaphoreReloadDataSource.signal()
-            return super.reloadDataSource()
-        }
-
-        self.dataSource.caching(metadatas: metadatas, dataSourceMetadatas: dataSourceMetadatas) {
-            self.semaphoreReloadDataSource.signal()
-            super.reloadDataSource()
+            self.dataSource.caching(metadatas: metadatas) {
+                self.semaphoreReloadDataSource.signal()
+                super.reloadDataSource()
+            }
         }
     }
 
