@@ -65,14 +65,18 @@ class NCOffline: NCCollectionViewCommon {
             for file in files {
                 ocIds.append(file.ocId)
             }
-            metadatas = self.database.getResultMetadatasPredicate(NSPredicate(format: "account == %@ AND ocId IN %@ AND NOT (status IN %@)", session.account, ocIds, global.metadataStatusHideInView), layoutForView: layoutForView, account: session.account)
+            let predicate = NSPredicate(format: "account == %@ AND ocId IN %@ AND NOT (status IN %@)", session.account, ocIds, global.metadataStatusHideInView)
+
+            self.database.getResultMetadatasPredicateAsync(predicate, layoutForView: layoutForView, account: session.account) { metadatas, layoutForView, account in
+                self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
+                super.reloadDataSource()
+            }
         } else {
-            metadatas = self.database.getResultMetadatasPredicate(self.defaultPredicate, layoutForView: layoutForView, account: session.account)
+            self.database.getResultMetadatasPredicateAsync(defaultPredicate, layoutForView: layoutForView, account: session.account) { metadatas, layoutForView, account in
+                self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
+                super.reloadDataSource()
+            }
         }
-
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
-
-        super.reloadDataSource()
     }
 
     override func getServerData() {

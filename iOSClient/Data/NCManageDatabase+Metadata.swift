@@ -1032,75 +1032,6 @@ extension NCManageDatabase {
         }
     }
 
-    func getResultMetadatasPredicate(_ predicate: NSPredicate, layoutForView: NCDBLayoutForView?, account: String) -> [tableMetadata] {
-        return performRealmRead { realm in
-            var results = realm.objects(tableMetadata.self)
-                .filter(predicate)
-                .freeze()
-            let layout: NCDBLayoutForView = layoutForView ?? NCDBLayoutForView()
-            let directoryOnTop = NCKeychain().getDirectoryOnTop(account: account)
-            let favoriteOnTop = NCKeychain().getFavoriteOnTop(account: account)
-
-            if layout.sort == "fileName" {
-                let ordered = layout.ascending ? ComparisonResult.orderedAscending : .orderedDescending
-
-                return results.sorted { lhs, rhs in
-                    // 1. favorite always has top priority if enabled
-                    if favoriteOnTop, lhs.favorite != rhs.favorite {
-                        return lhs.favorite && !rhs.favorite
-                    }
-
-                    // 2. directory on top (only if enabled)
-                    if directoryOnTop, lhs.directory != rhs.directory {
-                        return lhs.directory && !rhs.directory
-                    }
-
-                    // 3. fileNameView comparison
-                    return lhs.fileNameView.localizedStandardCompare(rhs.fileNameView) == ordered
-                }
-            } else {
-                // favorite always first if enabled
-                if favoriteOnTop {
-                    results = results.sorted(byKeyPath: "favorite", ascending: false)
-                }
-
-                if directoryOnTop {
-                    results = results.sorted(byKeyPath: "directory", ascending: false)
-                }
-
-                results = results.sorted(byKeyPath: layout.sort, ascending: layout.ascending)
-
-                return Array(results)
-            }
-        } ?? []
-    }
-
-    func getResultsMetadatas(predicate: NSPredicate, sortedByKeyPath: String, ascending: Bool, arraySlice: Int) -> [tableMetadata] {
-        return performRealmRead { realm in
-            let results = realm.objects(tableMetadata.self)
-                .filter(predicate)
-                .sorted(byKeyPath: sortedByKeyPath, ascending: ascending)
-                .prefix(arraySlice)
-            return Array(results)
-        } ?? []
-    }
-
-    func getResultMetadata(predicate: NSPredicate) -> tableMetadata? {
-        return performRealmRead { realm in
-            realm.objects(tableMetadata.self)
-                .filter(predicate)
-                .first
-        }
-    }
-
-    func getResultMetadataFromFileName(_ fileName: String, serverUrl: String, sessionTaskIdentifier: Int) -> tableMetadata? {
-        return performRealmRead { realm in
-            return realm.objects(tableMetadata.self)
-                .filter("fileName == %@ AND serverUrl == %@ AND sessionTaskIdentifier == %d", fileName, serverUrl, sessionTaskIdentifier)
-                .first
-        }
-    }
-
     func getResultsMetadatasFromGroupfolders(session: NCSession.Session, layoutForView: NCDBLayoutForView?) -> [tableMetadata] {
         let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
         let layout: NCDBLayoutForView = layoutForView ?? NCDBLayoutForView()
@@ -1166,6 +1097,32 @@ extension NCManageDatabase {
                 return Array(sorted)
             }
         } ?? []
+    }
+
+    func getResultsMetadatas(predicate: NSPredicate, sortedByKeyPath: String, ascending: Bool, arraySlice: Int) -> [tableMetadata] {
+        return performRealmRead { realm in
+            let results = realm.objects(tableMetadata.self)
+                .filter(predicate)
+                .sorted(byKeyPath: sortedByKeyPath, ascending: ascending)
+                .prefix(arraySlice)
+            return Array(results)
+        } ?? []
+    }
+
+    func getResultMetadata(predicate: NSPredicate) -> tableMetadata? {
+        return performRealmRead { realm in
+            realm.objects(tableMetadata.self)
+                .filter(predicate)
+                .first
+        }
+    }
+
+    func getResultMetadataFromFileName(_ fileName: String, serverUrl: String, sessionTaskIdentifier: Int) -> tableMetadata? {
+        return performRealmRead { realm in
+            return realm.objects(tableMetadata.self)
+                .filter("fileName == %@ AND serverUrl == %@ AND sessionTaskIdentifier == %d", fileName, serverUrl, sessionTaskIdentifier)
+                .first
+        }
     }
 
     func getTableMetadatasDirectoryFavoriteIdentifierRank(account: String) -> [String: NSNumber] {

@@ -64,11 +64,10 @@ class NCShares: NCCollectionViewCommon {
     // MARK: - DataSource
 
     override func reloadDataSource() {
-        let metadatas = self.database.getResultMetadatasPredicate(NSPredicate(format: "ocId IN %@", ocIdShares), layoutForView: layoutForView, account: session.account)
-
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
-
-        super.reloadDataSource()
+        database.getResultMetadatasPredicateAsync(NSPredicate(format: "ocId IN %@", ocIdShares), layoutForView: layoutForView, account: session.account) { metadatas, layoutForView, account in
+            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
+            super.reloadDataSource()
+        }
     }
 
     override func getServerData() {
