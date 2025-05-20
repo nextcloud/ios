@@ -369,6 +369,24 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
 
+    func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {
+        switch status {
+        case NCGlobal.shared.networkingStatusDelete:
+            if self.isSearchingMode {
+                self.networkSearch()
+            } else {
+                for metadataError in metadatasError {
+                    if metadataError.key.serverUrl == self.serverUrl,
+                       metadataError.value != .success {
+                        return self.reloadDataSource()
+                    }
+                }
+            }
+        default:
+            break
+        }
+    }
+
     func transferChange(status: String, metadata: tableMetadata, error: NKError) {
         guard session.account == metadata.account
         else {

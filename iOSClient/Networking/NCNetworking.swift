@@ -46,7 +46,7 @@ protocol NCTransferDelegate: AnyObject {
                                    serverUrl: String)
 
     func transferChange(status: String, metadata: tableMetadata, error: NKError)
-    func transferChange(status: String, metadatas: [tableMetadata], error: NKError)
+    func transferChange(status: String, metadatasError: [tableMetadata: NKError])
 }
 
 extension NCTransferDelegate {
@@ -56,7 +56,7 @@ extension NCTransferDelegate {
                                    fileName: String,
                                    serverUrl: String) {}
     func transferChange(status: String, metadata: tableMetadata, error: NKError) {}
-    func transferChange(status: String, metadatas: [tableMetadata], error: NKError) {}
+    func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {}
 }
 
 class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {

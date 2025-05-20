@@ -658,7 +658,7 @@ extension NCViewerMediaPage: UIScrollViewDelegate {
 }
 
 extension NCViewerMediaPage: NCTransferDelegate {
-    func tranferChange(status: String, metadata: tableMetadata, error: NKError) {
+    func transferChange(status: String, metadata: tableMetadata, error: NKError) {
         DispatchQueue.main.async {
             if self.currentViewController.metadata.ocId == metadata.ocId {
                 self.currentViewController.loadImage()

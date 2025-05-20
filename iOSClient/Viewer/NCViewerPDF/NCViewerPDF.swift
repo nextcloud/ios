@@ -255,8 +255,8 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         showTip()
     }
 
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
 
         NCNetworking.shared.removeDelegate(self)
 
@@ -534,11 +534,12 @@ extension NCViewerPDF: EasyTipViewDelegate {
 }
 
 extension NCViewerPDF: NCTransferDelegate {
-    func transferChange(status: String, metadatas: [tableMetadata], error: NKError) {
+    func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {
         switch status {
         case NCGlobal.shared.networkingStatusDelete:
-            for metadata in metadatas {
-                if metadata.ocId == self.metadata?.ocId {
+            for metadataError in metadatasError {
+                if metadataError.key.ocId == self.metadata?.ocId,
+                   metadataError.value == .success {
                     return self.viewUnload()
                 }
             }
