@@ -457,17 +457,13 @@ extension NCNetworking {
                     }
                 }
 
-                var deleteMetadatas: [tableMetadata] = []
+                var metadatasError: [tableMetadata: NKError] = [:]
                 for metadata in metadatasE2EE {
                     let error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
                     if error == .success {
-                        deleteMetadatas.append(tableMetadata(value: metadata))
+                        metadatasError[tableMetadata(value: metadata)] = .success
                     } else {
-                        self.notifyAllDelegates { delegate in
-                            delegate.transferChange(status: self.global.networkingStatusReloadDataSource,
-                                                    metadata: tableMetadata(value: metadata),
-                                                    error: error)
-                        }
+                        metadatasError[tableMetadata(value: metadata)] = error
                     }
                     let num = numIncrement()
                     ncHud.progress(num: num, total: total)
@@ -475,8 +471,7 @@ extension NCNetworking {
                 }
                 self.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusDelete,
-                                            metadatas: deleteMetadatas,
-                                            error: .success)
+                                            metadatasError: metadatasError)
                 }
                 ncHud.dismiss()
             }

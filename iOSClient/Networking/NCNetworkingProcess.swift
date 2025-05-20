@@ -416,9 +416,7 @@ class NCNetworkingProcess {
         /// ------------------------ DELETE
         ///
         if let metadatasWaitDelete = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitDelete), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitDelete.isEmpty {
-            var metadataInError = tableMetadata()
-            var deleteMetadatas: [tableMetadata] = []
-            var error: NKError = .success
+            var metadatasError: [tableMetadata: NKError] = [:]
 
             for metadata in metadatasWaitDelete {
                 /// Check Server Error
@@ -444,26 +442,15 @@ class NCNetworkingProcess {
                         self.database.deleteDirectoryAndSubDirectory(serverUrl: NCUtilityFileSystem().stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: metadata.account)
                     }
 
-                    deleteMetadatas.append(tableMetadata(value: metadata))
+                    metadatasError[tableMetadata(value: metadata)] = .success
                 } else {
                     self.database.setMetadataStatus(ocId: metadata.ocId, status: self.global.metadataStatusNormal)
-                    error = result.error
-                    metadataInError = tableMetadata(value: metadata)
+                    metadatasError[tableMetadata(value: metadata)] = result.error
                 }
             }
-            if error != .success {
-                NCNetworking.shared.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusReloadDataSource,
-                                            metadata: metadataInError,
-                                            error: error)
-                }
-            }
-            if !deleteMetadatas.isEmpty {
-                NCNetworking.shared.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusDelete,
-                                            metadatas: deleteMetadatas,
-                                            error: .success)
-                }
+            NCNetworking.shared.notifyAllDelegates { delegate in
+                delegate.transferChange(status: self.global.networkingStatusDelete,
+                                        metadatasError: metadatasError)
             }
         }
 

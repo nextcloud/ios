@@ -98,6 +98,10 @@ class NCMedia: UIViewController {
         return pinchGesture.state == .began || pinchGesture.state == .changed
     }
 
+    var sceneIdentifier: String {
+        (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
+    }
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -194,6 +198,8 @@ class NCMedia: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
+        NCNetworking.shared.addDelegate(self)
+
         NotificationCenter.default.addObserver(self, selector: #selector(copyMoveFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterCopyMoveFile), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(enterForeground(_:)), name: UIApplication.willEnterForegroundNotification, object: nil)
@@ -204,6 +210,8 @@ class NCMedia: UIViewController {
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
+
+        NCNetworking.shared.removeDelegate(self)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterCopyMoveFile), object: nil)
 
