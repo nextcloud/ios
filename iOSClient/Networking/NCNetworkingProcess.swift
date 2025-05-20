@@ -417,6 +417,7 @@ class NCNetworkingProcess {
         ///
         if let metadatasWaitDelete = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitDelete), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitDelete.isEmpty {
             var metadataInError = tableMetadata()
+            var deleteMetadatas: [tableMetadata] = []
             var error: NKError = .success
 
             for metadata in metadatasWaitDelete {
@@ -442,6 +443,8 @@ class NCNetworkingProcess {
                     if metadata.directory {
                         self.database.deleteDirectoryAndSubDirectory(serverUrl: NCUtilityFileSystem().stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: metadata.account)
                     }
+
+                    deleteMetadatas.append(tableMetadata(value: metadata))
                 } else {
                     self.database.setMetadataStatus(ocId: metadata.ocId, status: self.global.metadataStatusNormal)
                     error = result.error
@@ -453,6 +456,13 @@ class NCNetworkingProcess {
                     delegate.transferChange(status: self.global.networkingStatusReloadDataSource,
                                             metadata: metadataInError,
                                             error: error)
+                }
+            }
+            if !deleteMetadatas.isEmpty {
+                NCNetworking.shared.notifyAllDelegates { delegate in
+                    delegate.transferChange(status: self.global.networkingStatusDelete,
+                                            metadatas: deleteMetadatas,
+                                            error: .success)
                 }
             }
         }
