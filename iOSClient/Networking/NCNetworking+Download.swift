@@ -91,9 +91,9 @@ extension NCNetworking {
                                                                    "account": metadata.account])
 
             self.notifyAllDelegates { delegate in
-                delegate.tranferChange(status: self.global.notificationCenterDownloadStartFile,
-                                       metadata: tableMetadata(value: metadata),
-                                       error: .success)
+                delegate.transferChange(status: self.global.notificationCenterDownloadStartFile,
+                                        metadata: tableMetadata(value: metadata),
+                                        error: .success)
             }
             start()
         }, progressHandler: { progress in
@@ -150,9 +150,9 @@ extension NCNetworking {
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account])
             self.notifyAllDelegates { delegate in
-                delegate.tranferChange(status: self.global.notificationCenterDownloadStartFile,
-                                       metadata: tableMetadata(value: metadata),
-                                       error: .success)
+                delegate.transferChange(status: self.global.notificationCenterDownloadStartFile,
+                                        metadata: tableMetadata(value: metadata),
+                                        error: .success)
             }
         } else {
             database.setMetadataSession(ocId: metadata.ocId,
@@ -221,9 +221,9 @@ extension NCNetworking {
                                                                        "error": error],
                                                             second: 0.5)
                 self.notifyAllDelegates { delegate in
-                    delegate.tranferChange(status: self.global.notificationCenterDownloadedFile,
-                                           metadata: tableMetadata(value: metadata),
-                                           error: error)
+                    delegate.transferChange(status: self.global.notificationCenterDownloadedFile,
+                                            metadata: tableMetadata(value: metadata),
+                                            error: error)
                 }
             } else if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
                 self.database.setMetadataSession(ocId: metadata.ocId,
@@ -241,9 +241,9 @@ extension NCNetworking {
                                                                        "account": metadata.account],
                                                             second: 0.5)
                 self.notifyAllDelegates { delegate in
-                    delegate.tranferChange(status: self.global.notificationCenterDownloadCancelFile,
-                                           metadata: tableMetadata(value: metadata),
-                                           error: .success)
+                    delegate.transferChange(status: self.global.notificationCenterDownloadCancelFile,
+                                            metadata: tableMetadata(value: metadata),
+                                            error: .success)
                 }
             } else {
                 self.database.setMetadataSession(ocId: metadata.ocId,
@@ -263,9 +263,9 @@ extension NCNetworking {
                                                                        "error": error],
                                                             second: 0.5)
                 self.notifyAllDelegates { delegate in
-                    delegate.tranferChange(status: NCGlobal.shared.notificationCenterDownloadedFile,
-                                           metadata: tableMetadata(value: metadata),
-                                           error: error)
+                    delegate.transferChange(status: NCGlobal.shared.notificationCenterDownloadedFile,
+                                            metadata: tableMetadata(value: metadata),
+                                            error: error)
                 }
             }
         }

@@ -45,7 +45,18 @@ protocol NCTransferDelegate: AnyObject {
                                    fileName: String,
                                    serverUrl: String)
 
-    func tranferChange(status: String, metadata: tableMetadata, error: NKError)
+    func transferChange(status: String, metadata: tableMetadata, error: NKError)
+    func transferChange(status: String, metadatas: [tableMetadata], error: NKError)
+}
+
+extension NCTransferDelegate {
+    func transferProgressDidUpdate(progress: Float,
+                                   totalBytes: Int64,
+                                   totalBytesExpected: Int64,
+                                   fileName: String,
+                                   serverUrl: String) {}
+    func transferChange(status: String, metadata: tableMetadata, error: NKError) {}
+    func transferChange(status: String, metadatas: [tableMetadata], error: NKError) {}
 }
 
 class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {

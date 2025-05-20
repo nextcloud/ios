@@ -48,6 +48,8 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
     }
 
+    // MARK: - Transfer Delegate
+
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
 
     func tranferChange(status: String, metadata: tableMetadata, error: NKError) { }

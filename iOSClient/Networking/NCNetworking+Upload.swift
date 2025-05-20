@@ -131,9 +131,9 @@ extension NCNetworking {
                                              sessionTaskIdentifier: task.taskIdentifier)
 
             self.notifyAllDelegates { delegate in
-                delegate.tranferChange(status: self.global.networkingStatusUploadStart,
-                                       metadata: tableMetadata(value: metadata),
-                                       error: .success)
+                delegate.transferChange(status: self.global.networkingStatusUploadStart,
+                                        metadata: tableMetadata(value: metadata),
+                                        error: .success)
             }
             start()
         }, progressHandler: { progress in
@@ -185,9 +185,9 @@ extension NCNetworking {
                                     chunkFolder: chunkFolder,
                                     filesChunk: filesChunk)
             self.notifyAllDelegates { delegate in
-                delegate.tranferChange(status: self.global.networkingStatusUploadStart,
-                                       metadata: tableMetadata(value: metadata),
-                                       error: .success)
+                delegate.transferChange(status: self.global.networkingStatusUploadStart,
+                                        metadata: tableMetadata(value: metadata),
+                                        error: .success)
             }
         } requestHandler: { _ in
             self.database.setMetadataSession(ocId: metadata.ocId,
@@ -245,9 +245,9 @@ extension NCNetworking {
                                                  status: self.global.metadataStatusUploading,
                                                  sync: false)
                 self.notifyAllDelegates { delegate in
-                    delegate.tranferChange(status: self.global.networkingStatusUploadStart,
-                                           metadata: tableMetadata(value: metadata),
-                                           error: .success)
+                    delegate.transferChange(status: self.global.networkingStatusUploadStart,
+                                            metadata: tableMetadata(value: metadata),
+                                            error: .success)
                 }
             } else {
                 self.database.deleteMetadataOcId(metadata.ocId, sync: false)
@@ -399,9 +399,9 @@ extension NCNetworking {
                 }
             } else {
                 self.notifyAllDelegates { delegate in
-                    delegate.tranferChange(status: self.global.networkingStatusUploaded,
-                                           metadata: tableMetadata(value: metadata),
-                                           error: error)
+                    delegate.transferChange(status: self.global.networkingStatusUploaded,
+                                            metadata: tableMetadata(value: metadata),
+                                            error: error)
                 }
             }
         } else {
@@ -465,9 +465,9 @@ extension NCNetworking {
                                                  errorCode: error.errorCode,
                                                  sync: false)
                 self.notifyAllDelegates { delegate in
-                    delegate.tranferChange(status: self.global.networkingStatusUploaded,
-                                           metadata: tableMetadata(value: metadata),
-                                           error: error)
+                    delegate.transferChange(status: self.global.networkingStatusUploaded,
+                                            metadata: tableMetadata(value: metadata),
+                                            error: error)
                 }
                 // Client Diagnostic
                 if error.errorCode == self.global.errorInternalServerError {
@@ -509,9 +509,9 @@ extension NCNetworking {
 #endif
         self.database.deleteMetadataOcId(metadata.ocIdTransfer, sync: false)
         self.notifyAllDelegates { delegate in
-            delegate.tranferChange(status: self.global.networkingStatusUploadCancel,
-                                   metadata: tableMetadata(value: metadata),
-                                   error: .success)
+            delegate.transferChange(status: self.global.networkingStatusUploadCancel,
+                                    metadata: tableMetadata(value: metadata),
+                                    error: .success)
         }
     }
 }
