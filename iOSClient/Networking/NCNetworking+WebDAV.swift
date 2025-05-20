@@ -457,23 +457,20 @@ extension NCNetworking {
                     }
                 }
 
-                var metadatasDelete: [tableMetadata] = []
-                var error = NKError()
-                for metadata in metadatasE2EE where error == .success {
-                    error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
-                    if error == .success {
-                        metadatasDelete.append(tableMetadata(value: metadata))
+                for metadata in metadatasE2EE {
+                    let error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
+                    if error != .success {
+                        self.notifyAllDelegates { delegate in
+                            delegate.transferChange(status: self.global.networkingStatusReloadDataSource,
+                                                    metadata: tableMetadata(value: metadata),
+                                                    error: error)
+                        }
                     }
                     let num = numIncrement()
                     ncHud.progress(num: num, total: total)
                     if tapHudStopDelete { break }
                 }
                 ncHud.dismiss()
-                self.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusDelete,
-                                            metadatas: metadatasDelete,
-                                            error: error)
-                }
             }
         }
 #endif
