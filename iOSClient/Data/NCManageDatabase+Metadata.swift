@@ -983,14 +983,14 @@ extension NCManageDatabase {
 
     // MARK: - Realm Read (result)
 
-    func getResultMetadatasPredicateAsync(_ predicate: NSPredicate, layoutForView: NCDBLayoutForView?, account: String, completion: @escaping ([tableMetadata]) -> Void) {
+    func getResultMetadatasPredicateAsync(_ predicate: NSPredicate, layoutForView: NCDBLayoutForView?, account: String, completion: @escaping (_ metadatas: [tableMetadata], _ layoutForView: NCDBLayoutForView?, _ account: String ) -> Void) {
         performRealmRead({ realm in
             return realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .freeze()
         }, sync: false) { result in
             guard var result else {
-                return completion([])
+                return completion([], layoutForView, account)
             }
             let layout: NCDBLayoutForView = layoutForView ?? NCDBLayoutForView()
             let directoryOnTop = NCKeychain().getDirectoryOnTop(account: account)
@@ -1014,7 +1014,7 @@ extension NCManageDatabase {
                     return lhs.fileNameView.localizedStandardCompare(rhs.fileNameView) == ordered
                 }
 
-                return completion(Array(result))
+                return completion(Array(result), layoutForView, account)
             } else {
                 // favorite always first if enabled
                 if favoriteOnTop {
@@ -1027,12 +1027,12 @@ extension NCManageDatabase {
 
                 result = result.sorted(byKeyPath: layout.sort, ascending: layout.ascending)
 
-                return completion(Array(result))
+                return completion(Array(result), layout, account)
             }
         }
     }
 
-    func getResultsMetadatasPredicate(_ predicate: NSPredicate, layoutForView: NCDBLayoutForView?, account: String) -> [tableMetadata] {
+    func getResultMetadatasPredicate(_ predicate: NSPredicate, layoutForView: NCDBLayoutForView?, account: String) -> [tableMetadata] {
         return performRealmRead { realm in
             var results = realm.objects(tableMetadata.self)
                 .filter(predicate)
@@ -1129,7 +1129,7 @@ extension NCManageDatabase {
                }
            }
 
-           var results = realm.objects(tableMetadata.self)
+           let results = realm.objects(tableMetadata.self)
                .filter("ocId IN %@", ocIds)
                .freeze()
 
