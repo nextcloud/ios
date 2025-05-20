@@ -416,6 +416,8 @@ class NCNetworkingProcess {
         /// ------------------------ DELETE
         ///
         if let metadatasWaitDelete = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitDelete), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitDelete.isEmpty {
+            var metadatasDelete: [tableMetadata] = []
+
             for metadata in metadatasWaitDelete {
                 /// Check Server Error
                 guard networking.noServerErrorAccount(metadata.account) else {
@@ -426,6 +428,7 @@ class NCNetworkingProcess {
                 let result = await networking.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: metadata.account, options: options)
 
                 if result.error == .success || result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
+                    metadatasDelete.append(tableMetadata(value: metadata))
                     do {
                         try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
                     } catch { }
@@ -442,11 +445,12 @@ class NCNetworkingProcess {
                 } else {
                     self.database.setMetadataStatus(ocId: metadata.ocId, status: self.global.metadataStatusNormal)
                 }
-
+            }
+            if !metadatasDelete.isEmpty {
                 NCNetworking.shared.notifyAllDelegates { delegate in
-                    delegate.tranferChange(status: self.global.networkingStatusDelete,
-                                           metadata: tableMetadata(value: metadata),
-                                           error: result.error)
+                    delegate.transferChange(status: self.global.networkingStatusDelete,
+                                            metadatas: metadatasDelete,
+                                            error: .success)
                 }
             }
         }

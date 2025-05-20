@@ -534,9 +534,20 @@ extension NCViewerPDF: EasyTipViewDelegate {
 }
 
 extension NCViewerPDF: NCTransferDelegate {
-    func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
+    func transferChange(status: String, metadatas: [tableMetadata], error: NKError) {
+        switch status {
+        case NCGlobal.shared.networkingStatusDelete:
+            for metadata in metadatas {
+                if metadata.ocId == self.metadata?.ocId {
+                    return self.viewUnload()
+                }
+            }
+        default:
+            break
+        }
+    }
 
-    func tranferChange(status: String, metadata: tableMetadata, error: NKError) {
+    func transferChange(status: String, metadata: tableMetadata, error: NKError) {
         guard self.metadata?.serverUrl == metadata.serverUrl,
               self.metadata?.fileName == metadata.fileName
         else {
@@ -553,16 +564,6 @@ extension NCViewerPDF: NCTransferDelegate {
                     self.pdfDocument = PDFDocument(url: URL(fileURLWithPath: self.filePath))
                     self.pdfView.document = self.pdfDocument
                     self.pdfView.layoutDocumentView()
-                }
-            case NCGlobal.shared.networkingStatusDelete:
-                guard self.metadata?.ocId == metadata.ocId else {
-                    return
-                }
-
-                if error == .success {
-                    self.viewUnload()
-                } else {
-                    NCContentPresenter().showError(error: error)
                 }
             default:
                 break

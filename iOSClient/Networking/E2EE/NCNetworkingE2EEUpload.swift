@@ -184,9 +184,9 @@ class NCNetworkingE2EEUpload: NSObject {
             utility.createImageFileFrom(metadata: metadata)
 
             NCNetworking.shared.notifyAllDelegates { delegate in
-                delegate.tranferChange(status: global.networkingStatusUploaded,
-                                       metadata: tableMetadata(value: metadata),
-                                       error: .success)
+                delegate.transferChange(status: global.networkingStatusUploaded,
+                                        metadata: tableMetadata(value: metadata),
+                                        error: .success)
             }
 
             // LIVE PHOTO

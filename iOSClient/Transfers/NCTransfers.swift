@@ -277,7 +277,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     }
 
     // MARK: - Transfers Delegate
-    override func tranferChange(status: String, metadata: tableMetadata, error: NKError) {
+    override func transferChange(status: String, metadata: tableMetadata, error: NKError) {
         reloadDataSource()
     }
 

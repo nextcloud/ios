@@ -153,9 +153,9 @@ class NCNetworkingE2EECreateFolder: NSObject {
         self.database.addDirectory(e2eEncrypted: true, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
 
         NCNetworking.shared.notifyAllDelegates { delegate in
-            delegate.tranferChange(status: self.global.networkingStatusCreateFolder,
-                                   metadata: tableMetadata(value: metadata),
-                                   error: .success)
+            delegate.transferChange(status: self.global.networkingStatusCreateFolder,
+                                    metadata: tableMetadata(value: metadata),
+                                    error: .success)
         }
 
         return NKError()

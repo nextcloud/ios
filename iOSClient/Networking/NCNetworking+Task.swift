@@ -135,9 +135,9 @@ extension NCNetworking {
                                                                    "account": metadata.account],
                                                         second: 0.5)
             self.notifyAllDelegates { delegate in
-                delegate.tranferChange(status: self.global.notificationCenterDownloadCancelFile,
-                                       metadata: tableMetadata(value: metadata),
-                                       error: .success)
+                delegate.transferChange(status: self.global.notificationCenterDownloadCancelFile,
+                                        metadata: tableMetadata(value: metadata),
+                                        error: .success)
             }
         }
 
@@ -151,9 +151,9 @@ extension NCNetworking {
             }
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
             self.notifyAllDelegates { delegate in
-                delegate.tranferChange(status: self.global.networkingStatusUploadCancel,
-                                       metadata: tableMetadata(value: metadata),
-                                       error: .success)
+                delegate.transferChange(status: self.global.networkingStatusUploadCancel,
+                                        metadata: tableMetadata(value: metadata),
+                                        error: .success)
             }
         }
     }

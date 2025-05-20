@@ -369,7 +369,29 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
 
-    func tranferChange(status: String, metadata: tableMetadata, error: NKError) {
+    func transferChange(status: String, metadatas: [tableMetadata], error: NKError) {
+        if self.isSearchingMode {
+            return self.networkSearch()
+        }
+
+        switch status {
+        case self.global.networkingStatusDelete:
+            var reload: Bool = false
+            metadatas.forEach({ metadata in
+                if metadata.account == session.account,
+                   metadata.serverUrl == self.serverUrl {
+                    reload = true
+                }
+            })
+            if reload {
+                self.reloadDataSource()
+            }
+        default:
+            break
+        }
+    }
+
+    func transferChange(status: String, metadata: tableMetadata, error: NKError) {
         guard session.account == metadata.account
         else {
             return
@@ -391,17 +413,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 if metadata.serverUrl == self.serverUrl {
                     self.pushMetadata(metadata)
                 }
-            case self.global.networkingStatusDelete:
-                if error == .success {
-                    if self.isRecommendationActived {
-                        Task.detached {
-                            await NCNetworking.shared.createRecommendations(session: self.session)
-                        }
-                    }
-                } else {
-                    NCContentPresenter().showError(error: error)
-                }
-                self.reloadDataSource()
             default:
                 break
             }

@@ -226,13 +226,13 @@ extension NCNetworking {
 
             if let sceneIdentifier {
                 self.notifyDelegates(forScene: sceneIdentifier) { delegate in
-                    delegate.tranferChange(status: self.global.networkingStatusCreateFolder,
-                                           metadata: tableMetadata(value: metadata),
-                                           error: .success)
+                    delegate.transferChange(status: self.global.networkingStatusCreateFolder,
+                                            metadata: tableMetadata(value: metadata),
+                                            error: .success)
                 } others: { delegate in
-                    delegate.tranferChange(status: self.global.networkingStatusReloadDataSource,
-                                           metadata: tableMetadata(value: metadata),
-                                           error: .success)
+                    delegate.transferChange(status: self.global.networkingStatusReloadDataSource,
+                                            metadata: tableMetadata(value: metadata),
+                                            error: .success)
                 }
             }
         }
@@ -457,19 +457,23 @@ extension NCNetworking {
                     }
                 }
 
+                var metadatasDelete: [tableMetadata] = []
                 var error = NKError()
                 for metadata in metadatasE2EE where error == .success {
                     error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
-                    self.notifyAllDelegates { delegate in
-                        delegate.tranferChange(status: self.global.networkingStatusDelete,
-                                               metadata: tableMetadata(value: metadata),
-                                               error: error)
+                    if error == .success {
+                        metadatasDelete.append(tableMetadata(value: metadata))
                     }
                     let num = numIncrement()
                     ncHud.progress(num: num, total: total)
                     if tapHudStopDelete { break }
                 }
                 ncHud.dismiss()
+                self.notifyAllDelegates { delegate in
+                    delegate.transferChange(status: self.global.networkingStatusDelete,
+                                            metadatas: metadatasDelete,
+                                            error: error)
+                }
             }
         }
 #endif
