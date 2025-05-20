@@ -289,28 +289,26 @@ class NCCollectionViewDataSource: NSObject {
         return nil
     }
 
-    func caching(metadatas: [tableMetadata], dataSourceMetadatas: [tableMetadata], completion: @escaping () -> Void) {
+    func caching(metadatas: [tableMetadata], completion: @escaping () -> Void) {
         var counter: Int = 0
 
-        DispatchQueue.global().async {
-            for metadata in metadatas {
-                let metadata = tableMetadata(value: metadata)
-                let indexPath = IndexPath(row: counter, section: 0)
-                self.metadataIndexPath[indexPath] = tableMetadata(value: metadata)
+        for metadata in metadatas {
+            let metadata = tableMetadata(value: metadata)
+            let indexPath = IndexPath(row: counter, section: 0)
+            self.metadataIndexPath[indexPath] = tableMetadata(value: metadata)
 
-                /// caching preview
-                /// 
-                if metadata.isImageOrVideo,
-                   NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) == nil,
-                   let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) {
-                    NCImageCache.shared.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: self.global.previewExt256, cost: counter)
-                }
-
-                counter += 1
+            /// caching preview
+            ///
+            if metadata.isImageOrVideo,
+               NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) == nil,
+               let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) {
+                NCImageCache.shared.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: self.global.previewExt256, cost: counter)
             }
 
-            return completion()
+            counter += 1
         }
+
+        return completion()
     }
 
     func removeImageCache() {
