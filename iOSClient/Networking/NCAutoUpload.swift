@@ -17,7 +17,7 @@ class NCAutoUpload: NSObject {
     // MARK: -
 
     func initAutoUpload(controller: NCMainTabBarController?, account: String, completion: @escaping (_ num: Int) -> Void) {
-        DispatchQueue.global().async {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             guard NCNetworking.shared.isOnline,
                   let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
                   tableAccount.autoUploadStart
