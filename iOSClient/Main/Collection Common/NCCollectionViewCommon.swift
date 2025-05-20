@@ -835,16 +835,27 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.dataSourceTask = task
                 self.reloadDataSource()
             } completion: { metadatasSearch, error in
-                DispatchQueue.main.async {
-                    self.refreshControlEndRefreshing()
-                    self.reloadDataSource()
+                guard let metadatasSearch,
+                        error == .success,
+                        self.isSearchingMode
+                else {
+                    self.networkSearchInProgress = false
+                    DispatchQueue.main.async {
+                        self.refreshControlEndRefreshing()
+                        self.reloadDataSource()
+                    }
+                    return
                 }
-                guard let metadatasSearch, error == .success, self.isSearchingMode else { return }
                 let ocId = metadatasSearch.map { $0.ocId }
-                let metadatas = self.database.getResultsMetadatasPredicate(NSPredicate(format: "ocId IN %@", ocId), layoutForView: self.layoutForView, account: self.session.account)
 
-                self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: self.layoutForView, providers: self.providers, searchResults: self.searchResults, account: self.session.account)
-                self.networkSearchInProgress = false
+                self.database.getResultMetadatasPredicateAsync(NSPredicate(format: "ocId IN %@", ocId), layoutForView: self.layoutForView, account: self.session.account) { metadatas, layoutForView, account  in
+                    self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, providers: self.providers, searchResults: self.searchResults, account: account)
+                    self.networkSearchInProgress = false
+                    DispatchQueue.main.async {
+                        self.refreshControlEndRefreshing()
+                        self.reloadDataSource()
+                    }
+                }
             }
         }
     }

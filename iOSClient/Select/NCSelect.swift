@@ -493,7 +493,7 @@ extension NCSelect {
                 self.collectionView.reloadData()
             }
         } completion: { _, _, _, _ in
-            let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: NCDBLayoutForView(), account: self.session.account)
+            let metadatas = self.database.getResultMetadatasPredicate(predicate, layoutForView: NCDBLayoutForView(), account: self.session.account)
 
             self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, account: self.session.account)
             self.collectionView.reloadData()

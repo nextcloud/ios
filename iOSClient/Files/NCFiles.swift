@@ -197,8 +197,8 @@ class NCFiles: NCCollectionViewCommon {
         self.metadataFolder = database.getMetadataFolder(session: session, serverUrl: self.serverUrl)
         self.richWorkspaceText = database.getTableDirectory(predicate: predicateDirectory)?.richWorkspace
 
-        self.database.getResultMetadatasPredicateAsync(predicate, layoutForView: layoutForView, account: session.account) { metadatas in
-            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: self.layoutForView, account: self.session.account)
+        self.database.getResultMetadatasPredicateAsync(predicate, layoutForView: layoutForView, account: session.account) { metadatas, layoutForView, account in
+            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
 
             if metadatas.isEmpty {
                 self.semaphoreReloadDataSource.signal()
