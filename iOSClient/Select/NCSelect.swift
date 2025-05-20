@@ -492,13 +492,13 @@ extension NCSelect {
             if self.dataSource.isEmpty() {
                 self.collectionView.reloadData()
             }
-        } completion: { _, _, _, _ in
-            let metadatas = self.database.getResultMetadatasPredicate(predicate, layoutForView: NCDBLayoutForView(), account: self.session.account)
+        } completion: { account, _, _, _ in
+            self.database.getResultMetadatasPredicateAsync(predicate, layoutForView: NCDBLayoutForView(), account: account) { metadatas, layoutForView, account in
+                self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
+                self.collectionView.reloadData()
 
-            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, account: self.session.account)
-            self.collectionView.reloadData()
-
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": self.serverUrl])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": self.serverUrl])
+            }
         }
     }
 }
