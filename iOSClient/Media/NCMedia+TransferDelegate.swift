@@ -16,19 +16,26 @@ extension NCMedia: NCTransferDelegate {
                 self.semaphoreNotificationCenter.signal()
             }
             var deleteOcIds: [String] = []
-            var loadDataSource: Bool = false
-            for metadataError in metadatasError {
-                if metadataError.value.errorCode == self.global.errorResourceNotFound {
-                    deleteOcIds.append(metadataError.key.ocId)
-                    loadDataSource = true
-                } else if metadataError.value != .success {
-                    loadDataSource = true
+            var needLoadDataSource: Bool = false
+
+            for (key, error) in metadatasError {
+                switch error {
+                case .success:
+                    continue
+                default:
+                    if error.errorCode == self.global.errorResourceNotFound {
+                        deleteOcIds.append(key.ocId)
+                    }
+                    needLoadDataSource = true
                 }
             }
-            if loadDataSource {
+
+            if needLoadDataSource {
                 self.loadDataSource {
                     self.semaphoreNotificationCenter.signal()
                 }
+            } else {
+                self.semaphoreNotificationCenter.signal()
             }
         default:
             break
