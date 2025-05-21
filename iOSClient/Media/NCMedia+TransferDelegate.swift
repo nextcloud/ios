@@ -11,6 +11,7 @@ import NextcloudKit
 extension NCMedia: NCTransferDelegate {
     func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {
         switch status {
+        /// DELETE
         case NCGlobal.shared.networkingStatusDelete:
             if self.semaphoreNotificationCenter.wait(timeout: .now() + 5) == .timedOut {
                 self.semaphoreNotificationCenter.signal()

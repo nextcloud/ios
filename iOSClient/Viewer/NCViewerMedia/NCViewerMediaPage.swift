@@ -641,20 +641,25 @@ extension NCViewerMediaPage: UIScrollViewDelegate {
 
 extension NCViewerMediaPage: NCTransferDelegate {
     func transferChange(status: String, metadata: tableMetadata, error: NKError) {
-        DispatchQueue.main.async {
-            if status == self.global.networkingStatusUploaded,
-               error == .success {
+        switch status {
+        /// UPLOADED
+        case self.global.networkingStatusUploaded:
+            guard error == .success else { return }
+            DispatchQueue.main.async {
                 if self.currentViewController.metadata.ocId == metadata.ocId {
                     self.currentViewController.loadImage()
                 } else {
                     self.modifiedOcId.append(metadata.ocId)
                 }
             }
+        default:
+            break
         }
     }
 
     func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {
         switch status {
+        /// DELETE
         case NCGlobal.shared.networkingStatusDelete:
             let hasAtLeastOneSuccess = metadatasError.contains { key, value in
                 ocIds.contains(key.ocId) && value == .success
