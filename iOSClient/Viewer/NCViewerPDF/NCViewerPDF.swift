@@ -554,7 +554,7 @@ extension NCViewerPDF: NCTransferDelegate {
 
     func transferChange(status: String, metadata: tableMetadata, error: NKError) {
         guard self.metadata?.serverUrl == metadata.serverUrl,
-              self.metadata?.fileName == metadata.fileName
+              self.metadata?.fileNameView == metadata.fileNameView
         else {
             return
         }
