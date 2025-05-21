@@ -54,6 +54,7 @@ class NCViewerMediaPage: UIViewController {
     var nextTrackCommand: Any?
     var previousTrackCommand: Any?
     let utilityFileSystem = NCUtilityFileSystem()
+    let global = NCGlobal.shared
     let database = NCManageDatabase.shared
     var prefersLargeTitles: Bool?
 
@@ -136,8 +137,6 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(pageViewController.enableSwipeGesture), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterEnableSwipeGesture), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(pageViewController.disableSwipeGesture), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDisableSwipeGesture), object: nil)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
-
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: UIApplication.didBecomeActiveNotification, object: nil)
@@ -165,8 +164,6 @@ class NCViewerMediaPage: UIViewController {
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterEnableSwipeGesture), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDisableSwipeGesture), object: nil)
-
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
 
@@ -366,21 +363,6 @@ class NCViewerMediaPage: UIViewController {
         } else if metadata.isImage {
             self.currentViewController.loadImage()
         }
-    }
-
-    @objc func deleteFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let error = userInfo["error"] as? NKError else { return }
-
-        if error != .success {
-            NCContentPresenter().showError(error: error)
-        }
-
-        if let ncplayer = currentViewController.ncplayer, ncplayer.isPlaying() {
-            ncplayer.playerPause()
-        }
-
-        self.viewUnload()
     }
 
     @objc func applicationDidBecomeActive(_ notification: NSNotification) {
@@ -660,11 +642,34 @@ extension NCViewerMediaPage: UIScrollViewDelegate {
 extension NCViewerMediaPage: NCTransferDelegate {
     func transferChange(status: String, metadata: tableMetadata, error: NKError) {
         DispatchQueue.main.async {
-            if self.currentViewController.metadata.ocId == metadata.ocId {
-                self.currentViewController.loadImage()
-            } else {
-                self.modifiedOcId.append(metadata.ocId)
+            if status == self.global.networkingStatusUploaded,
+               error == .success {
+                if self.currentViewController.metadata.ocId == metadata.ocId {
+                    self.currentViewController.loadImage()
+                } else {
+                    self.modifiedOcId.append(metadata.ocId)
+                }
             }
+        }
+    }
+
+    func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {
+        switch status {
+        case NCGlobal.shared.networkingStatusDelete:
+            let hasAtLeastOneSuccess = metadatasError.contains { key, value in
+                ocIds.contains(key.ocId) && value == .success
+            }
+            if hasAtLeastOneSuccess {
+                DispatchQueue.main.async {
+                    if let ncplayer = self.currentViewController.ncplayer, ncplayer.isPlaying() {
+                        ncplayer.playerPause()
+                    }
+
+                    self.viewUnload()
+                }
+            }
+        default:
+            break
         }
     }
 
