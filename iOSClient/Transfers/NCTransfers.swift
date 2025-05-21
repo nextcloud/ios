@@ -25,7 +25,7 @@ import UIKit
 import NextcloudKit
 
 class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
-    var metadataTemp: tableMetadata?
+    private var metadataTemp: tableMetadata?
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -278,7 +278,10 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     // MARK: - Transfers Delegate
     override func transferChange(status: String, metadata: tableMetadata, error: NKError) {
-        reloadDataSource()
+        transferDebouncer.call {
+            print("cazzzz")
+            self.reloadDataSource()
+        }
     }
 
     override func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) {
