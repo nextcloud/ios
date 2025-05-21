@@ -266,7 +266,7 @@ extension NCShare: NCShareNetworkingDelegate {
         for sharee in sharees {
             if sharee.shareWith == account?.user { continue } // do not show your own account
             if let shares = existingShares.share, shares.contains(where: {$0.shareWith == sharee.shareWith}) { continue } // do not show already existing sharees
-
+            if metadata.ownerDisplayName == sharee.shareWith { continue } // do not show owner of the share 
             var label = sharee.label
             if sharee.shareType == shareCommon.SHARE_TYPE_CIRCLE {
                 label += " (\(sharee.circleInfo), \(sharee.circleOwner))"
