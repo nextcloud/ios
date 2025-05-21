@@ -422,7 +422,7 @@ extension NCNetworking {
         return .success
     }
 
-    func deleteMetadatas(_ metadatas: [tableMetadata], sceneIdentifier: String?) {
+    func setStatusWaitDelete(metadatas: [tableMetadata], sceneIdentifier: String?) {
         var metadatasPlain: [tableMetadata] = []
         var metadatasE2EE: [tableMetadata] = []
         let ncHud = NCHud()

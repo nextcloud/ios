@@ -345,6 +345,8 @@ final class NCGlobal: Sendable {
 
     let networkingStatusCreateFolder                            = "statusCreateFolder"
     let networkingStatusDelete                                  = "statusDelete"
+    let networkingStatusFavorite                                = "statusFavorite"
+
 
     let networkingStatusUploadStart                             = "statusUploadStart"
     let networkingStatusUploaded                                = "statusUploaded"
