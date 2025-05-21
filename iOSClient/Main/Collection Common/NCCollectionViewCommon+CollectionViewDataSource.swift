@@ -506,6 +506,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                                   heightHeaderSection: heightHeaderSection,
                                   sectionText: sectionText,
                                   viewController: self,
+                                  sceneItentifier: self.sceneIdentifier,
                                   delegate: self)
 
             } else if let header = header as? NCSectionFirstHeaderEmptyData {
