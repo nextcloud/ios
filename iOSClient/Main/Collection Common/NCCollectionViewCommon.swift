@@ -373,6 +373,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {
         switch status {
+        /// DELETE
         case NCGlobal.shared.networkingStatusDelete:
             let needLoadDataSource = metadatasError.contains { entry in
                 let (key, value) = entry
@@ -390,13 +391,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func transferChange(status: String, metadata: tableMetadata, error: NKError) {
-        guard session.account == metadata.account
-        else {
-            return
-        }
+        guard session.account == metadata.account else { return }
 
         DispatchQueue.main.async {
             switch status {
+            /// UPLOADED, UPLOADED LIVEPHOTO, RELOAD DATASOURCE
             case self.global.networkingStatusUploaded,
                  self.global.networkingStatusUploadedLivePhoto,
                  self.global.networkingStatusReloadDataSource:
@@ -407,6 +406,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                         self.reloadDataSource()
                     }
                 }
+            /// CREATE FOLDER
             case self.global.networkingStatusCreateFolder:
                 if metadata.serverUrl == self.serverUrl {
                     self.pushMetadata(metadata)
