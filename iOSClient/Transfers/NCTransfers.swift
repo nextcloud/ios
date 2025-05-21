@@ -279,7 +279,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     // MARK: - Transfers Delegate
     override func transferChange(status: String, metadata: tableMetadata, error: NKError) {
         transferDebouncer.call {
-            print("cazzzz")
             self.reloadDataSource()
         }
     }

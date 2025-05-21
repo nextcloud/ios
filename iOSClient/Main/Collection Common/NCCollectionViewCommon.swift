@@ -374,15 +374,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {
         switch status {
         case NCGlobal.shared.networkingStatusDelete:
+            let needLoadDataSource = metadatasError.contains { entry in
+                let (key, value) = entry
+                return key.serverUrl == self.serverUrl && value != .success
+            }
+
             if self.isSearchingMode {
                 self.networkSearch()
-            } else {
-                for metadataError in metadatasError {
-                    if metadataError.key.serverUrl == self.serverUrl,
-                       metadataError.value != .success {
-                        return self.reloadDataSource()
-                    }
-                }
+            } else if needLoadDataSource {
+                self.reloadDataSource()
             }
         default:
             break
@@ -395,25 +395,18 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return
         }
 
-
-        if self.isSearchingMode {
-            return self.networkSearch()
-        }
-
         DispatchQueue.main.async {
             switch status {
-            case self.global.networkingStatusUploaded, self.global.networkingStatusUploadedLivePhoto:
-                guard self.serverUrl == metadata.serverUrl
-                else {
-                    return
+            case self.global.networkingStatusUploaded,
+                 self.global.networkingStatusUploadedLivePhoto,
+                 self.global.networkingStatusReloadDataSource:
+                 self.transferDebouncer.call {
+                    if self.isSearchingMode {
+                        return self.networkSearch()
+                    } else if self.serverUrl == metadata.serverUrl {
+                        self.reloadDataSource()
+                    }
                 }
-                self.reloadDataSource()
-            case self.global.networkingStatusReloadDataSource:
-                guard self.serverUrl == metadata.serverUrl
-                else {
-                    return
-                }
-                self.reloadDataSource()
             case self.global.networkingStatusCreateFolder:
                 if metadata.serverUrl == self.serverUrl {
                     self.pushMetadata(metadata)
