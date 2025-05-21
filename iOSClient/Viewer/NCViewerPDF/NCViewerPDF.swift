@@ -276,11 +276,15 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     }
 
     @objc func viewUnload() {
-        navigationController?.popViewController(animated: true)
+        DispatchQueue.main.async {
+            self.navigationController?.popViewController(animated: true)
+        }
     }
 
     @objc func viewDismiss() {
-        self.dismiss(animated: true)
+        DispatchQueue.main.async {
+            self.dismiss(animated: true)
+        }
     }
 
     // MARK: - NotificationCenter
@@ -537,11 +541,11 @@ extension NCViewerPDF: NCTransferDelegate {
     func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {
         switch status {
         case NCGlobal.shared.networkingStatusDelete:
-            for metadataError in metadatasError {
-                if metadataError.key.ocId == self.metadata?.ocId,
-                   metadataError.value == .success {
-                    return self.viewUnload()
-                }
+            let shouldUnloadView = metadatasError.contains { key, error in
+                key.ocId == self.metadata?.ocId && error == .success
+            }
+            if shouldUnloadView {
+                self.viewUnload()
             }
         default:
             break
