@@ -166,6 +166,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return pinchGesture.state == .began || pinchGesture.state == .changed
     }
 
+    internal let transferDebouncer = NCTransferDebouncer(delay: 0.8)
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
