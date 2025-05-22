@@ -16,21 +16,21 @@ class NCAutoUpload: NSObject {
 
     func initAutoUpload(controller: NCMainTabBarController?, account: String, completion: @escaping (_ num: Int) -> Void) {
         guard NCNetworking.shared.isOnline,
-              let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
-              tableAccount.autoUploadStart
+              let tblAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
+              tblAccount.autoUploadStart
         else {
             return completion(0)
         }
         let albumIds = NCKeychain().getAutoUploadAlbumIds(account: account)
         let selectedAlbums = PHAssetCollection.allAlbums.filter({albumIds.contains($0.localIdentifier)})
 
-        self.getCameraRollAssets(controller: controller, assetCollections: selectedAlbums, account: account) { assets, fileNames in
+        self.getCameraRollAssets(controller: controller, assetCollections: selectedAlbums, tblAccount: tableAccount(value: tblAccount)) { assets, fileNames in
             guard let assets,
                   !assets.isEmpty,
                   let fileNames else {
                 return completion(0)
             }
-            self.uploadAssets(controller: controller, tblAccount: tableAccount, assets: assets, fileNames: fileNames) { num in
+            self.uploadAssets(controller: controller, tblAccount: tableAccount(value: tblAccount), assets: assets, fileNames: fileNames) { num in
                 completion(num)
             }
         }
@@ -41,7 +41,7 @@ class NCAutoUpload: NSObject {
         else {
             return
         }
-        self.getCameraRollAssets(controller: controller, assetCollections: assetCollections, account: account) { assets, fileNames in
+        self.getCameraRollAssets(controller: controller, assetCollections: assetCollections, tblAccount: tableAccount(value: tblAccount)) { assets, fileNames in
             guard let assets,
                   !assets.isEmpty,
                   let fileNames else {
@@ -126,11 +126,9 @@ class NCAutoUpload: NSObject {
 
     // MARK: -
 
-    private func getCameraRollAssets(controller: NCMainTabBarController?, assetCollections: [PHAssetCollection] = [], account: String, completion: @escaping (_ assets: [PHAsset]?, _ fileNames: [String]?) -> Void) {
+    private func getCameraRollAssets(controller: NCMainTabBarController?, assetCollections: [PHAssetCollection] = [], tblAccount: tableAccount, completion: @escaping (_ assets: [PHAsset]?, _ fileNames: [String]?) -> Void) {
         NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { [self] hasPermission in
-            guard hasPermission,
-                  let tblAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account))
-            else {
+            guard hasPermission else {
                 return completion(nil, nil)
             }
             DispatchQueue.global().async {
@@ -148,7 +146,7 @@ class NCAutoUpload: NSObject {
 
                 if tblAccount.autoUploadOnlyNew {
                     datePredicates.append(NSPredicate(format: "creationDate > %@", tblAccount.autoUploadOnlyNewSinceDate as NSDate))
-                } else if let lastDate = self.database.fetchLastAutoUploadedDate(account: account, autoUploadServerUrlBase: autoUploadServerUrlBase) {
+                } else if let lastDate = self.database.fetchLastAutoUploadedDate(account: tblAccount.account, autoUploadServerUrlBase: autoUploadServerUrlBase) {
                     datePredicates.append(NSPredicate(format: "creationDate > %@", lastDate as NSDate))
                 }
 
