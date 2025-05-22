@@ -1150,6 +1150,23 @@ extension NCManageDatabase {
         }
     }
 
+    func getAssetLocalIdentifiersWaitUpload() -> [String]? {
+        return performRealmRead { realm in
+            let results = realm.objects(tableMetadata.self).filter("sessionSelector == %@ AND status == %d AND assetLocalIdentifier != ''", NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.metadataStatusWaitUpload)
+            return results.map { $0.assetLocalIdentifier }
+        }
+    }
+
+    func getAssetLocalIdentifiersWaitUpload(completion: @escaping ([String]) -> Void) {
+        performRealmRead({ realm in
+            return realm.objects(tableMetadata.self)
+                .filter("sessionSelector == %@ AND status == %d AND assetLocalIdentifier != ''", NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.metadataStatusWaitUpload)
+        }, sync: false) { result in
+            let identifiers = Array(result?.compactMap { $0.assetLocalIdentifier } ?? [])
+            completion(identifiers)
+        }
+    }
+
     func getMetadataFromDirectory(account: String, serverUrl: String) -> Bool {
         return performRealmRead { realm in
             guard let directory = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first,

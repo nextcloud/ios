@@ -62,8 +62,6 @@ class NCAutoUpload: NSObject {
 
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload, new \(assets.count) assets found")
 
-        NCNetworking.shared.createFolder(assets: assets, useSubFolder: tblAccount.autoUploadCreateSubfolder, session: session)
-
         for (index, asset) in assets.enumerated() {
             let fileName = fileNames[index]
 
@@ -112,6 +110,7 @@ class NCAutoUpload: NSObject {
 
             metadatas.append(metadata)
         }
+        database.addMetadatas(metadatas, sync: false)
 
         /// Set last date in autoUploadOnlyNewSinceDate
         if !metadatas.isEmpty,
@@ -120,8 +119,15 @@ class NCAutoUpload: NSObject {
             self.database.updateAccountProperty(\.autoUploadOnlyNewSinceDate, value: date, account: session.account)
         }
 
-        self.endForAssetToUpload = true
-        self.database.addMetadatas(metadatas, sync: false)
+        /// Create folders
+        database.getAssetLocalIdentifiersWaitUpload { identifiers in
+            let fetchResult = PHAsset.fetchAssets(withLocalIdentifiers: identifiers, options: nil)
+            let assets: [PHAsset] = (0..<fetchResult.count).compactMap { fetchResult.object(at: $0) }
+            Task {
+                _ = await NCNetworking.shared.createFolder(assets: assets, useSubFolder: tblAccount.autoUploadCreateSubfolder, session: session)
+            }
+
+        }
     }
 
     // MARK: -
