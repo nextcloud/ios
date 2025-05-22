@@ -26,7 +26,6 @@ import SwiftUI
 import RealmSwift
 import NextcloudKit
 import EasyTipView
-import Alamofire
 
 class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCPhotoCellDelegate, NCSectionFirstHeaderDelegate, NCSectionFooterDelegate, NCSectionFirstHeaderEmptyDataDelegate, NCAccountSettingsModelDelegate, NCTransferDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
 
@@ -997,20 +996,5 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             size.height += 30
         }
         return size
-    }
-
-    // MARK: - NextcloudKit
-
-    func readFileOrFolder(serverUrlFileName: String,
-                          depth: String,
-                          showHiddenFiles: Bool = true,
-                          requestBody: Data? = nil,
-                          account: String,
-                          options: NKRequestOptions = NKRequestOptions()) async -> (account: String, files: [NKFile]?, responseData: AFDataResponse<Data>?, error: NKError) {
-        await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: depth, showHiddenFiles: showHiddenFiles, requestBody: requestBody, account: account, options: options) { account, files, responseData, error in
-                continuation.resume(returning: (account: account, files: files, responseData: responseData, error: error))
-            }
-        })
     }
 }

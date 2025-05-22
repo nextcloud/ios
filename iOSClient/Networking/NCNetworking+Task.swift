@@ -24,7 +24,6 @@
 import Foundation
 import UIKit
 import NextcloudKit
-import Alamofire
 import RealmSwift
 
 extension NCNetworking {

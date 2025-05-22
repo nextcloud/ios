@@ -26,7 +26,6 @@ import UIKit
 import NextcloudKit
 import FloatingPanel
 import Queuer
-import Alamofire
 
 class NCActivityCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var imageView: UIImageView!

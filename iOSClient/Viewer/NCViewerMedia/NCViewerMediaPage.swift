@@ -24,7 +24,6 @@
 import UIKit
 import NextcloudKit
 import MediaPlayer
-import Alamofire
 
 enum ScreenMode {
     case full, normal

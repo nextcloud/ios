@@ -24,7 +24,6 @@
 import Foundation
 import UIKit
 import NextcloudKit
-import Alamofire
 
 class NCCreateDocument: NSObject {
     let utility = NCUtility()
@@ -45,7 +44,7 @@ class NCCreateDocument: NSObject {
                 options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
             }
 
-            NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateId, account: account, options: options) { returnedAccount, url, _, error in
+            NextcloudKit.shared.textCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateId, account: account, options: options) { returnedAccount, url, _, error in
                 guard error == .success, let url else {
                     return NCContentPresenter().showError(error: error)
                 }
@@ -100,7 +99,7 @@ class NCCreateDocument: NSObject {
                 options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
             }
 
-            let results = await textGetListOfTemplates(account: account, options: options)
+            let results = await NextcloudKit.shared.textGetListOfTemplates(account: account, options: options)
             if results.error == .success, let resultTemplates = results.templates {
                 for template in resultTemplates {
                     let temp = NKEditorTemplates()
@@ -138,7 +137,7 @@ class NCCreateDocument: NSObject {
         }
 
         if editorId == NCGlobal.shared.editorCollabora {
-            let results = await getTemplatesRichdocuments(typeTemplate: templateId, account: account)
+            let results = await NextcloudKit.shared.getTemplatesRichdocuments(typeTemplate: templateId, account: account)
             if results.error == .success {
                 for template in results.templates! {
                     let temp = NKEditorTemplates()
@@ -159,23 +158,5 @@ class NCCreateDocument: NSObject {
         }
 
         return (templates, selectedTemplate, ext)
-    }
-
-    // MARK: - NextcloudKit async/await
-
-    func textGetListOfTemplates(account: String, options: NKRequestOptions = NKRequestOptions()) async -> (account: String, templates: [NKEditorTemplates]?, responseData: AFDataResponse<Data>?, error: NKError) {
-        await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.NCTextGetListOfTemplates(account: account) { account, templates, responseData, error in
-                continuation.resume(returning: (account: account, templates: templates, responseData: responseData, error: error))
-            }
-        })
-    }
-
-    func getTemplatesRichdocuments(typeTemplate: String, account: String, options: NKRequestOptions = NKRequestOptions()) async -> (account: String, templates: [NKRichdocumentsTemplate]?, responseData: AFDataResponse<Data>?, error: NKError) {
-        await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.getTemplatesRichdocuments(typeTemplate: typeTemplate, account: account, options: options) { account, templates, responseData, error in
-                continuation.resume(returning: (account: account, templates: templates, responseData: responseData, error: error))
-            }
-        })
     }
 }

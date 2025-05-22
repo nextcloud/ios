@@ -25,7 +25,6 @@ import UIKit
 import NextcloudKit
 import Photos
 import RealmSwift
-import Alamofire
 
 class NCNetworkingProcess {
     static let shared = NCNetworkingProcess()
@@ -300,7 +299,7 @@ class NCNetworkingProcess {
                     serverUrlFileNameDestination = serverUrlTo + "/" + fileNameCopy
                 }
 
-                let result = await copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account, options: options)
+                let result = await NextcloudKit.shared.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account, options: options)
 
                 database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
 
@@ -331,7 +330,7 @@ class NCNetworkingProcess {
                 let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
                 let overwrite = (metadata.storeFlag as? NSString)?.boolValue ?? false
 
-                let result = await moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account, options: options)
+                let result = await NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account, options: options)
 
                 database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
 
@@ -370,17 +369,6 @@ class NCNetworkingProcess {
         /// ------------------------ FAVORITE
         ///
         if let metadatasWaitFavorite = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitFavorite), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitFavorite.isEmpty {
-            func setFavorite(fileName: String,
-                             favorite: Bool,
-                             account: String,
-                             options: NKRequestOptions = NKRequestOptions()) async -> NKError {
-                await withUnsafeContinuation({ continuation in
-                    NextcloudKit.shared.setFavorite(fileName: fileName, favorite: favorite, account: account) { _, _, error in
-                        continuation.resume(returning: error)
-                    }
-                })
-            }
-
             for metadata in metadatasWaitFavorite {
                 /// Check Server Error
                 guard networking.noServerErrorAccount(metadata.account) else {
@@ -389,7 +377,7 @@ class NCNetworkingProcess {
 
                 let session = NCSession.Session(account: metadata.account, urlBase: metadata.urlBase, user: metadata.user, userId: metadata.userId)
                 let fileName = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
-                let error = await setFavorite(fileName: fileName, favorite: metadata.favorite, account: metadata.account, options: options)
+                let error = await NextcloudKit.shared.setFavorite(fileName: fileName, favorite: metadata.favorite, account: metadata.account, options: options)
 
                 if error == .success {
                     database.setMetadataFavorite(ocId: metadata.ocId, favorite: nil, saveOldFavorite: nil, status: global.metadataStatusNormal)
@@ -413,7 +401,7 @@ class NCNetworkingProcess {
 
                 let serverUrlFileNameSource = metadata.serveUrlFileName
                 let serverUrlFileNameDestination = metadata.serverUrl + "/" + metadata.fileName
-                let result = await moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: false, account: metadata.account, options: options)
+                let result = await NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: false, account: metadata.account, options: options)
 
                 if result.error == .success {
                     database.setMetadataServeUrlFileNameStatusNormal(ocId: metadata.ocId)
@@ -437,7 +425,7 @@ class NCNetworkingProcess {
                 }
 
                 let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                let result = await deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: metadata.account, options: options)
+                let result = await NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: metadata.account, options: options)
 
                 if result.error == .success || result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
                     do {
@@ -502,41 +490,5 @@ class NCNetworkingProcess {
         }
         self.database.addMetadatas(metadatasForUpload)
         completion(metadatasForUpload.count)
-    }
-
-    // MARK: - NextcloudKit
-
-    func copyFileOrFolder(serverUrlFileNameSource: String,
-                          serverUrlFileNameDestination: String,
-                          overwrite: Bool,
-                          account: String,
-                          options: NKRequestOptions = NKRequestOptions()) async -> (account: String, responseData: AFDataResponse<Data?>?, error: NKError) {
-        await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: account, options: options) { account, responseData, error in
-                continuation.resume(returning: (account: account, responseData: responseData, error: error))
-            }
-        })
-    }
-
-    func moveFileOrFolder(serverUrlFileNameSource: String,
-                          serverUrlFileNameDestination: String,
-                          overwrite: Bool,
-                          account: String,
-                          options: NKRequestOptions = NKRequestOptions()) async -> (account: String, responseData: AFDataResponse<Data?>?, error: NKError) {
-        await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: account, options: options) { account, responseData, error in
-                continuation.resume(returning: (account: account, responseData: responseData, error: error))
-            }
-        })
-    }
-
-    func deleteFileOrFolder(serverUrlFileName: String,
-                            account: String,
-                            options: NKRequestOptions = NKRequestOptions()) async -> (account: String, responseData: AFDataResponse<Data?>?, error: NKError) {
-        await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: account, options: options) { account, responseData, error in
-                continuation.resume(returning: (account: account, responseData: responseData, error: error))
-            }
-        })
     }
 }

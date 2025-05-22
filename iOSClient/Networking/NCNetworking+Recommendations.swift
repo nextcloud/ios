@@ -4,7 +4,6 @@
 
 import Foundation
 import UIKit
-import Alamofire
 import NextcloudKit
 
 extension NCNetworking {
@@ -14,7 +13,7 @@ extension NCNetworking {
         let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: session.account)
 
-        let results = await getRecommendedFiles(account: session.account, options: options)
+        let results = await NextcloudKit.shared.getRecommendedFiles(account: session.account, options: options)
         if results.error == .success,
            let recommendations = results.recommendations {
             for recommendation in recommendations {
@@ -26,7 +25,7 @@ extension NCNetworking {
                     serverUrlFileName = homeServer + recommendation.directory + "/" + recommendation.name
                 }
 
-                let results = await readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, account: session.account)
+                let results = await NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, account: session.account)
 
                 if results.error == .success, let file = results.files?.first {
                     let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
@@ -44,29 +43,5 @@ extension NCNetworking {
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadHeader, userInfo: ["account": session.account])
         }
-    }
-
-    // MARK: - NextcloudKit
-
-    func readFileOrFolder(serverUrlFileName: String,
-                          depth: String,
-                          showHiddenFiles: Bool = true,
-                          requestBody: Data? = nil,
-                          account: String,
-                          options: NKRequestOptions = NKRequestOptions()) async -> (account: String, files: [NKFile]?, responseData: AFDataResponse<Data>?, error: NKError) {
-        await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: depth, showHiddenFiles: showHiddenFiles, requestBody: requestBody, account: account, options: options) { account, files, responseData, error in
-                continuation.resume(returning: (account: account, files: files, responseData: responseData, error: error))
-            }
-        })
-    }
-
-    func getRecommendedFiles(account: String,
-                             options: NKRequestOptions = NKRequestOptions()) async -> (account: String, recommendations: [NKRecommendation]?, responseData: AFDataResponse<Data>?, error: NKError) {
-        await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.getRecommendedFiles(account: account, options: options) { account, recommendations, responseData, error in
-            continuation.resume(returning: (account: account, recommendations: recommendations, responseData: responseData, error: error))
-            }
-        })
     }
 }

@@ -23,7 +23,6 @@
 
 import UIKit
 import NextcloudKit
-import Alamofire
 import Queuer
 import Photos
 
@@ -196,34 +195,12 @@ extension NCNetworking {
         return resultFileName
     }
 
-    // MARK: - Create Folder
-
-    func createFolder(serverUrlFileName: String,
-                      account: String,
-                      options: NKRequestOptions = NKRequestOptions()) async -> (account: String, ocId: String?, date: Date?, responseData: AFDataResponse<Data?>?, error: NKError) {
-        await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName, account: account, options: options) { account, ocId, date, responseData, error in
-                continuation.resume(returning: (account: account, ocId: ocId, date: date, responseData: responseData, error: error))
-            }
-        })
-    }
-
     func createFolder(fileName: String,
                       serverUrl: String,
                       overwrite: Bool,
                       sceneIdentifier: String?,
                       session: NCSession.Session,
                       options: NKRequestOptions = NKRequestOptions()) async -> NKError {
-        func createFolder(serverUrlFileName: String,
-                          account: String,
-                          options: NKRequestOptions = NKRequestOptions()) async {
-            await withUnsafeContinuation({ continuation in
-                NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName, account: account, options: options) { account, ocId, date, responseData, error in
-                    continuation.resume()
-                }
-            })
-        }
-
         var fileNameFolder = utility.removeForbiddenCharacters(fileName.trimmingCharacters(in: .whitespacesAndNewlines))
         if !overwrite {
             fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: session.account)
@@ -267,7 +244,7 @@ extension NCNetworking {
         }
 
         /* create folder */
-        await createFolder(serverUrlFileName: fileNameFolderUrl, account: session.account, options: options)
+        _ = await NextcloudKit.shared.createFolder(serverUrlFileName: fileNameFolderUrl, account: session.account, options: options)
         result = await readFile(serverUrlFileName: fileNameFolderUrl, account: session.account)
 
         if result.error == .success,
@@ -349,7 +326,7 @@ extension NCNetworking {
                       session: NCSession.Session) async -> (Bool) {
         let serverUrlFileName = self.database.getAccountAutoUploadDirectory(session: session) + "/" + self.database.getAccountAutoUploadFileName(account: session.account)
 
-        var result = await createFolder(serverUrlFileName: serverUrlFileName, account: session.account)
+        var result = await NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName, account: session.account)
 
         if (result.error == .success || result.error.errorCode == 405), useSubFolder {
             let autoUploadServerUrlBase = self.database.getAccountAutoUploadServerUrlBase(session: session)
@@ -361,19 +338,19 @@ extension NCNetworking {
                 let year = componentsDate[0]
                 let serverUrlYear = autoUploadServerUrlBase
 
-                result = await createFolder(serverUrlFileName: serverUrlYear + "/" + String(year), account: session.account)
+                result = await NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlYear + "/" + String(year), account: session.account)
 
                 if (result.error == .success || result.error.errorCode == 405), autoUploadSubfolderGranularity >= self.global.subfolderGranularityMonthly {
                     let month = componentsDate[1]
                     let serverUrlMonth = autoUploadServerUrlBase + "/" + year
 
-                    result = await createFolder(serverUrlFileName: serverUrlMonth + "/" + String(month), account: session.account)
+                    result = await NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlMonth + "/" + String(month), account: session.account)
 
                     if (result.error == .success || result.error.errorCode == 405), autoUploadSubfolderGranularity == self.global.subfolderGranularityDaily {
                         let day = componentsDate[2]
                         let serverUrlDay = autoUploadServerUrlBase + "/" + year + "/" + month
 
-                        result = await createFolder(serverUrlFileName: serverUrlDay + "/" + String(day), account: session.account)
+                        result = await NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlDay + "/" + String(day), account: session.account)
                     }
                 }
 

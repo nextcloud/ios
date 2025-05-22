@@ -53,7 +53,6 @@ class NCOffline: NCCollectionViewCommon {
 
     override func reloadDataSource() {
         var ocIds: [String] = []
-        var metadatas: [tableMetadata] = []
 
         if self.serverUrl.isEmpty {
             if let directories = self.database.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", session.account), sorted: "serverUrl", ascending: true) {

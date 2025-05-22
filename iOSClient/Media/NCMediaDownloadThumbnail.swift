@@ -24,7 +24,6 @@
 import UIKit
 import NextcloudKit
 import Queuer
-import Alamofire
 
 class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
     var metadata: NCMediaDataSource.Metadata

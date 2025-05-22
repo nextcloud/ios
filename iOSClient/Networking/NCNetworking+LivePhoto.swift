@@ -23,7 +23,6 @@
 
 import UIKit
 import NextcloudKit
-import Alamofire
 import Queuer
 
 extension NCNetworking {
@@ -61,7 +60,7 @@ extension NCNetworking {
         if livePhoto {
             livePhotoFileId = metadataLast.fileId
         }
-        let resultsMetadataFirst = await setLivephoto(serverUrlfileNamePath: serverUrlfileNamePathFirst, livePhotoFile: livePhotoFileId, account: metadataFirst.account)
+        let resultsMetadataFirst = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePathFirst, livePhotoFile: livePhotoFileId, account: metadataFirst.account)
         if resultsMetadataFirst.error == .success {
             database.setMetadataLivePhotoByServer(account: metadataFirst.account, ocId: metadataFirst.ocId, livePhotoFile: livePhotoFileId, sync: false)
         }
@@ -71,7 +70,7 @@ extension NCNetworking {
         if livePhoto {
             livePhotoFileId = metadataFirst.fileId
         }
-        let resultsMetadataLast = await setLivephoto(serverUrlfileNamePath: serverUrlfileNamePathLast, livePhotoFile: livePhotoFileId, account: metadataLast.account)
+        let resultsMetadataLast = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePathLast, livePhotoFile: livePhotoFileId, account: metadataLast.account)
         if resultsMetadataLast.error == .success {
             database.setMetadataLivePhotoByServer(account: metadataLast.account, ocId: metadataLast.ocId, livePhotoFile: livePhotoFileId, sync: false)
         }
@@ -86,18 +85,5 @@ extension NCNetworking {
         } else {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Upload set LivePhoto with error \(resultsMetadataFirst.error.errorCode) - \(resultsMetadataLast.error.errorCode)")
         }
-    }
-
-    // MARK: - NextcloudKit
-
-    func setLivephoto(serverUrlfileNamePath: String,
-                      livePhotoFile: String,
-                      account: String,
-                      options: NKRequestOptions = NKRequestOptions()) async -> (account: String, responseData: AFDataResponse<Data?>?, error: NKError) {
-        await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile, account: account, options: options) { account, responseData, error in
-                continuation.resume(returning: (account: account, responseData: responseData, error: error))
-            }
-        })
     }
 }

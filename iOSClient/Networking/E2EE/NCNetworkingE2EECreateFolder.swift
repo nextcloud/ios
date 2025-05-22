@@ -22,7 +22,6 @@
 import UIKit
 import NextcloudKit
 import CFNetwork
-import Alamofire
 import Foundation
 
 class NCNetworkingE2EECreateFolder: NSObject {
@@ -123,7 +122,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
         // CREATE FOLDER
         //
-        let resultsCreateFolder = await createFolder(serverUrlFileName: serverUrlFileName, account: session.account, options: NKRequestOptions(customHeader: ["e2e-token": e2eToken]))
+        let resultsCreateFolder = await NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName, account: session.account, options: NKRequestOptions(customHeader: ["e2e-token": e2eToken]))
         guard resultsCreateFolder.error == .success, let ocId = resultsCreateFolder.ocId, let fileId = utility.ocIdToFileId(ocId: ocId) else {
             await networkingE2EE.unlock(account: session.account, serverUrl: serverUrl)
             return resultsCreateFolder.error
@@ -131,7 +130,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
         // SET FOLDER AS E2EE
         //
-        let resultsMarkE2EEFolder = await markE2EEFolder(fileId: fileId, delete: false, account: session.account, options: NCNetworkingE2EE().getOptions(account: session.account))
+        let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolder(fileId: fileId, delete: false, account: session.account, options: NCNetworkingE2EE().getOptions(account: session.account))
         guard resultsMarkE2EEFolder.error == .success  else {
             await networkingE2EE.unlock(account: session.account, serverUrl: serverUrl)
             return resultsMarkE2EEFolder.error
@@ -143,7 +142,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
         // WRITE DB (DIRECTORY - METADATA)
         //
-        let resultsReadFileOrFolder = await readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", account: session.account)
+        let resultsReadFileOrFolder = await NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", account: session.account)
         guard resultsReadFileOrFolder.error == .success, let file = resultsReadFileOrFolder.files?.first else {
             await networkingE2EE.unlock(account: session.account, serverUrl: serverUrl)
             return resultsReadFileOrFolder.error
@@ -159,41 +158,5 @@ class NCNetworkingE2EECreateFolder: NSObject {
         }
 
         return NKError()
-    }
-
-    // MARK: - NextcloudKit
-
-    func createFolder(serverUrlFileName: String,
-                      account: String,
-                      options: NKRequestOptions = NKRequestOptions()) async -> (account: String, ocId: String?, date: Date?, responseData: AFDataResponse<Data?>?, error: NKError) {
-        await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName, account: account, options: options) { account, ocId, date, responseData, error in
-                continuation.resume(returning: (account: account, ocId: ocId, date: date, responseData: responseData, error: error))
-            }
-        })
-    }
-
-    func readFileOrFolder(serverUrlFileName: String,
-                          depth: String,
-                          showHiddenFiles: Bool = true,
-                          requestBody: Data? = nil,
-                          account: String,
-                          options: NKRequestOptions = NKRequestOptions()) async -> (account: String, files: [NKFile]?, responseData: AFDataResponse<Data>?, error: NKError) {
-        await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: depth, showHiddenFiles: showHiddenFiles, requestBody: requestBody, account: account, options: options) { account, files, responseData, error in
-                continuation.resume(returning: (account: account, files: files, responseData: responseData, error: error))
-            }
-        })
-    }
-
-    func markE2EEFolder(fileId: String,
-                        delete: Bool,
-                        account: String,
-                        options: NKRequestOptions = NKRequestOptions()) async -> (account: String, responseData: AFDataResponse<Data>?, error: NKError) {
-        await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.markE2EEFolder(fileId: fileId, delete: delete, account: account, options: options) { account, responseData, error in
-                continuation.resume(returning: (account: account, responseData: responseData, error: error))
-            }
-        })
     }
 }
