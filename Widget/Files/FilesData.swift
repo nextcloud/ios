@@ -25,6 +25,7 @@ import UIKit
 import WidgetKit
 import Intents
 import NextcloudKit
+import Alamofire
 
 struct FilesDataEntry: TimelineEntry {
     let date: Date
@@ -218,9 +219,9 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 // IMAGE
                 image = utility.getImage(ocId: file.ocId, etag: file.etag, ext: NCGlobal.shared.previewExt512)
                 if image == nil, file.hasPreview {
-                    let result = await NCNetworking.shared.downloadPreview(fileId: file.fileId,
-                                                                           account: activeTableAccount.account,
-                                                                           options: options)
+                    let result = await downloadPreview(fileId: file.fileId,
+                                                       account: activeTableAccount.account,
+                                                       options: options)
                     if result.error == .success, let data = result.responseData?.data {
                         utility.createImageFileFrom(data: data, ocId: file.ocId, etag: file.etag)
                         image = utility.getImage(ocId: file.ocId, etag: file.etag, ext: NCGlobal.shared.previewExt256)
@@ -249,5 +250,18 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 completion(FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, isEmpty: datas.isEmpty, userId: activeTableAccount.userId, url: activeTableAccount.urlBase, account: activeTableAccount.account, tile: title, footerImage: "checkmark.icloud", footerText: footerText))
             }
         }
+    }
+
+    // MARK: - NextcloudKit
+
+    func downloadPreview(fileId: String,
+                         etag: String? = nil,
+                         account: String,
+                         options: NKRequestOptions = NKRequestOptions()) async -> (account: String, width: Int, height: Int, etag: String?, responseData: AFDataResponse<Data?>?, error: NKError) {
+        await withUnsafeContinuation({ continuation in
+            NextcloudKit.shared.downloadPreview(fileId: fileId, etag: etag, account: account, options: options) { account, width, height, etag, responseData, error in
+                continuation.resume(returning: (account: account, width: width, height: height, etag: etag, responseData: responseData, error: error))
+            }
+        })
     }
 }

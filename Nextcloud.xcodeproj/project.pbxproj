@@ -275,10 +275,6 @@
 		F711D63128F44801003F43C8 /* IntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C9739428F17131002C43E2 /* IntentHandler.swift */; };
 		F7132C722D085AD200B42D6A /* NCTermOfServiceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7132C6B2D085AD200B42D6A /* NCTermOfServiceModel.swift */; };
 		F7132C732D085AD200B42D6A /* NCTermOfServiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7132C6C2D085AD200B42D6A /* NCTermOfServiceView.swift */; };
-		F713FBE52C31645200F10760 /* NCNetworking+AsyncAwait.swift in Sources */ = {isa = PBXBuildFile; fileRef = F713FBE42C31645200F10760 /* NCNetworking+AsyncAwait.swift */; };
-		F713FBE62C31646400F10760 /* NCNetworking+AsyncAwait.swift in Sources */ = {isa = PBXBuildFile; fileRef = F713FBE42C31645200F10760 /* NCNetworking+AsyncAwait.swift */; };
-		F713FBE72C31646500F10760 /* NCNetworking+AsyncAwait.swift in Sources */ = {isa = PBXBuildFile; fileRef = F713FBE42C31645200F10760 /* NCNetworking+AsyncAwait.swift */; };
-		F713FBE82C31646600F10760 /* NCNetworking+AsyncAwait.swift in Sources */ = {isa = PBXBuildFile; fileRef = F713FBE42C31645200F10760 /* NCNetworking+AsyncAwait.swift */; };
 		F713FF002472764100214AF6 /* UIImage+animatedGIF.m in Sources */ = {isa = PBXBuildFile; fileRef = F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */; };
 		F71433E52C778FFA00E20B5A /* NotificationCenter+MainThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70460512499061800BB98A7 /* NotificationCenter+MainThread.swift */; };
 		F71433E62C778FFB00E20B5A /* NotificationCenter+MainThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70460512499061800BB98A7 /* NotificationCenter+MainThread.swift */; };
@@ -1403,7 +1399,6 @@
 		F711A4DB2AF92CAD00095DD8 /* NCUtility+Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCUtility+Date.swift"; sourceTree = "<group>"; };
 		F7132C6B2D085AD200B42D6A /* NCTermOfServiceModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTermOfServiceModel.swift; sourceTree = "<group>"; };
 		F7132C6C2D085AD200B42D6A /* NCTermOfServiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTermOfServiceView.swift; sourceTree = "<group>"; };
-		F713FBE42C31645200F10760 /* NCNetworking+AsyncAwait.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCNetworking+AsyncAwait.swift"; sourceTree = "<group>"; };
 		F713FEFE2472764000214AF6 /* UIImage+animatedGIF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+animatedGIF.h"; sourceTree = "<group>"; };
 		F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+animatedGIF.m"; sourceTree = "<group>"; };
 		F714560F296433C80038D028 /* NCDocumentCamera.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCDocumentCamera.swift; sourceTree = "<group>"; };
@@ -2475,7 +2470,6 @@
 				F75A9EE523796C6F0044CFCE /* NCNetworking.swift */,
 				F7A3DB8F2DDE238C008F7EC8 /* NCTransferDebouncer.swift */,
 				F7411C532D7B26C600F57358 /* NCNetworking+ServerError.swift */,
-				F713FBE42C31645200F10760 /* NCNetworking+AsyncAwait.swift */,
 				F7327E1F2B73A42F00A462C7 /* NCNetworking+Download.swift */,
 				F7327E342B73AEDE00A462C7 /* NCNetworking+LivePhoto.swift */,
 				F7F3E58A2D3BB65000A32B14 /* NCNetworking+Recommendations.swift */,
@@ -4344,7 +4338,6 @@
 				F7C687EC2D22BDE5004757BC /* NCManageDatabase+RecommendedFiles.swift in Sources */,
 				F33918C72C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift in Sources */,
 				F78A10C229322E8A008499B8 /* NCManageDatabase+Directory.swift in Sources */,
-				F713FBE72C31646500F10760 /* NCNetworking+AsyncAwait.swift in Sources */,
 				F79FFB272A97C24A0055EEA4 /* NCNetworkingE2EEMarkFolder.swift in Sources */,
 				F7D68FCE28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift in Sources */,
 				F73EF7B22B0224350087E6E9 /* NCManageDatabase+DirectEditing.swift in Sources */,
@@ -4382,7 +4375,6 @@
 				F359D8682A7D03420023F405 /* NCUtility+Exif.swift in Sources */,
 				F7346E1628B0EF5C006CE2D2 /* Widget.swift in Sources */,
 				F78302F828B4C3E100B84583 /* NCManageDatabase+Activity.swift in Sources */,
-				F713FBE62C31646400F10760 /* NCNetworking+AsyncAwait.swift in Sources */,
 				F711A4E92AF9327600095DD8 /* UIImage+animatedGIF.m in Sources */,
 				F73EF7D02B0225BA0087E6E9 /* NCManageDatabase+Tag.swift in Sources */,
 				F783030228B4C4B800B84583 /* NCUtility.swift in Sources */,
@@ -4465,7 +4457,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F713FBE82C31646600F10760 /* NCNetworking+AsyncAwait.swift in Sources */,
 				F36E64FC2B9733F20085ABB5 /* UIView+Extension.swift in Sources */,
 				F771E3F720E239B500AFB62D /* FileProviderExtension+Actions.swift in Sources */,
 				F7245926289BB59300474787 /* ThreadSafeDictionary.swift in Sources */,
@@ -4609,7 +4600,6 @@
 				F7B769A82B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift in Sources */,
 				F79EDAA326B004980007D134 /* NCPlayerToolBar.swift in Sources */,
 				F7B934FE2BDCFE1E002B2FC9 /* NCDragDrop.swift in Sources */,
-				F713FBE52C31645200F10760 /* NCNetworking+AsyncAwait.swift in Sources */,
 				F77444F8222816D5000D5EB0 /* NCPickerViewController.swift in Sources */,
 				F77BB74A2899857B0090FC19 /* UINavigationController+Extension.swift in Sources */,
 				F7327E282B73A53400A462C7 /* NCNetworking+Upload.swift in Sources */,

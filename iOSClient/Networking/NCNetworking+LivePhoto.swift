@@ -87,4 +87,17 @@ extension NCNetworking {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Upload set LivePhoto with error \(resultsMetadataFirst.error.errorCode) - \(resultsMetadataLast.error.errorCode)")
         }
     }
+
+    // MARK: - NextcloudKit
+
+    func setLivephoto(serverUrlfileNamePath: String,
+                      livePhotoFile: String,
+                      account: String,
+                      options: NKRequestOptions = NKRequestOptions()) async -> (account: String, responseData: AFDataResponse<Data?>?, error: NKError) {
+        await withUnsafeContinuation({ continuation in
+            NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile, account: account, options: options) { account, responseData, error in
+                continuation.resume(returning: (account: account, responseData: responseData, error: error))
+            }
+        })
+    }
 }

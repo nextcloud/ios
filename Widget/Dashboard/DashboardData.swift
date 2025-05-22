@@ -27,6 +27,7 @@ import Intents
 import NextcloudKit
 import RealmSwift
 import SVGKit
+import Alamofire
 
 struct DashboardDataEntry: TimelineEntry {
     let date: Date
@@ -223,7 +224,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                                     if FileManager().fileExists(atPath: fileNamePath), let image = UIImage(contentsOfFile: fileNamePath) {
                                         icon = image
                                     } else {
-                                        let (_, _, error) = await NCNetworking.shared.downloadPreview(url: url, account: activeTableAccount.account)
+                                        let (_, _, error) = await downloadPreview(url: url, account: activeTableAccount.account)
                                         if error == .success,
                                            let data = responseData?.data,
                                            let image = convertDataToImage(data: data, size: NCGlobal.shared.size256, fileNameToWrite: fileName) {
@@ -256,5 +257,17 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                 completion(DashboardDataEntry(date: Date(), datas: datas, dashboard: tableDashboard, buttons: buttons, isPlaceholder: false, isEmpty: datas.isEmpty, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: footerText, account: account))
             }
         }
+    }
+
+    // MARK: - NextcloudKit
+
+    func downloadPreview(url: URL,
+                         account: String,
+                         options: NKRequestOptions = NKRequestOptions()) async -> (account: String, responseData: AFDataResponse<Data?>?, error: NKError) {
+        await withUnsafeContinuation({ continuation in
+            NextcloudKit.shared.downloadPreview(url: url, account: account, options: options) { account, responseData, error in
+                continuation.resume(returning: (account: account, responseData: responseData, error: error))
+            }
+        })
     }
 }

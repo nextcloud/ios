@@ -198,12 +198,32 @@ extension NCNetworking {
 
     // MARK: - Create Folder
 
+    func createFolder(serverUrlFileName: String,
+                      account: String,
+                      options: NKRequestOptions = NKRequestOptions()) async -> (account: String, ocId: String?, date: Date?, responseData: AFDataResponse<Data?>?, error: NKError) {
+        await withUnsafeContinuation({ continuation in
+            NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName, account: account, options: options) { account, ocId, date, responseData, error in
+                continuation.resume(returning: (account: account, ocId: ocId, date: date, responseData: responseData, error: error))
+            }
+        })
+    }
+
     func createFolder(fileName: String,
                       serverUrl: String,
                       overwrite: Bool,
                       sceneIdentifier: String?,
                       session: NCSession.Session,
                       options: NKRequestOptions = NKRequestOptions()) async -> NKError {
+        func createFolder(serverUrlFileName: String,
+                          account: String,
+                          options: NKRequestOptions = NKRequestOptions()) async {
+            await withUnsafeContinuation({ continuation in
+                NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName, account: account, options: options) { account, ocId, date, responseData, error in
+                    continuation.resume()
+                }
+            })
+        }
+
         var fileNameFolder = utility.removeForbiddenCharacters(fileName.trimmingCharacters(in: .whitespacesAndNewlines))
         if !overwrite {
             fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: session.account)

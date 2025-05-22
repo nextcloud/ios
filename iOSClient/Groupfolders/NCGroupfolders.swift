@@ -24,6 +24,7 @@
 import UIKit
 import NextcloudKit
 import RealmSwift
+import Alamofire
 
 class NCGroupfolders: NCCollectionViewCommon {
     required init?(coder aDecoder: NSCoder) {
@@ -83,7 +84,7 @@ class NCGroupfolders: NCCollectionViewCommon {
                     for groupfolder in groupfolders {
                         let mountPoint = groupfolder.mountPoint.hasPrefix("/") ? groupfolder.mountPoint : "/" + groupfolder.mountPoint
                         let serverUrlFileName = homeServerUrl + mountPoint
-                        let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, account: account)
+                        let results = await self.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, account: account)
 
                         if results.error == .success, let file = results.files?.first {
                             let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)

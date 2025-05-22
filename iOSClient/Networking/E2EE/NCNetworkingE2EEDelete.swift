@@ -22,10 +22,23 @@
 import Foundation
 import UIKit
 import NextcloudKit
+import Alamofire
 
 class NCNetworkingE2EEDelete: NSObject {
     let database = NCManageDatabase.shared
     let networkingE2EE = NCNetworkingE2EE()
+
+    // MARK: - NextcloudKit
+
+    func deleteFileOrFolder(serverUrlFileName: String,
+                            account: String,
+                            options: NKRequestOptions = NKRequestOptions()) async -> (account: String, responseData: AFDataResponse<Data?>?, error: NKError) {
+        await withUnsafeContinuation({ continuation in
+            NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: account, options: options) { account, responseData, error in
+                continuation.resume(returning: (account: account, responseData: responseData, error: error))
+            }
+        })
+    }
 
     func delete(metadata: tableMetadata) async -> NKError {
         let session = NCSession.shared.getSession(account: metadata.account)
@@ -48,7 +61,7 @@ class NCNetworkingE2EEDelete: NSObject {
         //
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let options = NKRequestOptions(customHeader: ["e2e-token": e2eToken])
-        let result = await NCNetworking.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: metadata.account, options: options)
+        let result = await deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: metadata.account, options: options)
         if result.error == .success || result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
             do {
                 try FileManager.default.removeItem(atPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId))

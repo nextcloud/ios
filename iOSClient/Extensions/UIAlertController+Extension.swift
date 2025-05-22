@@ -24,6 +24,7 @@
 import Foundation
 import UIKit
 import NextcloudKit
+import Alamofire
 
 extension UIAlertController {
     /// Creates a alert controller with a textfield, asking to create a new folder
@@ -37,6 +38,16 @@ extension UIAlertController {
                              markE2ee: Bool = false,
                              sceneIdentifier: String? = nil,
                              completion: ((_ error: NKError) -> Void)? = nil) -> UIAlertController {
+        func createFolder(serverUrlFileName: String,
+                          account: String,
+                          options: NKRequestOptions = NKRequestOptions()) async -> (account: String, ocId: String?, date: Date?, responseData: AFDataResponse<Data?>?, error: NKError) {
+            await withUnsafeContinuation({ continuation in
+                NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName, account: account, options: options) { account, ocId, date, responseData, error in
+                    continuation.resume(returning: (account: account, ocId: ocId, date: date, responseData: responseData, error: error))
+                }
+            })
+        }
+
         let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message: nil, preferredStyle: .alert)
         let isDirectoryEncrypted = NCUtilityFileSystem().isDirectoryE2EE(session: session, serverUrl: serverUrl)
 
@@ -47,7 +58,7 @@ extension UIAlertController {
                     return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_offline_not_allowed_"))
                 }
                 Task {
-                    let createFolderResults = await NCNetworking.shared.createFolder(serverUrlFileName: serverUrl + "/" + fileNameFolder, account: session.account)
+                    let createFolderResults = await createFolder(serverUrlFileName: serverUrl + "/" + fileNameFolder, account: session.account)
                     if createFolderResults.error == .success {
                         let error = await NCNetworkingE2EEMarkFolder().markFolderE2ee(account: session.account, fileName: fileNameFolder, serverUrl: serverUrl, userId: session.userId)
                         if error != .success {

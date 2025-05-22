@@ -22,18 +22,46 @@
 import Foundation
 import UIKit
 import NextcloudKit
+import Alamofire
 
 class NCNetworkingE2EEMarkFolder: NSObject {
     let database = NCManageDatabase.shared
 
+    // MARK: - NextcloudKit
+
+    func readFileOrFolder(serverUrlFileName: String,
+                          depth: String,
+                          showHiddenFiles: Bool = true,
+                          requestBody: Data? = nil,
+                          account: String,
+                          options: NKRequestOptions = NKRequestOptions()) async -> (account: String, files: [NKFile]?, responseData: AFDataResponse<Data>?, error: NKError) {
+        await withUnsafeContinuation({ continuation in
+            NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: depth, showHiddenFiles: showHiddenFiles, requestBody: requestBody, account: account, options: options) { account, files, responseData, error in
+                continuation.resume(returning: (account: account, files: files, responseData: responseData, error: error))
+            }
+        })
+    }
+
+    func markE2EEFolder(fileId: String,
+                        delete: Bool,
+                        account: String,
+                        options: NKRequestOptions = NKRequestOptions()) async -> (account: String, responseData: AFDataResponse<Data>?, error: NKError) {
+        await withUnsafeContinuation({ continuation in
+            NextcloudKit.shared.markE2EEFolder(fileId: fileId, delete: delete, account: account, options: options) { account, responseData, error in
+                continuation.resume(returning: (account: account, responseData: responseData, error: error))
+            }
+        })
+    }
+
+
     func markFolderE2ee(account: String, fileName: String, serverUrl: String, userId: String) async -> NKError {
         let serverUrlFileName = serverUrl + "/" + fileName
-        let resultsReadFileOrFolder = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", account: account)
+        let resultsReadFileOrFolder = await readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", account: account)
         guard resultsReadFileOrFolder.error == .success,
               var file = resultsReadFileOrFolder.files?.first else {
             return resultsReadFileOrFolder.error
         }
-        let resultsMarkE2EEFolder = await NCNetworking.shared.markE2EEFolder(fileId: file.fileId, delete: false, account: account, options: NCNetworkingE2EE().getOptions(account: account))
+        let resultsMarkE2EEFolder = await markE2EEFolder(fileId: file.fileId, delete: false, account: account, options: NCNetworkingE2EE().getOptions(account: account))
         guard resultsMarkE2EEFolder.error == .success else { return resultsMarkE2EEFolder.error }
 
         file.e2eEncrypted = true
