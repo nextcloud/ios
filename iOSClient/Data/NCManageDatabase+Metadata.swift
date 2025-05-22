@@ -1272,35 +1272,37 @@ extension NCManageDatabase {
 
     func createMetadataFolder(assets: [PHAsset],
                               useSubFolder: Bool,
-                              session: NCSession.Session) {
+                              session: NCSession.Session, completion: @escaping () -> Void = {}) {
         var foldersCreated: [String] = []
 
         func createMetadata(fileName: String, serverUrl: String) {
-            var metadata = tableMetadata()
             guard !foldersCreated.contains(serverUrl + "/" + fileName) else {
                 return
             }
+            let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", session.account, serverUrl, fileName)
 
-            if let result = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", session.account, serverUrl, fileName)) {
-                metadata = result
-            } else {
-                metadata = NCManageDatabase.shared.createMetadata(fileName: fileName,
-                                                                  fileNameView: fileName,
-                                                                  ocId: NSUUID().uuidString,
-                                                                  serverUrl: serverUrl,
-                                                                  url: "",
-                                                                  contentType: "httpd/unix-directory",
-                                                                  directory: true,
-                                                                  session: session,
-                                                                  sceneIdentifier: nil)
+            NCManageDatabase.shared.getMetadataAsync(predicate: predicate) { result in
+                var metadata = tableMetadata()
+                if let result {
+                    metadata = result
+                } else {
+                    metadata = NCManageDatabase.shared.createMetadata(fileName: fileName,
+                                                                      fileNameView: fileName,
+                                                                      ocId: NSUUID().uuidString,
+                                                                      serverUrl: serverUrl,
+                                                                      url: "",
+                                                                      contentType: "httpd/unix-directory",
+                                                                      directory: true,
+                                                                      session: session,
+                                                                      sceneIdentifier: nil)
+                }
+                metadata.status = NCGlobal.shared.metadataStatusWaitCreateFolder
+                metadata.sessionDate = Date()
+
+                NCManageDatabase.shared.addMetadata(metadata, sync: false)
+
+                foldersCreated.append(serverUrl + "/" + fileName)
             }
-
-            metadata.status = NCGlobal.shared.metadataStatusWaitCreateFolder
-            metadata.sessionDate = Date()
-
-            NCManageDatabase.shared.addMetadata(metadata)
-
-            foldersCreated.append(serverUrl + "/" + fileName)
         }
 
         createMetadata(fileName: getAccountAutoUploadFileName(account: session.account), serverUrl: getAccountAutoUploadDirectory(session: session))
@@ -1331,6 +1333,9 @@ extension NCManageDatabase {
                     }
                 }
             }
+            completion()
+        } else {
+            completion()
         }
     }
 }

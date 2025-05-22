@@ -165,9 +165,12 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
 
         if useAutoUploadFolder {
             let assets = self.assets.compactMap { $0.phAsset }
-            self.database.createMetadataFolder(assets: assets, useSubFolder: self.useAutoUploadSubFolder, session: self.session)
-            self.showHUD = false
-            createProcessUploads()
+            self.database.createMetadataFolder(assets: assets, useSubFolder: self.useAutoUploadSubFolder, session: self.session) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    self.showHUD = false
+                    createProcessUploads()
+                }
+            }
         } else {
             createProcessUploads()
         }
