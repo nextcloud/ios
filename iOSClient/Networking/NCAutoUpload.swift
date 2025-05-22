@@ -14,8 +14,6 @@ class NCAutoUpload: NSObject {
     private let database = NCManageDatabase.shared
     private var endForAssetToUpload: Bool = false
 
-    // MARK: -
-
     func initAutoUpload(controller: NCMainTabBarController?, account: String, completion: @escaping (_ num: Int) -> Void) {
         guard NCNetworking.shared.isOnline,
               let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
