@@ -413,7 +413,12 @@ extension NCNetworking {
 #endif
         } else {
             deleteLocalFile(metadata: metadata)
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl, "clearDataSource": true])
+
+            self.notifyAllDelegates { delegate in
+                delegate.transferChange(status: global.networkingStatusReloadDataSource,
+                                        metadata: metadata,
+                                        error: .success)
+            }
         }
 
         return .success

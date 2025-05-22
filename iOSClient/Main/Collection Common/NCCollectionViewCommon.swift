@@ -395,14 +395,21 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         DispatchQueue.main.async {
             switch status {
-            /// UPLOADED, UPLOADED LIVEPHOTO, RELOAD DATASOURCE
-            case self.global.networkingStatusUploaded,
-                 self.global.networkingStatusUploadedLivePhoto,
-                 self.global.networkingStatusReloadDataSource:
-                 self.transferDebouncer.call {
-                    if self.isSearchingMode {
-                        return self.networkSearch()
+            /// UPLOADED, UPLOADED LIVEPHOTO
+            case self.global.networkingStatusUploaded, self.global.networkingStatusUploadedLivePhoto: self.transferDebouncer.call {
+                     if self.isSearchingMode {
+                        self.networkSearch()
                     } else if self.serverUrl == metadata.serverUrl {
+                        self.reloadDataSource()
+                    }
+                }
+            /// RELOAD DATASOURCE
+            case self.global.networkingStatusReloadDataSource:
+                self.transferDebouncer.call {
+                    if self.isSearchingMode {
+                        self.networkSearch()
+                    } else if self.serverUrl == metadata.serverUrl {
+                        self.dataSource.removeAll()
                         self.reloadDataSource()
                     }
                 }
