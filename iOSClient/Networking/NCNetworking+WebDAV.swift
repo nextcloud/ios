@@ -27,7 +27,7 @@ import Queuer
 import Photos
 
 extension NCNetworking {
-    // MARK: - Read file, folder
+    // MARK: - Read file & folder
 
     func readFolder(serverUrl: String,
                     account: String,
@@ -117,7 +117,7 @@ extension NCNetworking {
 
     func fileExists(serverUrlFileName: String,
                     account: String,
-                    completion: @escaping (_ account: String, _ exists: Bool?, _ file: NKFile?, _ error: NKError) -> Void) {
+                    completion: @escaping (_ account: String, _ exists: Bool, _ file: NKFile?, _ error: NKError) -> Void) {
         let options = NKRequestOptions(timeout: 10, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         let requestBody = NKDataFileXML(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).getRequestBodyFileExists().data(using: .utf8)
 
@@ -131,18 +131,20 @@ extension NCNetworking {
             } else if error.errorCode == self.global.errorResourceNotFound {
                 completion(account, false, nil, error)
             } else {
-                completion(account, nil, nil, error)
+                completion(account, false, nil, error)
             }
         }
     }
 
-    func fileExists(serverUrlFileName: String, account: String) async -> (account: String, exists: Bool?, file: NKFile?, error: NKError) {
+    func fileExists(serverUrlFileName: String, account: String) async -> (account: String, exists: Bool, file: NKFile?, error: NKError) {
         await withUnsafeContinuation({ continuation in
             fileExists(serverUrlFileName: serverUrlFileName, account: account) { account, exists, file, error in
                 continuation.resume(returning: (account, exists, file, error))
             }
         })
     }
+
+    // MARK: - Create Filename
 
     func createFileName(fileNameBase: String, account: String, serverUrl: String) async -> String {
         var exitLoop = false
@@ -186,7 +188,7 @@ extension NCNetworking {
                 continue
             }
             let results = await fileExists(serverUrlFileName: serverUrl + "/" + resultFileName, account: account)
-            if let exists = results.exists, exists {
+            if results.exists {
                 newFileName()
             } else {
                 exitLoop = true
@@ -195,12 +197,15 @@ extension NCNetworking {
         return resultFileName
     }
 
+    // MARK: - Create folder
+
     func createFolder(fileName: String,
                       serverUrl: String,
                       overwrite: Bool,
                       sceneIdentifier: String?,
                       session: NCSession.Session,
                       options: NKRequestOptions = NKRequestOptions()) async -> NKError {
+
         var fileNameFolder = utility.removeForbiddenCharacters(fileName.trimmingCharacters(in: .whitespacesAndNewlines))
         if !overwrite {
             fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: session.account)
@@ -255,110 +260,6 @@ extension NCNetworking {
         }
 
         return result.error
-    }
-
-    func createFolder(assets: [PHAsset],
-                      useSubFolder: Bool,
-                      session: NCSession.Session) {
-        var foldersCreated: [String] = []
-
-        func createMetadata(fileName: String, serverUrl: String) {
-            var metadata = tableMetadata()
-            guard !foldersCreated.contains(serverUrl + "/" + fileName) else {
-                return
-            }
-
-            if let result = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", session.account, serverUrl, fileName)) {
-                metadata = result
-            } else {
-                metadata = NCManageDatabase.shared.createMetadata(fileName: fileName,
-                                                                  fileNameView: fileName,
-                                                                  ocId: NSUUID().uuidString,
-                                                                  serverUrl: serverUrl,
-                                                                  url: "",
-                                                                  contentType: "httpd/unix-directory",
-                                                                  directory: true,
-                                                                  session: session,
-                                                                  sceneIdentifier: nil)
-            }
-
-            metadata.status = NCGlobal.shared.metadataStatusWaitCreateFolder
-            metadata.sessionDate = Date()
-
-            NCManageDatabase.shared.addMetadata(metadata)
-
-            foldersCreated.append(serverUrl + "/" + fileName)
-        }
-
-        createMetadata(fileName: self.database.getAccountAutoUploadFileName(account: session.account), serverUrl: self.database.getAccountAutoUploadDirectory(session: session))
-
-        if useSubFolder {
-            let autoUploadServerUrlBase = self.database.getAccountAutoUploadServerUrlBase(session: session)
-            let autoUploadSubfolderGranularity = self.database.getAccountAutoUploadSubfolderGranularity()
-            let folders = Set(assets.map { utilityFileSystem.createGranularityPath(asset: $0) }).sorted()
-
-            for folder in folders {
-                let componentsDate = folder.split(separator: "/")
-                let year = componentsDate[0]
-                let serverUrlYear = autoUploadServerUrlBase
-
-                createMetadata(fileName: String(year), serverUrl: serverUrlYear)
-
-                if autoUploadSubfolderGranularity >= self.global.subfolderGranularityMonthly {
-                    let month = componentsDate[1]
-                    let serverUrlMonth = autoUploadServerUrlBase + "/" + year
-
-                    createMetadata(fileName: String(month), serverUrl: serverUrlMonth)
-
-                    if autoUploadSubfolderGranularity == self.global.subfolderGranularityDaily {
-                        let day = componentsDate[2]
-                        let serverUrlDay = autoUploadServerUrlBase + "/" + year + "/" + month
-
-                        createMetadata(fileName: String(day), serverUrl: serverUrlDay)
-                    }
-                }
-            }
-        }
-    }
-
-    func createFolder(assets: [PHAsset],
-                      useSubFolder: Bool,
-                      session: NCSession.Session) async -> (Bool) {
-        let serverUrlFileName = self.database.getAccountAutoUploadDirectory(session: session) + "/" + self.database.getAccountAutoUploadFileName(account: session.account)
-
-        var result = await NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName, account: session.account)
-
-        if (result.error == .success || result.error.errorCode == 405), useSubFolder {
-            let autoUploadServerUrlBase = self.database.getAccountAutoUploadServerUrlBase(session: session)
-            let autoUploadSubfolderGranularity = self.database.getAccountAutoUploadSubfolderGranularity()
-            let folders = Set(assets.map { utilityFileSystem.createGranularityPath(asset: $0) }).sorted()
-
-            for folder in folders {
-                let componentsDate = folder.split(separator: "/")
-                let year = componentsDate[0]
-                let serverUrlYear = autoUploadServerUrlBase
-
-                result = await NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlYear + "/" + String(year), account: session.account)
-
-                if (result.error == .success || result.error.errorCode == 405), autoUploadSubfolderGranularity >= self.global.subfolderGranularityMonthly {
-                    let month = componentsDate[1]
-                    let serverUrlMonth = autoUploadServerUrlBase + "/" + year
-
-                    result = await NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlMonth + "/" + String(month), account: session.account)
-
-                    if (result.error == .success || result.error.errorCode == 405), autoUploadSubfolderGranularity == self.global.subfolderGranularityDaily {
-                        let day = componentsDate[2]
-                        let serverUrlDay = autoUploadServerUrlBase + "/" + year + "/" + month
-
-                        result = await NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlDay + "/" + String(day), account: session.account)
-                    }
-                }
-
-                if result.error != .success && result.error.errorCode != 405 { break }
-            }
-        }
-
-        return (result.error == .success || result.error.errorCode == 405)
     }
 
     // MARK: - Delete

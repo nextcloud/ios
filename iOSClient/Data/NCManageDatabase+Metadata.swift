@@ -6,6 +6,7 @@ import Foundation
 import UIKit
 import RealmSwift
 import NextcloudKit
+import Photos
 
 class tableMetadata: Object {
     override func isEqual(_ object: Any?) -> Bool {
@@ -1267,5 +1268,69 @@ extension NCManageDatabase {
                 .filter("status == %d AND (chunk > 0 OR e2eEncrypted == true)", NCGlobal.shared.metadataStatusUploading)
                 .first != nil
         } ?? false
+    }
+
+    func createMetadataFolder(assets: [PHAsset],
+                              useSubFolder: Bool,
+                              session: NCSession.Session) {
+        var foldersCreated: [String] = []
+
+        func createMetadata(fileName: String, serverUrl: String) {
+            var metadata = tableMetadata()
+            guard !foldersCreated.contains(serverUrl + "/" + fileName) else {
+                return
+            }
+
+            if let result = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", session.account, serverUrl, fileName)) {
+                metadata = result
+            } else {
+                metadata = NCManageDatabase.shared.createMetadata(fileName: fileName,
+                                                                  fileNameView: fileName,
+                                                                  ocId: NSUUID().uuidString,
+                                                                  serverUrl: serverUrl,
+                                                                  url: "",
+                                                                  contentType: "httpd/unix-directory",
+                                                                  directory: true,
+                                                                  session: session,
+                                                                  sceneIdentifier: nil)
+            }
+
+            metadata.status = NCGlobal.shared.metadataStatusWaitCreateFolder
+            metadata.sessionDate = Date()
+
+            NCManageDatabase.shared.addMetadata(metadata)
+
+            foldersCreated.append(serverUrl + "/" + fileName)
+        }
+
+        createMetadata(fileName: getAccountAutoUploadFileName(account: session.account), serverUrl: getAccountAutoUploadDirectory(session: session))
+
+        if useSubFolder {
+            let autoUploadServerUrlBase = getAccountAutoUploadServerUrlBase(session: session)
+            let autoUploadSubfolderGranularity = getAccountAutoUploadSubfolderGranularity()
+            let folders = Set(assets.map { utilityFileSystem.createGranularityPath(asset: $0) }).sorted()
+
+            for folder in folders {
+                let componentsDate = folder.split(separator: "/")
+                let year = componentsDate[0]
+                let serverUrlYear = autoUploadServerUrlBase
+
+                createMetadata(fileName: String(year), serverUrl: serverUrlYear)
+
+                if autoUploadSubfolderGranularity >= NCGlobal.shared.subfolderGranularityMonthly {
+                    let month = componentsDate[1]
+                    let serverUrlMonth = autoUploadServerUrlBase + "/" + year
+
+                    createMetadata(fileName: String(month), serverUrl: serverUrlMonth)
+
+                    if autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityDaily {
+                        let day = componentsDate[2]
+                        let serverUrlDay = autoUploadServerUrlBase + "/" + year + "/" + month
+
+                        createMetadata(fileName: String(day), serverUrl: serverUrlDay)
+                    }
+                }
+            }
+        }
     }
 }
