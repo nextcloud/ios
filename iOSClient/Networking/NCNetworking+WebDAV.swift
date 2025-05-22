@@ -576,7 +576,12 @@ extension NCNetworking {
             self.readFile(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, account: metadata.account) { _, metadata, error in
                 guard error == .success, let metadata = metadata else { return }
                 self.database.addMetadata(metadata)
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl, "clearDataSource": true])
+
+                self.notifyAllDelegates { delegate in
+                    delegate.transferChange(status: self.global.networkingStatusReloadDataSource,
+                                            metadata: metadata,
+                                            error: .success)
+                }
             }
         }
     }
