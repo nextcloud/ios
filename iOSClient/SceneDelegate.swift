@@ -119,8 +119,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
         }
 
-        NCAutoUpload.shared.initAutoUpload(controller: nil, account: session.account) { num in
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(num) uploads")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            NCAutoUpload.shared.initAutoUpload(controller: nil, account: session.account) { num in
+                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(num) uploads")
+            }
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
