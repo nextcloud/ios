@@ -196,6 +196,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func handleAppRefreshProcessingTask(taskText: String, completion: @escaping () -> Void = {}) {
         isAppSuspending = false
+        func initAutoUpload(controller: NCMainTabBarController? = nil, account: String) async -> Int {
+            await withUnsafeContinuation({ continuation in
+                NCAutoUpload.shared.initAutoUpload(controller: controller, account: account) { num in
+                    continuation.resume(returning: num)
+                }
+            })
+        }
 
         Task {
             guard let account = NCManageDatabase.shared.getActiveTableAccount()?.account
@@ -206,7 +213,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             let results = await NCNetworkingProcess.shared.refreshProcessingTask()
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) networking process with download: \(results.counterDownloading) upload: \(results.counterUploading)")
 
-            let newAutoUpload = await NCAutoUpload.shared.initAutoUploadProcessingTask(account: account)
+            let newAutoUpload = await initAutoUpload(account: account)
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) new auto upload with \(newAutoUpload) uploads")
 
             if taskText == "ProcessingTask",

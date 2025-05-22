@@ -38,14 +38,6 @@ class NCAutoUpload: NSObject {
         }
     }
 
-    func initAutoUploadProcessingTask(controller: NCMainTabBarController? = nil, account: String) async -> Int {
-        await withUnsafeContinuation({ continuation in
-            initAutoUpload(controller: controller, account: account) { num in
-                continuation.resume(returning: num)
-            }
-        })
-    }
-
     func autoUploadSelectedAlbums(controller: NCMainTabBarController?, assetCollections: [PHAssetCollection], log: String, account: String) {
         guard let tblAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account))
         else {
