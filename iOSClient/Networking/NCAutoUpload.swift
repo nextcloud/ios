@@ -111,20 +111,20 @@ class NCAutoUpload: NSObject {
             metadatas.append(metadata)
         }
 
-        if !metadatas.isEmpty {
-            self.database.createMetadataFolder(assets: assets, useSubFolder: tblAccount.autoUploadCreateSubfolder, session: session) {
-                DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
-                    self.database.addMetadatas(metadatas, sync: false)
-
-                    /// Set last date in autoUploadOnlyNewSinceDate
-                    if let metadata = metadatas.last {
-                        let date = metadata.creationDate as Date
-                        self.database.updateAccountProperty(\.autoUploadOnlyNewSinceDate, value: date, account: session.account)
-                    }
-                }
-            }
+        /// Set last date in autoUploadOnlyNewSinceDate
+        if let metadata = metadatas.last {
+            let date = metadata.creationDate as Date
+            self.database.updateAccountProperty(\.autoUploadOnlyNewSinceDate, value: date, account: session.account)
         }
-        completion(metadatas.count)
+
+        if !metadatas.isEmpty {
+            self.database.createMetadatasFolder(assets: assets, useSubFolder: tblAccount.autoUploadCreateSubfolder, session: session) { metadatasFolder in
+                self.database.addMetadatas(metadatasFolder + metadatas, sync: false)
+                completion(metadatas.count)
+            }
+        } else {
+            completion(metadatas.count)
+        }
     }
 
     // MARK: -
