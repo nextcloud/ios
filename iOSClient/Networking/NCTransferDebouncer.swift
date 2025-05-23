@@ -11,7 +11,7 @@ final class NCTransferDebouncer {
     private var timer: Timer?
     private var latestBlock: (() -> Void)?
 
-    init(delay: TimeInterval, maxEventCount: Int = 20) {
+    init(delay: TimeInterval, maxEventCount: Int = 10) {
         self.delay = delay
         self.maxEventCount = maxEventCount
     }
