@@ -1000,113 +1000,47 @@ extension NCManageDatabase {
                 .filter(predicate)
                 .freeze()
         }, sync: false) { result in
-            guard var result else {
+            guard let result else {
                 return completion([], layoutForView, account)
             }
-            let layout: NCDBLayoutForView = layoutForView ?? NCDBLayoutForView()
-            let directoryOnTop = NCKeychain().getDirectoryOnTop(account: account)
-            let favoriteOnTop = NCKeychain().getFavoriteOnTop(account: account)
+            let sorted = self.sortedResultsMetadata(layoutForView: layoutForView, account: account, metadatas: result)
 
-            if layout.sort == "fileName" {
-                let ordered = layout.ascending ? ComparisonResult.orderedAscending : .orderedDescending
-
-                let result = result.sorted { lhs, rhs in
-                    // 1. favorite always has top priority if enabled
-                    if favoriteOnTop, lhs.favorite != rhs.favorite {
-                        return lhs.favorite && !rhs.favorite
-                    }
-
-                    // 2. directory on top (only if enabled)
-                    if directoryOnTop, lhs.directory != rhs.directory {
-                        return lhs.directory && !rhs.directory
-                    }
-
-                    // 3. fileNameView comparison
-                    return lhs.fileNameView.localizedStandardCompare(rhs.fileNameView) == ordered
-                }
-
-                return completion(Array(result), layoutForView, account)
-            } else {
-                // favorite always first if enabled
-                if favoriteOnTop {
-                    result = result.sorted(byKeyPath: "favorite", ascending: false)
-                }
-
-                if directoryOnTop {
-                    result = result.sorted(byKeyPath: "directory", ascending: false)
-                }
-
-                result = result.sorted(byKeyPath: layout.sort, ascending: layout.ascending)
-
-                return completion(Array(result), layout, account)
-            }
+            return completion(sorted, layoutForView, account)
         }
     }
 
     func getResultsMetadatasFromGroupfolders(session: NCSession.Session, layoutForView: NCDBLayoutForView?) -> [tableMetadata] {
         let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
-        let layout: NCDBLayoutForView = layoutForView ?? NCDBLayoutForView()
-        let directoryOnTop = NCKeychain().getDirectoryOnTop(account: session.account)
-        let favoriteOnTop = NCKeychain().getFavoriteOnTop(account: session.account)
 
         return performRealmRead { realm in
-           var ocIds: [String] = []
+            var ocIds: [String] = []
 
-           let groupfolders = realm.objects(TableGroupfolders.self)
-               .filter("account == %@", session.account)
-               .sorted(byKeyPath: "mountPoint", ascending: true)
-               .freeze()
+            let groupfolders = realm.objects(TableGroupfolders.self)
+                .filter("account == %@", session.account)
+                .sorted(byKeyPath: "mountPoint", ascending: true)
+                .freeze()
 
-           for groupfolder in groupfolders {
-               let mountPoint = groupfolder.mountPoint.hasPrefix("/") ? groupfolder.mountPoint : "/" + groupfolder.mountPoint
-               let serverUrlFileName = homeServerUrl + mountPoint
+            for groupfolder in groupfolders {
+                let mountPoint = groupfolder.mountPoint.hasPrefix("/") ? groupfolder.mountPoint : "/" + groupfolder.mountPoint
+                let serverUrlFileName = homeServerUrl + mountPoint
 
-               if let directory = realm.objects(tableDirectory.self)
-                   .filter("account == %@ AND serverUrl == %@", session.account, serverUrlFileName)
-                   .first,
-                  let metadata = realm.objects(tableMetadata.self)
-                   .filter("ocId == %@", directory.ocId)
-                   .first {
-                   ocIds.append(metadata.ocId)
-               }
-           }
-
-           let results = realm.objects(tableMetadata.self)
-               .filter("ocId IN %@", ocIds)
-               .freeze()
-
-            if layout.sort == "fileName" {
-                let ordered = layout.ascending ? ComparisonResult.orderedAscending : .orderedDescending
-                return results.sorted { lhs, rhs in
-                    // 1. favorite on top (always takes priority if enabled)
-                    if favoriteOnTop, lhs.favorite != rhs.favorite {
-                        return lhs.favorite && !rhs.favorite
-                    }
-
-                    // 2. directory on top
-                    if directoryOnTop, lhs.directory != rhs.directory {
-                        return lhs.directory && !rhs.directory
-                    }
-
-                    // 3. file name comparison
-                    return lhs.fileNameView.localizedStandardCompare(rhs.fileNameView) == ordered
+                if let directory = realm.objects(tableDirectory.self)
+                    .filter("account == %@ AND serverUrl == %@", session.account, serverUrlFileName)
+                    .first,
+                   let metadata = realm.objects(tableMetadata.self)
+                    .filter("ocId == %@", directory.ocId)
+                    .first {
+                    ocIds.append(metadata.ocId)
                 }
-            } else {
-                // Realm sorting (applied in reverse-priority order)
-                var sorted = results
-
-                if favoriteOnTop {
-                    sorted = sorted.sorted(byKeyPath: "favorite", ascending: false)
-                }
-
-                if directoryOnTop {
-                    sorted = sorted.sorted(byKeyPath: "directory", ascending: false)
-                }
-
-                sorted = sorted.sorted(byKeyPath: layout.sort, ascending: layout.ascending)
-
-                return Array(sorted)
             }
+
+            let result = realm.objects(tableMetadata.self)
+                .filter("ocId IN %@", ocIds)
+                .freeze()
+
+            let sorted = self.sortedResultsMetadata(layoutForView: layoutForView, account: session.account, metadatas: result)
+
+            return sorted
         } ?? []
     }
 
