@@ -1268,9 +1268,11 @@ extension NCManageDatabase {
             let metadatas = realm.objects(tableMetadata.self)
                 .filter("session == %@ AND status == %d", session, NCGlobal.shared.metadataStatusWaitDownload)
                 .sorted(byKeyPath: "sessionDate")
-                .prefix(limit)
 
-            return metadatas.map { tableMetadata(value: $0) }
+            let safeLimit = min(limit, metadatas.count)
+            let limitedMetadatas = metadatas.prefix(safeLimit)
+
+            return limitedMetadatas.map { tableMetadata(value: $0) }
         } ?? []
     }
 
@@ -1279,9 +1281,11 @@ extension NCManageDatabase {
             let metadatas = realm.objects(tableMetadata.self)
                 .filter("sessionSelector == %@ AND status == %d", sessionSelector, NCGlobal.shared.metadataStatusWaitUpload)
                 .sorted(byKeyPath: "sessionDate")
-                .prefix(limit)
 
-            return metadatas.map { tableMetadata(value: $0) }
+            let safeLimit = min(limit, metadatas.count)
+            let limitedMetadatas = metadatas.prefix(safeLimit)
+
+            return limitedMetadatas.map { tableMetadata(value: $0) }
         } ?? []
     }
 
