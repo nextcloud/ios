@@ -23,6 +23,7 @@
 
 import UIKit
 import NextcloudKit
+import RealmSwift
 
 class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     private var metadataTemp: tableMetadata?
@@ -264,10 +265,17 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     // MARK: - DataSource
 
     override func reloadDataSource() {
-        if let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), sortedByKeyPath: "sessionDate", ascending: true) {
-            self.dataSource = NCCollectionViewDataSource(metadatas: Array(results.freeze()), layoutForView: layoutForView)
-        } else {
-            self.dataSource.removeAll()
+        let predicate = NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal)
+        let sortDescriptors = [
+            RealmSwift.SortDescriptor(keyPath: "status", ascending: false),
+            RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: false)
+        ]
+
+        self.database.getResultsMetadatasAsync(predicate: predicate, sortDescriptors: sortDescriptors, freeze: true) { results in
+            guard let results else {
+                return self.dataSource.removeAll()
+            }
+            self.dataSource = NCCollectionViewDataSource(metadatas: Array(results), layoutForView: self.layoutForView)
         }
         super.reloadDataSource()
     }

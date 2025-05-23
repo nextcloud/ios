@@ -1223,6 +1223,19 @@ extension NCManageDatabase {
         }
     }
 
+    func getResultsMetadatasAsync(predicate: NSPredicate,
+                                  sortDescriptors: [RealmSwift.SortDescriptor] = [],
+                                  freeze: Bool = false,
+                                  completion: @escaping (Results<tableMetadata>?) -> Void) {
+        performRealmRead({ realm in
+            var results = realm.objects(tableMetadata.self).filter(predicate)
+            if !sortDescriptors.isEmpty {
+                results = results.sorted(by: sortDescriptors)
+            }
+            return freeze ? results.freeze() : results
+        }, sync: false, completion: completion)
+    }
+
     func fetchNetworkingProcessState() -> (counterDownloading: Int, counterUploading: Int) {
         return performRealmRead { realm in
             let downloading = realm.objects(tableMetadata.self)
