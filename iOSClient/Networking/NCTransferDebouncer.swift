@@ -6,23 +6,38 @@ import UIKit
 
 final class NCTransferDebouncer {
     private let delay: TimeInterval
+    private let maxEventCount: Int
+    private var eventCount = 0
     private var timer: Timer?
     private var latestBlock: (() -> Void)?
 
-    init(delay: TimeInterval) {
+    init(delay: TimeInterval, maxEventCount: Int = 20) {
         self.delay = delay
+        self.maxEventCount = maxEventCount
     }
 
     func call(_ block: @escaping () -> Void) {
         latestBlock = block
-        timer?.invalidate()
+        eventCount += 1
 
-        let timer = Timer(timeInterval: delay, repeats: false) { [weak self] _ in
-            self?.latestBlock?()
-            self?.latestBlock = nil
+        if timer == nil {
+            let timer = Timer(timeInterval: delay, repeats: false) { [weak self] _ in
+                self?.commit()
+            }
+            RunLoop.main.add(timer, forMode: .common)
+            self.timer = timer
         }
 
-        RunLoop.main.add(timer, forMode: .common)
-        self.timer = timer
+        if eventCount >= maxEventCount {
+            commit()
+        }
+    }
+
+    private func commit() {
+        timer?.invalidate()
+        timer = nil
+        eventCount = 0
+        latestBlock?()
+        latestBlock = nil
     }
 }

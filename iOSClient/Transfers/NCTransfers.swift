@@ -268,7 +268,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         let predicate = NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal)
         let sortDescriptors = [
             RealmSwift.SortDescriptor(keyPath: "status", ascending: false),
-            RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: false)
+            RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
         ]
 
         self.database.getResultsMetadatasAsync(predicate: predicate, sortDescriptors: sortDescriptors, freeze: true) { results in
@@ -276,8 +276,9 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
                 return self.dataSource.removeAll()
             }
             self.dataSource = NCCollectionViewDataSource(metadatas: Array(results), layoutForView: self.layoutForView)
+
+            super.reloadDataSource()
         }
-        super.reloadDataSource()
     }
 
     override func getServerData() {

@@ -236,6 +236,12 @@ extension NCNetworking {
                                             metadata: tableMetadata(value: metadata),
                                             error: .success)
                 }
+            } else {
+                self.notifyAllDelegates { delegate in
+                    delegate.transferChange(status: self.global.networkingStatusCreateFolder,
+                                            metadata: tableMetadata(value: metadata),
+                                            error: .success)
+                }
             }
         }
 
