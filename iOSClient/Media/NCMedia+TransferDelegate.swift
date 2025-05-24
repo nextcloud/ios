@@ -48,4 +48,28 @@ extension NCMedia: NCTransferDelegate {
             self.loadDataSource()
         }
     }
+
+    func transferCopy(metadata: tableMetadata, dragdrop: Bool) {
+        guard dragdrop else {
+            return
+        }
+        setEditMode(false)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            self.loadDataSource()
+            self.searchMediaUI()
+        }
+    }
+
+    func transferMove(metadata: tableMetadata, dragdrop: Bool) {
+        guard dragdrop else {
+            return
+        }
+        setEditMode(false)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            self.loadDataSource()
+            self.searchMediaUI()
+        }
+    }
 }

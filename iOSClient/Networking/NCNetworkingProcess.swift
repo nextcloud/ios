@@ -304,7 +304,9 @@ class NCNetworkingProcess {
 
                 database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
 
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["serverUrl": metadata.serverUrl, "account": metadata.account, "dragdrop": false, "type": "copy"])
+                NCNetworking.shared.notifyAllDelegates { delete in
+                    delete.transferCopy(metadata: metadata, dragdrop: false)
+                }
 
                 if result.error == .success {
                     NCNetworking.shared.notifyAllDelegates { delegate in
@@ -338,7 +340,9 @@ class NCNetworkingProcess {
 
                 database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
 
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["serverUrl": metadata.serverUrl, "account": metadata.account, "dragdrop": false, "type": "move"])
+                NCNetworking.shared.notifyAllDelegates { delete in
+                    delete.transferMove(metadata: metadata, dragdrop: false)
+                }
 
                 if result.error == .success {
                     if metadata.directory {

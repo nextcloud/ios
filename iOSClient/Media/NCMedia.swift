@@ -198,8 +198,6 @@ class NCMedia: UIViewController {
 
         NCNetworking.shared.addDelegate(self)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(copyMoveFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterCopyMoveFile), object: nil)
-
         NotificationCenter.default.addObserver(self, selector: #selector(enterForeground(_:)), name: UIApplication.willEnterForegroundNotification, object: nil)
 
         searchNewMedia()
@@ -210,8 +208,6 @@ class NCMedia: UIViewController {
         super.viewDidDisappear(animated)
 
         NCNetworking.shared.removeDelegate(self)
-
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterCopyMoveFile), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
 
@@ -282,19 +278,6 @@ class NCMedia: UIViewController {
             database.deleteMetadataOcIds(ocIdDoNotExists)
             self.ocIdDoNotExists.removeAll()
             collectionViewReloadData()
-        }
-    }
-
-    @objc func copyMoveFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let dragDrop = userInfo["dragdrop"] as? Bool,
-              dragDrop else { return }
-
-        setEditMode(false)
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            self.loadDataSource()
-            self.searchMediaUI()
         }
     }
 
