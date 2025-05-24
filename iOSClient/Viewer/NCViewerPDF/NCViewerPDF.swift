@@ -578,4 +578,8 @@ extension NCViewerPDF: NCTransferDelegate {
             }
         }
     }
+
+    func transferReloadData(metadata: tableMetadata?) {
+
+    }
 }

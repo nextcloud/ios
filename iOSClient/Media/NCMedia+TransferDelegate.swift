@@ -38,13 +38,14 @@ extension NCMedia: NCTransferDelegate {
             } else {
                 self.semaphoreNotificationCenter.signal()
             }
-        /// RELOAD DATASOURCE
-        case self.global.networkingStatusReloadDataSource:
-            self.transferDebouncer.call {
-                self.loadDataSource()
-            }
         default:
             break
+        }
+    }
+
+    func transferReloadData(metadata: tableMetadata?) {
+        self.transferDebouncer.call {
+            self.loadDataSource()
         }
     }
 }

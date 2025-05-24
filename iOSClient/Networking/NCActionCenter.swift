@@ -54,6 +54,8 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     func transferChange(status: String, metadata: tableMetadata, error: NKError) { }
 
+    func transferReloadData(metadata: tableMetadata?) { }
+
     // MARK: - Download
 
     @objc func downloadedFile(_ notification: NSNotification) {

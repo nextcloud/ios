@@ -47,6 +47,7 @@ protocol NCTransferDelegate: AnyObject {
 
     func transferChange(status: String, metadata: tableMetadata, error: NKError)
     func transferChange(status: String, metadatasError: [tableMetadata: NKError])
+    func transferReloadData(metadata: tableMetadata?)
 }
 
 extension NCTransferDelegate {

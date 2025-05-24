@@ -278,8 +278,9 @@ extension UIAlertController {
 
             NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew)
 
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl])
-
+            NCNetworking.shared.notifyAllDelegates { delegate in
+                delegate.transferReloadData(metadata: tableMetadata(value: metadata))
+            }
             completion(fileNameNew)
         }
     }

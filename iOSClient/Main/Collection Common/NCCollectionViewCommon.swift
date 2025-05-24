@@ -403,16 +403,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                         self.reloadDataSource()
                     }
                 }
-            /// RELOAD DATASOURCE
-            case self.global.networkingStatusReloadDataSource:
-                self.transferDebouncer.call {
-                    if self.isSearchingMode {
-                        self.networkSearch()
-                    } else if self.serverUrl == metadata.serverUrl {
-                        self.dataSource.removeAll()
-                        self.reloadDataSource()
-                    }
-                }
             /// CREATE FOLDER
             case self.global.networkingStatusCreateFolder:
                 if metadata.serverUrl == self.serverUrl {
@@ -420,6 +410,20 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 }
             default:
                 break
+            }
+        }
+    }
+
+    func transferReloadData(metadata: tableMetadata?) {
+        self.transferDebouncer.call {
+            if self.isSearchingMode {
+                self.networkSearch()
+            } else if let metadata, self.serverUrl == metadata.serverUrl {
+                self.dataSource.removeAll()
+                self.reloadDataSource()
+            } else if metadata == nil {
+                self.dataSource.removeAll()
+                self.reloadDataSource()
             }
         }
     }
