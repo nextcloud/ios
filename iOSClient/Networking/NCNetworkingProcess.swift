@@ -267,6 +267,7 @@ class NCNetworkingProcess {
                                                           overwrite: true,
                                                           sceneIdentifier: metadata.sceneIdentifier,
                                                           session: NCSession.shared.getSession(account: metadata.account),
+                                                          selector: metadata.sessionSelector,
                                                           options: options)
                 if error != .success {
                     if metadata.sessionError.isEmpty {

@@ -143,6 +143,7 @@ class NCAutoUpload: NSObject {
                 if tblAccount.autoUploadImage {
                     mediaPredicates.append(NSPredicate(format: "mediaType == %i", PHAssetMediaType.image.rawValue))
                 }
+
                 if tblAccount.autoUploadVideo {
                     mediaPredicates.append(NSPredicate(format: "mediaType == %i", PHAssetMediaType.video.rawValue))
                 }

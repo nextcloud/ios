@@ -204,6 +204,7 @@ extension NCNetworking {
                       overwrite: Bool,
                       sceneIdentifier: String?,
                       session: NCSession.Session,
+                      selector: String? = nil,
                       options: NKRequestOptions = NKRequestOptions()) async -> NKError {
 
         var fileNameFolder = utility.removeForbiddenCharacters(fileName.trimmingCharacters(in: .whitespacesAndNewlines))
@@ -225,6 +226,10 @@ extension NCNetworking {
                                        permissions: metadata.permissions,
                                        serverUrl: fileNameFolderUrl,
                                        account: session.account)
+
+            guard selector != self.global.selectorUploadAutoUpload else {
+                return
+            }
 
             if let sceneIdentifier {
                 self.notifyDelegates(forScene: sceneIdentifier) { delegate in
