@@ -82,6 +82,8 @@ class NCMedia: UIViewController {
     var numberOfColumns: Int = 0
     var lastNumberOfColumns: Int = 0
 
+    let transferDebouncer = NCTransferDebouncer(delay: 1.5)
+
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)
     }
@@ -179,8 +181,6 @@ class NCMedia: UIViewController {
 
         NotificationCenter.default.addObserver(self, selector: #selector(fileExists(_:)), name: NSNotification.Name(rawValue: global.notificationCenterFileExists), object: nil)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource(_:)), name: NSNotification.Name(rawValue: global.notificationCenterReloadDataSource), object: nil)
-
         NotificationCenter.default.addObserver(self, selector: #selector(networkRemoveAll(_:)), name: UIApplication.didEnterBackgroundNotification, object: nil)
     }
 
@@ -256,10 +256,6 @@ class NCMedia: UIViewController {
                 task.cancel()
             }
         }
-    }
-
-    @objc func reloadDataSource(_ notification: NSNotification) {
-        self.loadDataSource()
     }
 
     @objc func enterForeground(_ notification: NSNotification) {

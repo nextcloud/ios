@@ -495,9 +495,9 @@ extension NCSelect {
         } completion: { account, _, _, _ in
             self.database.getResultMetadatasPredicateAsync(predicate, layoutForView: NCDBLayoutForView(), account: account) { metadatas, layoutForView, account in
                 self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
-                self.collectionView.reloadData()
-
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": self.serverUrl])
+                DispatchQueue.main.async {
+                    self.collectionView.reloadData()
+                }
             }
         }
     }
