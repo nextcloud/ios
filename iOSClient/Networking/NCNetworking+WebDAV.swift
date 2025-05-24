@@ -806,9 +806,13 @@ class NCOperationFileExists: ConcurrentOperation, @unchecked Sendable {
 
         NCNetworking.shared.fileExists(serverUrlFileName: serverUrlFileName, account: account) { _, _, _, error in
             if error == .success {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterFileExists, userInfo: ["ocId": self.ocId, "fileExists": true])
+                NCNetworking.shared.notifyAllDelegates { delegate in
+                    delegate.transferFileExists(ocId: self.ocId, exists: true)
+                }
             } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterFileExists, userInfo: ["ocId": self.ocId, "fileExists": false])
+                NCNetworking.shared.notifyAllDelegates { delegate in
+                    delegate.transferFileExists(ocId: self.ocId, exists: false)
+                }
             }
 
             self.finish()

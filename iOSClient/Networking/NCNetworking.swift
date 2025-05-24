@@ -51,6 +51,7 @@ protocol NCTransferDelegate: AnyObject {
     func transferRequestServerData(serverUrl: String?)
     func transferCopy(metadata: tableMetadata, dragdrop: Bool)
     func transferMove(metadata: tableMetadata, dragdrop: Bool)
+    func transferFileExists(ocId: String, exists: Bool)
 }
 
 extension NCTransferDelegate {
@@ -65,6 +66,7 @@ extension NCTransferDelegate {
     func transferRequestServerData(serverUrl: String?) {}
     func transferCopy(metadata: tableMetadata, dragdrop: Bool) {}
     func transferMove(metadata: tableMetadata, dragdrop: Bool) {}
+    func transferFileExists(ocId: String, exists: Bool) {}
 }
 
 class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {

@@ -72,4 +72,20 @@ extension NCMedia: NCTransferDelegate {
             self.searchMediaUI()
         }
     }
+
+    func transferFileExists(ocId: String, exists: Bool) {
+        filesExists.append(ocId)
+        if !exists {
+            ocIdDoNotExists.append(ocId)
+        }
+        if NCNetworking.shared.fileExistsQueue.operationCount == 0,
+           !ocIdDoNotExists.isEmpty,
+           let ocIdDoNotExists = self.ocIdDoNotExists.getArray() {
+            dataSource.removeMetadata(ocIdDoNotExists)
+            database.deleteMetadataOcIds(ocIdDoNotExists)
+            self.ocIdDoNotExists.removeAll()
+            collectionViewReloadData()
+        }
+    }
+
 }
