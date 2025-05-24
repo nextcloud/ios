@@ -314,7 +314,6 @@ final class NCGlobal: Sendable {
     let notificationCenterDownloadedFile                        = "downloadedFile"                  // userInfo: ocId, ocIdTransfer, session, session, serverUrl, account, selector, error
     let notificationCenterDownloadCancelFile                    = "downloadCancelFile"              // userInfo: ocId, ocIdTransfer, session, serverUrl, account
 
-    let notificationCenterRenameFile                            = "renameFile"                      // userInfo: serverUrl, account, error
     let notificationCenterFavoriteFile                          = "favoriteFile"                    // userInfo: ocId, serverUrl
     let notificationCenterFileExists                            = "fileExists"                      // userInfo: ocId, fileExists
 
@@ -337,6 +336,8 @@ final class NCGlobal: Sendable {
     // Networking Status
     let networkingStatusCreateFolder                            = "statusCreateFolder"
     let networkingStatusDelete                                  = "statusDelete"
+    let networkingStatusRename                                  = "statusRename"
+
     let networkingStatusFavorite                                = "statusFavorite"
 
     let networkingStatusUploadStart                             = "statusUploadStart"

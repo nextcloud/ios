@@ -286,7 +286,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.addObserver(self, selector: #selector(closeRichWorkspaceWebView), name: NSNotification.Name(rawValue: global.notificationCenterCloseRichWorkspaceWebView), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changeLayout(_:)), name: NSNotification.Name(rawValue: global.notificationCenterChangeLayout), object: nil)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(favoriteFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterFavoriteFile), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(downloadStartFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterDownloadStartFile), object: nil)
@@ -317,7 +316,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterCloseRichWorkspaceWebView), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterChangeLayout), object: nil)
 
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterFavoriteFile), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterDownloadStartFile), object: nil)
@@ -383,6 +381,19 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
+    //TODO: TRANSFER DELEGATE
+    /*
+     if isRecommendationActived {
+         Task.detached {
+             await NCNetworking.shared.createRecommendations(session: self.session)
+         }
+     }
+
+     Error message
+
+     */
+
+
     func transferChange(status: String, metadata: tableMetadata, error: NKError) {
         guard session.account == metadata.account else { return }
 
@@ -390,7 +401,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             switch status {
             /// UPLOADED, UPLOADED LIVEPHOTO
             case self.global.networkingStatusUploaded, self.global.networkingStatusUploadedLivePhoto: self.transferDebouncer.call {
-                     if self.isSearchingMode {
+                    if self.isSearchingMode {
                         self.networkSearch()
                     } else if self.serverUrl == metadata.serverUrl {
                         self.reloadDataSource()
@@ -400,6 +411,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             case self.global.networkingStatusCreateFolder:
                 if metadata.serverUrl == self.serverUrl {
                     self.pushMetadata(metadata)
+                }
+            case self.global.networkingStatusRename:
+                self.transferDebouncer.call {
+                    if self.isSearchingMode {
+                        self.networkSearch()
+                    } else if self.serverUrl == metadata.serverUrl {
+                        self.reloadDataSource()
+                    }
                 }
             default:
                 break
@@ -515,33 +534,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         reloadDataSource()
     }
 
-    @objc func renameFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let account = userInfo["account"] as? String,
-              let serverUrl = userInfo["serverUrl"] as? String,
-              let error = userInfo["error"] as? NKError,
-              account == session.account
-        else { return }
 
-        if error == .success {
-            if isSearchingMode {
-                return networkSearch()
-            }
-
-            if isRecommendationActived {
-                Task.detached {
-                    await NCNetworking.shared.createRecommendations(session: self.session)
-                }
-            }
-        }
-
-        if serverUrl == self.serverUrl {
-            if error != .success {
-                NCContentPresenter().showError(error: error)
-            }
-            reloadDataSource()
-        }
-    }
 
     @objc func favoriteFile(_ notification: NSNotification) {
         if isSearchingMode {

@@ -421,7 +421,11 @@ class NCNetworkingProcess {
                     database.restoreMetadataFileName(ocId: metadata.ocId)
                 }
 
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["serverUrl": metadata.serverUrl, "account": metadata.account, "error": result.error])
+                NCNetworking.shared.notifyAllDelegates { delegate in
+                    delegate.transferChange(status: NCGlobal.shared.networkingStatusRename,
+                                            metadata: metadata,
+                                            error: result.error)
+                }
             }
         }
 
