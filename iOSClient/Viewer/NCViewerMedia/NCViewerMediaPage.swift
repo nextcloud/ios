@@ -686,8 +686,4 @@ extension NCViewerMediaPage: NCTransferDelegate {
             }
         }
     }
-
-    func transferReloadData(metadata: tableMetadata?) {
-
-    }
 }

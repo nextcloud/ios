@@ -101,7 +101,9 @@ final class NCImageCache: @unchecked Sendable {
                     /// FILE
                     if !self.isDidEnterBackground {
                         for file in files where !file.serverUrl.isEmpty {
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": file.serverUrl])
+                            NCNetworking.shared.notifyAllDelegates { delegate in
+                                delegate.transferReloadData(serverUrl: file.serverUrl)
+                            }
                         }
                     }
 

@@ -232,7 +232,7 @@ extension NCNetworking {
                                             metadata: tableMetadata(value: metadata),
                                             error: .success)
                 } others: { delegate in
-                    delegate.transferReloadData(metadata: tableMetadata(value: metadata))
+                    delegate.transferReloadData(serverUrl: metadata.serverUrl)
                 }
             } else {
                 self.notifyAllDelegates { delegate in
@@ -320,7 +320,7 @@ extension NCNetworking {
             deleteLocalFile(metadata: metadata)
 
             self.notifyAllDelegates { delegate in
-                delegate.transferReloadData(metadata: tableMetadata(value: metadata))
+                delegate.transferReloadData(serverUrl: metadata.serverUrl)
             }
         }
 
@@ -481,7 +481,7 @@ extension NCNetworking {
                 self.database.addMetadata(metadata)
 
                 self.notifyAllDelegates { delegate in
-                    delegate.transferReloadData(metadata: tableMetadata(value: metadata))
+                    delegate.transferReloadData(serverUrl: metadata.serverUrl)
                 }
             }
         }

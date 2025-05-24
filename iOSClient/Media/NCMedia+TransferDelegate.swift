@@ -43,7 +43,7 @@ extension NCMedia: NCTransferDelegate {
         }
     }
 
-    func transferReloadData(metadata: tableMetadata?) {
+    func transferReloadData(serverUrl: String?) {
         self.transferDebouncer.call {
             self.loadDataSource()
         }

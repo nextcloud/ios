@@ -167,7 +167,10 @@ extension UIAlertController {
         if canDeleteServer {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { (_: UIAlertAction) in
                 NCNetworking.shared.setStatusWaitDelete(metadatas: selectedMetadatas, sceneIdentifier: sceneIdentifier)
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
+
+                NCNetworking.shared.notifyAllDelegates { delegate in
+                    delegate.transferReloadData(serverUrl: nil)
+                }
                 completion(false)
             })
         }
@@ -279,7 +282,7 @@ extension UIAlertController {
             NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew)
 
             NCNetworking.shared.notifyAllDelegates { delegate in
-                delegate.transferReloadData(metadata: tableMetadata(value: metadata))
+                delegate.transferReloadData(serverUrl: metadata.serverUrl)
             }
             completion(fileNameNew)
         }

@@ -121,7 +121,7 @@ class NCSharePaging: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         NCNetworking.shared.notifyAllDelegates { delegate in
-            delegate.transferReloadData(metadata: tableMetadata(value: metadata))
+            delegate.transferReloadData(serverUrl: metadata.serverUrl)
         }
     }
 

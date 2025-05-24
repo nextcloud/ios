@@ -58,7 +58,10 @@ extension NCNetworking {
         if metadata.status == global.metadataStatusWaitFavorite {
             let favorite = (metadata.storeFlag as? NSString)?.boolValue ?? false
             database.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite, saveOldFavorite: nil, status: global.metadataStatusNormal)
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
+
+            NCNetworking.shared.notifyAllDelegates { delegate in
+                delegate.transferReloadData(serverUrl: metadata.serverUrl)
+            }
             return
         }
 
@@ -66,7 +69,10 @@ extension NCNetworking {
         ///
         if metadata.status == global.metadataStatusWaitCopy {
             database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
+
+            NCNetworking.shared.notifyAllDelegates { delegate in
+                delegate.transferReloadData(serverUrl: metadata.serverUrl)
+            }
             return
         }
 
@@ -74,7 +80,10 @@ extension NCNetworking {
         ///
         if metadata.status == global.metadataStatusWaitMove {
             database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
+
+            NCNetworking.shared.notifyAllDelegates { delegate in
+                delegate.transferReloadData(serverUrl: metadata.serverUrl)
+            }
             return
         }
 
@@ -82,7 +91,10 @@ extension NCNetworking {
         ///
         if metadata.status == global.metadataStatusWaitDelete {
             database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusNormal)
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
+
+            NCNetworking.shared.notifyAllDelegates { delegate in
+                delegate.transferReloadData(serverUrl: metadata.serverUrl)
+            }
             return
         }
 
@@ -90,7 +102,10 @@ extension NCNetworking {
         ///
         if metadata.status == global.metadataStatusWaitRename {
             database.restoreMetadataFileName(ocId: metadata.ocId)
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
+
+            NCNetworking.shared.notifyAllDelegates { delegate in
+                delegate.transferReloadData(serverUrl: metadata.serverUrl)
+            }
             return
         }
 
@@ -102,7 +117,10 @@ extension NCNetworking {
                 database.deleteMetadataOcId(metadata.ocId)
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
             }
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
+
+            NCNetworking.shared.notifyAllDelegates { delegate in
+                delegate.transferReloadData(serverUrl: metadata.serverUrl)
+            }
             return
         }
 
@@ -111,7 +129,10 @@ extension NCNetworking {
         if metadata.session.isEmpty {
             self.database.deleteMetadataOcId(metadata.ocId)
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
+
+            NCNetworking.shared.notifyAllDelegates { delegate in
+                delegate.transferReloadData(serverUrl: metadata.serverUrl)
+            }
             return
         }
 
@@ -162,7 +183,10 @@ extension NCNetworking {
         for metadata in metadatas {
             cancelTask(metadata: metadata)
         }
-        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
+
+        NCNetworking.shared.notifyAllDelegates { delegate in
+            delegate.transferReloadData(serverUrl: nil)
+        }
     }
 
     func cancelAllDataTask() {

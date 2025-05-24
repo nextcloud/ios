@@ -347,14 +347,20 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         let favoriteOnTop = NCKeychain().getFavoriteOnTop(account: self.session.account)
         let favoriteOnTopAction = UIAction(title: NSLocalizedString("_favorite_on_top_", comment: ""), state: favoriteOnTop ? .on : .off) { _ in
             NCKeychain().setFavoriteOnTop(account: self.session.account, value: !favoriteOnTop)
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": collectionViewCommon.serverUrl, "clearDataSource": true])
+
+            NCNetworking.shared.notifyAllDelegates { delegate in
+                delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl)
+            }
             self.updateRightMenu()
         }
 
         let directoryOnTop = NCKeychain().getDirectoryOnTop(account: self.session.account)
         let directoryOnTopAction = UIAction(title: NSLocalizedString("_directory_on_top_", comment: ""), state: directoryOnTop ? .on : .off) { _ in
             NCKeychain().setDirectoryOnTop(account: self.session.account, value: !directoryOnTop)
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": collectionViewCommon.serverUrl, "clearDataSource": true])
+
+            NCNetworking.shared.notifyAllDelegates { delegate in
+                delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl)
+            }
             self.updateRightMenu()
         }
 
@@ -369,14 +375,20 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         let personalFilesOnly = NCKeychain().getPersonalFilesOnly(account: self.session.account)
         let personalFilesOnlyAction = UIAction(title: NSLocalizedString("_personal_files_only_", comment: ""), image: utility.loadImage(named: "folder.badge.person.crop", colors: NCBrandColor.shared.iconImageMultiColors), state: personalFilesOnly ? .on : .off) { _ in
             NCKeychain().setPersonalFilesOnly(account: self.session.account, value: !personalFilesOnly)
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": collectionViewCommon.serverUrl, "clearDataSource": true])
+
+            NCNetworking.shared.notifyAllDelegates { delegate in
+                delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl)
+            }
             self.updateRightMenu()
         }
 
         let showDescriptionKeychain = NCKeychain().showDescription
         let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), state: showDescriptionKeychain ? .on : .off) { _ in
             NCKeychain().showDescription = !showDescriptionKeychain
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": collectionViewCommon.serverUrl, "clearDataSource": true])
+
+            NCNetworking.shared.notifyAllDelegates { delegate in
+                delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl)
+            }
             self.updateRightMenu()
         }
 

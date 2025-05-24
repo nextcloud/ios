@@ -356,7 +356,7 @@ extension NCViewerRichDocument: UINavigationControllerDelegate {
 
         if parent == nil {
             NCNetworking.shared.notifyAllDelegates { delegate in
-                delegate.transferReloadData(metadata: tableMetadata(value: metadata))
+                delegate.transferReloadData(serverUrl: metadata.serverUrl)
             }
         }
     }
