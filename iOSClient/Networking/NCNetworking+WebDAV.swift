@@ -218,14 +218,14 @@ extension NCNetworking {
 
         func writeDirectoryMetadata(_ metadata: tableMetadata) {
             self.database.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", session.account, fileName, serverUrl))
-            self.database.addMetadata(metadata)
+            self.database.addMetadata(metadata, sync: false)
             self.database.addDirectory(e2eEncrypted: metadata.e2eEncrypted,
                                        favorite: metadata.favorite,
                                        ocId: metadata.ocId,
                                        fileId: metadata.fileId,
                                        permissions: metadata.permissions,
                                        serverUrl: fileNameFolderUrl,
-                                       account: session.account)
+                                       account: session.account, sync: false)
 
             guard selector != self.global.selectorUploadAutoUpload else {
                 return
@@ -265,7 +265,7 @@ extension NCNetworking {
            let metadata = result.metadata {
             writeDirectoryMetadata(metadata)
         } else if let metadata = self.database.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", session.account, fileName, serverUrl)) {
-            self.database.setMetadataSession(ocId: metadata.ocId, sessionError: result.error.errorDescription)
+            self.database.setMetadataSession(ocId: metadata.ocId, sessionError: result.error.errorDescription, sync: false)
         }
 
         return result.error

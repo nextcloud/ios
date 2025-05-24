@@ -30,8 +30,8 @@ extension NCManageDatabase {
 
     // MARK: - Realm write
 
-    func addDirectory(e2eEncrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String? = nil, permissions: String? = nil, richWorkspace: String? = nil, serverUrl: String, account: String) {
-        performRealmWrite { realm in
+    func addDirectory(e2eEncrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String? = nil, permissions: String? = nil, richWorkspace: String? = nil, serverUrl: String, account: String, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             if let existing = realm.objects(tableDirectory.self)
                 .filter("account == %@ AND ocId == %@", account, ocId)
                 .first {
