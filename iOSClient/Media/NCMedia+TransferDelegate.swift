@@ -87,5 +87,4 @@ extension NCMedia: NCTransferDelegate {
             collectionViewReloadData()
         }
     }
-
 }
