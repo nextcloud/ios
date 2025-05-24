@@ -65,10 +65,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     // MARK: - NotificationCenter
 
-    override func reloadDataSource(_ notification: NSNotification) {
-        reloadDataSource()
-    }
-
     override func copyMoveFile(_ notification: NSNotification) {
         reloadDataSource()
     }
