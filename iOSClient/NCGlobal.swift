@@ -328,8 +328,6 @@ final class NCGlobal: Sendable {
     let notificationCenterPlayerIsPlaying                       = "playerIsPlaying"
     let notificationCenterPlayerStoppedPlaying                  = "playerStoppedPlaying"
 
-    let notificationCenterUpdateShare                           = "updateShare"
-
     // Networking Status
     let networkingStatusCreateFolder                            = "statusCreateFolder"
     let networkingStatusDelete                                  = "statusDelete"
@@ -340,6 +338,9 @@ final class NCGlobal: Sendable {
     let networkingStatusUploaded                                = "statusUploaded"
     let networkingStatusUploadedLivePhoto                       = "statusUploadedLivePhoto"
     let networkingStatusUploadCancel                            = "statusUploadCancel"
+
+    let networkingStatusReloadAvatar                            = "statusReloadAvatar"
+
 
     // TIP
     //

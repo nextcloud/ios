@@ -29,6 +29,7 @@ class NCService: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     let database = NCManageDatabase.shared
+    let global = NCGlobal.shared
 
     // MARK: -
 
