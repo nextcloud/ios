@@ -46,8 +46,8 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         if canDeleteServer {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { _ in
                 NCNetworking.shared.setStatusWaitDelete(metadatas: metadatas, sceneIdentifier: self.controller?.sceneIdentifier)
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
                 self.setEditMode(false)
+                self.reloadDataSource()
             })
         }
 
