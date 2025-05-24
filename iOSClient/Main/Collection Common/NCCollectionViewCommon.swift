@@ -286,7 +286,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.addObserver(self, selector: #selector(closeRichWorkspaceWebView), name: NSNotification.Name(rawValue: global.notificationCenterCloseRichWorkspaceWebView), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changeLayout(_:)), name: NSNotification.Name(rawValue: global.notificationCenterChangeLayout), object: nil)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(favoriteFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterFavoriteFile), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(downloadStartFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterDownloadStartFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterDownloadedFile), object: nil)
@@ -316,7 +315,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterCloseRichWorkspaceWebView), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterChangeLayout), object: nil)
 
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterFavoriteFile), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterDownloadStartFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterDownloadedFile), object: nil)
@@ -412,10 +410,22 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 if metadata.serverUrl == self.serverUrl {
                     self.pushMetadata(metadata)
                 }
+            /// RENAME
             case self.global.networkingStatusRename:
                 self.transferDebouncer.call {
                     if self.isSearchingMode {
                         self.networkSearch()
+                    } else if self.serverUrl == metadata.serverUrl {
+                        self.reloadDataSource()
+                    }
+                }
+            /// FAVORITE
+            case self.global.networkingStatusFavorite:
+                self.transferDebouncer.call {
+                    if self.isSearchingMode {
+                        self.networkSearch()
+                    } else if self is NCFavorite {
+                        self.reloadDataSource()
                     } else if self.serverUrl == metadata.serverUrl {
                         self.reloadDataSource()
                     }
@@ -531,25 +541,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func closeRichWorkspaceWebView() {
-        reloadDataSource()
-    }
-
-
-
-    @objc func favoriteFile(_ notification: NSNotification) {
-        if isSearchingMode {
-            return networkSearch()
-        }
-
-        if self is NCFavorite {
-            return reloadDataSource()
-        }
-
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let serverUrl = userInfo["serverUrl"] as? String,
-              serverUrl == self.serverUrl
-        else { return }
-
         reloadDataSource()
     }
 

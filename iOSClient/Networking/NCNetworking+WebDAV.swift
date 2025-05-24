@@ -468,7 +468,11 @@ extension NCNetworking {
 
         self.database.setMetadataFavorite(ocId: metadata.ocId, favorite: !metadata.favorite, saveOldFavorite: metadata.favorite.description, status: global.metadataStatusWaitFavorite)
 
-        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterFavoriteFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl])
+        notifyAllDelegates { delegate in
+            delegate.transferChange(status: self.global.networkingStatusFavorite,
+                                    metadata: metadata,
+                                    error: .success)
+        }
     }
 
     // MARK: - Lock Files

@@ -124,8 +124,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         // NOTIFIFICATION
 
-        NotificationCenter.default.addObserver(self, selector: #selector(favoriteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
-
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(searchText), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuSearchTextPDF), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(goToPage), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuGotToPageInPDF), object: nil)
@@ -134,9 +132,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     }
 
     deinit {
-
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
-
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuSearchTextPDF), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuGotToPageInPDF), object: nil)
@@ -288,16 +283,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     }
 
     // MARK: - NotificationCenter
-
-    @objc func favoriteFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
-              ocId == self.metadata?.ocId,
-              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
-        else { return }
-
-        self.metadata = metadata
-    }
 
     @objc func searchText() {
         if let viewerPDFSearch = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateViewController(withIdentifier: "NCViewerPDFSearch") as? NCViewerPDFSearch {
@@ -572,6 +557,11 @@ extension NCViewerPDF: NCTransferDelegate {
                     self.pdfDocument = PDFDocument(url: URL(fileURLWithPath: self.filePath))
                     self.pdfView.document = self.pdfDocument
                     self.pdfView.layoutDocumentView()
+                }
+            /// FAVORITE
+            case NCGlobal.shared.networkingStatusFavorite:
+                if self.metadata?.ocId == metadata.ocId {
+                    self.metadata = metadata
                 }
             default:
                 break

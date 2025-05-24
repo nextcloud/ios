@@ -398,7 +398,11 @@ class NCNetworkingProcess {
                     database.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite, saveOldFavorite: nil, status: global.metadataStatusNormal)
                 }
 
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterFavoriteFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl])
+                NCNetworking.shared.notifyAllDelegates { delegate in
+                    delegate.transferChange(status: self.global.networkingStatusFavorite,
+                                            metadata: metadata,
+                                            error: .success)
+                }
             }
         }
 
