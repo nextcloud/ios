@@ -312,7 +312,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         func openNotification(controller: NCMainTabBarController) {
             if app == NCGlobal.shared.termsOfServiceName {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterGetServerData, second: 0.5)
+                NCNetworking.shared.notifyAllDelegates { delegate in
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        delegate.transferRequestServerData(serverUrl: nil)
+                    }
+                }
             } else if let navigationController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? UINavigationController,
                       let viewController = navigationController.topViewController as? NCNotification {
                 viewController.modalPresentationStyle = .pageSheet

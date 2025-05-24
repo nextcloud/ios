@@ -240,7 +240,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.navigationController?.navigationItem.leftBarButtonItems?.first?.customView?.addInteraction(dropInteraction)
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming(_:)), name: NSNotification.Name(rawValue: global.notificationCenterChangeTheming), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(getServerData(_:)), name: NSNotification.Name(rawValue: global.notificationCenterGetServerData), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadHeader(_:)), name: NSNotification.Name(rawValue: global.notificationCenterReloadHeader), object: nil)
 
         DispatchQueue.main.async {
@@ -417,12 +416,19 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.transferDebouncer.call {
             if self.isSearchingMode {
                 self.networkSearch()
-            } else if let serverUrl, self.serverUrl == serverUrl {
+            } else if ( self.serverUrl == serverUrl) || serverUrl == nil {
                 self.dataSource.removeAll()
                 self.reloadDataSource()
-            } else if serverUrl == nil {
-                self.dataSource.removeAll()
-                self.reloadDataSource()
+            }
+        }
+    }
+
+    func transferRequestServerData(serverUrl: String?) {
+        self.transferDebouncer.call {
+            if self.isSearchingMode {
+                self.networkSearch()
+            } else if ( self.serverUrl == serverUrl) || serverUrl == nil {
+                self.getServerData()
             }
         }
     }
@@ -472,17 +478,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.collectionView.collectionViewLayout.invalidateLayout()
 
         (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
-    }
-
-    @objc func getServerData(_ notification: NSNotification) {
-        if let userInfo = notification.userInfo as NSDictionary?,
-           let serverUrl = userInfo["serverUrl"] as? String {
-            if serverUrl != self.serverUrl {
-                return
-            }
-        }
-
-        getServerData()
     }
 
     @objc func reloadHeader(_ notification: NSNotification) {

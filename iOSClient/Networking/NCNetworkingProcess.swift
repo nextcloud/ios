@@ -307,9 +307,12 @@ class NCNetworkingProcess {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["serverUrl": metadata.serverUrl, "account": metadata.account, "dragdrop": false, "type": "copy"])
 
                 if result.error == .success {
-
-                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterGetServerData, userInfo: ["serverUrl": metadata.serverUrl])
-                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterGetServerData, userInfo: ["serverUrl": serverUrlTo])
+                    NCNetworking.shared.notifyAllDelegates { delegate in
+                        delegate.transferRequestServerData(serverUrl: metadata.serverUrl)
+                    }
+                    NCNetworking.shared.notifyAllDelegates { delegate in
+                        delegate.transferRequestServerData(serverUrl: serverUrlTo)
+                    }
 
                 } else {
                     NCContentPresenter().showError(error: result.error)
@@ -358,9 +361,13 @@ class NCNetworkingProcess {
                         }
                     }
 
-                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterGetServerData, userInfo: ["serverUrl": metadata.serverUrl])
-                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterGetServerData, userInfo: ["serverUrl": serverUrlTo])
+                    NCNetworking.shared.notifyAllDelegates { delegate in
+                        delegate.transferRequestServerData(serverUrl: metadata.serverUrl)
+                    }
 
+                    NCNetworking.shared.notifyAllDelegates { delegate in
+                        delegate.transferRequestServerData(serverUrl: serverUrlTo)
+                    }
                 } else {
                     NCContentPresenter().showError(error: result.error)
                 }

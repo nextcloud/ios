@@ -219,7 +219,9 @@ extension NCViewerNextcloudText: UINavigationControllerDelegate {
         super.didMove(toParent: parent)
 
         if parent == nil {
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterGetServerData, userInfo: ["serverUrl": self.metadata.serverUrl])
+            NCNetworking.shared.notifyAllDelegates { delegate in
+                delegate.transferRequestServerData(serverUrl: self.metadata.serverUrl)
+            }
         }
     }
 }

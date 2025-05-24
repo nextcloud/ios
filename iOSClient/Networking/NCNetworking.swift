@@ -48,6 +48,8 @@ protocol NCTransferDelegate: AnyObject {
     func transferChange(status: String, metadata: tableMetadata, error: NKError)
     func transferChange(status: String, metadatasError: [tableMetadata: NKError])
     func transferReloadData(serverUrl: String?)
+    func transferRequestServerData(serverUrl: String?)
+
 }
 
 extension NCTransferDelegate {
@@ -59,6 +61,7 @@ extension NCTransferDelegate {
     func transferChange(status: String, metadata: tableMetadata, error: NKError) {}
     func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {}
     func transferReloadData(serverUrl: String?) {}
+    func transferRequestServerData(serverUrl: String?) {}
 }
 
 class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
