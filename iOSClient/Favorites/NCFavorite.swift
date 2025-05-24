@@ -25,7 +25,6 @@ import UIKit
 import NextcloudKit
 
 class NCFavorite: NCCollectionViewCommon {
-
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 

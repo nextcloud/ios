@@ -193,8 +193,7 @@ extension NCCollectionViewCommon {
                                 self.database.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl))
                                 self.database.setDirectory(serverUrl: serverUrl, encrypted: false, account: metadata.account)
                                 self.database.setMetadataEncrypted(ocId: metadata.ocId, encrypted: false)
-
-                                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeStatusFolderE2EE, userInfo: ["serverUrl": metadata.serverUrl])
+                                self.reloadDataSource()
                             } else {
                                 NCContentPresenter().messageNotification(NSLocalizedString("_e2e_error_", comment: ""), error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
                             }
