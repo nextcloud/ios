@@ -1248,6 +1248,7 @@ extension NCManageDatabase {
 
             if let metadata {
                 metadata.status = NCGlobal.shared.metadataStatusWaitCreateFolder
+                metadata.sessionSelector = NCGlobal.shared.selectorUploadAutoUpload
                 metadata.sessionDate = Date()
                 metadatas.append(tableMetadata(value: metadata))
             } else {
@@ -1261,6 +1262,7 @@ extension NCManageDatabase {
                                                                       session: session,
                                                                       sceneIdentifier: nil)
                 metadata.status = NCGlobal.shared.metadataStatusWaitCreateFolder
+                metadata.sessionSelector = NCGlobal.shared.selectorUploadAutoUpload
                 metadata.sessionDate = Date()
                 metadatas.append(metadata)
             }
