@@ -23,7 +23,6 @@
 
 import UIKit
 import NextcloudKit
-import Alamofire
 
 extension NCNetworking {
     func synchronization(account: String,

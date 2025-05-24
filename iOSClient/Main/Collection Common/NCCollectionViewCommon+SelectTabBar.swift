@@ -45,9 +45,9 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
 
         if canDeleteServer {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { _ in
-                NCNetworking.shared.deleteMetadatas(metadatas, sceneIdentifier: self.controller?.sceneIdentifier)
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
+                NCNetworking.shared.setStatusWaitDelete(metadatas: metadatas, sceneIdentifier: self.controller?.sceneIdentifier)
                 self.setEditMode(false)
+                self.reloadDataSource()
             })
         }
 
@@ -56,14 +56,9 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
 
             Task {
                 var error = NKError()
-                var ocId: [String] = []
                 for metadata in copyMetadatas where error == .success {
                     error = await NCNetworking.shared.deleteCache(metadata, sceneIdentifier: self.controller?.sceneIdentifier)
-                    if error == .success {
-                        ocId.append(metadata.ocId)
-                    }
                 }
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "error": error])
             }
             self.setEditMode(false)
         })

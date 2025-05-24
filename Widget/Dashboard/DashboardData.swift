@@ -223,7 +223,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                                     if FileManager().fileExists(atPath: fileNamePath), let image = UIImage(contentsOfFile: fileNamePath) {
                                         icon = image
                                     } else {
-                                        let (_, _, error) = await NCNetworking.shared.downloadPreview(url: url, account: activeTableAccount.account)
+                                        let (_, _, error) = await NextcloudKit.shared.downloadPreview(url: url, account: activeTableAccount.account)
                                         if error == .success,
                                            let data = responseData?.data,
                                            let image = convertDataToImage(data: data, size: NCGlobal.shared.size256, fileNameToWrite: fileName) {
@@ -257,4 +257,5 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
             }
         }
     }
+
 }

@@ -139,8 +139,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
             bottomContraint?.constant = 150
         }
-
-        NotificationCenter.default.addObserver(self, selector: #selector(createFolder(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCreateFolder), object: nil)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -494,13 +492,13 @@ extension NCSelect {
             if self.dataSource.isEmpty() {
                 self.collectionView.reloadData()
             }
-        } completion: { _, _, _, _ in
-            let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: NCDBLayoutForView(), account: self.session.account)
-
-            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, account: self.session.account)
-            self.collectionView.reloadData()
-
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": self.serverUrl])
+        } completion: { account, _, _, _ in
+            self.database.getResultMetadatasPredicateAsync(predicate, layoutForView: NCDBLayoutForView(), account: account) { metadatas, layoutForView, account in
+                self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
+                DispatchQueue.main.async {
+                    self.collectionView.reloadData()
+                }
+            }
         }
     }
 }
