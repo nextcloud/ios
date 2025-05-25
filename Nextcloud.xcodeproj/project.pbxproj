@@ -550,7 +550,7 @@
 		F758B460212C56A400515F55 /* NCScan.swift in Sources */ = {isa = PBXBuildFile; fileRef = F758B45F212C56A400515F55 /* NCScan.swift */; };
 		F75A9EE623796C6F0044CFCE /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
 		F75A9EE723796C6F0044CFCE /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
-		F75B0ABD244C4DBB00E58DCA /* NCActionCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75B0ABC244C4DBB00E58DCA /* NCActionCenter.swift */; };
+		F75B0ABD244C4DBB00E58DCA /* NCNetworking+DownloadAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75B0ABC244C4DBB00E58DCA /* NCNetworking+DownloadAction.swift */; };
 		F75C0C4823D1FAE300163CC8 /* NCRichWorkspaceCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75C0C4723D1FAE300163CC8 /* NCRichWorkspaceCommon.swift */; };
 		F75CA1472962F13700B01130 /* NCHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75CA1462962F13700B01130 /* NCHUDView.swift */; };
 		F75D19E325EFE09000D74598 /* NCTrash+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75D19E225EFE09000D74598 /* NCTrash+Menu.swift */; };
@@ -1499,7 +1499,7 @@
 		F758B45D212C569C00515F55 /* NCScanCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCScanCell.swift; sourceTree = "<group>"; };
 		F758B45F212C56A400515F55 /* NCScan.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCScan.swift; sourceTree = "<group>"; };
 		F75A9EE523796C6F0044CFCE /* NCNetworking.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCNetworking.swift; sourceTree = "<group>"; };
-		F75B0ABC244C4DBB00E58DCA /* NCActionCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActionCenter.swift; sourceTree = "<group>"; };
+		F75B0ABC244C4DBB00E58DCA /* NCNetworking+DownloadAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCNetworking+DownloadAction.swift"; sourceTree = "<group>"; };
 		F75B91E21ECAE17800199C96 /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F75B91F71ECAE26300199C96 /* pt-BR */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-BR"; path = "pt-BR.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F75B923D1ECAE55E00199C96 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -2465,21 +2465,21 @@
 			children = (
 				F7C30DF8291BCBF00017149B /* E2EE */,
 				F72CD63925C19EBF00F46F9A /* NCAutoUpload.swift */,
-				F75B0ABC244C4DBB00E58DCA /* NCActionCenter.swift */,
 				F77BC3EC293E528A005F2B08 /* NCConfigServer.swift */,
 				F75A9EE523796C6F0044CFCE /* NCNetworking.swift */,
-				F7A3DB8F2DDE238C008F7EC8 /* NCTransferDebouncer.swift */,
-				F7411C532D7B26C600F57358 /* NCNetworking+ServerError.swift */,
 				F7327E1F2B73A42F00A462C7 /* NCNetworking+Download.swift */,
+				F75B0ABC244C4DBB00E58DCA /* NCNetworking+DownloadAction.swift */,
 				F7327E342B73AEDE00A462C7 /* NCNetworking+LivePhoto.swift */,
 				F7F3E58A2D3BB65000A32B14 /* NCNetworking+Recommendations.swift */,
-				F785129A2D79899E0087DDD0 /* NCNetworking+TermsOfService.swift */,
+				F7411C532D7B26C600F57358 /* NCNetworking+ServerError.swift */,
 				F7327E3C2B73B92800A462C7 /* NCNetworking+Synchronization.swift */,
 				F74230F22C79B57200CA1ACA /* NCNetworking+Task.swift */,
+				F785129A2D79899E0087DDD0 /* NCNetworking+TermsOfService.swift */,
 				F7327E272B73A53400A462C7 /* NCNetworking+Upload.swift */,
 				F7327E2F2B73A86700A462C7 /* NCNetworking+WebDAV.swift */,
 				F70D8D8024A4A9BF000A5756 /* NCNetworkingProcess.swift */,
 				F755BD9A20594AC7008C5FBB /* NCService.swift */,
+				F7A3DB8F2DDE238C008F7EC8 /* NCTransferDebouncer.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -4570,7 +4570,7 @@
 				F7BD0A042C4689E9003A4A6D /* NCMedia+MediaLayout.swift in Sources */,
 				F761856B29E98543006EB3B0 /* NCIntroViewController.swift in Sources */,
 				F7743A142C33F13A0034F670 /* NCCollectionViewCommon+CollectionViewDataSource.swift in Sources */,
-				F75B0ABD244C4DBB00E58DCA /* NCActionCenter.swift in Sources */,
+				F75B0ABD244C4DBB00E58DCA /* NCNetworking+DownloadAction.swift in Sources */,
 				AF935067276B84E700BD078F /* NCMenu+FloatingPanel.swift in Sources */,
 				F321DA8A2B71205A00DDA0E6 /* NCTrashSelectTabBar.swift in Sources */,
 				F76882282C0DD1E7001CF441 /* NCEndToEndInitialize.swift in Sources */,
