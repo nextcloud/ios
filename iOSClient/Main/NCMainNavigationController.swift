@@ -264,38 +264,26 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
         let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: utility.loadImage(named: "list.bullet"), state: layoutForView.layout == global.layoutList ? .on : .off) { _ in
             layoutForView.layout = self.global.layoutList
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
-                                                        object: nil,
-                                                        userInfo: ["account": self.session.account,
-                                                                   "serverUrl": collectionViewCommon.serverUrl,
-                                                                   "layoutForView": layoutForView])
+            collectionViewCommon.changeLayout(layoutForView: layoutForView)
+            self.updateRightMenu()
         }
 
         let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: utility.loadImage(named: "square.grid.2x2"), state: layoutForView.layout == global.layoutGrid ? .on : .off) { _ in
             layoutForView.layout = self.global.layoutGrid
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
-                                                        object: nil,
-                                                        userInfo: ["account": self.session.account,
-                                                                   "serverUrl": collectionViewCommon.serverUrl,
-                                                                   "layoutForView": layoutForView])
+            collectionViewCommon.changeLayout(layoutForView: layoutForView)
+            self.updateRightMenu()
         }
 
         let mediaSquare = UIAction(title: NSLocalizedString("_media_square_", comment: ""), image: utility.loadImage(named: "square.grid.3x3"), state: layoutForView.layout == global.layoutPhotoSquare ? .on : .off) { _ in
             layoutForView.layout = self.global.layoutPhotoSquare
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
-                                                        object: nil,
-                                                        userInfo: ["account": self.session.account,
-                                                                   "serverUrl": collectionViewCommon.serverUrl,
-                                                                   "layoutForView": layoutForView])
+            collectionViewCommon.changeLayout(layoutForView: layoutForView)
+            self.updateRightMenu()
         }
 
         let mediaRatio = UIAction(title: NSLocalizedString("_media_ratio_", comment: ""), image: utility.loadImage(named: "rectangle.grid.3x2"), state: layoutForView.layout == self.global.layoutPhotoRatio ? .on : .off) { _ in
             layoutForView.layout = self.global.layoutPhotoRatio
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
-                                                        object: nil,
-                                                        userInfo: ["account": self.session.account,
-                                                                   "serverUrl": collectionViewCommon.serverUrl,
-                                                                   "layoutForView": layoutForView])
+            collectionViewCommon.changeLayout(layoutForView: layoutForView)
+            self.updateRightMenu()
         }
 
         let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid, mediaSquare, mediaRatio])
@@ -311,11 +299,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 layoutForView.ascending = !layoutForView.ascending
             }
             layoutForView.sort = "fileName"
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
-                                                        object: nil,
-                                                        userInfo: ["account": self.session.account,
-                                                                   "serverUrl": collectionViewCommon.serverUrl,
-                                                                   "layoutForView": layoutForView])
+            collectionViewCommon.changeLayout(layoutForView: layoutForView)
+            self.updateRightMenu()
         }
 
         let byNewest = UIAction(title: NSLocalizedString("_date_", comment: ""), image: isDate ? ascendingChevronImage : nil, state: isDate ? .on : .off) { _ in
@@ -323,11 +308,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 layoutForView.ascending = !layoutForView.ascending
             }
             layoutForView.sort = "date"
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
-                                                        object: nil,
-                                                        userInfo: ["account": self.session.account,
-                                                                   "serverUrl": collectionViewCommon.serverUrl,
-                                                                   "layoutForView": layoutForView])
+            collectionViewCommon.changeLayout(layoutForView: layoutForView)
+            self.updateRightMenu()
         }
 
         let byLargest = UIAction(title: NSLocalizedString("_size_", comment: ""), image: isSize ? ascendingChevronImage : nil, state: isSize ? .on : .off) { _ in
@@ -335,11 +317,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 layoutForView.ascending = !layoutForView.ascending
             }
             layoutForView.sort = "size"
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
-                                                        object: nil,
-                                                        userInfo: ["account": self.session.account,
-                                                                   "serverUrl": collectionViewCommon.serverUrl,
-                                                                   "layoutForView": layoutForView])
+            collectionViewCommon.changeLayout(layoutForView: layoutForView)
+            self.updateRightMenu()
         }
 
         let sortSubmenu = UIMenu(title: NSLocalizedString("_order_by_", comment: ""), options: .displayInline, children: [byName, byNewest, byLargest])
