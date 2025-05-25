@@ -16,7 +16,12 @@ final class NCTransferDebouncer {
         self.maxEventCount = maxEventCount
     }
 
-    func call(_ block: @escaping () -> Void) {
+    func call(_ block: @escaping () -> Void, immediate: Bool = false) {
+        if immediate {
+            latestBlock = block
+            return commit()
+        }
+
         latestBlock = block
         eventCount += 1
 
