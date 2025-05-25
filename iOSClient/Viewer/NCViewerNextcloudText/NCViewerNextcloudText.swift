@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import NextcloudKit
 @preconcurrency import WebKit
 
 class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, WKUIDelegate {
@@ -32,6 +33,10 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     var metadata: tableMetadata = tableMetadata()
     var imageIcon: UIImage?
     let utility = NCUtility()
+
+    var sceneIdentifier: String {
+        (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
+    }
 
     // MARK: - View Life Cycle
 
@@ -102,11 +107,15 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
+        NCNetworking.shared.addDelegate(self)
+
         NCActivityIndicator.shared.start(backgroundView: view)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+
+        NCNetworking.shared.removeDelegate(self)
 
         webView.configuration.userContentController.removeScriptMessageHandler(forName: "DirectEditingMobileInterface")
 
@@ -121,16 +130,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     }
 
     // MARK: - NotificationCenter
-
-    @objc func favoriteFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
-              ocId == self.metadata.ocId,
-              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
-        else { return }
-
-        self.metadata = metadata
-    }
 
     @objc func keyboardDidShow(notification: Notification) {
         guard let info = notification.userInfo else { return }
@@ -219,6 +218,22 @@ extension NCViewerNextcloudText: UINavigationControllerDelegate {
         if parent == nil {
             NCNetworking.shared.notifyAllDelegates { delegate in
                 delegate.transferRequestServerData(serverUrl: self.metadata.serverUrl)
+            }
+        }
+    }
+}
+
+extension NCViewerNextcloudText: NCTransferDelegate {
+    func transferChange(status: String, metadata: tableMetadata, error: NKError) {
+        DispatchQueue.main.async {
+            switch status {
+            /// FAVORITE
+            case NCGlobal.shared.networkingStatusFavorite:
+                if self.metadata.ocId == metadata.ocId {
+                    self.metadata = metadata
+                }
+            default:
+                break
             }
         }
     }
