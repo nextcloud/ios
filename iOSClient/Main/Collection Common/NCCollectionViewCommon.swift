@@ -719,7 +719,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - DataSource
 
-    @objc func reloadDataSource() {
+    func reloadDataSource() {
         if isSearchingMode {
             isDirectoryEncrypted = false
         } else {
