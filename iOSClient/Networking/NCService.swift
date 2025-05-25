@@ -173,12 +173,7 @@ class NCService: NSObject {
             }
 
             // Recommendations
-            if NCCapabilities.shared.getCapabilities(account: account).capabilityRecommendations {
-                Task.detached {
-                    let session = NCSession.shared.getSession(account: account)
-                    await NCNetworking.shared.createRecommendations(session: session)
-                }
-            } else {
+            if !NCCapabilities.shared.getCapabilities(account: account).capabilityRecommendations {
                 self.database.deleteAllRecommendedFiles(account: account)
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadHeader, userInfo: ["account": account])
             }

@@ -230,26 +230,20 @@ class NCFiles: NCCollectionViewCommon {
 
         DispatchQueue.global().async {
             self.networkReadFolder { metadatas, error in
-                DispatchQueue.main.async {
-                    self.refreshControlEndRefreshing()
-                    self.reloadDataSource()
-                }
-
                 if error == .success {
                     let metadatas: [tableMetadata] = metadatas ?? self.dataSource.getMetadatas()
                     for metadata in metadatas where !metadata.directory && downloadMetadata(metadata) {
                         self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                         session: NCNetworking.shared.sessionDownload,
                                                                         selector: NCGlobal.shared.selectorDownloadFile,
-                                                                        sceneIdentifier: self.controller?.sceneIdentifier)
+                                                                        sceneIdentifier: self.controller?.sceneIdentifier,
+                                                                        sync: false)
                         NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                     }
-                    /// Recommendation
-                    if self.isRecommendationActived {
-                        Task.detached {
-                            await NCNetworking.shared.createRecommendations(session: self.session)
-                        }
-                    }
+                }
+                DispatchQueue.main.async {
+                    self.refreshControlEndRefreshing()
+                    self.reloadDataSource()
                 }
             }
         }

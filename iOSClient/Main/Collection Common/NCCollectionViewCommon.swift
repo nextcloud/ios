@@ -214,11 +214,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
             self.getServerData()
-            if self.isRecommendationActived {
-                Task.detached {
-                    await NCNetworking.shared.createRecommendations(session: self.session)
-                }
-            }
         }
 
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPressCollecationView(_:)))
@@ -373,11 +368,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     //TODO: TRANSFER DELEGATE
     /*
-     if isRecommendationActived {
-         Task.detached {
-             await NCNetworking.shared.createRecommendations(session: self.session)
-         }
-     }
+
 
      Error message
 
@@ -452,11 +443,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if isSearchingMode {
             return networkSearch()
         }
-        if isRecommendationActived {
-            Task.detached {
-                await NCNetworking.shared.createRecommendations(session: self.session)
-            }
-        }
         if metadata.serverUrl == self.serverUrl {
             reloadDataSource()
         }
@@ -465,11 +451,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func transferMove(metadata: tableMetadata, dragdrop: Bool) {
         if isSearchingMode {
             return networkSearch()
-        }
-        if isRecommendationActived {
-            Task.detached {
-                await NCNetworking.shared.createRecommendations(session: self.session)
-            }
         }
         if metadata.serverUrl == self.serverUrl {
             reloadDataSource()
@@ -743,6 +724,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             isDirectoryEncrypted = false
         } else {
             isDirectoryEncrypted = NCUtilityFileSystem().isDirectoryE2EE(session: session, serverUrl: serverUrl)
+            if isRecommendationActived {
+                Task.detached {
+                    await NCNetworking.shared.createRecommendations(session: self.session)
+                }
+            }
         }
 
         DispatchQueue.main.async {

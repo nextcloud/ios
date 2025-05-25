@@ -28,7 +28,7 @@ import SVGKit
 import Photos
 import Alamofire
 
-class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelectDelegate, NCTransferDelegate {
+class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelectDelegate {
     static let shared = NCActionCenter()
 
     var viewerQuickLook: NCViewerQuickLook?
@@ -43,18 +43,9 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     func setup(sceneIdentifier: String) {
         self.sceneIdentifier = sceneIdentifier
-        NCNetworking.shared.addDelegate(self)
 
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
     }
-
-    // MARK: - Transfer Delegate
-
-    func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
-
-    func transferChange(status: String, metadata: tableMetadata, error: NKError) { }
-
-    func transferReloadData(serverUrl: String?) { }
 
     // MARK: - Download
 
