@@ -70,13 +70,13 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     func move() {
         let metadatas = getSelectedMetadatas()
 
-        NCActionCenter.shared.openSelectView(items: metadatas, controller: self.controller)
+        NCDownloadAction.shared.openSelectView(items: metadatas, controller: self.controller)
         setEditMode(false)
     }
 
     func share() {
         let metadatas = getSelectedMetadatas()
-        NCActionCenter.shared.openActivityViewController(selectedMetadata: metadatas, controller: self.controller, sender: nil)
+        NCDownloadAction.shared.openActivityViewController(selectedMetadata: metadatas, controller: self.controller, sender: nil)
         setEditMode(false)
     }
 
@@ -88,13 +88,13 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                 message: NSLocalizedString("_select_offline_warning_", comment: ""),
                 preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("_continue_", comment: ""), style: .default, handler: { _ in
-                metadatas.forEach { NCActionCenter.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
+                metadatas.forEach { NCDownloadAction.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
                 self.setEditMode(false)
             }))
             alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
             self.present(alert, animated: true)
         } else {
-            metadatas.forEach { NCActionCenter.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
+            metadatas.forEach { NCDownloadAction.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
             setEditMode(false)
         }
     }

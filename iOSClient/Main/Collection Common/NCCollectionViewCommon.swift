@@ -137,7 +137,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     var defaultPredicate: NSPredicate {
-        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND NOT (status IN %@) AND NOT (livePhotoFile != '' AND classFile == %@)", session.account, self.serverUrl, NCGlobal.shared.metadataStatusHideInView, NKCommon.TypeClassFile.video.rawValue)
+        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND NOT (status IN %@) AND NOT (livePhotoFile != '' AND classFile == %@)", session.account, self.serverUrl, self.global.metadataStatusHideInView, NKCommon.TypeClassFile.video.rawValue)
         return predicate
     }
 
@@ -350,7 +350,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {
         switch status {
         /// DELETE
-        case NCGlobal.shared.networkingStatusDelete:
+        case self.global.networkingStatusDelete:
             let needLoadDataSource = metadatasError.contains { entry in
                 let (key, value) = entry
                 return key.serverUrl == self.serverUrl && value != .success
@@ -624,7 +624,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func tapShareListItem(with ocId: String, ocIdTransfer: String, sender: Any) {
         guard let metadata = self.database.getMetadataFromOcId(ocId) else { return }
 
-        NCActionCenter.shared.openShare(viewController: self, metadata: metadata, page: .sharing)
+        NCDownloadAction.shared.openShare(viewController: self, metadata: metadata, page: .sharing)
     }
 
     func tapMoreGridItem(with ocId: String, ocIdTransfer: String, image: UIImage?, sender: Any) {
@@ -714,7 +714,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func pasteFilesMenu(_ sender: Any?) {
-        NCActionCenter.shared.pastePasteboard(serverUrl: serverUrl, account: session.account, controller: self.controller)
+        NCDownloadAction.shared.pastePasteboard(serverUrl: serverUrl, account: session.account, controller: self.controller)
     }
 
     // MARK: - DataSource

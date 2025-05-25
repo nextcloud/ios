@@ -9,8 +9,8 @@ import SVGKit
 import Photos
 import Alamofire
 
-class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelectDelegate {
-    static let shared = NCActionCenter()
+class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSelectDelegate, NCTransferDelegate {
+    static let shared = NCDownloadAction()
 
     var viewerQuickLook: NCViewerQuickLook?
     var documentController: UIDocumentInteractionController?
@@ -25,10 +25,24 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     func setup(sceneIdentifier: String) {
         self.sceneIdentifier = sceneIdentifier
 
+        NCNetworking.shared.addDelegate(self)
+
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
     }
 
     // MARK: - Download
+
+    func transferChange(status: String, metadata: tableMetadata, error: NKError) {
+        DispatchQueue.main.async {
+            switch status {
+            /// DOWNLOADED
+            case self.global.networkingStatusDownloaded:
+                break
+            default:
+                break
+            }
+        }
+    }
 
     @objc func downloadedFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
@@ -134,6 +148,8 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         }
     }
 
+    //MARK: -
+
     func setMetadataAvalableOffline(_ metadata: tableMetadata, isOffline: Bool) {
         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
         if isOffline {
@@ -164,6 +180,8 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                                                        selector: NCGlobal.shared.selectorSynchronizationOffline)
         }
     }
+
+    //MARK: -
 
     func viewerFile(account: String, fileId: String, viewController: UIViewController) {
         var downloadRequest: DownloadRequest?

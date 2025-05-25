@@ -171,7 +171,7 @@ extension NCMenuAction {
             order: order,
             sender: sender,
             action: { _ in
-                NCActionCenter.shared.openActivityViewController(selectedMetadata: selectedMetadatas, controller: controller, sender: sender)
+                NCDownloadAction.shared.openActivityViewController(selectedMetadata: selectedMetadatas, controller: controller, sender: sender)
                 completion?()
             }
         )
@@ -191,13 +191,13 @@ extension NCMenuAction {
                         message: NSLocalizedString("_select_offline_warning_", comment: ""),
                         preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: NSLocalizedString("_continue_", comment: ""), style: .default, handler: { _ in
-                        selectedMetadatas.forEach { NCActionCenter.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
+                        selectedMetadatas.forEach { NCDownloadAction.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
                         completion?()
                     }))
                     alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
                     viewController.present(alert, animated: true)
                 } else {
-                    selectedMetadatas.forEach { NCActionCenter.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
+                    selectedMetadatas.forEach { NCDownloadAction.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
                     completion?()
                 }
             }
@@ -227,7 +227,7 @@ extension NCMenuAction {
                     viewController.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true, completion: nil)
                 } else {
                     let controller = viewController.tabBarController as? NCMainTabBarController
-                    NCActionCenter.shared.openSelectView(items: selectedMetadatas, controller: controller)
+                    NCDownloadAction.shared.openSelectView(items: selectedMetadatas, controller: controller)
                     completion?()
                 }
             }

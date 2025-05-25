@@ -45,7 +45,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         if metadata.directory {
             pushMetadata(metadata)
         } else {
-            let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
+            let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt1024)
 
             if !metadata.isDirectoryE2EE, metadata.isImage || metadata.isAudioOrVideo {
                 let metadatas = self.dataSource.getMetadatas()
@@ -57,7 +57,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
             } else if metadata.isAvailableEditorView ||
                       utilityFileSystem.fileProviderStorageExists(metadata) ||
-                      metadata.name == NCGlobal.shared.talkName {
+                        metadata.name == self.global.talkName {
 
                 NCViewer().view(viewController: self, metadata: metadata, image: image)
 

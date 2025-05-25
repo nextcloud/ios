@@ -180,7 +180,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
             }
 
             if message.body as? String == "share" {
-                NCActionCenter.shared.openShare(viewController: self, metadata: metadata, page: .sharing)
+                NCDownloadAction.shared.openShare(viewController: self, metadata: metadata, page: .sharing)
             }
 
             if let param = message.body as? [AnyHashable: Any] {

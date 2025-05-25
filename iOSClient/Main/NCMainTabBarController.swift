@@ -40,6 +40,7 @@ class NCMainTabBarController: UITabBarController {
     private var previousIndex: Int?
     private var checkUserDelaultErrorInProgress: Bool = false
     private var timer: Timer?
+    private let global = NCGlobal.shared
 
     var window: UIWindow? {
         return SceneManager.shared.getWindow(controller: self)
@@ -49,7 +50,7 @@ class NCMainTabBarController: UITabBarController {
         super.viewDidLoad()
         delegate = self
 
-        NCActionCenter.shared.setup(sceneIdentifier: sceneIdentifier)
+        NCDownloadAction.shared.setup(sceneIdentifier: sceneIdentifier)
 
         tabBar.tintColor = NCBrandColor.shared.getElement(account: account)
 
@@ -93,7 +94,7 @@ class NCMainTabBarController: UITabBarController {
             item.tag = 104
         }
 
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil, queue: .main) { [weak self] notification in
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterChangeTheming), object: nil, queue: .main) { [weak self] notification in
             if let userInfo = notification.userInfo as? NSDictionary,
                let account = userInfo["account"] as? String,
                self?.account == account {
@@ -101,7 +102,7 @@ class NCMainTabBarController: UITabBarController {
             }
         }
 
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCheckUserDelaultErrorDone), object: nil, queue: nil) { notification in
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterCheckUserDelaultErrorDone), object: nil, queue: nil) { notification in
             if let userInfo = notification.userInfo,
                let account = userInfo["account"] as? String,
                let controller = userInfo["controller"] as? NCMainTabBarController,

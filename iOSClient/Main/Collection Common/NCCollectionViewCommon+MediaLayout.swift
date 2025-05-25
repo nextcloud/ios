@@ -28,7 +28,7 @@ import NextcloudKit
 extension NCCollectionViewCommon: NCMediaLayoutDelegate {
     func getColumnCount() -> Int {
         if self.numberOfColumns == 0,
-           let layoutForView = database.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewFiles, serverUrl: self.serverUrl) {
+           let layoutForView = database.getLayoutForView(account: session.account, key: global.layoutViewFiles, serverUrl: self.serverUrl) {
             if layoutForView.columnPhoto > 0 {
                 self.numberOfColumns = layoutForView.columnPhoto
             } else {
@@ -67,7 +67,7 @@ extension NCCollectionViewCommon: NCMediaLayoutDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: IndexPath, columnCount: Int, typeLayout: String) -> CGSize {
-        if typeLayout == NCGlobal.shared.layoutPhotoSquare {
+        if typeLayout == global.layoutPhotoSquare {
             return CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
         } else {
             guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return .zero }
@@ -75,7 +75,7 @@ extension NCCollectionViewCommon: NCMediaLayoutDelegate {
             if metadata.imageSize != CGSize.zero {
                 return metadata.imageSize
             } else if metadata.classFile == NKCommon.TypeClassFile.document.rawValue {
-                let ext = NCGlobal.shared.getSizeExtension(column: self.numberOfColumns)
+                let ext = global.getSizeExtension(column: self.numberOfColumns)
                 if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
                     return image.size
                 }

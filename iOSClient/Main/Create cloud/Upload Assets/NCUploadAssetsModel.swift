@@ -39,6 +39,7 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
         NCSession.shared.getSession(controller: controller)
     }
     let database = NCManageDatabase.shared
+    let global = NCGlobal.shared
     var metadatasNOConflict: [tableMetadata] = []
     var metadatasUploadInConflict: [tableMetadata] = []
     var timer: Timer?
@@ -222,8 +223,8 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
             }
             metadataForUpload.assetLocalIdentifier = asset.localIdentifier
             metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
-            metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
-            metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
+            metadataForUpload.sessionSelector = self.global.selectorUploadFile
+            metadataForUpload.status = self.global.metadataStatusWaitUpload
             metadataForUpload.sessionDate = Date()
             metadataForUpload.nativeFormat = previewStore.nativeFormat
 

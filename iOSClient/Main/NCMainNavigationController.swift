@@ -103,7 +103,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             }
         }), for: .touchUpInside)
 
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateNotification), object: nil, queue: nil) { _ in
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterUpdateNotification), object: nil, queue: nil) { _ in
             let capabilities = NCCapabilities.shared.getCapabilities(account: self.session.account)
             if capabilities.capabilityNotification.count > 0 {
                 NextcloudKit.shared.getNotifications(account: self.session.account) { _ in
@@ -179,7 +179,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
 
         let capabilities = NCCapabilities.shared.getCapabilities(account: session.account)
-        let resultsCount = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal))?.count ?? 0
+        let resultsCount = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", self.global.metadataStatusNormal))?.count ?? 0
         var tempRightBarButtonItems: [UIBarButtonItem] = createRightMenu() == nil ? [] : [self.menuBarButtonItem]
         var tempTotalTags = tempRightBarButtonItems.count == 0 ? 0 : self.menuBarButtonItem.tag
         var totalTags = 0
@@ -398,11 +398,11 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: utility.loadImage(named: "checkmark.circle", colors: [NCBrandColor.shared.iconImageColor]), attributes: isSelectAvailable ? [] : .disabled) { _ in
             trashViewController.setEditMode(true)
         }
-        let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: utility.loadImage(named: "list.bullet", colors: [NCBrandColor.shared.iconImageColor]), state: layoutForView.layout == NCGlobal.shared.layoutList ? .on : .off) { _ in
+        let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: utility.loadImage(named: "list.bullet", colors: [NCBrandColor.shared.iconImageColor]), state: layoutForView.layout == self.global.layoutList ? .on : .off) { _ in
             trashViewController.onListSelected()
             self.updateRightMenu()
         }
-        let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: utility.loadImage(named: "square.grid.2x2", colors: [NCBrandColor.shared.iconImageColor]), state: layoutForView.layout == NCGlobal.shared.layoutGrid ? .on : .off) { _ in
+        let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: utility.loadImage(named: "square.grid.2x2", colors: [NCBrandColor.shared.iconImageColor]), state: layoutForView.layout == self.global.layoutGrid ? .on : .off) { _ in
             trashViewController.onGridSelected()
             self.updateRightMenu()
         }

@@ -48,6 +48,7 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
     private weak var delegate: NCSectionFirstHeaderDelegate?
     private let utility = NCUtility()
     private var markdownParser = MarkdownParser()
+    private let global = NCGlobal.shared
     private var richWorkspaceText: String?
     private let richWorkspaceGradient: CAGradientLayer = CAGradientLayer()
     private var recommendations: [tableRecommendedFiles] = []
@@ -176,7 +177,7 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? NCRecommendationsCell else { fatalError() }
 
         if let metadata = NCManageDatabase.shared.getMetadataFromFileId(recommendedFiles.id) {
-            let imagePreview = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512)
+            let imagePreview = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt512)
 
             if metadata.directory {
                 cell.image.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
@@ -191,7 +192,7 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
                     NextcloudKit.shared.downloadPreview(fileId: metadata.fileId, account: metadata.account) { _, _, _, _, responseData, error in
                         if error == .success, let data = responseData?.data {
                             self.utility.createImageFileFrom(data: data, ocId: metadata.ocId, etag: metadata.etag)
-                            if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512) {
+                            if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt512) {
                                 for case let cell as NCRecommendationsCell in self.collectionViewRecommendations.visibleCells {
                                     if cell.id == recommendedFiles.id {
                                         cell.image.contentMode = .scaleAspectFill

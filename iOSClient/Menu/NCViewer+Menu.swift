@@ -43,7 +43,7 @@ extension NCViewer {
                     icon: utility.loadImage(named: "info.circle", colors: [NCBrandColor.shared.iconImageColor]),
                     sender: sender,
                     action: { _ in
-                        NCActionCenter.shared.openShare(viewController: controller, metadata: metadata, page: .activity)
+                        NCDownloadAction.shared.openShare(viewController: controller, metadata: metadata, page: .activity)
                     }
                 )
             )
@@ -59,7 +59,7 @@ extension NCViewer {
                     icon: utility.loadImage(named: "questionmark.folder", colors: [NCBrandColor.shared.iconImageColor]),
                     sender: sender,
                     action: { _ in
-                        NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil, sceneIdentifier: controller.sceneIdentifier)
+                        NCDownloadAction.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil, sceneIdentifier: controller.sceneIdentifier)
                     }
                 )
             )

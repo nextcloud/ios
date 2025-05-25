@@ -338,6 +338,8 @@ final class NCGlobal: Sendable {
     let networkingStatusUploadedLivePhoto                       = "statusUploadedLivePhoto"
     let networkingStatusUploadCancel                            = "statusUploadCancel"
 
+    let networkingStatusDownloaded                              = "statusDownloaded"
+
     let networkingStatusReloadAvatar                            = "statusReloadAvatar"
 
 

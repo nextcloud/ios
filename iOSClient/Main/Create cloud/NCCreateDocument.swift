@@ -28,6 +28,7 @@ import NextcloudKit
 class NCCreateDocument: NSObject {
     let utility = NCUtility()
     let database = NCManageDatabase.shared
+    let global = NCGlobal.shared
 
     func createDocument(controller: NCMainTabBarController, fileNamePath: String, fileName: String, editorId: String, creatorId: String? = nil, templateId: String, account: String) {
         let session = NCSession.shared.getSession(account: account)
@@ -37,10 +38,10 @@ class NCCreateDocument: NSObject {
         var options = NKRequestOptions()
         let serverUrl = controller.currentServerUrl()
 
-        if let creatorId, editorId == NCGlobal.shared.editorText || editorId == NCGlobal.shared.editorOnlyoffice {
-            if editorId == NCGlobal.shared.editorOnlyoffice {
+        if let creatorId, editorId == global.editorText || editorId == global.editorOnlyoffice {
+            if editorId == global.editorOnlyoffice {
                 options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentOnlyOffice())
-            } else if editorId == NCGlobal.shared.editorText {
+            } else if editorId == global.editorText {
                 options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
             }
 
@@ -63,7 +64,7 @@ class NCCreateDocument: NSObject {
                 }
             }
 
-        } else if editorId == NCGlobal.shared.editorCollabora {
+        } else if editorId == global.editorCollabora {
 
             NextcloudKit.shared.createRichdocuments(path: fileNamePath, templateId: templateId, account: account) { returnedAccount, url, _, error in
                 guard error == .success, let url else {
@@ -91,11 +92,11 @@ class NCCreateDocument: NSObject {
         var selectedTemplate = NKEditorTemplates()
         var ext: String = ""
 
-        if editorId == NCGlobal.shared.editorText || editorId == NCGlobal.shared.editorOnlyoffice {
+        if editorId == global.editorText || editorId == global.editorOnlyoffice {
             var options = NKRequestOptions()
-            if editorId == NCGlobal.shared.editorOnlyoffice {
+            if editorId == global.editorOnlyoffice {
                 options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentOnlyOffice())
-            } else if editorId == NCGlobal.shared.editorText {
+            } else if editorId == global.editorText {
                 options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
             }
 
@@ -119,13 +120,13 @@ class NCCreateDocument: NSObject {
             if templates.isEmpty {
                 let temp = NKEditorTemplates()
                 temp.identifier = ""
-                if editorId == NCGlobal.shared.editorText {
+                if editorId == global.editorText {
                     temp.ext = "md"
-                } else if editorId == NCGlobal.shared.editorOnlyoffice && templateId == NCGlobal.shared.templateDocument {
+                } else if editorId == global.editorOnlyoffice && templateId == global.templateDocument {
                     temp.ext = "docx"
-                } else if editorId == NCGlobal.shared.editorOnlyoffice && templateId == NCGlobal.shared.templateSpreadsheet {
+                } else if editorId == global.editorOnlyoffice && templateId == global.templateSpreadsheet {
                     temp.ext = "xlsx"
-                } else if editorId == NCGlobal.shared.editorOnlyoffice && templateId == NCGlobal.shared.templatePresentation {
+                } else if editorId == global.editorOnlyoffice && templateId == global.templatePresentation {
                     temp.ext = "pptx"
                 }
                 temp.name = "Empty"
@@ -136,7 +137,7 @@ class NCCreateDocument: NSObject {
             }
         }
 
-        if editorId == NCGlobal.shared.editorCollabora {
+        if editorId == global.editorCollabora {
             let results = await NextcloudKit.shared.getTemplatesRichdocuments(typeTemplate: templateId, account: account)
             if results.error == .success {
                 for template in results.templates! {

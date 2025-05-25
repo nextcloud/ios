@@ -85,7 +85,7 @@ extension NCCollectionViewCommon {
                     order: 10,
                     sender: sender,
                     action: { _ in
-                        NCActionCenter.shared.openShare(viewController: self, metadata: metadata, page: .activity)
+                        NCDownloadAction.shared.openShare(viewController: self, metadata: metadata, page: .activity)
                     }
                 )
             )
@@ -137,7 +137,7 @@ extension NCCollectionViewCommon {
                     order: 21,
                     sender: sender,
                     action: { _ in
-                        NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil, sceneIdentifier: sceneIdentifier)
+                        NCDownloadAction.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil, sceneIdentifier: sceneIdentifier)
                     }
                 )
             )
