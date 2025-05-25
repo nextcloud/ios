@@ -541,13 +541,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - Layout
 
     func changeLayout(layoutForView: NCDBLayoutForView) {
-        if self.layoutForView?.layout == layoutForView.layout {
-            self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
-            self.reloadDataSource()
+        guard self.layoutForView?.layout != layoutForView.layout else {
             return
         }
 
-        self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
+        self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView, sync: false)
         layoutForView.layout = layoutForView.layout
         self.layoutType = layoutForView.layout
 

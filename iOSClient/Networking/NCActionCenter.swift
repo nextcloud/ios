@@ -542,7 +542,6 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
                     NCNetworking.shared.notifyAllDelegates { delete in
                         delete.transferCopy(metadata: metadata, dragdrop: false)
-
                     }
                 }
 
@@ -555,7 +554,6 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
                     NCNetworking.shared.notifyAllDelegates { delete in
                         delete.transferMove(metadata: metadata, dragdrop: false)
-
                     }
                 }
             }
