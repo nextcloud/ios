@@ -82,16 +82,9 @@ extension NCNetworking {
             self.database.setMetadataSession(ocId: metadata.ocId,
                                              sessionTaskIdentifier: task.taskIdentifier,
                                              status: self.global.metadataStatusDownloading)
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterDownloadStartFile,
-                                                        object: nil,
-                                                        userInfo: ["ocId": metadata.ocId,
-                                                                   "ocIdTransfer": metadata.ocIdTransfer,
-                                                                   "session": metadata.session,
-                                                                   "serverUrl": metadata.serverUrl,
-                                                                   "account": metadata.account])
 
             self.notifyAllDelegates { delegate in
-                delegate.transferChange(status: self.global.notificationCenterDownloadStartFile,
+                delegate.transferChange(status: self.global.networkingStatusDownloadStart,
                                         metadata: tableMetadata(value: metadata),
                                         error: .success)
             }
@@ -142,15 +135,8 @@ extension NCNetworking {
             database.setMetadataSession(ocId: metadata.ocId,
                                         sessionTaskIdentifier: task.taskIdentifier,
                                         status: self.global.metadataStatusDownloading)
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadStartFile,
-                                                        object: nil,
-                                                        userInfo: ["ocId": metadata.ocId,
-                                                                   "ocIdTransfer": metadata.ocIdTransfer,
-                                                                   "session": metadata.session,
-                                                                   "serverUrl": metadata.serverUrl,
-                                                                   "account": metadata.account])
             self.notifyAllDelegates { delegate in
-                delegate.transferChange(status: self.global.notificationCenterDownloadStartFile,
+                delegate.transferChange(status: self.global.networkingStatusDownloadStart,
                                         metadata: tableMetadata(value: metadata),
                                         error: .success)
             }
@@ -210,62 +196,36 @@ extension NCNetworking {
                                                  sessionError: "",
                                                  status: self.global.metadataStatusNormal,
                                                  etag: etag)
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterDownloadedFile,
-                                                            object: nil,
-                                                            userInfo: ["ocId": metadata.ocId,
-                                                                       "ocIdTransfer": metadata.ocIdTransfer,
-                                                                       "session": metadata.session,
-                                                                       "serverUrl": metadata.serverUrl,
-                                                                       "account": metadata.account,
-                                                                       "selector": metadata.sessionSelector,
-                                                                       "error": error],
-                                                            second: 0.5)
                 self.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.notificationCenterDownloadedFile,
+                    delegate.transferChange(status: self.global.networkingStatusDownloaded,
                                             metadata: tableMetadata(value: metadata),
                                             error: error)
                 }
             } else if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
-                self.database.setMetadataSession(ocId: metadata.ocId,
-                                                 session: "",
-                                                 sessionTaskIdentifier: 0,
-                                                 sessionError: "",
-                                                 selector: "",
-                                                 status: self.global.metadataStatusNormal)
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterDownloadCancelFile,
-                                                            object: nil,
-                                                            userInfo: ["ocId": metadata.ocId,
-                                                                       "ocIdTransfer": metadata.ocIdTransfer,
-                                                                       "session": metadata.session,
-                                                                       "serverUrl": metadata.serverUrl,
-                                                                       "account": metadata.account],
-                                                            second: 0.5)
-                self.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.notificationCenterDownloadCancelFile,
-                                            metadata: tableMetadata(value: metadata),
-                                            error: .success)
+                if let metadata = self.database.setMetadataSession(ocId: metadata.ocId,
+                                                                   session: "",
+                                                                   sessionTaskIdentifier: 0,
+                                                                   sessionError: "",
+                                                                   selector: "",
+                                                                   status: self.global.metadataStatusNormal) {
+                    self.notifyAllDelegates { delegate in
+                        delegate.transferChange(status: self.global.networkingStatusDownloadCancel,
+                                                metadata: tableMetadata(value: metadata),
+                                                error: .success)
+                    }
                 }
             } else {
-                self.database.setMetadataSession(ocId: metadata.ocId,
-                                                 session: "",
-                                                 sessionTaskIdentifier: 0,
-                                                 sessionError: "",
-                                                 selector: "",
-                                                 status: self.global.metadataStatusNormal)
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile,
-                                                            object: nil,
-                                                            userInfo: ["ocId": metadata.ocId,
-                                                                       "ocIdTransfer": metadata.ocIdTransfer,
-                                                                       "session": metadata.session,
-                                                                       "serverUrl": metadata.serverUrl,
-                                                                       "account": metadata.account,
-                                                                       "selector": metadata.sessionSelector,
-                                                                       "error": error],
-                                                            second: 0.5)
-                self.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: NCGlobal.shared.notificationCenterDownloadedFile,
-                                            metadata: tableMetadata(value: metadata),
-                                            error: error)
+                if let metadata = self.database.setMetadataSession(ocId: metadata.ocId,
+                                                                   session: "",
+                                                                   sessionTaskIdentifier: 0,
+                                                                   sessionError: "",
+                                                                   selector: "",
+                                                                   status: self.global.metadataStatusNormal) {
+                    self.notifyAllDelegates { delegate in
+                        delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
+                                                metadata: tableMetadata(value: metadata),
+                                                error: error)
+                    }
                 }
             }
         }

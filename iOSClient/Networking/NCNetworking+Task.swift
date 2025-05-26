@@ -146,16 +146,8 @@ extension NCNetworking {
                 cancelDownloadBackgroundTask(metadata: metadata)
             }
 
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterDownloadCancelFile,
-                                                        object: nil,
-                                                        userInfo: ["ocId": metadata.ocId,
-                                                                   "ocIdTransfer": metadata.ocIdTransfer,
-                                                                   "session": metadata.session,
-                                                                   "serverUrl": metadata.serverUrl,
-                                                                   "account": metadata.account],
-                                                        second: 0.5)
             self.notifyAllDelegates { delegate in
-                delegate.transferChange(status: self.global.notificationCenterDownloadCancelFile,
+                delegate.transferChange(status: self.global.networkingStatusDownloadCancel,
                                         metadata: tableMetadata(value: metadata),
                                         error: .success)
             }
@@ -359,9 +351,9 @@ extension NCNetworking {
 
             if !foundTask {
                 if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
-                    self.database.setMetadataSession(ocId: metadata.ocId,
-                                                     sessionError: "",
-                                                     status: self.global.metadataStatusWaitUpload)
+                    _ = self.database.setMetadataSession(ocId: metadata.ocId,
+                                                         sessionError: "",
+                                                         status: self.global.metadataStatusWaitUpload)
                 } else {
                     self.database.deleteMetadataOcId(metadata.ocId)
                 }

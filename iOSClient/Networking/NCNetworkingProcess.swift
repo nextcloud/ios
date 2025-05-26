@@ -310,12 +310,11 @@ class NCNetworkingProcess {
 
                 if result.error == .success {
                     NCNetworking.shared.notifyAllDelegates { delegate in
-                        delegate.transferRequestServerData(serverUrl: metadata.serverUrl)
+                        delegate.transferRequestData(serverUrl: metadata.serverUrl)
                     }
                     NCNetworking.shared.notifyAllDelegates { delegate in
-                        delegate.transferRequestServerData(serverUrl: serverUrlTo)
+                        delegate.transferRequestData(serverUrl: serverUrlTo)
                     }
-
                 } else {
                     NCContentPresenter().showError(error: result.error)
                 }
@@ -366,11 +365,11 @@ class NCNetworkingProcess {
                     }
 
                     NCNetworking.shared.notifyAllDelegates { delegate in
-                        delegate.transferRequestServerData(serverUrl: metadata.serverUrl)
+                        delegate.transferRequestData(serverUrl: metadata.serverUrl)
                     }
 
                     NCNetworking.shared.notifyAllDelegates { delegate in
-                        delegate.transferRequestServerData(serverUrl: serverUrlTo)
+                        delegate.transferRequestData(serverUrl: serverUrlTo)
                     }
                 } else {
                     NCContentPresenter().showError(error: result.error)

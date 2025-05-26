@@ -54,15 +54,13 @@ class NCContextMenu: NSObject {
         let share = UIAction(title: NSLocalizedString("_share_", comment: ""),
                              image: utility.loadImage(named: "square.and.arrow.up") ) { _ in
             if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile,
-                                                            object: nil,
-                                                            userInfo: ["ocId": self.metadata.ocId,
-                                                                       "ocIdTransfer": self.metadata.ocIdTransfer,
-                                                                       "session": self.metadata.session,
-                                                                       "selector": NCGlobal.shared.selectorOpenIn,
-                                                                       "error": NKError(),
-                                                                       "account": self.metadata.account],
-                                                            second: 0.5)
+                NCNetworking.shared.notifyAllDelegates { delegate in
+                    let metadata = tableMetadata(value: self.metadata)
+                    metadata.sessionSelector = NCGlobal.shared.selectorOpenIn
+                    delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
+                                            metadata: metadata,
+                                            error: .success)
+                }
             } else {
                 guard let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [self.metadata],
                                                                                      session: NCNetworking.shared.sessionDownload,
@@ -107,15 +105,13 @@ class NCContextMenu: NSObject {
         let modify = UIAction(title: NSLocalizedString("_modify_", comment: ""),
                               image: utility.loadImage(named: "pencil.tip.crop.circle")) { _ in
             if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile,
-                                                            object: nil,
-                                                            userInfo: ["ocId": self.metadata.ocId,
-                                                                       "ocIdTransfer": self.metadata.ocIdTransfer,
-                                                                       "session": self.metadata.session,
-                                                                       "selector": NCGlobal.shared.selectorLoadFileQuickLook,
-                                                                       "error": NKError(),
-                                                                       "account": self.metadata.account],
-                                                            second: 0.5)
+                NCNetworking.shared.notifyAllDelegates { delegate in
+                    let metadata = tableMetadata(value: self.metadata)
+                    metadata.sessionSelector = NCGlobal.shared.selectorLoadFileQuickLook
+                    delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
+                                            metadata: metadata,
+                                            error: .success)
+                }
             } else {
                 guard let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [self.metadata],
                                                                                      session: NCNetworking.shared.sessionDownload,

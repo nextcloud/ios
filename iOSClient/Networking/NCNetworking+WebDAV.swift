@@ -265,7 +265,7 @@ extension NCNetworking {
            let metadata = result.metadata {
             writeDirectoryMetadata(metadata)
         } else if let metadata = self.database.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", session.account, fileName, serverUrl)) {
-            self.database.setMetadataSession(ocId: metadata.ocId, sessionError: result.error.errorDescription, sync: false)
+            _ = self.database.setMetadataSession(ocId: metadata.ocId, sessionError: result.error.errorDescription, sync: false)
         }
 
         return result.error
@@ -277,6 +277,7 @@ extension NCNetworking {
         tapHudStopDelete = true
     }
 
+    @MainActor
     func deleteCache(_ metadata: tableMetadata, sceneIdentifier: String?) async -> (NKError) {
         let ncHud = NCHud()
         var num: Float = 0

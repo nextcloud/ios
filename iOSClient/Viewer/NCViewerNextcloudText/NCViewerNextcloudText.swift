@@ -213,7 +213,7 @@ extension NCViewerNextcloudText: UINavigationControllerDelegate {
 
         if parent == nil {
             NCNetworking.shared.notifyAllDelegates { delegate in
-                delegate.transferRequestServerData(serverUrl: self.metadata.serverUrl)
+                delegate.transferRequestData(serverUrl: self.metadata.serverUrl)
             }
         }
     }

@@ -48,7 +48,7 @@ protocol NCTransferDelegate: AnyObject {
     func transferChange(status: String, metadata: tableMetadata, error: NKError)
     func transferChange(status: String, metadatasError: [tableMetadata: NKError])
     func transferReloadData(serverUrl: String?)
-    func transferRequestServerData(serverUrl: String?)
+    func transferRequestData(serverUrl: String?)
     func transferCopy(metadata: tableMetadata, dragdrop: Bool)
     func transferMove(metadata: tableMetadata, dragdrop: Bool)
     func transferFileExists(ocId: String, exists: Bool)
@@ -63,7 +63,7 @@ extension NCTransferDelegate {
     func transferChange(status: String, metadata: tableMetadata, error: NKError) {}
     func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {}
     func transferReloadData(serverUrl: String?) {}
-    func transferRequestServerData(serverUrl: String?) {}
+    func transferRequestData(serverUrl: String?) {}
     func transferCopy(metadata: tableMetadata, dragdrop: Bool) {}
     func transferMove(metadata: tableMetadata, dragdrop: Bool) {}
     func transferFileExists(ocId: String, exists: Bool) {}

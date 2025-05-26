@@ -142,7 +142,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         }
 
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
-            return NCViewerProviderContextMenu(metadata: metadata, image: image)
+            return NCViewerProviderContextMenu(metadata: metadata, image: image, sceneIdentifier: self.sceneIdentifier)
         }, actionProvider: { _ in
             let contextMenu = NCContextMenu(metadata: tableMetadata(value: metadata), viewController: self, sceneIdentifier: self.sceneIdentifier, image: image)
             return contextMenu.viewMenu()

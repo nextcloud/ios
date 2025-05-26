@@ -135,9 +135,6 @@ class NCViewerMediaPage: UIViewController {
 
         NotificationCenter.default.addObserver(self, selector: #selector(pageViewController.enableSwipeGesture), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterEnableSwipeGesture), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(pageViewController.disableSwipeGesture), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDisableSwipeGesture), object: nil)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
-
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: UIApplication.didBecomeActiveNotification, object: nil)
 
         if NCNetworking.shared.isOnline {
@@ -159,12 +156,8 @@ class NCViewerMediaPage: UIViewController {
         timerAutoHide?.invalidate()
         timerAutoHide = nil
 
-        NCNetworking.shared.removeDelegate(self)
-
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterEnableSwipeGesture), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDisableSwipeGesture), object: nil)
-
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: UIApplication.didBecomeActiveNotification, object: nil)
     }
@@ -188,6 +181,8 @@ class NCViewerMediaPage: UIViewController {
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
+
+        NCNetworking.shared.removeDelegate(self)
 
         currentViewController.ncplayer?.playerStop()
         timerAutoHide?.invalidate()
@@ -330,39 +325,6 @@ class NCViewerMediaPage: UIViewController {
     }
 
     // MARK: - NotificationCenter
-
-    @objc func downloadedFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String
-        else {
-            return
-        }
-
-        self.progressView.progress = 0
-        let metadata = self.currentViewController.metadata
-
-        guard !metadata.isInvalidated,
-              metadata.ocId == ocId,
-              self.utilityFileSystem.fileProviderStorageExists(metadata)
-        else {
-            return
-        }
-
-        if metadata.isAudioOrVideo, let ncplayer = self.currentViewController.ncplayer {
-            let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-            if ncplayer.isPlaying() {
-                ncplayer.playerPause()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    ncplayer.openAVPlayer(url: url)
-                    ncplayer.playerPlay()
-                }
-            } else {
-                ncplayer.openAVPlayer(url: url)
-            }
-        } else if metadata.isImage {
-            self.currentViewController.loadImage()
-        }
-    }
 
     @objc func applicationDidBecomeActive(_ notification: NSNotification) {
         progressView.progress = 0
@@ -640,40 +602,60 @@ extension NCViewerMediaPage: UIScrollViewDelegate {
 
 extension NCViewerMediaPage: NCTransferDelegate {
     func transferChange(status: String, metadata: tableMetadata, error: NKError) {
-        switch status {
-        /// UPLOADED
-        case self.global.networkingStatusUploaded:
-            guard error == .success else { return }
-            DispatchQueue.main.async {
+        DispatchQueue.main.async {
+            switch status {
+                /// DOWNLOAD
+            case self.global.networkingStatusDownloaded:
+                guard metadata.ocId == self.currentViewController.metadata.ocId else {
+                    return
+                }
+                self.progressView.progress = 0
+
+                if metadata.isAudioOrVideo, let ncplayer = self.currentViewController.ncplayer {
+                    let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                    if ncplayer.isPlaying() {
+                        ncplayer.playerPause()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            ncplayer.openAVPlayer(url: url)
+                            ncplayer.playerPlay()
+                        }
+                    } else {
+                        ncplayer.openAVPlayer(url: url)
+                    }
+                } else if metadata.isImage {
+                    self.currentViewController.loadImage()
+                }
+                /// UPLOAD
+            case self.global.networkingStatusUploaded:
+                guard error == .success else { return }
                 if self.currentViewController.metadata.ocId == metadata.ocId {
                     self.currentViewController.loadImage()
                 } else {
                     self.modifiedOcId.append(metadata.ocId)
                 }
+            default:
+                break
             }
-        default:
-            break
         }
     }
 
     func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {
-        switch status {
-        /// DELETE
-        case NCGlobal.shared.networkingStatusDelete:
-            let hasAtLeastOneSuccess = metadatasError.contains { key, value in
-                ocIds.contains(key.ocId) && value == .success
-            }
-            if hasAtLeastOneSuccess {
-                DispatchQueue.main.async {
+        DispatchQueue.main.async {
+            switch status {
+                /// DELETE
+            case NCGlobal.shared.networkingStatusDelete:
+                let hasAtLeastOneSuccess = metadatasError.contains { key, value in
+                    self.ocIds.contains(key.ocId) && value == .success
+                }
+                if hasAtLeastOneSuccess {
                     if let ncplayer = self.currentViewController.ncplayer, ncplayer.isPlaying() {
                         ncplayer.playerPause()
                     }
-
                     self.viewUnload()
                 }
+            default:
+                break
             }
-        default:
-            break
         }
     }
 

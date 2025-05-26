@@ -57,7 +57,7 @@ extension NCMedia: UICollectionViewDelegate {
         let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024)
 
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
-            return NCViewerProviderContextMenu(metadata: metadata, image: image)
+            return NCViewerProviderContextMenu(metadata: metadata, image: image, sceneIdentifier: self.sceneIdentifier)
         }, actionProvider: { _ in
             let contextMenu = NCContextMenu(metadata: tableMetadata(value: metadata), viewController: self, sceneIdentifier: self.sceneIdentifier, image: image)
             return contextMenu.viewMenu()

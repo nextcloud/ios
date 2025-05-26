@@ -26,8 +26,6 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         self.sceneIdentifier = sceneIdentifier
 
         NCNetworking.shared.addDelegate(self)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
     }
 
     // MARK: - Download
@@ -37,34 +35,27 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             switch status {
             /// DOWNLOADED
             case self.global.networkingStatusDownloaded:
-                break
+                self.downloadedFile(metadata: metadata, error: error)
             default:
                 break
             }
         }
     }
 
-    @objc func downloadedFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
-              let selector = userInfo["selector"] as? String,
-              let error = userInfo["error"] as? NKError
-        else { return }
-
+    func downloadedFile(metadata: tableMetadata, error: NKError) {
         guard error == .success else {
             // File do not exists on server, remove in local
             if error.errorCode == NCGlobal.shared.errorResourceNotFound || error.errorCode == NCGlobal.shared.errorBadServerResponse {
                 do {
-                    try FileManager.default.removeItem(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
+                    try FileManager.default.removeItem(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
                 } catch { }
-                database.deleteMetadataOcId(ocId)
-                database.deleteLocalFileOcId(ocId)
+                database.deleteMetadatas([metadata])
+                database.deleteLocalFileOcId(metadata.ocId)
             } else {
                 NCContentPresenter().messageNotification("_download_file_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
             }
             return
         }
-        guard let metadata = database.getMetadataFromOcId(ocId) else { return }
         /// Select UIWindowScene active in serverUrl
         var controller: NCMainTabBarController?
         let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
@@ -84,7 +75,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         }
         guard let controller else { return }
 
-        switch selector {
+        switch metadata.sessionSelector {
         case NCGlobal.shared.selectorLoadFileQuickLook:
 
             let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
@@ -144,11 +135,11 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
 
         default:
             let applicationHandle = NCApplicationHandle()
-            applicationHandle.downloadedFile(selector: selector, metadata: metadata)
+            applicationHandle.downloadedFile(selector: metadata.sessionSelector, metadata: metadata)
         }
     }
 
-    //MARK: -
+    // MARK: -
 
     func setMetadataAvalableOffline(_ metadata: tableMetadata, isOffline: Bool) {
         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
@@ -437,7 +428,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                     self.utilityFileSystem.moveFile(atPath: fileNameLocalPath, toPath: toPath)
                     self.database.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
                     NCNetworking.shared.notifyAllDelegates { delegate in
-                        delegate.transferRequestServerData(serverUrl: serverUrl)
+                        delegate.transferRequestData(serverUrl: serverUrl)
                     }
                 } else if afError?.isExplicitlyCancelledError ?? false {
                     print("cancel")

@@ -313,7 +313,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if app == NCGlobal.shared.termsOfServiceName {
                 NCNetworking.shared.notifyAllDelegates { delegate in
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        delegate.transferRequestServerData(serverUrl: nil)
+                        delegate.transferRequestData(serverUrl: nil)
                     }
                 }
             } else if let navigationController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? UINavigationController,

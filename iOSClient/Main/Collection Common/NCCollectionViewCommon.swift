@@ -279,10 +279,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         NotificationCenter.default.addObserver(self, selector: #selector(applicationWillResignActive(_:)), name: UIApplication.willResignActiveNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(closeRichWorkspaceWebView), name: NSNotification.Name(rawValue: global.notificationCenterCloseRichWorkspaceWebView), object: nil)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(downloadStartFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterDownloadStartFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterDownloadedFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(downloadCancelFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterDownloadCancelFile), object: nil)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -304,10 +300,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         NotificationCenter.default.removeObserver(self, name: UIApplication.willResignActiveNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterCloseRichWorkspaceWebView), object: nil)
-
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterDownloadStartFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterDownloadedFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterDownloadCancelFile), object: nil)
 
         dataSource.removeImageCache()
     }
@@ -368,12 +360,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     //TODO: TRANSFER DELEGATE
     /*
-
-
      Error message
-
      */
-
 
     func transferChange(status: String, metadata: tableMetadata, error: NKError) {
         guard session.account == metadata.account else { return }
@@ -388,6 +376,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                         self.reloadDataSource()
                     }
                 }
+            /// DOWNLOAD
+            case self.global.networkingStatusDownloadStart:
+                self.reloadDataSource()
+            case self.global.networkingStatusDownloaded:
+                self.reloadDataSource()
+            case self.global.networkingStatusDownloadCancel:
+                self.reloadDataSource()
             /// CREATE FOLDER
             case self.global.networkingStatusCreateFolder:
                 if metadata.serverUrl == self.serverUrl {
@@ -480,53 +475,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         reloadDataSource()
     }
 
-    @objc func downloadStartFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let serverUrl = userInfo["serverUrl"] as? String,
-              let account = userInfo["account"] as? String
-        else { return }
-
-        if account == self.session.account, serverUrl == self.serverUrl {
-            reloadDataSource()
-        } else {
-            collectionView?.reloadData()
-        }
-    }
-
-    @objc func downloadedFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let serverUrl = userInfo["serverUrl"] as? String,
-              let account = userInfo["account"] as? String
-        else { return }
-
-        if account == self.session.account, serverUrl == self.serverUrl {
-            reloadDataSource()
-        } else {
-            collectionView?.reloadData()
-        }
-    }
-
-    @objc func downloadCancelFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let serverUrl = userInfo["serverUrl"] as? String,
-              let account = userInfo["account"] as? String
-        else { return }
-
-        if account == self.session.account, serverUrl == self.serverUrl {
-            reloadDataSource()
-        } else {
-            collectionView?.reloadData()
-        }
-    }
-
     // MARK: - Layout
 
     func changeLayout(layoutForView: NCDBLayoutForView) {
-        guard self.layoutForView?.layout != layoutForView.layout else {
+        if self.layoutForView?.layout == layoutForView.layout {
+            self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
+            self.reloadDataSource()
             return
         }
 
-        self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView, sync: false)
+        self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
         layoutForView.layout = layoutForView.layout
         self.layoutType = layoutForView.layout
 
@@ -544,6 +502,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         self.collectionView.collectionViewLayout.invalidateLayout()
+
+        (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
     }
 
     func getNavigationTitle() -> String {
@@ -743,8 +703,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    func getServerData() {
-    }
+    func getServerData() {}
 
     @objc func networkSearch() {
         guard !networkSearchInProgress else {

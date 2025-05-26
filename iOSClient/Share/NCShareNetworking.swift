@@ -123,7 +123,7 @@ class NCShareNetworking: NSObject {
                 }
 
                 NCNetworking.shared.notifyAllDelegates { delegate in
-                    delegate.transferRequestServerData(serverUrl: self.metadata.serverUrl)
+                    delegate.transferRequestData(serverUrl: self.metadata.serverUrl)
                 }
             } else {
                 NCContentPresenter().showError(error: error)
@@ -143,7 +143,7 @@ class NCShareNetworking: NSObject {
                 self.delegate?.unShareCompleted()
 
                 NCNetworking.shared.notifyAllDelegates { delegate in
-                    delegate.transferRequestServerData(serverUrl: self.metadata.serverUrl)
+                    delegate.transferRequestData(serverUrl: self.metadata.serverUrl)
                 }
             } else {
                 NCContentPresenter().showError(error: error)
@@ -168,7 +168,7 @@ class NCShareNetworking: NSObject {
                 }
 
                 NCNetworking.shared.notifyAllDelegates { delegate in
-                    delegate.transferRequestServerData(serverUrl: self.metadata.serverUrl)
+                    delegate.transferRequestData(serverUrl: self.metadata.serverUrl)
                 }
             } else {
                 NCContentPresenter().showError(error: error)

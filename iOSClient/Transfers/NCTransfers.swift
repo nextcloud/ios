@@ -63,17 +63,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         reloadDataSource()
     }
 
-    // MARK: - NotificationCenter
-
-    override func downloadStartFile(_ notification: NSNotification) {
-    }
-
-    override func downloadedFile(_ notification: NSNotification) {
-    }
-
-    override func downloadCancelFile(_ notification: NSNotification) {
-    }
-
     // MARK: TAP EVENT
 
     override func tapMoreGridItem(with ocId: String, ocIdTransfer: String, image: UIImage?, sender: Any) {

@@ -130,15 +130,13 @@ extension NCViewer {
                     sender: sender,
                     action: { _ in
                         if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile,
-                                                                        object: nil,
-                                                                        userInfo: ["ocId": metadata.ocId,
-                                                                                   "ocIdTransfer": metadata.ocIdTransfer,
-                                                                                   "session": metadata.session,
-                                                                                   "selector": NCGlobal.shared.selectorSaveAsScan,
-                                                                                   "error": NKError(),
-                                                                                   "account": metadata.account],
-                                                                        second: 0.5)
+                            NCNetworking.shared.notifyAllDelegates { delegate in
+                                let metadata = tableMetadata(value: metadata)
+                                metadata.sessionSelector = NCGlobal.shared.selectorSaveAsScan
+                                delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
+                                                        metadata: metadata,
+                                                        error: .success)
+                            }
                         } else {
                             guard let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                  session: NCNetworking.shared.sessionDownload,
@@ -219,15 +217,13 @@ extension NCViewer {
                     sender: sender,
                     action: { _ in
                         if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile,
-                                                                        object: nil,
-                                                                        userInfo: ["ocId": metadata.ocId,
-                                                                                   "ocIdTransfer": metadata.ocIdTransfer,
-                                                                                   "session": metadata.session,
-                                                                                   "selector": NCGlobal.shared.selectorLoadFileQuickLook,
-                                                                                   "error": NKError(),
-                                                                                   "account": metadata.account],
-                                                                        second: 0.5)
+                            NCNetworking.shared.notifyAllDelegates { delegate in
+                                let metadata = tableMetadata(value: metadata)
+                                metadata.sessionSelector = NCGlobal.shared.selectorLoadFileQuickLook
+                                delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
+                                                        metadata: metadata,
+                                                        error: .success)
+                            }
                         } else {
                             guard let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                  session: NCNetworking.shared.sessionDownload,
