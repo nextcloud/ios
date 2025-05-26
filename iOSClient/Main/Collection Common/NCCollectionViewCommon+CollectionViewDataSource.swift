@@ -206,6 +206,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
             cell.fileSubinfoLabel?.isHidden = true
         } else if !metadata.sessionError.isEmpty, metadata.status != global.metadataStatusNormal {
+            cell.fileTitleLabel?.text = metadata.fileNameView
             cell.fileSubinfoLabel?.isHidden = false
             cell.fileInfoLabel?.text = metadata.sessionError
         } else {
