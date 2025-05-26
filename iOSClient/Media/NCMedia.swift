@@ -82,7 +82,7 @@ class NCMedia: UIViewController {
     var numberOfColumns: Int = 0
     var lastNumberOfColumns: Int = 0
 
-    let transferDebouncer = NCTransferDebouncer(delay: 1.5)
+    let transferDebouncer = NCTransferDebouncer(delay: 1)
 
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)

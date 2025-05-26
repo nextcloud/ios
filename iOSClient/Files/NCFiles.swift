@@ -178,29 +178,27 @@ class NCFiles: NCCollectionViewCommon {
             return super.reloadDataSource()
         }
 
-        self.transferDebouncer.call({
-            var predicate = self.defaultPredicate
-            let predicateDirectory = NSPredicate(format: "account == %@ AND serverUrl == %@", self.session.account, self.serverUrl)
+        var predicate = self.defaultPredicate
+        let predicateDirectory = NSPredicate(format: "account == %@ AND serverUrl == %@", self.session.account, self.serverUrl)
 
-            if NCKeychain().getPersonalFilesOnly(account: self.session.account) {
-                predicate = self.personalFilesOnlyPredicate
+        if NCKeychain().getPersonalFilesOnly(account: self.session.account) {
+            predicate = self.personalFilesOnlyPredicate
+        }
+
+        self.metadataFolder = self.database.getMetadataFolder(session: self.session, serverUrl: self.serverUrl)
+        self.richWorkspaceText = self.database.getTableDirectory(predicate: predicateDirectory)?.richWorkspace
+
+        self.database.getResultMetadatasPredicateAsync(predicate, layoutForView: self.layoutForView, account: self.session.account) { metadatas, layoutForView, account in
+            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
+
+            if metadatas.isEmpty {
+                return super.reloadDataSource()
             }
 
-            self.metadataFolder = self.database.getMetadataFolder(session: self.session, serverUrl: self.serverUrl)
-            self.richWorkspaceText = self.database.getTableDirectory(predicate: predicateDirectory)?.richWorkspace
-
-            self.database.getResultMetadatasPredicateAsync(predicate, layoutForView: self.layoutForView, account: self.session.account) { metadatas, layoutForView, account in
-                self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
-
-                if metadatas.isEmpty {
-                    return super.reloadDataSource()
-                }
-
-                self.dataSource.caching(metadatas: metadatas) {
-                    super.reloadDataSource()
-                }
+            self.dataSource.caching(metadatas: metadatas) {
+                super.reloadDataSource()
             }
-        }, immediate: self.dataSource.isEmpty())
+        }
     }
 
     override func getServerData() {

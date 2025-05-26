@@ -166,7 +166,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return pinchGesture.state == .began || pinchGesture.state == .changed
     }
 
-    internal let transferDebouncer = NCTransferDebouncer(delay: 1.5)
+    internal let transferDebouncer = NCTransferDebouncer(delay: 1)
 
     // MARK: - View Life Cycle
 
@@ -369,7 +369,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         DispatchQueue.main.async {
             switch status {
             /// UPLOADED, UPLOADED LIVEPHOTO
-            case self.global.networkingStatusUploaded, self.global.networkingStatusUploadedLivePhoto: self.transferDebouncer.call {
+            case self.global.networkingStatusUploaded, self.global.networkingStatusUploadedLivePhoto:
+                self.transferDebouncer.call {
                     if self.isSearchingMode {
                         self.networkSearch()
                     } else if self.serverUrl == metadata.serverUrl {
