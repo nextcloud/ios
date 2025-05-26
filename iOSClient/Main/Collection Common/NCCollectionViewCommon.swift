@@ -343,9 +343,18 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         switch status {
         /// DELETE
         case self.global.networkingStatusDelete:
+            let errorForThisServer = metadatasError.first { entry in
+                let (key, value) = entry
+                return key.serverUrl == self.serverUrl && value != .success
+            }?.value
+
             let needLoadDataSource = metadatasError.contains { entry in
                 let (key, value) = entry
                 return key.serverUrl == self.serverUrl && value != .success
+            }
+
+            if let error = errorForThisServer {
+                NCContentPresenter().showError(error: error)
             }
 
             if self.isSearchingMode {
