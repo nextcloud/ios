@@ -350,7 +350,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
             let needLoadDataSource = metadatasError.contains { entry in
                 let (key, value) = entry
-                return key.serverUrl == self.serverUrl && value != .success
+                return key.serverUrl == self.serverUrl && value == .success
             }
 
             if let error = errorForThisServer {

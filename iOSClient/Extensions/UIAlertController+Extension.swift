@@ -167,10 +167,6 @@ extension UIAlertController {
         if canDeleteServer {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { (_: UIAlertAction) in
                 NCNetworking.shared.setStatusWaitDelete(metadatas: selectedMetadatas, sceneIdentifier: sceneIdentifier)
-
-                NCNetworking.shared.notifyAllDelegates { delegate in
-                    delegate.transferReloadData(serverUrl: nil)
-                }
                 completion(false)
             })
         }
