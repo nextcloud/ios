@@ -309,10 +309,6 @@ final class NCGlobal: Sendable {
     let notificationCenterCheckUserDelaultErrorDone             = "checkUserDelaultErrorDone"       // userInfo: account, controller
     let notificationCenterUpdateNotification                    = "updateNotification"
 
-    let notificationCenterDownloadStartFile                     = "downloadStartFile"               // userInfo: ocId, ocIdTransfer, session, serverUrl, account
-    let notificationCenterDownloadedFile                        = "downloadedFile"                  // userInfo: ocId, ocIdTransfer, session, session, serverUrl, account, selector, error
-    let notificationCenterDownloadCancelFile                    = "downloadCancelFile"              // userInfo: ocId, ocIdTransfer, session, serverUrl, account
-
     let notificationCenterMenuSearchTextPDF                     = "menuSearchTextPDF"
     let notificationCenterMenuGotToPageInPDF                    = "menuGotToPageInPDF"
 
@@ -333,12 +329,15 @@ final class NCGlobal: Sendable {
     let networkingStatusRename                                  = "statusRename"
     let networkingStatusFavorite                                = "statusFavorite"
 
+    let networkingStatusDownloadStart                           = "statusDownloadStart"
+    let networkingStatusDownloaded                              = "statusDownloaded"
+    let networkingStatusDownloadCancel                          = "statusDownloadCancel"
+
     let networkingStatusUploadStart                             = "statusUploadStart"
     let networkingStatusUploaded                                = "statusUploaded"
     let networkingStatusUploadedLivePhoto                       = "statusUploadedLivePhoto"
     let networkingStatusUploadCancel                            = "statusUploadCancel"
 
-    let networkingStatusDownloaded                              = "statusDownloaded"
 
     let networkingStatusReloadAvatar                            = "statusReloadAvatar"
 
