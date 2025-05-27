@@ -226,6 +226,7 @@ extension NCNetworking {
                                        permissions: metadata.permissions,
                                        serverUrl: fileNameFolderUrl,
                                        account: session.account, sync: false)
+            let metadata = tableMetadata(value: metadata)
 
             guard selector != self.global.selectorUploadAutoUpload else {
                 return
@@ -234,7 +235,7 @@ extension NCNetworking {
             if let sceneIdentifier {
                 self.notifyDelegates(forScene: sceneIdentifier) { delegate in
                     delegate.transferChange(status: self.global.networkingStatusCreateFolder,
-                                            metadata: tableMetadata(value: metadata),
+                                            metadata: metadata,
                                             error: .success)
                 } others: { delegate in
                     delegate.transferReloadData(serverUrl: metadata.serverUrl)
@@ -242,7 +243,7 @@ extension NCNetworking {
             } else {
                 self.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusCreateFolder,
-                                            metadata: tableMetadata(value: metadata),
+                                            metadata: metadata,
                                             error: .success)
                 }
             }
