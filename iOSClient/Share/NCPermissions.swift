@@ -25,16 +25,6 @@ import UIKit
 import Foundation
 
 class NCPermissions: NSObject {
-    let permissionShared = "S"
-    let permissionCanShare = "R"
-    let permissionMounted = "M"
-    let permissionFileCanWrite = "W"
-    let permissionCanCreateFile = "C"
-    let permissionCanCreateFolder = "K"
-    let permissionCanDelete = "D"
-    let permissionCanRename = "N"
-    let permissionCanMove = "V"
-
     // Share permission
     // permissions - (int) 1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all
     //

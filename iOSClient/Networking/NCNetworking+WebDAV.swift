@@ -469,7 +469,7 @@ extension NCNetworking {
 #endif
 
         for metadata in metadatasPlain {
-            let permission = NCUtility().permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanDelete)
+            let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanDelete)
             if (!metadata.permissions.isEmpty && permission == false) || (metadata.status != global.metadataStatusNormal) {
                 return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_delete_file_"))
             }
@@ -489,7 +489,7 @@ extension NCNetworking {
     // MARK: - Rename
 
     func renameMetadata(_ metadata: tableMetadata, fileNameNew: String) {
-        let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanRename)
+        let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanRename)
         if (!metadata.permissions.isEmpty && permission == false) ||
             (metadata.status != global.metadataStatusNormal && metadata.status != global.metadataStatusWaitRename) {
             return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_"))
@@ -515,7 +515,7 @@ extension NCNetworking {
     // MARK: - Move
 
     func moveMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) {
-        let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanRename)
+        let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanRename)
 
         if (!metadata.permissions.isEmpty && !permission) ||
             (metadata.status != global.metadataStatusNormal && metadata.status != global.metadataStatusWaitMove) {
@@ -528,7 +528,7 @@ extension NCNetworking {
     // MARK: - Copy
 
     func copyMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) {
-        let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanRename)
+        let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanRename)
 
         if (!metadata.permissions.isEmpty && !permission) ||
             (metadata.status != global.metadataStatusNormal && metadata.status != global.metadataStatusWaitCopy) {

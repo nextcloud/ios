@@ -455,5 +455,3 @@ extension NCShare: UISearchBarDelegate {
         networking?.getSharees(searchString: searchString)
     }
 }
-
-

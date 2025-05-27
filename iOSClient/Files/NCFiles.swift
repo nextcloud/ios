@@ -75,7 +75,7 @@ class NCFiles: NCCollectionViewCommon {
                 self.plusButton.backgroundColor = NCBrandColor.shared.getElement(account: activeTableAccount.account)
             }
         }
-
+        
         if self.serverUrl.isEmpty {
 
             ///
@@ -125,6 +125,12 @@ class NCFiles: NCCollectionViewCommon {
 
         resetPlusButtonAlpha()
         reloadDataSource()
+
+        print(metadataFolder?.permissions)
+        if let metadataFolder, !NCMetadataPermissions.canCreateFolder(metadataFolder) {
+            plusButton.isEnabled = false
+            plusButton.backgroundColor = .lightGray
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {

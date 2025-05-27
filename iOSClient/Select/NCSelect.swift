@@ -318,10 +318,10 @@ extension NCSelect: UICollectionViewDataSource {
 
         var isShare = false
         var isMounted = false
-        let permissions = NCPermissions()
+        let metadataPermissions = NCMetadataPermissions()
 
-        isShare = metadata.permissions.contains(permissions.permissionShared) && !metadataFolder.permissions.contains(permissions.permissionShared)
-        isMounted = metadata.permissions.contains(permissions.permissionMounted) && !metadataFolder.permissions.contains(permissions.permissionMounted)
+        isShare = metadata.permissions.contains(NCMetadataPermissions.permissionShared) && !metadataFolder.permissions.contains(NCMetadataPermissions.permissionShared)
+        isMounted = metadata.permissions.contains(NCMetadataPermissions.permissionMounted) && !metadataFolder.permissions.contains(NCMetadataPermissions.permissionMounted)
 
         cell.listCellDelegate = self
 
