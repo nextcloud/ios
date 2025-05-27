@@ -29,6 +29,9 @@ class NCCollectionViewDataSource: NSObject {
     private let utilityFileSystem = NCUtilityFileSystem()
     private let utility = NCUtility()
     private let global = NCGlobal.shared
+
+    var ocIds: [String] = []
+
     private var sectionsValue: [String] = []
     private var providers: [NKSearchProvider]?
     private var searchResults: [NKSearchResult]?
@@ -64,11 +67,17 @@ class NCCollectionViewDataSource: NSObject {
         }
     }
 
+    init(ocIds: [String]) {
+        self.ocIds = ocIds
+    }
+
     // MARK: -
 
     func removeAll() {
         self.metadatas.removeAll()
         self.metadataIndexPath.removeAll()
+
+        self.ocIds.removeAll()
 
         self.metadatasForSection.removeAll()
         self.sectionsValue.removeAll()
@@ -187,6 +196,33 @@ class NCCollectionViewDataSource: NSObject {
             if let rowIndex = metadataForSection.metadatas.firstIndex(where: {$0.ocId == metadata.ocId}) {
                 indexPaths.append(IndexPath(row: rowIndex, section: sectionIndex))
             }
+        }
+    }
+
+    // MARK: -
+
+    func getIndexPathOcId(_ ocId: String) -> IndexPath? {
+        guard self.ocIds.isEmpty else { return nil }
+
+        if let rowIndex = ocIds.firstIndex(where: {$0 == ocId}) {
+            return IndexPath(row: rowIndex, section: 0)
+        }
+
+        return nil
+    }
+
+    func getOcId(indexPath: IndexPath) -> String? {
+        guard indexPath.row >= 0, indexPath.row < ocIds.count else {
+            return nil
+        }
+        return ocIds[indexPath.row]
+    }
+
+    func removeOcId(_ ocId: String) {
+        guard self.ocIds.isEmpty else { return }
+
+        if let rowIndex = ocIds.firstIndex(of: ocId) {
+            self.ocIds.remove(at: rowIndex)
         }
     }
 

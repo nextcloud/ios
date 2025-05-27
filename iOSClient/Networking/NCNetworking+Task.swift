@@ -351,9 +351,9 @@ extension NCNetworking {
 
             if !foundTask {
                 if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
-                    = self.database.setMetadataSession(ocId: metadata.ocId,
-                                                       sessionError: "",
-                                                       status: self.global.metadataStatusWaitUpload)
+                    self.database.setMetadataSession(ocId: metadata.ocId,
+                                                     sessionError: "",
+                                                     status: self.global.metadataStatusWaitUpload)
                 } else {
                     self.database.deleteMetadataOcId(metadata.ocId)
                 }

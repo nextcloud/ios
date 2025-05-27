@@ -927,6 +927,23 @@ extension NCManageDatabase {
         }
     }
 
+    func getMetadataFromOcIdAsync(_ ocId: String?, completion: @escaping (_ metadata: tableMetadata?) -> Void) {
+        guard let ocId else {
+            return completion(nil)
+        }
+
+        performRealmRead({ realm in
+            return realm.objects(tableMetadata.self)
+                .filter("ocId == %@", ocId)
+                .first
+                .map { tableMetadata(value: $0) }
+        }, sync: false) { result in
+            DispatchQueue.main.async {
+                completion(result)
+            }
+        }
+    }
+
     func getMetadataFromOcIdAndocIdTransfer(_ ocId: String?) -> tableMetadata? {
         guard let ocId else { return nil }
 
@@ -1178,6 +1195,23 @@ extension NCManageDatabase {
             }
             return freeze ? results.freeze() : results
         }, sync: false, completion: completion)
+    }
+
+    func getResultsOcIdsAsync(predicate: NSPredicate,
+                              sortDescriptors: [RealmSwift.SortDescriptor] = [],
+                              completion: @escaping ([String]) -> Void) {
+        performRealmRead({ realm in
+            var results = realm.objects(tableMetadata.self).filter(predicate)
+            if !sortDescriptors.isEmpty {
+                results = results.sorted(by: sortDescriptors)
+            }
+            return results
+        }, sync: false) { results in
+            guard let results else {
+                return completion([])
+            }
+            completion(results.map { $0.ocId })
+        }
     }
 
     func fetchNetworkingProcessState() -> (counterDownloading: Int, counterUploading: Int) {
