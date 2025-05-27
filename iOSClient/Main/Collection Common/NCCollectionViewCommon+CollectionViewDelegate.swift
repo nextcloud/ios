@@ -76,7 +76,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                         }
                     }
 
-                    NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
+                    NCNetworking.shared.download(metadata: metadata) {
                     } requestHandler: { request in
                         downloadRequest = request
                     } progressHandler: { progress in

@@ -148,7 +148,7 @@ class NCNetworkingProcess {
             }
 
             counterDownloading += 1
-            networking.download(metadata: metadata, withNotificationProgressTask: true)
+            networking.download(metadata: metadata)
         }
 
         /// ------------------------ UPLOAD

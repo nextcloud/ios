@@ -29,13 +29,12 @@ import RealmSwift
 
 extension NCNetworking {
     func download(metadata: tableMetadata,
-                  withNotificationProgressTask: Bool,
                   start: @escaping () -> Void = { },
                   requestHandler: @escaping (_ request: DownloadRequest) -> Void = { _ in },
                   progressHandler: @escaping (_ progress: Progress) -> Void = { _ in },
                   completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void = { _, _ in }) {
         if metadata.session == sessionDownload {
-            downloadFile(metadata: metadata, withNotificationProgressTask: withNotificationProgressTask) {
+            downloadFile(metadata: metadata) {
                 start()
             } requestHandler: { request in
                 requestHandler(request)
@@ -52,7 +51,6 @@ extension NCNetworking {
     }
 
     private func downloadFile(metadata: tableMetadata,
-                              withNotificationProgressTask: Bool,
                               start: @escaping () -> Void = { },
                               requestHandler: @escaping (_ request: DownloadRequest) -> Void = { _ in },
                               progressHandler: @escaping (_ progress: Progress) -> Void = { _ in },

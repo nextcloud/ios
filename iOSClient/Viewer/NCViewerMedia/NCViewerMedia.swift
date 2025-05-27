@@ -173,7 +173,7 @@ class NCViewerMedia: UIViewController {
                                 }
                             }
 
-                            NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
+                            NCNetworking.shared.download(metadata: metadata) {
                             } requestHandler: { request in
                                 downloadRequest = request
                             } progressHandler: { progress in
@@ -268,7 +268,7 @@ class NCViewerMedia: UIViewController {
            let metadata = self.database.getMetadataLivePhoto(metadata: metadata),
            !utilityFileSystem.fileProviderStorageExists(metadata),
            let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata], session: NCNetworking.shared.sessionDownload, selector: "") {
-            NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
+            NCNetworking.shared.download(metadata: metadata)
         }
 
         if metadata.isImage, fileNameExtension == "GIF" || fileNameExtension == "SVG", !utilityFileSystem.fileProviderStorageExists(metadata) {
@@ -341,7 +341,7 @@ class NCViewerMedia: UIViewController {
 
     private func downloadImage(withSelector selector: String = "") {
         guard let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata], session: NCNetworking.shared.sessionDownload, selector: selector) else { return }
-        NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true) {
+        NCNetworking.shared.download(metadata: metadata) {
         } requestHandler: { _ in
             self.allowOpeningDetails = false
         } completion: { _, _ in

@@ -228,7 +228,7 @@ class NCFiles: NCCollectionViewCommon {
                                                                         selector: NCGlobal.shared.selectorDownloadFile,
                                                                         sceneIdentifier: self.controller?.sceneIdentifier,
                                                                         sync: false)
-                        NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
+                        NCNetworking.shared.download(metadata: metadata)
                     }
                 }
                 DispatchQueue.main.async {

@@ -96,7 +96,7 @@ class NCViewerProviderContextMenu: UIViewController {
                         NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                   session: NCNetworking.shared.sessionDownload,
                                                                                   selector: "")
-                        NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
+                        NCNetworking.shared.download(metadata: metadata)
                     }
                 }
             }
@@ -107,7 +107,7 @@ class NCViewerProviderContextMenu: UIViewController {
                 NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                           session: NCNetworking.shared.sessionDownload,
                                                                           selector: "")
-                NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
+                NCNetworking.shared.download(metadata: metadata)
             }
             // DOWNLOAD LIVE PHOTO
             if let metadataLivePhoto = self.metadataLivePhoto,
@@ -116,7 +116,7 @@ class NCViewerProviderContextMenu: UIViewController {
                 NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadataLivePhoto],
                                                                           session: NCNetworking.shared.sessionDownload,
                                                                           selector: "")
-                NCNetworking.shared.download(metadata: metadataLivePhoto, withNotificationProgressTask: true)
+                NCNetworking.shared.download(metadata: metadataLivePhoto)
             }
         }
     }

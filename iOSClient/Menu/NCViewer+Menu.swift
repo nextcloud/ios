@@ -142,7 +142,7 @@ extension NCViewer {
                                                                                                  session: NCNetworking.shared.sessionDownload,
                                                                                                  selector: NCGlobal.shared.selectorSaveAsScan,
                                                                                                  sceneIdentifier: controller.sceneIdentifier) else { return }
-                            NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
+                            NCNetworking.shared.download(metadata: metadata)
                         }
                     }
                 )
@@ -173,7 +173,7 @@ extension NCViewer {
                                                                                              session: NCNetworking.shared.sessionDownload,
                                                                                              selector: "",
                                                                                              sceneIdentifier: controller.sceneIdentifier) else { return }
-                        NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
+                        NCNetworking.shared.download(metadata: metadata)
                     }
                 )
             )
@@ -229,7 +229,7 @@ extension NCViewer {
                                                                                                  session: NCNetworking.shared.sessionDownload,
                                                                                                  selector: NCGlobal.shared.selectorLoadFileQuickLook,
                                                                                                  sceneIdentifier: controller.sceneIdentifier) else { return }
-                            NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
+                            NCNetworking.shared.download(metadata: metadata)
                         }
                     }
                 )

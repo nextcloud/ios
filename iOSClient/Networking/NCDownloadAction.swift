@@ -316,7 +316,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                                                                                      session: NCNetworking.shared.sessionDownload,
                                                                                      selector: "",
                                                                                      sceneIdentifier: controller.sceneIdentifier) else { return completion() }
-                NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
+                NCNetworking.shared.download(metadata: metadata) {
                 } progressHandler: { progress in
                     processor.hud.progress(progress.fractionCompleted)
                 } completion: { _, _ in
