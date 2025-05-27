@@ -438,7 +438,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    func transferRequestServerData(serverUrl: String?) {
+    func transferRequestData(serverUrl: String?) {
         self.transferDebouncer.call {
             if self.isSearchingMode {
                 self.networkSearch()

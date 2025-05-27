@@ -302,10 +302,11 @@ class NCNetworkingProcess {
 
                 let result = await NextcloudKit.shared.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account, options: options)
 
+                /*
                 database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
 
-                NCNetworking.shared.notifyAllDelegates { delete in
-                    delete.transferCopy(metadata: metadata, dragdrop: false, error: result.error)
+                NCNetworking.shared.notifyAllDelegates { delegate in
+                    delegate.transferCopy(metadata: metadata, dragdrop: false, error: result.error)
                 }
 
                 if result.error == .success {
@@ -316,6 +317,7 @@ class NCNetworkingProcess {
                         delegate.transferRequestData(serverUrl: serverUrlTo)
                     }
                 }
+                */
             }
         }
 
@@ -337,9 +339,11 @@ class NCNetworkingProcess {
 
                 database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
 
+                /*
                 NCNetworking.shared.notifyAllDelegates { delete in
                     delete.transferMove(metadata: metadata, dragdrop: false, error: result.error)
                 }
+                */
 
                 if result.error == .success {
                     if metadata.directory {
@@ -362,6 +366,7 @@ class NCNetworkingProcess {
                         }
                     }
 
+                    /*
                     NCNetworking.shared.notifyAllDelegates { delegate in
                         delegate.transferRequestData(serverUrl: metadata.serverUrl)
                     }
@@ -369,6 +374,7 @@ class NCNetworkingProcess {
                     NCNetworking.shared.notifyAllDelegates { delegate in
                         delegate.transferRequestData(serverUrl: serverUrlTo)
                     }
+                    */
                 }
             }
         }
