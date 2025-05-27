@@ -165,7 +165,7 @@ class NCDragDrop: NSObject {
         for metadata in metadatas {
             NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
             NCNetworking.shared.notifyAllDelegates { delete in
-                delete.transferCopy(metadata: metadata, dragdrop: true)
+                delete.transferCopy(metadata: metadata, dragdrop: true, error: .success)
             }
         }
     }
@@ -174,7 +174,7 @@ class NCDragDrop: NSObject {
         for metadata in metadatas {
             NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
             NCNetworking.shared.notifyAllDelegates { delete in
-                delete.transferMove(metadata: metadata, dragdrop: true)
+                delete.transferMove(metadata: metadata, dragdrop: true, error: .success)
             }
         }
     }

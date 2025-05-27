@@ -367,13 +367,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    //TODO: TRANSFER DELEGATE
-    /*
-     Error message
-     */
-
     func transferChange(status: String, metadata: tableMetadata, error: NKError) {
         guard session.account == metadata.account else { return }
+
+        if error != .success {
+            NCContentPresenter().showError(error: error)
+        }
 
         DispatchQueue.main.async {
             switch status {
@@ -444,7 +443,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    func transferCopy(metadata: tableMetadata, dragdrop: Bool) {
+    func transferCopy(metadata: tableMetadata, dragdrop: Bool, error: NKError) {
         if isSearchingMode {
             return networkSearch()
         }
@@ -453,7 +452,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    func transferMove(metadata: tableMetadata, dragdrop: Bool) {
+    func transferMove(metadata: tableMetadata, dragdrop: Bool, error: NKError) {
         if isSearchingMode {
             return networkSearch()
         }

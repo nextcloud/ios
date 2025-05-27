@@ -49,7 +49,7 @@ extension NCMedia: NCTransferDelegate {
         }
     }
 
-    func transferCopy(metadata: tableMetadata, dragdrop: Bool) {
+    func transferCopy(metadata: tableMetadata, dragdrop: Bool, error: NKError) {
         guard dragdrop else {
             return
         }
@@ -61,7 +61,7 @@ extension NCMedia: NCTransferDelegate {
         }
     }
 
-    func transferMove(metadata: tableMetadata, dragdrop: Bool) {
+    func transferMove(metadata: tableMetadata, dragdrop: Bool, error: NKError) {
         guard dragdrop else {
             return
         }

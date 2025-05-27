@@ -305,7 +305,7 @@ class NCNetworkingProcess {
                 database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
 
                 NCNetworking.shared.notifyAllDelegates { delete in
-                    delete.transferCopy(metadata: metadata, dragdrop: false)
+                    delete.transferCopy(metadata: metadata, dragdrop: false, error: result.error)
                 }
 
                 if result.error == .success {
@@ -340,7 +340,7 @@ class NCNetworkingProcess {
                 database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
 
                 NCNetworking.shared.notifyAllDelegates { delete in
-                    delete.transferMove(metadata: metadata, dragdrop: false)
+                    delete.transferMove(metadata: metadata, dragdrop: false, error: result.error)
                 }
 
                 if result.error == .success {
@@ -400,7 +400,7 @@ class NCNetworkingProcess {
                 NCNetworking.shared.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusFavorite,
                                             metadata: metadata,
-                                            error: .success)
+                                            error: error)
                 }
             }
         }

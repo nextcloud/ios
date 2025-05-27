@@ -266,9 +266,12 @@ extension NCViewerProviderContextMenu: VLCMediaPlayerDelegate {
 
 extension NCViewerProviderContextMenu: NCTransferDelegate {
     func transferChange(status: String, metadata: tableMetadata, error: NKError) {
+        if error != .success {
+            NCContentPresenter().showError(error: error)
+        }
+
         DispatchQueue.main.async {
             switch status {
-
             /// DOWNLOAD
             case self.global.networkingStatusDownloadStart:
                 if metadata.ocId == self.metadata?.ocId || metadata.ocId == self.metadataLivePhoto?.ocId {
