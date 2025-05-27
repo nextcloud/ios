@@ -13,7 +13,9 @@ extension NCNetworking {
             return
         }
 
+        let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: session.account)
         var recommendationsToInsert: [NKRecommendation] = []
+        var metadatasToInsert: [tableMetadata] = []
         let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         let results = await NextcloudKit.shared.getRecommendedFiles(account: session.account, options: options)
         var serverUrlFileName = ""
@@ -26,12 +28,12 @@ extension NCNetworking {
                     serverUrlFileName = homeServer + recommendation.directory + "/" + recommendation.name
                 }
 
-                let result = await fileExists(serverUrlFileName: serverUrlFileName, account: session.account)
+                let results = await NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, account: session.account)
 
-                if result.exists, let file = result.file {
+                if results.error == .success, let file = results.files?.first {
                     let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
                     let metadata = self.database.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
-                    self.database.addMetadata(metadata, sync: false)
+                    metadatasToInsert.append(metadata)
 
                     if metadata.isLivePhoto, metadata.isVideo {
                         continue
@@ -40,6 +42,8 @@ extension NCNetworking {
                     }
                 }
             }
+
+            self.database.addMetadatas(metadatasToInsert)
             self.database.createRecommendedFiles(account: session.account, recommendations: recommendationsToInsert, sync: false)
 
             await collectionView.reloadData()
