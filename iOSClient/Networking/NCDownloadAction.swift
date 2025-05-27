@@ -521,9 +521,6 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                     }
 
                     NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
-                    NCNetworking.shared.notifyAllDelegates { delete in
-                        delete.transferCopy(metadata: metadata, dragdrop: false, error: .success)
-                    }
                 }
 
             } else if move {
@@ -533,9 +530,6 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                     }
 
                     NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
-                    NCNetworking.shared.notifyAllDelegates { delete in
-                        delete.transferMove(metadata: metadata, dragdrop: false, error: .success)
-                    }
                 }
             }
         }

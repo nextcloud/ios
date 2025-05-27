@@ -315,8 +315,6 @@ class NCNetworkingProcess {
                     NCNetworking.shared.notifyAllDelegates { delegate in
                         delegate.transferRequestData(serverUrl: serverUrlTo)
                     }
-                } else {
-                    NCContentPresenter().showError(error: result.error)
                 }
             }
         }
@@ -371,8 +369,6 @@ class NCNetworkingProcess {
                     NCNetworking.shared.notifyAllDelegates { delegate in
                         delegate.transferRequestData(serverUrl: serverUrlTo)
                     }
-                } else {
-                    NCContentPresenter().showError(error: result.error)
                 }
             }
         }

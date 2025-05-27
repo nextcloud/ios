@@ -11,6 +11,7 @@ extension NCManageDatabase {
 
     // MARK: - Realm Write
 
+    @discardableResult
     func setMetadataSession(ocId: String,
                             newFileName: String? = nil,
                             session: String? = nil,

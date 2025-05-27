@@ -265,7 +265,7 @@ extension NCNetworking {
            let metadata = result.metadata {
             writeDirectoryMetadata(metadata)
         } else if let metadata = self.database.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", session.account, fileName, serverUrl)) {
-            _ = self.database.setMetadataSession(ocId: metadata.ocId, sessionError: result.error.errorDescription, sync: false)
+            self.database.setMetadataSession(ocId: metadata.ocId, sessionError: result.error.errorDescription, sync: false)
         }
 
         return result.error
