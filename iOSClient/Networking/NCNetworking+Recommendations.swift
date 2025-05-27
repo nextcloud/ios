@@ -7,8 +7,12 @@ import UIKit
 import NextcloudKit
 
 extension NCNetworking {
-    func createRecommendations(session: NCSession.Session) async {
+    func createRecommendations(session: NCSession.Session, serverUrl: String, collectionView: UICollectionView) async {
         let homeServer = self.utilityFileSystem.getHomeServer(urlBase: session.urlBase, userId: session.userId)
+        guard homeServer == serverUrl else {
+            return
+        }
+
         var recommendationsToInsert: [NKRecommendation] = []
         let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: session.account)
@@ -41,7 +45,7 @@ extension NCNetworking {
             }
             self.database.createRecommendedFiles(account: session.account, recommendations: recommendationsToInsert)
 
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadHeader, userInfo: ["account": session.account])
+            await collectionView.reloadData()
         }
     }
 }

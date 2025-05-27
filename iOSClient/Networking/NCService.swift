@@ -175,7 +175,6 @@ class NCService: NSObject {
             // Recommendations
             if !NCCapabilities.shared.getCapabilities(account: account).capabilityRecommendations {
                 self.database.deleteAllRecommendedFiles(account: account)
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadHeader, userInfo: ["account": account])
             }
 
             // Theming

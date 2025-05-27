@@ -234,7 +234,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.navigationController?.navigationItem.leftBarButtonItems?.first?.customView?.addInteraction(dropInteraction)
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming(_:)), name: NSNotification.Name(rawValue: global.notificationCenterChangeTheming), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadHeader(_:)), name: NSNotification.Name(rawValue: global.notificationCenterReloadHeader), object: nil)
 
         DispatchQueue.main.async {
             self.collectionView?.collectionViewLayout.invalidateLayout()
@@ -361,6 +360,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.networkSearch()
             } else if needLoadDataSource {
                 self.reloadDataSource()
+            } else {
+                if isRecommendationActived {
+                    Task.detached {
+                        await NCNetworking.shared.createRecommendations(session: self.session, serverUrl: self.serverUrl, collectionView: self.collectionView)
+                    }
+                }
             }
         default:
             break
@@ -477,15 +482,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func changeTheming(_ notification: NSNotification) {
         self.reloadDataSource()
-    }
-
-    @objc func reloadHeader(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let account = userInfo["account"] as? String,
-              account == session.account
-        else { return }
-
-        self.collectionView.reloadData()
     }
 
     @objc func closeRichWorkspaceWebView() {
@@ -703,7 +699,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             isDirectoryEncrypted = NCUtilityFileSystem().isDirectoryE2EE(session: session, serverUrl: serverUrl)
             if isRecommendationActived {
                 Task.detached {
-                    await NCNetworking.shared.createRecommendations(session: self.session)
+                    await NCNetworking.shared.createRecommendations(session: self.session, serverUrl: self.serverUrl, collectionView: self.collectionView)
                 }
             }
         }
