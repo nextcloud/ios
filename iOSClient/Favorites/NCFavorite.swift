@@ -61,9 +61,9 @@ class NCFavorite: NCCollectionViewCommon {
            predicate = NSPredicate(format: "account == %@ AND favorite == true AND NOT (status IN %@)", session.account, global.metadataStatusHideInView)
         }
 
-        self.database.getMetadatasAsync(predicate: predicate,
-                                        layoutForView: layoutForView,
-                                        account: session.account) { metadatas, layoutForView, account in
+        self.database.getMetadatas(predicate: predicate,
+                                   layoutForView: layoutForView,
+                                   account: session.account) { metadatas, layoutForView, account in
             self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
             super.reloadDataSource()
         }

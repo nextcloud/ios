@@ -60,9 +60,9 @@ class NCGroupfolders: NCCollectionViewCommon {
             self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
             super.reloadDataSource()
         } else {
-            database.getMetadatasAsync(predicate: defaultPredicate,
-                                       layoutForView: layoutForView,
-                                       account: session.account) { metadatas, layoutForView, account in
+            database.getMetadatas(predicate: defaultPredicate,
+                                  layoutForView: layoutForView,
+                                  account: session.account) { metadatas, layoutForView, account in
                 self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
                 super.reloadDataSource()
             }

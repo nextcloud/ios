@@ -506,9 +506,9 @@ extension NCSelect {
                 self.collectionView.reloadData()
             }
         } completion: { account, _, _, _ in
-            self.database.getMetadatasAsync(predicate: predicate,
-                                            layoutForView: NCDBLayoutForView(),
-                                            account: account) { metadatas, layoutForView, account in
+            self.database.getMetadatas(predicate: predicate,
+                                       layoutForView: NCDBLayoutForView(),
+                                       account: account) { metadatas, layoutForView, account in
                 self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
                 DispatchQueue.main.async {
                     self.collectionView.reloadData()

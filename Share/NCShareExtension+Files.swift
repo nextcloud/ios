@@ -31,9 +31,9 @@ extension NCShareExtension {
         let layoutForView = NCManageDatabase.shared.getLayoutForView(account: session.account, key: keyLayout, serverUrl: serverUrl) ?? NCDBLayoutForView()
         let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", session.account, serverUrl)
 
-        self.database.getMetadatasAsync(predicate: predicate,
-                                        layoutForView: layoutForView,
-                                        account: session.account) { metadatas, layoutForView, account in
+        self.database.getMetadatas(predicate: predicate,
+                                   layoutForView: layoutForView,
+                                   account: session.account) { metadatas, layoutForView, account in
             self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
             DispatchQueue.main.async {
                 if withLoadFolder {

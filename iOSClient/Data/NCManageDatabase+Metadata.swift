@@ -1183,10 +1183,10 @@ extension NCManageDatabase {
         }
     }
 
-    func getMetadatasAsync(predicate: NSPredicate,
-                           layoutForView: NCDBLayoutForView?,
-                           account: String,
-                           completion: @escaping (_ metadatas: [tableMetadata], _ layoutForView: NCDBLayoutForView?, _ account: String ) -> Void) {
+    func getMetadatas(predicate: NSPredicate,
+                      layoutForView: NCDBLayoutForView?,
+                      account: String,
+                      completion: @escaping (_ metadatas: [tableMetadata], _ layoutForView: NCDBLayoutForView?, _ account: String ) -> Void) {
         performRealmRead({ realm in
             return realm.objects(tableMetadata.self)
                 .filter(predicate)
