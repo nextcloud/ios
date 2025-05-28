@@ -1019,21 +1019,6 @@ extension NCManageDatabase {
 
     // MARK: - Realm Read (result)
 
-    func getResultMetadatasPredicateAsync(_ predicate: NSPredicate, layoutForView: NCDBLayoutForView?, account: String, completion: @escaping (_ metadatas: [tableMetadata], _ layoutForView: NCDBLayoutForView?, _ account: String ) -> Void) {
-        performRealmRead({ realm in
-            return realm.objects(tableMetadata.self)
-                .filter(predicate)
-                .freeze()
-        }, sync: false) { result in
-            guard let result else {
-                return completion([], layoutForView, account)
-            }
-            let sorted = self.sortedResultsMetadata(layoutForView: layoutForView, account: account, metadatas: result)
-
-            return completion(sorted, layoutForView, account)
-        }
-    }
-
     func getResultsMetadatasFromGroupfolders(session: NCSession.Session, layoutForView: NCDBLayoutForView?) -> [tableMetadata] {
         let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
 
@@ -1192,6 +1177,23 @@ extension NCManageDatabase {
         }
     }
 
+    func getResultPredicateAsync(predicate: NSPredicate,
+                                 layoutForView: NCDBLayoutForView?,
+                                 account: String,
+                                 completion: @escaping (_ metadatas: [tableMetadata], _ layoutForView: NCDBLayoutForView?, _ account: String ) -> Void) {
+        performRealmRead({ realm in
+            return realm.objects(tableMetadata.self)
+                .filter(predicate)
+        }, sync: false) { result in
+            guard let result else {
+                return completion([], layoutForView, account)
+            }
+            let sorted = self.sortedResultsMetadata(layoutForView: layoutForView, account: account, metadatas: result)
+
+            return completion(sorted, layoutForView, account)
+        }
+    }
+
     func getResultsMetadatasAsync(predicate: NSPredicate,
                                   sortDescriptors: [RealmSwift.SortDescriptor] = [],
                                   freeze: Bool = false,
@@ -1203,23 +1205,6 @@ extension NCManageDatabase {
             }
             return freeze ? results.freeze() : results
         }, sync: false, completion: completion)
-    }
-
-    func getResultsOcIdsAsync(predicate: NSPredicate,
-                              sortDescriptors: [RealmSwift.SortDescriptor] = [],
-                              completion: @escaping ([String]) -> Void) {
-        performRealmRead({ realm in
-            var results = realm.objects(tableMetadata.self).filter(predicate)
-            if !sortDescriptors.isEmpty {
-                results = results.sorted(by: sortDescriptors)
-            }
-            return results
-        }, sync: false) { results in
-            guard let results else {
-                return completion([])
-            }
-            completion(results.map { $0.ocId })
-        }
     }
 
     func fetchNetworkingProcessState() -> (counterDownloading: Int, counterUploading: Int) {
