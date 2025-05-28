@@ -155,6 +155,27 @@ extension NCManageDatabase {
         }
     }
 
+    func getTableLocal(predicate: NSPredicate,
+                       dispatchOnMainQueue: Bool = true,
+                       completion: @escaping (_ localFile: tableLocalFile?) -> Void) {
+        performRealmRead({ realm in
+            return realm.objects(tableLocalFile.self)
+                .filter(predicate)
+                .first
+        }, sync: false) { result in
+            let detachedResult = result.map { tableLocalFile(value: $0) }
+            let deliver: () -> Void = {
+                completion(detachedResult)
+            }
+
+            if dispatchOnMainQueue {
+                DispatchQueue.main.async(execute: deliver)
+            } else {
+                deliver()
+            }
+        }
+    }
+
     func getTableLocalFiles(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableLocalFile] {
         return performRealmRead { realm in
             Array(

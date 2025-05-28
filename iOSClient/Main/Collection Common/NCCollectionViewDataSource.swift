@@ -282,9 +282,8 @@ class NCCollectionViewDataSource: NSObject {
     }
 
     func getFooterInformation() -> (directories: Int, files: Int, size: Int64) {
-        let validMetadatas = metadatas.filter { !$0.isInvalidated }
-        let directories = validMetadatas.filter({ $0.directory == true})
-        let files = validMetadatas.filter({ $0.directory == false})
+        let directories = metadatas.filter({ $0.directory == true})
+        let files = metadatas.filter({ $0.directory == false})
         var size: Int64 = 0
 
         files.forEach { metadata in

@@ -935,7 +935,9 @@ extension NCManageDatabase {
         }
     }
 
-    func getMetadataFromOcIdAsync(_ ocId: String?, completion: @escaping (_ metadata: tableMetadata?) -> Void) {
+    func getMetadataFromOcIdAsync(_ ocId: String?,
+                                  dispatchOnMainQueue: Bool = true,
+                                  completion: @escaping (_ metadata: tableMetadata?) -> Void) {
         guard let ocId else {
             return completion(nil)
         }
@@ -946,7 +948,11 @@ extension NCManageDatabase {
                 .first
                 .map { tableMetadata(value: $0) }
         }, sync: false) { result in
-            DispatchQueue.main.async {
+            if dispatchOnMainQueue {
+                DispatchQueue.main.async {
+                    completion(result)
+                }
+            } else {
                 completion(result)
             }
         }
@@ -1189,8 +1195,9 @@ extension NCManageDatabase {
                 return completion([], layoutForView, account)
             }
             let sorted = self.sortedResultsMetadata(layoutForView: layoutForView, account: account, metadatas: result)
+            let metadatas = sorted.map { tableMetadata(value: $0) }
 
-            return completion(sorted, layoutForView, account)
+            return completion(metadatas, layoutForView, account)
         }
     }
 
