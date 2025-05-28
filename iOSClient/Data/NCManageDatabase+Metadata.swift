@@ -554,6 +554,14 @@ extension NCManageDatabase {
         }
     }
 
+    func addMetadataIfNeeded(_ metadata: tableMetadata, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
+            if realm.object(ofType: tableMetadata.self, forPrimaryKey: metadata.ocId) == nil {
+                realm.add(metadata)
+            }
+        }
+    }
+
     func addMetadataAndReturn(_ metadata: tableMetadata, sync: Bool = true) -> tableMetadata {
         var addedMetadata = tableMetadata(value: metadata)
 

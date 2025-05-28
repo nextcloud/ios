@@ -49,10 +49,7 @@ extension NCMedia: NCTransferDelegate {
         }
     }
 
-    func transferCopy(metadata: tableMetadata, dragdrop: Bool, error: NKError) {
-        guard dragdrop else {
-            return
-        }
+    func transferCopy(metadata: tableMetadata, error: NKError) {
         setEditMode(false)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -61,10 +58,7 @@ extension NCMedia: NCTransferDelegate {
         }
     }
 
-    func transferMove(metadata: tableMetadata, dragdrop: Bool, error: NKError) {
-        guard dragdrop else {
-            return
-        }
+    func transferMove(metadata: tableMetadata, error: NKError) {
         setEditMode(false)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {

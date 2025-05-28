@@ -15,8 +15,7 @@ extension NCNetworking {
 
         let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: session.account)
         var recommendationsToInsert: [NKRecommendation] = []
-        let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-        let results = await NextcloudKit.shared.getRecommendedFiles(account: session.account, options: options)
+        let results = await NextcloudKit.shared.getRecommendedFiles(account: session.account)
         var serverUrlFileName = ""
 
         if results.error == .success, let recommendations = results.recommendations {
@@ -32,7 +31,7 @@ extension NCNetworking {
                 if results.error == .success, let file = results.files?.first {
                     let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
                     let metadata = self.database.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
-                    self.database.addMetadata(metadata, sync: false)
+                    self.database.addMetadataIfNeeded(metadata, sync: false)
 
                     if metadata.isLivePhoto, metadata.isVideo {
                         continue

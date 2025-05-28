@@ -300,24 +300,19 @@ class NCNetworkingProcess {
                     serverUrlFileNameDestination = serverUrlTo + "/" + fileNameCopy
                 }
 
-                let result = await NextcloudKit.shared.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account, options: options)
+                let resultCopy = await NextcloudKit.shared.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account, options: options)
 
-                /*
-                database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
+                if resultCopy.error == .success {
+                    let result = await NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileNameDestination, account: metadata.account)
+                    if result.error == .success, let metadata = result.metadata {
+                        database.addMetadata(metadata)
+                    }
+                    returnError = true
+                }
 
                 NCNetworking.shared.notifyAllDelegates { delegate in
-                    delegate.transferCopy(metadata: metadata, dragdrop: false, error: result.error)
+                    delegate.transferCopy(metadata: metadata, error: resultCopy.error)
                 }
-
-                if result.error == .success {
-                    NCNetworking.shared.notifyAllDelegates { delegate in
-                        delegate.transferRequestData(serverUrl: metadata.serverUrl)
-                    }
-                    NCNetworking.shared.notifyAllDelegates { delegate in
-                        delegate.transferRequestData(serverUrl: serverUrlTo)
-                    }
-                }
-                */
             }
         }
 

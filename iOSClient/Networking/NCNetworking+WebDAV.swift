@@ -93,10 +93,10 @@ extension NCNetworking {
             let shares = self.database.getTableShares(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
 
             for share in shares {
-                self.database.deleteDownloadLimit(byAccount: metadata.account, shareToken: share.token)
+                self.database.deleteDownloadLimit(byAccount: metadata.account, shareToken: share.token, sync: false)
 
                 if let receivedDownloadLimit = file.downloadLimits.first(where: { $0.token == share.token }) {
-                    self.database.createDownloadLimit(account: metadata.account, count: receivedDownloadLimit.count, limit: receivedDownloadLimit.limit, token: receivedDownloadLimit.token)
+                    self.database.createDownloadLimit(account: metadata.account, count: receivedDownloadLimit.count, limit: receivedDownloadLimit.limit, token: receivedDownloadLimit.token, sync: false)
                 }
             }
 

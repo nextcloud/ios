@@ -448,7 +448,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    func transferCopy(metadata: tableMetadata, dragdrop: Bool, error: NKError) {
+    func transferCopy(metadata: tableMetadata, error: NKError) {
         if error != .success {
             NCContentPresenter().showError(error: error)
         }
@@ -461,7 +461,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    func transferMove(metadata: tableMetadata, dragdrop: Bool, error: NKError) {
+    func transferMove(metadata: tableMetadata, error: NKError) {
         if error != .success {
             NCContentPresenter().showError(error: error)
         }
