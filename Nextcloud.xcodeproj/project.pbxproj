@@ -792,10 +792,10 @@
 		F7A0D1362591FBC5008F8A13 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		F7A0D1372591FBC5008F8A13 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		F7A1050E29E587AF00FFD92B /* TagListView in Frameworks */ = {isa = PBXBuildFile; productRef = F7A1050D29E587AF00FFD92B /* TagListView */; };
-		F7A3DB902DDE23B5008F7EC8 /* NCTransferDebouncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A3DB8F2DDE238C008F7EC8 /* NCTransferDebouncer.swift */; };
-		F7A3DB912DDE23B5008F7EC8 /* NCTransferDebouncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A3DB8F2DDE238C008F7EC8 /* NCTransferDebouncer.swift */; };
-		F7A3DB922DDE23B5008F7EC8 /* NCTransferDebouncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A3DB8F2DDE238C008F7EC8 /* NCTransferDebouncer.swift */; };
-		F7A3DB932DDE23B5008F7EC8 /* NCTransferDebouncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A3DB8F2DDE238C008F7EC8 /* NCTransferDebouncer.swift */; };
+		F7A3DB902DDE23B5008F7EC8 /* NCDebouncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A3DB8F2DDE238C008F7EC8 /* NCDebouncer.swift */; };
+		F7A3DB912DDE23B5008F7EC8 /* NCDebouncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A3DB8F2DDE238C008F7EC8 /* NCDebouncer.swift */; };
+		F7A3DB922DDE23B5008F7EC8 /* NCDebouncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A3DB8F2DDE238C008F7EC8 /* NCDebouncer.swift */; };
+		F7A3DB932DDE23B5008F7EC8 /* NCDebouncer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A3DB8F2DDE238C008F7EC8 /* NCDebouncer.swift */; };
 		F7A48415297028FC00BD1B49 /* Nextcloud Hub.png in Resources */ = {isa = PBXBuildFile; fileRef = F7A48414297028FC00BD1B49 /* Nextcloud Hub.png */; };
 		F7A509252C26BD5D00326106 /* NCCreateDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A509242C26BD5D00326106 /* NCCreateDocument.swift */; };
 		F7A509262C26D95D00326106 /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = F7160A812BE933390034DCB3 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -1652,7 +1652,7 @@
 		F7A03E322D426115007AA677 /* NCMoreNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMoreNavigationController.swift; sourceTree = "<group>"; };
 		F7A03E342D427308007AA677 /* NCMainNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMainNavigationController.swift; sourceTree = "<group>"; };
 		F7A0D1342591FBC5008F8A13 /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
-		F7A3DB8F2DDE238C008F7EC8 /* NCTransferDebouncer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTransferDebouncer.swift; sourceTree = "<group>"; };
+		F7A3DB8F2DDE238C008F7EC8 /* NCDebouncer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCDebouncer.swift; sourceTree = "<group>"; };
 		F7A48414297028FC00BD1B49 /* Nextcloud Hub.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Nextcloud Hub.png"; sourceTree = SOURCE_ROOT; };
 		F7A509242C26BD5D00326106 /* NCCreateDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCreateDocument.swift; sourceTree = "<group>"; };
 		F7A560412AE1593700BE8FD6 /* NCOperationSaveLivePhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCOperationSaveLivePhoto.swift; sourceTree = "<group>"; };
@@ -2479,7 +2479,7 @@
 				F7327E2F2B73A86700A462C7 /* NCNetworking+WebDAV.swift */,
 				F70D8D8024A4A9BF000A5756 /* NCNetworkingProcess.swift */,
 				F755BD9A20594AC7008C5FBB /* NCService.swift */,
-				F7A3DB8F2DDE238C008F7EC8 /* NCTransferDebouncer.swift */,
+				F7A3DB8F2DDE238C008F7EC8 /* NCDebouncer.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -4239,7 +4239,7 @@
 			files = (
 				F7864ACF2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift in Sources */,
 				F71F6D0A2B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */,
-				F7A3DB902DDE23B5008F7EC8 /* NCTransferDebouncer.swift in Sources */,
+				F7A3DB902DDE23B5008F7EC8 /* NCDebouncer.swift in Sources */,
 				F7245925289BB59100474787 /* ThreadSafeDictionary.swift in Sources */,
 				F7BF9D852934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift in Sources */,
 				F79EC78926316AC4004E59D6 /* NCPopupViewController.swift in Sources */,
@@ -4431,7 +4431,7 @@
 				F7D7A7702DCDD437003D2007 /* NCManageDatabase+AutoUpload.swift in Sources */,
 				F343A4BC2A1E734600DDA874 /* Optional+Extension.swift in Sources */,
 				F7411C562D7B26D700F57358 /* NCNetworking+ServerError.swift in Sources */,
-				F7A3DB912DDE23B5008F7EC8 /* NCTransferDebouncer.swift in Sources */,
+				F7A3DB912DDE23B5008F7EC8 /* NCDebouncer.swift in Sources */,
 				F7327E362B73AEDE00A462C7 /* NCNetworking+LivePhoto.swift in Sources */,
 				F72EA95828B7BC4F00C88F0C /* FilesData.swift in Sources */,
 				F7327E312B73A86700A462C7 /* NCNetworking+WebDAV.swift in Sources */,
@@ -4489,7 +4489,7 @@
 				F7327E2C2B73A53400A462C7 /* NCNetworking+Upload.swift in Sources */,
 				F7D68FCF28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift in Sources */,
 				F33EE6F62BF4C9B200CA1A51 /* PKCS12.swift in Sources */,
-				F7A3DB922DDE23B5008F7EC8 /* NCTransferDebouncer.swift in Sources */,
+				F7A3DB922DDE23B5008F7EC8 /* NCDebouncer.swift in Sources */,
 				F7F3E58B2D3BB65600A32B14 /* NCNetworking+Recommendations.swift in Sources */,
 				F73EF7C32B02250B0087E6E9 /* NCManageDatabase+GPS.swift in Sources */,
 				F7C9B9212B582F550064EA91 /* NCManageDatabase+SecurityGuard.swift in Sources */,
@@ -4587,7 +4587,7 @@
 				F73F537F1E929C8500F8678D /* NCMore.swift in Sources */,
 				F702F2CF25EE5B5C008F8E80 /* NCGlobal.swift in Sources */,
 				F794E13F2BBC0F70003693D7 /* SceneDelegate.swift in Sources */,
-				F7A3DB932DDE23B5008F7EC8 /* NCTransferDebouncer.swift in Sources */,
+				F7A3DB932DDE23B5008F7EC8 /* NCDebouncer.swift in Sources */,
 				F72CD63A25C19EBF00F46F9A /* NCAutoUpload.swift in Sources */,
 				F768822F2C0DD1E7001CF441 /* NCAutoUploadModel.swift in Sources */,
 				AF93471D27E2361E002537EE /* NCShareAdvancePermissionFooter.swift in Sources */,

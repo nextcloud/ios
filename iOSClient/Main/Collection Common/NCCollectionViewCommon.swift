@@ -166,7 +166,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return pinchGesture.state == .began || pinchGesture.state == .changed
     }
 
-    internal let transferDebouncer = NCTransferDebouncer(delay: 1)
+    internal let debouncer = NCDebouncer(delay: 1)
 
     // MARK: - View Life Cycle
 
@@ -383,7 +383,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             switch status {
             /// UPLOADED, UPLOADED LIVEPHOTO
             case self.global.networkingStatusUploaded, self.global.networkingStatusUploadedLivePhoto:
-                self.transferDebouncer.call {
+                self.debouncer.call {
                     if self.isSearchingMode {
                         self.networkSearch()
                     } else if self.serverUrl == metadata.serverUrl {
@@ -404,7 +404,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 }
             /// RENAME
             case self.global.networkingStatusRename:
-                self.transferDebouncer.call {
+                self.debouncer.call {
                     if self.isSearchingMode {
                         self.networkSearch()
                     } else if self.serverUrl == metadata.serverUrl {
@@ -413,7 +413,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 }
             /// FAVORITE
             case self.global.networkingStatusFavorite:
-                self.transferDebouncer.call {
+                self.debouncer.call {
                     if self.isSearchingMode {
                         self.networkSearch()
                     } else if self is NCFavorite {
@@ -429,7 +429,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func transferReloadData(serverUrl: String?) {
-        self.transferDebouncer.call {
+        self.debouncer.call {
             if self.isSearchingMode {
                 self.networkSearch()
             } else if ( self.serverUrl == serverUrl) || serverUrl == nil {
@@ -439,7 +439,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func transferRequestData(serverUrl: String?) {
-        self.transferDebouncer.call {
+        self.debouncer.call {
             if self.isSearchingMode {
                 self.networkSearch()
             } else if ( self.serverUrl == serverUrl) || serverUrl == nil {

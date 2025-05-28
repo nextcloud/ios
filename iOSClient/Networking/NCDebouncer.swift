@@ -4,7 +4,7 @@
 
 import UIKit
 
-final class NCTransferDebouncer {
+final class NCDebouncer {
     private let delay: TimeInterval
     private let maxEventCount: Int
     private var eventCount = 0

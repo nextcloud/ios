@@ -260,13 +260,13 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     // MARK: - Transfers Delegate
     override func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {
-        transferDebouncer.call {
+        debouncer.call {
             self.reloadDataSource()
         }
     }
 
     override func transferChange(status: String, metadata: tableMetadata, error: NKError) {
-        transferDebouncer.call {
+        debouncer.call {
             self.reloadDataSource()
         }
     }

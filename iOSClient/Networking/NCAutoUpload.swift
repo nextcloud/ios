@@ -119,7 +119,7 @@ class NCAutoUpload: NSObject {
 
         if !metadatas.isEmpty {
             self.database.createMetadatasFolder(assets: assets, useSubFolder: tblAccount.autoUploadCreateSubfolder, session: session) { metadatasFolder in
-                self.database.addMetadatas(metadatasFolder + metadatas, sync: false)
+                self.database.addMetadatas(metadatasFolder + metadatas, sync: true)
                 completion(metadatas.count)
             }
         } else {
