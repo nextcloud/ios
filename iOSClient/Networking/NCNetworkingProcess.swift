@@ -289,6 +289,7 @@ class NCNetworkingProcess {
                     continue
                 }
 
+                let ocId = metadata.ocId
                 let serverUrlTo = metadata.serverUrlTo
                 let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
                 var serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
@@ -309,6 +310,8 @@ class NCNetworkingProcess {
                     }
                     returnError = true
                 }
+
+                database.setMetadataStatus(ocId: ocId, status: global.metadataStatusNormal, sync: false)
 
                 NCNetworking.shared.notifyAllDelegates { delegate in
                     delegate.transferCopy(metadata: metadata, error: resultCopy.error)
