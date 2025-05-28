@@ -202,7 +202,6 @@ extension NCNetworking {
     func createFolder(fileName: String,
                       serverUrl: String,
                       overwrite: Bool,
-                      sceneIdentifier: String?,
                       session: NCSession.Session,
                       selector: String? = nil,
                       options: NKRequestOptions = NKRequestOptions()) async -> NKError {
@@ -226,50 +225,27 @@ extension NCNetworking {
                                        permissions: metadata.permissions,
                                        serverUrl: fileNameFolderUrl,
                                        account: session.account, sync: false)
-            let metadata = tableMetadata(value: metadata)
-
-            guard selector != self.global.selectorUploadAutoUpload else {
-                return
-            }
-
-            if let sceneIdentifier {
-                self.notifyDelegates(forScene: sceneIdentifier) { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusCreateFolder,
-                                            metadata: metadata,
-                                            error: .success)
-                } others: { delegate in
-                    delegate.transferReloadData(serverUrl: metadata.serverUrl)
-                }
-            } else {
-                self.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusCreateFolder,
-                                            metadata: metadata,
-                                            error: .success)
-                }
-            }
         }
 
         /* check exists folder */
-        var result = await readFile(serverUrlFileName: fileNameFolderUrl, account: session.account)
-
-        if result.error == .success,
-            let metadata = result.metadata {
+        let resultReadFile = await readFile(serverUrlFileName: fileNameFolderUrl, account: session.account)
+        if resultReadFile.error == .success,
+            let metadata = resultReadFile.metadata {
             writeDirectoryMetadata(metadata)
             return .success
         }
 
         /* create folder */
-        _ = await NextcloudKit.shared.createFolder(serverUrlFileName: fileNameFolderUrl, account: session.account, options: options)
-        result = await readFile(serverUrlFileName: fileNameFolderUrl, account: session.account)
-
-        if result.error == .success,
-           let metadata = result.metadata {
-            writeDirectoryMetadata(metadata)
-        } else if let metadata = self.database.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", session.account, fileName, serverUrl)) {
-            self.database.setMetadataSession(ocId: metadata.ocId, sessionError: result.error.errorDescription, sync: false)
+        let resultCreateFolder = await NextcloudKit.shared.createFolder(serverUrlFileName: fileNameFolderUrl, account: session.account, options: options)
+        if resultCreateFolder.error == .success {
+            let resultReadFile = await readFile(serverUrlFileName: fileNameFolderUrl, account: session.account)
+            if resultReadFile.error == .success,
+               let metadata = resultReadFile.metadata {
+                writeDirectoryMetadata(metadata)
+            }
         }
 
-        return result.error
+        return resultCreateFolder.error
     }
 
     // MARK: - Delete
