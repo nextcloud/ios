@@ -935,9 +935,9 @@ extension NCManageDatabase {
         }
     }
 
-    func getMetadataFromOcIdAsync(_ ocId: String?,
-                                  dispatchOnMainQueue: Bool = true,
-                                  completion: @escaping (_ metadata: tableMetadata?) -> Void) {
+    func getMetadataFromOcId(_ ocId: String?,
+                             dispatchOnMainQueue: Bool = true,
+                             completion: @escaping (_ metadata: tableMetadata?) -> Void) {
         guard let ocId else {
             return completion(nil)
         }

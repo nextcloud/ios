@@ -29,6 +29,7 @@ class NCCollectionViewDataSource: NSObject {
     private let utilityFileSystem = NCUtilityFileSystem()
     private let utility = NCUtility()
     private let global = NCGlobal.shared
+    private let database = NCManageDatabase.shared
 
     var ocIds: [String] = []
 
@@ -238,9 +239,8 @@ class NCCollectionViewDataSource: NSObject {
 
     func getIndexPathMetadata(ocId: String) -> IndexPath? {
         guard self.sectionsValue.isEmpty else { return nil }
-        let validMetadatas = self.metadatas.filter { !$0.isInvalidated }
 
-        if let rowIndex = validMetadatas.firstIndex(where: {$0.ocId == ocId}) {
+        if let rowIndex = metadatas.firstIndex(where: {$0.ocId == ocId}) {
             return IndexPath(row: rowIndex, section: 0)
         }
 
@@ -255,9 +255,9 @@ class NCCollectionViewDataSource: NSObject {
 
     func numberOfItemsInSection(_ section: Int) -> Int {
         if self.sectionsValue.isEmpty {
-            let validMetadatas = metadatas.filter { !$0.isInvalidated }
-            return validMetadatas.count
+            return metadatas.count
         }
+
         guard !self.metadatas.isEmpty,
               let metadataForSection = getMetadataForSection(section)
         else {
@@ -294,10 +294,8 @@ class NCCollectionViewDataSource: NSObject {
     }
 
     func getResultMetadata(indexPath: IndexPath) -> tableMetadata? {
-        let validMetadatas = metadatas.filter { !$0.isInvalidated }
-
-        if indexPath.row < validMetadatas.count {
-            return validMetadatas[indexPath.row]
+        if indexPath.row < metadatas.count {
+            return metadatas[indexPath.row]
         }
 
         return nil
@@ -317,7 +315,7 @@ class NCCollectionViewDataSource: NSObject {
         }
 
         if let result {
-            NCManageDatabase.shared.getMetadataFromOcIdAsync(result.ocId) { metadata in
+            self.database.getMetadataFromOcId(result.ocId) { metadata in
                 completion(metadata)
             }
         } else {
