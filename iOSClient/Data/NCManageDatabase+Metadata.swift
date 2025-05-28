@@ -151,12 +151,6 @@ extension tableMetadata {
         return (classFile == NKCommon.TypeClassFile.image.rawValue && contentType != "image/svg+xml") || classFile == NKCommon.TypeClassFile.video.rawValue
     }
 
-    /*
-    var isDocumentViewableOnly: Bool {
-        sharePermissionsCollaborationServices == NCPermissions().permissionReadShare && classFile == NKCommon.TypeClassFile.document.rawValue
-    }
-    */
-
     var isAudioOrVideo: Bool {
         return classFile == NKCommon.TypeClassFile.audio.rawValue || classFile == NKCommon.TypeClassFile.video.rawValue
     }
