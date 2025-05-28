@@ -308,6 +308,7 @@ class NCNetworkingProcess {
                     if result.error == .success, let metadata = result.metadata {
                         database.addMetadata(metadata)
                     }
+                } else {
                     returnError = true
                 }
 
@@ -328,22 +329,20 @@ class NCNetworkingProcess {
                     continue
                 }
 
+                let ocId = metadata.ocId
                 let serverUrlTo = metadata.serverUrlTo
                 let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
                 let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
                 let overwrite = (metadata.storeFlag as? NSString)?.boolValue ?? false
 
-                let result = await NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account, options: options)
+                let resultMove = await NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account, options: options)
 
-                database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
-
-                /*
-                NCNetworking.shared.notifyAllDelegates { delete in
-                    delete.transferMove(metadata: metadata, dragdrop: false, error: result.error)
-                }
-                */
-
-                if result.error == .success {
+                if resultMove.error == .success {
+                    let result = await NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileNameDestination, account: metadata.account)
+                    if result.error == .success, let metadata = result.metadata {
+                        database.addMetadata(metadata)
+                    }
+                    // Remove source metadata
                     if metadata.directory {
                         self.database.deleteDirectoryAndSubDirectory(serverUrl: utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: result.account)
                     } else {
@@ -363,16 +362,14 @@ class NCNetworkingProcess {
                             self.database.deleteLocalFileOcId(metadataLive.ocId)
                         }
                     }
+                } else {
+                    returnError = true
+                }
 
-                    /*
-                    NCNetworking.shared.notifyAllDelegates { delegate in
-                        delegate.transferRequestData(serverUrl: metadata.serverUrl)
-                    }
+                database.setMetadataStatus(ocId: ocId, status: global.metadataStatusNormal, sync: false)
 
-                    NCNetworking.shared.notifyAllDelegates { delegate in
-                        delegate.transferRequestData(serverUrl: serverUrlTo)
-                    }
-                    */
+                NCNetworking.shared.notifyAllDelegates { delegate in
+                    delegate.transferMove(metadata: metadata, error: resultMove.error)
                 }
             }
         }
