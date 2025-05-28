@@ -66,16 +66,16 @@ class NCOffline: NCCollectionViewCommon {
             }
             let predicate = NSPredicate(format: "account == %@ AND ocId IN %@ AND NOT (status IN %@)", session.account, ocIds, global.metadataStatusHideInView)
 
-            self.database.getResultPredicateAsync(predicate:predicate,
-                                                  layoutForView: layoutForView,
-                                                  account: session.account) { metadatas, layoutForView, account in
+            self.database.getMetadatasAsync(predicate: predicate,
+                                            layoutForView: layoutForView,
+                                            account: session.account) { metadatas, layoutForView, account in
                 self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
                 super.reloadDataSource()
             }
         } else {
-            self.database.getResultPredicateAsync(predicate:defaultPredicate,
-                                                  layoutForView: layoutForView,
-                                                  account: session.account) { metadatas, layoutForView, account in
+            self.database.getMetadatasAsync(predicate: defaultPredicate,
+                                            layoutForView: layoutForView,
+                                            account: session.account) { metadatas, layoutForView, account in
                 self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
                 super.reloadDataSource()
             }

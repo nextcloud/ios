@@ -28,20 +28,22 @@ import NextcloudKit
 
 extension NCShareExtension: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return showAlert(description: "_invalid_url_") }
-        let serverUrl = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
-        if metadata.e2eEncrypted && !NCKeychain().isEndToEndEnabled(account: session.account) {
-            showAlert(title: "_info_", description: "_e2e_goto_settings_for_enable_")
-        }
+        self.dataSource.getMetadata(indexPath: indexPath) { metadata in
+            guard let metadata else { return self.showAlert(description: "_invalid_url_") }
+            let serverUrl = self.utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
+            if metadata.e2eEncrypted && !NCKeychain().isEndToEndEnabled(account: self.session.account) {
+                self.showAlert(title: "_info_", description: "_e2e_goto_settings_for_enable_")
+            }
 
-        if let fileNameError = FileNameValidator.checkFileName(metadata.fileNameView, account: session.account) {
-            present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
-            return
-        }
+            if let fileNameError = FileNameValidator.checkFileName(metadata.fileNameView, account: self.session.account) {
+                self.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+                return
+            }
 
-        self.serverUrl = serverUrl
-        reloadDatasource(withLoadFolder: true)
-        setNavigationBar(navigationTitle: metadata.fileNameView)
+            self.serverUrl = serverUrl
+            self.reloadDatasource(withLoadFolder: true)
+            self.setNavigationBar(navigationTitle: metadata.fileNameView)
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
@@ -84,46 +86,47 @@ extension NCShareExtension: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell)!
-        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else {
-            return cell
+
+        self.dataSource.getMetadata(indexPath: indexPath) { metadata in
+            guard let metadata else {
+                return
+            }
+
+            cell.fileOcId = metadata.ocId
+            cell.fileOcIdTransfer = metadata.ocIdTransfer
+            cell.fileUser = metadata.ownerId
+            cell.labelTitle.text = metadata.fileNameView
+            cell.labelTitle.textColor = NCBrandColor.shared.textColor
+            cell.imageSelect.image = nil
+            cell.imageStatus.image = nil
+            cell.imageLocal.image = nil
+            cell.imageFavorite.image = nil
+            cell.imageShared.image = nil
+            cell.imageMore.image = nil
+            cell.imageItem.image = nil
+            cell.imageItem.backgroundColor = nil
+
+            if metadata.directory {
+                self.setupDirectoryCell(cell, indexPath: indexPath, with: metadata)
+            }
+
+            if metadata.favorite {
+                cell.imageFavorite.image = NCImageCache.shared.getImageFavorite()
+            }
+
+            cell.imageSelect.isHidden = true
+            cell.backgroundView = nil
+            cell.hideButtonMore(true)
+            cell.hideButtonShare(true)
+            cell.selected(false, isEditMode: false)
+
+            if metadata.isLivePhoto {
+                cell.imageStatus.image = self.utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor2])
+            }
+
+            cell.setTags(tags: Array(metadata.tags))
+            cell.separator.isHidden = collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1
         }
-
-        cell.fileOcId = metadata.ocId
-        cell.fileOcIdTransfer = metadata.ocIdTransfer
-        cell.fileUser = metadata.ownerId
-        cell.labelTitle.text = metadata.fileNameView
-        cell.labelTitle.textColor = NCBrandColor.shared.textColor
-        cell.imageSelect.image = nil
-        cell.imageStatus.image = nil
-        cell.imageLocal.image = nil
-        cell.imageFavorite.image = nil
-        cell.imageShared.image = nil
-        cell.imageMore.image = nil
-        cell.imageItem.image = nil
-        cell.imageItem.backgroundColor = nil
-
-        if metadata.directory {
-            setupDirectoryCell(cell, indexPath: indexPath, with: metadata)
-        }
-
-        if metadata.favorite {
-            cell.imageFavorite.image = NCImageCache.shared.getImageFavorite()
-        }
-
-        cell.imageSelect.isHidden = true
-        cell.backgroundView = nil
-        cell.hideButtonMore(true)
-        cell.hideButtonShare(true)
-        cell.selected(false, isEditMode: false)
-
-        if metadata.isLivePhoto {
-            cell.imageStatus.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor2])
-        }
-
-        cell.setTags(tags: Array(metadata.tags))
-
-        cell.separator.isHidden = collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1
-
         return cell
     }
 

@@ -304,22 +304,36 @@ class NCCollectionViewDataSource: NSObject {
         return nil
     }
 
-    func getMetadata(indexPath: IndexPath) -> tableMetadata? {
+    func getMetadata(indexPath: IndexPath,
+                     completion: @escaping  (_ metadata: tableMetadata?) -> Void) {
+        var result: tableMetadata?
+
         if !metadatasForSection.isEmpty, indexPath.section < metadatasForSection.count {
             if let metadataForSection = getMetadataForSection(indexPath.section),
-               indexPath.row < metadataForSection.metadatas.count,
-               !metadataForSection.metadatas[indexPath.row].isInvalidated {
+               indexPath.row < metadataForSection.metadatas.count {
+                result = metadataForSection.metadatas[indexPath.row]
+            }
+        } else if indexPath.row < self.metadatas.count {
+            result = metadataIndexPath[indexPath]
+        }
+
+        if let result {
+            NCManageDatabase.shared.getMetadataFromOcIdAsync(result.ocId) { metadata in
+                completion(metadata)
+            }
+        } else {
+            completion(result)
+        }
+    }
+
+    func getMetadataSync(indexPath: IndexPath) -> tableMetadata? {
+        if !metadatasForSection.isEmpty, indexPath.section < metadatasForSection.count {
+            if let metadataForSection = getMetadataForSection(indexPath.section),
+               indexPath.row < metadataForSection.metadatas.count {
                 return tableMetadata(value: metadataForSection.metadatas[indexPath.row])
             }
         } else if indexPath.row < self.metadatas.count {
-            if let metadata = metadataIndexPath[indexPath] {
-                return metadata
-            } else {
-                let validMetadatas = self.metadatas.filter { !$0.isInvalidated }
-                let metadata = tableMetadata(value: validMetadatas[indexPath.row])
-                metadataIndexPath[indexPath] = metadata
-                return metadata
-            }
+            return metadataIndexPath[indexPath]
         }
 
         return nil

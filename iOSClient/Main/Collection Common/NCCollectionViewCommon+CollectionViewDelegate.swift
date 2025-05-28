@@ -100,28 +100,27 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath),
-              !metadata.isInvalidated
-        else {
-            return
-        }
-
-        if isEditMode {
-            if let index = fileSelect.firstIndex(of: metadata.ocId) {
-                fileSelect.remove(at: index)
-            } else {
-                fileSelect.append(metadata.ocId)
+        self.dataSource.getMetadata(indexPath: indexPath) { metadata in
+            guard let metadata else {
+                return
             }
-            collectionView.reloadItems(at: [indexPath])
-            tabBarSelect?.update(fileSelect: fileSelect, metadatas: getSelectedMetadatas(), userId: metadata.userId)
-            return
-        }
+            if self.isEditMode {
+                if let index = self.fileSelect.firstIndex(of: metadata.ocId) {
+                    self.fileSelect.remove(at: index)
+                } else {
+                    self.fileSelect.append(metadata.ocId)
+                }
+                self.collectionView.reloadItems(at: [indexPath])
+                self.tabBarSelect?.update(fileSelect: self.fileSelect, metadatas: self.getSelectedMetadatas(), userId: metadata.userId)
+                return
+            }
 
-        self.didSelectMetadata(metadata, withOcIds: true)
+            self.didSelectMetadata(metadata, withOcIds: true)
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath),
+        guard let metadata = self.dataSource.getMetadataSync(indexPath: indexPath),
               metadata.classFile != NKCommon.TypeClassFile.url.rawValue,
               !isEditMode
         else {
