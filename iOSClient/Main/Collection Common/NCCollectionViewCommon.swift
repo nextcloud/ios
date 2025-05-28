@@ -399,7 +399,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.reloadDataSource()
             /// CREATE FOLDER
             case self.global.networkingStatusCreateFolder:
-                if metadata.serverUrl == self.serverUrl {
+                if metadata.serverUrl == self.serverUrl, metadata.sessionSelector != self.global.selectorUploadAutoUpload {
                     self.pushMetadata(metadata)
                 }
             /// RENAME

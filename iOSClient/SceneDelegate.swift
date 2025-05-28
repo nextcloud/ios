@@ -53,6 +53,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             let capability = self.database.setCapabilities(account: activeTableAccount.account)
             NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
 
+            NCNetworkingProcess.shared.setCurrentAccount(activeTableAccount.account)
+
             for tableAccount in self.database.getAllTableAccount() {
                 NextcloudKit.shared.appendSession(account: tableAccount.account,
                                                   urlBase: tableAccount.urlBase,

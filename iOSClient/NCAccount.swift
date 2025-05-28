@@ -121,6 +121,8 @@ class NCAccount: NSObject {
             NCAutoUpload.shared.initAutoUpload(controller: nil, account: account) { num in
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(num) uploads")
             }
+            /// Networking Process
+            NCNetworkingProcess.shared.setCurrentAccount(account)
             /// Color
             NCBrandColor.shared.settingThemingColor(account: account)
             NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeTheming, userInfo: ["account": account])

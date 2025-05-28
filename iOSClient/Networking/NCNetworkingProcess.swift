@@ -37,6 +37,7 @@ class NCNetworkingProcess {
     private let lockQueue = DispatchQueue(label: "com.nextcloud.networkingprocess.lockqueue")
     private var timer: Timer?
     private var enableControllingScreenAwake = true
+    private var currentAccount: String = ""
 
     private init() {
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayerIsPlaying), object: nil, queue: nil) { _ in
@@ -126,6 +127,11 @@ class NCNetworkingProcess {
 
         let isWiFi = networking.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi
 
+        /// Check Server Error
+        guard !self.currentAccount.isEmpty, networking.noServerErrorAccount(self.currentAccount) else {
+            return (0, 0)
+        }
+
         /// ------------------------ WEBDAV
         ///
         let metadatas = database.getMetadatas(predicate: NSPredicate(format: "status IN %@", global.metadataStatusWaitWebDav))
@@ -142,11 +148,6 @@ class NCNetworkingProcess {
         let metadatasWaitDownload = self.database.fetchNetworkingProcessDownload(limit: limitDownload, session: networking.sessionDownloadBackground)
 
         for metadata in metadatasWaitDownload where counterDownloading < httpMaximumConnectionsPerHostInDownload {
-            /// Check Server Error
-            guard networking.noServerErrorAccount(metadata.account) else {
-                continue
-            }
-
             counterDownloading += 1
             networking.download(metadata: metadata)
         }
@@ -173,11 +174,6 @@ class NCNetworkingProcess {
             }
 
             for metadata in metadatasWaitUpload where counterUploading < httpMaximumConnectionsPerHostInUpload {
-                /// Check Server Error
-                guard networking.noServerErrorAccount(metadata.account) else {
-                    continue
-                }
-
                 let metadatas = await NCCameraRoll().extractCameraRoll(from: metadata)
 
                 if metadatas.isEmpty {
@@ -222,11 +218,6 @@ class NCNetworkingProcess {
         ///
         if counterUploading == 0 {
             for metadata in metadatasUploadError {
-                /// Check Server Error
-                guard networking.noServerErrorAccount(metadata.account) else {
-                    continue
-                }
-
                 /// Check QUOTA
                 if metadata.sessionError.contains("\(global.errorQuota)") {
                     NextcloudKit.shared.getUserMetadata(account: metadata.account, userId: metadata.userId) { _, userProfile, _, error in
@@ -255,11 +246,6 @@ class NCNetworkingProcess {
         ///
         if let metadatasWaitCreateFolder = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCreateFolder), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitCreateFolder.isEmpty {
             for metadata in metadatasWaitCreateFolder {
-                /// Check Server Error
-                guard networking.noServerErrorAccount(metadata.account) else {
-                    continue
-                }
-
                 let errorCreateFolder = await networking.createFolder(fileName: metadata.fileName,
                                                                       serverUrl: metadata.serverUrl,
                                                                       overwrite: true,
@@ -288,11 +274,6 @@ class NCNetworkingProcess {
         ///
         if let metadatasWaitCopy = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCopy), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitCopy.isEmpty {
             for metadata in metadatasWaitCopy {
-                /// Check Server Error
-                guard networking.noServerErrorAccount(metadata.account) else {
-                    continue
-                }
-
                 let ocId = metadata.ocId
                 let serverUrlTo = metadata.serverUrlTo
                 let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
@@ -330,11 +311,6 @@ class NCNetworkingProcess {
         ///
         if let metadatasWaitMove = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitMove), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitMove.isEmpty {
             for metadata in metadatasWaitMove {
-                /// Check Server Error
-                guard networking.noServerErrorAccount(metadata.account) else {
-                    continue
-                }
-
                 let ocId = metadata.ocId
                 let serverUrlTo = metadata.serverUrlTo
                 let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
@@ -386,11 +362,6 @@ class NCNetworkingProcess {
         ///
         if let metadatasWaitFavorite = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitFavorite), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitFavorite.isEmpty {
             for metadata in metadatasWaitFavorite {
-                /// Check Server Error
-                guard networking.noServerErrorAccount(metadata.account) else {
-                    continue
-                }
-
                 let session = NCSession.Session(account: metadata.account, urlBase: metadata.urlBase, user: metadata.user, userId: metadata.userId)
                 let fileName = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
                 let errorFavorite = await NextcloudKit.shared.setFavorite(fileName: fileName, favorite: metadata.favorite, account: metadata.account)
@@ -418,11 +389,6 @@ class NCNetworkingProcess {
         ///
         if let metadatasWaitRename = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitRename), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitRename.isEmpty {
             for metadata in metadatasWaitRename {
-                /// Check Server Error
-                guard networking.noServerErrorAccount(metadata.account) else {
-                    continue
-                }
-
                 let serverUrlFileNameSource = metadata.serveUrlFileName
                 let serverUrlFileNameDestination = metadata.serverUrl + "/" + metadata.fileName
                 let resultRename = await NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: false, account: metadata.account)
@@ -453,12 +419,6 @@ class NCNetworkingProcess {
 
             for metadata in metadatasWaitDelete {
                 let ocId = metadata.ocId
-
-                /// Check Server Error
-                guard networking.noServerErrorAccount(metadata.account) else {
-                    continue
-                }
-
                 let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
                 let resultDelete = await NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: metadata.account)
 
@@ -500,6 +460,10 @@ class NCNetworkingProcess {
     }
 
     // MARK: - Public
+
+    func setCurrentAccount(_ account: String) {
+        self.currentAccount = account
+    }
 
     func refreshProcessingTask() async -> (counterDownloading: Int, counterUploading: Int) {
         await withCheckedContinuation { continuation in
