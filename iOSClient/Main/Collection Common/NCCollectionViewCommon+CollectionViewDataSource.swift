@@ -145,12 +145,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         let existsImagePreview = utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag)
         let ext = global.getSizeExtension(column: self.numberOfColumns)
 
-        defer {
-            if !metadata.isSharable() || NCCapabilities.shared.disableSharesView(account: metadata.account) {
-                cell.hideButtonShare(true)
-            }
-        }
-
         // E2EE create preview
         if self.isDirectoryEncrypted,
            metadata.isImageOrVideo,
@@ -192,9 +186,17 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.filePreviewImageView?.contentMode = .scaleAspectFit
         }
 
+        /// Placeholder
+
         self.dataSource.getMetadata(indexPath: indexPath) { metadata in
             guard let metadata else {
                 return
+            }
+
+            defer {
+                if !metadata.isSharable() || NCCapabilities.shared.disableSharesView(account: metadata.account) {
+                    cell.hideButtonShare(true)
+                }
             }
 
             if self.metadataFolder != nil {
