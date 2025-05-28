@@ -392,6 +392,7 @@ class NCNetworkingProcess {
                 } else {
                     let favorite = (metadata.storeFlag as? NSString)?.boolValue ?? false
                     database.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite, saveOldFavorite: nil, status: global.metadataStatusNormal)
+                    returnError = true
                 }
 
                 NCNetworking.shared.notifyAllDelegates { delegate in
@@ -419,6 +420,7 @@ class NCNetworkingProcess {
                     database.setMetadataServeUrlFileNameStatusNormal(ocId: metadata.ocId)
                 } else {
                     database.restoreMetadataFileName(ocId: metadata.ocId)
+                    returnError = true
                 }
 
                 NCNetworking.shared.notifyAllDelegates { delegate in
@@ -435,6 +437,8 @@ class NCNetworkingProcess {
             var metadatasError: [tableMetadata: NKError] = [:]
 
             for metadata in metadatasWaitDelete {
+                let ocId = metadata.ocId
+
                 /// Check Server Error
                 guard networking.noServerErrorAccount(metadata.account) else {
                     continue
@@ -462,8 +466,12 @@ class NCNetworkingProcess {
                 } else {
                     self.database.setMetadataStatus(ocId: metadata.ocId, status: self.global.metadataStatusNormal)
                     metadatasError[tableMetadata(value: metadata)] = result.error
+                    returnError = true
                 }
+
+                database.setMetadataStatus(ocId: ocId, status: global.metadataStatusNormal, sync: false)
             }
+
             NCNetworking.shared.notifyAllDelegates { delegate in
                 delegate.transferChange(status: self.global.networkingStatusDelete,
                                         metadatasError: metadatasError)
