@@ -391,7 +391,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     }
                 }
             /// DOWNLOAD
-            case self.global.networkingStatusDownloadStart:
+            case self.global.networkingStatusDownloading:
                 if metadata.serverUrl == self.serverUrl {
                     self.reloadDataSource()
                 }

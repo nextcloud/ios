@@ -206,12 +206,11 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                     hud.show()
                     NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: account, requestHandler: { request in
                         downloadRequest = request
-                        self.database.setMetadataSession(ocId: metadata.ocId,
-                                                         status: self.global.metadataStatusDownloading)
                     }, taskHandler: { task in
                         self.database.setMetadataSession(ocId: metadata.ocId,
                                                          sessionTaskIdentifier: task.taskIdentifier,
-                                                         status: self.global.metadataStatusDownloading)
+                                                         status: self.global.metadataStatusDownloading,
+                                                         sync: false)
                     }, progressHandler: { progress in
                         hud.progress(progress.fractionCompleted)
                     }) { accountDownload, etag, _, _, _, _, error in
@@ -221,7 +220,8 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                                                          sessionTaskIdentifier: 0,
                                                          sessionError: "",
                                                          status: self.global.metadataStatusNormal,
-                                                         etag: etag)
+                                                         etag: etag,
+                                                         sync: false)
                         if account == accountDownload, error == .success {
                             self.database.addLocalFile(metadata: metadata)
                             NCViewer().view(viewController: viewController, metadata: metadata)

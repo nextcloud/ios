@@ -547,10 +547,9 @@ extension NCViewerPDF: NCTransferDelegate {
 
         DispatchQueue.main.async {
             switch status {
-            /// UPLOAD START
-            case NCGlobal.shared.networkingStatusUploadStart:
+            /// UPLOAD
+            case NCGlobal.shared.networkingStatusUploading:
                 NCActivityIndicator.shared.start()
-            /// UPLOADED
             case NCGlobal.shared.networkingStatusUploaded:
                 NCActivityIndicator.shared.stop()
                 if error == .success {

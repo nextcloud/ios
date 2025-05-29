@@ -25,43 +25,46 @@ extension NCManageDatabase {
         var updatedMetadata: tableMetadata?
 
         performRealmWrite(sync: sync) { realm in
-            if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
-                if let newFileName = newFileName {
-                    result.fileName = newFileName
-                    result.fileNameView = newFileName
-                }
-                if let session {
-                    result.session = session
-                }
-                if let sessionTaskIdentifier {
-                    result.sessionTaskIdentifier = sessionTaskIdentifier
-                }
-                if let sessionError {
-                    result.sessionError = sessionError
-                    if sessionError.isEmpty {
-                        result.errorCode = 0
-                    }
-                }
-                if let selector {
-                    result.sessionSelector = selector
-                }
-                if let status {
-                    result.status = status
-                    if status == NCGlobal.shared.metadataStatusWaitDownload || status == NCGlobal.shared.metadataStatusWaitUpload {
-                        result.sessionDate = Date()
-                    } else if status == NCGlobal.shared.metadataStatusNormal {
-                        result.sessionDate = nil
-                    }
-                }
-                if let etag {
-                    result.etag = etag
-                }
-                if let errorCode {
-                    result.errorCode = errorCode
-                }
-                updatedMetadata = result
+            guard let metadata = realm.objects(tableMetadata.self)
+                .filter("ocId == %@", ocId)
+                .first else {
+                return
             }
+
+            if let name = newFileName {
+                metadata.fileName = name
+                metadata.fileNameView = name
+            }
+
+            if let session { metadata.session = session }
+            if let sessionTaskIdentifier { metadata.sessionTaskIdentifier = sessionTaskIdentifier }
+            if let sessionError {
+                metadata.sessionError = sessionError
+                if sessionError.isEmpty {
+                    metadata.errorCode = 0
+                }
+            }
+            if let selector { metadata.sessionSelector = selector }
+
+            if let status {
+                metadata.status = status
+                switch status {
+                case NCGlobal.shared.metadataStatusWaitDownload,
+                     NCGlobal.shared.metadataStatusWaitUpload:
+                    metadata.sessionDate = Date()
+                case NCGlobal.shared.metadataStatusNormal:
+                    metadata.sessionDate = nil
+                default:
+                    break
+                }
+            }
+
+            if let etag { metadata.etag = etag }
+            if let errorCode { metadata.errorCode = errorCode }
+
+            updatedMetadata = tableMetadata(value: metadata)
         }
+
         return updatedMetadata
     }
 

@@ -466,12 +466,11 @@ extension NCPlayerToolBar: NCSelectDelegate {
 
                 NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, requestHandler: { request in
                     downloadRequest = request
-                    self.database.setMetadataSession(ocId: metadata.ocId,
-                                                     status: self.global.metadataStatusDownloading)
                 }, taskHandler: { task in
                     self.database.setMetadataSession(ocId: metadata.ocId,
                                                      sessionTaskIdentifier: task.taskIdentifier,
-                                                     status: self.global.metadataStatusDownloading)
+                                                     status: self.global.metadataStatusDownloading,
+                                                     sync: false)
                 }, progressHandler: { progress in
                     self.hud.progress(progress.fractionCompleted)
                 }) { _, etag, _, _, _, _, error in
@@ -481,7 +480,8 @@ extension NCPlayerToolBar: NCSelectDelegate {
                                                      sessionTaskIdentifier: 0,
                                                      sessionError: "",
                                                      status: self.global.metadataStatusNormal,
-                                                     etag: etag)
+                                                     etag: etag,
+                                                     sync: false)
                     if error == .success {
                         self.hud.success()
                         self.addPlaybackSlave(type: type, metadata: metadata)

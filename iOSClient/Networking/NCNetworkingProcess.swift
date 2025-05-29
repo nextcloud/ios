@@ -225,14 +225,16 @@ class NCNetworkingProcess {
                             self.database.setMetadataSession(ocId: metadata.ocId,
                                                              session: self.networking.sessionUploadBackground,
                                                              sessionError: "",
-                                                             status: self.global.metadataStatusWaitUpload)
+                                                             status: self.global.metadataStatusWaitUpload,
+                                                             sync: false)
                         }
                     }
                 } else {
                     self.database.setMetadataSession(ocId: metadata.ocId,
                                                      session: self.networking.sessionUploadBackground,
                                                      sessionError: "",
-                                                     status: global.metadataStatusWaitUpload)
+                                                     status: global.metadataStatusWaitUpload,
+                                                     sync: false)
                 }
             }
         }

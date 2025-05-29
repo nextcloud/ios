@@ -273,7 +273,7 @@ extension NCViewerProviderContextMenu: NCTransferDelegate {
         DispatchQueue.main.async {
             switch status {
             /// DOWNLOAD
-            case self.global.networkingStatusDownloadStart:
+            case self.global.networkingStatusDownloading:
                 if metadata.ocId == self.metadata?.ocId || metadata.ocId == self.metadataLivePhoto?.ocId {
                     NCActivityIndicator.shared.start(backgroundView: self.view)
                 }

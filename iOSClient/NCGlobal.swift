@@ -328,11 +328,11 @@ final class NCGlobal: Sendable {
     let networkingStatusRename                                  = "statusRename"
     let networkingStatusFavorite                                = "statusFavorite"
 
-    let networkingStatusDownloadStart                           = "statusDownloadStart"
+    let networkingStatusDownloading                             = "statusDownloading"
     let networkingStatusDownloaded                              = "statusDownloaded"
     let networkingStatusDownloadCancel                          = "statusDownloadCancel"
 
-    let networkingStatusUploadStart                             = "statusUploadStart"
+    let networkingStatusUploading                               = "statusUploading"
     let networkingStatusUploaded                                = "statusUploaded"
     let networkingStatusUploadedLivePhoto                       = "statusUploadedLivePhoto"
     let networkingStatusUploadCancel                            = "statusUploadCancel"
