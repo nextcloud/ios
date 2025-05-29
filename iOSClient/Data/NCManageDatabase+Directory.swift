@@ -249,6 +249,18 @@ extension NCManageDatabase {
         }
     }
 
+    func getResultTableDirectory(ocId: String) -> tableDirectory? {
+        return performRealmRead { realm in
+            guard let result = realm.objects(tableDirectory.self)
+                .filter("ocId == %@", ocId)
+                .first
+            else {
+                return nil
+            }
+            return result
+        }
+    }
+
     func getTableDirectory(ocId: String,
                            dispatchOnMainQueue: Bool = true,
                            completion: @escaping (_ tblDirectory: tableDirectory?) -> Void) {
