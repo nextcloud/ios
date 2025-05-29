@@ -103,9 +103,10 @@ class NCShares: NCCollectionViewCommon {
                             let serverUrlFileName = share.serverUrl + "/" + share.fileName
                             let result = await NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: session.account)
                             if result.error == .success, let metadata = result.metadata {
+                                let ocId = metadata.ocId
                                 self.database.addMetadata(metadata)
                                 _ = await MainActor.run {
-                                    self.ocIdShares.insert(metadata.ocId)
+                                    self.ocIdShares.insert(ocId)
                                 }
                             }
                         }
