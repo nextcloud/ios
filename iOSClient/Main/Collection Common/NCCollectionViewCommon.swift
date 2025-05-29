@@ -392,11 +392,17 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 }
             /// DOWNLOAD
             case self.global.networkingStatusDownloadStart:
-                self.reloadDataSource()
+                if metadata.serverUrl == self.serverUrl {
+                    self.reloadDataSource()
+                }
             case self.global.networkingStatusDownloaded:
-                self.reloadDataSource()
+                if metadata.serverUrl == self.serverUrl {
+                    self.reloadDataSource()
+                }
             case self.global.networkingStatusDownloadCancel:
-                self.reloadDataSource()
+                if metadata.serverUrl == self.serverUrl {
+                    self.reloadDataSource()
+                }
             /// CREATE FOLDER
             case self.global.networkingStatusCreateFolder:
                 if metadata.serverUrl == self.serverUrl, metadata.sessionSelector != self.global.selectorUploadAutoUpload {
