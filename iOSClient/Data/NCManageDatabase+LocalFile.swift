@@ -61,13 +61,13 @@ extension NCManageDatabase {
        }
     }
 
-    func deleteLocalFileOcId(_ ocId: String?) {
+    func deleteLocalFileOcId(_ ocId: String?, sync: Bool = true) {
         guard let ocId
         else {
             return
         }
 
-        performRealmWrite { realm in
+        performRealmWrite(sync: sync) { realm in
             let results = realm.objects(tableLocalFile.self)
                 .filter("ocId == %@", ocId)
             realm.delete(results)

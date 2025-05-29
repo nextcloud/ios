@@ -199,6 +199,12 @@ extension NCNetworking {
                                             metadata: tableMetadata(value: metadata),
                                             error: error)
                 }
+            } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
+                do {
+                    try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                } catch { }
+                self.database.deleteLocalFileOcId(metadata.ocId, sync: false)
+                self.database.deleteMetadatas([metadata], sync: false)
             } else if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
                 if let metadata = self.database.setMetadataSession(ocId: metadata.ocId,
                                                                    session: "",

@@ -44,16 +44,6 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
 
     func downloadedFile(metadata: tableMetadata, error: NKError) {
         guard error == .success else {
-            // File do not exists on server, remove in local
-            if error.errorCode == NCGlobal.shared.errorResourceNotFound || error.errorCode == NCGlobal.shared.errorBadServerResponse {
-                do {
-                    try FileManager.default.removeItem(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-                } catch { }
-                database.deleteMetadatas([metadata])
-                database.deleteLocalFileOcId(metadata.ocId)
-            } else {
-                NCContentPresenter().messageNotification("_download_file_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
-            }
             return
         }
         /// Select UIWindowScene active in serverUrl
@@ -172,7 +162,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         }
     }
 
-    //MARK: -
+    // MARK: -
 
     func viewerFile(account: String, fileId: String, viewController: UIViewController) {
         var downloadRequest: DownloadRequest?
