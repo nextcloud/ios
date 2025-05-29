@@ -26,7 +26,6 @@ import UIKit
 import NextcloudKit
 import FloatingPanel
 import Queuer
-import Alamofire
 
 class NCActivityCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var imageView: UIImageView!
@@ -115,7 +114,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
             guard let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: activityPreview.account, idActivity: activityPreview.idActivity, id: String(activityPreview.fileId)) else {
                 return
             }
-            NCActionCenter.shared.viewerFile(account: account, fileId: activitySubjectRich.id, viewController: viewController)
+            NCDownloadAction.shared.viewerFile(account: account, fileId: activitySubjectRich.id, viewController: viewController)
         }
     }
 }

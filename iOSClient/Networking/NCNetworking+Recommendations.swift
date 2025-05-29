@@ -4,34 +4,34 @@
 
 import Foundation
 import UIKit
-import Alamofire
 import NextcloudKit
 
 extension NCNetworking {
-    func createRecommendations(session: NCSession.Session) async {
+    func createRecommendations(session: NCSession.Session, serverUrl: String, collectionView: UICollectionView) async {
         let homeServer = self.utilityFileSystem.getHomeServer(urlBase: session.urlBase, userId: session.userId)
-        var recommendationsToInsert: [NKRecommendation] = []
-        let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+        guard homeServer == serverUrl else {
+            return
+        }
+
         let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: session.account)
+        var recommendationsToInsert: [NKRecommendation] = []
+        let results = await NextcloudKit.shared.getRecommendedFiles(account: session.account)
+        var serverUrlFileName = ""
 
-        let results = await NCNetworking.shared.getRecommendedFiles(account: session.account, options: options)
-        if results.error == .success,
-           let recommendations = results.recommendations {
+        if results.error == .success, let recommendations = results.recommendations {
             for recommendation in recommendations {
-                var serverUrlFileName = ""
-
                 if recommendation.directory.last == "/" {
                     serverUrlFileName = homeServer + recommendation.directory + recommendation.name
                 } else {
                     serverUrlFileName = homeServer + recommendation.directory + "/" + recommendation.name
                 }
 
-                let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, account: session.account)
+                let results = await NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, account: session.account)
 
                 if results.error == .success, let file = results.files?.first {
                     let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
                     let metadata = self.database.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
-                    self.database.addMetadata(metadata)
+                    self.database.addMetadataIfNeeded(metadata, sync: false)
 
                     if metadata.isLivePhoto, metadata.isVideo {
                         continue
@@ -40,9 +40,9 @@ extension NCNetworking {
                     }
                 }
             }
-            self.database.createRecommendedFiles(account: session.account, recommendations: recommendationsToInsert)
+            self.database.createRecommendedFiles(account: session.account, recommendations: recommendationsToInsert, sync: false)
 
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadHeader, userInfo: ["account": session.account])
+            await collectionView.reloadData()
         }
     }
 }

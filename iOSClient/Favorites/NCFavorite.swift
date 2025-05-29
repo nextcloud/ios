@@ -25,7 +25,6 @@ import UIKit
 import NextcloudKit
 
 class NCFavorite: NCCollectionViewCommon {
-
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
@@ -62,11 +61,14 @@ class NCFavorite: NCCollectionViewCommon {
            predicate = NSPredicate(format: "account == %@ AND favorite == true AND NOT (status IN %@)", session.account, global.metadataStatusHideInView)
         }
 
-        let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView, account: session.account)
-
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
-
-        super.reloadDataSource()
+        self.database.getMetadatas(predicate: predicate,
+                                   layoutForView: layoutForView,
+                                   account: session.account) { metadatas, layoutForView, account in
+            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
+            self.dataSource.caching(metadatas: metadatas) {
+                super.reloadDataSource()
+            }
+        }
     }
 
     override func getServerData() {

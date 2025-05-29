@@ -135,7 +135,7 @@ class NCViewer: NSObject {
                 if metadata.url.isEmpty {
                     let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
                     NCActivityIndicator.shared.start(backgroundView: viewController.view)
-                    NextcloudKit.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: editor, account: metadata.account, options: options) { _, url, _, error in
+                    NextcloudKit.shared.textOpenFile(fileNamePath: fileNamePath, editor: editor, account: metadata.account, options: options) { _, url, _, error in
                         NCActivityIndicator.shared.stop()
                         if error == .success, url != nil {
                             if let navigationController = viewController.navigationController,
@@ -174,7 +174,7 @@ class NCViewer: NSObject {
         } else {
             // Document Interaction Controller
             if let controller = viewController.tabBarController as? NCMainTabBarController {
-                NCActionCenter.shared.openActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
+                NCDownloadAction.shared.openActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
             }
         }
     }

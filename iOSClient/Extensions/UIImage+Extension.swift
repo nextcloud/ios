@@ -218,14 +218,14 @@ extension UIImage {
         return newImage
     }
 
-    func colorizeFolder(metadata: tableMetadata, tableDirectory: tableDirectory? = nil) -> UIImage {
+    func colorizeFolder(metadata: tableMetadata, tblDirectory: tableDirectory? = nil) -> UIImage {
         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
         var image = self
-        if let tableDirectory = tableDirectory {
-            if let hex = tableDirectory.colorFolder, let color = UIColor(hex: hex) {
+        if let tblDirectory {
+            if let hex = tblDirectory.colorFolder, let color = UIColor(hex: hex) {
                 image = self.withTintColor(color, renderingMode: .alwaysOriginal)
             }
-        } else if let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl)), let hex = tableDirectory.colorFolder, let color = UIColor(hex: hex) {
+        } else if let tblDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl)), let hex = tblDirectory.colorFolder, let color = UIColor(hex: hex) {
             image = self.withTintColor(color, renderingMode: .alwaysOriginal)
         }
         return image

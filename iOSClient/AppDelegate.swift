@@ -112,13 +112,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         /// Activation singleton
         _ = NCNetworking.shared
-        _ = NCActionCenter.shared
+        _ = NCDownloadAction.shared
         _ = NCNetworkingProcess.shared
-        _ = NCTransferProgress.shared
-        _ = NCActionCenter.shared
-
-        NCTransferProgress.shared.setup()
-        NCActionCenter.shared.setup()
 
         return true
     }
@@ -156,7 +151,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     @discussion Schedule a refresh task request to ask that the system launch your app briefly so that you can download data and keep your app's contents up-to-date. The system will fulfill this request intelligently based on system conditions and app usage.
      */
     func scheduleAppRefresh() {
-        let request = BGAppRefreshTaskRequest(identifier: NCGlobal.shared.refreshTask)
+        let request = BGAppRefreshTaskRequest(identifier: global.refreshTask)
 
         request.earliestBeginDate = Date(timeIntervalSinceNow: 60) // Refresh after 60 seconds.
         do {
@@ -170,7 +165,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
      @discussion Schedule a processing task request to ask that the system launch your app when conditions are favorable for battery life to handle deferrable, longer-running processing, such as syncing, database maintenance, or similar tasks. The system will attempt to fulfill this request to the best of its ability within the next two days as long as the user has used your app within the past week.
      */
     func scheduleAppProcessing() {
-        let request = BGProcessingTaskRequest(identifier: NCGlobal.shared.processingTask)
+        let request = BGProcessingTaskRequest(identifier: global.processingTask)
 
         request.earliestBeginDate = Date(timeIntervalSinceNow: 5 * 60) // Refresh after 5 minutes.
         request.requiresNetworkConnectivity = false
@@ -200,6 +195,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func handleAppRefreshProcessingTask(taskText: String, completion: @escaping () -> Void = {}) {
         isAppSuspending = false
+        func initAutoUpload(controller: NCMainTabBarController? = nil, account: String) async -> Int {
+            await withUnsafeContinuation({ continuation in
+                NCAutoUpload.shared.initAutoUpload(controller: controller, account: account) { num in
+                    continuation.resume(returning: num)
+                }
+            })
+        }
 
         Task {
             guard let account = NCManageDatabase.shared.getActiveTableAccount()?.account
@@ -210,7 +212,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             let results = await NCNetworkingProcess.shared.refreshProcessingTask()
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) networking process with download: \(results.counterDownloading) upload: \(results.counterUploading)")
 
-            let newAutoUpload = await NCAutoUpload.shared.initAutoUploadProcessingTask(account: account)
+            let newAutoUpload = await initAutoUpload(account: account)
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) new auto upload with \(newAutoUpload) uploads")
 
             if taskText == "ProcessingTask",
@@ -309,7 +311,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         func openNotification(controller: NCMainTabBarController) {
             if app == NCGlobal.shared.termsOfServiceName {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterGetServerData, second: 0.5)
+                NCNetworking.shared.notifyAllDelegates { delegate in
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        delegate.transferRequestData(serverUrl: nil)
+                    }
+                }
             } else if let navigationController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? UINavigationController,
                       let viewController = navigationController.topViewController as? NCNotification {
                 viewController.modalPresentationStyle = .pageSheet

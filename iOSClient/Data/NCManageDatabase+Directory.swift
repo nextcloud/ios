@@ -30,8 +30,8 @@ extension NCManageDatabase {
 
     // MARK: - Realm write
 
-    func addDirectory(e2eEncrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String? = nil, permissions: String? = nil, richWorkspace: String? = nil, serverUrl: String, account: String) {
-        performRealmWrite { realm in
+    func addDirectory(e2eEncrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String? = nil, permissions: String? = nil, richWorkspace: String? = nil, serverUrl: String, account: String, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             if let existing = realm.objects(tableDirectory.self)
                 .filter("account == %@ AND ocId == %@", account, ocId)
                 .first {
@@ -246,6 +246,25 @@ extension NCManageDatabase {
                 return nil
             }
             return tableDirectory(value: result)
+        }
+    }
+
+    func getTableDirectory(ocId: String,
+                           dispatchOnMainQueue: Bool = true,
+                           completion: @escaping (_ tblDirectory: tableDirectory?) -> Void) {
+        performRealmRead({ realm in
+            return realm.objects(tableDirectory.self)
+                .filter("ocId == %@", ocId)
+                .first
+                .map { tableDirectory(value: $0) }
+        }, sync: false) { result in
+            if dispatchOnMainQueue {
+                DispatchQueue.main.async {
+                    completion(result)
+                }
+            } else {
+                completion(result)
+            }
         }
     }
 

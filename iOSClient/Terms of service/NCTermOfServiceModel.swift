@@ -53,7 +53,9 @@ class NCTermOfServiceModel: ObservableObject {
 
         NCNetworking.shared.signTermsOfService(account: controller.account, termId: termId) { error in
             if error == .success {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterGetServerData)
+                NCNetworking.shared.notifyAllDelegates { delegate in
+                    delegate.transferRequestData(serverUrl: nil)
+                }
             } else {
                 NCContentPresenter().showError(error: error)
             }

@@ -38,13 +38,35 @@ import SwiftUI
 }
 
 protocol NCTransferDelegate: AnyObject {
+    var sceneIdentifier: String { get }
     func transferProgressDidUpdate(progress: Float,
                                    totalBytes: Int64,
                                    totalBytesExpected: Int64,
                                    fileName: String,
                                    serverUrl: String)
 
-    func tranferChange(status: String, metadata: tableMetadata, error: NKError)
+    func transferChange(status: String, metadata: tableMetadata, error: NKError)
+    func transferChange(status: String, metadatasError: [tableMetadata: NKError])
+    func transferReloadData(serverUrl: String?)
+    func transferRequestData(serverUrl: String?)
+    func transferCopy(metadata: tableMetadata, error: NKError)
+    func transferMove(metadata: tableMetadata, error: NKError)
+    func transferFileExists(ocId: String, exists: Bool)
+}
+
+extension NCTransferDelegate {
+    func transferProgressDidUpdate(progress: Float,
+                                   totalBytes: Int64,
+                                   totalBytesExpected: Int64,
+                                   fileName: String,
+                                   serverUrl: String) {}
+    func transferChange(status: String, metadata: tableMetadata, error: NKError) {}
+    func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {}
+    func transferReloadData(serverUrl: String?) {}
+    func transferRequestData(serverUrl: String?) {}
+    func transferCopy(metadata: tableMetadata, error: NKError) {}
+    func transferMove(metadata: tableMetadata, error: NKError) {}
+    func transferFileExists(ocId: String, exists: Bool) {}
 }
 
 class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
@@ -73,13 +95,55 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     var p12Data: Data?
     var p12Password: String?
     var tapHudStopDelete = false
-    weak var transferDelegate: NCTransferDelegate?
 
     var isOffline: Bool {
         return networkReachability == NKCommon.TypeReachability.notReachable || networkReachability == NKCommon.TypeReachability.unknown
     }
     var isOnline: Bool {
         return networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi || networkReachability == NKCommon.TypeReachability.reachableCellular
+    }
+
+    /// Delegate for multi scene
+    private var transferDelegates = NSHashTable<AnyObject>.weakObjects()
+
+    func addDelegate(_ delegate: NCTransferDelegate) {
+        transferDelegates.add(delegate)
+    }
+
+    func removeDelegate(_ delegate: NCTransferDelegate) {
+        transferDelegates.remove(delegate)
+    }
+
+    func notifyAllDelegates(_ block: (NCTransferDelegate) -> Void) {
+        for delegate in transferDelegates.allObjects {
+            if let delegate = delegate as? NCTransferDelegate {
+                block(delegate)
+            }
+        }
+    }
+
+    func notifyDelegate(forScene sceneIdentifier: String, _ block: (NCTransferDelegate) -> Void) {
+        for delegate in transferDelegates.allObjects {
+            if let delegate = delegate as? NCTransferDelegate, delegate.sceneIdentifier == sceneIdentifier {
+                block(delegate)
+            }
+        }
+    }
+
+    func notifyDelegates(forScene sceneIdentifier: String,
+                         matching: (NCTransferDelegate) -> Void,
+                         others: (NCTransferDelegate) -> Void) {
+        for delegate in transferDelegates.allObjects {
+            guard let delegate = delegate as? NCTransferDelegate
+            else {
+                continue
+            }
+            if delegate.sceneIdentifier == sceneIdentifier {
+                matching(delegate)
+            } else {
+                others(delegate)
+            }
+        }
     }
 
     // OPERATIONQUEUE
@@ -104,10 +168,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
                     self.getActiveAccountCertificate(account: account)
                 }
             }
-        }
-
-        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
-            NCTransferProgress.shared.clearAllCountError()
         }
     }
 

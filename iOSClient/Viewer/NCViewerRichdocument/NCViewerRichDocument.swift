@@ -35,8 +35,13 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     var link: String = ""
     var metadata: tableMetadata = tableMetadata()
     var imageIcon: UIImage?
+
     var session: NCSession.Session {
         NCSession.shared.getSession(account: metadata.account)
+    }
+
+    var sceneIdentifier: String {
+        (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
     }
 
     // MARK: - View Life Cycle
@@ -87,8 +92,6 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(favoriteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
-
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.grabFocus), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRichdocumentGrabFocus), object: nil)
 
@@ -99,11 +102,15 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
+        NCNetworking.shared.addDelegate(self)
+
         NCActivityIndicator.shared.start(backgroundView: view)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+
+        NCNetworking.shared.removeDelegate(self)
 
         if let navigationController = self.navigationController {
             if !navigationController.viewControllers.contains(self) {
@@ -115,8 +122,6 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
         }
 
         webView.configuration.userContentController.removeScriptMessageHandler(forName: "RichDocumentsMobileInterface")
-
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRichdocumentGrabFocus), object: nil)
@@ -130,16 +135,6 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     }
 
     // MARK: - NotificationCenter
-
-    @objc func favoriteFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
-              ocId == self.metadata.ocId,
-              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
-        else { return }
-
-        self.metadata = metadata
-    }
 
     @objc func keyboardDidShow(notification: Notification) {
         guard let info = notification.userInfo else { return }
@@ -185,7 +180,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
             }
 
             if message.body as? String == "share" {
-                NCActionCenter.shared.openShare(viewController: self, metadata: metadata, page: .sharing)
+                NCDownloadAction.shared.openShare(viewController: self, metadata: metadata, page: .sharing)
             }
 
             if let param = message.body as? [AnyHashable: Any] {
@@ -355,7 +350,25 @@ extension NCViewerRichDocument: UINavigationControllerDelegate {
         super.didMove(toParent: parent)
 
         if parent == nil {
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": self.metadata.serverUrl])
+            NCNetworking.shared.notifyAllDelegates { delegate in
+                delegate.transferReloadData(serverUrl: metadata.serverUrl)
+            }
+        }
+    }
+}
+
+extension NCViewerRichDocument: NCTransferDelegate {
+    func transferChange(status: String, metadata: tableMetadata, error: NKError) {
+        DispatchQueue.main.async {
+            switch status {
+            /// FAVORITE
+            case NCGlobal.shared.networkingStatusFavorite:
+                if self.metadata.ocId == metadata.ocId {
+                    self.metadata = metadata
+                }
+            default:
+                break
+            }
         }
     }
 }

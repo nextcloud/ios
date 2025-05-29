@@ -24,7 +24,6 @@
 import Foundation
 import UIKit
 import NextcloudKit
-import Alamofire
 import RealmSwift
 
 extension NCNetworking {
@@ -59,7 +58,10 @@ extension NCNetworking {
         if metadata.status == global.metadataStatusWaitFavorite {
             let favorite = (metadata.storeFlag as? NSString)?.boolValue ?? false
             database.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite, saveOldFavorite: nil, status: global.metadataStatusNormal)
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
+
+            NCNetworking.shared.notifyAllDelegates { delegate in
+                delegate.transferReloadData(serverUrl: metadata.serverUrl)
+            }
             return
         }
 
@@ -67,7 +69,10 @@ extension NCNetworking {
         ///
         if metadata.status == global.metadataStatusWaitCopy {
             database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
+
+            NCNetworking.shared.notifyAllDelegates { delegate in
+                delegate.transferReloadData(serverUrl: metadata.serverUrl)
+            }
             return
         }
 
@@ -75,7 +80,10 @@ extension NCNetworking {
         ///
         if metadata.status == global.metadataStatusWaitMove {
             database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
+
+            NCNetworking.shared.notifyAllDelegates { delegate in
+                delegate.transferReloadData(serverUrl: metadata.serverUrl)
+            }
             return
         }
 
@@ -83,7 +91,10 @@ extension NCNetworking {
         ///
         if metadata.status == global.metadataStatusWaitDelete {
             database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusNormal)
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
+
+            NCNetworking.shared.notifyAllDelegates { delegate in
+                delegate.transferReloadData(serverUrl: metadata.serverUrl)
+            }
             return
         }
 
@@ -91,7 +102,10 @@ extension NCNetworking {
         ///
         if metadata.status == global.metadataStatusWaitRename {
             database.restoreMetadataFileName(ocId: metadata.ocId)
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
+
+            NCNetworking.shared.notifyAllDelegates { delegate in
+                delegate.transferReloadData(serverUrl: metadata.serverUrl)
+            }
             return
         }
 
@@ -103,7 +117,10 @@ extension NCNetworking {
                 database.deleteMetadataOcId(metadata.ocId)
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
             }
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
+
+            NCNetworking.shared.notifyAllDelegates { delegate in
+                delegate.transferReloadData(serverUrl: metadata.serverUrl)
+            }
             return
         }
 
@@ -112,7 +129,10 @@ extension NCNetworking {
         if metadata.session.isEmpty {
             self.database.deleteMetadataOcId(metadata.ocId)
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
+
+            NCNetworking.shared.notifyAllDelegates { delegate in
+                delegate.transferReloadData(serverUrl: metadata.serverUrl)
+            }
             return
         }
 
@@ -126,17 +146,11 @@ extension NCNetworking {
                 cancelDownloadBackgroundTask(metadata: metadata)
             }
 
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterDownloadCancelFile,
-                                                        object: nil,
-                                                        userInfo: ["ocId": metadata.ocId,
-                                                                   "ocIdTransfer": metadata.ocIdTransfer,
-                                                                   "session": metadata.session,
-                                                                   "serverUrl": metadata.serverUrl,
-                                                                   "account": metadata.account],
-                                                        second: 0.5)
-            self.transferDelegate?.tranferChange(status: self.global.notificationCenterDownloadCancelFile,
-                                                 metadata: tableMetadata(value: metadata),
-                                                 error: .success)
+            self.notifyAllDelegates { delegate in
+                delegate.transferChange(status: self.global.networkingStatusDownloadCancel,
+                                        metadata: tableMetadata(value: metadata),
+                                        error: .success)
+            }
         }
 
         /// UPLOAD
@@ -148,18 +162,11 @@ extension NCNetworking {
                 cancelUploadBackgroundTask(metadata: metadata)
             }
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadCancelFile,
-                                                        object: nil,
-                                                        userInfo: ["ocId": metadata.ocId,
-                                                                   "ocIdTransfer": metadata.ocIdTransfer,
-                                                                   "session": metadata.session,
-                                                                   "serverUrl": metadata.serverUrl,
-                                                                   "account": metadata.account],
-                                                        second: 0.5)
-            self.transferDelegate?.tranferChange(status: self.global.notificationCenterUploadCancelFile,
-                                                 metadata: tableMetadata(value: metadata),
-                                                 error: .success)
+            self.notifyAllDelegates { delegate in
+                delegate.transferChange(status: self.global.networkingStatusUploadCancel,
+                                        metadata: tableMetadata(value: metadata),
+                                        error: .success)
+            }
         }
     }
 
@@ -168,7 +175,10 @@ extension NCNetworking {
         for metadata in metadatas {
             cancelTask(metadata: metadata)
         }
-        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
+
+        NCNetworking.shared.notifyAllDelegates { delegate in
+            delegate.transferReloadData(serverUrl: nil)
+        }
     }
 
     func cancelAllDataTask() {

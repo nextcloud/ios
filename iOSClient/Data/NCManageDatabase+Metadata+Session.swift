@@ -11,6 +11,7 @@ extension NCManageDatabase {
 
     // MARK: - Realm Write
 
+    @discardableResult
     func setMetadataSession(ocId: String,
                             newFileName: String? = nil,
                             session: String? = nil,
@@ -20,7 +21,8 @@ extension NCManageDatabase {
                             status: Int? = nil,
                             etag: String? = nil,
                             errorCode: Int? = nil,
-                            sync: Bool = true) {
+                            sync: Bool = true) -> tableMetadata? {
+        var updatedMetadata: tableMetadata?
 
         performRealmWrite(sync: sync) { realm in
             if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
@@ -57,8 +59,10 @@ extension NCManageDatabase {
                 if let errorCode {
                     result.errorCode = errorCode
                 }
+                updatedMetadata = result
             }
         }
+        return updatedMetadata
     }
 
     @discardableResult

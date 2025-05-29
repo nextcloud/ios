@@ -64,11 +64,14 @@ class NCShares: NCCollectionViewCommon {
     // MARK: - DataSource
 
     override func reloadDataSource() {
-        let metadatas = self.database.getResultsMetadatasPredicate(NSPredicate(format: "ocId IN %@", ocIdShares), layoutForView: layoutForView, account: session.account)
-
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
-
-        super.reloadDataSource()
+        database.getMetadatas(predicate: NSPredicate(format: "ocId IN %@", ocIdShares),
+                              layoutForView: layoutForView,
+                              account: session.account) { metadatas, layoutForView, account in
+            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
+            self.dataSource.caching(metadatas: metadatas) {
+                super.reloadDataSource()
+            }
+        }
     }
 
     override func getServerData() {
@@ -100,9 +103,10 @@ class NCShares: NCCollectionViewCommon {
                             let serverUrlFileName = share.serverUrl + "/" + share.fileName
                             let result = await NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: session.account)
                             if result.error == .success, let metadata = result.metadata {
+                                let ocId = metadata.ocId
                                 self.database.addMetadata(metadata)
                                 _ = await MainActor.run {
-                                    self.ocIdShares.insert(metadata.ocId)
+                                    self.ocIdShares.insert(ocId)
                                 }
                             }
                         }

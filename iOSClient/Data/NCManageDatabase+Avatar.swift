@@ -88,4 +88,30 @@ extension NCManageDatabase {
 
         return (image, tblAvatar)
     }
+
+    func getImageAvatarLoaded(fileName: String,
+                              dispatchOnMainQueue: Bool = true,
+                              completion: @escaping (_ image: UIImage?, _ tblAvatar: tableAvatar?) -> Void) {
+        let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
+        let image = UIImage(contentsOfFile: fileNameLocalPath)
+
+        performRealmRead({ realm in
+            return realm.objects(tableAvatar.self)
+                .filter("fileName == %@", fileName)
+                .first
+                .map { tableAvatar(value: $0) }
+        }, sync: false) { result in
+            if result == nil {
+                self.utilityFileSystem.removeFile(atPath: fileNameLocalPath)
+            }
+
+            if dispatchOnMainQueue {
+                DispatchQueue.main.async {
+                    completion(image, result)
+                }
+            } else {
+                completion(image, result)
+            }
+        }
+    }
 }

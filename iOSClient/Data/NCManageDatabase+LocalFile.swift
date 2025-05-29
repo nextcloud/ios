@@ -61,13 +61,13 @@ extension NCManageDatabase {
        }
     }
 
-    func deleteLocalFileOcId(_ ocId: String?) {
+    func deleteLocalFileOcId(_ ocId: String?, sync: Bool = true) {
         guard let ocId
         else {
             return
         }
 
-        performRealmWrite { realm in
+        performRealmWrite(sync: sync) { realm in
             let results = realm.objects(tableLocalFile.self)
                 .filter("ocId == %@", ocId)
             realm.delete(results)
@@ -152,6 +152,27 @@ extension NCManageDatabase {
     func getResultsTableLocalFile(predicate: NSPredicate) -> Results<tableLocalFile>? {
         return performRealmRead { realm in
             realm.objects(tableLocalFile.self).filter(predicate)
+        }
+    }
+
+    func getTableLocal(predicate: NSPredicate,
+                       dispatchOnMainQueue: Bool = true,
+                       completion: @escaping (_ localFile: tableLocalFile?) -> Void) {
+        performRealmRead({ realm in
+            return realm.objects(tableLocalFile.self)
+                .filter(predicate)
+                .first
+        }, sync: false) { result in
+            let detachedResult = result.map { tableLocalFile(value: $0) }
+            let deliver: () -> Void = {
+                completion(detachedResult)
+            }
+
+            if dispatchOnMainQueue {
+                DispatchQueue.main.async(execute: deliver)
+            } else {
+                deliver()
+            }
         }
     }
 

@@ -30,16 +30,20 @@ extension NCShareExtension {
     @objc func reloadDatasource(withLoadFolder: Bool) {
         let layoutForView = NCManageDatabase.shared.getLayoutForView(account: session.account, key: keyLayout, serverUrl: serverUrl) ?? NCDBLayoutForView()
         let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", session.account, serverUrl)
-        let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView, account: session.account)
 
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, account: session.account)
-
-        if withLoadFolder {
-            loadFolder()
-        } else {
-            self.refreshControl.endRefreshing()
+        self.database.getMetadatas(predicate: predicate,
+                                   layoutForView: layoutForView,
+                                   account: session.account) { metadatas, layoutForView, account in
+            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
+            self.dataSource.caching(metadatas: metadatas) {
+                if withLoadFolder {
+                    self.loadFolder()
+                } else {
+                    self.refreshControl.endRefreshing()
+                }
+                self.collectionView.reloadData()
+            }
         }
-        collectionView.reloadData()
     }
 
     @objc func didCreateFolder(_ notification: NSNotification) {
