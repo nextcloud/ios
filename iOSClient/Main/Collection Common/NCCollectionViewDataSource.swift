@@ -323,7 +323,7 @@ class NCCollectionViewDataSource: NSObject {
         }
     }
 
-    func getMetadataSync(indexPath: IndexPath) -> tableMetadata? {
+    func getMetadata(indexPath: IndexPath) -> tableMetadata? {
         if !metadatasForSection.isEmpty, indexPath.section < metadatasForSection.count {
             if let metadataForSection = getMetadataForSection(indexPath.section),
                indexPath.row < metadataForSection.metadatas.count {
