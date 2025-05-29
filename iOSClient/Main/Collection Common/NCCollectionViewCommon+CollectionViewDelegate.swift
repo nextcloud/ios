@@ -120,7 +120,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        guard let metadata = self.dataSource.getMetadataSync(indexPath: indexPath),
+        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath),
               metadata.classFile != NKCommon.TypeClassFile.url.rawValue,
               !isEditMode
         else {

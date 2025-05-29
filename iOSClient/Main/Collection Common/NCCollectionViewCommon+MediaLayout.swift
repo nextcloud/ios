@@ -70,7 +70,7 @@ extension NCCollectionViewCommon: NCMediaLayoutDelegate {
         if typeLayout == global.layoutPhotoSquare {
             return CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
         } else {
-            guard let metadata = dataSource.getMetadataSync(indexPath: indexPath) else { return .zero }
+            guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return .zero }
 
             if metadata.imageSize != CGSize.zero {
                 return metadata.imageSize
