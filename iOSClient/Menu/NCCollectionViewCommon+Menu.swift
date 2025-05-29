@@ -303,11 +303,13 @@ extension NCCollectionViewCommon {
                                                         error: .success)
                             }
                         } else {
-                            guard let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                                 session: NCNetworking.shared.sessionDownload,
-                                                                                                 selector: NCGlobal.shared.selectorSaveAsScan,
-                                                                                                 sceneIdentifier: sceneIdentifier) else { return }
-                            NCNetworking.shared.download(metadata: metadata)
+                            if let metadata = self.database.setMetadataSessionInWaitDownload(metadata: metadata,
+                                                                                             session: NCNetworking.shared.sessionDownload,
+                                                                                             selector: NCGlobal.shared.selectorSaveAsScan,
+                                                                                             sceneIdentifier: sceneIdentifier,
+                                                                                             sync: false) {
+                                NCNetworking.shared.download(metadata: metadata)
+                            }
                         }
                     }
                 )
@@ -359,11 +361,13 @@ extension NCCollectionViewCommon {
                                                         error: .success)
                             }
                         } else {
-                            guard let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                                 session: NCNetworking.shared.sessionDownload,
-                                                                                                 selector: NCGlobal.shared.selectorLoadFileQuickLook,
-                                                                                                 sceneIdentifier: sceneIdentifier) else { return }
-                            NCNetworking.shared.download(metadata: metadata)
+                            if let metadata = self.database.setMetadataSessionInWaitDownload(metadata: metadata,
+                                                                                             session: NCNetworking.shared.sessionDownload,
+                                                                                             selector: NCGlobal.shared.selectorLoadFileQuickLook,
+                                                                                             sceneIdentifier: sceneIdentifier,
+                                                                                             sync: false) {
+                                NCNetworking.shared.download(metadata: metadata)
+                            }
                         }
                     }
                 )

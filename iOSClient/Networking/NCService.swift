@@ -248,9 +248,10 @@ class NCService: NSObject {
         for file: tableLocalFile in files {
             guard let metadata = self.database.getMetadataFromOcId(file.ocId) else { continue }
             if NCNetworking.shared.isSynchronizable(ocId: metadata.ocId, fileName: metadata.fileName, etag: metadata.etag) {
-                self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                session: NCNetworking.shared.sessionDownloadBackground,
-                                                                selector: NCGlobal.shared.selectorSynchronizationOffline)
+                _ = self.database.setMetadataSessionInWaitDownload(metadata: metadata,
+                                                                   session: NCNetworking.shared.sessionDownloadBackground,
+                                                                   selector: NCGlobal.shared.selectorSynchronizationOffline,
+                                                                   sync: false)
             }
         }
     }

@@ -40,12 +40,16 @@ class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
 
     override func start() {
         guard !isCancelled,
-            let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                     session: NCNetworking.shared.sessionDownload,
-                                                                                     selector: ""),
-            let metadataLive = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadataMOV],
-                                                                                         session: NCNetworking.shared.sessionDownload,
-                                                                                         selector: "") else { return self.finish() }
+            let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(metadata: metadata,
+                                                                                    session: NCNetworking.shared.sessionDownload,
+                                                                                    selector: "",
+                                                                                    sync: false),
+            let metadataLive = NCManageDatabase.shared.setMetadataSessionInWaitDownload(metadata: metadataMOV,
+                                                                                        session: NCNetworking.shared.sessionDownload,
+                                                                                        selector: "",
+                                                                                        sync: false) else {
+            return self.finish()
+        }
 
         NCNetworking.shared.download(metadata: metadata) {
         } requestHandler: { _ in

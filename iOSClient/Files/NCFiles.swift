@@ -220,12 +220,13 @@ class NCFiles: NCCollectionViewCommon {
                 if error == .success {
                     let metadatas: [tableMetadata] = metadatas ?? self.dataSource.getMetadatas()
                     for metadata in metadatas where !metadata.directory && downloadMetadata(metadata) {
-                        self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                        session: NCNetworking.shared.sessionDownload,
-                                                                        selector: NCGlobal.shared.selectorDownloadFile,
-                                                                        sceneIdentifier: self.controller?.sceneIdentifier,
-                                                                        sync: false)
-                        NCNetworking.shared.download(metadata: metadata)
+                        if let metadata = self.database.setMetadataSessionInWaitDownload(metadata: metadata,
+                                                                                         session: NCNetworking.shared.sessionDownload,
+                                                                                         selector: NCGlobal.shared.selectorDownloadFile,
+                                                                                         sceneIdentifier: self.controller?.sceneIdentifier,
+                                                                                         sync: false) {
+                            NCNetworking.shared.download(metadata: metadata)
+                        }
                     }
                 }
                 DispatchQueue.main.async {

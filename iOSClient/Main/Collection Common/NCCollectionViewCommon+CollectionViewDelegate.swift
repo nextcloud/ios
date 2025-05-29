@@ -62,10 +62,11 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 NCViewer().view(viewController: self, metadata: metadata, image: image)
 
             } else if NextcloudKit.shared.isNetworkReachable(),
-                      let metadata = database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                session: NCNetworking.shared.sessionDownload,
-                                                                                selector: global.selectorLoadFileView,
-                                                                                sceneIdentifier: self.controller?.sceneIdentifier) {
+                      let metadata = database.setMetadataSessionInWaitDownload(metadata: metadata,
+                                                                               session: NCNetworking.shared.sessionDownload,
+                                                                               selector: global.selectorLoadFileView,
+                                                                               sceneIdentifier: self.controller?.sceneIdentifier,
+                                                                               sync: false) {
                 if metadata.name == "files" {
                     let hud = NCHud(self.tabBarController?.view)
                     var downloadRequest: DownloadRequest?

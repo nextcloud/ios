@@ -158,7 +158,8 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             database.addLocalFile(metadata: metadata, offline: true)
             database.setMetadatasSessionInWaitDownload(metadatas: metadatasSynchronizationOffline,
                                                        session: NCNetworking.shared.sessionDownloadBackground,
-                                                       selector: NCGlobal.shared.selectorSynchronizationOffline)
+                                                       selector: NCGlobal.shared.selectorSynchronizationOffline,
+                                                       sync: false)
         }
     }
 
@@ -302,10 +303,14 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, controller: controller)
         for (metadata, url) in downloadMetadata {
             processor.execute { completion in
-                guard let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                     session: NCNetworking.shared.sessionDownload,
-                                                                                     selector: "",
-                                                                                     sceneIdentifier: controller.sceneIdentifier) else { return completion() }
+                guard let metadata = self.database.setMetadataSessionInWaitDownload(metadata: metadata,
+                                                                                    session: NCNetworking.shared.sessionDownload,
+                                                                                    selector: "",
+                                                                                    sceneIdentifier: controller.sceneIdentifier,
+                                                                                    sync: false) else {
+                    return completion()
+                }
+
                 NCNetworking.shared.download(metadata: metadata) {
                 } progressHandler: { progress in
                     processor.hud.progress(progress.fractionCompleted)
