@@ -30,8 +30,11 @@ extension NCManageDatabase {
 
     // MARK: - Realm write
 
-    func addDirectEditing(account: String, editors: [NKEditorDetailsEditors], creators: [NKEditorDetailsCreators]) {
-        performRealmWrite { realm in
+    func addDirectEditing(account: String,
+                          editors: [NKEditorDetailsEditors],
+                          creators: [NKEditorDetailsCreators],
+                          sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             let resultsCreators = realm.objects(tableDirectEditingCreators.self).filter("account == %@", account)
             realm.delete(resultsCreators)
 

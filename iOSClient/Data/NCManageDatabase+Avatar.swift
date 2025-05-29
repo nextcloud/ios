@@ -22,8 +22,8 @@ extension NCManageDatabase {
 
     // MARK: - Realm write
 
-    func addAvatar(fileName: String, etag: String) {
-        performRealmWrite { realm in
+    func addAvatar(fileName: String, etag: String, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             let addObject = tableAvatar()
             addObject.date = NSDate()
             addObject.etag = etag
@@ -43,11 +43,11 @@ extension NCManageDatabase {
     }
 
     @discardableResult
-    func setAvatarLoaded(fileName: String) -> UIImage? {
+    func setAvatarLoaded(fileName: String, sync: Bool = true) -> UIImage? {
         let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
         var image: UIImage?
 
-        performRealmWrite { realm in
+        performRealmWrite(sync: sync) { realm in
             if let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first {
                 if let imageAvatar = UIImage(contentsOfFile: fileNameLocalPath) {
                     result.loaded = true
