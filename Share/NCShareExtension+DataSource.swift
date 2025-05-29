@@ -86,47 +86,46 @@ extension NCShareExtension: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell)!
-
-        self.dataSource.getMetadata(indexPath: indexPath) { metadata in
-            guard let metadata else {
-                return
-            }
-
-            cell.fileOcId = metadata.ocId
-            cell.fileOcIdTransfer = metadata.ocIdTransfer
-            cell.fileUser = metadata.ownerId
-            cell.labelTitle.text = metadata.fileNameView
-            cell.labelTitle.textColor = NCBrandColor.shared.textColor
-            cell.imageSelect.image = nil
-            cell.imageStatus.image = nil
-            cell.imageLocal.image = nil
-            cell.imageFavorite.image = nil
-            cell.imageShared.image = nil
-            cell.imageMore.image = nil
-            cell.imageItem.image = nil
-            cell.imageItem.backgroundColor = nil
-
-            if metadata.directory {
-                self.setupDirectoryCell(cell, indexPath: indexPath, with: metadata)
-            }
-
-            if metadata.favorite {
-                cell.imageFavorite.image = NCImageCache.shared.getImageFavorite()
-            }
-
-            cell.imageSelect.isHidden = true
-            cell.backgroundView = nil
-            cell.hideButtonMore(true)
-            cell.hideButtonShare(true)
-            cell.selected(false, isEditMode: false)
-
-            if metadata.isLivePhoto {
-                cell.imageStatus.image = self.utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor2])
-            }
-
-            cell.setTags(tags: Array(metadata.tags))
-            cell.separator.isHidden = collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1
+        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else {
+            return cell
         }
+
+        cell.fileOcId = metadata.ocId
+        cell.fileOcIdTransfer = metadata.ocIdTransfer
+        cell.fileUser = metadata.ownerId
+        cell.labelTitle.text = metadata.fileNameView
+        cell.labelTitle.textColor = NCBrandColor.shared.textColor
+        cell.imageSelect.image = nil
+        cell.imageStatus.image = nil
+        cell.imageLocal.image = nil
+        cell.imageFavorite.image = nil
+        cell.imageShared.image = nil
+        cell.imageMore.image = nil
+        cell.imageItem.image = nil
+        cell.imageItem.backgroundColor = nil
+
+        if metadata.directory {
+            setupDirectoryCell(cell, indexPath: indexPath, with: metadata)
+        }
+
+        if metadata.favorite {
+            cell.imageFavorite.image = NCImageCache.shared.getImageFavorite()
+        }
+
+        cell.imageSelect.isHidden = true
+        cell.backgroundView = nil
+        cell.hideButtonMore(true)
+        cell.hideButtonShare(true)
+        cell.selected(false, isEditMode: false)
+
+        if metadata.isLivePhoto {
+            cell.imageStatus.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor2])
+        }
+
+        cell.setTags(tags: Array(metadata.tags))
+
+        cell.separator.isHidden = collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1
+
         return cell
     }
 
