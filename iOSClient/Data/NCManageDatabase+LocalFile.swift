@@ -151,7 +151,16 @@ extension NCManageDatabase {
 
     func getResultsTableLocalFile(predicate: NSPredicate) -> Results<tableLocalFile>? {
         return performRealmRead { realm in
-            realm.objects(tableLocalFile.self).filter(predicate)
+            realm.objects(tableLocalFile.self)
+                .filter(predicate)
+        }
+    }
+
+    func getResultTableLocalFile(predicate: NSPredicate) -> tableLocalFile? {
+        return performRealmRead { realm in
+            realm.objects(tableLocalFile.self)
+                .filter(predicate)
+                .first
         }
     }
 
