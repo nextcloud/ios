@@ -318,7 +318,9 @@ class NCCollectionViewDataSource: NSObject {
             counter += 1
         }
 
-        return completion()
+        DispatchQueue.main.async {
+            return completion()
+        }
     }
 
     func removeImageCache() {
