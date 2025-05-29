@@ -39,7 +39,7 @@ class NCService: NSObject {
             return
         }
 
-        self.database.clearAllAvatarLoaded()
+        self.database.clearAllAvatarLoaded(sync: false)
         self.addInternalTypeIdentifier(account: account)
 
         Task(priority: .background) {
@@ -113,7 +113,7 @@ class NCService: NSObject {
         if resultUserProfile.error == .success,
            let userProfile = resultUserProfile.userProfile,
            userId == userProfile.userId {
-            self.database.setAccountUserProfile(account: resultUserProfile.account, userProfile: userProfile)
+            self.database.setAccountUserProfile(account: resultUserProfile.account, userProfile: userProfile, sync: false)
             return true
         } else {
             return false
@@ -127,7 +127,7 @@ class NCService: NSObject {
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
             guard error == .success, let files else { return }
             self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
-                self.database.updateMetadatasFavorite(account: account, metadatas: metadatas)
+                self.database.updateMetadatasFavorite(account: account, metadatas: metadatas, sync: false)
             }
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Synchronize Favorite")
             self.synchronizeOffline(account: account)
@@ -137,23 +137,25 @@ class NCService: NSObject {
     func getAvatar(account: String) {
         let session = NCSession.shared.getSession(account: account)
         let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: session.user)
-        let etag = self.database.getTableAvatar(fileName: fileName)?.etag
 
-        NextcloudKit.shared.downloadAvatar(user: session.userId,
-                                           fileNameLocalPath: utilityFileSystem.directoryUserData + "/" + fileName,
-                                           sizeImage: NCGlobal.shared.avatarSize,
-                                           avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
-                                           etag: etag,
-                                           account: account,
-                                           options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, _, newEtag, _, error in
-            if let newEtag,
-               etag != newEtag,
-               error == .success {
-                self.database.addAvatar(fileName: fileName, etag: newEtag)
+        self.database.getTableAvatar(fileName: fileName,
+                                     dispatchOnMainQueue: false) { tblAvatar in
+            NextcloudKit.shared.downloadAvatar(user: session.userId,
+                                               fileNameLocalPath: self.utilityFileSystem.directoryUserData + "/" + fileName,
+                                               sizeImage: NCGlobal.shared.avatarSize,
+                                               avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
+                                               etag: tblAvatar?.etag,
+                                               account: account,
+                                               options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, _, newEtag, _, error in
+                if let newEtag,
+                   tblAvatar?.etag != newEtag,
+                   error == .success {
+                    self.database.addAvatar(fileName: fileName, etag: newEtag, sync: false)
 
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: ["error": error])
-            } else if error.errorCode == NCGlobal.shared.errorNotModified {
-                self.database.setAvatarLoaded(fileName: fileName)
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: ["error": error])
+                } else if error.errorCode == NCGlobal.shared.errorNotModified {
+                    self.database.setAvatarLoaded(fileName: fileName, sync: false)
+                }
             }
         }
     }
@@ -166,7 +168,7 @@ class NCService: NSObject {
 
             data.printJson()
 
-            self.database.addCapabilitiesJSon(data, account: account)
+            self.database.addCapabilitiesJSon(data, account: account, sync: false)
 
             guard let capability = self.database.setCapabilities(account: account, data: data) else {
                 return
@@ -174,7 +176,7 @@ class NCService: NSObject {
 
             // Recommendations
             if !NCCapabilities.shared.getCapabilities(account: account).capabilityRecommendations {
-                self.database.deleteAllRecommendedFiles(account: account)
+                self.database.deleteAllRecommendedFiles(account: account, sync: false)
             }
 
             // Theming
@@ -187,7 +189,7 @@ class NCService: NSObject {
                 let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
                 NextcloudKit.shared.textObtainEditorDetails(account: account, options: options) { account, editors, creators, _, error in
                     if error == .success {
-                        self.database.addDirectEditing(account: account, editors: editors, creators: creators)
+                        self.database.addDirectEditing(account: account, editors: editors, creators: creators, sync: false)
                     }
                 }
             }
@@ -196,21 +198,21 @@ class NCService: NSObject {
             if capability.capabilityExternalSites {
                 NextcloudKit.shared.getExternalSite(account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, externalSites, _, error in
                     if error == .success {
-                        self.database.deleteExternalSites(account: account)
+                        self.database.deleteExternalSites(account: account, sync: false)
                         for externalSite in externalSites {
-                            self.database.addExternalSites(externalSite, account: account)
+                            self.database.addExternalSites(externalSite, account: account, sync: false)
                         }
                     }
                 }
             } else {
-                self.database.deleteExternalSites(account: account)
+                self.database.deleteExternalSites(account: account, sync: false)
             }
 
             // User Status
             if capability.capabilityUserStatusEnabled {
                 NextcloudKit.shared.getUserStatus(account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, _, _, error in
                     if error == .success {
-                        self.database.setAccountUserStatus(userStatusClearAt: clearAt, userStatusIcon: icon, userStatusMessage: message, userStatusMessageId: messageId, userStatusMessageIsPredefined: messageIsPredefined, userStatusStatus: status, userStatusStatusIsUserDefined: statusIsUserDefined, account: account)
+                        self.database.setAccountUserStatus(userStatusClearAt: clearAt, userStatusIcon: icon, userStatusMessage: message, userStatusMessageId: messageId, userStatusMessageIsPredefined: messageIsPredefined, userStatusStatus: status, userStatusStatusIsUserDefined: statusIsUserDefined, account: account, sync: false)
                     }
                 }
             }
@@ -221,8 +223,9 @@ class NCService: NSObject {
             }
 
             // Added UTI for ONLYOFFICE & Text
-            if let directEditingCreators = self.database.getDirectEditingCreators(account: account) {
-                for directEditing in directEditingCreators {
+            self.database.getDirectEditingCreators(account: account,
+                                                   dispatchOnMainQueue: false) { tblDirectEditingCreators in
+                for directEditing in tblDirectEditingCreators {
                     NextcloudKit.shared.nkCommonInstance.addInternalTypeIdentifier(typeIdentifier: directEditing.mimetype, classFile: NKCommon.TypeClassFile.document.rawValue, editor: directEditing.editor, iconName: NKCommon.TypeIconFile.document.rawValue, name: "document", account: account)
                 }
             }
@@ -248,9 +251,10 @@ class NCService: NSObject {
         for file: tableLocalFile in files {
             guard let metadata = self.database.getMetadataFromOcId(file.ocId) else { continue }
             if NCNetworking.shared.isSynchronizable(ocId: metadata.ocId, fileName: metadata.fileName, etag: metadata.etag) {
-                self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                session: NCNetworking.shared.sessionDownloadBackground,
-                                                                selector: NCGlobal.shared.selectorSynchronizationOffline)
+                _ = self.database.setMetadataSessionInWaitDownload(metadata: metadata,
+                                                                   session: NCNetworking.shared.sessionDownloadBackground,
+                                                                   selector: NCGlobal.shared.selectorSynchronizationOffline,
+                                                                   sync: false)
             }
         }
     }

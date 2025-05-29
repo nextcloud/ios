@@ -145,6 +145,12 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         let existsImagePreview = utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag)
         let ext = global.getSizeExtension(column: self.numberOfColumns)
 
+        defer {
+            if !metadata.isSharable() || NCCapabilities.shared.disableSharesView(account: metadata.account) {
+                cell.hideButtonShare(true)
+            }
+        }
+
         // E2EE create preview
         if self.isDirectoryEncrypted,
            metadata.isImageOrVideo,
@@ -210,6 +216,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
             cell.fileSubinfoLabel?.isHidden = true
         } else if !metadata.sessionError.isEmpty, metadata.status != global.metadataStatusNormal {
+            cell.fileTitleLabel?.text = metadata.fileNameView
             cell.fileSubinfoLabel?.isHidden = false
             cell.fileInfoLabel?.text = metadata.sessionError
         } else {
@@ -225,6 +232,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         if metadata.directory {
+            let tblDirectory = database.getResultTableDirectory(ocId: metadata.ocId)
+
             if metadata.e2eEncrypted {
                 cell.filePreviewImageView?.image = imageCache.getFolderEncrypted(account: metadata.account)
             } else if isShare {
@@ -245,15 +254,16 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.filePreviewImageView?.image = imageCache.getFolder(account: metadata.account)
             }
 
-            database.getTableDirectory(ocId: metadata.ocId) { tblDirectory in
-                // Local image: offline
-                if let tblDirectory, tblDirectory.offline {
-                    cell.fileLocalImage?.image = self.imageCache.getImageOfflineFlag()
-                }
-                // color folder
-                cell.filePreviewImageView?.image = cell.filePreviewImageView?.image?.colorizeFolder(metadata: metadata, tblDirectory: tblDirectory)
+            // Local image: offline
+            if let tblDirectory, tblDirectory.offline {
+                cell.fileLocalImage?.image = imageCache.getImageOfflineFlag()
             }
+
+            // color folder
+            cell.filePreviewImageView?.image = cell.filePreviewImageView?.image?.colorizeFolder(metadata: metadata, tblDirectory: tblDirectory)
+
         } else {
+            let tableLocalFile = database.getResultTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
 
             if metadata.hasPreviewBorder {
                 cell.filePreviewImageView?.layer.borderWidth = 0.2
@@ -315,13 +325,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
             }
 
-            self.database.getTableLocal(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) { tblLocalFile in
-                if let tblLocalFile, tblLocalFile.offline {
-                    a11yValues.append(NSLocalizedString("_offline_", comment: ""))
-                    cell.fileLocalImage?.image = self.imageCache.getImageOfflineFlag()
-                } else if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                    cell.fileLocalImage?.image = self.imageCache.getImageLocal()
-                }
+            if let tableLocalFile, tableLocalFile.offline {
+                a11yValues.append(NSLocalizedString("_offline_", comment: ""))
+                cell.fileLocalImage?.image = imageCache.getImageOfflineFlag()
+            } else if utilityFileSystem.fileProviderStorageExists(metadata) {
+                cell.fileLocalImage?.image = imageCache.getImageLocal()
             }
         }
 

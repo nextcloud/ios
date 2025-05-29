@@ -30,8 +30,11 @@ extension NCManageDatabase {
 
     // MARK: - Realm write
 
-    func addDirectEditing(account: String, editors: [NKEditorDetailsEditors], creators: [NKEditorDetailsCreators]) {
-        performRealmWrite { realm in
+    func addDirectEditing(account: String,
+                          editors: [NKEditorDetailsEditors],
+                          creators: [NKEditorDetailsCreators],
+                          sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             let resultsCreators = realm.objects(tableDirectEditingCreators.self).filter("account == %@", account)
             realm.delete(resultsCreators)
 
@@ -70,6 +73,26 @@ extension NCManageDatabase {
             let results = realm.objects(tableDirectEditingCreators.self)
                 .filter("account == %@", account)
             return results.isEmpty ? nil : results.map { tableDirectEditingCreators(value: $0) }
+        }
+    }
+
+    func getDirectEditingCreators(account: String,
+                                  dispatchOnMainQueue: Bool = true,
+                                  completion: @escaping (_ tblDirectEditingCreators: [tableDirectEditingCreators]) -> Void) {
+        var resultArray: [tableDirectEditingCreators] = []
+
+        performRealmRead({ realm in
+            let objects = realm.objects(tableDirectEditingCreators.self)
+                .filter("account == %@", account)
+            resultArray = objects.map { tableDirectEditingCreators(value: $0) }
+        }, sync: false) { _ in
+            if dispatchOnMainQueue {
+                DispatchQueue.main.async {
+                    completion(resultArray)
+                }
+            } else {
+                completion(resultArray)
+            }
         }
     }
 

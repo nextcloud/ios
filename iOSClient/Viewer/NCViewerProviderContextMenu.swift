@@ -93,10 +93,12 @@ class NCViewerProviderContextMenu: UIViewController {
                         maxDownload = NCGlobal.shared.maxAutoDownload
                     }
                     if metadata.size <= maxDownload {
-                        NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                  session: NCNetworking.shared.sessionDownload,
-                                                                                  selector: "")
-                        NCNetworking.shared.download(metadata: metadata)
+                        if let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(metadata: metadata,
+                                                                                                   session: NCNetworking.shared.sessionDownload,
+                                                                                                   selector: "",
+                                                                                                   sync: false) {
+                            NCNetworking.shared.download(metadata: metadata)
+                        }
                     }
                 }
             }
@@ -104,19 +106,23 @@ class NCViewerProviderContextMenu: UIViewController {
             if !utilityFileSystem.fileProviderStorageExists(metadata),
                NCNetworking.shared.isOnline,
                (metadata.contentType == "image/gif" || metadata.contentType == "image/svg+xml") {
-                NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                          session: NCNetworking.shared.sessionDownload,
-                                                                          selector: "")
-                NCNetworking.shared.download(metadata: metadata)
+                if let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(metadata: metadata,
+                                                                                           session: NCNetworking.shared.sessionDownload,
+                                                                                           selector: "",
+                                                                                           sync: false) {
+                    NCNetworking.shared.download(metadata: metadata)
+                }
             }
             // DOWNLOAD LIVE PHOTO
             if let metadataLivePhoto = self.metadataLivePhoto,
                NCNetworking.shared.isOnline,
                !utilityFileSystem.fileProviderStorageExists(metadataLivePhoto) {
-                NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadataLivePhoto],
-                                                                          session: NCNetworking.shared.sessionDownload,
-                                                                          selector: "")
-                NCNetworking.shared.download(metadata: metadataLivePhoto)
+                if let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(metadata: metadataLivePhoto,
+                                                                                           session: NCNetworking.shared.sessionDownload,
+                                                                                           selector: "",
+                                                                                           sync: false) {
+                    NCNetworking.shared.download(metadata: metadata)
+                }
             }
         }
     }
@@ -273,7 +279,7 @@ extension NCViewerProviderContextMenu: NCTransferDelegate {
         DispatchQueue.main.async {
             switch status {
             /// DOWNLOAD
-            case self.global.networkingStatusDownloadStart:
+            case self.global.networkingStatusDownloading:
                 if metadata.ocId == self.metadata?.ocId || metadata.ocId == self.metadataLivePhoto?.ocId {
                     NCActivityIndicator.shared.start(backgroundView: self.view)
                 }

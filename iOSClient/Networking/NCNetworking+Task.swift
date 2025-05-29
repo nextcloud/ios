@@ -353,7 +353,8 @@ extension NCNetworking {
                 if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
                     self.database.setMetadataSession(ocId: metadata.ocId,
                                                      sessionError: "",
-                                                     status: self.global.metadataStatusWaitUpload)
+                                                     status: self.global.metadataStatusWaitUpload,
+                                                     sync: false)
                 } else {
                     self.database.deleteMetadataOcId(metadata.ocId)
                 }
@@ -401,7 +402,8 @@ extension NCNetworking {
                 if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
                     self.database.setMetadataSession(ocId: metadata.ocId,
                                                      sessionError: "",
-                                                     status: self.global.metadataStatusWaitUpload)
+                                                     status: self.global.metadataStatusWaitUpload,
+                                                     sync: false)
                 } else {
                     self.database.deleteMetadataOcId(metadata.ocId)
                 }
@@ -434,7 +436,8 @@ extension NCNetworking {
                                                  session: "",
                                                  sessionError: "",
                                                  selector: "",
-                                                 status: self.global.metadataStatusNormal)
+                                                 status: self.global.metadataStatusNormal,
+                                                 sync: false)
             }
         }
 
@@ -463,7 +466,8 @@ extension NCNetworking {
                                                  session: "",
                                                  sessionError: "",
                                                  selector: "",
-                                                 status: self.global.metadataStatusNormal)
+                                                 status: self.global.metadataStatusNormal,
+                                                 sync: false)
             }
         }
     }

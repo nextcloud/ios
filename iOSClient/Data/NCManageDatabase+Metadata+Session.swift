@@ -25,57 +25,57 @@ extension NCManageDatabase {
         var updatedMetadata: tableMetadata?
 
         performRealmWrite(sync: sync) { realm in
-            if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
-                if let newFileName = newFileName {
-                    result.fileName = newFileName
-                    result.fileNameView = newFileName
-                }
-                if let session {
-                    result.session = session
-                }
-                if let sessionTaskIdentifier {
-                    result.sessionTaskIdentifier = sessionTaskIdentifier
-                }
-                if let sessionError {
-                    result.sessionError = sessionError
-                    if sessionError.isEmpty {
-                        result.errorCode = 0
-                    }
-                }
-                if let selector {
-                    result.sessionSelector = selector
-                }
-                if let status {
-                    result.status = status
-                    if status == NCGlobal.shared.metadataStatusWaitDownload || status == NCGlobal.shared.metadataStatusWaitUpload {
-                        result.sessionDate = Date()
-                    } else if status == NCGlobal.shared.metadataStatusNormal {
-                        result.sessionDate = nil
-                    }
-                }
-                if let etag {
-                    result.etag = etag
-                }
-                if let errorCode {
-                    result.errorCode = errorCode
-                }
-                updatedMetadata = result
+            guard let metadata = realm.objects(tableMetadata.self)
+                .filter("ocId == %@", ocId)
+                .first else {
+                return
             }
+
+            if let name = newFileName {
+                metadata.fileName = name
+                metadata.fileNameView = name
+            }
+
+            if let session { metadata.session = session }
+            if let sessionTaskIdentifier { metadata.sessionTaskIdentifier = sessionTaskIdentifier }
+            if let sessionError {
+                metadata.sessionError = sessionError
+                if sessionError.isEmpty {
+                    metadata.errorCode = 0
+                }
+            }
+            if let selector { metadata.sessionSelector = selector }
+
+            if let status {
+                metadata.status = status
+                switch status {
+                case NCGlobal.shared.metadataStatusWaitDownload,
+                     NCGlobal.shared.metadataStatusWaitUpload:
+                    metadata.sessionDate = Date()
+                case NCGlobal.shared.metadataStatusNormal:
+                    metadata.sessionDate = nil
+                default:
+                    break
+                }
+            }
+
+            if let etag { metadata.etag = etag }
+            if let errorCode { metadata.errorCode = errorCode }
+
+            updatedMetadata = tableMetadata(value: metadata)
         }
+
         return updatedMetadata
     }
 
-    @discardableResult
     func setMetadatasSessionInWaitDownload(metadatas: [tableMetadata],
                                            session: String,
                                            selector: String,
                                            sceneIdentifier: String? = nil,
-                                           sync: Bool = true) -> tableMetadata? {
-        guard !metadatas.isEmpty
-        else {
-            return nil
+                                           sync: Bool = true) {
+        guard !metadatas.isEmpty else {
+            return
         }
-        var lastUpdated: tableMetadata?
 
         performRealmWrite(sync: sync) { realm in
             for metadata in metadatas {
@@ -94,13 +94,40 @@ extension NCManageDatabase {
                 if object === metadata {
                     realm.add(object, update: .all)
                 }
-
-                lastUpdated = tableMetadata(value: object)
             }
         }
-
-        return lastUpdated
     }
+
+    func setMetadataSessionInWaitDownload(metadata: tableMetadata,
+                                          session: String,
+                                          selector: String,
+                                          sceneIdentifier: String? = nil,
+                                          sync: Bool = true) -> tableMetadata? {
+        var updatedMetadata: tableMetadata?
+
+        performRealmWrite(sync: sync) { realm in
+            let object = realm.objects(tableMetadata.self)
+                .filter("ocId == %@", metadata.ocId)
+                .first ?? metadata
+
+            object.sceneIdentifier = sceneIdentifier
+            object.session = session
+            object.sessionTaskIdentifier = 0
+            object.sessionError = ""
+            object.sessionSelector = selector
+            object.status = NCGlobal.shared.metadataStatusWaitDownload
+            object.sessionDate = Date()
+
+            if object === metadata {
+                realm.add(object, update: .all)
+            }
+
+            updatedMetadata = tableMetadata(value: object)
+        }
+
+        return updatedMetadata
+    }
+
 
     func clearMetadataSession(metadatas: [tableMetadata], sync: Bool = true) {
         guard !metadatas.isEmpty

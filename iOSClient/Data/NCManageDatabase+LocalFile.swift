@@ -47,8 +47,8 @@ extension NCManageDatabase {
         }
     }
 
-    func addLocalFile(account: String, etag: String, ocId: String, fileName: String) {
-        performRealmWrite { realm in
+    func addLocalFile(account: String, etag: String, ocId: String, fileName: String, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
            let addObject = tableLocalFile()
            addObject.account = account
            addObject.etag = etag
@@ -151,7 +151,16 @@ extension NCManageDatabase {
 
     func getResultsTableLocalFile(predicate: NSPredicate) -> Results<tableLocalFile>? {
         return performRealmRead { realm in
-            realm.objects(tableLocalFile.self).filter(predicate)
+            realm.objects(tableLocalFile.self)
+                .filter(predicate)
+        }
+    }
+
+    func getResultTableLocalFile(predicate: NSPredicate) -> tableLocalFile? {
+        return performRealmRead { realm in
+            realm.objects(tableLocalFile.self)
+                .filter(predicate)
+                .first
         }
     }
 

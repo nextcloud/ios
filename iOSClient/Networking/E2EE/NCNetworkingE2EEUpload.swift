@@ -179,8 +179,8 @@ class NCNetworkingE2EEUpload: NSObject {
             metadata.sessionError = ""
             metadata.status = NCGlobal.shared.metadataStatusNormal
 
-            self.database.addMetadata(metadata)
-            self.database.addLocalFile(metadata: metadata)
+            self.database.addMetadata(metadata, sync: false)
+            self.database.addLocalFile(metadata: metadata, sync: false)
             utility.createImageFileFrom(metadata: metadata)
 
             NCNetworking.shared.notifyAllDelegates { delegate in

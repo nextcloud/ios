@@ -888,7 +888,8 @@ extension NCManageDatabase {
         }
     }
 
-    func getMetadatasAsync(predicate: NSPredicate, completion: @escaping ([tableMetadata]) -> Void) {
+    func getMetadatas(predicate: NSPredicate,
+                      completion: @escaping ([tableMetadata]) -> Void) {
         performRealmRead({ realm in
             let results = realm.objects(tableMetadata.self)
                 .filter(predicate)
