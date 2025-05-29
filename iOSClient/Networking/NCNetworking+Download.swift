@@ -189,7 +189,7 @@ extension NCNetworking {
                     NCEndToEndEncryption.shared().decryptFile(metadata.fileName, fileNameView: metadata.fileNameView, ocId: metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
                 }
 #endif
-                self.database.addLocalFile(metadata: metadata)
+                self.database.addLocalFile(metadata: metadata, sync: false)
                 if let metadata = self.database.setMetadataSession(ocId: metadata.ocId,
                                                                    session: "",
                                                                    sessionTaskIdentifier: 0,

@@ -47,8 +47,8 @@ extension NCManageDatabase {
         }
     }
 
-    func addLocalFile(account: String, etag: String, ocId: String, fileName: String) {
-        performRealmWrite { realm in
+    func addLocalFile(account: String, etag: String, ocId: String, fileName: String, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
            let addObject = tableLocalFile()
            addObject.account = account
            addObject.etag = etag

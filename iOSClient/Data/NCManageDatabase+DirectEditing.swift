@@ -76,6 +76,26 @@ extension NCManageDatabase {
         }
     }
 
+    func getDirectEditingCreators(account: String,
+                                  dispatchOnMainQueue: Bool = true,
+                                  completion: @escaping (_ tblDirectEditingCreators: [tableDirectEditingCreators]) -> Void) {
+        var resultArray: [tableDirectEditingCreators] = []
+
+        performRealmRead({ realm in
+            let objects = realm.objects(tableDirectEditingCreators.self)
+                .filter("account == %@", account)
+            resultArray = objects.map { tableDirectEditingCreators(value: $0) }
+        }, sync: false) { _ in
+            if dispatchOnMainQueue {
+                DispatchQueue.main.async {
+                    completion(resultArray)
+                }
+            } else {
+                completion(resultArray)
+            }
+        }
+    }
+
     func getDirectEditingCreators(predicate: NSPredicate) -> [tableDirectEditingCreators]? {
         performRealmRead { realm in
             let results = realm.objects(tableDirectEditingCreators.self)

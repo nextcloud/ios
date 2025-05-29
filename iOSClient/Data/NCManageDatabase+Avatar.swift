@@ -33,8 +33,8 @@ extension NCManageDatabase {
         }
     }
 
-    func clearAllAvatarLoaded() {
-        performRealmWrite { realm in
+    func clearAllAvatarLoaded(sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             let results = realm.objects(tableAvatar.self)
             for result in results {
                 result.loaded = false
@@ -70,6 +70,25 @@ extension NCManageDatabase {
                 return nil
             }
             return tableAvatar(value: result)
+        }
+    }
+
+    func getTableAvatar(fileName: String,
+                        dispatchOnMainQueue: Bool = true,
+                        completion: @escaping (_ tblAvatar: tableAvatar?) -> Void) {
+        performRealmRead({ realm in
+            return realm.objects(tableAvatar.self)
+                .filter("fileName == %@", fileName)
+                .first
+                .map { tableAvatar(value: $0) }
+        }, sync: false) { result in
+            if dispatchOnMainQueue {
+                DispatchQueue.main.async {
+                    completion(result)
+                }
+            } else {
+                completion(result)
+            }
         }
     }
 

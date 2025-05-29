@@ -155,7 +155,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             if let metadata = database.getMetadataLivePhoto(metadata: metadata) {
                 metadatasSynchronizationOffline.append(metadata)
             }
-            database.addLocalFile(metadata: metadata, offline: true)
+            database.addLocalFile(metadata: metadata, offline: true, sync: false)
             database.setMetadatasSessionInWaitDownload(metadatas: metadatasSynchronizationOffline,
                                                        session: NCNetworking.shared.sessionDownloadBackground,
                                                        selector: NCGlobal.shared.selectorSynchronizationOffline,
@@ -421,7 +421,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                 if error == .success && etag != nil && ocId != nil {
                     let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)
                     self.utilityFileSystem.moveFile(atPath: fileNameLocalPath, toPath: toPath)
-                    self.database.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
+                    self.database.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName, sync: false)
                     NCNetworking.shared.notifyAllDelegates { delegate in
                         delegate.transferRequestData(serverUrl: serverUrl)
                     }

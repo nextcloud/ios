@@ -39,7 +39,7 @@ class NCService: NSObject {
             return
         }
 
-        self.database.clearAllAvatarLoaded()
+        self.database.clearAllAvatarLoaded(sync: false)
         self.addInternalTypeIdentifier(account: account)
 
         Task(priority: .background) {
@@ -137,23 +137,25 @@ class NCService: NSObject {
     func getAvatar(account: String) {
         let session = NCSession.shared.getSession(account: account)
         let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: session.user)
-        let etag = self.database.getTableAvatar(fileName: fileName)?.etag
 
-        NextcloudKit.shared.downloadAvatar(user: session.userId,
-                                           fileNameLocalPath: utilityFileSystem.directoryUserData + "/" + fileName,
-                                           sizeImage: NCGlobal.shared.avatarSize,
-                                           avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
-                                           etag: etag,
-                                           account: account,
-                                           options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, _, newEtag, _, error in
-            if let newEtag,
-               etag != newEtag,
-               error == .success {
-                self.database.addAvatar(fileName: fileName, etag: newEtag, sync: false)
+        self.database.getTableAvatar(fileName: fileName,
+                                     dispatchOnMainQueue: false) { tblAvatar in
+            NextcloudKit.shared.downloadAvatar(user: session.userId,
+                                               fileNameLocalPath: self.utilityFileSystem.directoryUserData + "/" + fileName,
+                                               sizeImage: NCGlobal.shared.avatarSize,
+                                               avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
+                                               etag: tblAvatar?.etag,
+                                               account: account,
+                                               options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, _, newEtag, _, error in
+                if let newEtag,
+                   tblAvatar?.etag != newEtag,
+                   error == .success {
+                    self.database.addAvatar(fileName: fileName, etag: newEtag, sync: false)
 
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: ["error": error])
-            } else if error.errorCode == NCGlobal.shared.errorNotModified {
-                self.database.setAvatarLoaded(fileName: fileName, sync: false)
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: ["error": error])
+                } else if error.errorCode == NCGlobal.shared.errorNotModified {
+                    self.database.setAvatarLoaded(fileName: fileName, sync: false)
+                }
             }
         }
     }
@@ -221,8 +223,9 @@ class NCService: NSObject {
             }
 
             // Added UTI for ONLYOFFICE & Text
-            if let directEditingCreators = self.database.getDirectEditingCreators(account: account) {
-                for directEditing in directEditingCreators {
+            self.database.getDirectEditingCreators(account: account,
+                                                   dispatchOnMainQueue: false) { tblDirectEditingCreators in
+                for directEditing in tblDirectEditingCreators {
                     NextcloudKit.shared.nkCommonInstance.addInternalTypeIdentifier(typeIdentifier: directEditing.mimetype, classFile: NKCommon.TypeClassFile.document.rawValue, editor: directEditing.editor, iconName: NKCommon.TypeIconFile.document.rawValue, name: "document", account: account)
                 }
             }
