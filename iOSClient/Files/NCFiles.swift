@@ -192,11 +192,6 @@ class NCFiles: NCCollectionViewCommon {
                                    layoutForView: self.layoutForView,
                                    account: self.session.account) { metadatas, layoutForView, account in
             self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
-
-            if metadatas.isEmpty {
-                return super.reloadDataSource()
-            }
-
             self.dataSource.caching(metadatas: metadatas) {
                 super.reloadDataSource()
             }

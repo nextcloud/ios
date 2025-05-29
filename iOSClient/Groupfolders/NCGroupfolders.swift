@@ -58,13 +58,17 @@ class NCGroupfolders: NCCollectionViewCommon {
         if self.serverUrl.isEmpty {
             let metadatas = database.getResultsMetadatasFromGroupfolders(session: session, layoutForView: layoutForView)
             self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
-            super.reloadDataSource()
+            self.dataSource.caching(metadatas: metadatas) {
+                super.reloadDataSource()
+            }
         } else {
             database.getMetadatas(predicate: defaultPredicate,
                                   layoutForView: layoutForView,
                                   account: session.account) { metadatas, layoutForView, account in
                 self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
-                super.reloadDataSource()
+                self.dataSource.caching(metadatas: metadatas) {
+                    super.reloadDataSource()
+                }
             }
         }
     }

@@ -35,13 +35,15 @@ extension NCShareExtension {
                                    layoutForView: layoutForView,
                                    account: session.account) { metadatas, layoutForView, account in
             self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
-            DispatchQueue.main.async {
-                if withLoadFolder {
-                    self.loadFolder()
-                } else {
-                    self.refreshControl.endRefreshing()
+            self.dataSource.caching(metadatas: metadatas) {
+                DispatchQueue.main.async {
+                    if withLoadFolder {
+                        self.loadFolder()
+                    } else {
+                        self.refreshControl.endRefreshing()
+                    }
+                    self.collectionView.reloadData()
                 }
-                self.collectionView.reloadData()
             }
         }
     }

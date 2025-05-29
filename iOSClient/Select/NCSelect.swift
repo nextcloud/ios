@@ -507,15 +507,9 @@ extension NCSelect {
                                        layoutForView: NCDBLayoutForView(),
                                        account: account) { metadatas, layoutForView, account in
                 self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
-                if metadatas.isEmpty {
+                self.dataSource.caching(metadatas: metadatas) {
                     DispatchQueue.main.async {
                         self.collectionView.reloadData()
-                    }
-                } else {
-                    self.dataSource.caching(metadatas: metadatas) {
-                        DispatchQueue.main.async {
-                            self.collectionView.reloadData()
-                        }
                     }
                 }
             }

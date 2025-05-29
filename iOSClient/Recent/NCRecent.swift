@@ -65,8 +65,9 @@ class NCRecent: NCCollectionViewCommon {
         layoutForView?.ascending = false
 
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
-
-        super.reloadDataSource()
+        self.dataSource.caching(metadatas: metadatas) {
+            super.reloadDataSource()
+        }
     }
 
     override func getServerData() {
