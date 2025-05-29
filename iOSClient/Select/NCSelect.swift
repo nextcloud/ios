@@ -320,97 +320,94 @@ extension NCSelect: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell)!
+        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else {
+            return cell
+        }
 
-        self.dataSource.getMetadata(indexPath: indexPath) { metadata in
-            guard let metadata else {
-                return
-            }
+        var isShare = false
+        var isMounted = false
+        let permissions = NCPermissions()
 
-            var isShare = false
-            var isMounted = false
-            let permissions = NCPermissions()
+        isShare = metadata.permissions.contains(permissions.permissionShared) && !metadataFolder.permissions.contains(permissions.permissionShared)
+        isMounted = metadata.permissions.contains(permissions.permissionMounted) && !metadataFolder.permissions.contains(permissions.permissionMounted)
 
-            isShare = metadata.permissions.contains(permissions.permissionShared) && !self.metadataFolder.permissions.contains(permissions.permissionShared)
-            isMounted = metadata.permissions.contains(permissions.permissionMounted) && !self.metadataFolder.permissions.contains(permissions.permissionMounted)
+        cell.listCellDelegate = self
 
-            cell.listCellDelegate = self
+        cell.fileOcId = metadata.ocId
+        cell.fileOcIdTransfer = metadata.ocIdTransfer
+        cell.fileUser = metadata.ownerId
+        cell.labelTitle.text = metadata.fileNameView
+        cell.labelTitle.textColor = NCBrandColor.shared.textColor
 
-            cell.fileOcId = metadata.ocId
-            cell.fileOcIdTransfer = metadata.ocIdTransfer
-            cell.fileUser = metadata.ownerId
-            cell.labelTitle.text = metadata.fileNameView
-            cell.labelTitle.textColor = NCBrandColor.shared.textColor
+        cell.imageSelect.image = nil
+        cell.imageStatus.image = nil
+        cell.imageLocal.image = nil
+        cell.imageFavorite.image = nil
+        cell.imageShared.image = nil
+        cell.imageMore.image = nil
 
-            cell.imageSelect.image = nil
-            cell.imageStatus.image = nil
-            cell.imageLocal.image = nil
-            cell.imageFavorite.image = nil
-            cell.imageShared.image = nil
-            cell.imageMore.image = nil
+        cell.imageItem.image = nil
+        cell.imageItem.backgroundColor = nil
 
-            cell.imageItem.image = nil
-            cell.imageItem.backgroundColor = nil
-
-            if metadata.directory {
-                if metadata.e2eEncrypted {
-                    cell.imageItem.image = NCImageCache.shared.getFolderEncrypted(account: metadata.account)
-                } else if isShare {
-                    cell.imageItem.image = NCImageCache.shared.getFolderSharedWithMe(account: metadata.account)
-                } else if !metadata.shareType.isEmpty {
-                    metadata.shareType.contains(3) ?
-                    (cell.imageItem.image = NCImageCache.shared.getFolderPublic(account: metadata.account)) :
-                    (cell.imageItem.image = NCImageCache.shared.getFolderSharedWithMe(account: metadata.account))
-                } else if metadata.mountType == "group" {
-                    cell.imageItem.image = NCImageCache.shared.getFolderGroup(account: metadata.account)
-                } else if isMounted {
-                    cell.imageItem.image = NCImageCache.shared.getFolderExternal(account: metadata.account)
-                } else if metadata.fileName == self.autoUploadFileName && metadata.serverUrl == self.autoUploadDirectory {
-                    cell.imageItem.image = NCImageCache.shared.getFolderAutomaticUpload(account: metadata.account)
-                } else {
-                    cell.imageItem.image = NCImageCache.shared.getFolder(account: metadata.account)
-                }
-                cell.imageItem.image = cell.imageItem.image?.colorizeFolder(metadata: metadata)
-
-                cell.labelInfo.text = self.utility.getRelativeDateTitle(metadata.date as Date)
-
+        if metadata.directory {
+            if metadata.e2eEncrypted {
+                cell.imageItem.image = NCImageCache.shared.getFolderEncrypted(account: metadata.account)
+            } else if isShare {
+                cell.imageItem.image = NCImageCache.shared.getFolderSharedWithMe(account: metadata.account)
+            } else if !metadata.shareType.isEmpty {
+                metadata.shareType.contains(3) ?
+                (cell.imageItem.image = NCImageCache.shared.getFolderPublic(account: metadata.account)) :
+                (cell.imageItem.image = NCImageCache.shared.getFolderSharedWithMe(account: metadata.account))
+            } else if metadata.mountType == "group" {
+                cell.imageItem.image = NCImageCache.shared.getFolderGroup(account: metadata.account)
+            } else if isMounted {
+                cell.imageItem.image = NCImageCache.shared.getFolderExternal(account: metadata.account)
+            } else if metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory {
+                cell.imageItem.image = NCImageCache.shared.getFolderAutomaticUpload(account: metadata.account)
             } else {
+                cell.imageItem.image = NCImageCache.shared.getFolder(account: metadata.account)
+            }
+            cell.imageItem.image = cell.imageItem.image?.colorizeFolder(metadata: metadata)
+            cell.labelInfo.text = utility.getRelativeDateTitle(metadata.date as Date)
 
-                cell.labelInfo.text = self.utility.getRelativeDateTitle(metadata.date as Date) + " · " + self.utilityFileSystem.transformedSize(metadata.size)
+        } else {
 
-                // image local
-                if self.database.getResultTableLocalFile(ocId: metadata.ocId) != nil {
+            cell.labelInfo.text = utility.getRelativeDateTitle(metadata.date as Date) + " · " + utilityFileSystem.transformedSize(metadata.size)
+
+            self.database.getTableLocal(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) { tblLocalFile in
+                if let tblLocalFile, tblLocalFile.offline {
                     cell.imageLocal.image = NCImageCache.shared.getImageOfflineFlag()
                 } else if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                     cell.imageLocal.image = NCImageCache.shared.getImageLocal()
                 }
             }
-
-            // image Favorite
-            if metadata.favorite {
-                cell.imageFavorite.image = NCImageCache.shared.getImageFavorite()
-            }
-
-            cell.imageSelect.isHidden = true
-            cell.backgroundView = nil
-            cell.hideButtonMore(true)
-            cell.hideButtonShare(true)
-            cell.selected(false, isEditMode: false)
-
-            // Live Photo
-            if metadata.isLivePhoto {
-                cell.imageStatus.image = self.utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor2])
-            }
-
-            // Remove last separator
-            if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 {
-                cell.separator.isHidden = true
-            } else {
-                cell.separator.isHidden = false
-            }
-
-            // Add TAGS
-            cell.setTags(tags: Array(metadata.tags))
         }
+
+        // image Favorite
+        if metadata.favorite {
+            cell.imageFavorite.image = NCImageCache.shared.getImageFavorite()
+        }
+
+        cell.imageSelect.isHidden = true
+        cell.backgroundView = nil
+        cell.hideButtonMore(true)
+        cell.hideButtonShare(true)
+        cell.selected(false, isEditMode: false)
+
+        // Live Photo
+        if metadata.isLivePhoto {
+            cell.imageStatus.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor2])
+        }
+
+        // Remove last separator
+        if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 {
+            cell.separator.isHidden = true
+        } else {
+            cell.separator.isHidden = false
+        }
+
+        // Add TAGS
+        cell.setTags(tags: Array(metadata.tags))
 
         return cell
     }
