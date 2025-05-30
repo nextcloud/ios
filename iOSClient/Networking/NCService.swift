@@ -49,7 +49,7 @@ class NCService: NSObject {
                 getAvatar(account: account)
                 NCNetworkingE2EE().unlockAll(account: account)
                 sendClientDiagnosticsRemoteOperation(account: account)
-                synchronize(account: account)
+                await synchronize(account: account)
             }
         }
     }
@@ -109,7 +109,7 @@ class NCService: NSObject {
             return false
         }
 
-        let resultUserProfile = await NextcloudKit.shared.getUserMetadata(account: account, userId: userId, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue))
+        let resultUserProfile = await NextcloudKit.shared.getUserMetadataAsync(account: account, userId: userId, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue))
         if resultUserProfile.error == .success,
            let userProfile = resultUserProfile.userProfile,
            userId == userProfile.userId {
@@ -117,20 +117,6 @@ class NCService: NSObject {
             return true
         } else {
             return false
-        }
-    }
-
-    func synchronize(account: String) {
-        let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: account)
-        NextcloudKit.shared.listingFavorites(showHiddenFiles: showHiddenFiles,
-                                             account: account,
-                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
-            guard error == .success, let files else { return }
-            self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
-                self.database.updateMetadatasFavorite(account: account, metadatas: metadatas, sync: false)
-            }
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Synchronize Favorite")
-            self.synchronizeOffline(account: account)
         }
     }
 
@@ -236,25 +222,31 @@ class NCService: NSObject {
 
     // MARK: -
 
-    @objc func synchronizeOffline(account: String) {
-        // Synchronize Directory
-        Task {
-            if let directories = self.database.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "serverUrl", ascending: true) {
-                for directory: tableDirectory in directories {
-                    await NCNetworking.shared.synchronization(account: account, serverUrl: directory.serverUrl, add: false)
-                }
+    func synchronize(account: String) async {
+        let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: account)
+
+        let resultsFavorite = await NextcloudKit.shared.listingFavoritesAsync(showHiddenFiles: showHiddenFiles, account: account)
+        if resultsFavorite.error == .success, let files = resultsFavorite.files {
+            let resultsMetadatas = await self.database.convertFilesToMetadatasAsync(files, useFirstAsMetadataFolder: false)
+            if !resultsMetadatas.metadatas.isEmpty {
+                await self.database.updateMetadatasFavoriteAsync(account: account, metadatas: resultsMetadatas.metadatas)
             }
         }
 
+        // Synchronize Directory
+        let directories = await self.database.getTablesDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "serverUrl", ascending: true)
+        for directory in directories {
+            await NCNetworking.shared.synchronization(account: account, serverUrl: directory.serverUrl, add: false)
+        }
+
         // Synchronize Files
-        let files = self.database.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "fileName", ascending: true)
-        for file: tableLocalFile in files {
-            guard let metadata = self.database.getMetadataFromOcId(file.ocId) else { continue }
-            if NCNetworking.shared.isSynchronizable(ocId: metadata.ocId, fileName: metadata.fileName, etag: metadata.etag) {
-                _ = self.database.setMetadataSessionInWaitDownload(metadata: metadata,
-                                                                   session: NCNetworking.shared.sessionDownloadBackground,
-                                                                   selector: NCGlobal.shared.selectorSynchronizationOffline,
-                                                                   sync: false)
+        let files = await self.database.getTableLocalFilesAsync(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "fileName", ascending: true)
+        for file in files {
+            if let metadata = await self.database.getMetadataFromOcIdAsync(file.ocId),
+               await NCNetworking.shared.isSynchronizable(ocId: metadata.ocId, fileName: metadata.fileName, etag: metadata.etag) {
+                await self.database.setMetadataSessionInWaitDownloadAsync(metadata: metadata,
+                                                                          session: NCNetworking.shared.sessionDownloadBackground,
+                                                                          selector: NCGlobal.shared.selectorSynchronizationOffline)
             }
         }
     }

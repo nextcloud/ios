@@ -450,6 +450,14 @@ extension NCManageDatabase {
         completion(tableMetadata(value: metadataFolder), metadatas)
     }
 
+    func convertFilesToMetadatasAsync(_ files: [NKFile], useFirstAsMetadataFolder: Bool) async -> (metadataFolder: tableMetadata, metadatas: [tableMetadata]) {
+        await withCheckedContinuation { continuation in
+            convertFilesToMetadatas(files, useFirstAsMetadataFolder: useFirstAsMetadataFolder) { metadataFolder, metadatas in
+                continuation.resume(returning: (metadataFolder, metadatas))
+            }
+        }
+    }
+
     func getMetadataDirectoryFrom(files: [NKFile]) -> tableMetadata? {
         guard let file = files.first else { return nil }
         let isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(file: file)
@@ -571,6 +579,12 @@ extension NCManageDatabase {
 
     func addMetadatas(_ metadatas: [tableMetadata], sync: Bool = true) {
         performRealmWrite(sync: sync) { realm in
+            realm.add(metadatas, update: .all)
+        }
+    }
+
+    func addMetadatasAsync(_ metadatas: [tableMetadata]) async {
+        await performRealmWrite { realm in
             realm.add(metadatas, update: .all)
         }
     }
@@ -747,6 +761,19 @@ extension NCManageDatabase {
         }
 
         performRealmWrite(sync: sync) { realm in
+            let oldFavorites = realm.objects(tableMetadata.self)
+                .filter("account == %@ AND favorite == true", account)
+            for item in oldFavorites {
+                item.favorite = false
+            }
+            realm.add(metadatas, update: .all)
+        }
+    }
+
+    func updateMetadatasFavoriteAsync(account: String, metadatas: [tableMetadata]) async {
+        guard !metadatas.isEmpty else { return }
+
+        await performRealmWrite { realm in
             let oldFavorites = realm.objects(tableMetadata.self)
                 .filter("account == %@ AND favorite == true", account)
             for item in oldFavorites {
@@ -944,6 +971,17 @@ extension NCManageDatabase {
         }
     }
 
+    func getMetadataFromOcIdAsync(_ ocId: String?) async -> tableMetadata? {
+        guard let ocId else { return nil }
+
+        return await performRealmRead { realm in
+            realm.objects(tableMetadata.self)
+                .filter("ocId == %@", ocId)
+                .first
+                .map { tableMetadata(value: $0) }
+        }
+    }
+
     func getMetadataFromOcId(_ ocId: String?,
                              dispatchOnMainQueue: Bool = true,
                              completion: @escaping (_ metadata: tableMetadata?) -> Void) {
@@ -1081,6 +1119,14 @@ extension NCManageDatabase {
 
     func getResultMetadata(predicate: NSPredicate) -> tableMetadata? {
         return performRealmRead { realm in
+            realm.objects(tableMetadata.self)
+                .filter(predicate)
+                .first
+        }
+    }
+
+    func getResultMetadataAsync(predicate: NSPredicate) async -> tableMetadata? {
+        return await performRealmRead { realm in
             realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .first

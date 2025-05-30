@@ -236,7 +236,7 @@ extension NCNetworking {
         }
 
         /* create folder */
-        let resultCreateFolder = await NextcloudKit.shared.createFolder(serverUrlFileName: fileNameFolderUrl, account: session.account, options: options)
+        let resultCreateFolder = await NextcloudKit.shared.createFolderAsync(serverUrlFileName: fileNameFolderUrl, account: session.account, options: options)
         if resultCreateFolder.error == .success {
             let resultReadFile = await readFile(serverUrlFileName: fileNameFolderUrl, account: session.account)
             if resultReadFile.error == .success,

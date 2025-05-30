@@ -295,7 +295,7 @@ class NCNetworkingProcess {
                 serverUrlFileNameDestination = serverUrlTo + "/" + fileNameCopy
             }
 
-            let resultCopy = await NextcloudKit.shared.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
+            let resultCopy = await NextcloudKit.shared.copyFileOrFolderAsync(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
 
             database.setMetadataStatus(ocId: ocId, status: global.metadataStatusNormal, sync: false)
 
@@ -325,7 +325,7 @@ class NCNetworkingProcess {
             let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
             let overwrite = (metadata.storeFlag as? NSString)?.boolValue ?? false
 
-            let resultMove = await NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
+            let resultMove = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
 
             database.setMetadataStatus(ocId: ocId, status: global.metadataStatusNormal, sync: false)
 
@@ -371,7 +371,7 @@ class NCNetworkingProcess {
         for metadata in metadatasWaitFavorite {
             let session = NCSession.Session(account: metadata.account, urlBase: metadata.urlBase, user: metadata.user, userId: metadata.userId)
             let fileName = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
-            let errorFavorite = await NextcloudKit.shared.setFavorite(fileName: fileName, favorite: metadata.favorite, account: metadata.account)
+            let errorFavorite = await NextcloudKit.shared.setFavoriteAsync(fileName: fileName, favorite: metadata.favorite, account: metadata.account)
 
             if errorFavorite == .success {
                 database.setMetadataFavorite(ocId: metadata.ocId, favorite: nil, saveOldFavorite: nil, status: global.metadataStatusNormal)
@@ -397,7 +397,7 @@ class NCNetworkingProcess {
         for metadata in metadatasWaitRename {
             let serverUrlFileNameSource = metadata.serveUrlFileName
             let serverUrlFileNameDestination = metadata.serverUrl + "/" + metadata.fileName
-            let resultRename = await NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: false, account: metadata.account)
+            let resultRename = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: false, account: metadata.account)
 
             if resultRename.error == .success {
                 database.setMetadataServeUrlFileNameStatusNormal(ocId: metadata.ocId)
@@ -426,7 +426,7 @@ class NCNetworkingProcess {
             for metadata in metadatasWaitDelete {
                 let ocId = metadata.ocId
                 let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                let resultDelete = await NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: metadata.account)
+                let resultDelete = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: serverUrlFileName, account: metadata.account)
 
                 database.setMetadataStatus(ocId: ocId, status: global.metadataStatusNormal, sync: false)
 

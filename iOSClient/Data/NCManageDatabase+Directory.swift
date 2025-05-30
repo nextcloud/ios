@@ -86,6 +86,36 @@ extension NCManageDatabase {
         }
     }
 
+    func addDirectoriesAsync(metadatas: [tableMetadata]) async {
+        await performRealmWrite { realm in
+            for metadata in metadatas {
+                let existing = realm.objects(tableDirectory.self)
+                    .filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId)
+                    .first
+
+                if let existing {
+                    existing.e2eEncrypted = metadata.e2eEncrypted
+                    existing.favorite = metadata.favorite
+                    existing.etag = metadata.etag
+                    existing.permissions = metadata.permissions
+                    existing.richWorkspace = metadata.richWorkspace
+                } else {
+                    let directory = tableDirectory()
+                    directory.account = metadata.account
+                    directory.e2eEncrypted = metadata.e2eEncrypted
+                    directory.etag = metadata.etag
+                    directory.favorite = metadata.favorite
+                    directory.fileId = metadata.fileId
+                    directory.ocId = metadata.ocId
+                    directory.permissions = metadata.permissions
+                    directory.richWorkspace = metadata.richWorkspace
+                    directory.serverUrl = metadata.serveUrlFileName
+                    realm.add(directory, update: .modified)
+                }
+            }
+        }
+    }
+
     func deleteDirectoryAndSubDirectory(serverUrl: String, account: String) {
 #if !EXTENSION
         DispatchQueue.main.async {
@@ -178,8 +208,8 @@ extension NCManageDatabase {
         }
     }
 
-    func setDirectorySynchronizationDate(serverUrl: String, account: String) {
-        performRealmWrite { realm in
+    func setDirectorySynchronizationDateAsync(serverUrl: String, account: String) async {
+        await performRealmWrite { realm in
             realm.objects(tableDirectory.self)
                 .filter("account == %@ AND serverUrl == %@", account, serverUrl)
                 .first?
@@ -293,5 +323,14 @@ extension NCManageDatabase {
 
             return results.map { tableDirectory(value: $0) }
         }
+    }
+
+    func getTablesDirectoryAsync(predicate: NSPredicate, sorted: String, ascending: Bool) async -> [tableDirectory] {
+        await performRealmRead { realm in
+            realm.objects(tableDirectory.self)
+            .filter(predicate)
+            .sorted(byKeyPath: sorted, ascending: ascending)
+            .map { tableDirectory(value: $0) }
+        } ?? []
     }
 }

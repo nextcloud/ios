@@ -128,6 +128,55 @@ extension NCManageDatabase {
         return updatedMetadata
     }
 
+    func setMetadataSessionInWaitDownloadAsync(metadata: tableMetadata,
+                                               session: String,
+                                               selector: String,
+                                               sceneIdentifier: String? = nil) async {
+        await performRealmWrite { realm in
+            let object = realm.objects(tableMetadata.self)
+                .filter("ocId == %@", metadata.ocId)
+                .first ?? metadata
+
+            object.sceneIdentifier = sceneIdentifier
+            object.session = session
+            object.sessionTaskIdentifier = 0
+            object.sessionError = ""
+            object.sessionSelector = selector
+            object.status = NCGlobal.shared.metadataStatusWaitDownload
+            object.sessionDate = Date()
+
+            if object === metadata {
+                realm.add(object, update: .all)
+            }
+        }
+    }
+
+    func setMetadatasSessionInWaitDownloadAsync(metadatas: [tableMetadata],
+                                                session: String,
+                                                selector: String,
+                                                sceneIdentifier: String? = nil) async {
+        guard !metadatas.isEmpty else { return }
+
+        await performRealmWrite { realm in
+            for metadata in metadatas {
+                let object = realm.objects(tableMetadata.self)
+                    .filter("ocId == %@", metadata.ocId)
+                    .first ?? metadata
+
+                object.sceneIdentifier = sceneIdentifier
+                object.session = session
+                object.sessionTaskIdentifier = 0
+                object.sessionError = ""
+                object.sessionSelector = selector
+                object.status = NCGlobal.shared.metadataStatusWaitDownload
+                object.sessionDate = Date()
+
+                if object === metadata {
+                    realm.add(object, update: .all)
+                }
+            }
+        }
+    }
 
     func clearMetadataSession(metadatas: [tableMetadata], sync: Bool = true) {
         guard !metadatas.isEmpty

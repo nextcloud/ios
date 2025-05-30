@@ -47,7 +47,7 @@ extension UIAlertController {
                     return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_offline_not_allowed_"))
                 }
                 Task {
-                    let createFolderResults = await NextcloudKit.shared.createFolder(serverUrlFileName: serverUrl + "/" + fileNameFolder, account: session.account)
+                    let createFolderResults = await NextcloudKit.shared.createFolderAsync(serverUrlFileName: serverUrl + "/" + fileNameFolder, account: session.account)
                     if createFolderResults.error == .success {
                         let error = await NCNetworkingE2EEMarkFolder().markFolderE2ee(account: session.account, fileName: fileNameFolder, serverUrl: serverUrl, userId: session.userId)
                         if error != .success {

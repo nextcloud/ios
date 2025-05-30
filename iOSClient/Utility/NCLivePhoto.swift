@@ -489,10 +489,10 @@ extension NCLivePhoto {
 
         Task {
             if metadata.livePhotoFile.isEmpty {
-                _ = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath1, livePhotoFile: livePhotoFile, account: metadata.account)
+                _ = await NextcloudKit.shared.setLivephotoAsync(serverUrlfileNamePath: serverUrlfileNamePath1, livePhotoFile: livePhotoFile, account: metadata.account)
             }
             if metadata2.livePhotoFile.isEmpty {
-                _ = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath2, livePhotoFile: livePhotoFile2, account: metadata2.account)
+                _ = await NextcloudKit.shared.setLivephotoAsync(serverUrlfileNamePath: serverUrlfileNamePath2, livePhotoFile: livePhotoFile2, account: metadata2.account)
             }
         }
     }
@@ -504,11 +504,11 @@ extension NCLivePhoto {
         Task {
             if metadata1.livePhotoFile.isEmpty {
                 let serverUrlfileNamePath = metadata1.urlBase + metadata1.path + metadata1.fileName
-                _ = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata2.fileName, account: metadata2.account)
+                _ = await NextcloudKit.shared.setLivephotoAsync(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata2.fileName, account: metadata2.account)
             }
             if metadata2.livePhotoFile.isEmpty {
                 let serverUrlfileNamePath = metadata2.urlBase + metadata2.path + metadata2.fileName
-                _ = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata1.fileName, account: metadata1.account)
+                _ = await NextcloudKit.shared.setLivephotoAsync(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata1.fileName, account: metadata1.account)
             }
         }
     }
