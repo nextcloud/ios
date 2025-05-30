@@ -227,13 +227,8 @@ extension NCSharePaging: PagingViewControllerDataSource {
 // MARK: - Header
 
 class NCShareHeaderViewController: PagingViewController {
-
     public var image: UIImage?
     public var metadata = tableMetadata()
-
-    public var activityEnabled = true
-    public var commentsEnabled = true
-    public var sharingEnabled = true
 
     override func loadView() {
         view = NCSharePagingView(

@@ -33,8 +33,7 @@ class tableMetadata: Object {
            self.altitude == object.altitude,
            self.status == object.status,
            Array(self.tags).elementsEqual(Array(object.tags)),
-           Array(self.shareType).elementsEqual(Array(object.shareType)),
-           Array(self.sharePermissionsCloudMesh).elementsEqual(Array(object.sharePermissionsCloudMesh)) {
+           Array(self.shareType).elementsEqual(Array(object.shareType)) {
             return true
         } else {
             return false
@@ -100,8 +99,8 @@ class tableMetadata: Object {
     @objc dynamic var sessionError = ""
     @objc dynamic var sessionSelector = ""
     @objc dynamic var sessionTaskIdentifier: Int = 0
+    /// The  integer for sharing permissions.
     @objc dynamic var sharePermissionsCollaborationServices: Int = 0
-    let sharePermissionsCloudMesh = List<String>()
     let shareType = List<Int>()
     @objc dynamic var size: Int64 = 0
     @objc dynamic var status: Int = 0
@@ -381,9 +380,7 @@ extension NCManageDatabase {
         metadata.serverUrl = file.serverUrl
         metadata.serveUrlFileName = file.serverUrl + "/" + file.fileName
         metadata.sharePermissionsCollaborationServices = file.sharePermissionsCollaborationServices
-        for element in file.sharePermissionsCloudMesh {
-            metadata.sharePermissionsCloudMesh.append(element)
-        }
+
         for element in file.shareType {
             metadata.shareType.append(element)
         }

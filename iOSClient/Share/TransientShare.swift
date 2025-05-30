@@ -10,6 +10,7 @@ import NextcloudKit
 /// The persisted counterpart is ``tableShare``.
 ///
 class TransientShare: Shareable {
+
     var shareType: Int
     var permissions: Int
 
@@ -22,6 +23,7 @@ class TransientShare: Shareable {
     var note: String = ""
     var expirationDate: NSDate?
     var shareWithDisplayname: String = ""
+    var downloadAndSync = false
 
     var attributes: String?
 
