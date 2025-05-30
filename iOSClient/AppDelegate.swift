@@ -209,16 +209,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 return
             }
 
-            let results = await NCNetworkingProcess.shared.refreshProcessingTask()
-            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) networking process with download: \(results.counterDownloading) upload: \(results.counterUploading)")
+            await NCNetworkingProcess.shared.refreshProcessingTask()
 
             let newAutoUpload = await initAutoUpload(account: account)
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) new auto upload with \(newAutoUpload) uploads")
 
             if taskText == "ProcessingTask",
                newAutoUpload == 0,
-               results.counterDownloading == 0,
-               results.counterUploading == 0,
                let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "offlineDate", ascending: true) {
                 for directory: tableDirectory in directories {
                     // test only 3 time for day (every 8 h.)
@@ -230,21 +227,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) end synchronization for \(directory.serverUrl), errorCode: \(results.errorCode), item: \(results.num)")
                 }
             }
-
-            let resultsCount = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal))?.count ?? 0
-#if DEBUG
-            if UIApplication.shared.applicationIconBadgeNumber != resultsCount {
-                UIApplication.shared.applicationIconBadgeNumber = resultsCount
-            }
-#else
-            if resultsCount > 999 {
-                UIApplication.shared.applicationIconBadgeNumber = 999
-            } else {
-                if UIApplication.shared.applicationIconBadgeNumber != resultsCount {
-                    UIApplication.shared.applicationIconBadgeNumber = resultsCount
-                }
-            }
-#endif
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) completion handle")
             completion()

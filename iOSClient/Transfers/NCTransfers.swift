@@ -244,7 +244,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
         ]
 
-        self.database.getResultsMetadatasAsync(predicate: predicate, sortDescriptors: sortDescriptors, freeze: true) { results in
+        self.database.getResultsMetadatas(predicate: predicate, sortDescriptors: sortDescriptors, freeze: true) { results in
             guard let results else {
                 return self.dataSource.removeAll()
             }

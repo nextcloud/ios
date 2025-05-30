@@ -916,6 +916,17 @@ extension NCManageDatabase {
         }
     }
 
+    func getMetadatasAsync(predicate: NSPredicate,
+                           sortedByKeyPath: String,
+                           ascending: Bool = false) async -> [tableMetadata]? {
+        return await performRealmRead { realm in
+            realm.objects(tableMetadata.self)
+                .filter(predicate)
+                .sorted(byKeyPath: sortedByKeyPath, ascending: ascending)
+                .map { tableMetadata(value: $0) }
+        }
+    }
+
     func getMetadatas(predicate: NSPredicate, numItems: Int, sorted: String, ascending: Bool) -> [tableMetadata] {
         return performRealmRead { realm in
             let results = realm.objects(tableMetadata.self)
@@ -1202,10 +1213,10 @@ extension NCManageDatabase {
         }
     }
 
-    func getResultsMetadatasAsync(predicate: NSPredicate,
-                                  sortDescriptors: [RealmSwift.SortDescriptor] = [],
-                                  freeze: Bool = false,
-                                  completion: @escaping (Results<tableMetadata>?) -> Void) {
+    func getResultsMetadatas(predicate: NSPredicate,
+                             sortDescriptors: [RealmSwift.SortDescriptor] = [],
+                             freeze: Bool = false,
+                             completion: @escaping (Results<tableMetadata>?) -> Void) {
         performRealmRead({ realm in
             var results = realm.objects(tableMetadata.self).filter(predicate)
             if !sortDescriptors.isEmpty {
@@ -1215,40 +1226,22 @@ extension NCManageDatabase {
         }, sync: false, completion: completion)
     }
 
-    func fetchNetworkingProcessState() -> (counterDownloading: Int, counterUploading: Int) {
-        return performRealmRead { realm in
-            let downloading = realm.objects(tableMetadata.self)
-                .filter("status == %d", NCGlobal.shared.metadataStatusDownloading)
-            let uploading = realm.objects(tableMetadata.self)
-                .filter("status == %d", NCGlobal.shared.metadataStatusUploading)
-
-            return (
-                counterDownloading: downloading.count,
-                counterUploading: uploading.count
-            )
-        } ?? (
-            counterDownloading: 0,
-            counterUploading: 0
-        )
+    func getResultsMetadatasAsync(predicate: NSPredicate,
+                                  sortDescriptors: [RealmSwift.SortDescriptor] = [],
+                                  freeze: Bool = false) async -> Results<tableMetadata>? {
+        await performRealmRead { realm in
+            var results = realm.objects(tableMetadata.self).filter(predicate)
+            if !sortDescriptors.isEmpty {
+                results = results.sorted(by: sortDescriptors)
+            }
+            return freeze ? results.freeze() : results
+        }
     }
 
     func fetchNetworkingProcessDownload(limit: Int, session: String) -> [tableMetadata] {
         return performRealmRead { realm in
             let metadatas = realm.objects(tableMetadata.self)
                 .filter("session == %@ AND status == %d", session, NCGlobal.shared.metadataStatusWaitDownload)
-                .sorted(byKeyPath: "sessionDate")
-
-            let safeLimit = min(limit, metadatas.count)
-            let limitedMetadatas = metadatas.prefix(safeLimit)
-
-            return limitedMetadatas.map { tableMetadata(value: $0) }
-        } ?? []
-    }
-
-    func fetchNetworkingProcessUpload(limit: Int, sessionSelector: String) -> [tableMetadata] {
-        return performRealmRead { realm in
-            let metadatas = realm.objects(tableMetadata.self)
-                .filter("sessionSelector == %@ AND status == %d", sessionSelector, NCGlobal.shared.metadataStatusWaitUpload)
                 .sorted(byKeyPath: "sessionDate")
 
             let safeLimit = min(limit, metadatas.count)

@@ -189,6 +189,22 @@ extension NCManageDatabase {
         return updated
     }
 
+    func setMetadataStatus(ocId: String, status: Int) async -> tableMetadata? {
+        var updated: tableMetadata?
+
+        await performRealmWrite { realm in
+            guard let result = realm.object(ofType: tableMetadata.self, forPrimaryKey: ocId) else {
+                return
+            }
+
+            result.status = status
+            result.sessionDate = (status == NCGlobal.shared.metadataStatusNormal) ? nil : Date()
+            updated = tableMetadata(value: result)
+        }
+
+        return updated
+    }
+
     // MARK: - Realm Read
 
     func getMetadata(from url: URL?, sessionTaskIdentifier: Int) -> tableMetadata? {
