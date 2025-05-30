@@ -168,7 +168,7 @@ final class NCManageDatabase: Sendable {
         }
     }
 
-    // MARK: -
+    // MARK: - performRealmRead, performRealmWrite
 
     @discardableResult
     func performRealmRead<T>(_ block: @escaping (Realm) throws -> T?, sync: Bool = true, completion: ((T?) -> Void)? = nil) -> T? {
@@ -245,6 +245,29 @@ final class NCManageDatabase: Sendable {
             realmQueue.async(execute: executionBlock)
         } else {
             realmQueue.sync(execute: executionBlock)
+        }
+    }
+
+    // MARK: - performRealmRead async/await, performRealmWrite async/await
+
+    func performRealmRead<T>(_ block: @escaping (Realm) throws -> T?) async -> T? {
+        await withCheckedContinuation { continuation in
+            _ = self.performRealmRead(block, sync: false) { result in
+                continuation.resume(returning: result)
+            }
+        }
+    }
+
+    func performRealmWrite(_ block: @escaping (Realm) throws -> Void) async {
+        await withCheckedContinuation { continuation in
+            performRealmWrite(sync: false) { realm in
+                do {
+                    try block(realm)
+                } catch {
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm write error: \(error)")
+                }
+                continuation.resume()
+            }
         }
     }
 
