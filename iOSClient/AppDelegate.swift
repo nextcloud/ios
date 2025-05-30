@@ -209,7 +209,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 return
             }
 
-            await NCNetworkingProcess.shared.refreshProcessingTask()
+           // await NCNetworkingProcess.shared.refreshProcessingTask()
 
             let newAutoUpload = await initAutoUpload(account: account)
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) new auto upload with \(newAutoUpload) uploads")

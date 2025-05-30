@@ -471,22 +471,6 @@ class NCNetworkingProcess {
         self.currentAccount = account
     }
 
-    func refreshProcessingTask() async {
-        await withCheckedContinuation { continuation in
-            self.lockQueue.sync {
-                guard !self.hasRun, networking.isOnline else { return }
-                self.hasRun = true
-
-                Task { [weak self] in
-                    guard let self else { return }
-                    await self.start()
-                    self.hasRun = false
-                    continuation.resume()
-                }
-            }
-        }
-    }
-
     func createProcessUploads(metadatas: [tableMetadata], verifyAlreadyExists: Bool = false, completion: @escaping (_ items: Int) -> Void = {_ in}) {
         var metadatasForUpload: [tableMetadata] = []
         for metadata in metadatas {
