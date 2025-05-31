@@ -47,8 +47,8 @@ class NCService: NSObject {
             if result {
                 await requestServerCapabilities(account: account, controller: controller)
                 await getAvatar(account: account)
-                NCNetworkingE2EE().unlockAll(account: account)
-                sendClientDiagnosticsRemoteOperation(account: account)
+                await NCNetworkingE2EE().unlockAll(account: account)
+                await sendClientDiagnosticsRemoteOperation(account: account)
                 await synchronize(account: account)
             }
         }
@@ -179,8 +179,8 @@ class NCService: NSObject {
             let results = await NextcloudKit.shared.getExternalSiteAsync(account: account)
             if results.error == .success {
                 self.database.deleteExternalSites(account: account, sync: false)
-                for externalSite in results.externalFiles {
-                    self.database.addExternalSites(externalSite, account: account, sync: false)
+                for site in results.externalSite {
+                    self.database.addExternalSites(site, account: account, sync: false)
                 }
             }
         } else {
@@ -251,7 +251,7 @@ class NCService: NSObject {
 
     // MARK: -
 
-    func sendClientDiagnosticsRemoteOperation(account: String) {
+    func sendClientDiagnosticsRemoteOperation(account: String) async {
         guard NCCapabilities.shared.getCapabilities(account: account).capabilitySecurityGuardDiagnostics,
               self.database.existsDiagnostics(account: account) else {
             return
@@ -308,20 +308,24 @@ class NCService: NSObject {
         var problemBadResponse: Issues.Problem.Error?
         var problemUploadServerError: Issues.Problem.Error?
 
-        if let result = self.database.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueSyncConflicts)?.first {
-            syncConflicts = Issues.SyncConflicts(count: result.counter, oldest: result.oldest)
-            ids.append(result.id)
-        }
-        if let result = self.database.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueVirusDetected)?.first {
-            virusDetected = Issues.VirusDetected(count: result.counter, oldest: result.oldest)
-            ids.append(result.id)
-        }
-        if let result = self.database.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)?.first {
-            e2eeErrors = Issues.E2EError(count: result.counter, oldest: result.oldest)
-            ids.append(result.id)
-        }
-        if let results = self.database.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueProblems) {
-            for result in results {
+        if let results = await self.database.getDiagnosticsAsync(account: account) {
+            if let result = results.first(where: { $0.issue == NCGlobal.shared.diagnosticIssueSyncConflicts }) {
+                syncConflicts = Issues.SyncConflicts(count: result.counter, oldest: result.oldest)
+                ids.append(result.id)
+            }
+
+            if let result = results.first(where: { $0.issue == NCGlobal.shared.diagnosticIssueVirusDetected }) {
+                virusDetected = Issues.VirusDetected(count: result.counter, oldest: result.oldest)
+                ids.append(result.id)
+            }
+
+            if let result = results.first(where: { $0.issue == NCGlobal.shared.diagnosticIssueE2eeErrors }) {
+                e2eeErrors = Issues.E2EError(count: result.counter, oldest: result.oldest)
+                ids.append(result.id)
+            }
+
+            let problemResults = results.filter { $0.issue == NCGlobal.shared.diagnosticIssueProblems }
+            for result in problemResults {
                 switch result.error {
                 case NCGlobal.shared.diagnosticProblemsForbidden:
                     if result.counter >= 1 {
@@ -342,20 +346,20 @@ class NCService: NSObject {
                     break
                 }
             }
-            problems = Issues.Problem(forbidden: problemForbidden, badResponse: problemBadResponse, uploadServerError: problemUploadServerError)
-        }
 
-        do {
-            let issues = Issues(syncConflicts: syncConflicts, virusDetected: virusDetected, e2eeErrors: e2eeErrors, problems: problems)
-            let data = try JSONEncoder().encode(issues)
-            data.printJson()
-            NextcloudKit.shared.sendClientDiagnosticsRemoteOperation(data: data, account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, error in
-                if error == .success {
-                    self.database.deleteDiagnostics(account: account, ids: ids)
+            problems = Issues.Problem(forbidden: problemForbidden, badResponse: problemBadResponse, uploadServerError: problemUploadServerError)
+
+            do {
+                let issues = Issues(syncConflicts: syncConflicts, virusDetected: virusDetected, e2eeErrors: e2eeErrors, problems: problems)
+                let data = try JSONEncoder().encode(issues)
+                data.printJson()
+                let results = await NextcloudKit.shared.sendClientDiagnosticsRemoteOperationAsync(data: data, account: account)
+                if results.error == .success {
+                    await self.database.deleteDiagnosticsAsync(account: account, ids: ids)
                 }
+            } catch {
+                print("Error: \(error.localizedDescription)")
             }
-        } catch {
-            print("Error: \(error.localizedDescription)")
         }
     }
 }

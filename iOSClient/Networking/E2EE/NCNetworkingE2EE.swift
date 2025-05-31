@@ -250,15 +250,14 @@ class NCNetworkingE2EE: NSObject {
         return
     }
 
-    func unlockAll(account: String) {
+    func unlockAll(account: String) async {
         guard NCKeychain().isEndToEndEnabled(account: account) else { return }
 
-        Task {
-            for result in self.database.getE2EAllTokenLock(account: account) {
-                let resultsLockE2EEFolder = await NextcloudKit.shared.lockE2EEFolderAsync(fileId: result.fileId, e2eToken: result.e2eToken, e2eCounter: nil, method: "DELETE", account: account, options: NCNetworkingE2EE().getOptions(account: account))
-                if resultsLockE2EEFolder.error == .success {
-                    self.database.deleteE2ETokenLock(account: account, serverUrl: result.serverUrl)
-                }
+        let results = await self.database.getE2EAllTokenLockAsync(account: account)
+        for result in results {
+            let resultsLockE2EEFolder = await NextcloudKit.shared.lockE2EEFolderAsync(fileId: result.fileId, e2eToken: result.e2eToken, e2eCounter: nil, method: "DELETE", account: account, options: NCNetworkingE2EE().getOptions(account: account))
+            if resultsLockE2EEFolder.error == .success {
+                self.database.deleteE2ETokenLock(account: account, serverUrl: result.serverUrl,sync: false)
             }
         }
     }
