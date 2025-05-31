@@ -222,7 +222,6 @@ class NCService: NSObject {
 
     func synchronize(account: String) async {
         let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: account)
-
         let resultsFavorite = await NextcloudKit.shared.listingFavoritesAsync(showHiddenFiles: showHiddenFiles, account: account)
         if resultsFavorite.error == .success, let files = resultsFavorite.files {
             let resultsMetadatas = await self.database.convertFilesToMetadatasAsync(files, useFirstAsMetadataFolder: false)

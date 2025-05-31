@@ -30,7 +30,7 @@ extension NCNetworking {
         let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: account)
         let options = NKRequestOptions(timeout: 120, taskDescription: NCGlobal.shared.taskDescriptionSynchronization, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         var metadatasDirectory: [tableMetadata] = []
-        var metadatasSynchronizationOffline: [tableMetadata] = []
+        var metadatasDownload: [tableMetadata] = []
 
         let results = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrl, depth: "infinity", showHiddenFiles: showHiddenFiles, account: account, options: options)
         guard account == results.account else {
@@ -52,7 +52,7 @@ extension NCNetworking {
                 if file.directory {
                     metadatasDirectory.append(self.database.convertFileToMetadata(file, isDirectoryE2EE: false))
                 } else if await isSynchronizable(ocId: file.ocId, fileName: file.fileName, etag: file.etag) {
-                    metadatasSynchronizationOffline.append(self.database.convertFileToMetadata(file, isDirectoryE2EE: false))
+                    metadatasDownload.append(self.database.convertFileToMetadata(file, isDirectoryE2EE: false))
                 }
             }
 
@@ -61,7 +61,7 @@ extension NCNetworking {
 
             await self.database.addMetadatasAsync(metadatasDirectory)
             await self.database.addDirectoriesAsync(metadatas: metadatasDirectory)
-            await self.database.setMetadatasSessionInWaitDownloadAsync(metadatas: metadatasSynchronizationOffline,
+            await self.database.setMetadatasSessionInWaitDownloadAsync(metadatas: metadatasDownload,
                                                                        session: self.sessionDownloadBackground,
                                                                        selector: self.global.selectorSynchronizationOffline)
             await self.database.setDirectorySynchronizationDateAsync(serverUrl: serverUrl, account: account)
