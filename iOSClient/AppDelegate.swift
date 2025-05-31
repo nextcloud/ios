@@ -209,6 +209,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 return
             }
 
+            let metadatasss = await self.database.getResultsMetadatasAsync(predicate: NSPredicate(format: "status == %d", self.global.metadataStatusWaitUpload, self.global.metadataStatusWaitCreateFolder))
+
            // await NCNetworkingProcess.shared.refreshProcessingTask()
 
             let newAutoUpload = await initAutoUpload(account: account)
