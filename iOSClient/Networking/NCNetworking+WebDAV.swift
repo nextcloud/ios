@@ -216,7 +216,7 @@ extension NCNetworking {
         let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
 
         func writeDirectoryMetadata(_ metadata: tableMetadata) {
-            self.database.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", session.account, fileName, serverUrl))
+            self.database.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", session.account, fileName, serverUrl), sync: false)
             self.database.addMetadata(metadata, sync: false)
             self.database.addDirectory(e2eEncrypted: metadata.e2eEncrypted,
                                        favorite: metadata.favorite,

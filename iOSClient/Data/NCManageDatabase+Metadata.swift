@@ -1281,6 +1281,26 @@ extension NCManageDatabase {
         }
     }
 
+    func getResultsMetadatasAsync(predicate: NSPredicate,
+                                  sortDescriptors: [RealmSwift.SortDescriptor] = [],
+                                  freeze: Bool = false,
+                                  limit: Int? = nil) async -> [tableMetadata]? {
+        await performRealmRead { realm in
+            var results = realm.objects(tableMetadata.self).filter(predicate)
+
+            if !sortDescriptors.isEmpty {
+                results = results.sorted(by: sortDescriptors)
+            }
+
+            if let limit = limit {
+                let sliced = results.prefix(limit)
+                return freeze ? sliced.map { $0.freeze() } : Array(sliced)
+            } else {
+                return freeze ? results.map { $0.freeze() } : Array(results)
+            }
+        }
+    }
+
     func fetchNetworkingProcessDownload(limit: Int, session: String) -> [tableMetadata] {
         return performRealmRead { realm in
             let metadatas = realm.objects(tableMetadata.self)
