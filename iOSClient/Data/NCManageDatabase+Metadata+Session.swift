@@ -11,7 +11,6 @@ extension NCManageDatabase {
 
     // MARK: - Realm Write
 
-    @discardableResult
     func setMetadataSession(ocId: String,
                             newFileName: String? = nil,
                             session: String? = nil,
@@ -21,9 +20,7 @@ extension NCManageDatabase {
                             status: Int? = nil,
                             etag: String? = nil,
                             errorCode: Int? = nil,
-                            sync: Bool = true) -> tableMetadata? {
-        var updatedMetadata: tableMetadata?
-
+                            sync: Bool = true) {
         performRealmWrite(sync: sync) { realm in
             guard let metadata = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
@@ -61,11 +58,7 @@ extension NCManageDatabase {
 
             if let etag { metadata.etag = etag }
             if let errorCode { metadata.errorCode = errorCode }
-
-            updatedMetadata = tableMetadata(value: metadata)
         }
-
-        return updatedMetadata
     }
 
     func setMetadatasSessionInWaitDownload(metadatas: [tableMetadata],
@@ -79,9 +72,11 @@ extension NCManageDatabase {
 
         performRealmWrite(sync: sync) { realm in
             for metadata in metadatas {
-                let object = realm.objects(tableMetadata.self)
+                guard let object = realm.objects(tableMetadata.self)
                     .filter("ocId == %@", metadata.ocId)
-                    .first ?? metadata
+                    .first else {
+                    continue
+                }
 
                 object.sceneIdentifier = sceneIdentifier
                 object.session = session
@@ -90,10 +85,6 @@ extension NCManageDatabase {
                 object.sessionSelector = selector
                 object.status = NCGlobal.shared.metadataStatusWaitDownload
                 object.sessionDate = Date()
-
-                if object === metadata {
-                    realm.add(object, update: .all)
-                }
             }
         }
     }
@@ -102,13 +93,13 @@ extension NCManageDatabase {
                                           session: String,
                                           selector: String,
                                           sceneIdentifier: String? = nil,
-                                          sync: Bool = true) -> tableMetadata? {
-        var updatedMetadata: tableMetadata?
-
+                                          sync: Bool = true) {
         performRealmWrite(sync: sync) { realm in
-            let object = realm.objects(tableMetadata.self)
+            guard let object = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", metadata.ocId)
-                .first ?? metadata
+                .first else {
+                return
+            }
 
             object.sceneIdentifier = sceneIdentifier
             object.session = session
@@ -117,15 +108,7 @@ extension NCManageDatabase {
             object.sessionSelector = selector
             object.status = NCGlobal.shared.metadataStatusWaitDownload
             object.sessionDate = Date()
-
-            if object === metadata {
-                realm.add(object, update: .all)
-            }
-
-            updatedMetadata = tableMetadata(value: object)
         }
-
-        return updatedMetadata
     }
 
     func setMetadataSessionInWaitDownloadAsync(metadata: tableMetadata,
@@ -133,9 +116,11 @@ extension NCManageDatabase {
                                                selector: String,
                                                sceneIdentifier: String? = nil) async {
         await performRealmWrite { realm in
-            let object = realm.objects(tableMetadata.self)
+            guard let object = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", metadata.ocId)
-                .first ?? metadata
+                .first else {
+                return
+            }
 
             object.sceneIdentifier = sceneIdentifier
             object.session = session
@@ -144,10 +129,6 @@ extension NCManageDatabase {
             object.sessionSelector = selector
             object.status = NCGlobal.shared.metadataStatusWaitDownload
             object.sessionDate = Date()
-
-            if object === metadata {
-                realm.add(object, update: .all)
-            }
         }
     }
 
@@ -159,9 +140,11 @@ extension NCManageDatabase {
 
         await performRealmWrite { realm in
             for metadata in metadatas {
-                let object = realm.objects(tableMetadata.self)
+                guard let object = realm.objects(tableMetadata.self)
                     .filter("ocId == %@", metadata.ocId)
-                    .first ?? metadata
+                    .first else {
+                    continue
+               }
 
                 object.sceneIdentifier = sceneIdentifier
                 object.session = session
@@ -170,10 +153,6 @@ extension NCManageDatabase {
                 object.sessionSelector = selector
                 object.status = NCGlobal.shared.metadataStatusWaitDownload
                 object.sessionDate = Date()
-
-                if object === metadata {
-                    realm.add(object, update: .all)
-                }
             }
         }
     }
@@ -220,10 +199,7 @@ extension NCManageDatabase {
         }
     }
 
-    @discardableResult
-    func setMetadataStatus(ocId: String, status: Int, sync: Bool = true) -> tableMetadata? {
-        var updated: tableMetadata?
-
+    func setMetadataStatus(ocId: String, status: Int, sync: Bool = true) {
         performRealmWrite(sync: sync) { realm in
             guard let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
             else {
@@ -232,26 +208,7 @@ extension NCManageDatabase {
 
             result.status = status
             result.sessionDate = (status == NCGlobal.shared.metadataStatusNormal) ? nil : Date()
-            updated = tableMetadata(value: result)
         }
-
-        return updated
-    }
-
-    func setMetadataStatus(ocId: String, status: Int) async -> tableMetadata? {
-        var updated: tableMetadata?
-
-        await performRealmWrite { realm in
-            guard let result = realm.object(ofType: tableMetadata.self, forPrimaryKey: ocId) else {
-                return
-            }
-
-            result.status = status
-            result.sessionDate = (status == NCGlobal.shared.metadataStatusNormal) ? nil : Date()
-            updated = tableMetadata(value: result)
-        }
-
-        return updated
     }
 
     // MARK: - Realm Read
