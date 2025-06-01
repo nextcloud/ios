@@ -56,7 +56,7 @@ extension NCManageDatabase {
     /// Create a new download limit object in the database.
     ///
     @discardableResult
-    func createDownloadLimit(account: String, count: Int, limit: Int, token: String, sync: Bool = true) -> TableDownloadLimit? {
+    func createDownloadLimit(account: String, count: Int, limit: Int, token: String) -> TableDownloadLimit? {
         let downloadLimit = TableDownloadLimit()
         downloadLimit.id = formatId(by: account, token: token)
         downloadLimit.account = account
@@ -64,7 +64,7 @@ extension NCManageDatabase {
         downloadLimit.limit = limit
         downloadLimit.token = token
 
-        performRealmWrite(sync: sync) { realm in
+        performRealmWrite { realm in
             realm.add(downloadLimit, update: .all)
         }
 

@@ -567,10 +567,10 @@ extension NCManageDatabase {
         }
     }
 
-    func addMetadataAndReturn(_ metadata: tableMetadata, sync: Bool = true) -> tableMetadata {
+    func addMetadataAndReturn(_ metadata: tableMetadata) -> tableMetadata {
         var addedMetadata = tableMetadata(value: metadata)
 
-        performRealmWrite(sync: sync) { realm in
+        performRealmWrite{ realm in
             let created = realm.create(tableMetadata.self, value: metadata, update: .all)
             addedMetadata = tableMetadata(value: created)
         }
