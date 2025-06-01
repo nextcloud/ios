@@ -93,11 +93,12 @@ class NCViewerProviderContextMenu: UIViewController {
                         maxDownload = NCGlobal.shared.maxAutoDownload
                     }
                     if metadata.size <= maxDownload {
-                        if let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(metadata: metadata,
-                                                                                                   session: NCNetworking.shared.sessionDownload,
-                                                                                                   selector: "",
-                                                                                                   sync: false) {
-                            NCNetworking.shared.download(metadata: metadata)
+                        Task {
+                            if let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(metadata: metadata,
+                                                                                                                  session: NCNetworking.shared.sessionDownload,
+                                                                                                                  selector: "") {
+                                NCNetworking.shared.download(metadata: metadata)
+                            }
                         }
                     }
                 }
@@ -106,22 +107,24 @@ class NCViewerProviderContextMenu: UIViewController {
             if !utilityFileSystem.fileProviderStorageExists(metadata),
                NCNetworking.shared.isOnline,
                (metadata.contentType == "image/gif" || metadata.contentType == "image/svg+xml") {
-                if let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(metadata: metadata,
-                                                                                           session: NCNetworking.shared.sessionDownload,
-                                                                                           selector: "",
-                                                                                           sync: false) {
-                    NCNetworking.shared.download(metadata: metadata)
+                Task {
+                    if let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(metadata: metadata,
+                                                                                                          session: NCNetworking.shared.sessionDownload,
+                                                                                                          selector: "") {
+                        NCNetworking.shared.download(metadata: metadata)
+                    }
                 }
             }
             // DOWNLOAD LIVE PHOTO
             if let metadataLivePhoto = self.metadataLivePhoto,
                NCNetworking.shared.isOnline,
                !utilityFileSystem.fileProviderStorageExists(metadataLivePhoto) {
-                if let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(metadata: metadataLivePhoto,
-                                                                                           session: NCNetworking.shared.sessionDownload,
-                                                                                           selector: "",
-                                                                                           sync: false) {
-                    NCNetworking.shared.download(metadata: metadata)
+                Task {
+                    if let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(metadata: metadataLivePhoto,
+                                                                                                          session: NCNetworking.shared.sessionDownload,
+                                                                                                          selector: "") {
+                        NCNetworking.shared.download(metadata: metadata)
+                    }
                 }
             }
         }

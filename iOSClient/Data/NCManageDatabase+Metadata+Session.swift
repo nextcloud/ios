@@ -111,10 +111,13 @@ extension NCManageDatabase {
         }
     }
 
+    @discardableResult
     func setMetadataSessionInWaitDownloadAsync(metadata: tableMetadata,
                                                session: String,
                                                selector: String,
-                                               sceneIdentifier: String? = nil) async {
+                                               sceneIdentifier: String? = nil) async -> tableMetadata? {
+        var updatedMetadata: tableMetadata?
+
         await performRealmWrite { realm in
             guard let object = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", metadata.ocId)
@@ -129,7 +132,11 @@ extension NCManageDatabase {
             object.sessionSelector = selector
             object.status = NCGlobal.shared.metadataStatusWaitDownload
             object.sessionDate = Date()
+
+            updatedMetadata = tableMetadata(value: object)
         }
+
+        return updatedMetadata
     }
 
     func setMetadatasSessionInWaitDownloadAsync(metadatas: [tableMetadata],
