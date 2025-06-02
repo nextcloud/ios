@@ -99,7 +99,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         review.showStoreReview()
 #endif
 
-        /*
         BGTaskScheduler.shared.register(forTaskWithIdentifier: global.refreshTask, using: nil) { task in
             guard let appRefreshTask = task as? BGAppRefreshTask else {
                 task.setTaskCompleted(success: false)
@@ -107,7 +106,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
             self.handleAppRefresh(appRefreshTask)
         }
-        */
 
         BGTaskScheduler.shared.register(forTaskWithIdentifier: global.processingTask, using: nil) { task in
             guard let processingTask = task as? BGProcessingTask else {
@@ -188,7 +186,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
+    func handleAppRefresh(_ task: BGAppRefreshTask) {
+        NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start background refresh task")
+
+        task.setTaskCompleted(success: true)
+    }
+
     func handleProcessingTask(_ task: BGProcessingTask) {
+        NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start background processing task")
+
         task.expirationHandler = {
             // Pulisci risorse o annulla operazioni in corso
         }
