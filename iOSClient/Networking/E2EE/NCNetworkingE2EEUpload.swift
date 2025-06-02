@@ -44,7 +44,6 @@ class NCNetworkingE2EEUpload: NSObject {
     var numChunks: Int = 0
 
     func upload(metadata: tableMetadata, uploadE2EEDelegate: uploadE2EEDelegate?, controller: UIViewController?) async -> NKError {
-        var metadata = metadata
         let session = NCSession.shared.getSession(account: metadata.account)
         let hud = await NCHud(controller?.view)
 
@@ -56,7 +55,7 @@ class NCNetworkingE2EEUpload: NSObject {
         metadata.session = NCNetworking.shared.sessionUpload
         metadata.sessionError = ""
 
-        metadata = self.database.addMetadata(metadata)
+        let metadata = self.database.addMetadata(metadata)
 
         guard let directory = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))

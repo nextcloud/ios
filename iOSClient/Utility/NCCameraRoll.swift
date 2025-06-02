@@ -88,7 +88,7 @@ class NCCameraRoll: NSObject {
                                                    modifyMetadataForUpload: Bool,
                                                    completion: @escaping (_ metadata: tableMetadata?, _ fileNamePath: String?, _ error: Bool) -> Void) {
         var fileNamePath: String?
-        var metadata = metadata
+        var metadata = tableMetadata(value: metadata)
         var compatibilityFormat: Bool = false
         var chunkSize = NCGlobal.shared.chunkSizeMBCellular
         if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
