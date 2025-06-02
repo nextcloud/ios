@@ -189,7 +189,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleAppRefresh(_ task: BGAppRefreshTask) {
         NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start background refresh task")
 
+        task.expirationHandler = {
+            // Pulisci risorse o annulla operazioni in corso
+        }
+
         task.setTaskCompleted(success: true)
+        scheduleAppRefresh()
     }
 
     func handleProcessingTask(_ task: BGProcessingTask) {
@@ -203,7 +208,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             await autoUpload()
 
             task.setTaskCompleted(success: true)
-
             scheduleAppProcessing()
         }
     }
@@ -258,8 +262,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
             ]
             let metadatasWaitUpload = await self.database.getResultsMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@ AND chunk == 0", self.global.metadataStatusWaitUpload, self.global.selectorUploadAutoUpload), sortDescriptors: sortDescriptors, limit: limitUpload)
+
             for metadata in metadatasWaitUpload ?? [] {
                 NCNetworking.shared.upload(metadata: tableMetadata(value: metadata))
+
                 NextcloudKit.shared.nkCommonInstance.writeLog("Create Upload \(metadata.fileName) in \(metadata.serverUrl)")
             }
         }
