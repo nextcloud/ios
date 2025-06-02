@@ -59,8 +59,8 @@ extension NCNetworking {
             let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Synchronization \(serverUrl) in \(diffDate)")
 
-            self.database.addMetadatas(metadatasDirectory)
-            self.database.addDirectories(metadatas: metadatasDirectory)
+            self.database.addMetadatas(metadatasDirectory, sync: false)
+            self.database.addDirectories(metadatas: metadatasDirectory, sync: false)
             self.database.setMetadatasSessionInWaitDownload(metadatas: metadatasDownload,
                                                             session: self.sessionDownloadBackground,
                                                             selector: self.global.selectorSynchronizationOffline)

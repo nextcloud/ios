@@ -56,10 +56,10 @@ extension NCManageDatabase {
         }
     }
 
-    func addDirectories(metadatas: [tableMetadata]) {
+    func addDirectories(metadatas: [tableMetadata], sync: Bool = true) {
         let detached = metadatas.map { tableMetadata(value: $0) }
 
-        performRealmWrite { realm in
+        performRealmWrite(sync: sync) { realm in
             for metadata in detached {
                 let existing = realm.objects(tableDirectory.self)
                     .filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId)
