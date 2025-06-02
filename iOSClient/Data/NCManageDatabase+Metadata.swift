@@ -553,12 +553,6 @@ extension NCManageDatabase {
 
     // MARK: - Realm Write
 
-    func addMetadata(_ metadata: tableMetadata, sync: Bool = true) {
-        performRealmWrite(sync: sync) { realm in
-            realm.add(metadata, update: .all)
-        }
-    }
-
     func addMetadataIfNeeded(_ metadata: tableMetadata, sync: Bool = true) {
         performRealmWrite(sync: sync) { realm in
             if realm.object(ofType: tableMetadata.self, forPrimaryKey: metadata.ocId) == nil {
@@ -567,10 +561,11 @@ extension NCManageDatabase {
         }
     }
 
-    func addMetadata(_ metadata: tableMetadata) -> tableMetadata {
+    @discardableResult
+    func addMetadata(_ metadata: tableMetadata, sync: Bool = true) -> tableMetadata {
         let detached = tableMetadata(value: metadata)
 
-        performRealmWrite { realm in
+        performRealmWrite(sync: sync) { realm in
             realm.add(detached, update: .all)
         }
 

@@ -160,8 +160,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             database.addLocalFile(metadata: metadata, offline: true, sync: false)
             database.setMetadatasSessionInWaitDownload(metadatas: metadatasSynchronizationOffline,
                                                        session: NCNetworking.shared.sessionDownloadBackground,
-                                                       selector: NCGlobal.shared.selectorSynchronizationOffline,
-                                                       sync: false)
+                                                       selector: NCGlobal.shared.selectorSynchronizationOffline)
         }
     }
 
@@ -210,21 +209,19 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                     NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: account, requestHandler: { request in
                         downloadRequest = request
                     }, taskHandler: { task in
-                        self.database.setMetadataSession(ocId: metadata.ocId,
+                        self.database.setMetadataSession(metadata: metadata,
                                                          sessionTaskIdentifier: task.taskIdentifier,
-                                                         status: self.global.metadataStatusDownloading,
-                                                         sync: false)
+                                                         status: self.global.metadataStatusDownloading)
                     }, progressHandler: { progress in
                         hud.progress(progress.fractionCompleted)
                     }) { accountDownload, etag, _, _, _, _, error in
                         hud.dismiss()
-                        self.database.setMetadataSession(ocId: metadata.ocId,
+                        self.database.setMetadataSession(metadata: metadata,
                                                          session: "",
                                                          sessionTaskIdentifier: 0,
                                                          sessionError: "",
                                                          status: self.global.metadataStatusNormal,
-                                                         etag: etag,
-                                                         sync: false)
+                                                         etag: etag)
                         if account == accountDownload, error == .success {
                             self.database.addLocalFile(metadata: metadata)
                             NCViewer().view(viewController: viewController, metadata: metadata)
@@ -305,13 +302,10 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, controller: controller)
         for (metadata, url) in downloadMetadata {
             processor.execute { completion in
-                guard let metadata = self.database.setMetadataSessionInWaitDownload(metadata: metadata,
-                                                                                    session: NCNetworking.shared.sessionDownload,
-                                                                                    selector: "",
-                                                                                    sceneIdentifier: controller.sceneIdentifier,
-                                                                                    sync: false) else {
-                    return completion()
-                }
+                let metadata = self.database.setMetadataSessionInWaitDownload(metadata: metadata,
+                                                                              session: NCNetworking.shared.sessionDownload,
+                                                                              selector: "",
+                                                                              sceneIdentifier: controller.sceneIdentifier)
 
                 NCNetworking.shared.download(metadata: metadata) {
                 } progressHandler: { progress in

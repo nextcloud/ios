@@ -241,9 +241,9 @@ class NCService: NSObject {
         for file in files {
             if let metadata = await self.database.getMetadataFromOcIdAsync(file.ocId),
                await NCNetworking.shared.isSynchronizable(ocId: metadata.ocId, fileName: metadata.fileName, etag: metadata.etag) {
-                await self.database.setMetadataSessionInWaitDownloadAsync(metadata: metadata,
-                                                                          session: NCNetworking.shared.sessionDownloadBackground,
-                                                                          selector: NCGlobal.shared.selectorSynchronizationOffline)
+                self.database.setMetadataSessionInWaitDownload(metadata: metadata,
+                                                               session: NCNetworking.shared.sessionDownloadBackground,
+                                                               selector: NCGlobal.shared.selectorSynchronizationOffline)
             }
         }
     }

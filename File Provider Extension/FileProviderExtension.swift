@@ -248,7 +248,7 @@ class FileProviderExtension: NSFileProviderExtension {
         }
         let serverUrlFileName = metadata.serverUrl + "/" + fileName
 
-        self.database.setMetadataSession(ocId: metadata.ocId,
+        self.database.setMetadataSession(metadata: metadata,
                                          session: NCNetworking.shared.sessionUploadBackgroundExt,
                                          sessionTaskIdentifier: 0,
                                          sessionError: "",
@@ -264,7 +264,7 @@ class FileProviderExtension: NSFileProviderExtension {
                                                                                                   sessionIdentifier: NCNetworking.shared.sessionUploadBackgroundExt)
 
         if let task, error == .success {
-            self.database.setMetadataSession(ocId: metadata.ocId,
+            self.database.setMetadataSession(metadata: metadata,
                                              sessionTaskIdentifier: task.taskIdentifier,
                                              status: NCGlobal.shared.metadataStatusUploading)
             fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(metadata.fileId)) { _ in }
@@ -344,7 +344,7 @@ class FileProviderExtension: NSFileProviderExtension {
                                                                                                                 account: metadataForUpload.account,
                                                                                                                 sessionIdentifier: metadataForUpload.session)
                 if let task, error == .success {
-                    self.database.setMetadataSession(ocId: metadataForUpload.ocId,
+                    self.database.setMetadataSession(metadata: metadataForUpload,
                                                      sessionTaskIdentifier: task.taskIdentifier,
                                                      status: NCGlobal.shared.metadataStatusUploading)
                     fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(ocIdTransfer)) { _ in }

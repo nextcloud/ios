@@ -189,31 +189,30 @@ class NCNetworkingProcess {
                     if !isWiFi && metadata.session == networking.sessionUploadBackgroundWWan { continue }
                     if isAppInBackground && (isInDirectoryE2EE || metadata.chunk > 0) { continue }
 
-                    let metadata = await self.database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusUploading)
-                    if let metadata {
-                        /// find controller
-                        var controller: NCMainTabBarController?
-                        if let sceneIdentifier = metadata.sceneIdentifier, !sceneIdentifier.isEmpty {
-                            controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier)
-                        } else {
-                            for ctlr in SceneManager.shared.getControllers() {
-                                let account = await ctlr.account
-                                if account == metadata.account {
-                                    controller = ctlr
-                                }
-                            }
-
-                            if controller == nil {
-                                controller = await UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+                    let metadata = self.database.setMetadataStatus(metadata: metadata,
+                                                                         status: global.metadataStatusUploading)
+                    /// find controller
+                    var controller: NCMainTabBarController?
+                    if let sceneIdentifier = metadata.sceneIdentifier, !sceneIdentifier.isEmpty {
+                        controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier)
+                    } else {
+                        for ctlr in SceneManager.shared.getControllers() {
+                            let account = await ctlr.account
+                            if account == metadata.account {
+                                controller = ctlr
                             }
                         }
 
-                        networking.upload(metadata: metadata, controller: controller)
-                        if isInDirectoryE2EE || metadata.chunk > 0 {
-                            httpMaximumConnectionsPerHostInUpload = 1
+                        if controller == nil {
+                            controller = await UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
                         }
-                        counterUploading += 1
                     }
+
+                    networking.upload(metadata: metadata, controller: controller)
+                    if isInDirectoryE2EE || metadata.chunk > 0 {
+                        httpMaximumConnectionsPerHostInUpload = 1
+                    }
+                    counterUploading += 1
                 }
             }
         }
@@ -227,19 +226,17 @@ class NCNetworkingProcess {
                 if metadata.sessionError.contains("\(global.errorQuota)") {
                     NextcloudKit.shared.getUserMetadata(account: metadata.account, userId: metadata.userId) { _, userProfile, _, error in
                         if error == .success, let userProfile, userProfile.quotaFree > 0, userProfile.quotaFree > metadata.size {
-                            self.database.setMetadataSession(ocId: metadata.ocId,
+                            self.database.setMetadataSession(metadata: metadata,
                                                              session: self.networking.sessionUploadBackground,
                                                              sessionError: "",
-                                                             status: self.global.metadataStatusWaitUpload,
-                                                             sync: false)
+                                                             status: self.global.metadataStatusWaitUpload)
                         }
                     }
                 } else {
-                    self.database.setMetadataSession(ocId: metadata.ocId,
+                    self.database.setMetadataSession(metadata: metadata,
                                                      session: self.networking.sessionUploadBackground,
                                                      sessionError: "",
-                                                     status: global.metadataStatusWaitUpload,
-                                                     sync: false)
+                                                     status: global.metadataStatusWaitUpload)
                 }
             }
         }
@@ -283,7 +280,6 @@ class NCNetworkingProcess {
         ///
         let metadatasWaitCopy = metadatas.filter { $0.status == global.metadataStatusWaitCopy }.sorted { $0.serverUrl < $1.serverUrl }
         for metadata in metadatasWaitCopy {
-            let ocId = metadata.ocId
             let serverUrlTo = metadata.serverUrlTo
             let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
             var serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
@@ -297,7 +293,8 @@ class NCNetworkingProcess {
 
             let resultCopy = await NextcloudKit.shared.copyFileOrFolderAsync(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
 
-            database.setMetadataStatus(ocId: ocId, status: global.metadataStatusNormal, sync: false)
+            database.setMetadataStatus(metadata: metadata,
+                                       status: global.metadataStatusNormal)
 
             if resultCopy.error == .success {
                 let result = await NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileNameDestination, account: metadata.account)
@@ -319,7 +316,6 @@ class NCNetworkingProcess {
         ///
         let metadatasWaitMove = metadatas.filter { $0.status == global.metadataStatusWaitMove }.sorted { $0.serverUrl < $1.serverUrl }
         for metadata in metadatasWaitMove {
-            let ocId = metadata.ocId
             let serverUrlTo = metadata.serverUrlTo
             let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
             let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
@@ -327,7 +323,8 @@ class NCNetworkingProcess {
 
             let resultMove = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
 
-            database.setMetadataStatus(ocId: ocId, status: global.metadataStatusNormal, sync: false)
+            database.setMetadataStatus(metadata: metadata,
+                                       status: global.metadataStatusNormal)
 
             if resultMove.error == .success {
                 let result = await NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileNameDestination, account: metadata.account)
@@ -424,11 +421,11 @@ class NCNetworkingProcess {
             var returnError = NKError()
 
             for metadata in metadatasWaitDelete {
-                let ocId = metadata.ocId
                 let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
                 let resultDelete = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: serverUrlFileName, account: metadata.account)
 
-                database.setMetadataStatus(ocId: ocId, status: global.metadataStatusNormal, sync: false)
+                database.setMetadataStatus(metadata: metadata,
+                                           status: global.metadataStatusNormal)
 
                 if resultDelete.error == .success || resultDelete.error.errorCode == NCGlobal.shared.errorResourceNotFound {
                     do {

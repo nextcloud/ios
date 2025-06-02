@@ -423,13 +423,12 @@ extension NCNetworking {
                             let atpath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileName
                             let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + newFileName
                             self.utilityFileSystem.moveFile(atPath: atpath, toPath: toPath)
-                            self.database.setMetadataSession(ocId: metadata.ocId,
+                            self.database.setMetadataSession(metadata: metadata,
                                                              newFileName: newFileName,
                                                              sessionTaskIdentifier: 0,
                                                              sessionError: "",
                                                              status: self.global.metadataStatusWaitUpload,
-                                                             errorCode: error.errorCode,
-                                                             sync: false)
+                                                             errorCode: error.errorCode)
                         }))
                         alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive, handler: { _ in
                             self.uploadCancelFile(metadata: metadata)

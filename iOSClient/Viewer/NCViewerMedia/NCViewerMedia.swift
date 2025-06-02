@@ -161,12 +161,9 @@ class NCViewerMedia: UIViewController {
                         if error == .success, let url = url {
                             ncplayer.openAVPlayer(url: url, autoplay: autoplay)
                         } else {
-                            guard let metadata = self.database.setMetadataSessionInWaitDownload(metadata: self.metadata,
-                                                                                                session: NCNetworking.shared.sessionDownload,
-                                                                                                selector: "",
-                                                                                                sync: false) else {
-                                return
-                            }
+                            let metadata = self.database.setMetadataSessionInWaitDownload(metadata: self.metadata,
+                                                                                          session: NCNetworking.shared.sessionDownload,
+                                                                                          selector: "")
                             var downloadRequest: DownloadRequest?
                             let hud = NCHud(self.tabBarController?.view)
                             hud.initHudRing(text: NSLocalizedString("_downloading_", comment: ""),
@@ -269,11 +266,10 @@ class NCViewerMedia: UIViewController {
         if metadata.isLivePhoto,
            NCNetworking.shared.isOnline,
            let metadata = self.database.getMetadataLivePhoto(metadata: metadata),
-           !utilityFileSystem.fileProviderStorageExists(metadata),
-           let metadata = self.database.setMetadataSessionInWaitDownload(metadata: metadata,
-                                                                         session: NCNetworking.shared.sessionDownload,
-                                                                         selector: "",
-                                                                         sync: false) {
+           !utilityFileSystem.fileProviderStorageExists(metadata) {
+            let metadata = self.database.setMetadataSessionInWaitDownload(metadata: metadata,
+                                                                          session: NCNetworking.shared.sessionDownload,
+                                                                          selector: "")
             NCNetworking.shared.download(metadata: metadata)
         }
 
@@ -346,12 +342,10 @@ class NCViewerMedia: UIViewController {
     }
 
     private func downloadImage(withSelector selector: String = "") {
-        guard let metadata = self.database.setMetadataSessionInWaitDownload(metadata: metadata,
-                                                                            session: NCNetworking.shared.sessionDownload,
-                                                                            selector: selector,
-                                                                            sync: false) else {
-            return
-        }
+        let metadata = self.database.setMetadataSessionInWaitDownload(metadata: metadata,
+                                                                      session: NCNetworking.shared.sessionDownload,
+                                                                      selector: selector)
+
         NCNetworking.shared.download(metadata: metadata) {
         } requestHandler: { _ in
             self.allowOpeningDetails = false
