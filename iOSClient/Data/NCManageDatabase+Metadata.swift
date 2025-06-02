@@ -569,7 +569,7 @@ extension NCManageDatabase {
             realm.add(detached, update: .all)
         }
 
-        return detached
+        return tableMetadata(value: detached)
     }
 
     func addMetadatas(_ metadatas: [tableMetadata], sync: Bool = true) {

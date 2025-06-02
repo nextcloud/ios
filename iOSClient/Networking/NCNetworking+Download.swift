@@ -55,17 +55,10 @@ extension NCNetworking {
                               requestHandler: @escaping (_ request: DownloadRequest) -> Void = { _ in },
                               progressHandler: @escaping (_ progress: Progress) -> Void = { _ in },
                               completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void = { _, _ in }) {
-        var metadata = metadata
         var downloadTask: URLSessionTask?
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
         let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-
-        if let metadataExists = database.getMetadataFromOcId(metadata.ocId) {
-            metadata = metadataExists
-        } else {
-            metadata = database.addMetadata(metadata)
-        }
 
         if metadata.status == global.metadataStatusDownloading || metadata.status == global.metadataStatusUploading {
             return completion(nil, NKError())

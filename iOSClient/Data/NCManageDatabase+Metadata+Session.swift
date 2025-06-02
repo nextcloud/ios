@@ -36,7 +36,9 @@ extension NCManageDatabase {
                 mutableMetadata.errorCode = 0
             }
         }
-        if let selector { mutableMetadata.sessionSelector = selector }
+        if let selector {
+            mutableMetadata.sessionSelector = selector
+        }
 
         if let status {
             mutableMetadata.status = status
@@ -58,7 +60,7 @@ extension NCManageDatabase {
             realm.add(mutableMetadata, update: .all)
         }
 
-        return mutableMetadata
+        return tableMetadata(value: mutableMetadata)
     }
 
     func setMetadatasSessionInWaitDownload(metadatas: [tableMetadata],
@@ -102,7 +104,7 @@ extension NCManageDatabase {
             realm.add(detached, update: .all)
         }
 
-        return detached
+        return tableMetadata(value: detached)
     }
 
     func clearMetadataSession(metadatas: [tableMetadata]) {
@@ -152,7 +154,7 @@ extension NCManageDatabase {
 
         }
 
-        return detached
+        return tableMetadata(value: detached)
     }
 
     // MARK: - Realm Read
