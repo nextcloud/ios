@@ -183,7 +183,7 @@ class FileProviderExtension: NSFileProviderExtension {
            tableLocalFile.etag == metadata.etag {
             return completionHandler(nil)
         } else {
-            self.database.setMetadataSession(ocId: metadata.ocId,
+            self.database.setMetadataSession(metadata: metadata,
                                              session: NCNetworking.shared.sessionDownload,
                                              sessionTaskIdentifier: 0,
                                              sessionError: "",
@@ -195,7 +195,7 @@ class FileProviderExtension: NSFileProviderExtension {
 
         NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, requestHandler: { _ in
         }, taskHandler: { task in
-            self.database.setMetadataSession(ocId: metadata.ocId,
+            self.database.setMetadataSession(metadata: metadata,
                                              sessionTaskIdentifier: task.taskIdentifier)
             fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(itemIdentifier.rawValue)) { _ in }
         }, progressHandler: { _ in
@@ -217,7 +217,8 @@ class FileProviderExtension: NSFileProviderExtension {
                 self.database.addMetadata(metadata)
                 completionHandler(nil)
             } else if error.errorCode == 200 {
-                self.database.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusNormal)
+                self.database.setMetadataStatus(metadata: metadata,
+                                                status: NCGlobal.shared.metadataStatusNormal)
                 completionHandler(nil)
             } else {
                 metadata.status = NCGlobal.shared.metadataStatusDownloadError

@@ -56,7 +56,7 @@ class NCNetworkingE2EEUpload: NSObject {
         metadata.session = NCNetworking.shared.sessionUpload
         metadata.sessionError = ""
 
-        metadata = self.database.addMetadataAndReturn(metadata)
+        metadata = self.database.addMetadata(metadata)
 
         guard let directory = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
@@ -195,7 +195,7 @@ class NCNetworkingE2EEUpload: NSObject {
                 NCNetworking.shared.createLivePhoto(metadata: metadata)
             }
         } else {
-            self.database.setMetadataSession(ocId: metadata.ocId,
+            self.database.setMetadataSession(metadata: metadata,
                                              sessionTaskIdentifier: 0,
                                              sessionError: resultsSendFile.error.errorDescription,
                                              status: NCGlobal.shared.metadataStatusUploadError,

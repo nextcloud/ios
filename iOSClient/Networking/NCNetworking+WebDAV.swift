@@ -96,7 +96,10 @@ extension NCNetworking {
                 self.database.deleteDownloadLimit(byAccount: metadata.account, shareToken: share.token, sync: false)
 
                 if let receivedDownloadLimit = file.downloadLimits.first(where: { $0.token == share.token }) {
-                    self.database.createDownloadLimit(account: metadata.account, count: receivedDownloadLimit.count, limit: receivedDownloadLimit.limit, token: receivedDownloadLimit.token, sync: false)
+                    self.database.createDownloadLimit(account: metadata.account,
+                                                      count: receivedDownloadLimit.count,
+                                                      limit: receivedDownloadLimit.limit,
+                                                      token: receivedDownloadLimit.token)
                 }
             }
 
@@ -380,7 +383,8 @@ extension NCNetworking {
                 }
                 return
             }
-            self.database.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusWaitDelete)
+            self.database.setMetadataStatus(metadata: metadata,
+                                            status: NCGlobal.shared.metadataStatusWaitDelete)
         }
     }
 

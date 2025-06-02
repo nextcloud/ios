@@ -56,8 +56,9 @@ extension NCManageDatabase {
     /// Create a new download limit object in the database.
     ///
     @discardableResult
-    func createDownloadLimit(account: String, count: Int, limit: Int, token: String) -> TableDownloadLimit? {
+    func createDownloadLimit(account: String, count: Int, limit: Int, token: String) -> TableDownloadLimit {
         let downloadLimit = TableDownloadLimit()
+
         downloadLimit.id = formatId(by: account, token: token)
         downloadLimit.account = account
         downloadLimit.count = count
