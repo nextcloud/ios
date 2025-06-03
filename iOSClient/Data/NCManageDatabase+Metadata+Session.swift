@@ -56,7 +56,7 @@ extension NCManageDatabase {
         if let etag { mutableMetadata.etag = etag }
         if let errorCode { mutableMetadata.errorCode = errorCode }
 
-        performRealmWrite(sync: false) { realm in
+        performRealmWrite(sync: true) { realm in
             realm.add(mutableMetadata, update: .all)
         }
 
@@ -70,7 +70,7 @@ extension NCManageDatabase {
         guard !metadatas.isEmpty else { return }
         let detached = metadatas.map { tableMetadata(value: $0) }
 
-        performRealmWrite(sync: false) { realm in
+        performRealmWrite(sync: true) { realm in
             for metadata in detached {
                 metadata.sceneIdentifier = sceneIdentifier
                 metadata.session = session
@@ -100,7 +100,7 @@ extension NCManageDatabase {
         detached.status = NCGlobal.shared.metadataStatusWaitDownload
         detached.sessionDate = Date()
 
-        performRealmWrite(sync: false) { realm in
+        performRealmWrite(sync: true) { realm in
             realm.add(detached, update: .all)
         }
 
@@ -114,7 +114,7 @@ extension NCManageDatabase {
         }
         let detachedMetadatas = metadatas.map { tableMetadata(value: $0) }
 
-        performRealmWrite(sync: false) { realm in
+        performRealmWrite(sync: true) { realm in
             detachedMetadatas.forEach { metadata in
                 metadata.sceneIdentifier = nil
                 metadata.session = ""
@@ -123,6 +123,8 @@ extension NCManageDatabase {
                 metadata.sessionSelector = ""
                 metadata.sessionDate = nil
                 metadata.status = NCGlobal.shared.metadataStatusNormal
+
+                realm.add(metadata, update: .all)
             }
         }
     }
@@ -138,7 +140,7 @@ extension NCManageDatabase {
         detached.sessionDate = nil
         detached.status = NCGlobal.shared.metadataStatusNormal
 
-        performRealmWrite(sync: false) { realm in
+        performRealmWrite(sync: true) { realm in
             realm.add(detached, update: .all)
         }
     }
@@ -149,7 +151,7 @@ extension NCManageDatabase {
 
         detached.status = status
 
-        performRealmWrite(sync: false) { realm in
+        performRealmWrite(sync: true) { realm in
             realm.add(detached, update: .all)
 
         }

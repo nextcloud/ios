@@ -66,7 +66,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                                                                          session: NCNetworking.shared.sessionDownload,
                                                                          selector: global.selectorLoadFileView,
                                                                          sceneIdentifier: self.controller?.sceneIdentifier)
-
                 if metadata.name == "files" {
                     let hud = NCHud(self.tabBarController?.view)
                     var downloadRequest: DownloadRequest?

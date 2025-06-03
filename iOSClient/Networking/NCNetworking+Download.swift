@@ -212,7 +212,6 @@ extension NCNetworking {
                                             metadata: metadata,
                                             error: .success)
                 }
-
             } else {
                 let metadata = self.database.setMetadataSession(metadata: metadata,
                                                                 session: "",
