@@ -108,6 +108,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
             self.handleAppRefresh(appRefreshTask)
         }
+        scheduleAppRefresh()
 
         BGTaskScheduler.shared.register(forTaskWithIdentifier: global.processingTask, using: backgroundQueue) { task in
             guard let processingTask = task as? BGProcessingTask else {
@@ -116,6 +117,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
             self.handleProcessingTask(processingTask)
         }
+        scheduleAppProcessing()
 
         if NCBrandOptions.shared.enforce_passcode_lock {
             NCKeychain().requestPasscodeAtStart = true
@@ -167,6 +169,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         request.earliestBeginDate = Date(timeIntervalSinceNow: 60) // Refresh after 60 seconds.
         do {
             try BGTaskScheduler.shared.submit(request)
+            if let date = request.earliestBeginDate {
+                NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Refresh task scheduled (UTC) \(date.description(with: Locale(identifier: "en_US_POSIX")))")
+            }
         } catch {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Refresh task failed to submit request: \(error)")
         }
@@ -183,6 +188,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         request.requiresExternalPower = false
         do {
             try BGTaskScheduler.shared.submit(request)
+            if let date = request.earliestBeginDate {
+                NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Processing task scheduled (UTC) \(date.description(with: Locale(identifier: "en_US_POSIX")))")
+            }
         } catch {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Background Processing task failed to submit request: \(error)")
         }

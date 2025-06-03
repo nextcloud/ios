@@ -201,9 +201,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Create Apps share accounts \(error.localizedDescription)")
         }
 
-        appDelegate?.scheduleAppRefresh()
-        appDelegate?.scheduleAppProcessing()
-
         NCNetworking.shared.cancelAllQueue()
 
         if NCKeychain().presentPasscode {
