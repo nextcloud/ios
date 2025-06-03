@@ -211,7 +211,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Processing task with \(numTransfers) transfers")
 
             task.setTaskCompleted(success: true)
-        }    }
+            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Refresh task completed")
+        }
+    }
 
     func handleProcessingTask(_ task: BGProcessingTask) {
         NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start processing task")
@@ -227,11 +229,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Processing task with \(numTransfers) transfers")
 
             task.setTaskCompleted(success: true)
+            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Processing task completed")
         }
     }
 
     func autoUpload(limitUpload: Int) async -> Int {
         var numTransfers: Int = 0
+        var counterUploading: Int = 0
+
         func initAutoUpload(controller: NCMainTabBarController? = nil, account: String) async -> Int {
             await withUnsafeContinuation({ continuation in
                 NCAutoUpload.shared.initAutoUpload(controller: controller, account: account) { num in
@@ -264,7 +269,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                                                                                session: NCSession.shared.getSession(account: metadata.account),
                                                                                selector: metadata.sessionSelector)
 
-                NextcloudKit.shared.nkCommonInstance.writeLog("Create auto upload folder with \(errorCreateFolder.errorCode)")
+                NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Create auto upload folder with \(errorCreateFolder.errorCode)")
 
                 guard errorCreateFolder == .success else {
                     return numTransfers
@@ -274,22 +279,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
 
-        let metadatasUploading = await self.database.getResultsMetadatasAsync(predicate: NSPredicate(format: "status == %d", self.global.metadataStatusUploading), limit: nil)
+        if let metadatasUploading = await self.database.getResultsMetadatasAsync(predicate: NSPredicate(format: "status == %d", self.global.metadataStatusUploading), limit: nil) {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Already in uploading \(String(describing: metadatasUploading.count))")
 
-        let counterUploading: Int = metadatasUploading?.count ?? 0
+            counterUploading = metadatasUploading.count
+        }
         let limitUpload = NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload - counterUploading
+
         if limitUpload > 0 {
             let sortDescriptors = [
                 RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
             ]
-            let metadatasWaitUpload = await self.database.getResultsMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@ AND chunk == 0", self.global.metadataStatusWaitUpload, self.global.selectorUploadAutoUpload), sortDescriptors: sortDescriptors, limit: limitUpload)
 
-            for metadata in metadatasWaitUpload ?? [] {
-                NCNetworking.shared.upload(metadata: tableMetadata(value: metadata))
+            if let metadatasWaitUpload = await self.database.getResultsMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@ AND chunk == 0", self.global.metadataStatusWaitUpload, self.global.selectorUploadAutoUpload), sortDescriptors: sortDescriptors, limit: limitUpload) {
 
-                NextcloudKit.shared.nkCommonInstance.writeLog("Create Upload \(metadata.fileName) in \(metadata.serverUrl)")
+                NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] In wait upload \(String(describing: metadatasWaitUpload.count))")
 
-                numTransfers += 1
+                for metadata in metadatasWaitUpload {
+                    NCNetworking.shared.upload(metadata: tableMetadata(value: metadata))
+                    NextcloudKit.shared.nkCommonInstance.writeLog("Create Upload \(metadata.fileName) in \(metadata.serverUrl)")
+                    numTransfers += 1
+                }
             }
         } else {
             numTransfers = counterUploading
