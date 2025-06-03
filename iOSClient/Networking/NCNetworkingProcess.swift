@@ -250,7 +250,7 @@ class NCNetworkingProcess {
         ///
         let metadatasWaitCreateFolder = metadatas.filter { $0.status == global.metadataStatusWaitCreateFolder }.sorted { $0.serverUrl < $1.serverUrl }
         for metadata in metadatasWaitCreateFolder {
-            let errorCreateFolder = await networking.createFolder(fileName: metadata.fileName,
+            let resultsCreateFolder = await networking.createFolder(fileName: metadata.fileName,
                                                                   serverUrl: metadata.serverUrl,
                                                                   overwrite: true,
                                                                   session: NCSession.shared.getSession(account: metadata.account),
@@ -259,7 +259,7 @@ class NCNetworkingProcess {
                 NCNetworking.shared.notifyDelegates(forScene: sceneIdentifier) { delegate in
                     delegate.transferChange(status: self.global.networkingStatusCreateFolder,
                                             metadata: metadata,
-                                            error: errorCreateFolder)
+                                            error: resultsCreateFolder.error)
                 } others: { delegate in
                     delegate.transferReloadData(serverUrl: metadata.serverUrl)
                 }
@@ -267,7 +267,7 @@ class NCNetworkingProcess {
                 NCNetworking.shared.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusCreateFolder,
                                             metadata: metadata,
-                                            error: errorCreateFolder)
+                                            error: resultsCreateFolder.error)
                 }
             }
 

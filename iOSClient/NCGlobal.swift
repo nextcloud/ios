@@ -225,6 +225,8 @@ final class NCGlobal: Sendable {
     let errorUnauthorizedFilesPasscode: Int     = -99993
     let errorDisableFilesApp: Int               = -99992
     let errorUnexpectedResponseFromDB: Int      = -99991
+    let errorIncorrectFileName: Int             = -99990
+
     // E2EE
     let errorE2EENotEnabled: Int                = -98000
     let errorE2EEVersion: Int                   = -98001

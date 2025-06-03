@@ -263,21 +263,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         if let metadatasWaitCreateFolder {
             for metadata in metadatasWaitCreateFolder {
-                let errorCreateFolder = await NCNetworking.shared.createFolder(fileName: metadata.fileName,
-                                                                               serverUrl: metadata.serverUrl,
-                                                                               overwrite: true,
-                                                                               session: NCSession.shared.getSession(account: metadata.account),
-                                                                               selector: metadata.sessionSelector)
+                let resultsCreateFolder = await NCNetworking.shared.createFolder(fileName: metadata.fileName,
+                                                                                 serverUrl: metadata.serverUrl,
+                                                                                 overwrite: true,
+                                                                                 session: NCSession.shared.getSession(account: metadata.account),
+                                                                                 selector: metadata.sessionSelector)
 
-                NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Create auto upload folder with \(errorCreateFolder.errorCode)")
-
-                guard errorCreateFolder == .success else {
+                guard resultsCreateFolder.error == .success else {
+                    let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Create auto upload folder \(serverUrl) with error: \(resultsCreateFolder.error.errorCode)")
                     return numTransfers
                 }
 
-                numTransfers += 1
+                if resultsCreateFolder.serverExists == false {
+                    numTransfers += 1
+                }
             }
-        } else {
+        }
+
+        if numTransfers == 0 {
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] No creations folders required")
         }
 
@@ -306,7 +310,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         } else {
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Uploading is full")
-            numTransfers = counterUploading
+            return 0
         }
 
         return numTransfers
