@@ -45,39 +45,39 @@ class NCPermissions: NSObject {
     // Check https://docs.nextcloud.com/server/latest/developer_manual/client_apis/OCS/ocs-share-api.html#share-attributes
     let permissionDownloadShare: Int = 0
 
-    func isPermissionToRead(_ permission: Int) -> Bool {
+    func hasPermissionToRead(_ permission: Int) -> Bool {
         return ((permission & permissionReadShare) > 0)
     }
 
-    func isPermissionToCanDelete(_ permission: Int) -> Bool {
+    func hasPermissionToDelete(_ permission: Int) -> Bool {
         return ((permission & permissionDeleteShare) > 0)
     }
 
-    func isPermissionToCanCreate(_ permission: Int) -> Bool {
+    func hasPermissionToCreate(_ permission: Int) -> Bool {
         return ((permission & permissionCreateShare) > 0)
     }
 
-    func isPermissionToCanEdit(_ permission: Int) -> Bool {
+    func hasPermissionToEdit(_ permission: Int) -> Bool {
         return ((permission & permissionEditShare) > 0)
     }
 
-    func isPermissionToCanShare(_ permission: Int) -> Bool {
+    func hasPermissionToShare(_ permission: Int) -> Bool {
         return ((permission & permissionShareShare) > 0)
     }
 
     func isAnyPermissionToEdit(_ permission: Int) -> Bool {
-        let canCreate = isPermissionToCanCreate(permission)
-        let canEdit = isPermissionToCanEdit(permission)
-        let canDelete = isPermissionToCanDelete(permission)
+        let canCreate = hasPermissionToCreate(permission)
+        let canEdit = hasPermissionToEdit(permission)
+        let canDelete = hasPermissionToDelete(permission)
         return canCreate || canEdit || canDelete
     }
 
     /// "Can edit" means it has can read, create, edit, and delete.
     func canEdit(_ permission: Int, isDirectory: Bool) -> Bool {
-        let canRead   = isPermissionToRead(permission)
-        let canCreate = isDirectory ? isPermissionToCanCreate(permission) : true
-        let canEdit = isPermissionToCanEdit(permission)
-        let canDelete = isDirectory ? isPermissionToCanDelete(permission) : true
+        let canRead   = hasPermissionToRead(permission)
+        let canCreate = isDirectory ? hasPermissionToCreate(permission) : true
+        let canEdit = hasPermissionToEdit(permission)
+        let canDelete = isDirectory ? hasPermissionToDelete(permission) : true
         return canCreate && canEdit && canRead && canDelete
     }
 
