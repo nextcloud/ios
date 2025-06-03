@@ -92,6 +92,15 @@ extension NCManageDatabase {
         }
     }
 
+    func getTableAvatarAsync(fileName: String) async -> tableAvatar? {
+        return await performRealmRead { realm in
+            realm.objects(tableAvatar.self)
+                .filter("fileName == %@", fileName)
+                .first
+                .map { tableAvatar(value: $0) }
+        }
+    }
+
     func getImageAvatarLoaded(fileName: String) -> (image: UIImage?, tblAvatar: tableAvatar?) {
         let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
         let image = UIImage(contentsOfFile: fileNameLocalPath)

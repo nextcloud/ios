@@ -90,7 +90,8 @@ extension NCNetworking {
         /// DELETE
         ///
         if metadata.status == global.metadataStatusWaitDelete {
-            database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusNormal)
+            let metadata = database.setMetadataStatus(metadata: metadata,
+                                                      status: global.metadataStatusNormal)
 
             NCNetworking.shared.notifyAllDelegates { delegate in
                 delegate.transferReloadData(serverUrl: metadata.serverUrl)
@@ -351,10 +352,9 @@ extension NCNetworking {
 
             if !foundTask {
                 if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
-                    self.database.setMetadataSession(ocId: metadata.ocId,
+                    self.database.setMetadataSession(metadata: metadata,
                                                      sessionError: "",
-                                                     status: self.global.metadataStatusWaitUpload,
-                                                     sync: false)
+                                                     status: self.global.metadataStatusWaitUpload)
                 } else {
                     self.database.deleteMetadataOcId(metadata.ocId)
                 }
@@ -400,10 +400,9 @@ extension NCNetworking {
 
             if !foundTask {
                 if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
-                    self.database.setMetadataSession(ocId: metadata.ocId,
+                    self.database.setMetadataSession(metadata: metadata,
                                                      sessionError: "",
-                                                     status: self.global.metadataStatusWaitUpload,
-                                                     sync: false)
+                                                     status: self.global.metadataStatusWaitUpload)
                 } else {
                     self.database.deleteMetadataOcId(metadata.ocId)
                 }
@@ -432,12 +431,11 @@ extension NCNetworking {
             }
 
             if !foundTask {
-                self.database.setMetadataSession(ocId: metadata.ocId,
+                self.database.setMetadataSession(metadata: metadata,
                                                  session: "",
                                                  sessionError: "",
                                                  selector: "",
-                                                 status: self.global.metadataStatusNormal,
-                                                 sync: false)
+                                                 status: self.global.metadataStatusNormal)
             }
         }
 
@@ -462,12 +460,11 @@ extension NCNetworking {
             }
 
             if !foundTask {
-                self.database.setMetadataSession(ocId: metadata.ocId,
+                self.database.setMetadataSession(metadata: metadata,
                                                  session: "",
                                                  sessionError: "",
                                                  selector: "",
-                                                 status: self.global.metadataStatusNormal,
-                                                 sync: false)
+                                                 status: self.global.metadataStatusNormal)
             }
         }
     }

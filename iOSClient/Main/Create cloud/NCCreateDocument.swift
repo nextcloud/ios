@@ -100,7 +100,7 @@ class NCCreateDocument: NSObject {
                 options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
             }
 
-            let results = await NextcloudKit.shared.textGetListOfTemplates(account: account, options: options)
+            let results = await NextcloudKit.shared.textGetListOfTemplatesAsync(account: account, options: options)
             if results.error == .success, let resultTemplates = results.templates {
                 for template in resultTemplates {
                     let temp = NKEditorTemplates()
@@ -138,7 +138,7 @@ class NCCreateDocument: NSObject {
         }
 
         if editorId == global.editorCollabora {
-            let results = await NextcloudKit.shared.getTemplatesRichdocuments(typeTemplate: templateId, account: account)
+            let results = await NextcloudKit.shared.getTemplatesRichdocumentsAsync(typeTemplate: templateId, account: account)
             if results.error == .success {
                 for template in results.templates! {
                     let temp = NKEditorTemplates()

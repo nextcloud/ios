@@ -124,16 +124,16 @@ extension NCNetworking {
         NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, account: metadata.account, options: options, requestHandler: { request in
             requestHandler(request)
         }, taskHandler: { task in
-            if let metadata = self.database.setMetadataSession(ocId: metadata.ocId,
-                                                               sessionTaskIdentifier: task.taskIdentifier,
-                                                               status: self.global.metadataStatusUploading,
-                                                               sync: false) {
-                self.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusUploading,
-                                            metadata: metadata,
-                                            error: .success)
-                }
+            let metadata = self.database.setMetadataSession(metadata: metadata,
+                                                            sessionTaskIdentifier: task.taskIdentifier,
+                                                            status: self.global.metadataStatusUploading)
+
+            self.notifyAllDelegates { delegate in
+                delegate.transferChange(status: self.global.networkingStatusUploading,
+                                        metadata: metadata,
+                                        error: .success)
             }
+
             start()
         }, progressHandler: { progress in
             self.notifyAllDelegates { delegate in
@@ -190,10 +190,9 @@ extension NCNetworking {
             }
         } requestHandler: { _ in
         } taskHandler: { task in
-            self.database.setMetadataSession(ocId: metadata.ocId,
+            self.database.setMetadataSession(metadata: metadata,
                                              sessionTaskIdentifier: task.taskIdentifier,
-                                             status: self.global.metadataStatusUploading,
-                                             sync: false)
+                                             status: self.global.metadataStatusUploading)
         } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
             self.notifyAllDelegates { delegate in
                 delegate.transferProgressDidUpdate(progress: Float(fractionCompleted),
@@ -239,15 +238,14 @@ extension NCNetworking {
             let (task, error) = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, account: metadata.account, sessionIdentifier: metadata.session)
             if let task, error == .success {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
-                if let metadata = self.database.setMetadataSession(ocId: metadata.ocId,
-                                                                   sessionTaskIdentifier: task.taskIdentifier,
-                                                                   status: self.global.metadataStatusUploading,
-                                                                   sync: false) {
-                    self.notifyAllDelegates { delegate in
-                        delegate.transferChange(status: self.global.networkingStatusUploading,
-                                                metadata: metadata,
-                                                error: .success)
-                    }
+                let metadata = self.database.setMetadataSession(metadata: metadata,
+                                                                sessionTaskIdentifier: task.taskIdentifier,
+                                                                status: self.global.metadataStatusUploading)
+
+                self.notifyAllDelegates { delegate in
+                    delegate.transferChange(status: self.global.networkingStatusUploading,
+                                            metadata: metadata,
+                                            error: .success)
                 }
             } else {
                 self.database.deleteMetadataOcId(metadata.ocId, sync: false)
@@ -352,7 +350,7 @@ extension NCNetworking {
             metadata.status = self.global.metadataStatusNormal
 
             self.database.deleteMetadata(predicate: NSPredicate(format: "ocIdTransfer == %@", metadata.ocIdTransfer), sync: false)
-            metadata = self.database.addMetadataAndReturn(metadata, sync: false)
+            metadata = self.database.addMetadata(metadata)
 
             if selector == self.global.selectorUploadFileNODelete {
 #if EXTENSION
@@ -425,13 +423,12 @@ extension NCNetworking {
                             let atpath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileName
                             let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + newFileName
                             self.utilityFileSystem.moveFile(atPath: atpath, toPath: toPath)
-                            self.database.setMetadataSession(ocId: metadata.ocId,
+                            self.database.setMetadataSession(metadata: metadata,
                                                              newFileName: newFileName,
                                                              sessionTaskIdentifier: 0,
                                                              sessionError: "",
                                                              status: self.global.metadataStatusWaitUpload,
-                                                             errorCode: error.errorCode,
-                                                             sync: false)
+                                                             errorCode: error.errorCode)
                         }))
                         alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive, handler: { _ in
                             self.uploadCancelFile(metadata: metadata)
@@ -458,18 +455,18 @@ extension NCNetworking {
                 }
 #endif
             } else {
-                if let metadata = self.database.setMetadataSession(ocId: metadata.ocId,
-                                                                   sessionTaskIdentifier: 0,
-                                                                   sessionError: error.errorDescription,
-                                                                   status: self.global.metadataStatusUploadError,
-                                                                   errorCode: error.errorCode,
-                                                                   sync: false) {
-                    self.notifyAllDelegates { delegate in
-                        delegate.transferChange(status: self.global.networkingStatusUploaded,
-                                                metadata: metadata,
-                                                error: error)
-                    }
+                let metadata = self.database.setMetadataSession(metadata: metadata,
+                                                                sessionTaskIdentifier: 0,
+                                                                sessionError: error.errorDescription,
+                                                                status: self.global.metadataStatusUploadError,
+                                                                errorCode: error.errorCode)
+
+                self.notifyAllDelegates { delegate in
+                    delegate.transferChange(status: self.global.networkingStatusUploaded,
+                                            metadata: metadata,
+                                            error: error)
                 }
+
                 // Client Diagnostic
                 if error.errorCode == self.global.errorInternalServerError {
                     self.database.addDiagnostic(account: metadata.account,

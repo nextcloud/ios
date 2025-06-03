@@ -60,7 +60,7 @@ extension NCNetworking {
         if livePhoto {
             livePhotoFileId = metadataLast.fileId
         }
-        let resultsMetadataFirst = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePathFirst, livePhotoFile: livePhotoFileId, account: metadataFirst.account)
+        let resultsMetadataFirst = await NextcloudKit.shared.setLivephotoAsync(serverUrlfileNamePath: serverUrlfileNamePathFirst, livePhotoFile: livePhotoFileId, account: metadataFirst.account)
         if resultsMetadataFirst.error == .success {
             database.setMetadataLivePhotoByServer(account: metadataFirst.account, ocId: metadataFirst.ocId, livePhotoFile: livePhotoFileId, sync: false)
         }
@@ -70,7 +70,7 @@ extension NCNetworking {
         if livePhoto {
             livePhotoFileId = metadataFirst.fileId
         }
-        let resultsMetadataLast = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePathLast, livePhotoFile: livePhotoFileId, account: metadataLast.account)
+        let resultsMetadataLast = await NextcloudKit.shared.setLivephotoAsync(serverUrlfileNamePath: serverUrlfileNamePathLast, livePhotoFile: livePhotoFileId, account: metadataLast.account)
         if resultsMetadataLast.error == .success {
             database.setMetadataLivePhotoByServer(account: metadataLast.account, ocId: metadataLast.ocId, livePhotoFile: livePhotoFileId, sync: false)
         }

@@ -96,7 +96,10 @@ extension NCNetworking {
                 self.database.deleteDownloadLimit(byAccount: metadata.account, shareToken: share.token, sync: false)
 
                 if let receivedDownloadLimit = file.downloadLimits.first(where: { $0.token == share.token }) {
-                    self.database.createDownloadLimit(account: metadata.account, count: receivedDownloadLimit.count, limit: receivedDownloadLimit.limit, token: receivedDownloadLimit.token, sync: false)
+                    self.database.createDownloadLimit(account: metadata.account,
+                                                      count: receivedDownloadLimit.count,
+                                                      limit: receivedDownloadLimit.limit,
+                                                      token: receivedDownloadLimit.token)
                 }
             }
 
@@ -216,7 +219,7 @@ extension NCNetworking {
         let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
 
         func writeDirectoryMetadata(_ metadata: tableMetadata) {
-            self.database.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", session.account, fileName, serverUrl))
+            self.database.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", session.account, fileName, serverUrl), sync: false)
             self.database.addMetadata(metadata, sync: false)
             self.database.addDirectory(e2eEncrypted: metadata.e2eEncrypted,
                                        favorite: metadata.favorite,
@@ -236,7 +239,7 @@ extension NCNetworking {
         }
 
         /* create folder */
-        let resultCreateFolder = await NextcloudKit.shared.createFolder(serverUrlFileName: fileNameFolderUrl, account: session.account, options: options)
+        let resultCreateFolder = await NextcloudKit.shared.createFolderAsync(serverUrlFileName: fileNameFolderUrl, account: session.account, options: options)
         if resultCreateFolder.error == .success {
             let resultReadFile = await readFile(serverUrlFileName: fileNameFolderUrl, account: session.account)
             if resultReadFile.error == .success,
@@ -380,7 +383,8 @@ extension NCNetworking {
                 }
                 return
             }
-            self.database.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusWaitDelete)
+            self.database.setMetadataStatus(metadata: metadata,
+                                            status: NCGlobal.shared.metadataStatusWaitDelete)
         }
     }
 

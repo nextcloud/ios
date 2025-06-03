@@ -205,20 +205,18 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                             NCActivityIndicator.shared.start(backgroundView: view)
                             NextcloudKit.shared.download(serverUrlFileName: url, fileNameLocalPath: fileNameLocalPath, account: self.metadata.account, requestHandler: { _ in
                             }, taskHandler: { task in
-                                self.database.setMetadataSession(ocId: self.metadata.ocId,
+                                self.database.setMetadataSession(metadata: self.metadata,
                                                                  sessionTaskIdentifier: task.taskIdentifier,
-                                                                 status: self.global.metadataStatusDownloading,
-                                                                 sync: false)
+                                                                 status: self.global.metadataStatusDownloading)
                             }, progressHandler: { _ in
                             }, completionHandler: { account, etag, _, _, responseData, _, error in
                                 NCActivityIndicator.shared.stop()
-                                self.database.setMetadataSession(ocId: self.metadata.ocId,
+                                self.database.setMetadataSession(metadata: self.metadata,
                                                                  session: "",
                                                                  sessionTaskIdentifier: 0,
                                                                  sessionError: "",
                                                                  status: self.global.metadataStatusNormal,
-                                                                 etag: etag,
-                                                                 sync: false)
+                                                                 etag: etag)
                                 if error == .success && account == self.metadata.account {
                                     var item = fileNameLocalPath
 

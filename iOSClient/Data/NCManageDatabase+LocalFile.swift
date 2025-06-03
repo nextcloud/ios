@@ -156,6 +156,15 @@ extension NCManageDatabase {
         }
     }
 
+    func getTableLocalFileAsync(predicate: NSPredicate) async -> tableLocalFile? {
+        await performRealmRead { realm in
+            realm.objects(tableLocalFile.self)
+                .filter(predicate)
+                .first
+                .map { tableLocalFile(value: $0) }
+        }
+    }
+
     func getResultTableLocalFile(predicate: NSPredicate) -> tableLocalFile? {
         return performRealmRead { realm in
             realm.objects(tableLocalFile.self)
@@ -193,6 +202,15 @@ extension NCManageDatabase {
                     .sorted(byKeyPath: sorted, ascending: ascending)
                     .map { tableLocalFile(value: $0) }
             )
+        } ?? []
+    }
+
+    func getTableLocalFilesAsync(predicate: NSPredicate, sorted: String, ascending: Bool) async -> [tableLocalFile] {
+        await performRealmRead { realm in
+            realm.objects(tableLocalFile.self)
+                .filter(predicate)
+                .sorted(byKeyPath: sorted, ascending: ascending)
+                .map { tableLocalFile(value: $0) }
         } ?? []
     }
 

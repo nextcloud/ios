@@ -122,7 +122,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
         // CREATE FOLDER
         //
-        let resultsCreateFolder = await NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName, account: session.account, options: NKRequestOptions(customHeader: ["e2e-token": e2eToken]))
+        let resultsCreateFolder = await NextcloudKit.shared.createFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account, options: NKRequestOptions(customHeader: ["e2e-token": e2eToken]))
         guard resultsCreateFolder.error == .success, let ocId = resultsCreateFolder.ocId, let fileId = utility.ocIdToFileId(ocId: ocId) else {
             await networkingE2EE.unlock(account: session.account, serverUrl: serverUrl)
             return resultsCreateFolder.error
@@ -130,7 +130,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
         // SET FOLDER AS E2EE
         //
-        let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolder(fileId: fileId, delete: false, account: session.account, options: NCNetworkingE2EE().getOptions(account: session.account))
+        let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolderAsync(fileId: fileId, delete: false, account: session.account, options: NCNetworkingE2EE().getOptions(account: session.account))
         guard resultsMarkE2EEFolder.error == .success  else {
             await networkingE2EE.unlock(account: session.account, serverUrl: serverUrl)
             return resultsMarkE2EEFolder.error
@@ -142,7 +142,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
         // WRITE DB (DIRECTORY - METADATA)
         //
-        let resultsReadFileOrFolder = await NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", account: session.account)
+        let resultsReadFileOrFolder = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrlFileName, depth: "0", account: session.account)
         guard resultsReadFileOrFolder.error == .success, let file = resultsReadFileOrFolder.files?.first else {
             await networkingE2EE.unlock(account: session.account, serverUrl: serverUrl)
             return resultsReadFileOrFolder.error

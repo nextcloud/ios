@@ -55,17 +55,10 @@ extension NCNetworking {
                               requestHandler: @escaping (_ request: DownloadRequest) -> Void = { _ in },
                               progressHandler: @escaping (_ progress: Progress) -> Void = { _ in },
                               completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void = { _, _ in }) {
-        var metadata = metadata
         var downloadTask: URLSessionTask?
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
         let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-
-        if let metadataExists = database.getMetadataFromOcId(metadata.ocId) {
-            metadata = metadataExists
-        } else {
-            metadata = database.addMetadataAndReturn(metadata)
-        }
 
         if metadata.status == global.metadataStatusDownloading || metadata.status == global.metadataStatusUploading {
             return completion(nil, NKError())
@@ -75,17 +68,16 @@ extension NCNetworking {
             requestHandler(request)
         }, taskHandler: { task in
             downloadTask = task
-            if let metadata = self.database.setMetadataSession(ocId: metadata.ocId,
-                                                               sessionTaskIdentifier: task.taskIdentifier,
-                                                               status: self.global.metadataStatusDownloading,
-                                                               sync: false) {
+            let metadata = self.database.setMetadataSession(metadata: metadata,
+                                                            sessionTaskIdentifier: task.taskIdentifier,
+                                                            status: self.global.metadataStatusDownloading)
 
-                self.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusDownloading,
-                                            metadata: metadata,
-                                            error: .success)
-                }
+            self.notifyAllDelegates { delegate in
+                delegate.transferChange(status: self.global.networkingStatusDownloading,
+                                        metadata: metadata,
+                                        error: .success)
             }
+
             start()
         }, progressHandler: { progress in
             self.notifyAllDelegates { delegate in
@@ -130,24 +122,23 @@ extension NCNetworking {
         let (task, error) = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account)
 
         if let task, error == .success {
-            if let metadata = database.setMetadataSession(ocId: metadata.ocId,
-                                                          sessionTaskIdentifier: task.taskIdentifier,
-                                                          status: self.global.metadataStatusDownloading,
-                                                          sync: false) {
-                self.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusDownloading,
-                                            metadata: metadata,
-                                            error: .success)
-                }
+            let metadata = database.setMetadataSession(metadata: metadata,
+                                                       sessionTaskIdentifier: task.taskIdentifier,
+                                                       status: self.global.metadataStatusDownloading)
+
+            self.notifyAllDelegates { delegate in
+                delegate.transferChange(status: self.global.networkingStatusDownloading,
+                                        metadata: metadata,
+                                        error: .success)
             }
+
         } else {
-            database.setMetadataSession(ocId: metadata.ocId,
+            database.setMetadataSession(metadata: metadata,
                                         session: "",
                                         sessionTaskIdentifier: 0,
                                         sessionError: "",
                                         selector: "",
-                                        status: self.global.metadataStatusNormal,
-                                        sync: false)
+                                        status: self.global.metadataStatusNormal)
         }
         completion(error)
     }
@@ -190,19 +181,19 @@ extension NCNetworking {
                 }
 #endif
                 self.database.addLocalFile(metadata: metadata, sync: false)
-                if let metadata = self.database.setMetadataSession(ocId: metadata.ocId,
-                                                                   session: "",
-                                                                   sessionTaskIdentifier: 0,
-                                                                   sessionError: "",
-                                                                   status: self.global.metadataStatusNormal,
-                                                                   etag: etag,
-                                                                   sync: false) {
-                    self.notifyAllDelegates { delegate in
-                        delegate.transferChange(status: self.global.networkingStatusDownloaded,
-                                                metadata: metadata,
-                                                error: error)
-                    }
+                let metadata = self.database.setMetadataSession(metadata: metadata,
+                                                                session: "",
+                                                                sessionTaskIdentifier: 0,
+                                                                sessionError: "",
+                                                                status: self.global.metadataStatusNormal,
+                                                                etag: etag)
+
+                self.notifyAllDelegates { delegate in
+                    delegate.transferChange(status: self.global.networkingStatusDownloaded,
+                                            metadata: metadata,
+                                            error: error)
                 }
+
             } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
                 do {
                     try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
@@ -210,32 +201,29 @@ extension NCNetworking {
                 self.database.deleteLocalFileOcId(metadata.ocId, sync: false)
                 self.database.deleteMetadatas([metadata], sync: false)
             } else if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
-                if let metadata = self.database.setMetadataSession(ocId: metadata.ocId,
-                                                                   session: "",
-                                                                   sessionTaskIdentifier: 0,
-                                                                   sessionError: "",
-                                                                   selector: "",
-                                                                   status: self.global.metadataStatusNormal,
-                                                                   sync: false) {
-                    self.notifyAllDelegates { delegate in
-                        delegate.transferChange(status: self.global.networkingStatusDownloadCancel,
-                                                metadata: metadata,
-                                                error: .success)
-                    }
+                let metadata = self.database.setMetadataSession(metadata: metadata,
+                                                                session: "",
+                                                                sessionTaskIdentifier: 0,
+                                                                sessionError: "",
+                                                                selector: "",
+                                                                status: self.global.metadataStatusNormal)
+                self.notifyAllDelegates { delegate in
+                    delegate.transferChange(status: self.global.networkingStatusDownloadCancel,
+                                            metadata: metadata,
+                                            error: .success)
                 }
             } else {
-                if let metadata = self.database.setMetadataSession(ocId: metadata.ocId,
-                                                                   session: "",
-                                                                   sessionTaskIdentifier: 0,
-                                                                   sessionError: "",
-                                                                   selector: "",
-                                                                   status: self.global.metadataStatusNormal,
-                                                                   sync: false) {
-                    self.notifyAllDelegates { delegate in
-                        delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
-                                                metadata: metadata,
-                                                error: error)
-                    }
+                let metadata = self.database.setMetadataSession(metadata: metadata,
+                                                                session: "",
+                                                                sessionTaskIdentifier: 0,
+                                                                sessionError: "",
+                                                                selector: "",
+                                                                status: self.global.metadataStatusNormal)
+
+                self.notifyAllDelegates { delegate in
+                    delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
+                                            metadata: metadata,
+                                            error: error)
                 }
             }
         }

@@ -28,17 +28,17 @@ class NCNetworkingE2EEMarkFolder: NSObject {
 
     func markFolderE2ee(account: String, fileName: String, serverUrl: String, userId: String) async -> NKError {
         let serverUrlFileName = serverUrl + "/" + fileName
-        let resultsReadFileOrFolder = await NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", account: account)
+        let resultsReadFileOrFolder = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrlFileName, depth: "0", account: account)
         guard resultsReadFileOrFolder.error == .success,
               var file = resultsReadFileOrFolder.files?.first else {
             return resultsReadFileOrFolder.error
         }
-        let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolder(fileId: file.fileId, delete: false, account: account, options: NCNetworkingE2EE().getOptions(account: account))
+        let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolderAsync(fileId: file.fileId, delete: false, account: account, options: NCNetworkingE2EE().getOptions(account: account))
         guard resultsMarkE2EEFolder.error == .success else { return resultsMarkE2EEFolder.error }
 
         file.e2eEncrypted = true
 
-        let metadata = self.database.addMetadataAndReturn(self.database.convertFileToMetadata(file, isDirectoryE2EE: false))
+        let metadata = self.database.addMetadata(self.database.convertFileToMetadata(file, isDirectoryE2EE: false))
 
         self.database.addDirectory(e2eEncrypted: true, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
         self.database.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrlFileName))

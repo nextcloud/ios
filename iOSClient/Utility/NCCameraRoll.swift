@@ -49,7 +49,7 @@ class NCCameraRoll: NSObject {
             }
             metadataSource.isExtractFile = true
 
-            metadatas.append(self.database.addMetadataAndReturn(metadataSource))
+            metadatas.append(self.database.addMetadata(metadataSource))
 
             return completition(metadatas)
         }
@@ -63,7 +63,7 @@ class NCCameraRoll: NSObject {
                 if metadata.isLivePhoto, fetchAssets.count > 0 {
                     self.createMetadataLivePhoto(metadata: metadata, asset: fetchAssets.firstObject) { metadata in
                         if let metadata {
-                            metadatas.append(self.database.addMetadataAndReturn(metadata))
+                            metadatas.append(self.database.addMetadata(metadata))
                         }
                         completition(metadatas)
                     }
@@ -88,7 +88,7 @@ class NCCameraRoll: NSObject {
                                                    modifyMetadataForUpload: Bool,
                                                    completion: @escaping (_ metadata: tableMetadata?, _ fileNamePath: String?, _ error: Bool) -> Void) {
         var fileNamePath: String?
-        var metadata = metadata
+        var metadata = tableMetadata(value: metadata)
         var compatibilityFormat: Bool = false
         var chunkSize = NCGlobal.shared.chunkSizeMBCellular
         if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
@@ -110,7 +110,7 @@ class NCCameraRoll: NSObject {
                         metadata.session = NCNetworking.shared.sessionUpload
                     }
                     metadata.isExtractFile = true
-                    metadata = self.database.addMetadataAndReturn(metadata)
+                    metadata = self.database.addMetadata(metadata)
                 }
                 completion(metadata, fileNamePath, error)
             }
@@ -312,7 +312,7 @@ class NCCameraRoll: NSObject {
                 metadataLivePhoto.date = metadata.date
                 metadataLivePhoto.uploadDate = metadata.uploadDate
 
-                return completion(self.database.addMetadataAndReturn(metadataLivePhoto))
+                return completion(self.database.addMetadata(metadataLivePhoto))
             }
         }
     }

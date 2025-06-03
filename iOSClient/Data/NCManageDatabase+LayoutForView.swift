@@ -63,10 +63,10 @@ extension NCManageDatabase {
     }
 
     @discardableResult
-    func setLayoutForView(layoutForView: NCDBLayoutForView, sync: Bool = true) -> NCDBLayoutForView? {
+    func setLayoutForView(layoutForView: NCDBLayoutForView) -> NCDBLayoutForView? {
         let object = NCDBLayoutForView(value: layoutForView)
 
-        performRealmWrite(sync: sync) { realm in
+        performRealmWrite { realm in
             realm.add(object, update: .all)
         }
 
