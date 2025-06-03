@@ -188,32 +188,35 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func handleAppRefresh(_ task: BGAppRefreshTask) {
         NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start background refresh task")
+        scheduleAppRefresh()
+        isAppSuspending = false
 
         task.expirationHandler = {
-            // Pulisci risorse o annulla operazioni in corso
+            // clear resource in progress
         }
 
         task.setTaskCompleted(success: true)
-        scheduleAppRefresh()
     }
 
     func handleProcessingTask(_ task: BGProcessingTask) {
         NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start background processing task")
+        scheduleAppProcessing()
+        isAppSuspending = false
 
         task.expirationHandler = {
-            // Pulisci risorse o annulla operazioni in corso
+            // clear resource in progress
         }
 
         Task {
-            await autoUpload()
+            let numTransfers = await autoUpload()
+            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Background processing task with \(numTransfers) transfers")
 
             task.setTaskCompleted(success: true)
-            scheduleAppProcessing()
         }
     }
 
-    func autoUpload() async {
-        isAppSuspending = false
+    func autoUpload() async -> Int {
+        var numTransfers: Int = 0
         func initAutoUpload(controller: NCMainTabBarController? = nil, account: String) async -> Int {
             await withUnsafeContinuation({ continuation in
                 NCAutoUpload.shared.initAutoUpload(controller: controller, account: account) { num in
@@ -224,7 +227,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         guard let tblAccount = NCManageDatabase.shared.getActiveTableAccount()
         else {
-            return
+            return numTransfers
         }
 
         /// AUTO UPLOAD ONLY FOR NEW PHOTO
@@ -247,10 +250,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 NextcloudKit.shared.nkCommonInstance.writeLog("Create auto upload folder with \(errorCreateFolder.errorCode)")
 
                 guard errorCreateFolder == .success else {
-                    return
+                    return numTransfers
                 }
+
+                numTransfers += 1
             }
-            return
+
+            return numTransfers
         }
 
         let metadatasUploading = await self.database.getResultsMetadatasAsync(predicate: NSPredicate(format: "status == %d", self.global.metadataStatusUploading), limit: nil)
@@ -267,8 +273,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 NCNetworking.shared.upload(metadata: tableMetadata(value: metadata))
 
                 NextcloudKit.shared.nkCommonInstance.writeLog("Create Upload \(metadata.fileName) in \(metadata.serverUrl)")
+
+                numTransfers += 1
             }
+        } else {
+            numTransfers = counterUploading
         }
+
+        return numTransfers
     }
 
     // MARK: - Background Networking Session
