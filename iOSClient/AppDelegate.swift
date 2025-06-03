@@ -250,6 +250,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return numTransfers
         }
 
+        NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Auto upload start with limit \(limitUpload)")
+
         /// INIT AUTO UPLOAD ONLY FOR NEW PHOTO
         if tblAccount.autoUploadOnlyNew {
             let newAutoUpload = await initAutoUpload(account: tblAccount.account)
@@ -275,6 +277,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
                 numTransfers += 1
             }
+        } else {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] No creations folders required")
         }
 
         if let metadatasUploading = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d", self.global.metadataStatusUploading), limit: nil) {
@@ -301,6 +305,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 }
             }
         } else {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Uploading is full")
             numTransfers = counterUploading
         }
 
