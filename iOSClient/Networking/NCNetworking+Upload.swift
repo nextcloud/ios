@@ -240,7 +240,8 @@ extension NCNetworking {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
                 let metadata = self.database.setMetadataSession(metadata: metadata,
                                                                 sessionTaskIdentifier: task.taskIdentifier,
-                                                                status: self.global.metadataStatusUploading)
+                                                                status: self.global.metadataStatusUploading,
+                                                                sync: false)
 
                 self.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusUploading,

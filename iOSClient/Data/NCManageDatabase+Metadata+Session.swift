@@ -20,7 +20,8 @@ extension NCManageDatabase {
                             selector: String? = nil,
                             status: Int? = nil,
                             etag: String? = nil,
-                            errorCode: Int? = nil) -> tableMetadata {
+                            errorCode: Int? = nil,
+                            sync: Bool = true) -> tableMetadata {
         let mutableMetadata = tableMetadata(value: metadata)
 
         if let name = newFileName {
@@ -56,7 +57,7 @@ extension NCManageDatabase {
         if let etag { mutableMetadata.etag = etag }
         if let errorCode { mutableMetadata.errorCode = errorCode }
 
-        performRealmWrite(sync: true) { realm in
+        performRealmWrite(sync: sync) { realm in
             realm.add(mutableMetadata, update: .all)
         }
 

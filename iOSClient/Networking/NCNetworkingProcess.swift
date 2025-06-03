@@ -271,8 +271,8 @@ class NCNetworkingProcess {
                 }
             }
 
-            if errorCreateFolder != .success {
-                return errorCreateFolder
+            if resultsCreateFolder.error != .success {
+                return resultsCreateFolder.error
             }
         }
 
