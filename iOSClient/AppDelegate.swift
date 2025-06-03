@@ -45,6 +45,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var loginFlowV2Endpoint = ""
     var loginFlowV2Login = ""
 
+    let backgroundQueue = DispatchQueue(label: "com.nextcloud.bgTaskQueue")
+
     /// Init 
     let global = NCGlobal.shared
     let database = NCManageDatabase.shared
@@ -99,7 +101,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         review.showStoreReview()
 #endif
 
-        BGTaskScheduler.shared.register(forTaskWithIdentifier: global.refreshTask, using: nil) { task in
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: global.refreshTask, using: backgroundQueue) { task in
             guard let appRefreshTask = task as? BGAppRefreshTask else {
                 task.setTaskCompleted(success: false)
                 return
@@ -107,7 +109,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             self.handleAppRefresh(appRefreshTask)
         }
 
-        BGTaskScheduler.shared.register(forTaskWithIdentifier: global.processingTask, using: nil) { task in
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: global.processingTask, using: backgroundQueue) { task in
             guard let processingTask = task as? BGProcessingTask else {
                 task.setTaskCompleted(success: false)
                 return
