@@ -257,7 +257,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         /// CREATION FOLDERS
-        let metadatasWaitCreateFolder = await self.database.getResultsMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@", self.global.metadataStatusWaitCreateFolder, self.global.selectorUploadAutoUpload), limit: nil)
+        let metadatasWaitCreateFolder = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@", self.global.metadataStatusWaitCreateFolder, self.global.selectorUploadAutoUpload), limit: nil)
 
         if let metadatasWaitCreateFolder {
             for metadata in metadatasWaitCreateFolder {
@@ -277,7 +277,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
 
-        if let metadatasUploading = await self.database.getResultsMetadatasAsync(predicate: NSPredicate(format: "status == %d", self.global.metadataStatusUploading), limit: nil) {
+        if let metadatasUploading = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d", self.global.metadataStatusUploading), limit: nil) {
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Already in uploading \(String(describing: metadatasUploading.count))")
 
             counterUploading = metadatasUploading.count
@@ -290,7 +290,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
             ]
 
-            if let metadatasWaitUpload = await self.database.getResultsMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@ AND chunk == 0", self.global.metadataStatusWaitUpload, self.global.selectorUploadAutoUpload), sortDescriptors: sortDescriptors, limit: limitUpload) {
+            if let metadatasWaitUpload = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@ AND chunk == 0", self.global.metadataStatusWaitUpload, self.global.selectorUploadAutoUpload), sortDescriptors: sortDescriptors, limit: limitUpload) {
 
                 NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] In wait upload \(String(describing: metadatasWaitUpload.count))")
 
