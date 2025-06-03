@@ -67,6 +67,30 @@ extension NCManageDatabase {
         return skipFileNames
     }
 
+    func fetchSkipFileNames(account: String,
+                            autoUploadServerUrlBase: String,
+                            completion: @escaping (Set<String>?) -> Void) {
+        performRealmRead({ realm in
+            var skipFileNames = Set<String>()
+
+            let metadatas = realm.objects(tableMetadata.self)
+                .filter("account == %@ AND autoUploadServerUrlBase == %@ AND status IN %@",
+                        account, autoUploadServerUrlBase, NCGlobal.shared.metadataStatusUploadingAllMode)
+                .map(\.fileNameView)
+
+            let transfers = realm.objects(tableAutoUploadTransfer.self)
+                .filter("account == %@ AND serverUrlBase == %@",
+                        account, autoUploadServerUrlBase)
+                .map(\.fileName)
+
+            skipFileNames.formUnion(metadatas)
+            skipFileNames.formUnion(transfers)
+
+            return skipFileNames
+        }, sync: false, completion: completion)
+    }
+
+
     func fetchLastAutoUploadedDate(account: String, autoUploadServerUrlBase: String) -> Date? {
         performRealmRead { realm in
             realm.objects(tableAutoUploadTransfer.self)
