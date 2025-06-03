@@ -253,10 +253,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         /// INIT AUTO UPLOAD ONLY FOR NEW PHOTO
         if tblAccount.autoUploadOnlyNew {
             let newAutoUpload = await initAutoUpload(account: tblAccount.account)
-            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Auto upload with \(newAutoUpload) uploads")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Auto upload with new \(newAutoUpload) photo or video")
         }
 
-        /// Creation folders
+        /// CREATION FOLDERS
         let metadatasWaitCreateFolder = await self.database.getResultsMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@", self.global.metadataStatusWaitCreateFolder, self.global.selectorUploadAutoUpload), limit: nil)
 
         if let metadatasWaitCreateFolder {
@@ -284,6 +284,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         let limitUpload = NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload - counterUploading
 
+        /// UPLOAD
         if limitUpload > 0 {
             let sortDescriptors = [
                 RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
