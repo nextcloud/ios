@@ -250,12 +250,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return numTransfers
         }
 
-        /// AUTO UPLOAD ONLY FOR NEW PHOTO
+        /// INIT AUTO UPLOAD ONLY FOR NEW PHOTO
         if tblAccount.autoUploadOnlyNew {
             let newAutoUpload = await initAutoUpload(account: tblAccount.account)
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Auto upload with \(newAutoUpload) uploads")
-        } else {
-            return 0
         }
 
         /// Creation folders
