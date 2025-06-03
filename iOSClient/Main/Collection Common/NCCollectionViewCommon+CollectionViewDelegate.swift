@@ -45,7 +45,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         if metadata.directory {
             pushMetadata(metadata)
         } else {
-            let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
+            let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt1024)
 
             if !metadata.isDirectoryE2EE, metadata.isImage || metadata.isAudioOrVideo {
                 let metadatas = self.dataSource.getMetadatas()
@@ -57,15 +57,15 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
             } else if metadata.isAvailableEditorView ||
                       utilityFileSystem.fileProviderStorageExists(metadata) ||
-                      metadata.name == NCGlobal.shared.talkName {
+                        metadata.name == self.global.talkName {
 
                 NCViewer().view(viewController: self, metadata: metadata, image: image)
 
-            } else if NextcloudKit.shared.isNetworkReachable(),
-                      let metadata = database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                session: NCNetworking.shared.sessionDownload,
-                                                                                selector: global.selectorLoadFileView,
-                                                                                sceneIdentifier: self.controller?.sceneIdentifier) {
+            } else if NextcloudKit.shared.isNetworkReachable() {
+                let metadata = database.setMetadataSessionInWaitDownload(metadata: metadata,
+                                                                         session: NCNetworking.shared.sessionDownload,
+                                                                         selector: global.selectorLoadFileView,
+                                                                         sceneIdentifier: self.controller?.sceneIdentifier)
                 if metadata.name == "files" {
                     let hud = NCHud(self.tabBarController?.view)
                     var downloadRequest: DownloadRequest?
@@ -76,7 +76,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                         }
                     }
 
-                    NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
+                    NCNetworking.shared.download(metadata: metadata) {
                     } requestHandler: { request in
                         downloadRequest = request
                     } progressHandler: { progress in
@@ -100,24 +100,23 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath),
-              !metadata.isInvalidated
-        else {
-            return
-        }
-
-        if isEditMode {
-            if let index = fileSelect.firstIndex(of: metadata.ocId) {
-                fileSelect.remove(at: index)
-            } else {
-                fileSelect.append(metadata.ocId)
+        self.dataSource.getMetadata(indexPath: indexPath) { metadata in
+            guard let metadata else {
+                return
             }
-            collectionView.reloadItems(at: [indexPath])
-            tabBarSelect?.update(fileSelect: fileSelect, metadatas: getSelectedMetadatas(), userId: metadata.userId)
-            return
-        }
+            if self.isEditMode {
+                if let index = self.fileSelect.firstIndex(of: metadata.ocId) {
+                    self.fileSelect.remove(at: index)
+                } else {
+                    self.fileSelect.append(metadata.ocId)
+                }
+                self.collectionView.reloadItems(at: [indexPath])
+                self.tabBarSelect?.update(fileSelect: self.fileSelect, metadatas: self.getSelectedMetadatas(), userId: metadata.userId)
+                return
+            }
 
-        self.didSelectMetadata(metadata, withOcIds: true)
+            self.didSelectMetadata(metadata, withOcIds: true)
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
@@ -142,9 +141,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         }
 
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
-            return NCViewerProviderContextMenu(metadata: metadata, image: image)
+            return NCViewerProviderContextMenu(metadata: metadata, image: image, sceneIdentifier: self.sceneIdentifier)
         }, actionProvider: { _ in
-            return NCContextMenu().viewMenu(ocId: metadata.ocId, viewController: self, image: image)
+            let contextMenu = NCContextMenu(metadata: tableMetadata(value: metadata), viewController: self, sceneIdentifier: self.sceneIdentifier, image: image)
+            return contextMenu.viewMenu()
         })
     }
 

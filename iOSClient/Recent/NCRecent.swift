@@ -64,9 +64,10 @@ class NCRecent: NCCollectionViewCommon {
         layoutForView?.sort = "date"
         layoutForView?.ascending = false
 
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
-
-        super.reloadDataSource()
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
+        self.dataSource.caching(metadatas: metadatas) {
+            super.reloadDataSource()
+        }
     }
 
     override func getServerData() {
@@ -137,10 +138,11 @@ class NCRecent: NCCollectionViewCommon {
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
         let lessDateString = dateFormatter.string(from: Date())
         let requestBody = String(format: requestBodyRecent, "/files/" + session.userId, lessDateString)
+        let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: session.account)
 
         NextcloudKit.shared.searchBodyRequest(serverUrl: session.urlBase,
                                               requestBody: requestBody,
-                                              showHiddenFiles: NCKeychain().showHiddenFiles,
+                                              showHiddenFiles: showHiddenFiles,
                                               account: session.account) { task in
             self.dataSourceTask = task
             if self.dataSource.isEmpty() {

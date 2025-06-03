@@ -181,6 +181,9 @@ extension NCShare {
             if let model = try database.getDownloadLimit(byAccount: metadata.account, shareToken: updatedShare.token) {
                 downloadLimit = .limited(limit: model.limit, count: model.count)
             }
+            if let model = try database.getDownloadLimit(byAccount: metadata.account, shareToken: updatedShare.token) {
+                downloadLimit = .limited(limit: model.limit, count: model.count)
+            }
         } catch {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Failed to get download limit from database!")
             return

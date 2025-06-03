@@ -16,10 +16,14 @@ class NCFavoriteNavigationController: NCMainNavigationController {
         }
 
         if collectionViewCommon.layoutKey == global.layoutViewFavorite {
-            return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu])
+            let fileSettings = UIMenu(title: "", options: .displayInline, children: [items.directoryOnTop, items.hiddenFiles])
+
+            return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, fileSettings])
         } else {
-            let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.showDescription])
-            return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu])
+            let fileSettings = UIMenu(title: "", options: .displayInline, children: [items.directoryOnTop, items.hiddenFiles])
+            let additionalSettings = UIMenu(title: "", options: .displayInline, children: [items.showDescription])
+
+            return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, fileSettings, additionalSettings])
         }
     }
 }

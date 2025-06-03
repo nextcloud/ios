@@ -70,7 +70,7 @@ extension NCManageDatabase {
             realm.add(object, update: .all)
         }
 
-        return object
+        return NCDBLayoutForView(value: object)
     }
 
     // MARK: - Realm read

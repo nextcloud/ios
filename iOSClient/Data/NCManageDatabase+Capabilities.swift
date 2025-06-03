@@ -20,8 +20,8 @@ extension NCManageDatabase {
 
     // MARK: - Realm write
 
-    func addCapabilitiesJSon(_ data: Data, account: String) {
-        performRealmWrite { realm in
+    func addCapabilitiesJSon(_ data: Data, account: String, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             let addObject = tableCapabilities()
             addObject.account = account
             addObject.jsondata = data

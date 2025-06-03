@@ -179,6 +179,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
     dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
     let lessDateString = dateFormatter.string(from: Date())
     let requestBody = String(format: requestBodyRecent, "/files/" + activeTableAccount.userId, lessDateString)
+    let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: activeTableAccount.account)
 
     // LOG
     let levelLog = NCKeychain().logLevel
@@ -189,7 +190,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
     NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start \(NCBrandOptions.shared.brand) widget session with level \(levelLog) " + versionNextcloudiOS)
 
     let options = NKRequestOptions(timeout: 30, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-    NextcloudKit.shared.searchBodyRequest(serverUrl: activeTableAccount.urlBase, requestBody: requestBody, showHiddenFiles: NCKeychain().showHiddenFiles, account: activeTableAccount.account, options: options) { _, files, data, error in
+    NextcloudKit.shared.searchBodyRequest(serverUrl: activeTableAccount.urlBase, requestBody: requestBody, showHiddenFiles: showHiddenFiles, account: activeTableAccount.account, options: options) { _, files, data, error in
         Task {
             var datas: [FilesData] = []
             let title = getTitleFilesWidget(tableAccount: activeTableAccount)
@@ -217,9 +218,9 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 // IMAGE
                 image = utility.getImage(ocId: file.ocId, etag: file.etag, ext: NCGlobal.shared.previewExt512)
                 if image == nil, file.hasPreview {
-                    let result = await NCNetworking.shared.downloadPreview(fileId: file.fileId,
-                                                                           account: activeTableAccount.account,
-                                                                           options: options)
+                    let result = await NextcloudKit.shared.downloadPreviewAsync(fileId: file.fileId,
+                                                                                account: activeTableAccount.account,
+                                                                                options: options)
                     if result.error == .success, let data = result.responseData?.data {
                         utility.createImageFileFrom(data: data, ocId: file.ocId, etag: file.etag)
                         image = utility.getImage(ocId: file.ocId, etag: file.etag, ext: NCGlobal.shared.previewExt256)

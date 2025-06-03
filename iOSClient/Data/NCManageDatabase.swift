@@ -16,7 +16,7 @@ protocol DateCompareable {
 final class NCManageDatabase: Sendable {
     static let shared = NCManageDatabase()
 
-    private let realmQueue = DispatchQueue(label: "com.nextcloud.realmQueue")
+    private let realmQueue = DispatchQueue(label: "com.nextcloud.realmQueue") // serial queue
     private let realmQueueKey = DispatchSpecificKey<Bool>()
 
     let utilityFileSystem = NCUtilityFileSystem()
@@ -168,7 +168,7 @@ final class NCManageDatabase: Sendable {
         }
     }
 
-    // MARK: -
+    // MARK: - performRealmRead, performRealmWrite
 
     @discardableResult
     func performRealmRead<T>(_ block: @escaping (Realm) throws -> T?, sync: Bool = true, completion: ((T?) -> Void)? = nil) -> T? {
@@ -245,6 +245,29 @@ final class NCManageDatabase: Sendable {
             realmQueue.async(execute: executionBlock)
         } else {
             realmQueue.sync(execute: executionBlock)
+        }
+    }
+
+    // MARK: - performRealmRead async/await, performRealmWrite async/await
+
+    func performRealmRead<T>(_ block: @escaping (Realm) throws -> T?) async -> T? {
+        await withCheckedContinuation { continuation in
+            _ = self.performRealmRead(block, sync: false) { result in
+                continuation.resume(returning: result)
+            }
+        }
+    }
+
+    func performRealmWrite(_ block: @escaping (Realm) throws -> Void) async {
+        await withCheckedContinuation { continuation in
+            performRealmWrite(sync: false) { realm in
+                do {
+                    try block(realm)
+                } catch {
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm write error: \(error)")
+                }
+                continuation.resume()
+            }
         }
     }
 
@@ -372,6 +395,41 @@ final class NCManageDatabase: Sendable {
             print("Error opening Realm: \(error)")
             return nil
         }
+    }
+
+    // MARK: -
+    // MARK: Utils
+
+    func sortedResultsMetadata(layoutForView: NCDBLayoutForView?, account: String, metadatas: Results<tableMetadata>) -> [tableMetadata] {
+        let layout: NCDBLayoutForView = layoutForView ?? NCDBLayoutForView()
+        let directoryOnTop = NCKeychain().getDirectoryOnTop(account: account)
+        let favoriteOnTop = NCKeychain().getFavoriteOnTop(account: account)
+
+        let sorted = metadatas.sorted { lhs, rhs in
+            if favoriteOnTop, lhs.favorite != rhs.favorite {
+                return lhs.favorite && !rhs.favorite
+            }
+
+            if directoryOnTop, lhs.directory != rhs.directory {
+                return lhs.directory && !rhs.directory
+            }
+
+            switch layout.sort {
+            case "fileName":
+                let result = lhs.fileNameView.localizedStandardCompare(rhs.fileNameView)
+                return layout.ascending ? result == .orderedAscending : result == .orderedDescending
+            case "date":
+                let lhsDate = lhs.date as Date
+                let rhsDate = rhs.date as Date
+                return layout.ascending ? lhsDate < rhsDate : lhsDate > rhsDate
+            case "size":
+                return layout.ascending ? lhs.size < rhs.size : lhs.size > rhs.size
+            default:
+                return true
+            }
+        }
+
+        return Array(sorted)
     }
 
     // MARK: -

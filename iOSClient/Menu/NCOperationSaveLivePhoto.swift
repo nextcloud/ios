@@ -39,15 +39,18 @@ class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
     }
 
     override func start() {
-        guard !isCancelled,
-            let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                     session: NCNetworking.shared.sessionDownload,
-                                                                                     selector: ""),
-            let metadataLive = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadataMOV],
-                                                                                         session: NCNetworking.shared.sessionDownload,
-                                                                                         selector: "") else { return self.finish() }
+        guard !isCancelled else {
+            return self.finish()
+        }
 
-        NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
+        let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(metadata: metadata,
+                                                                                session: NCNetworking.shared.sessionDownload,
+                                                                                selector: "")
+        let metadataLive = NCManageDatabase.shared.setMetadataSessionInWaitDownload(metadata: metadataMOV,
+                                                                                    session: NCNetworking.shared.sessionDownload,
+                                                                                    selector: "")
+
+        NCNetworking.shared.download(metadata: metadata) {
         } requestHandler: { _ in
         } progressHandler: { progress in
             self.hud?.progress(progress.fractionCompleted)
@@ -56,7 +59,7 @@ class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
                 self.hud?.error(text: NSLocalizedString("_livephoto_save_error_", comment: ""))
                 return self.finish()
             }
-            NCNetworking.shared.download(metadata: metadataLive, withNotificationProgressTask: false) {
+            NCNetworking.shared.download(metadata: metadataLive) {
                 self.hud?.setText(text: NSLocalizedString("_download_video_", comment: ""), detailText: self.metadataMOV.fileName)
             } progressHandler: { progress in
                 self.hud?.progress(progress.fractionCompleted)

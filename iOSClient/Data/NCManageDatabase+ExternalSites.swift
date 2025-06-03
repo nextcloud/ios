@@ -21,8 +21,8 @@ extension NCManageDatabase {
 
     // MARK: - Realm Write
 
-    func addExternalSites(_ externalSite: NKExternalSite, account: String) {
-        performRealmWrite { realm in
+    func addExternalSites(_ externalSite: NKExternalSite, account: String, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             let addObject = tableExternalSites()
             addObject.account = account
             addObject.idExternalSite = externalSite.idExternalSite
@@ -35,8 +35,8 @@ extension NCManageDatabase {
         }
     }
 
-    func deleteExternalSites(account: String) {
-        performRealmWrite { realm in
+    func deleteExternalSites(account: String, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             let results = realm.objects(tableExternalSites.self).filter("account == %@", account)
             realm.delete(results)
         }

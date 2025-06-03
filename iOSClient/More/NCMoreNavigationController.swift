@@ -26,8 +26,8 @@ class NCMoreNavigationController: NCMainNavigationController {
         } else if collectionViewCommon?.layoutKey == global.layoutViewGroupfolders, let items = self.createRightMenuActions() {
             return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu])
         } else if collectionViewCommon?.layoutKey == global.layoutViewFiles, let items = self.createRightMenuActions() {
-            let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.showDescription])
-            return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu])
+            let additionalSettings = UIMenu(title: "", options: .displayInline, children: [items.showDescription])
+            return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSettings])
         } else if trashViewController != nil, let items = self.createTrashRightMenuActions() {
             return UIMenu(children: items)
         }

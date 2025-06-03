@@ -281,8 +281,8 @@ extension NCManageDatabase {
         }
     }
 
-    func setAccountUserProfile(account: String, userProfile: NKUserProfile) {
-        performRealmWrite { realm in
+    func setAccountUserProfile(account: String, userProfile: NKUserProfile, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             if let result = realm.objects(tableAccount.self)
                 .filter("account == %@", account)
                 .first {
@@ -321,8 +321,16 @@ extension NCManageDatabase {
         }
     }
 
-    func setAccountUserStatus(userStatusClearAt: Date?, userStatusIcon: String?, userStatusMessage: String?, userStatusMessageId: String?, userStatusMessageIsPredefined: Bool, userStatusStatus: String?, userStatusStatusIsUserDefined: Bool, account: String) {
-        performRealmWrite { realm in
+    func setAccountUserStatus(userStatusClearAt: Date?,
+                              userStatusIcon: String?,
+                              userStatusMessage: String?,
+                              userStatusMessageId: String?,
+                              userStatusMessageIsPredefined: Bool,
+                              userStatusStatus: String?,
+                              userStatusStatusIsUserDefined: Bool,
+                              account: String,
+                              sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             if let result = realm.objects(tableAccount.self)
                 .filter("account == %@", account)
                 .first {

@@ -56,8 +56,9 @@ extension NCManageDatabase {
     /// Create a new download limit object in the database.
     ///
     @discardableResult
-    func createDownloadLimit(account: String, count: Int, limit: Int, token: String) -> TableDownloadLimit? {
+    func createDownloadLimit(account: String, count: Int, limit: Int, token: String) -> TableDownloadLimit {
         let downloadLimit = TableDownloadLimit()
+
         downloadLimit.id = formatId(by: account, token: token)
         downloadLimit.account = account
         downloadLimit.count = count
@@ -78,8 +79,8 @@ extension NCManageDatabase {
     ///     - account: The unique account identifier to namespace the limit.
     ///     - token: The `token` of the associated ``Nextcloud/tableShare/token``.
     ///
-    func deleteDownloadLimit(byAccount account: String, shareToken token: String) {
-        performRealmWrite { realm in
+    func deleteDownloadLimit(byAccount account: String, shareToken token: String, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             if let object = realm.object(ofType: TableDownloadLimit.self, forPrimaryKey: self.formatId(by: account, token: token)) {
                 realm.delete(object)
             }

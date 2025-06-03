@@ -28,20 +28,22 @@ import NextcloudKit
 
 extension NCShareExtension: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return showAlert(description: "_invalid_url_") }
-        let serverUrl = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
-        if metadata.e2eEncrypted && !NCKeychain().isEndToEndEnabled(account: session.account) {
-            showAlert(title: "_info_", description: "_e2e_goto_settings_for_enable_")
-        }
+        self.dataSource.getMetadata(indexPath: indexPath) { metadata in
+            guard let metadata else { return self.showAlert(description: "_invalid_url_") }
+            let serverUrl = self.utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
+            if metadata.e2eEncrypted && !NCKeychain().isEndToEndEnabled(account: self.session.account) {
+                self.showAlert(title: "_info_", description: "_e2e_goto_settings_for_enable_")
+            }
 
-        if let fileNameError = FileNameValidator.checkFileName(metadata.fileNameView, account: session.account) {
-            present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
-            return
-        }
+            if let fileNameError = FileNameValidator.checkFileName(metadata.fileNameView, account: self.session.account) {
+                self.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+                return
+            }
 
-        self.serverUrl = serverUrl
-        reloadDatasource(withLoadFolder: true)
-        setNavigationBar(navigationTitle: metadata.fileNameView)
+            self.serverUrl = serverUrl
+            self.reloadDatasource(withLoadFolder: true)
+            self.setNavigationBar(navigationTitle: metadata.fileNameView)
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {

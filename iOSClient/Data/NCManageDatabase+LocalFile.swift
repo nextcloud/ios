@@ -47,8 +47,8 @@ extension NCManageDatabase {
         }
     }
 
-    func addLocalFile(account: String, etag: String, ocId: String, fileName: String) {
-        performRealmWrite { realm in
+    func addLocalFile(account: String, etag: String, ocId: String, fileName: String, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
            let addObject = tableLocalFile()
            addObject.account = account
            addObject.etag = etag
@@ -61,13 +61,13 @@ extension NCManageDatabase {
        }
     }
 
-    func deleteLocalFileOcId(_ ocId: String?) {
+    func deleteLocalFileOcId(_ ocId: String?, sync: Bool = true) {
         guard let ocId
         else {
             return
         }
 
-        performRealmWrite { realm in
+        performRealmWrite(sync: sync) { realm in
             let results = realm.objects(tableLocalFile.self)
                 .filter("ocId == %@", ocId)
             realm.delete(results)
@@ -151,7 +151,46 @@ extension NCManageDatabase {
 
     func getResultsTableLocalFile(predicate: NSPredicate) -> Results<tableLocalFile>? {
         return performRealmRead { realm in
-            realm.objects(tableLocalFile.self).filter(predicate)
+            realm.objects(tableLocalFile.self)
+                .filter(predicate)
+        }
+    }
+
+    func getTableLocalFileAsync(predicate: NSPredicate) async -> tableLocalFile? {
+        await performRealmRead { realm in
+            realm.objects(tableLocalFile.self)
+                .filter(predicate)
+                .first
+                .map { tableLocalFile(value: $0) }
+        }
+    }
+
+    func getResultTableLocalFile(predicate: NSPredicate) -> tableLocalFile? {
+        return performRealmRead { realm in
+            realm.objects(tableLocalFile.self)
+                .filter(predicate)
+                .first
+        }
+    }
+
+    func getTableLocal(predicate: NSPredicate,
+                       dispatchOnMainQueue: Bool = true,
+                       completion: @escaping (_ localFile: tableLocalFile?) -> Void) {
+        performRealmRead({ realm in
+            return realm.objects(tableLocalFile.self)
+                .filter(predicate)
+                .first
+        }, sync: false) { result in
+            let detachedResult = result.map { tableLocalFile(value: $0) }
+            let deliver: () -> Void = {
+                completion(detachedResult)
+            }
+
+            if dispatchOnMainQueue {
+                DispatchQueue.main.async(execute: deliver)
+            } else {
+                deliver()
+            }
         }
     }
 
@@ -163,6 +202,15 @@ extension NCManageDatabase {
                     .sorted(byKeyPath: sorted, ascending: ascending)
                     .map { tableLocalFile(value: $0) }
             )
+        } ?? []
+    }
+
+    func getTableLocalFilesAsync(predicate: NSPredicate, sorted: String, ascending: Bool) async -> [tableLocalFile] {
+        await performRealmRead { realm in
+            realm.objects(tableLocalFile.self)
+                .filter(predicate)
+                .sorted(byKeyPath: sorted, ascending: ascending)
+                .map { tableLocalFile(value: $0) }
         } ?? []
     }
 

@@ -30,6 +30,7 @@ class NCPermissions: NSObject {
     //
     let permissionReadShare: Int = 1
     let permissionEditShare: Int = 2
+    let permissionEditShare: Int = 2
     let permissionCreateShare: Int = 4
     let permissionDeleteShare: Int = 8
     let permissionShareShare: Int = 16
@@ -40,6 +41,9 @@ class NCPermissions: NSObject {
     let permissionMaxFolderShare: Int = 31
     let permissionDefaultFileRemoteShareNoSupportShareOption: Int = 3
     let permissionDefaultFolderRemoteShareNoSupportShareOption: Int = 15
+
+    // Additional attributes. This also includes the permission to download.
+    // Check https://docs.nextcloud.com/server/latest/developer_manual/client_apis/OCS/ocs-share-api.html#share-attributes
 
     // Additional attributes. This also includes the permission to download.
     // Check https://docs.nextcloud.com/server/latest/developer_manual/client_apis/OCS/ocs-share-api.html#share-attributes
@@ -65,6 +69,7 @@ class NCPermissions: NSObject {
         return ((permission & permissionShareShare) > 0)
     }
 
+
     func isAnyPermissionToEdit(_ permission: Int) -> Bool {
         let canCreate = hasPermissionToCreate(permission)
         let canEdit = hasPermissionToEdit(permission)
@@ -87,11 +92,16 @@ class NCPermissions: NSObject {
 
         if canRead {
             permission = permission + permissionReadShare
+        if canRead {
+            permission = permission + permissionReadShare
         }
+
 
         if canCreate && isDirectory {
             permission = permission + permissionCreateShare
         }
+        if canEdit {
+            permission = permission + permissionEditShare
         if canEdit {
             permission = permission + permissionEditShare
         }
@@ -101,6 +111,7 @@ class NCPermissions: NSObject {
         if canShare {
             permission = permission + permissionShareShare
         }
+
 
         return permission
     }

@@ -304,32 +304,9 @@ final class NCGlobal: Sendable {
     let notificationCenterReloadDataNCShare                     = "reloadDataNCShare"
     let notificationCenterCloseRichWorkspaceWebView             = "closeRichWorkspaceWebView"
     let notificationCenterReloadAvatar                          = "reloadAvatar"
-    let notificationCenterReloadHeader                          = "reloadHeader"
     let notificationCenterClearCache                            = "clearCache"
-    let notificationCenterChangeLayout                          = "changeLayout"                    // userInfo: account, serverUrl, layoutForView
     let notificationCenterCheckUserDelaultErrorDone             = "checkUserDelaultErrorDone"       // userInfo: account, controller
     let notificationCenterUpdateNotification                    = "updateNotification"
-
-    let notificationCenterReloadDataSource                      = "reloadDataSource"                // userInfo: serverUrl?, clearDataSource
-    let notificationCenterGetServerData                         = "getServerData"                   // userInfo: serverUrl?
-
-    let notificationCenterChangeStatusFolderE2EE                = "changeStatusFolderE2EE"          // userInfo: serverUrl
-
-    let notificationCenterDownloadStartFile                     = "downloadStartFile"               // userInfo: ocId, ocIdTransfer, session, serverUrl, account
-    let notificationCenterDownloadedFile                        = "downloadedFile"                  // userInfo: ocId, ocIdTransfer, session, session, serverUrl, account, selector, error
-    let notificationCenterDownloadCancelFile                    = "downloadCancelFile"              // userInfo: ocId, ocIdTransfer, session, serverUrl, account
-
-    let notificationCenterUploadStartFile                       = "uploadStartFile"                 // userInfo: ocId, ocIdTransfer, session, serverUrl, account, fileName, sessionSelector
-    let notificationCenterUploadedFile                          = "uploadedFile"                    // userInfo: ocId, ocIdTransfer, session, serverUrl, account, fileName, ocIdTransfer, error
-    let notificationCenterUploadedLivePhoto                     = "uploadedLivePhoto"               // userInfo: ocId, ocIdTransfer, session, serverUrl, account, fileName, ocIdTransfer, error
-    let notificationCenterUploadCancelFile                      = "uploadCancelFile"                // userInfo: ocId, ocIdTransfer, session, serverUrl, account
-
-    let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, withPush, sceneIdentifier
-    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: [ocId], error
-    let notificationCenterCopyMoveFile                          = "copyMoveFile"                    // userInfo: [ocId] serverUrl, account, dragdrop, type (copy, move)
-    let notificationCenterRenameFile                            = "renameFile"                      // userInfo: serverUrl, account, error
-    let notificationCenterFavoriteFile                          = "favoriteFile"                    // userInfo: ocId, serverUrl
-    let notificationCenterFileExists                            = "fileExists"                      // userInfo: ocId, fileExists
 
     let notificationCenterMenuSearchTextPDF                     = "menuSearchTextPDF"
     let notificationCenterMenuGotToPageInPDF                    = "menuGotToPageInPDF"
@@ -345,7 +322,24 @@ final class NCGlobal: Sendable {
     let notificationCenterPlayerIsPlaying                       = "playerIsPlaying"
     let notificationCenterPlayerStoppedPlaying                  = "playerStoppedPlaying"
 
-    let notificationCenterUpdateShare                           = "updateShare"
+    // Networking Status
+    let networkingStatusCreateFolder                            = "statusCreateFolder"
+    let networkingStatusDelete                                  = "statusDelete"
+    let networkingStatusRename                                  = "statusRename"
+    let networkingStatusFavorite                                = "statusFavorite"
+
+    let networkingStatusDownloading                             = "statusDownloading"
+    let networkingStatusDownloaded                              = "statusDownloaded"
+    let networkingStatusDownloadCancel                          = "statusDownloadCancel"
+
+    let networkingStatusUploading                               = "statusUploading"
+    let networkingStatusUploaded                                = "statusUploaded"
+    let networkingStatusUploadedLivePhoto                       = "statusUploadedLivePhoto"
+    let networkingStatusUploadCancel                            = "statusUploadCancel"
+
+
+    let networkingStatusReloadAvatar                            = "statusReloadAvatar"
+
 
     // TIP
     //

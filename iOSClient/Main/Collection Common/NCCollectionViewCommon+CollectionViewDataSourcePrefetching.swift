@@ -34,13 +34,12 @@ extension NCCollectionViewCommon: UICollectionViewDataSourcePrefetching {
 
         let cost = indexPaths.first?.row ?? 0
 
-        DispatchQueue.global().async {
-            for indexPath in indexPaths {
-                if let metadata = self.dataSource.getMetadata(indexPath: indexPath),
+        for indexPath in indexPaths {
+            self.dataSource.getMetadata(indexPath: indexPath) { metadata in
+                if let metadata,
                    metadata.isImageOrVideo,
                    self.imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) == nil,
                    let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-
                     self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: cost)
                 }
             }

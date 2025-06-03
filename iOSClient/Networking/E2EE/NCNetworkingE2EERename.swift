@@ -91,7 +91,11 @@ class NCNetworkingE2EERename: NSObject {
         //
         await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
 
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["serverUrl": metadata.serverUrl, "account": metadata.account, "error": uploadMetadataError])
+        NCNetworking.shared.notifyAllDelegates { delegate in
+            delegate.transferChange(status: NCGlobal.shared.networkingStatusRename,
+                                    metadata: metadata,
+                                    error: uploadMetadataError)
+        }
 
         return NKError()
     }

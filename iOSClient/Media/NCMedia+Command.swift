@@ -219,7 +219,7 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
                     }
                 }
 
-                NCNetworking.shared.deleteMetadatas(metadatas, sceneIdentifier: self.controller?.sceneIdentifier)
+                NCNetworking.shared.setStatusWaitDelete(metadatas: metadatas, sceneIdentifier: self.controller?.sceneIdentifier)
 
                 for index in indices {
                     let indexPath = IndexPath(row: index, section: 0)

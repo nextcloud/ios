@@ -29,6 +29,7 @@ class NCCollectionViewDataSource: NSObject {
     private let utilityFileSystem = NCUtilityFileSystem()
     private let utility = NCUtility()
     private let global = NCGlobal.shared
+    private let database = NCManageDatabase.shared
     private var sectionsValue: [String] = []
     private var providers: [NKSearchProvider]?
     private var searchResults: [NKSearchResult]?
@@ -37,6 +38,7 @@ class NCCollectionViewDataSource: NSObject {
     private var layoutForView: NCDBLayoutForView?
     private var metadataIndexPath = ThreadSafeDictionary<IndexPath, tableMetadata>()
     private var directoryOnTop: Bool = true
+    private var favoriteOnTop: Bool = true
 
     override init() { super.init() }
 
@@ -44,13 +46,16 @@ class NCCollectionViewDataSource: NSObject {
          layoutForView: NCDBLayoutForView? = nil,
          providers: [NKSearchProvider]? = nil,
          searchResults: [NKSearchResult]? = nil,
-         directoryOnTop: Bool = true) {
+         account: String? = nil) {
         super.init()
         removeAll()
 
         self.metadatas = metadatas
         self.layoutForView = layoutForView
-        self.directoryOnTop = directoryOnTop
+        if let account {
+            self.directoryOnTop = NCKeychain().getDirectoryOnTop(account: account)
+            self.favoriteOnTop = NCKeychain().getFavoriteOnTop(account: account)
+        }
         /// unified search
         self.providers = providers
         self.searchResults = searchResults
@@ -65,7 +70,6 @@ class NCCollectionViewDataSource: NSObject {
     func removeAll() {
         self.metadatas.removeAll()
         self.metadataIndexPath.removeAll()
-
         self.metadatasForSection.removeAll()
         self.sectionsValue.removeAll()
         self.providers = nil
@@ -112,21 +116,33 @@ class NCCollectionViewDataSource: NSObject {
             }
         } else {
             /// normal
+            let favorite = NSLocalizedString("favorite", comment: "").lowercased().firstUppercased
             let directory = NSLocalizedString("directory", comment: "").lowercased().firstUppercased
-            self.sectionsValue = self.sectionsValue.sorted {
-                if self.directoryOnTop,
-                   $0 == directory {
-                    return true
-                } else if self.directoryOnTop,
-                          $1 == directory {
-                    return false
+
+            self.sectionsValue = self.sectionsValue.sorted { lhs, rhs in
+                // 1. favorite on top
+                if favoriteOnTop {
+                    if lhs == favorite && rhs != favorite {
+                        return true
+                    }
+                    if rhs == favorite && lhs != favorite {
+                        return false
+                    }
                 }
-                if let ascending = layoutForView?.ascending,
-                    ascending {
-                    return $0 < $1
-                } else {
-                    return $0 > $1
+
+                // 2. directory on top
+                if directoryOnTop {
+                    if lhs == directory && rhs != directory {
+                        return true
+                    }
+                    if rhs == directory && lhs != directory {
+                        return false
+                    }
                 }
+
+                // 3. alphabetical
+                let ascending = layoutForView?.ascending ?? true
+                return ascending ? lhs < rhs : lhs > rhs
             }
         }
 
@@ -148,6 +164,7 @@ class NCCollectionViewDataSource: NSObject {
                                                       metadatas: metadatas,
                                                       lastSearchResult: searchResult,
                                                       layoutForView: self.layoutForView,
+                                                      favoriteOnTop: self.favoriteOnTop,
                                                       directoryOnTop: self.directoryOnTop)
         metadatasForSection.append(metadataForSection)
     }
@@ -185,9 +202,8 @@ class NCCollectionViewDataSource: NSObject {
 
     func getIndexPathMetadata(ocId: String) -> IndexPath? {
         guard self.sectionsValue.isEmpty else { return nil }
-        let validMetadatas = self.metadatas.filter { !$0.isInvalidated }
 
-        if let rowIndex = validMetadatas.firstIndex(where: {$0.ocId == ocId}) {
+        if let rowIndex = metadatas.firstIndex(where: {$0.ocId == ocId}) {
             return IndexPath(row: rowIndex, section: 0)
         }
 
@@ -202,9 +218,9 @@ class NCCollectionViewDataSource: NSObject {
 
     func numberOfItemsInSection(_ section: Int) -> Int {
         if self.sectionsValue.isEmpty {
-            let validMetadatas = metadatas.filter { !$0.isInvalidated }
-            return validMetadatas.count
+            return metadatas.count
         }
+
         guard !self.metadatas.isEmpty,
               let metadataForSection = getMetadataForSection(section)
         else {
@@ -229,9 +245,8 @@ class NCCollectionViewDataSource: NSObject {
     }
 
     func getFooterInformation() -> (directories: Int, files: Int, size: Int64) {
-        let validMetadatas = metadatas.filter { !$0.isInvalidated }
-        let directories = validMetadatas.filter({ $0.directory == true})
-        let files = validMetadatas.filter({ $0.directory == false})
+        let directories = metadatas.filter({ $0.directory == true})
+        let files = metadatas.filter({ $0.directory == false})
         var size: Int64 = 0
 
         files.forEach { metadata in
@@ -242,56 +257,68 @@ class NCCollectionViewDataSource: NSObject {
     }
 
     func getResultMetadata(indexPath: IndexPath) -> tableMetadata? {
-        let validMetadatas = metadatas.filter { !$0.isInvalidated }
-
-        if indexPath.row < validMetadatas.count {
-            return validMetadatas[indexPath.row]
+        if indexPath.row < metadatas.count {
+            return metadatas[indexPath.row]
         }
 
         return nil
+    }
+
+    func getMetadata(indexPath: IndexPath,
+                     completion: @escaping  (_ metadata: tableMetadata?) -> Void) {
+        var result: tableMetadata?
+
+        if !metadatasForSection.isEmpty, indexPath.section < metadatasForSection.count {
+            if let metadataForSection = getMetadataForSection(indexPath.section),
+               indexPath.row < metadataForSection.metadatas.count {
+                result = metadataForSection.metadatas[indexPath.row]
+            }
+        } else if indexPath.row < self.metadatas.count {
+            result = metadataIndexPath[indexPath]
+        }
+
+        if let result {
+            self.database.getMetadataFromOcId(result.ocId) { metadata in
+                completion(metadata)
+            }
+        } else {
+            completion(result)
+        }
     }
 
     func getMetadata(indexPath: IndexPath) -> tableMetadata? {
         if !metadatasForSection.isEmpty, indexPath.section < metadatasForSection.count {
             if let metadataForSection = getMetadataForSection(indexPath.section),
-               indexPath.row < metadataForSection.metadatas.count,
-               !metadataForSection.metadatas[indexPath.row].isInvalidated {
+               indexPath.row < metadataForSection.metadatas.count {
                 return tableMetadata(value: metadataForSection.metadatas[indexPath.row])
             }
         } else if indexPath.row < self.metadatas.count {
-            if let metadata = metadataIndexPath[indexPath] {
-                return metadata
-            } else {
-                let validMetadatas = self.metadatas.filter { !$0.isInvalidated }
-                let metadata = tableMetadata(value: validMetadatas[indexPath.row])
-                metadataIndexPath[indexPath] = metadata
-                return metadata
-            }
+            return metadataIndexPath[indexPath]
         }
 
         return nil
     }
 
-    func caching(metadatas: [tableMetadata], dataSourceMetadatas: [tableMetadata], completion: @escaping () -> Void) {
+    func caching(metadatas: [tableMetadata], completion: @escaping () -> Void) {
         var counter: Int = 0
 
-        DispatchQueue.global().async {
-            for metadata in metadatas {
-                let metadata = tableMetadata(value: metadata)
-                let indexPath = IndexPath(row: counter, section: 0)
-                self.metadataIndexPath[indexPath] = tableMetadata(value: metadata)
+        for metadata in metadatas {
+            let metadata = tableMetadata(value: metadata)
+            let indexPath = IndexPath(row: counter, section: 0)
+            self.metadataIndexPath[indexPath] = tableMetadata(value: metadata)
 
-                /// caching preview
-                /// 
-                if metadata.isImageOrVideo,
-                   NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) == nil,
-                   let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) {
-                    NCImageCache.shared.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: self.global.previewExt256, cost: counter)
-                }
-
-                counter += 1
+            /// caching preview
+            ///
+            if metadata.isImageOrVideo,
+               NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) == nil,
+               let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) {
+                NCImageCache.shared.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: self.global.previewExt256, cost: counter)
             }
 
+            counter += 1
+        }
+
+        DispatchQueue.main.async {
             return completion()
         }
     }
@@ -354,6 +381,7 @@ class NCMetadataForSection: NSObject {
     var unifiedSearchInProgress: Bool = false
     var layoutForView: NCDBLayoutForView?
     var directoryOnTop: Bool
+    var favoriteOnTop: Bool
 
     private var metadatasSorted: [tableMetadata] = []
     private var metadatasFavoriteDirectory: [tableMetadata] = []
@@ -365,11 +393,12 @@ class NCMetadataForSection: NSObject {
     public var numFile: Int = 0
     public var totalSize: Int64 = 0
 
-    init(sectionValue: String, metadatas: [tableMetadata], lastSearchResult: NKSearchResult?, layoutForView: NCDBLayoutForView?, directoryOnTop: Bool) {
+    init(sectionValue: String, metadatas: [tableMetadata], lastSearchResult: NKSearchResult?, layoutForView: NCDBLayoutForView?, favoriteOnTop: Bool, directoryOnTop: Bool) {
         self.sectionValue = sectionValue
         self.metadatas = metadatas
         self.lastSearchResult = lastSearchResult
         self.layoutForView = layoutForView
+        self.favoriteOnTop = favoriteOnTop
         self.directoryOnTop = directoryOnTop
 
         super.init()
@@ -447,14 +476,14 @@ class NCMetadataForSection: NSObject {
                 continue
             }
 
-            // Organized the metadata
-            if metadata.favorite {
+            // Organize the metadata based on favoriteOnTop and directoryOnTop
+            if favoriteOnTop && metadata.favorite {
                 if metadata.directory {
                     metadatasFavoriteDirectory.append(metadata)
                 } else {
                     metadatasFavoriteFile.append(metadata)
                 }
-            } else if metadata.directory && self.directoryOnTop {
+            } else if directoryOnTop && metadata.directory {
                 metadatasDirectory.append(metadata)
             } else {
                 metadatasFile.append(metadata)

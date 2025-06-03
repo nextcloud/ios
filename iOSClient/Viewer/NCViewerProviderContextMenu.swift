@@ -33,7 +33,9 @@ class NCViewerProviderContextMenu: UIViewController {
     private var image: UIImage?
     private let player = VLCMediaPlayer()
     private let utilityFileSystem = NCUtilityFileSystem()
+    internal let global = NCGlobal.shared
     private let sizeIcon: CGFloat = 150
+    internal var sceneIdentifier: String  = ""
 
     // MARK: - View Life Cycle
 
@@ -41,11 +43,12 @@ class NCViewerProviderContextMenu: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    init(metadata: tableMetadata, image: UIImage?) {
+    init(metadata: tableMetadata, image: UIImage?, sceneIdentifier: String) {
         super.init(nibName: nil, bundle: nil)
         self.metadata = tableMetadata(value: metadata)
         self.metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
         self.image = image
+        self.sceneIdentifier = sceneIdentifier
 
         if metadata.directory {
             imageView.image = NCImageCache.shared.getFolder(account: metadata.account)
@@ -90,10 +93,10 @@ class NCViewerProviderContextMenu: UIViewController {
                         maxDownload = NCGlobal.shared.maxAutoDownload
                     }
                     if metadata.size <= maxDownload {
-                        NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                  session: NCNetworking.shared.sessionDownload,
-                                                                                  selector: "")
-                        NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
+                        let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(metadata: metadata,
+                                                                                                session: NCNetworking.shared.sessionDownload,
+                                                                                                selector: "")
+                        NCNetworking.shared.download(metadata: metadata)
                     }
                 }
             }
@@ -101,19 +104,19 @@ class NCViewerProviderContextMenu: UIViewController {
             if !utilityFileSystem.fileProviderStorageExists(metadata),
                NCNetworking.shared.isOnline,
                (metadata.contentType == "image/gif" || metadata.contentType == "image/svg+xml") {
-                NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                          session: NCNetworking.shared.sessionDownload,
-                                                                          selector: "")
-                NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
+                let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(metadata: metadata,
+                                                                                            session: NCNetworking.shared.sessionDownload,
+                                                                                            selector: "")
+                NCNetworking.shared.download(metadata: metadata)
             }
             // DOWNLOAD LIVE PHOTO
             if let metadataLivePhoto = self.metadataLivePhoto,
                NCNetworking.shared.isOnline,
                !utilityFileSystem.fileProviderStorageExists(metadataLivePhoto) {
-                NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadataLivePhoto],
-                                                                          session: NCNetworking.shared.sessionDownload,
-                                                                          selector: "")
-                NCNetworking.shared.download(metadata: metadataLivePhoto, withNotificationProgressTask: true)
+                let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(metadata: metadataLivePhoto,
+                                                                                        session: NCNetworking.shared.sessionDownload,
+                                                                                        selector: "")
+                NCNetworking.shared.download(metadata: metadata)
             }
         }
     }
@@ -123,70 +126,22 @@ class NCViewerProviderContextMenu: UIViewController {
         imageView.contentMode = .scaleAspectFill
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(downloadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadStartFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(downloadCancelFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile), object: nil)
+        NCNetworking.shared.addDelegate(self)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
         player.stop()
-
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadStartFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile), object: nil)
     }
 
-    // MARK: - NotificationCenter
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
 
-    @objc func downloadStartFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String
-        else { return }
-
-        if ocId == self.metadata?.ocId || ocId == self.metadataLivePhoto?.ocId {
-            DispatchQueue.main.async { NCActivityIndicator.shared.start(backgroundView: self.view) }
-        }
-    }
-
-    @objc func downloadedFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
-              let error = userInfo["error"] as? NKError,
-              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
-        else { return }
-
-        if error == .success && metadata.ocId == self.metadata?.ocId {
-            if metadata.isImage {
-                DispatchQueue.main.async {
-                    self.viewImage(metadata: metadata)
-                }
-            } else if metadata.isVideo {
-                viewVideo(metadata: metadata)
-            } else if metadata.isAudio {
-                viewVideo(metadata: metadata)
-            }
-        }
-        if error == .success && metadata.ocId == self.metadataLivePhoto?.ocId {
-            viewVideo(metadata: metadata)
-        }
-        if ocId == self.metadata?.ocId || ocId == self.metadataLivePhoto?.ocId {
-            NCActivityIndicator.shared.stop()
-        }
-    }
-
-    @objc func downloadCancelFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String
-        else { return }
-
-        if ocId == self.metadata?.ocId || ocId == self.metadataLivePhoto?.ocId {
-            NCActivityIndicator.shared.stop()
-        }
+        NCNetworking.shared.removeDelegate(self)
     }
 
     // MARK: - Viewer
@@ -306,5 +261,43 @@ extension NCViewerProviderContextMenu: VLCMediaPlayerDelegate {
 
     func mediaPlayer(_ player: VLCMediaPlayer, recordingStoppedAtPath path: String) {
         // Handle other states...
+    }
+}
+
+extension NCViewerProviderContextMenu: NCTransferDelegate {
+    func transferChange(status: String, metadata: tableMetadata, error: NKError) {
+        if error != .success {
+            NCContentPresenter().showError(error: error)
+        }
+
+        DispatchQueue.main.async {
+            switch status {
+            /// DOWNLOAD
+            case self.global.networkingStatusDownloading:
+                if metadata.ocId == self.metadata?.ocId || metadata.ocId == self.metadataLivePhoto?.ocId {
+                    NCActivityIndicator.shared.start(backgroundView: self.view)
+                }
+            case self.global.networkingStatusDownloaded:
+                if error == .success, metadata.ocId == self.metadata?.ocId {
+                    if metadata.isImage {
+                        self.viewImage(metadata: metadata)
+                    } else if metadata.isVideo || metadata.isAudio {
+                        self.viewVideo(metadata: metadata)
+                    }
+                }
+                if error == .success && metadata.ocId == self.metadataLivePhoto?.ocId {
+                    self.viewVideo(metadata: metadata)
+                }
+                if metadata.ocId == self.metadata?.ocId || metadata.ocId == self.metadataLivePhoto?.ocId {
+                    NCActivityIndicator.shared.stop()
+                }
+            case self.global.networkingStatusDownloadCancel:
+                if metadata.ocId == self.metadata?.ocId || metadata.ocId == self.metadataLivePhoto?.ocId {
+                    NCActivityIndicator.shared.stop()
+                }
+            default:
+                break
+            }
+        }
     }
 }

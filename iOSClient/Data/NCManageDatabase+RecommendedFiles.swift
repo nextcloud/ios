@@ -38,8 +38,8 @@ extension NCManageDatabase {
 
     // MARK: - Realm write
 
-    func createRecommendedFiles(account: String, recommendations: [NKRecommendation]) {
-        performRealmWrite { realm in
+    func createRecommendedFiles(account: String, recommendations: [NKRecommendation], sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             // Removed all objct for account
             let results = realm.objects(tableRecommendedFiles.self).filter("account == %@", account)
             realm.delete(results)
@@ -52,8 +52,8 @@ extension NCManageDatabase {
         }
     }
 
-    func deleteAllRecommendedFiles(account: String) {
-        performRealmWrite { realm in
+    func deleteAllRecommendedFiles(account: String, sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
             let results = realm.objects(tableRecommendedFiles.self)
                 .filter("account == %@", account)
             realm.delete(results)

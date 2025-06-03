@@ -10,11 +10,19 @@ let userAgent: String = {
     return "Mozilla/5.0 (iOS) Nextcloud-iOS/\(appVersion)"
 }()
 
+ /*
+ Codname Matheria
+
+ Matheria represents a pivotal step forward in the evolution of our software. This release delivers substantial architectural enhancements, increased performance, and a robust foundation for future innovations.
+
+ The codename embodies the concept of dynamic, living matter — reflecting our vision of a platform that is not only powerful and reliable, but also capable of continuous transformation and intelligent adaptation.
+ */
+
 final class NCBrandOptions: @unchecked Sendable {
     static let shared = NCBrandOptions()
 
     var brand: String = "Nextcloud"
-    var textCopyrightNextcloudiOS: String = "Nextcloud Hydrogen for iOS %@ © 2025"
+    var textCopyrightNextcloudiOS: String = "Nextcloud Matheria for iOS %@ © 2025"
     var textCopyrightNextcloudServer: String = "Nextcloud Server %@"
     var loginBaseUrl: String = "https://cloud.nextcloud.com"
     var pushNotificationServerProxy: String = "https://push-notifications.nextcloud.com"
@@ -52,7 +60,7 @@ final class NCBrandOptions: @unchecked Sendable {
     var disable_source_code_in_settings: Bool = false
     var enforce_passcode_lock = false
 
-    // (name: "Name 1", url: "https://cloud.nextcloud.com"),(name: "Name 2", url: "https://cloud.nextcloud.com")
+    // Example: (name: "Name 1", url: "https://cloud.nextcloud.com"),(name: "Name 2", url: "https://cloud.nextcloud.com")
     var enforce_servers: [(name: String, url: String)] = []
 
     // Internal option behaviour

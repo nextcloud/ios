@@ -466,17 +466,15 @@ extension NCPlayerToolBar: NCSelectDelegate {
 
                 NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, requestHandler: { request in
                     downloadRequest = request
-                    self.database.setMetadataSession(ocId: metadata.ocId,
-                                                     status: self.global.metadataStatusDownloading)
                 }, taskHandler: { task in
-                    self.database.setMetadataSession(ocId: metadata.ocId,
+                    self.database.setMetadataSession(metadata: metadata,
                                                      sessionTaskIdentifier: task.taskIdentifier,
                                                      status: self.global.metadataStatusDownloading)
                 }, progressHandler: { progress in
                     self.hud.progress(progress.fractionCompleted)
                 }) { _, etag, _, _, _, _, error in
                     self.hud.dismiss()
-                    self.database.setMetadataSession(ocId: metadata.ocId,
+                    self.database.setMetadataSession(metadata: metadata,
                                                      session: "",
                                                      sessionTaskIdentifier: 0,
                                                      sessionError: "",

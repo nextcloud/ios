@@ -1,25 +1,6 @@
-//
-//  NCActionCenter.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 19/04/2020.
-//  Copyright © 2020 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2020 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 import NextcloudKit
@@ -28,20 +9,8 @@ import SVGKit
 import Photos
 import Alamofire
 
-class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelectDelegate {
-    public static let shared: NCActionCenter = {
-        let instance = NCActionCenter()
-        NotificationCenter.default.addObserver(instance, selector: #selector(downloadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadStartFile), object: nil)
-        NotificationCenter.default.addObserver(instance, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
-        NotificationCenter.default.addObserver(instance, selector: #selector(downloadCancelFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile), object: nil)
-
-        NotificationCenter.default.addObserver(instance, selector: #selector(uploadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
-        NotificationCenter.default.addObserver(instance, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
-        NotificationCenter.default.addObserver(instance, selector: #selector(uploadedLivePhoto(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedLivePhoto), object: nil)
-        NotificationCenter.default.addObserver(instance, selector: #selector(uploadCancelFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile), object: nil)
-
-        return instance
-    }()
+class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSelectDelegate, NCTransferDelegate {
+    static let shared = NCDownloadAction()
 
     var viewerQuickLook: NCViewerQuickLook?
     var documentController: UIDocumentInteractionController?
@@ -49,41 +18,34 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     let utility = NCUtility()
     let database = NCManageDatabase.shared
     let global = NCGlobal.shared
+    var sceneIdentifier: String = ""
+
+    override private init() { }
+
+    func setup(sceneIdentifier: String) {
+        self.sceneIdentifier = sceneIdentifier
+
+        NCNetworking.shared.addDelegate(self)
+    }
 
     // MARK: - Download
 
-    @objc func downloadStartFile(_ notification: NSNotification) { }
-    @objc func downloadCancelFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocIdTransfer = userInfo["ocIdTransfer"] as? String
-        else { return }
-
-        NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
-    }
-    @objc func downloadedFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
-              let selector = userInfo["selector"] as? String,
-              let error = userInfo["error"] as? NKError,
-              let ocIdTransfer = userInfo["ocIdTransfer"] as? String
-        else { return }
-
-        NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
-
-        guard error == .success else {
-            // File do not exists on server, remove in local
-            if error.errorCode == NCGlobal.shared.errorResourceNotFound || error.errorCode == NCGlobal.shared.errorBadServerResponse {
-                do {
-                    try FileManager.default.removeItem(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
-                } catch { }
-                database.deleteMetadataOcId(ocId)
-                database.deleteLocalFileOcId(ocId)
-            } else {
-                NCContentPresenter().messageNotification("_download_file_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+    func transferChange(status: String, metadata: tableMetadata, error: NKError) {
+        DispatchQueue.main.async {
+            switch status {
+            /// DOWNLOADED
+            case self.global.networkingStatusDownloaded:
+                self.downloadedFile(metadata: metadata, error: error)
+            default:
+                break
             }
+        }
+    }
+
+    func downloadedFile(metadata: tableMetadata, error: NKError) {
+        guard error == .success else {
             return
         }
-        guard let metadata = database.getMetadataFromOcId(ocId) else { return }
         /// Select UIWindowScene active in serverUrl
         var controller: NCMainTabBarController?
         let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
@@ -103,7 +65,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         }
         guard let controller else { return }
 
-        switch selector {
+        switch metadata.sessionSelector {
         case NCGlobal.shared.selectorLoadFileQuickLook:
 
             let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
@@ -163,9 +125,11 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
         default:
             let applicationHandle = NCApplicationHandle()
-            applicationHandle.downloadedFile(selector: selector, metadata: metadata)
+            applicationHandle.downloadedFile(selector: metadata.sessionSelector, metadata: metadata)
         }
     }
+
+    // MARK: -
 
     func setMetadataAvalableOffline(_ metadata: tableMetadata, isOffline: Bool) {
         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
@@ -184,19 +148,23 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             }
         } else if metadata.directory {
             database.setDirectory(serverUrl: serverUrl, offline: true, metadata: metadata)
-            NCNetworking.shared.synchronization(account: metadata.account, serverUrl: serverUrl, add: true)
+            Task {
+                await NCNetworking.shared.synchronization(account: metadata.account, serverUrl: metadata.serverUrl, add: true)
+            }
         } else {
             var metadatasSynchronizationOffline: [tableMetadata] = []
             metadatasSynchronizationOffline.append(metadata)
             if let metadata = database.getMetadataLivePhoto(metadata: metadata) {
                 metadatasSynchronizationOffline.append(metadata)
             }
-            database.addLocalFile(metadata: metadata, offline: true)
+            database.addLocalFile(metadata: metadata, offline: true, sync: false)
             database.setMetadatasSessionInWaitDownload(metadatas: metadatasSynchronizationOffline,
                                                        session: NCNetworking.shared.sessionDownloadBackground,
                                                        selector: NCGlobal.shared.selectorSynchronizationOffline)
         }
     }
+
+    // MARK: -
 
     func viewerFile(account: String, fileId: String, viewController: UIViewController) {
         var downloadRequest: DownloadRequest?
@@ -240,17 +208,15 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     hud.show()
                     NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: account, requestHandler: { request in
                         downloadRequest = request
-                        self.database.setMetadataSession(ocId: metadata.ocId,
-                                                         status: self.global.metadataStatusDownloading)
                     }, taskHandler: { task in
-                        self.database.setMetadataSession(ocId: metadata.ocId,
+                        self.database.setMetadataSession(metadata: metadata,
                                                          sessionTaskIdentifier: task.taskIdentifier,
                                                          status: self.global.metadataStatusDownloading)
                     }, progressHandler: { progress in
                         hud.progress(progress.fractionCompleted)
                     }) { accountDownload, etag, _, _, _, _, error in
                         hud.dismiss()
-                        self.database.setMetadataSession(ocId: metadata.ocId,
+                        self.database.setMetadataSession(metadata: metadata,
                                                          session: "",
                                                          sessionTaskIdentifier: 0,
                                                          sessionError: "",
@@ -266,36 +232,6 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_file_not_found_")
                 NCContentPresenter().showError(error: error)
             }
-        }
-    }
-
-    // MARK: - Upload
-
-    @objc func uploadStartFile(_ notification: NSNotification) { }
-    @objc func uploadedLivePhoto(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocIdTransfer = userInfo["ocIdTransfer"] as? String
-        else { return }
-
-        NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
-    }
-    @objc func uploadCancelFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocIdTransfer = userInfo["ocIdTransfer"] as? String
-        else { return }
-
-        NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
-    }
-    @objc func uploadedFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let error = userInfo["error"] as? NKError,
-              let ocIdTransfer = userInfo["ocIdTransfer"] as? String
-        else { return }
-
-        NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
-
-        if error != .success, error.errorCode != NSURLErrorCancelled, error.errorCode != NCGlobal.shared.errorRequestExplicityCancelled {
-            NCContentPresenter().messageNotification("_upload_file_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
         }
     }
 
@@ -366,11 +302,12 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, controller: controller)
         for (metadata, url) in downloadMetadata {
             processor.execute { completion in
-                guard let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                     session: NCNetworking.shared.sessionDownload,
-                                                                                     selector: "",
-                                                                                     sceneIdentifier: controller.sceneIdentifier) else { return completion() }
-                NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
+                let metadata = self.database.setMetadataSessionInWaitDownload(metadata: metadata,
+                                                                              session: NCNetworking.shared.sessionDownload,
+                                                                              selector: "",
+                                                                              sceneIdentifier: controller.sceneIdentifier)
+
+                NCNetworking.shared.download(metadata: metadata) {
                 } progressHandler: { progress in
                     processor.hud.progress(progress.fractionCompleted)
                 } completion: { _, _ in
@@ -480,8 +417,10 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 if error == .success && etag != nil && ocId != nil {
                     let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)
                     self.utilityFileSystem.moveFile(atPath: fileNameLocalPath, toPath: toPath)
-                    self.database.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterGetServerData, userInfo: ["serverUrl": serverUrl])
+                    self.database.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName, sync: false)
+                    NCNetworking.shared.notifyAllDelegates { delegate in
+                        delegate.transferRequestData(serverUrl: serverUrl)
+                    }
                 } else if afError?.isExplicitlyCancelledError ?? false {
                     print("cancel")
                 } else {
@@ -567,47 +506,21 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool, session: NCSession.Session) {
         if let serverUrl, !items.isEmpty {
             if copy {
-                var metadataServerUrl: String = ""
-                var metadataAccount: String = ""
-                var ocId: [String] = []
-
                 for case let metadata as tableMetadata in items {
                     if metadata.status != NCGlobal.shared.metadataStatusNormal, metadata.status != NCGlobal.shared.metadataStatusWaitCopy {
                         continue
                     }
 
-                    metadataServerUrl = metadata.serverUrl
-                    metadataAccount = metadata.account
-
-                    ocId.append(metadata.ocId)
-
                     NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
                 }
 
-                if !ocId.isEmpty {
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["ocId": ocId, "serverUrl": metadataServerUrl, "account": metadataAccount, "dragdrop": false, "type": "copy"])
-                }
-
             } else if move {
-                var metadataServerUrl: String = ""
-                var metadataAccount: String = ""
-                var ocId: [String] = []
-
                 for case let metadata as tableMetadata in items {
                     if metadata.status != NCGlobal.shared.metadataStatusNormal, metadata.status != NCGlobal.shared.metadataStatusWaitMove {
                         continue
                     }
 
-                    metadataServerUrl = metadata.serverUrl
-                    metadataAccount = metadata.account
-
-                    ocId.append(metadata.ocId)
-
                     NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
-                }
-
-                if !ocId.isEmpty {
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["ocId": ocId, "serverUrl": metadataServerUrl, "account": metadataAccount, "dragdrop": false, "type": "move"])
                 }
             }
         }

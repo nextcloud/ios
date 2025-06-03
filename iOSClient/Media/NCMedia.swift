@@ -82,6 +82,8 @@ class NCMedia: UIViewController {
     var numberOfColumns: Int = 0
     var lastNumberOfColumns: Int = 0
 
+    let debouncer = NCDebouncer(delay: 1)
+
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)
     }
@@ -96,6 +98,10 @@ class NCMedia: UIViewController {
 
     var isPinchGestureActive: Bool {
         return pinchGesture.state == .began || pinchGesture.state == .changed
+    }
+
+    var sceneIdentifier: String {
+        (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
     }
 
     // MARK: - View Life Cycle
@@ -173,12 +179,6 @@ class NCMedia: UIViewController {
             self.searchMediaUI(true)
         }
 
-        NotificationCenter.default.addObserver(self, selector: #selector(fileExists(_:)), name: NSNotification.Name(rawValue: global.notificationCenterFileExists), object: nil)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterDeleteFile), object: nil)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource(_:)), name: NSNotification.Name(rawValue: global.notificationCenterReloadDataSource), object: nil)
-
         NotificationCenter.default.addObserver(self, selector: #selector(networkRemoveAll(_:)), name: UIApplication.didEnterBackgroundNotification, object: nil)
     }
 
@@ -194,7 +194,7 @@ class NCMedia: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(copyMoveFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterCopyMoveFile), object: nil)
+        NCNetworking.shared.addDelegate(self)
 
         NotificationCenter.default.addObserver(self, selector: #selector(enterForeground(_:)), name: UIApplication.willEnterForegroundNotification, object: nil)
 
@@ -205,7 +205,7 @@ class NCMedia: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterCopyMoveFile), object: nil)
+        NCNetworking.shared.removeDelegate(self)
 
         NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
 
@@ -252,77 +252,8 @@ class NCMedia: UIViewController {
         }
     }
 
-    @objc func reloadDataSource(_ notification: NSNotification) {
-        self.loadDataSource()
-    }
-
-    @objc func deleteFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let error = userInfo["error"] as? NKError
-        else {
-            return
-        }
-
-        // This is only a fail safe "dead lock", I don't think the timeout will ever be called but at least nothing gets stuck, if after 5 sec. (which is a long time in this routine), the semaphore is still locked
-        //
-        if self.semaphoreNotificationCenter.wait(timeout: .now() + 5) == .timedOut {
-            self.semaphoreNotificationCenter.signal()
-        }
-
-        if error.errorCode == self.global.errorResourceNotFound,
-           let ocIds = userInfo["ocId"] as? [String],
-           let ocId = ocIds.first {
-            self.database.deleteMetadataOcId(ocId)
-            self.loadDataSource {
-                self.semaphoreNotificationCenter.signal()
-            }
-        } else if error != .success {
-            self.loadDataSource {
-                self.semaphoreNotificationCenter.signal()
-            }
-        } else {
-            semaphoreNotificationCenter.signal()
-        }
-    }
-
     @objc func enterForeground(_ notification: NSNotification) {
         searchNewMedia()
-    }
-
-    @objc func fileExists(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
-              let fileExists = userInfo["fileExists"] as? Bool
-        else {
-            return
-        }
-
-        filesExists.append(ocId)
-        if !fileExists {
-            ocIdDoNotExists.append(ocId)
-        }
-
-        if NCNetworking.shared.fileExistsQueue.operationCount == 0,
-           !ocIdDoNotExists.isEmpty,
-           let ocIdDoNotExists = self.ocIdDoNotExists.getArray() {
-            dataSource.removeMetadata(ocIdDoNotExists)
-            database.deleteMetadataOcIds(ocIdDoNotExists)
-            self.ocIdDoNotExists.removeAll()
-            collectionViewReloadData()
-        }
-    }
-
-    @objc func copyMoveFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let dragDrop = userInfo["dragdrop"] as? Bool,
-              dragDrop else { return }
-
-        setEditMode(false)
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            self.loadDataSource()
-            self.searchMediaUI()
-        }
     }
 
     func buildMediaPhotoVideo(columnCount: Int) {
