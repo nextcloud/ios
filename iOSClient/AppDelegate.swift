@@ -206,6 +206,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Refresh task expiration handler")
         }
 
+        task.setTaskCompleted(success: true)
+        NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Refresh task completed")
+
+
+        /*
         Task {
             let numTransfers = await autoUpload(limitUpload: 1)
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Processing task with \(numTransfers) transfers")
@@ -213,6 +218,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             task.setTaskCompleted(success: true)
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Refresh task completed")
         }
+        */
     }
 
     func handleProcessingTask(_ task: BGProcessingTask) {
@@ -224,13 +230,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Processing task expiration handler")
         }
 
-        Task {
-            let numTransfers = await autoUpload(limitUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload)
-            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Processing task with \(numTransfers) transfers")
-
-            task.setTaskCompleted(success: true)
-            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Processing task completed")
-        }
+        NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Processing task completed")
+        task.setTaskCompleted(success: true)
     }
 
     func autoUpload(limitUpload: Int) async -> Int {
