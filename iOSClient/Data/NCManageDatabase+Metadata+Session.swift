@@ -22,46 +22,48 @@ extension NCManageDatabase {
                             etag: String? = nil,
                             errorCode: Int? = nil,
                             sync: Bool = true) -> tableMetadata {
-        let mutableMetadata = tableMetadata(value: metadata)
+        let detached = tableMetadata(value: metadata)
 
         if let name = newFileName {
-            mutableMetadata.fileName = name
-            mutableMetadata.fileNameView = name
+            detached.fileName = name
+            detached.fileNameView = name
         }
 
-        if let session { mutableMetadata.session = session }
-        if let sessionTaskIdentifier { mutableMetadata.sessionTaskIdentifier = sessionTaskIdentifier }
+        if let session { detached.session = session }
+        if let sessionTaskIdentifier { detached.sessionTaskIdentifier = sessionTaskIdentifier }
         if let sessionError {
-            mutableMetadata.sessionError = sessionError
+            detached.sessionError = sessionError
             if sessionError.isEmpty {
-                mutableMetadata.errorCode = 0
+                detached.errorCode = 0
             }
         }
         if let selector {
-            mutableMetadata.sessionSelector = selector
+            detached.sessionSelector = selector
         }
 
         if let status {
-            mutableMetadata.status = status
+            detached.status = status
             switch status {
             case NCGlobal.shared.metadataStatusWaitDownload,
                  NCGlobal.shared.metadataStatusWaitUpload:
-                mutableMetadata.sessionDate = Date()
+                detached.sessionDate = Date()
             case NCGlobal.shared.metadataStatusNormal:
-                mutableMetadata.sessionDate = nil
+                detached.sessionDate = nil
             default:
                 break
             }
         }
 
-        if let etag { mutableMetadata.etag = etag }
-        if let errorCode { mutableMetadata.errorCode = errorCode }
+        if let etag { detached.etag = etag }
+        if let errorCode { detached.errorCode = errorCode }
+
+        let returnCopy = tableMetadata(value: detached)
 
         performRealmWrite(sync: sync) { realm in
-            realm.add(mutableMetadata, update: .all)
+            realm.add(detached, update: .all)
         }
 
-        return tableMetadata(value: mutableMetadata)
+        return returnCopy
     }
 
     func setMetadatasSessionInWaitDownload(metadatas: [tableMetadata],
@@ -101,11 +103,13 @@ extension NCManageDatabase {
         detached.status = NCGlobal.shared.metadataStatusWaitDownload
         detached.sessionDate = Date()
 
+        let returnCopy = tableMetadata(value: detached)
+
         performRealmWrite(sync: true) { realm in
             realm.add(detached, update: .all)
         }
 
-        return tableMetadata(value: detached)
+        return returnCopy
     }
 
     func clearMetadataSession(metadatas: [tableMetadata]) {
