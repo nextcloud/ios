@@ -138,11 +138,12 @@ extension NCViewer {
                                                         error: .success)
                             }
                         } else {
-                            let metadata = self.database.setMetadataSessionInWaitDownload(metadata: metadata,
+                            if let metadata = self.database.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
                                                                                           session: NCNetworking.shared.sessionDownload,
                                                                                           selector: NCGlobal.shared.selectorSaveAsScan,
-                                                                                          sceneIdentifier: controller.sceneIdentifier)
-                            NCNetworking.shared.download(metadata: metadata)
+                                                                                          sceneIdentifier: controller.sceneIdentifier) {
+                                NCNetworking.shared.download(metadata: metadata)
+                            }
                         }
                     }
                 )
@@ -169,11 +170,12 @@ extension NCViewer {
                     icon: utility.loadImage(named: "iphone.circle", colors: [NCBrandColor.shared.iconImageColor]),
                     sender: sender,
                     action: { _ in
-                        let metadata = self.database.setMetadataSessionInWaitDownload(metadata: metadata,
-                                                                                      session: NCNetworking.shared.sessionDownload,
-                                                                                      selector: "",
-                                                                                      sceneIdentifier: controller.sceneIdentifier)
-                        NCNetworking.shared.download(metadata: metadata)
+                        if let metadata = self.database.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
+                                                                                         session: NCNetworking.shared.sessionDownload,
+                                                                                         selector: "",
+                                                                                         sceneIdentifier: controller.sceneIdentifier) {
+                            NCNetworking.shared.download(metadata: metadata)
+                        }
                     }
                 )
             )
@@ -225,11 +227,12 @@ extension NCViewer {
                                                         error: .success)
                             }
                         } else {
-                            let metadata = self.database.setMetadataSessionInWaitDownload(metadata: metadata,
-                                                                                          session: NCNetworking.shared.sessionDownload,
-                                                                                          selector: NCGlobal.shared.selectorLoadFileQuickLook,
-                                                                                          sceneIdentifier: controller.sceneIdentifier)
-                            NCNetworking.shared.download(metadata: metadata)
+                            if let metadata = self.database.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
+                                                                                             session: NCNetworking.shared.sessionDownload,
+                                                                                             selector: NCGlobal.shared.selectorLoadFileQuickLook,
+                                                                                             sceneIdentifier: controller.sceneIdentifier) {
+                                NCNetworking.shared.download(metadata: metadata)
+                            }
                         }
                     }
                 )

@@ -90,11 +90,12 @@ extension NCNetworking {
         /// DELETE
         ///
         if metadata.status == global.metadataStatusWaitDelete {
-            let metadata = database.setMetadataStatus(metadata: metadata,
-                                                      status: global.metadataStatusNormal)
-
-            NCNetworking.shared.notifyAllDelegates { delegate in
-                delegate.transferReloadData(serverUrl: metadata.serverUrl)
+            if let metadata = database.setMetadataStatus(ocId: metadata.ocId,
+                                                         status: global.metadataStatusNormal) {
+                
+                NCNetworking.shared.notifyAllDelegates { delegate in
+                    delegate.transferReloadData(serverUrl: metadata.serverUrl)
+                }
             }
             return
         }

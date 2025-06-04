@@ -383,7 +383,7 @@ extension NCNetworking {
                 }
                 return
             }
-            self.database.setMetadataStatus(metadata: metadata,
+            self.database.setMetadataStatus(ocId: metadata.ocId,
                                             status: NCGlobal.shared.metadataStatusWaitDelete)
         }
     }

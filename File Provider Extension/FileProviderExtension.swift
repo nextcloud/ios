@@ -217,7 +217,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 self.database.addMetadata(metadata)
                 completionHandler(nil)
             } else if error.errorCode == 200 {
-                self.database.setMetadataStatus(metadata: metadata,
+                self.database.setMetadataStatus(ocId: metadata.ocId,
                                                 status: NCGlobal.shared.metadataStatusNormal)
                 completionHandler(nil)
             } else {

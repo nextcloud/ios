@@ -161,9 +161,11 @@ class NCViewerMedia: UIViewController {
                         if error == .success, let url = url {
                             ncplayer.openAVPlayer(url: url, autoplay: autoplay)
                         } else {
-                            let metadata = self.database.setMetadataSessionInWaitDownload(metadata: self.metadata,
-                                                                                          session: NCNetworking.shared.sessionDownload,
-                                                                                          selector: "")
+                            guard let metadata = self.database.setMetadataSessionInWaitDownload(ocId: self.metadata.ocId,
+                                                                                                session: NCNetworking.shared.sessionDownload,
+                                                                                                selector: "") else {
+                                return
+                            }
                             var downloadRequest: DownloadRequest?
                             let hud = NCHud(self.tabBarController?.view)
                             hud.initHudRing(text: NSLocalizedString("_downloading_", comment: ""),
@@ -267,10 +269,11 @@ class NCViewerMedia: UIViewController {
            NCNetworking.shared.isOnline,
            let metadata = self.database.getMetadataLivePhoto(metadata: metadata),
            !utilityFileSystem.fileProviderStorageExists(metadata) {
-            let metadata = self.database.setMetadataSessionInWaitDownload(metadata: metadata,
-                                                                          session: NCNetworking.shared.sessionDownload,
-                                                                          selector: "")
-            NCNetworking.shared.download(metadata: metadata)
+            if let metadata = self.database.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
+                                                                             session: NCNetworking.shared.sessionDownload,
+                                                                             selector: "") {
+                NCNetworking.shared.download(metadata: metadata)
+            }
         }
 
         if metadata.isImage, fileNameExtension == "GIF" || fileNameExtension == "SVG", !utilityFileSystem.fileProviderStorageExists(metadata) {
@@ -342,15 +345,16 @@ class NCViewerMedia: UIViewController {
     }
 
     private func downloadImage(withSelector selector: String = "") {
-        let metadata = self.database.setMetadataSessionInWaitDownload(metadata: metadata,
-                                                                      session: NCNetworking.shared.sessionDownload,
-                                                                      selector: selector)
+        if let metadata = self.database.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
+                                                                         session: NCNetworking.shared.sessionDownload,
+                                                                         selector: selector) {
 
-        NCNetworking.shared.download(metadata: metadata) {
-        } requestHandler: { _ in
-            self.allowOpeningDetails = false
-        } completion: { _, _ in
-            self.allowOpeningDetails = true
+            NCNetworking.shared.download(metadata: metadata) {
+            } requestHandler: { _ in
+                self.allowOpeningDetails = false
+            } completion: { _, _ in
+                self.allowOpeningDetails = true
+            }
         }
     }
 
