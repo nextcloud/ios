@@ -124,14 +124,15 @@ extension NCNetworking {
         NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, account: metadata.account, options: options, requestHandler: { request in
             requestHandler(request)
         }, taskHandler: { task in
-            let metadata = self.database.setMetadataSession(metadata: metadata,
-                                                            sessionTaskIdentifier: task.taskIdentifier,
-                                                            status: self.global.metadataStatusUploading)
+            if let metadata = self.database.setMetadataSession(ocId: metadata.ocId,
+                                                               sessionTaskIdentifier: task.taskIdentifier,
+                                                               status: self.global.metadataStatusUploading) {
 
-            self.notifyAllDelegates { delegate in
-                delegate.transferChange(status: self.global.networkingStatusUploading,
-                                        metadata: metadata,
-                                        error: .success)
+                self.notifyAllDelegates { delegate in
+                    delegate.transferChange(status: self.global.networkingStatusUploading,
+                                            metadata: metadata,
+                                            error: .success)
+                }
             }
 
             start()
@@ -190,7 +191,7 @@ extension NCNetworking {
             }
         } requestHandler: { _ in
         } taskHandler: { task in
-            self.database.setMetadataSession(metadata: metadata,
+            self.database.setMetadataSession(ocId: metadata.ocId,
                                              sessionTaskIdentifier: task.taskIdentifier,
                                              status: self.global.metadataStatusUploading)
         } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
@@ -238,15 +239,16 @@ extension NCNetworking {
             let (task, error) = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, account: metadata.account, sessionIdentifier: metadata.session)
             if let task, error == .success {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
-                let metadata = self.database.setMetadataSession(metadata: metadata,
-                                                                sessionTaskIdentifier: task.taskIdentifier,
-                                                                status: self.global.metadataStatusUploading,
-                                                                sync: false)
+                if let metadata = self.database.setMetadataSession(ocId: metadata.ocId,
+                                                                   sessionTaskIdentifier: task.taskIdentifier,
+                                                                   status: self.global.metadataStatusUploading,
+                                                                   sync: false) {
 
-                self.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusUploading,
-                                            metadata: metadata,
-                                            error: .success)
+                    self.notifyAllDelegates { delegate in
+                        delegate.transferChange(status: self.global.networkingStatusUploading,
+                                                metadata: metadata,
+                                                error: .success)
+                    }
                 }
             } else {
                 self.database.deleteMetadataOcId(metadata.ocId, sync: false)
@@ -424,7 +426,7 @@ extension NCNetworking {
                             let atpath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileName
                             let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + newFileName
                             self.utilityFileSystem.moveFile(atPath: atpath, toPath: toPath)
-                            self.database.setMetadataSession(metadata: metadata,
+                            self.database.setMetadataSession(ocId: metadata.ocId,
                                                              newFileName: newFileName,
                                                              sessionTaskIdentifier: 0,
                                                              sessionError: "",
@@ -456,16 +458,17 @@ extension NCNetworking {
                 }
 #endif
             } else {
-                let metadata = self.database.setMetadataSession(metadata: metadata,
-                                                                sessionTaskIdentifier: 0,
-                                                                sessionError: error.errorDescription,
-                                                                status: self.global.metadataStatusUploadError,
-                                                                errorCode: error.errorCode)
+                if let metadata = self.database.setMetadataSession(ocId: metadata.ocId,
+                                                                   sessionTaskIdentifier: 0,
+                                                                   sessionError: error.errorDescription,
+                                                                   status: self.global.metadataStatusUploadError,
+                                                                   errorCode: error.errorCode) {
 
-                self.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusUploaded,
-                                            metadata: metadata,
-                                            error: error)
+                    self.notifyAllDelegates { delegate in
+                        delegate.transferChange(status: self.global.networkingStatusUploaded,
+                                                metadata: metadata,
+                                                error: error)
+                    }
                 }
 
                 // Client Diagnostic

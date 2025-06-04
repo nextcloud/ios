@@ -352,7 +352,7 @@ extension NCNetworking {
 
             if !foundTask {
                 if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
-                    self.database.setMetadataSession(metadata: metadata,
+                    self.database.setMetadataSession(ocId: metadata.ocId,
                                                      sessionError: "",
                                                      status: self.global.metadataStatusWaitUpload)
                 } else {
@@ -400,7 +400,7 @@ extension NCNetworking {
 
             if !foundTask {
                 if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
-                    self.database.setMetadataSession(metadata: metadata,
+                    self.database.setMetadataSession(ocId: metadata.ocId,
                                                      sessionError: "",
                                                      status: self.global.metadataStatusWaitUpload)
                 } else {
@@ -431,7 +431,7 @@ extension NCNetworking {
             }
 
             if !foundTask {
-                self.database.setMetadataSession(metadata: metadata,
+                self.database.setMetadataSession(ocId: metadata.ocId,
                                                  session: "",
                                                  sessionError: "",
                                                  selector: "",
@@ -460,7 +460,7 @@ extension NCNetworking {
             }
 
             if !foundTask {
-                self.database.setMetadataSession(metadata: metadata,
+                self.database.setMetadataSession(ocId: metadata.ocId,
                                                  session: "",
                                                  sessionError: "",
                                                  selector: "",

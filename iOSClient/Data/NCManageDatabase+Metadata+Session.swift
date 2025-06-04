@@ -12,7 +12,7 @@ extension NCManageDatabase {
     // MARK: - Realm Write
 
     @discardableResult
-    func setMetadataSession(metadata: tableMetadata,
+    func setMetadataSession(ocId: String,
                             newFileName: String? = nil,
                             session: String? = nil,
                             sessionTaskIdentifier: Int? = nil,
@@ -21,51 +21,66 @@ extension NCManageDatabase {
                             status: Int? = nil,
                             etag: String? = nil,
                             errorCode: Int? = nil,
-                            sync: Bool = true) -> tableMetadata {
-        let detached = tableMetadata(value: metadata)
+                            sync: Bool = true) -> tableMetadata? {
 
-        if let name = newFileName {
-            detached.fileName = name
-            detached.fileNameView = name
-        }
-
-        if let session { detached.session = session }
-        if let sessionTaskIdentifier { detached.sessionTaskIdentifier = sessionTaskIdentifier }
-        if let sessionError {
-            detached.sessionError = sessionError
-            if sessionError.isEmpty {
-                detached.errorCode = 0
-            }
-        }
-        if let selector {
-            detached.sessionSelector = selector
-        }
-
-        if let status {
-            detached.status = status
-            switch status {
-            case NCGlobal.shared.metadataStatusWaitDownload,
-                 NCGlobal.shared.metadataStatusWaitUpload:
-                detached.sessionDate = Date()
-            case NCGlobal.shared.metadataStatusNormal:
-                detached.sessionDate = nil
-            default:
-                break
-            }
-        }
-
-        if let etag { detached.etag = etag }
-        if let errorCode { detached.errorCode = errorCode }
-
-        let returnCopy = tableMetadata(value: detached)
+        var detached: tableMetadata?
 
         performRealmWrite(sync: sync) { realm in
-            realm.add(detached, update: .all)
+            guard let metadata = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first else {
+                return
+            }
+
+            if let name = newFileName {
+                metadata.fileName = name
+                metadata.fileNameView = name
+            }
+
+            if let session {
+                metadata.session = session
+            }
+
+            if let sessionTaskIdentifier {
+                metadata.sessionTaskIdentifier = sessionTaskIdentifier
+            }
+
+            if let sessionError {
+                metadata.sessionError = sessionError
+                if sessionError.isEmpty {
+                    metadata.errorCode = 0
+                }
+            }
+
+            if let selector {
+                metadata.sessionSelector = selector
+            }
+
+            if let status {
+                metadata.status = status
+                switch status {
+                case NCGlobal.shared.metadataStatusWaitDownload,
+                     NCGlobal.shared.metadataStatusWaitUpload:
+                    metadata.sessionDate = Date()
+                case NCGlobal.shared.metadataStatusNormal:
+                    metadata.sessionDate = nil
+                default: break
+                }
+            }
+
+            if let etag {
+                metadata.etag = etag
+            }
+
+            if let errorCode {
+                metadata.errorCode = errorCode
+            }
+
+            realm.add(metadata, update: .all)
+            detached = tableMetadata(value: metadata)
         }
 
-        return returnCopy
+        return detached
     }
-
+    
     func setMetadatasSessionInWaitDownload(metadatas: [tableMetadata],
                                            session: String,
                                            selector: String,

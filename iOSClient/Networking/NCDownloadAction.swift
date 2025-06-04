@@ -209,14 +209,14 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                     NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: account, requestHandler: { request in
                         downloadRequest = request
                     }, taskHandler: { task in
-                        self.database.setMetadataSession(metadata: metadata,
+                        self.database.setMetadataSession(ocId: metadata.ocId,
                                                          sessionTaskIdentifier: task.taskIdentifier,
                                                          status: self.global.metadataStatusDownloading)
                     }, progressHandler: { progress in
                         hud.progress(progress.fractionCompleted)
                     }) { accountDownload, etag, _, _, _, _, error in
                         hud.dismiss()
-                        self.database.setMetadataSession(metadata: metadata,
+                        self.database.setMetadataSession(ocId: metadata.ocId,
                                                          session: "",
                                                          sessionTaskIdentifier: 0,
                                                          sessionError: "",

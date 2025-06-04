@@ -226,14 +226,14 @@ class NCNetworkingProcess {
                 if metadata.sessionError.contains("\(global.errorQuota)") {
                     NextcloudKit.shared.getUserMetadata(account: metadata.account, userId: metadata.userId) { _, userProfile, _, error in
                         if error == .success, let userProfile, userProfile.quotaFree > 0, userProfile.quotaFree > metadata.size {
-                            self.database.setMetadataSession(metadata: metadata,
+                            self.database.setMetadataSession(ocId: metadata.ocId,
                                                              session: self.networking.sessionUploadBackground,
                                                              sessionError: "",
                                                              status: self.global.metadataStatusWaitUpload)
                         }
                     }
                 } else {
-                    self.database.setMetadataSession(metadata: metadata,
+                    self.database.setMetadataSession(ocId: metadata.ocId,
                                                      session: self.networking.sessionUploadBackground,
                                                      sessionError: "",
                                                      status: global.metadataStatusWaitUpload)

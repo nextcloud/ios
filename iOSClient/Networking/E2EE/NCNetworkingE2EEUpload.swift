@@ -194,7 +194,7 @@ class NCNetworkingE2EEUpload: NSObject {
                 NCNetworking.shared.createLivePhoto(metadata: metadata)
             }
         } else {
-            self.database.setMetadataSession(metadata: metadata,
+            self.database.setMetadataSession(ocId: metadata.ocId,
                                              sessionTaskIdentifier: 0,
                                              sessionError: resultsSendFile.error.errorDescription,
                                              status: NCGlobal.shared.metadataStatusUploadError,
