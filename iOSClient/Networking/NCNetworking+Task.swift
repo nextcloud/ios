@@ -412,9 +412,9 @@ extension NCNetworking {
 
         /// DOWNLOADING-FOREGROUND
         ///
-        metadatas = self.database.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d",
+        metadatas = self.database.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status IN %@",
                                                                       sessionDownload,
-                                                                      self.global.metadataStatusDownloading))
+                                                                      self.global.metadataStatusDownloadingAllMode))
 
         for metadata in metadatas {
             guard let nkSession = NextcloudKit.shared.getSession(account: metadata.account) else {
