@@ -225,6 +225,8 @@ final class NCGlobal: Sendable {
     let errorUnauthorizedFilesPasscode: Int     = -99993
     let errorDisableFilesApp: Int               = -99992
     let errorUnexpectedResponseFromDB: Int      = -99991
+    let errorIncorrectFileName: Int             = -99990
+
     // E2EE
     let errorE2EENotEnabled: Int                = -98000
     let errorE2EEVersion: Int                   = -98001
@@ -286,6 +288,7 @@ final class NCGlobal: Sendable {
     let metadataStatusWaitMove: Int             = 15
 
     let metadataStatusUploadingAllMode          = [1,2,3]
+    let metadataStatusDownloadingAllMode        = [-1, -2, -3]
     let metadataStatusInTransfer                = [-1, -2, 1, 2]
     let metadataStatusHideInView                = [1, 2, 3, 11]
     let metadataStatusWaitWebDav                = [10, 11, 12, 13, 14, 15]

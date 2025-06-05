@@ -209,14 +209,14 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                     NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: account, requestHandler: { request in
                         downloadRequest = request
                     }, taskHandler: { task in
-                        self.database.setMetadataSession(metadata: metadata,
+                        self.database.setMetadataSession(ocId: metadata.ocId,
                                                          sessionTaskIdentifier: task.taskIdentifier,
                                                          status: self.global.metadataStatusDownloading)
                     }, progressHandler: { progress in
                         hud.progress(progress.fractionCompleted)
                     }) { accountDownload, etag, _, _, _, _, error in
                         hud.dismiss()
-                        self.database.setMetadataSession(metadata: metadata,
+                        self.database.setMetadataSession(ocId: metadata.ocId,
                                                          session: "",
                                                          sessionTaskIdentifier: 0,
                                                          sessionError: "",
@@ -302,10 +302,12 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, controller: controller)
         for (metadata, url) in downloadMetadata {
             processor.execute { completion in
-                let metadata = self.database.setMetadataSessionInWaitDownload(metadata: metadata,
-                                                                              session: NCNetworking.shared.sessionDownload,
-                                                                              selector: "",
-                                                                              sceneIdentifier: controller.sceneIdentifier)
+                guard let metadata = self.database.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
+                                                                                    session: NCNetworking.shared.sessionDownload,
+                                                                                    selector: "",
+                                                                                    sceneIdentifier: controller.sceneIdentifier) else {
+                    return completion()
+                }
 
                 NCNetworking.shared.download(metadata: metadata) {
                 } progressHandler: { progress in

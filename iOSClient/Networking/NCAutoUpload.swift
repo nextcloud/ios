@@ -36,7 +36,7 @@ class NCAutoUpload: NSObject {
         }
     }
 
-    func autoUploadSelectedAlbums(controller: NCMainTabBarController?, assetCollections: [PHAssetCollection], log: String, account: String) {
+    func autoUploadSelectedAlbums(controller: NCMainTabBarController?, assetCollections: [PHAssetCollection], account: String) {
         guard let tblAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account))
         else {
             return
