@@ -390,24 +390,44 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
 
                     // PREVIEW
                     let cameraRoll = NCCameraRoll()
-                    cameraRoll.extractImageVideoFromAssetLocalIdentifier(metadata: metadataNewFile, modifyMetadataForUpload: false) { _, fileNamePath, error in
-                        if !error {
-                            self.fileNamesPath[metadataNewFile.fileNameView] = fileNamePath!
+                    cameraRoll.extractImageVideoFromAssetLocalIdentifier(
+                        metadata: metadataNewFile,
+                        modifyMetadataForUpload: false
+                    ) { result in
+                        switch result {
+                        case .success(let extractedAsset):
+                            let fileNamePath = extractedAsset.filePath
+                            self.fileNamesPath[metadataNewFile.fileNameView] = fileNamePath
+
                             do {
-                                let fileDictionary = try FileManager.default.attributesOfItem(atPath: fileNamePath!)
+                                let fileDictionary = try FileManager.default.attributesOfItem(atPath: fileNamePath)
                                 let fileSize = fileDictionary[FileAttributeKey.size] as? Int64 ?? 0
-                                if mediaType == PHAssetMediaType.image {
-                                    let data = try Data(contentsOf: URL(fileURLWithPath: fileNamePath!))
+
+                                if mediaType == .image {
+                                    let data = try Data(contentsOf: URL(fileURLWithPath: fileNamePath))
                                     if let image = UIImage(data: data) {
-                                        DispatchQueue.main.async { cell.imageNewFile.image = image }
+                                        DispatchQueue.main.async {
+                                            cell.imageNewFile.image = image
+                                        }
                                     }
-                                } else if mediaType == PHAssetMediaType.video {
-                                    if let image = self.utility.imageFromVideo(url: URL(fileURLWithPath: fileNamePath!), at: 0) {
-                                        DispatchQueue.main.async { cell.imageNewFile.image = image }
+                                } else if mediaType == .video {
+                                    if let image = self.utility.imageFromVideo(url: URL(fileURLWithPath: fileNamePath), at: 0) {
+                                        DispatchQueue.main.async {
+                                            cell.imageNewFile.image = image
+                                        }
                                     }
                                 }
-                                DispatchQueue.main.async { cell.labelDetailNewFile.text = self.utility.getRelativeDateTitle(date) + "\n" + self.utilityFileSystem.transformedSize(fileSize) }
-                            } catch { print("Error: \(error)") }
+
+                                DispatchQueue.main.async {
+                                    cell.labelDetailNewFile.text = self.utility.getRelativeDateTitle(date) + "\n" +
+                                                                    self.utilityFileSystem.transformedSize(fileSize)
+                                }
+                            } catch {
+                                print("Error reading file attributes: \(error)")
+                            }
+
+                        case .failure(let error):
+                            print("❌ Extraction failed: \(error.localizedDescription)")
                         }
                     }
                 }
