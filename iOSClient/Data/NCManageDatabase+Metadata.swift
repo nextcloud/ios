@@ -1420,4 +1420,12 @@ extension NCManageDatabase {
             completion(metadatas)
         }
     }
+
+    func createMetadatasFolder(assets: [PHAsset], useSubFolder: Bool, session: NCSession.Session) async -> [tableMetadata] {
+        await withCheckedContinuation { continuation in
+            createMetadatasFolder(assets: assets, useSubFolder: useSubFolder, session: session) { result in
+                continuation.resume(returning: result)
+            }
+        }
+    }
 }

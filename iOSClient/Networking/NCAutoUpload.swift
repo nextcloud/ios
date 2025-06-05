@@ -14,7 +14,7 @@ class NCAutoUpload: NSObject {
     private let database = NCManageDatabase.shared
     private var endForAssetToUpload: Bool = false
 
-    func initAutoUpload(controller: NCMainTabBarController?, account: String) async -> Int {
+    func initAutoUpload(controller: NCMainTabBarController? = nil, account: String) async -> Int {
         guard NCNetworking.shared.isOnline,
               let tblAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
               tblAccount.autoUploadStart else {
@@ -120,13 +120,11 @@ class NCAutoUpload: NSObject {
         }
 
         if !metadatas.isEmpty {
-            self.database.createMetadatasFolder(assets: assets, useSubFolder: tblAccount.autoUploadCreateSubfolder, session: session) { metadatasFolder in
-                self.database.addMetadatas(metadatasFolder + metadatas, sync: false)
-                return metadatas.count
-            }
-        } else {
-            return metadatas.count
+            let metadatasFolder = await self.database.createMetadatasFolder(assets: assets, useSubFolder: tblAccount.autoUploadCreateSubfolder, session: session)
+            self.database.addMetadatas(metadatasFolder + metadatas, sync: false)
         }
+
+        return metadatas.count
     }
 
     // MARK: -
@@ -140,12 +138,9 @@ class NCAutoUpload: NSObject {
                 continuation.resume(returning: granted)
             }
         }
-
         guard hasPermission else {
             return (nil, nil)
         }
-
-
         let autoUploadServerUrlBase = self.database.getAccountAutoUploadServerUrlBase(account: tblAccount.account, urlBase: tblAccount.urlBase, userId: tblAccount.userId)
         var mediaPredicates: [NSPredicate] = []
         var datePredicates: [NSPredicate] = []

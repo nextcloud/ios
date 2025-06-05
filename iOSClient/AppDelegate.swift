@@ -236,15 +236,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func autoUpload(limitUpload: Int) async -> Int {
         var numTransfers: Int = 0
         var counterUploading: Int = 0
-
-        func initAutoUpload(controller: NCMainTabBarController? = nil, account: String) async -> Int {
-            await withUnsafeContinuation({ continuation in
-                NCAutoUpload.shared.initAutoUpload(controller: controller, account: account) { num in
-                    continuation.resume(returning: num)
-                }
-            })
-        }
-
         guard let tblAccount = NCManageDatabase.shared.getActiveTableAccount()
         else {
             return numTransfers
@@ -254,7 +245,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         /// INIT AUTO UPLOAD ONLY FOR NEW PHOTO
         if tblAccount.autoUploadOnlyNew {
-            let newAutoUpload = await initAutoUpload(account: tblAccount.account)
+            let newAutoUpload = await NCAutoUpload.shared.initAutoUpload(account: tblAccount.account)
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Auto upload with new \(newAutoUpload) photo or video")
         }
 
