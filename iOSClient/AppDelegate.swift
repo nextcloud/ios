@@ -209,7 +209,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         task.setTaskCompleted(success: true)
         NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Refresh task completed")
 
-
         /*
         Task {
             let numTransfers = await autoUpload(limitUpload: 1)
