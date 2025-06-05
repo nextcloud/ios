@@ -356,13 +356,18 @@ extension NCNetworking {
             metadata = self.database.addMetadata(metadata)
 
             if selector == self.global.selectorUploadFileNODelete {
+                if isAppInBackground {
 #if EXTENSION
-                self.utilityFileSystem.moveFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer),
-                                                toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
+                    self.utilityFileSystem.moveFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer),
+                                                    toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
 #else
-                moveFileSafely(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer),
-                               toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
+                    moveFileSafely(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer), toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
 #endif
+                } else {
+                    self.utilityFileSystem.moveFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer),
+                                                    toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
+                }
+
                 self.database.addLocalFile(metadata: metadata, sync: false)
             } else {
 #if EXTENSION
@@ -370,7 +375,6 @@ extension NCNetworking {
 #else
                 removeFileInBackgroundSafe(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer))
 #endif
-
             }
 
             /// Update the auto upload data
