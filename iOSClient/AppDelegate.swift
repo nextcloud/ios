@@ -206,10 +206,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Refresh task expiration handler")
         }
 
-        task.setTaskCompleted(success: true)
-        NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Refresh task completed")
-
-        /*
         Task {
             let numTransfers = await autoUpload(limitUpload: 1)
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Processing task with \(numTransfers) transfers")
@@ -217,7 +213,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             task.setTaskCompleted(success: true)
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Refresh task completed")
         }
-        */
     }
 
     func handleProcessingTask(_ task: BGProcessingTask) {
@@ -293,7 +288,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
                 NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] In wait upload \(String(describing: metadatasWaitUpload.count))")
 
-                for metadata in metadatasWaitUpload {
+                let metadatas = await NCCameraRoll().extractCameraRoll(from: metadatasWaitUpload)
+
+                for metadata in metadatas {
                     NCNetworking.shared.upload(metadata: tableMetadata(value: metadata))
                     NextcloudKit.shared.nkCommonInstance.writeLog("Create Upload \(metadata.fileName) in \(metadata.serverUrl)")
                     numTransfers += 1

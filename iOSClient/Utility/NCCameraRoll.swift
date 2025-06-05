@@ -6,8 +6,6 @@ import Foundation
 import Photos
 import UIKit
 import NextcloudKit
-
-import Photos
 import AVFoundation
 
 /// Structure representing an extracted asset result
@@ -52,7 +50,7 @@ final class NCCameraRoll: CameraRollExtractor {
                 for item in result {
                     extracted += 1
                     progress?(extracted, total, item)
-                    print("✅ Extracted: \(item.fileNameView)")
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[LOG] Extracted from camera roll: \(item.fileNameView)")
                 }
                 results.append(contentsOf: result)
             }
@@ -107,7 +105,7 @@ final class NCCameraRoll: CameraRollExtractor {
         }
 
         do {
-            let result = try await extractImageVideoFromAssetLocalIdentifierAsync(
+            let result = try await extractImageVideoFromAssetLocalIdentifier(
                 metadata: metadataSource,
                 modifyMetadataForUpload: true
             )
@@ -122,7 +120,7 @@ final class NCCameraRoll: CameraRollExtractor {
                 metadatas.append(self.database.addMetadata(livePhotoMetadata))
             }
         } catch {
-            print("❌ Error during extraction: \(error.localizedDescription)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Error during extraction: \(error.localizedDescription), of filename: \(metadataSource.fileNameView)")
         }
 
         return metadatas
@@ -140,7 +138,7 @@ final class NCCameraRoll: CameraRollExtractor {
     ) {
         Task {
             do {
-                let result = try await extractImageVideoFromAssetLocalIdentifierAsync(
+                let result = try await extractImageVideoFromAssetLocalIdentifier(
                     metadata: metadata,
                     modifyMetadataForUpload: modifyMetadataForUpload
                 )
@@ -156,7 +154,7 @@ final class NCCameraRoll: CameraRollExtractor {
     ///   - originalMetadata: Metadata describing the asset
     ///   - modifyMetadataForUpload: Whether to update metadata for upload and store it in the database
     /// - Returns: An `ExtractedAsset` containing the updated metadata and path to the extracted file
-    func extractImageVideoFromAssetLocalIdentifierAsync(
+    func extractImageVideoFromAssetLocalIdentifier(
         metadata originalMetadata: tableMetadata,
         modifyMetadataForUpload: Bool
     ) async throws -> ExtractedAsset {
@@ -172,10 +170,9 @@ final class NCCameraRoll: CameraRollExtractor {
             withLocalIdentifiers: [metadata.assetLocalIdentifier],
             options: nil
         ).firstObject else {
-            throw NSError(
-                domain: "ExtractAssetError",
-                code: 1,
-                userInfo: [NSLocalizedDescriptionKey: "Asset not found"]
+            throw NSError(domain: "ExtractAssetError",
+                          code: 1,
+                          userInfo: [NSLocalizedDescriptionKey: "Asset not found"]
             )
         }
 
@@ -212,10 +209,9 @@ final class NCCameraRoll: CameraRollExtractor {
                 filePath: filePath
             )
         default:
-            throw NSError(
-                domain: "ExtractAssetError",
-                code: 7,
-                userInfo: [NSLocalizedDescriptionKey: "Unsupported media type"]
+            throw NSError(domain: "ExtractAssetError",
+                          code: 7,
+                          userInfo: [NSLocalizedDescriptionKey: "Unsupported media type"]
             )
         }
 
@@ -269,7 +265,9 @@ final class NCCameraRoll: CameraRollExtractor {
                     if let data = data {
                         continuation.resume(returning: data)
                     } else {
-                        continuation.resume(throwing: NSError(domain: "ExtractAssetError", code: 2, userInfo: [NSLocalizedDescriptionKey: "Image data is nil"]))
+                        continuation.resume(throwing: NSError(domain: "ExtractAssetError",
+                                                              code: 2,
+                                                              userInfo: [NSLocalizedDescriptionKey: "Image data is nil"]))
                     }
                 }
             }
@@ -282,7 +280,9 @@ final class NCCameraRoll: CameraRollExtractor {
                   let colorSpace = ciImage.colorSpace,
                   let jpegData = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace)
             else {
-                throw NSError(domain: "ExtractAssetError", code: 3, userInfo: [NSLocalizedDescriptionKey: "JPEG conversion failed"])
+                throw NSError(domain: "ExtractAssetError",
+                              code: 3,
+                              userInfo: [NSLocalizedDescriptionKey: "JPEG conversion failed"])
             }
             data = jpegData
         }
@@ -302,7 +302,9 @@ final class NCCameraRoll: CameraRollExtractor {
                     if let asset = asset {
                         continuation.resume(returning: asset)
                     } else {
-                        continuation.resume(throwing: NSError(domain: "ExtractAssetError", code: 4, userInfo: [NSLocalizedDescriptionKey: "Video asset is nil"]))
+                        continuation.resume(throwing: NSError(domain: "ExtractAssetError",
+                                                              code: 4,
+                                                              userInfo: [NSLocalizedDescriptionKey: "Video asset is nil"]))
                     }
                 }
             }
@@ -320,15 +322,20 @@ final class NCCameraRoll: CameraRollExtractor {
 
             try await withCheckedThrowingContinuation { continuation in
                 exporter.exportAsynchronously {
+                    // Capture of 'exporter' with non-sendable type 'AVAssetExportSession' in a '@Sendable' closure I don't know how fix
                     if exporter.status == .completed {
                         continuation.resume()
                     } else {
-                        continuation.resume(throwing: NSError(domain: "ExtractAssetError", code: 5, userInfo: [NSLocalizedDescriptionKey: "Video export failed"]))
+                        continuation.resume(throwing: NSError(domain: "ExtractAssetError",
+                                                              code: 5,
+                                                              userInfo: [NSLocalizedDescriptionKey: "Video export failed"]))
                     }
                 }
             }
         } else {
-            throw NSError(domain: "ExtractAssetError", code: 6, userInfo: [NSLocalizedDescriptionKey: "Unsupported video format"])
+            throw NSError(domain: "ExtractAssetError",
+                          code: 6,
+                          userInfo: [NSLocalizedDescriptionKey: "Unsupported video format"])
         }
     }
 
@@ -349,7 +356,7 @@ final class NCCameraRoll: CameraRollExtractor {
         options.deliveryMode = .fastFormat
         options.isNetworkAccessAllowed = true
 
-        // Access UIScreen.main.bounds safely in Swift 6
+        // UIScreen.main.bounds safely in Swift 6
         let screenSize = await MainActor.run {
             UIScreen.main.bounds.size
         }
