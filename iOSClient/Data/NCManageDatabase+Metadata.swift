@@ -1238,7 +1238,7 @@ extension NCManageDatabase {
             let safeLimit = min(limit, metadatas.count)
             let limitedMetadatas = metadatas.prefix(safeLimit)
 
-            return metadatas.map { tableMetadata(value: $0) }
+            return limitedMetadatas.map { tableMetadata(value: $0) }
         } ?? []
     }
 
