@@ -36,6 +36,8 @@ class NCAccount: NSObject {
                        password: String,
                        controller: NCMainTabBarController?,
                        completion: @escaping () -> Void = {}) {
+        NextcloudKit.shared.nkCommonInstance.writeLog(info: "Creating account...")
+
         var urlBase = urlBase
         if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
         let account: String = "\(user) \(urlBase)"
@@ -58,19 +60,24 @@ class NCAccount: NSObject {
         NextcloudKit.shared.getUserProfile(account: account) { account, userProfile, _, error in
             if error == .success, let userProfile {
                 /// Login log debug
-                NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Create new account \(account) with user \(user) and userId \(userProfile.userId)")
+                NextcloudKit.shared.nkCommonInstance.writeLog(info: "Got user profile, creating new account \(account) with user \(user) and userId \(userProfile.userId)")
                 ///
                 NextcloudKit.shared.updateSession(account: account, userId: userProfile.userId)
                 NCSession.shared.appendSession(account: account, urlBase: urlBase, user: user, userId: userProfile.userId)
                 self.database.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
+
                 self.changeAccount(account, userProfile: userProfile, controller: controller) {
+                    NextcloudKit.shared.nkCommonInstance.writeLog(info: "NCAccount changed user profile to \(userProfile.userId).")
                     NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
+
                     if let controller {
                         controller.account = account
+                        NextcloudKit.shared.nkCommonInstance.writeLog(info: "Dismissing login provider view controller...")
                         viewController.dismiss(animated: true)
 
                         completion()
                     } else if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                        NextcloudKit.shared.nkCommonInstance.writeLog(info: "Presenting initial view controller from main storyboard...")
                         controller.account = account
                         controller.modalPresentationStyle = .fullScreen
                         controller.view.alpha = 0
