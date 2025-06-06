@@ -192,7 +192,7 @@ extension tableMetadata {
     }
 
     var isDeletable: Bool {
-        if !isDirectoryE2EE && e2eEncrypted {
+        if (!isDirectoryE2EE && e2eEncrypted) || !NCMetadataPermissions.canDelete(self) {
             return false
         }
         return true

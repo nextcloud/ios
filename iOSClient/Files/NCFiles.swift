@@ -122,12 +122,6 @@ class NCFiles: NCCollectionViewCommon {
 
         resetPlusButtonAlpha()
         reloadDataSource()
-
-//        print(" [TEST] on appear " + metadataFolder!.permissions)
-//        if let metadataFolder, !NCMetadataPermissions.canCreateFolder(metadataFolder) {
-//            plusButton.isEnabled = false
-//            plusButton.backgroundColor = .lightGray
-//        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -196,8 +190,12 @@ class NCFiles: NCCollectionViewCommon {
 
 print("[TEST] reload " + (metadataFolder?.permissions ?? ""))
         if let metadataFolder {
+            // disable + button if no create permission
             plusButton.isEnabled = NCMetadataPermissions.canCreateFolder(metadataFolder)
             plusButton.backgroundColor = NCMetadataPermissions.canCreateFolder(metadataFolder) ? NCBrandColor.shared.customer : .lightGray
+
+            // disable option to delete files if no delete permission
+
         }
 
         self.database.getMetadatas(predicate: predicate,

@@ -24,6 +24,10 @@ class NCMetadataPermissions: NSObject {
         return metadata.permissions.contains(permissionCanCreateFolder)
     }
 
+    static func canDelete(_ metadata: tableMetadata) -> Bool {
+        return metadata.permissions.contains(permissionCanDelete)
+    }
+
     static func permissionsContainsString(_ metadataPermissions: String, permissions: String) -> Bool {
         for char in permissions {
             if metadataPermissions.contains(char) == false {
