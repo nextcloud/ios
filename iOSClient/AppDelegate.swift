@@ -166,13 +166,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func scheduleAppRefresh() {
         let request = BGAppRefreshTaskRequest(identifier: global.refreshTask)
 
-        request.earliestBeginDate = Date(timeIntervalSinceNow: 60) // Refresh after 60 seconds.
+        request.earliestBeginDate = Date(timeIntervalSinceNow: 5 * 60) // Refresh after 5 minutes.
 
         do {
             try BGTaskScheduler.shared.submit(request)
-            if let date = request.earliestBeginDate {
-                NextcloudKit.shared.nkCommonInstance.writeLog("Refresh task scheduled (UTC) \(date.description(with: Locale(identifier: "en_US_POSIX")))")
-            }
         } catch {
             NextcloudKit.shared.nkCommonInstance.writeLog("Refresh task failed to submit request: \(error)")
         }
@@ -184,14 +181,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func scheduleAppProcessing() {
         let request = BGProcessingTaskRequest(identifier: global.processingTask)
 
-        request.earliestBeginDate = Date(timeIntervalSinceNow: 5 * 60) // Refresh after 5 minutes.
+        request.earliestBeginDate = Date(timeIntervalSinceNow: 30 * 60) // Refresh after 30 minutes.
         request.requiresNetworkConnectivity = false
         request.requiresExternalPower = false
+
         do {
             try BGTaskScheduler.shared.submit(request)
-            if let date = request.earliestBeginDate {
-                NextcloudKit.shared.nkCommonInstance.writeLog("Processing task scheduled (UTC) \(date.description(with: Locale(identifier: "en_US_POSIX")))")
-            }
         } catch {
             NextcloudKit.shared.nkCommonInstance.writeLog("Processing task failed to submit request: \(error)")
         }
