@@ -52,12 +52,16 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
         NextcloudKit.shared.nkCommonInstance.writeLog("Location monitoring stopped")
     }
 
-    func isLocationServiceActive() -> Bool {
-        guard CLLocationManager.locationServicesEnabled() else {
-            return false
-        }
+    func checkLocationServiceIsActive(completion: @escaping (Bool) -> Void) {
+        DispatchQueue.global(qos: .userInitiated).async {
+            guard CLLocationManager.locationServicesEnabled() else {
+                return completion(false)
+            }
+            let status = self.locationManager.authorizationStatus
+            let isActive = (status == .authorizedAlways)
 
-        return locationManager.authorizationStatus == .authorizedAlways
+            completion(isActive)
+        }
     }
 
     private func presentInitialExplanation(from viewController: UIViewController) {
