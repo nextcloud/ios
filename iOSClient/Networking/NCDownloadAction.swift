@@ -149,7 +149,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         } else if metadata.directory {
             database.setDirectory(serverUrl: serverUrl, offline: true, metadata: metadata)
             Task {
-                await NCNetworking.shared.synchronization(account: metadata.account, serverUrl: metadata.serverUrl, add: true)
+                await NCNetworking.shared.synchronization(account: metadata.account, serverUrl: metadata.serverUrl)
             }
         } else {
             var metadatasSynchronizationOffline: [tableMetadata] = []

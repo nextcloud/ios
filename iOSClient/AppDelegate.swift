@@ -101,6 +101,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         review.showStoreReview()
 #endif
 
+        // BACKGROUND TASK
+
         BGTaskScheduler.shared.register(forTaskWithIdentifier: global.refreshTask, using: backgroundQueue) { task in
             guard let appRefreshTask = task as? BGAppRefreshTask else {
                 task.setTaskCompleted(success: false)
@@ -170,9 +172,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         do {
             try BGTaskScheduler.shared.submit(request)
-            if let date = request.earliestBeginDate {
-                NextcloudKit.shared.nkCommonInstance.writeLog("Refresh task scheduled (UTC) \(date.description(with: Locale(identifier: "en_US_POSIX")))")
-            }
         } catch {
             NextcloudKit.shared.nkCommonInstance.writeLog("Refresh task failed to submit request: \(error)")
         }
@@ -187,11 +186,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         request.earliestBeginDate = Date(timeIntervalSinceNow: 5 * 60) // Refresh after 5 minutes.
         request.requiresNetworkConnectivity = false
         request.requiresExternalPower = false
+
         do {
             try BGTaskScheduler.shared.submit(request)
-            if let date = request.earliestBeginDate {
-                NextcloudKit.shared.nkCommonInstance.writeLog("Processing task scheduled (UTC) \(date.description(with: Locale(identifier: "en_US_POSIX")))")
-            }
         } catch {
             NextcloudKit.shared.nkCommonInstance.writeLog("Processing task failed to submit request: \(error)")
         }
@@ -224,15 +221,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.nkCommonInstance.writeLog("Processing task expiration handler")
         }
 
-        NextcloudKit.shared.nkCommonInstance.writeLog("Processing task completed")
-        task.setTaskCompleted(success: true)
+        Task {
+            let numTransfers = await autoUpload()
+            NextcloudKit.shared.nkCommonInstance.writeLog("Processing task with \(numTransfers) transfers")
+
+            task.setTaskCompleted(success: true)
+            NextcloudKit.shared.nkCommonInstance.writeLog("Processing task completed")
+        }
     }
 
     func autoUpload() async -> Int {
         var numTransfers: Int = 0
         var counterUploading: Int = 0
-        guard let tblAccount = NCManageDatabase.shared.getActiveTableAccount()
-        else {
+        let tblAccount = await self.database.getActiveTableAccountAsync()
+
+        guard let tblAccount,
+              tblAccount.autoUploadStart else {
             return numTransfers
         }
 

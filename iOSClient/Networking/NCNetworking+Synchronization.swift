@@ -25,7 +25,7 @@ import UIKit
 import NextcloudKit
 
 extension NCNetworking {
-    func synchronization(account: String, serverUrl: String, add: Bool) async {
+    func synchronization(account: String, serverUrl: String) async {
         let startDate = Date()
         let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: account)
         let options = NKRequestOptions(timeout: 120, taskDescription: NCGlobal.shared.taskDescriptionSynchronization, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
@@ -33,19 +33,6 @@ extension NCNetworking {
         var metadatasDownload: [tableMetadata] = []
 
         let results = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrl, depth: "infinity", showHiddenFiles: showHiddenFiles, account: account, options: options)
-        guard account == results.account else {
-            return
-        }
-
-        if !add {
-            if await self.database.getResultMetadataAsync(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND (status == %d OR status == %d)",
-                                                                                 account,
-                                                                                 self.global.selectorSynchronizationOffline,
-                                                                                 self.global.metadataStatusWaitDownload,
-                                                                                 self.global.metadataStatusDownloading)) != nil {
-                return
-            }
-        }
 
         if results.error == .success, let files = results.files {
             for file in files {
