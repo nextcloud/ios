@@ -100,8 +100,8 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
     }
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard !isProcessing else {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Upload in progress, skipping location trigger")
+        guard !isProcessing,
+              isAppInBackground else {
             return
         }
 
