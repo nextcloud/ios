@@ -234,6 +234,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func autoUpload() async -> Int {
         var numTransfers: Int = 0
         var counterUploading: Int = 0
+        let maxUploading: Int = NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload
         let tblAccount = await self.database.getActiveTableAccountAsync()
 
         guard let tblAccount,
@@ -283,7 +284,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
                 let results = await self.networking.fileExists(serverUrlFileName: serverUrlFileName, account: tblAccount.account)
                 if results.exists {
-                    await self.database.setMetadataStatusAsync(ocId: metadata.ocId, status: self.global.metadataStatusNormal)
+                    await self.database.setMetadataStatusAsync(ocId: metadata.ocId, status: self.global.metadataStatusServerUploaded)
                     counterUploading -= 1
 
                     NextcloudKit.shared.nkCommonInstance.writeLog("Auto upload file \(metadata.fileName) in \(metadata.serverUrl), uploaded")
@@ -292,7 +293,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
             NextcloudKit.shared.nkCommonInstance.writeLog("Auto upload already in uploading \(String(describing: counterUploading))")
         }
-        let counterUploadingAvailable = min(NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload - counterUploading, 10)
+        let counterUploadingAvailable = min(maxUploading - counterUploading, maxUploading)
 
         /// UPLOAD
         if counterUploadingAvailable > 0 {
