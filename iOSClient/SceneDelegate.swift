@@ -123,7 +123,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            NCAutoUpload.shared.initAutoUpload(controller: nil, account: session.account) { num in
+            Task {
+                let num = await NCAutoUpload.shared.initAutoUpload(account: session.account)
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(num) uploads")
             }
         }

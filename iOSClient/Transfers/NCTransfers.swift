@@ -104,7 +104,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         guard let metadata = metadataTemp else { return }
         let cameraRoll = NCCameraRoll()
 
-        cameraRoll.extractCameraRoll(from: metadata) { metadatas in
+        Task {
+            let metadatas = await cameraRoll.extractCameraRoll(from: metadata)
             for metadata in metadatas {
                 if let metadata = self.database.setMetadataStatus(ocId: metadata.ocId,
                                                                   status: NCGlobal.shared.metadataStatusUploading) {

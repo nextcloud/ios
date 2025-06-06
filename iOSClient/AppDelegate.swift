@@ -84,7 +84,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.setupLog(pathLog: utilityFileSystem.directoryGroup,
                                          levelLog: NCKeychain().logLevel,
                                          copyLogToDocumentDirectory: true)
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start session with level \(NCKeychain().logLevel) " + versionNextcloudiOS)
+            NextcloudKit.shared.nkCommonInstance.writeLog("Start session with level \(NCKeychain().logLevel) " + versionNextcloudiOS)
         }
 
         /// Push Notification & display notification
@@ -141,7 +141,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             notificationCenter.add(req)
         }
 
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] bye bye")
+        NextcloudKit.shared.nkCommonInstance.writeLog("bye bye")
     }
 
     // MARK: - UISceneSession Lifecycle
@@ -171,10 +171,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         do {
             try BGTaskScheduler.shared.submit(request)
             if let date = request.earliestBeginDate {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Refresh task scheduled (UTC) \(date.description(with: Locale(identifier: "en_US_POSIX")))")
+                NextcloudKit.shared.nkCommonInstance.writeLog("Refresh task scheduled (UTC) \(date.description(with: Locale(identifier: "en_US_POSIX")))")
             }
         } catch {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Refresh task failed to submit request: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Refresh task failed to submit request: \(error)")
         }
     }
 
@@ -190,72 +190,56 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         do {
             try BGTaskScheduler.shared.submit(request)
             if let date = request.earliestBeginDate {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Processing task scheduled (UTC) \(date.description(with: Locale(identifier: "en_US_POSIX")))")
+                NextcloudKit.shared.nkCommonInstance.writeLog("Processing task scheduled (UTC) \(date.description(with: Locale(identifier: "en_US_POSIX")))")
             }
         } catch {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Processing task failed to submit request: \(error)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Processing task failed to submit request: \(error)")
         }
     }
 
     func handleAppRefresh(_ task: BGAppRefreshTask) {
-        NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start refresh task")
+        NextcloudKit.shared.nkCommonInstance.writeLog("Start refresh task")
         scheduleAppRefresh()
         isAppSuspending = false
 
         task.expirationHandler = {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Refresh task expiration handler")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Refresh task expiration handler")
         }
 
-        task.setTaskCompleted(success: true)
-        NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Refresh task completed")
-
-        /*
         Task {
-            let numTransfers = await autoUpload(limitUpload: 1)
-            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Processing task with \(numTransfers) transfers")
+            let numTransfers = await autoUpload()
+            NextcloudKit.shared.nkCommonInstance.writeLog("Processing task with \(numTransfers) transfers")
 
             task.setTaskCompleted(success: true)
-            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Refresh task completed")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Refresh task completed")
         }
-        */
     }
 
     func handleProcessingTask(_ task: BGProcessingTask) {
-        NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start processing task")
+        NextcloudKit.shared.nkCommonInstance.writeLog("Start processing task")
         scheduleAppProcessing()
         isAppSuspending = false
 
         task.expirationHandler = {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Processing task expiration handler")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Processing task expiration handler")
         }
 
-        NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Processing task completed")
+        NextcloudKit.shared.nkCommonInstance.writeLog("Processing task completed")
         task.setTaskCompleted(success: true)
     }
 
-    func autoUpload(limitUpload: Int) async -> Int {
+    func autoUpload() async -> Int {
         var numTransfers: Int = 0
         var counterUploading: Int = 0
-
-        func initAutoUpload(controller: NCMainTabBarController? = nil, account: String) async -> Int {
-            await withUnsafeContinuation({ continuation in
-                NCAutoUpload.shared.initAutoUpload(controller: controller, account: account) { num in
-                    continuation.resume(returning: num)
-                }
-            })
-        }
-
         guard let tblAccount = NCManageDatabase.shared.getActiveTableAccount()
         else {
             return numTransfers
         }
 
-        NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Auto upload start with limit \(limitUpload)")
-
         /// INIT AUTO UPLOAD ONLY FOR NEW PHOTO
         if tblAccount.autoUploadOnlyNew {
-            let newAutoUpload = await initAutoUpload(account: tblAccount.account)
-            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Auto upload with new \(newAutoUpload) photo or video")
+            let newAutoUpload = await NCAutoUpload.shared.initAutoUpload(account: tblAccount.account)
+            NextcloudKit.shared.nkCommonInstance.writeLog("Auto upload with new \(newAutoUpload) photo or video")
         }
 
         /// CREATION FOLDERS
@@ -271,7 +255,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
                 guard resultsCreateFolder.error == .success else {
                     let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Create auto upload folder \(serverUrl) with error: \(resultsCreateFolder.error.errorCode)")
+                    NextcloudKit.shared.nkCommonInstance.writeLog("Auto upload create folder \(serverUrl) with error: \(resultsCreateFolder.error.errorCode)")
                     return numTransfers
                 }
 
@@ -282,34 +266,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         if numTransfers == 0 {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] No creations folders required")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Auto upload no creations folders required")
         }
 
         if let metadatasUploading = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d", self.global.metadataStatusUploading), limit: nil) {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Already in uploading \(String(describing: metadatasUploading.count))")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Auto upload already in uploading \(String(describing: metadatasUploading.count))")
 
             counterUploading = metadatasUploading.count
         }
-        let limitUpload = NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload - counterUploading
+        let counterUploadingAvailable = min(NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload - counterUploading, 10)
 
         /// UPLOAD
-        if limitUpload > 0 {
+        if counterUploadingAvailable > 0 {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Auto upload start with limit \(counterUploadingAvailable)")
+
             let sortDescriptors = [
                 RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
             ]
 
-            if let metadatasWaitUpload = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@ AND chunk == 0", self.global.metadataStatusWaitUpload, self.global.selectorUploadAutoUpload), sortDescriptors: sortDescriptors, limit: limitUpload) {
+            if let metadatasWaitUpload = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@ AND chunk == 0", self.global.metadataStatusWaitUpload, self.global.selectorUploadAutoUpload), sortDescriptors: sortDescriptors, limit: counterUploadingAvailable) {
 
-                NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] In wait upload \(String(describing: metadatasWaitUpload.count))")
+                NextcloudKit.shared.nkCommonInstance.writeLog("Auto upload in wait upload \(String(describing: metadatasWaitUpload.count))")
 
-                for metadata in metadatasWaitUpload {
+                let metadatas = await NCCameraRoll().extractCameraRoll(from: metadatasWaitUpload)
+
+                for metadata in metadatas {
                     NCNetworking.shared.upload(metadata: tableMetadata(value: metadata))
-                    NextcloudKit.shared.nkCommonInstance.writeLog("Create Upload \(metadata.fileName) in \(metadata.serverUrl)")
+                    NextcloudKit.shared.nkCommonInstance.writeLog("Auto upload create new upload \(metadata.fileName) in \(metadata.serverUrl)")
                     numTransfers += 1
                 }
             }
         } else {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Uploading is full")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Auto upload uploading is full")
             return 0
         }
 
@@ -319,7 +307,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Background Networking Session
 
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
-        NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Handle Events For Background URLSession: \(identifier)")
+        NextcloudKit.shared.nkCommonInstance.writeLog("Handle vvents For background URLSession: \(identifier)")
         WidgetCenter.shared.reloadAllTimelines()
         backgroundSessionCompletionHandler = completionHandler
     }

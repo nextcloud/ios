@@ -388,7 +388,7 @@ extension NCNetworking {
                                                     sync: false)
             }
 
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload complete " + metadata.serverUrl + "/" + metadata.fileName + ", result: success(\(size) bytes)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("Upload complete " + metadata.serverUrl + "/" + metadata.fileName + ", result: success(\(size) bytes)")
 
             let userInfo: [String: Any] = ["ocId": metadata.ocId,
                                            "ocIdTransfer": metadata.ocIdTransfer,

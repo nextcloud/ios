@@ -125,7 +125,8 @@ class NCAccount: NSObject {
             /// Start the service
             NCService().startRequestServicesServer(account: account, controller: controller)
             /// Start the auto upload
-            NCAutoUpload.shared.initAutoUpload(controller: nil, account: account) { num in
+            Task {
+                let num = await NCAutoUpload.shared.initAutoUpload(controller: nil, account: account)
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(num) uploads")
             }
             /// Networking Process

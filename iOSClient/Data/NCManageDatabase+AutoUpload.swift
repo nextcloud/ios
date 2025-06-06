@@ -48,10 +48,8 @@ extension NCManageDatabase {
 
     // MARK: - Realm Read
 
-    func fetchSkipFileNames(account: String, autoUploadServerUrlBase: String) -> Set<String> {
-        var skipFileNames = Set<String>()
-
-        performRealmRead { realm in
+    func fetchSkipFileNames(account: String, autoUploadServerUrlBase: String) async -> Set<String> {
+        let result: Set<String>? = await performRealmRead { realm in
             let metadatas = realm.objects(tableMetadata.self)
                 .filter("account == %@ AND autoUploadServerUrlBase == %@ AND status IN %@", account, autoUploadServerUrlBase, NCGlobal.shared.metadataStatusUploadingAllMode)
                 .map(\.fileNameView)
@@ -60,36 +58,11 @@ extension NCManageDatabase {
                 .filter("account == %@ AND serverUrlBase == %@", account, autoUploadServerUrlBase)
                 .map(\.fileName)
 
-            skipFileNames.formUnion(metadatas)
-            skipFileNames.formUnion(transfers)
+            return Set(metadatas).union(transfers)
         }
 
-        return skipFileNames
+        return result ?? []
     }
-
-    func fetchSkipFileNames(account: String,
-                            autoUploadServerUrlBase: String,
-                            completion: @escaping (Set<String>?) -> Void) {
-        performRealmRead({ realm in
-            var skipFileNames = Set<String>()
-
-            let metadatas = realm.objects(tableMetadata.self)
-                .filter("account == %@ AND autoUploadServerUrlBase == %@ AND status IN %@",
-                        account, autoUploadServerUrlBase, NCGlobal.shared.metadataStatusUploadingAllMode)
-                .map(\.fileNameView)
-
-            let transfers = realm.objects(tableAutoUploadTransfer.self)
-                .filter("account == %@ AND serverUrlBase == %@",
-                        account, autoUploadServerUrlBase)
-                .map(\.fileName)
-
-            skipFileNames.formUnion(metadatas)
-            skipFileNames.formUnion(transfers)
-
-            return skipFileNames
-        }, sync: false, completion: completion)
-    }
-
 
     func fetchLastAutoUploadedDate(account: String, autoUploadServerUrlBase: String) -> Date? {
         performRealmRead { realm in
