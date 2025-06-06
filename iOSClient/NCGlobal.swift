@@ -23,8 +23,6 @@
 
 import UIKit
 
-/// Used for read/write in Realm
-var isAppSuspending: Bool = false
 /// Used for know if the app in in Background mode
 var isAppInBackground: Bool = false
 
@@ -33,12 +31,10 @@ final class NCGlobal: Sendable {
 
     init() {
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
-            isAppSuspending = true
             isAppInBackground = true
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { _ in
-            isAppSuspending = false
             isAppInBackground = false
         }
     }

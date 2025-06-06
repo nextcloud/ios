@@ -277,7 +277,6 @@ extension NCNetworking {
                         size: Int64,
                         task: URLSessionTask,
                         error: NKError) {
-        isAppSuspending = false
 
 #if EXTENSION_FILE_PROVIDER_EXTENSION
 

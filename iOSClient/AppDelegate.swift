@@ -229,9 +229,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func autoUpload() async -> Int {
-        // MUST BE TRUE for Read/write
-        isAppSuspending = false
-
         var numTransfers: Int = 0
         var counterUploading: Int = 0
         let tblAccount = await self.database.getActiveTableAccountAsync()
