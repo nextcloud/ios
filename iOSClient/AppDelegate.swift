@@ -121,8 +121,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         scheduleAppProcessing()
 
-        NCBackgroundLocationUploadManager.shared.start()
-
         if NCBrandOptions.shared.enforce_passcode_lock {
             NCKeychain().requestPasscodeAtStart = true
         }

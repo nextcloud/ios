@@ -175,6 +175,10 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             Task {
                 _ = await NCAutoUpload.shared.autoUploadSelectedAlbums(controller: self.controller, assetCollections: assetCollections, account: session.account)
             }
+
+            if let controller = self.controller {
+                NCBackgroundLocationUploadManager.shared.start(from: controller)
+            }
         } else {
             database.clearMetadatasUpload(account: session.account)
         }

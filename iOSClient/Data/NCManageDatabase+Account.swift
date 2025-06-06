@@ -443,6 +443,15 @@ extension NCManageDatabase {
         }
     }
 
+    func getActiveTableAccountAsync() async -> tableAccount? {
+        await performRealmRead { realm in
+            realm.objects(tableAccount.self)
+                .filter("active == true")
+                .first
+                .map { tableAccount(value: $0) }
+        }
+    }
+
     func getTableAccount(account: String) -> tableAccount? {
         performRealmRead { realm in
             realm.objects(tableAccount.self)

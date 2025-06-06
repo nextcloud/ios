@@ -15,26 +15,76 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
     private let locationManager = CLLocationManager()
     private var isProcessing = false
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    private weak var presentingViewController: UIViewController?
+    private let explanationShownKey = "locationExplanationShown"
 
-    override init() {
+    private override init() {
         super.init()
 
         locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
+        locationManager.desiredAccuracy = kCLLocationAccuracyKilometer
         locationManager.allowsBackgroundLocationUpdates = true
         locationManager.pausesLocationUpdatesAutomatically = true
         locationManager.activityType = .otherNavigation
     }
 
-    func start() {
-        locationManager.requestAlwaysAuthorization()
-        locationManager.startMonitoringSignificantLocationChanges()
-        NextcloudKit.shared.nkCommonInstance.writeLog("Location monitoring started")
+    func start(from viewController: UIViewController) {
+        self.presentingViewController = viewController
+
+        let status = locationManager.authorizationStatus
+
+        if status == .notDetermined {
+            if !UserDefaults.standard.bool(forKey: explanationShownKey) {
+                presentInitialExplanation(from: viewController)
+            } else {
+                locationManager.requestAlwaysAuthorization()
+            }
+        } else if status != .authorizedAlways {
+            presentSettingsAlert(from: viewController)
+        } else {
+            locationManager.startMonitoringSignificantLocationChanges()
+            NextcloudKit.shared.nkCommonInstance.writeLog("Location monitoring started")
+        }
     }
 
     func stop() {
         locationManager.stopMonitoringSignificantLocationChanges()
         NextcloudKit.shared.nkCommonInstance.writeLog("Location monitoring stopped")
+    }
+
+    private func presentInitialExplanation(from viewController: UIViewController) {
+        let alert = UIAlertController(
+            title: "Background Location Access",
+            message: "This app needs background location access to automatically upload files when you move between areas. GPS is not used and your location is never stored.",
+            preferredStyle: .alert
+        )
+
+        alert.addAction(UIAlertAction(title: "Continue", style: .default) { _ in
+            UserDefaults.standard.set(true, forKey: self.explanationShownKey)
+            self.locationManager.requestAlwaysAuthorization()
+        })
+
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+
+        viewController.present(alert, animated: true)
+    }
+
+    private func presentSettingsAlert(from viewController: UIViewController) {
+        let alert = UIAlertController(
+            title: "Enable Background Location",
+            message: "To allow automatic file uploads in the background, please enable 'Always' location access in Settings.",
+            preferredStyle: .alert
+        )
+
+        alert.addAction(UIAlertAction(title: "Open Settings", style: .default) { _ in
+            if let url = URL(string: UIApplication.openSettingsURLString) {
+                UIApplication.shared.open(url)
+            }
+        })
+
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+
+        viewController.present(alert, animated: true)
     }
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {

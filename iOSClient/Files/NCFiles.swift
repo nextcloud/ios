@@ -137,6 +137,13 @@ class NCFiles: NCCollectionViewCommon {
         if !isSearchingMode {
             getServerData()
         }
+
+        Task {
+            if let tblAccount = await self.database.getActiveTableAccountAsync(),
+               tblAccount.autoUploadStart {
+                NCBackgroundLocationUploadManager.shared.start(from: self)
+            }
+        }
     }
 
     override func viewDidDisappear(_ animated: Bool) {
