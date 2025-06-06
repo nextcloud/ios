@@ -54,35 +54,35 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
 
     private func presentInitialExplanation(from viewController: UIViewController) {
         let alert = UIAlertController(
-            title: "Background Location Access",
-            message: "This app needs background location access to automatically upload files when you move between areas. GPS is not used and your location is never stored.",
+            title: NSLocalizedString("_background_location_access_title_", comment: ""),
+            message: NSLocalizedString("_background_location_access_message_", comment: ""),
             preferredStyle: .alert
         )
 
-        alert.addAction(UIAlertAction(title: "Continue", style: .default) { _ in
+        alert.addAction(UIAlertAction(title: NSLocalizedString("_continue_", comment: ""), style: .default) { _ in
             UserDefaults.standard.set(true, forKey: self.explanationShownKey)
             self.locationManager.requestAlwaysAuthorization()
         })
 
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
 
         viewController.present(alert, animated: true)
     }
 
     private func presentSettingsAlert(from viewController: UIViewController) {
         let alert = UIAlertController(
-            title: "Enable Background Location",
-            message: "To allow automatic file uploads in the background, please enable 'Always' location access in Settings.",
+            title: NSLocalizedString("_enable_background_location_title_", comment: ""),
+            message: NSLocalizedString("_enable_background_location_message_", comment: ""),
             preferredStyle: .alert
         )
 
-        alert.addAction(UIAlertAction(title: "Open Settings", style: .default) { _ in
+        alert.addAction(UIAlertAction(title: NSLocalizedString("_open_settings_", comment: ""), style: .default) { _ in
             if let url = URL(string: UIApplication.openSettingsURLString) {
                 UIApplication.shared.open(url)
             }
         })
 
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
 
         viewController.present(alert, animated: true)
     }
