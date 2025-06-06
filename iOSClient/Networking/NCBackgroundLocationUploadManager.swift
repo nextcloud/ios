@@ -52,6 +52,14 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
         NextcloudKit.shared.nkCommonInstance.writeLog("Location monitoring stopped")
     }
 
+    func isLocationServiceActive() -> Bool {
+        guard CLLocationManager.locationServicesEnabled() else {
+            return false
+        }
+
+        return locationManager.authorizationStatus == .authorizedAlways
+    }
+
     private func presentInitialExplanation(from viewController: UIViewController) {
         let alert = UIAlertController(
             title: NSLocalizedString("_background_location_access_title_", comment: ""),

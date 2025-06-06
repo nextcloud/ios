@@ -189,11 +189,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         if tableAccount.autoUploadStart {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload: true")
-            if UIApplication.shared.backgroundRefreshStatus == .available {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload in background: true")
-            } else {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload in background: false")
-            }
+            let isBackgroundRefreshAvailable = UIApplication.shared.backgroundRefreshStatus == .available
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload refresh in background: \(isBackgroundRefreshAvailable)")
+            let isLocationServiceActive = NCBackgroundLocationUploadManager.shared.isLocationServiceActive()
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload Location service: \(isLocationServiceActive)")
         } else {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload: false")
         }

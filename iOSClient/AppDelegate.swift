@@ -233,7 +233,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func autoUpload() async -> Int {
         var numTransfers: Int = 0
         var counterUploading: Int = 0
-        guard let tblAccount = NCManageDatabase.shared.getActiveTableAccount(), tblAccount.autoUploadStart else {
+        let tblAccount = await self.database.getActiveTableAccountAsync()
+
+        guard let tblAccount,
+              tblAccount.autoUploadStart else {
             return numTransfers
         }
 
