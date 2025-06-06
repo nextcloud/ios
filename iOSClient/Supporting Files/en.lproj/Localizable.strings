@@ -704,3 +704,4 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_back_up_new_photos_only_" = "Back up new photos/videos only";
 "_auto_upload_all_photos_warning_title_" = "Are you sure you want to upload all photos?";
 "_auto_upload_all_photos_warning_message_" = "This can take some time to process depending on the amount of photos.";
+"_item_with_same_name_already_exists_" = "An item with the same name already exists.";
