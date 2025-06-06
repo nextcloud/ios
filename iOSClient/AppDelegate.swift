@@ -197,6 +197,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleAppRefresh(_ task: BGAppRefreshTask) {
         NextcloudKit.shared.nkCommonInstance.writeLog("Start refresh task")
         scheduleAppRefresh()
+        isAppSuspending = false // now you can read/write in Realm
 
         task.expirationHandler = {
             NextcloudKit.shared.nkCommonInstance.writeLog("Refresh task expiration handler")
@@ -214,6 +215,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleProcessingTask(_ task: BGProcessingTask) {
         NextcloudKit.shared.nkCommonInstance.writeLog("Start processing task")
         scheduleAppProcessing()
+        isAppSuspending = false // now you can read/write in Realm
 
         task.expirationHandler = {
             NextcloudKit.shared.nkCommonInstance.writeLog("Processing task expiration handler")

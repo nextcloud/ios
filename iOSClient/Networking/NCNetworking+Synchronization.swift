@@ -28,7 +28,7 @@ extension NCNetworking {
     func synchronization(account: String, serverUrl: String) async {
         let startDate = Date()
         let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: account)
-        let options = NKRequestOptions(timeout: 120, taskDescription: NCGlobal.shared.taskDescriptionSynchronization, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+        let options = NKRequestOptions(timeout: 300, taskDescription: NCGlobal.shared.taskDescriptionSynchronization, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         var metadatasDirectory: [tableMetadata] = []
         var metadatasDownload: [tableMetadata] = []
 

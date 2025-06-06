@@ -105,7 +105,9 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
             return
         }
 
+        isAppSuspending = false // now you can read/write in Realm
         isProcessing = true
+
         let location = locations.last
         let log = "Triggered by location change: \(location?.coordinate.latitude ?? 0), \(location?.coordinate.longitude ?? 0)"
         NextcloudKit.shared.nkCommonInstance.writeLog(log)

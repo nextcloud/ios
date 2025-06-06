@@ -172,6 +172,10 @@ final class NCManageDatabase: Sendable {
 
     @discardableResult
     func performRealmRead<T>(_ block: @escaping (Realm) throws -> T?, sync: Bool = true, completion: ((T?) -> Void)? = nil) -> T? {
+        guard !isAppSuspending else {
+            completion?(nil)
+            return nil // Return nil because the result is handled asynchronously
+        }
 
         if DispatchQueue.getSpecific(key: realmQueueKey) == true {
             // Already on realmQueue: execute directly to avoid deadlocks
@@ -219,6 +223,11 @@ final class NCManageDatabase: Sendable {
     }
 
     func performRealmWrite(sync: Bool = true, _ block: @escaping (Realm) throws -> Void) {
+        guard !isAppSuspending
+        else {
+            return
+        }
+
         let executionBlock: @Sendable () -> Void = {
             autoreleasepool {
                 do {
