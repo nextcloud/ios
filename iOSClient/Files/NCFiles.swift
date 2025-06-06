@@ -73,7 +73,7 @@ class NCFiles: NCCollectionViewCommon {
                 self.plusButton.backgroundColor = NCBrandColor.shared.getElement(account: activeTableAccount.account)
             }
         }
-
+        
         if self.serverUrl.isEmpty {
 
             ///
@@ -196,6 +196,16 @@ class NCFiles: NCCollectionViewCommon {
 
         self.metadataFolder = self.database.getMetadataFolder(session: self.session, serverUrl: self.serverUrl)
         self.richWorkspaceText = self.database.getTableDirectory(predicate: predicateDirectory)?.richWorkspace
+
+print("[TEST] reload " + (metadataFolder?.permissions ?? ""))
+        if let metadataFolder {
+            // disable + button if no create permission
+            plusButton.isEnabled = NCMetadataPermissions.canCreateFolder(metadataFolder)
+            plusButton.backgroundColor = NCMetadataPermissions.canCreateFolder(metadataFolder) ? NCBrandColor.shared.customer : .lightGray
+
+            // disable option to delete files if no delete permission
+
+        }
 
         self.database.getMetadatas(predicate: predicate,
                                    layoutForView: self.layoutForView,

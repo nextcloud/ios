@@ -178,7 +178,7 @@ final class NCManageDatabase: Sendable {
         }
 
         if DispatchQueue.getSpecific(key: realmQueueKey) == true {
-            // Already on realmQueue: execute directly to avoid deadlocks
+            // Already in realmQueue: execute directly to avoid deadlocks
             do {
                 let realm = try Realm()
                 let result = try block(realm)
