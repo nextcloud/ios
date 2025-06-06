@@ -295,8 +295,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 let metadatas = await NCCameraRoll().extractCameraRoll(from: metadatasWaitUpload)
 
                 for metadata in metadatas {
-                    NCNetworking.shared.upload(metadata: tableMetadata(value: metadata))
-                    NextcloudKit.shared.nkCommonInstance.writeLog("Auto upload create new upload \(metadata.fileName) in \(metadata.serverUrl)")
+                    let error = await NCNetworking.shared.uploadFileInBackgroundAsync(metadata: tableMetadata(value: metadata))
+
+                    if error == .success {
+                        NextcloudKit.shared.nkCommonInstance.writeLog("Auto upload create new upload \(metadata.fileName) in \(metadata.serverUrl)")
+                    } else {
+                        NextcloudKit.shared.nkCommonInstance.writeLog("Auto upload failure \(metadata.fileName) in \(metadata.serverUrl) with error \(error.errorDescription)")
+                    }
+
                     numTransfers += 1
                 }
             }

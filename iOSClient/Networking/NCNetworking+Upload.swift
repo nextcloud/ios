@@ -258,6 +258,17 @@ extension NCNetworking {
         }
     }
 
+    func uploadFileInBackgroundAsync(metadata: tableMetadata, controller: UIViewController? = nil) async -> NKError {
+        await withCheckedContinuation { continuation in
+            uploadFileInBackground(metadata: metadata,
+                                   controller: controller,
+                                   start: { },
+                                   completion: { error in
+                continuation.resume(returning: error)
+            })
+        }
+    }
+
     func uploadComplete(fileName: String,
                         serverUrl: String,
                         ocId: String?,
