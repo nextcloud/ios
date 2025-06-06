@@ -110,10 +110,10 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
         let log = "Triggered by location change: \(location?.coordinate.latitude ?? 0), \(location?.coordinate.longitude ?? 0)"
         NextcloudKit.shared.nkCommonInstance.writeLog(log)
 
-        Task {
-            let numTransfers = await appDelegate.autoUpload()
+        Task.detached {
+            let numTransfers = await self.appDelegate.autoUpload()
             NextcloudKit.shared.nkCommonInstance.writeLog("Triggered upload completed with \(numTransfers) transfers")
-            isProcessing = false
+            self.isProcessing = false
         }
     }
 

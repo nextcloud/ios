@@ -197,7 +197,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleAppRefresh(_ task: BGAppRefreshTask) {
         NextcloudKit.shared.nkCommonInstance.writeLog("Start refresh task")
         scheduleAppRefresh()
-        isAppSuspending = false
 
         task.expirationHandler = {
             NextcloudKit.shared.nkCommonInstance.writeLog("Refresh task expiration handler")
@@ -215,7 +214,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleProcessingTask(_ task: BGProcessingTask) {
         NextcloudKit.shared.nkCommonInstance.writeLog("Start processing task")
         scheduleAppProcessing()
-        isAppSuspending = false
 
         task.expirationHandler = {
             NextcloudKit.shared.nkCommonInstance.writeLog("Processing task expiration handler")
@@ -231,6 +229,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func autoUpload() async -> Int {
+        // MUST BE TRUE for Read/write
+        isAppSuspending = false
+
         var numTransfers: Int = 0
         var counterUploading: Int = 0
         let tblAccount = await self.database.getActiveTableAccountAsync()
