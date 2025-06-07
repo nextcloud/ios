@@ -13,9 +13,9 @@
 			<key>NSStringFormatValueTypeKey</key>
 			<string>d</string>
 			<key>one</key>
-			<string>%d remaining download allowed</string>
+			<string>Lubatud on veel %d allalaadimine</string>
 			<key>other</key>
-			<string>%d remaining downloads allowed</string>
+			<string>Lubatud on veel %d allalaadimist</string>
 		</dict>
 	</dict>
 </dict>
