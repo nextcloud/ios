@@ -279,7 +279,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
             counterUploading = metadatasUploading.count
 
-            // Verify if the file is already uploaded (fileExists)
+            // Verify if the file is already uploaded (fileExists) -> metadataStatusServerUploaded
             for metadata in metadatasUploading {
                 let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
                 let results = await self.networking.fileExists(serverUrlFileName: serverUrlFileName, account: tblAccount.account)
