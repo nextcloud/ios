@@ -47,7 +47,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     @Published var logFileCleared: Bool = false
     // Properties for log level and cache deletion
     /// State variable for storing the selected log level.
-    @Published var selectedLogLevel: LogLevel = .normal
+    @Published var selectedLogLevel: NKLogLevel = .normal
     /// State variable for storing the selected cache deletion interval.
     @Published var selectedInterval: CacheDeletionInterval = .never
     /// State variable for storing the footer title, usually used for cache deletion.
@@ -58,7 +58,6 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
     }
-    @Published var selectedLogLevelUI: ConverionLogLevel = .normal
 
     /// Initializes the view model with default values.
     init(controller: NCMainTabBarController?) {
@@ -190,24 +189,6 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
         )
 
         controller?.present(viewerQuickLook, animated: true, completion: nil)
-    }
-}
-
-enum ConverionLogLevel: Int, CaseIterable, Identifiable {
-    case off = 0
-    case trace = 1
-    case normal = 2
-    case verbose = 3
-
-    public var id: Int { rawValue }
-
-    public var displayText: String {
-        switch self {
-        case .off: return NSLocalizedString("_disabled_", comment: "Log level: off")
-        case .trace: return NSLocalizedString("_trace_", comment: "Log level: trace")
-        case .normal: return NSLocalizedString("_normal_", comment: "Log level: normal")
-        case .verbose: return NSLocalizedString("_verbose_", comment: "Log level: verbose")
-        }
     }
 }
 

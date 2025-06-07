@@ -129,7 +129,7 @@ struct NCSettingsAdvancedView: View {
                     .tint(Color(UIColor.label))
                     /// Set Log Level()
                     Picker(NSLocalizedString("_set_log_level_", comment: ""), selection: $model.selectedLogLevel) {
-                        ForEach(ConverionLogLevel.allCases) { level in
+                        ForEach(NKLogLevel.allCases) { level in
                             Text(level.displayText).tag(level)
                         }
                     }

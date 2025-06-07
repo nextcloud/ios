@@ -220,15 +220,15 @@ import NextcloudKit
     }
 
     /// Stores and retrieves the current log level from the keychain.
-    var log: LogLevel {
+    var log: NKLogLevel {
         get {
             migrate(key: "logLevel")
             if let value = try? keychain.get("logLevel"),
                let intValue = Int(value),
-               let level = LogLevel(rawValue: intValue) {
+               let level = NKLogLevel(rawValue: intValue) {
                 return level
             }
-            return LogLevel.normal
+            return NKLogLevel.normal
         }
         set {
             keychain["logLevel"] = String(newValue.rawValue)
