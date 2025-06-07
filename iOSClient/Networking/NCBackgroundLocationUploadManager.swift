@@ -100,20 +100,22 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
     }
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard !isProcessing else {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Upload in progress, skipping location trigger")
+        guard !isProcessing,
+              isAppInBackground else {
             return
         }
 
+        isAppSuspending = false // now you can read/write in Realm
         isProcessing = true
+
         let location = locations.last
         let log = "Triggered by location change: \(location?.coordinate.latitude ?? 0), \(location?.coordinate.longitude ?? 0)"
         NextcloudKit.shared.nkCommonInstance.writeLog(log)
 
-        Task {
-            let numTransfers = await appDelegate.autoUpload()
+        Task.detached {
+            let numTransfers = await self.appDelegate.autoUpload()
             NextcloudKit.shared.nkCommonInstance.writeLog("Triggered upload completed with \(numTransfers) transfers")
-            isProcessing = false
+            self.isProcessing = false
         }
     }
 

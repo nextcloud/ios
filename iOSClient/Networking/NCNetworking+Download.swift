@@ -168,8 +168,6 @@ extension NCNetworking {
                           length: Int64,
                           task: URLSessionTask,
                           error: NKError) {
-        isAppSuspending = false
-
         DispatchQueue.global().async {
             guard let url = task.currentRequest?.url,
                   let metadata = self.database.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) else { return }

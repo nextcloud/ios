@@ -185,6 +185,20 @@ extension NCManageDatabase {
         return detached
     }
 
+    /// Updates the metadata status for the given `ocId` in the Realm database.
+    /// - Parameters:
+    ///   - ocId: The unique identifier of the metadata.
+    ///   - status: The new status value to set.
+    func setMetadataStatusAsync(ocId: String, status: Int) async {
+        await performRealmWrite { realm in
+            guard let metadata = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first else {
+                return
+            }
+            metadata.status = status
+            realm.add(metadata, update: .all)
+        }
+    }
+
     // MARK: - Realm Read
 
     func getMetadata(from url: URL?, sessionTaskIdentifier: Int) -> tableMetadata? {

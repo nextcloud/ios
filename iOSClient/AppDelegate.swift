@@ -50,6 +50,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     /// Init 
     let global = NCGlobal.shared
     let database = NCManageDatabase.shared
+    let networking = NCNetworking.shared
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         if isUiTestingEnabled {
@@ -75,7 +76,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCBrandColor.shared.createUserColors()
 
         NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup,
-                                  delegate: NCNetworking.shared)
+                                  delegate: networking)
 
         if NCBrandOptions.shared.disable_log {
             utilityFileSystem.removeFile(atPath: NextcloudKit.shared.nkCommonInstance.filenamePathLog)
@@ -197,7 +198,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleAppRefresh(_ task: BGAppRefreshTask) {
         NextcloudKit.shared.nkCommonInstance.writeLog("Start refresh task")
         scheduleAppRefresh()
-        isAppSuspending = false
+        isAppSuspending = false // now you can read/write in Realm
 
         task.expirationHandler = {
             NextcloudKit.shared.nkCommonInstance.writeLog("Refresh task expiration handler")
@@ -215,7 +216,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleProcessingTask(_ task: BGProcessingTask) {
         NextcloudKit.shared.nkCommonInstance.writeLog("Start processing task")
         scheduleAppProcessing()
-        isAppSuspending = false
+        isAppSuspending = false // now you can read/write in Realm
 
         task.expirationHandler = {
             NextcloudKit.shared.nkCommonInstance.writeLog("Processing task expiration handler")
@@ -233,6 +234,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func autoUpload() async -> Int {
         var numTransfers: Int = 0
         var counterUploading: Int = 0
+        let maxUploading: Int = NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload
         let tblAccount = await self.database.getActiveTableAccountAsync()
 
         guard let tblAccount,
@@ -251,11 +253,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         if let metadatasWaitCreateFolder {
             for metadata in metadatasWaitCreateFolder {
-                let resultsCreateFolder = await NCNetworking.shared.createFolder(fileName: metadata.fileName,
-                                                                                 serverUrl: metadata.serverUrl,
-                                                                                 overwrite: true,
-                                                                                 session: NCSession.shared.getSession(account: metadata.account),
-                                                                                 selector: metadata.sessionSelector)
+                let resultsCreateFolder = await self.networking.createFolder(fileName: metadata.fileName,
+                                                                             serverUrl: metadata.serverUrl,
+                                                                             overwrite: true,
+                                                                             session: NCSession.shared.getSession(account: metadata.account),
+                                                                             selector: metadata.sessionSelector)
 
                 guard resultsCreateFolder.error == .success else {
                     let serverUrl = metadata.serverUrl + "/" + metadata.fileName
@@ -274,11 +276,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         if let metadatasUploading = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d", self.global.metadataStatusUploading), limit: nil) {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Auto upload already in uploading \(String(describing: metadatasUploading.count))")
 
             counterUploading = metadatasUploading.count
+
+            // Verify if the file is already uploaded (fileExists) -> metadataStatusServerUploaded
+            for metadata in metadatasUploading {
+                let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+                let results = await self.networking.fileExists(serverUrlFileName: serverUrlFileName, account: tblAccount.account)
+                if results.exists {
+                    await self.database.setMetadataStatusAsync(ocId: metadata.ocId, status: self.global.metadataStatusServerUploaded)
+                    counterUploading -= 1
+
+                    NextcloudKit.shared.nkCommonInstance.writeLog("Auto upload file \(metadata.fileName) in \(metadata.serverUrl), uploaded")
+                }
+            }
+
+            NextcloudKit.shared.nkCommonInstance.writeLog("Auto upload already in uploading \(String(describing: counterUploading))")
         }
-        let counterUploadingAvailable = min(NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload - counterUploading, 10)
+        let counterUploadingAvailable = min(maxUploading - counterUploading, maxUploading)
 
         /// UPLOAD
         if counterUploadingAvailable > 0 {
@@ -295,8 +310,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 let metadatas = await NCCameraRoll().extractCameraRoll(from: metadatasWaitUpload)
 
                 for metadata in metadatas {
-                    NCNetworking.shared.upload(metadata: tableMetadata(value: metadata))
-                    NextcloudKit.shared.nkCommonInstance.writeLog("Auto upload create new upload \(metadata.fileName) in \(metadata.serverUrl)")
+                    let error = await self.networking.uploadFileInBackgroundAsync(metadata: tableMetadata(value: metadata))
+
+                    if error == .success {
+                        NextcloudKit.shared.nkCommonInstance.writeLog("Auto upload create new upload \(metadata.fileName) in \(metadata.serverUrl)")
+                    } else {
+                        NextcloudKit.shared.nkCommonInstance.writeLog("Auto upload failure \(metadata.fileName) in \(metadata.serverUrl) with error \(error.errorDescription)")
+                    }
+
                     numTransfers += 1
                 }
             }
@@ -350,7 +371,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func subscribingPushNotification(account: String, urlBase: String, user: String) {
 #if !targetEnvironment(simulator)
-        NCNetworking.shared.checkPushNotificationServerProxyCertificateUntrusted(viewController: UIApplication.shared.firstWindow?.rootViewController) { error in
+        self.networking.checkPushNotificationServerProxyCertificateUntrusted(viewController: UIApplication.shared.firstWindow?.rootViewController) { error in
             if error == .success {
                 NCPushNotification.shared.subscribingNextcloudServerPushNotification(account: account, urlBase: urlBase, user: user, pushKitToken: self.pushKitToken)
             }
@@ -368,7 +389,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         func openNotification(controller: NCMainTabBarController) {
             if app == NCGlobal.shared.termsOfServiceName {
-                NCNetworking.shared.notifyAllDelegates { delegate in
+                self.networking.notifyAllDelegates { delegate in
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         delegate.transferRequestData(serverUrl: nil)
                     }
@@ -417,7 +438,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let alertController = UIAlertController(title: title, message: NSLocalizedString("_server_is_trusted_", comment: ""), preferredStyle: .alert)
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { _ in
-            NCNetworking.shared.writeCertificate(host: host)
+            self.networking.writeCertificate(host: host)
         }))
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { _ in }))
@@ -439,7 +460,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func resetApplication() {
         let utilityFileSystem = NCUtilityFileSystem()
 
-        NCNetworking.shared.cancelAllTask()
+        networking.cancelAllTask()
 
         URLCache.shared.removeAllCachedResponses()
 
