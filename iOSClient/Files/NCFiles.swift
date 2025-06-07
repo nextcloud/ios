@@ -295,7 +295,7 @@ class NCFiles: NCCollectionViewCommon {
                         let error = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: signature, serverUrl: self.serverUrl, session: self.session)
                         if error == .success {
                             if version == "v1", NCCapabilities.shared.getCapabilities(account: account).capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
-                                NextcloudKit.shared.nkCommonInstance.writeLog("[E2EE] Conversion v1 to v2")
+                                nkLog(info: "[E2EE] Conversion v1 to v2")
                                 NCActivityIndicator.shared.start()
                                 Task {
                                     let serverUrl = metadataFolder.serverUrl + "/" + metadataFolder.fileName

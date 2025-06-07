@@ -209,7 +209,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
 #if !EXTENSION
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate, let completionHandler = appDelegate.backgroundSessionCompletionHandler {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Called urlSessionDidFinishEvents for Background URLSession")
+            nkLog(info: " Called urlSessionDidFinishEvents for Background URLSession")
             appDelegate.backgroundSessionCompletionHandler = nil
             completionHandler()
         }
@@ -283,7 +283,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         let certificateToPath = directoryCertificate + "/" + host + ".der"
 
         if !utilityFileSystem.copyFile(atPath: certificateAtPath, toPath: certificateToPath) {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Write certificare error")
+            nkLog(error: "Write certificare error")
         }
     }
 
@@ -294,7 +294,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         let x509cert = d2i_X509_bio(mem, nil)
 
         if x509cert == nil {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] OpenSSL couldn't parse X509 Certificate")
+            nkLog(error: "OpenSSL couldn't parse X509 Certificate")
         } else {
             // save details
             if FileManager.default.fileExists(atPath: certNamePathTXT) {

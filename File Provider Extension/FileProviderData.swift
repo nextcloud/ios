@@ -33,6 +33,7 @@ class fileProviderData: NSObject {
     var domain: NSFileProviderDomain?
     var fileProviderManager: NSFileProviderManager = NSFileProviderManager.default
     let utilityFileSystem = NCUtilityFileSystem()
+    let global = NCGlobal.shared
     let database = NCManageDatabase.shared
     var listFavoriteIdentifierRank: [String: NSNumber] = [:]
     var fileProviderSignalDeleteContainerItemIdentifier: [NSFileProviderItemIdentifier: NSFileProviderItemIdentifier] = [:]
@@ -78,13 +79,14 @@ class fileProviderData: NSObject {
         if let domain, let fileProviderManager = NSFileProviderManager(for: domain) {
             self.fileProviderManager = fileProviderManager
         }
-
-        // LOG
-        NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
-        let levelLog = NCKeychain().logLevel
-        NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
         let version = NSString(format: NCBrandOptions.shared.textCopyrightNextcloudiOS as NSString, NCUtility().getVersionApp()) as String
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start File Provider session with level \(levelLog) " + version + " (File Provider Extension)")
+
+        NextcloudKit.configureLogger(printLog: (NCBrandOptions.shared.disable_log ? false : global.printLog),
+                                     printColor: (NCBrandOptions.shared.disable_log ? false : global.printColor),
+                                     minLevel: (NCBrandOptions.shared.disable_log ? .off : NCKeychain().log),
+                                     retentionDays: (NCBrandOptions.shared.disable_log ? 0 : global.retentionDays))
+
+        nkLog(info: "Start File Provider session " + version + " (File Provider Extension)")
 
         var tblAccount = self.database.getActiveTableAccount()
         if let domain {

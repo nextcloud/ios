@@ -369,7 +369,7 @@ extension NCManageDatabase {
 
             return capabilities
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not decode json capabilities: \(error)")
+            nkLog(error: "Could not decode json capabilities: \(error)")
             return nil
         }
     }

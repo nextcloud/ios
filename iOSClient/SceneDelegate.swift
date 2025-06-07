@@ -48,7 +48,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
 
         if let activeTableAccount = self.database.getActiveTableAccount() {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Account active \(activeTableAccount.account)")
+           nkLog(info: " Account active \(activeTableAccount.account)")
 
             let capability = self.database.setCapabilities(account: activeTableAccount.account)
             NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
@@ -104,7 +104,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneWillEnterForeground(_ scene: UIScene) {
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene will enter in foreground")
+       nkLog(info: " Scene will enter in foreground")
         let session = SceneManager.shared.getSession(scene: scene)
         let controller = SceneManager.shared.getController(scene: scene)
         guard !session.account.isEmpty else { return }
@@ -125,7 +125,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             Task {
                 let num = await NCAutoUpload.shared.initAutoUpload(account: session.account)
-                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(num) uploads")
+               nkLog(info: " Initialize Auto upload with \(num) uploads")
             }
         }
 
@@ -144,7 +144,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene did become active")
+        nkLog(info: " Scene did become active")
         let session = SceneManager.shared.getSession(scene: scene)
         guard !session.account.isEmpty else { return }
 
@@ -152,7 +152,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneWillResignActive(_ scene: UIScene) {
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene will resign active")
+        nkLog(info: " Scene will resign active")
 
         NSFileProviderManager.removeAllDomains { _ in
             /*
@@ -180,7 +180,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene did enter in background")
+        nkLog(info: " Scene did enter in background")
         database.backupTableAccountToFile()
         let session = SceneManager.shared.getSession(scene: scene)
         guard let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
@@ -188,18 +188,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
 
         if tableAccount.autoUploadStart {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload: true")
+            nkLog(info: " Auto upload: true")
             let isBackgroundRefreshAvailable = UIApplication.shared.backgroundRefreshStatus == .available
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Refresh task in background: \(isBackgroundRefreshAvailable)")
+            nkLog(info: " Refresh task in background: \(isBackgroundRefreshAvailable)")
             NCBackgroundLocationUploadManager.shared.checkLocationServiceIsActive { active in
-                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Location service: \(active)")
+               nkLog(info: " Location service: \(active)")
             }
         } else {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload: false")
+            nkLog(info: " Auto upload: false")
         }
 
         if let error = NCAccount().updateAppsShareAccounts() {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Create Apps share accounts \(error.localizedDescription)")
+            nkLog(error: "Create Apps share accounts \(error.localizedDescription)")
         }
 
         NCNetworking.shared.cancelAllQueue()

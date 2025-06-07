@@ -44,7 +44,7 @@ extension NCNetworking {
         let metadata = tableMetadata.init(value: metadata)
         var numChunks: Int = 0
         var hud: NCHud?
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload file \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier) with size \(metadata.size) [CHUNK \(metadata.chunk), E2EE \(metadata.isDirectoryE2EE)]")
+        nkLog(info: " Upload file \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier) with size \(metadata.size) [CHUNK \(metadata.chunk), E2EE \(metadata.isDirectoryE2EE)]")
 
         func tapOperation() {
             NotificationCenter.default.postOnMainThread(name: NextcloudKit.shared.nkCommonInstance.notificationCenterChunkedFileStop.rawValue)
@@ -238,7 +238,7 @@ extension NCNetworking {
         } else {
             let (task, error) = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, account: metadata.account, sessionIdentifier: metadata.session)
             if let task, error == .success {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
+                nkLog(info: " Upload file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
                 if let metadata = self.database.setMetadataSession(ocId: metadata.ocId,
                                                                    sessionTaskIdentifier: task.taskIdentifier,
                                                                    status: self.global.metadataStatusUploading,
@@ -398,7 +398,7 @@ extension NCNetworking {
                                                     sync: false)
             }
 
-            NextcloudKit.shared.nkCommonInstance.writeLog("Upload complete " + metadata.serverUrl + "/" + metadata.fileName + ", result: success(\(size) bytes)")
+            nkLog(info: "Upload complete " + metadata.serverUrl + "/" + metadata.fileName + ", result: success(\(size) bytes)")
 
             let userInfo: [String: Any] = ["ocId": metadata.ocId,
                                            "ocIdTransfer": metadata.ocIdTransfer,

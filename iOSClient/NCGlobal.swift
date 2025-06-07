@@ -431,4 +431,9 @@ final class NCGlobal: Sendable {
     //
     let taskDescriptionRetrievesProperties  = "retrievesProperties"
     let taskDescriptionSynchronization      = "synchronization"
+
+    // LOG
+    let printLog                            = true
+    let printColor                          = true
+    let retentionDays: Int                  = 30
 }

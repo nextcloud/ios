@@ -172,7 +172,7 @@ class NCNetworkingProcess {
             let metadatasWaitUpload = Array(filteredUpload)
 
             if !metadatasWaitUpload.isEmpty {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] PROCESS (UPLOAD) find \(metadatasWaitUpload.count) items")
+                nkLog(info: " PROCESS (UPLOAD) find \(metadatasWaitUpload.count) items")
             }
 
             for metadata in metadatasWaitUpload where counterUploading < httpMaximumConnectionsPerHostInUpload {

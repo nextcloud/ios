@@ -145,10 +145,10 @@ extension NCManageDatabase {
             return
         }
 
-        NextcloudKit.shared.nkCommonInstance.writeLog("DATABASE: Trying to restore account from backup...")
+        nkLog(info: "DATABASE: Trying to restore account from backup...")
 
         if !FileManager.default.fileExists(atPath: fileURL.path) {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE: Account restore backup not found at: \(fileURL.path)")
+            nkLog(error: "DATABASE: Account restore backup not found at: \(fileURL.path)")
             return
         }
 
@@ -167,9 +167,9 @@ extension NCManageDatabase {
                 }
             }
 
-            NextcloudKit.shared.nkCommonInstance.writeLog("DATABASE: Account restored")
+            nkLog(info: "DATABASE: Account restored")
         } catch {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE: Account restore error: \(error)")
+            nkLog(error: "DATABASE: Account restore error: \(error)")
         }
     }
 

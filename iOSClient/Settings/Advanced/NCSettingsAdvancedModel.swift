@@ -47,7 +47,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     @Published var logFileCleared: Bool = false
     // Properties for log level and cache deletion
     /// State variable for storing the selected log level.
-    @Published var selectedLogLevel: LogLevel = .standard
+    @Published var selectedLogLevel: LogLevel = .normal
     /// State variable for storing the selected cache deletion interval.
     @Published var selectedInterval: CacheDeletionInterval = .never
     /// State variable for storing the footer title, usually used for cache deletion.
@@ -74,7 +74,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
         removeFromCameraRoll = keychain.removePhotoCameraRoll
         appIntegration = keychain.disableFilesApp
         crashReporter = keychain.disableCrashservice
-        selectedLogLevel = LogLevel(rawValue: keychain.logLevel) ?? .standard
+        selectedLogLevel = keychain.log
         selectedInterval = CacheDeletionInterval(rawValue: keychain.cleanUpDay) ?? .never
 
         DispatchQueue.global().async {
@@ -112,8 +112,8 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
 
     /// Updates the value of `selectedLogLevel` in the keychain and sets it for NextcloudKit.
     func updateSelectedLogLevel() {
-        keychain.logLevel = selectedLogLevel.rawValue
-        NextcloudKit.shared.nkCommonInstance.levelLog = selectedLogLevel.rawValue
+        keychain.log = selectedLogLevel
+        NKLogFileManager.shared.minLevel = selectedLogLevel
     }
 
     /// Updates the value of `selectedInterval` in the keychain.
@@ -178,49 +178,34 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
 
     /// Presents the log file viewer.
     func viewLogFile() {
-        // Instantiate NCViewerQuickLook with the log file URL, editing disabled, and no metadata
-        let viewerQuickLook = NCViewerQuickLook(with: NSURL(fileURLWithPath: NextcloudKit.shared.nkCommonInstance.filenamePathLog) as URL, isEditingEnabled: false, metadata: nil)
-        // Present the NCViewerQuickLook view controller
+        // Path of the current (active) log file
+        let currentLogURL = NKLogFileManager.shared.currentLogFileURL()
+
+        // Create NCViewerQuickLook with the current log file
+        let viewerQuickLook = NCViewerQuickLook(
+            with: currentLogURL,
+            isEditingEnabled: false,
+            metadata: nil
+        )
+
         controller?.present(viewerQuickLook, animated: true, completion: nil)
     }
-
-    /// Clears the log file.
-    func clearLogFile() {
-        // Clear the log file using NextcloudKit
-        NextcloudKit.shared.nkCommonInstance.clearFileLog()
-        // Fetch the log level from the keychain
-        let logLevel = keychain.logLevel
-        // Get the app's version and copyright information
-        let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility().getVersionApp(withBuild: true))
-        // Construct the log message
-        let logMessage = "[INFO] Clear log with level \(logLevel) \(versionNextcloudiOS)"
-        // Write the log entry about the log clearance
-        NextcloudKit.shared.nkCommonInstance.writeLog(logMessage)
-        // Set the alert state to show that log file has been cleared
-        self.logFileCleared = true
-    }
 }
 
-/// An enum that represents the level of the log
-enum LogLevel: Int, CaseIterable, Identifiable, Equatable {
-    /// Represents that logging is disabled
-    case disabled = 0
-    /// Represents standard logging level
-    case standard = 1
-    /// Represents maximum logging level
-    case maximum = 2
-    var id: Int { self.rawValue }
-}
+enum ConverionLogLevel: Int, CaseIterable, Identifiable {
+    case off = 0
+    case trace = 1
+    case normal = 2
+    case verbose = 3
 
-extension LogLevel {
-    var displayText: String {
+    public var id: Int { rawValue }
+
+    public var displayText: String {
         switch self {
-        case .disabled:
-            return NSLocalizedString("_disabled_", comment: "")
-        case .standard:
-            return NSLocalizedString("_standard_", comment: "")
-        case .maximum:
-            return NSLocalizedString("_maximum_", comment: "")
+        case .off: return NSLocalizedString("Off", comment: "Log level: off")
+        case .trace: return NSLocalizedString("Trace", comment: "Log level: trace")
+        case .normal: return NSLocalizedString("Normal", comment: "Log level: normal")
+        case .verbose: return NSLocalizedString("Verbose", comment: "Log level: verbose")
         }
     }
 }

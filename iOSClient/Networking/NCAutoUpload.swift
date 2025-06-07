@@ -62,7 +62,7 @@ class NCAutoUpload: NSObject {
         let fileSystem = NCUtilityFileSystem()
         let skipFileNames = await self.database.fetchSkipFileNames(account: tblAccount.account, autoUploadServerUrlBase: autoUploadServerUrlBase)
 
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload, new \(assets.count) assets found")
+       nkLog(info: " Automatic upload, new \(assets.count) assets found")
 
         for (index, asset) in assets.enumerated() {
             let fileName = fileNames[index]

@@ -88,6 +88,7 @@ func getFilesItems(displaySize: CGSize) -> Int {
 func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: FilesDataEntry) -> Void) {
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
+    let global = NCGlobal.shared
     let filesItems = getFilesItems(displaySize: displaySize)
     let datasPlaceholder = Array(filesDatasTest[0...filesItems - 1])
     var activeTableAccount: tableAccount?
@@ -182,12 +183,14 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
     let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: activeTableAccount.account)
 
     // LOG
-    let levelLog = NCKeychain().logLevel
     let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
 
-    NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
-    NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
-    NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start \(NCBrandOptions.shared.brand) widget session with level \(levelLog) " + versionNextcloudiOS)
+    NextcloudKit.configureLogger(printLog: (NCBrandOptions.shared.disable_log ? false : global.printLog),
+                                 printColor: (NCBrandOptions.shared.disable_log ? false : global.printColor),
+                                 minLevel: (NCBrandOptions.shared.disable_log ? .off : NCKeychain().log),
+                                 retentionDays: (NCBrandOptions.shared.disable_log ? 0 : global.retentionDays))
+
+    nkLog(info: "Start \(NCBrandOptions.shared.brand) widget session " + versionNextcloudiOS)
 
     let options = NKRequestOptions(timeout: 30, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
     NextcloudKit.shared.searchBodyRequest(serverUrl: activeTableAccount.urlBase, requestBody: requestBody, showHiddenFiles: showHiddenFiles, account: activeTableAccount.account, options: options) { _, files, data, error in
