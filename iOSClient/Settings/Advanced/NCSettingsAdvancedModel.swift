@@ -58,6 +58,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
     }
+    @Published var selectedLogLevelUI: ConverionLogLevel = .normal
 
     /// Initializes the view model with default values.
     init(controller: NCMainTabBarController?) {
@@ -202,10 +203,10 @@ enum ConverionLogLevel: Int, CaseIterable, Identifiable {
 
     public var displayText: String {
         switch self {
-        case .off: return NSLocalizedString("Off", comment: "Log level: off")
-        case .trace: return NSLocalizedString("Trace", comment: "Log level: trace")
-        case .normal: return NSLocalizedString("Normal", comment: "Log level: normal")
-        case .verbose: return NSLocalizedString("Verbose", comment: "Log level: verbose")
+        case .off: return NSLocalizedString("_disabled_", comment: "Log level: off")
+        case .trace: return NSLocalizedString("_trace_", comment: "Log level: trace")
+        case .normal: return NSLocalizedString("_normal_", comment: "Log level: normal")
+        case .verbose: return NSLocalizedString("_verbose_", comment: "Log level: verbose")
         }
     }
 }
