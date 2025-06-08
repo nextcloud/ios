@@ -286,11 +286,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     await self.database.setMetadataStatusAsync(ocId: metadata.ocId, status: self.global.metadataStatusServerUploaded)
                     counterUploading -= 1
 
-                    nkLog(tag: self.global.logTagTask, message: "Auto upload file \(metadata.fileName) in \(metadata.serverUrl), uploaded")
+                    nkLog(tag: self.global.logTagTask, typeTag: .warning, message: "Auto upload file \(metadata.fileName) in \(metadata.serverUrl), already uploaded, skipped.")
                 }
             }
-
-            nkLog(tag: self.global.logTagTask, typeTag: .warning, message: "Auto upload already in uploading \(String(describing: counterUploading))")
         }
         let counterUploadingAvailable = min(maxUploading - counterUploading, maxUploading)
 
