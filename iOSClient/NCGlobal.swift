@@ -436,4 +436,8 @@ final class NCGlobal: Sendable {
     let printLog                            = true
     let printColor                          = true
     let retentionDays: Int                  = 30
+
+    // LOG TAG
+    let logTagTask                          = "[TASK]"
+    let logTagE2EE                          = "[E2EE]"
 }
