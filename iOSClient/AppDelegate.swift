@@ -312,7 +312,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     let error = await self.networking.uploadFileInBackgroundAsync(metadata: tableMetadata(value: metadata))
 
                     if error == .success {
-                        nkLog(tag: self.global.logTagTask, typeTag: .success  ,message: "Auto upload create new upload \(metadata.fileName) in \(metadata.serverUrl)")
+                        nkLog(tag: self.global.logTagTask, typeTag: .success, message: "Auto upload create new upload \(metadata.fileName) in \(metadata.serverUrl)")
                     } else {
                         nkLog(tag: self.global.logTagTask, typeTag: .error, message: "Auto upload failure \(metadata.fileName) in \(metadata.serverUrl) with error \(error.errorDescription)")
                     }
