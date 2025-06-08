@@ -113,7 +113,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     /// Updates the value of `selectedLogLevel` in the keychain and sets it for NextcloudKit.
     func updateSelectedLogLevel() {
         keychain.log = selectedLogLevel
-        NKLogFileManager.shared.minLevel = selectedLogLevel
+        NKLogFileManager.shared.logLevel = selectedLogLevel
     }
 
     /// Updates the value of `selectedInterval` in the keychain.

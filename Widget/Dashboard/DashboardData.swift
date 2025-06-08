@@ -150,7 +150,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
 
     NextcloudKit.configureLogger(printLog: (NCBrandOptions.shared.disable_log ? false : global.printLog),
                                  printColor: (NCBrandOptions.shared.disable_log ? false : global.printColor),
-                                 minLevel: (NCBrandOptions.shared.disable_log ? .off : NCKeychain().log),
+                                 logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCKeychain().log),
                                  retentionDays: (NCBrandOptions.shared.disable_log ? 0 : global.retentionDays))
 
     nkLog(info: "Start \(NCBrandOptions.shared.brand) dashboard widget session " + versionNextcloudiOS)

@@ -126,7 +126,7 @@ class NCShareExtension: UIViewController {
 
         NextcloudKit.configureLogger(printLog: (NCBrandOptions.shared.disable_log ? false : global.printLog),
                                      printColor: (NCBrandOptions.shared.disable_log ? false : global.printColor),
-                                     minLevel: (NCBrandOptions.shared.disable_log ? .off : NCKeychain().log),
+                                     logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCKeychain().log),
                                      retentionDays: (NCBrandOptions.shared.disable_log ? 0 : global.retentionDays))
 
         nkLog(info: " Start Share session " + versionNextcloudiOS)
@@ -387,7 +387,7 @@ extension NCShareExtension {
             self.hud.progress(0)
         } progressHandler: { _, _, fractionCompleted in
             self.hud.progress(fractionCompleted)
-        } completion: { _, error in
+        } completion: {error in
             if error != .success {
                 self.database.deleteMetadataOcId(metadata.ocId)
                 self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
