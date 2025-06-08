@@ -190,7 +190,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                                  logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCKeychain().log),
                                  retentionDays: (NCBrandOptions.shared.disable_log ? 0 : global.retentionDays))
 
-    nkLog(info: "Start \(NCBrandOptions.shared.brand) widget session " + versionNextcloudiOS)
+    nkLog(debug: "Start \(NCBrandOptions.shared.brand) widget session " + versionNextcloudiOS)
 
     let options = NKRequestOptions(timeout: 30, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
     NextcloudKit.shared.searchBodyRequest(serverUrl: activeTableAccount.urlBase, requestBody: requestBody, showHiddenFiles: showHiddenFiles, account: activeTableAccount.account, options: options) { _, files, data, error in

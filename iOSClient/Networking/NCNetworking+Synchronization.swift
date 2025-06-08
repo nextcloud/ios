@@ -44,7 +44,7 @@ extension NCNetworking {
             }
 
             let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
-            nkLog(info: "Synchronization \(serverUrl) in \(diffDate)")
+            nkLog(debug: "Synchronization \(serverUrl) in \(diffDate)")
 
             self.database.addMetadatas(metadatasDirectory, sync: false)
             self.database.addDirectories(metadatas: metadatasDirectory, sync: false)
@@ -53,7 +53,7 @@ extension NCNetworking {
                                                             selector: self.global.selectorSynchronizationOffline)
             await self.database.setDirectorySynchronizationDateAsync(serverUrl: serverUrl, account: account)
         } else {
-            nkLog(error: "Synchronization \(serverUrl), \(results.error.errorCode)")
+            nkLog(debug: "Synchronization \(serverUrl), \(results.error.errorCode)")
         }
 
     }

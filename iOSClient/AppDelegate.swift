@@ -83,7 +83,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                                      logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCKeychain().log),
                                      retentionDays: (NCBrandOptions.shared.disable_log ? 0 : global.retentionDays))
 
-        nkLog(info: "Start session with level \(NCKeychain().log) " + versionNextcloudiOS)
+        nkLog(debug: "Start session with level \(NCKeychain().log) " + versionNextcloudiOS)
 
         /// Push Notification & display notification
         UNUserNotificationCenter.current().getNotificationSettings { settings in
@@ -141,7 +141,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             notificationCenter.add(req)
         }
 
-        nkLog(info: "bye bye")
+        nkLog(debug: "bye bye")
     }
 
     // MARK: - UISceneSession Lifecycle
@@ -329,7 +329,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Background Networking Session
 
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
-        nkLog(info: "Handle vvents For background URLSession: \(identifier)")
+        nkLog(debug: "Handle vvents For background URLSession: \(identifier)")
         WidgetCenter.shared.reloadAllTimelines()
         backgroundSessionCompletionHandler = completionHandler
     }

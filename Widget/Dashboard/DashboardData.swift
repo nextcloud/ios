@@ -153,7 +153,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                                  logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCKeychain().log),
                                  retentionDays: (NCBrandOptions.shared.disable_log ? 0 : global.retentionDays))
 
-    nkLog(info: "Start \(NCBrandOptions.shared.brand) dashboard widget session " + versionNextcloudiOS)
+    nkLog(debug: "Start \(NCBrandOptions.shared.brand) dashboard widget session " + versionNextcloudiOS)
 
     let (tableDashboard, tableButton) = NCManageDatabase.shared.getDashboardWidget(account: activeTableAccount.account, id: id)
     let existsButton = (tableButton?.isEmpty ?? true) ? false : true

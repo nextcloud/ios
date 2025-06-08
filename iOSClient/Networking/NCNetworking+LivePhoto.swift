@@ -34,7 +34,7 @@ extension NCNetworking {
                                                          metadata.livePhotoFile)) { metadataLast in
             if let metadataLast {
                 if metadataLast.status != self.global.metadataStatusNormal {
-                    return nkLog(info: "Upload set LivePhoto error for files (NO Status Normal) " + (metadataLast.fileName as NSString).deletingPathExtension)
+                    return nkLog(debug: "Upload set LivePhoto error for files (NO Status Normal) " + (metadataLast.fileName as NSString).deletingPathExtension)
                 }
                 Task {
                     await self.setLivePhoto(metadataFirst: metadata, metadataLast: metadataLast, userInfo: aUserInfo)
@@ -76,7 +76,7 @@ extension NCNetworking {
         }
 
         if resultsMetadataFirst.error == .success, resultsMetadataLast.error == .success {
-            nkLog(info: "Upload set LivePhoto for files " + (metadataFirst.fileName as NSString).deletingPathExtension)
+            nkLog(debug: "Upload set LivePhoto for files " + (metadataFirst.fileName as NSString).deletingPathExtension)
             notifyAllDelegates { delegate in
                delegate.transferChange(status: self.global.networkingStatusUploadedLivePhoto,
                                        metadata: tableMetadata(value: metadataFirst),

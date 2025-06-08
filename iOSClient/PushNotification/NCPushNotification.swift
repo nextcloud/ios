@@ -59,11 +59,11 @@ class NCPushNotification {
                 let userAgent = String(format: "%@  (Strict VoIP)", NCBrandOptions.shared.getUserAgent())
                 let options = NKRequestOptions(customUserAgent: userAgent)
 
-                nkLog(info: " Subscribed to Push Notification Server")
+                nkLog(debug: " Subscribed to Push Notification Server")
 
                 NextcloudKit.shared.subscribingPushProxy(proxyServerUrl: proxyServerPath, pushToken: pushKitToken, deviceIdentifier: deviceIdentifier, signature: signature, publicKey: publicKey, account: account, options: options) { account, _, error in
                     if error == .success {
-                        nkLog(info: " Subscribed to Push Notification Server Proxy")
+                        nkLog(debug: " Subscribed to Push Notification Server Proxy")
 
                         self.keychain.setPushNotificationToken(account: account, token: pushKitToken)
                         self.keychain.setPushNotificationDeviceIdentifier(account: account, deviceIdentifier: deviceIdentifier)
@@ -82,14 +82,14 @@ class NCPushNotification {
 
         NextcloudKit.shared.unsubscribingPushNotification(serverUrl: urlBase, account: account) { _, _, error in
             if error == .success {
-                nkLog(info: " Unsubscribed to Push Notification Server")
+                nkLog(debug: " Unsubscribed to Push Notification Server")
 
                 let userAgent = String(format: "%@  (Strict VoIP)", NCBrandOptions.shared.getUserAgent())
                 let options = NKRequestOptions(customUserAgent: userAgent)
 
                 NextcloudKit.shared.unsubscribingPushProxy(proxyServerUrl: NCBrandOptions.shared.pushNotificationServerProxy, deviceIdentifier: deviceIdentifier, signature: signature, publicKey: publicKey, account: account, options: options) { _, _, error in
                     if error == .success {
-                        nkLog(info: " Unsubscribed to Push Notification Server Proxy")
+                        nkLog(debug: " Unsubscribed to Push Notification Server Proxy")
                     }
                 }
             }

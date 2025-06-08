@@ -145,10 +145,10 @@ extension NCManageDatabase {
             return
         }
 
-        nkLog(info: "DATABASE: Trying to restore account from backup...")
+        nkLog(debug: "Trying to restore account from backup...")
 
         if !FileManager.default.fileExists(atPath: fileURL.path) {
-            nkLog(error: "DATABASE: Account restore backup not found at: \(fileURL.path)")
+            nkLog(error: "Account restore backup not found at: \(fileURL.path)")
             return
         }
 
@@ -167,9 +167,9 @@ extension NCManageDatabase {
                 }
             }
 
-            nkLog(info: "DATABASE: Account restored")
+            nkLog(debug: "Account restored")
         } catch {
-            nkLog(error: "DATABASE: Account restore error: \(error)")
+            nkLog(error: "Account restore error: \(error)")
         }
     }
 

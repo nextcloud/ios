@@ -50,7 +50,7 @@ final class NCCameraRoll: CameraRollExtractor {
                 for item in result {
                     extracted += 1
                     progress?(extracted, total, item)
-                    nkLog(info: "Extracted from camera roll: \(item.fileNameView)")
+                    nkLog(debug: "Extracted from camera roll: \(item.fileNameView)")
                 }
                 results.append(contentsOf: result)
             }

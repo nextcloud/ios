@@ -129,7 +129,7 @@ class NCShareExtension: UIViewController {
                                      logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCKeychain().log),
                                      retentionDays: (NCBrandOptions.shared.disable_log ? 0 : global.retentionDays))
 
-        nkLog(info: " Start Share session " + versionNextcloudiOS)
+        nkLog(debug: " Start Share session " + versionNextcloudiOS)
 
         NCBrandColor.shared.createUserColors()
     }

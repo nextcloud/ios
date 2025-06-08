@@ -369,7 +369,7 @@ extension NCManageDatabase {
 
             return capabilities
         } catch let error as NSError {
-            nkLog(error: "Could not decode json capabilities: \(error)")
+            nkLog(debug: "Could not decode json capabilities: \(error)")
             return nil
         }
     }

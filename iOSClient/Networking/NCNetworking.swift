@@ -209,7 +209,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
 #if !EXTENSION
         if let appDelegate = UIApplication.shared.delegate as? AppDelegate, let completionHandler = appDelegate.backgroundSessionCompletionHandler {
-            nkLog(info: " Called urlSessionDidFinishEvents for Background URLSession")
+            nkLog(debug: "Called urlSessionDidFinishEvents for Background URLSession")
             appDelegate.backgroundSessionCompletionHandler = nil
             completionHandler()
         }

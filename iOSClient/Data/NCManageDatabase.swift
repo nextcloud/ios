@@ -345,7 +345,7 @@ final class NCManageDatabase: Sendable {
             let realm = try Realm()
             return realm.resolve(tableRef)
         } catch let error as NSError {
-            nkLog(error: "Could not write to database: \(error)")
+            nkLog(error: "Realm could not write to database: \(error)")
         }
         return nil
     }
@@ -356,7 +356,7 @@ final class NCManageDatabase: Sendable {
                 let realm = try Realm()
                 realm.refresh()
             } catch let error as NSError {
-                nkLog(error: "Could not refresh database: \(error)")
+                nkLog(error: "Realm could not refresh database: \(error)")
             }
         }
     }

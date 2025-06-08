@@ -328,7 +328,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 NextcloudKit.shared.getLoginFlowV2(serverUrl: url, options: loginOptions) { [self] token, endpoint, login, _, error in
                     // Login Flow V2
                     if error == .success, let token, let endpoint, let login {
-                        nkLog(info: "Successfully received login flow information.")
+                        nkLog(debug: "Successfully received login flow information.")
                         let safariVC = NCLoginProvider()
                         safariVC.initialURLString = login
                         safariVC.uiColor = textColor

@@ -86,7 +86,7 @@ class fileProviderData: NSObject {
                                      logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCKeychain().log),
                                      retentionDays: (NCBrandOptions.shared.disable_log ? 0 : global.retentionDays))
 
-        nkLog(info: "Start File Provider session " + version + " (File Provider Extension)")
+        nkLog(debug: "Start File Provider session " + version + " (File Provider Extension)")
 
         var tblAccount = self.database.getActiveTableAccount()
         if let domain {

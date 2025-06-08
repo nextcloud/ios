@@ -103,7 +103,7 @@ extension NCMedia {
                 }
             }
 
-            nkLog(info: "Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate), limit \(limit)")
+            nkLog(debug: "Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate), limit \(limit)")
 
             if NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityServerVersionMajor >= self.global.nextcloudVersion31 {
                 elementDate = "nc:metadata-photos-original_date_time"
