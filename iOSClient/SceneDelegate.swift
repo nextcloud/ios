@@ -125,7 +125,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             Task {
                 let num = await NCAutoUpload.shared.initAutoUpload(account: session.account)
-                nkLog(debug: "Initialize Auto upload with \(num) uploads")
+                nkLog(start: "Initialize Auto upload with \(num) uploads")
             }
         }
 
