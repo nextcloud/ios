@@ -130,7 +130,7 @@ class NCLoginProvider: UIViewController {
     /// Start checking the status of the login flow in the background periodally.
     ///
     func startPolling(loginFlowV2Token: String, loginFlowV2Endpoint: String, loginFlowV2Login: String) {
-        nkLog(debug: "Starting polling at \(loginFlowV2Endpoint) with token \(loginFlowV2Token)")
+        nkLog(start: "Starting polling at \(loginFlowV2Endpoint) with token \(loginFlowV2Token)")
         pollingTask = createPollingTask(token: loginFlowV2Token, endpoint: loginFlowV2Endpoint)
         nkLog(debug: "Polling task created.")
     }

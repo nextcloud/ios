@@ -80,7 +80,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCKeychain().log))
 
-        nkLog(debug: "Start session with level \(NCKeychain().log) " + versionNextcloudiOS)
+        nkLog(start: "Start session with level \(NCKeychain().log) " + versionNextcloudiOS)
 
         /// Push Notification & display notification
         UNUserNotificationCenter.current().getNotificationSettings { settings in
@@ -190,7 +190,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func handleAppRefresh(_ task: BGAppRefreshTask) {
-        nkLog(tag: self.global.logTagTask, message: "Start refresh task")
+        nkLog(tag: self.global.logTagTask, emonji: .start, message: "Start refresh task")
 
         scheduleAppRefresh()
         isAppSuspending = false // now you can read/write in Realm
@@ -208,7 +208,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func handleProcessingTask(_ task: BGProcessingTask) {
-        nkLog(tag: self.global.logTagTask, message: "Start processing task")
+        nkLog(tag: self.global.logTagTask, emonji: .start, message: "Start processing task")
 
         scheduleAppProcessing()
         isAppSuspending = false // now you can read/write in Realm
@@ -291,7 +291,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         /// UPLOAD
         if counterUploadingAvailable > 0 {
-            nkLog(tag: self.global.logTagTask, message: "Auto upload start with limit \(counterUploadingAvailable)")
+            nkLog(tag: self.global.logTagTask, emonji: .start, message: "Auto upload start with limit \(counterUploadingAvailable)")
 
             let sortDescriptors = [
                 RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
