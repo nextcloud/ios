@@ -433,7 +433,7 @@ final class NCGlobal: Sendable {
     let taskDescriptionSynchronization      = "synchronization"
 
     // LOG TAG
-    let logTagTask                          = "TASK"
+    let logTagTask                          = "BG TASK"
     let logTagE2EE                          = "E2EE"
     let logTagPN                            = "PN"
 }
