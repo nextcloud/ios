@@ -148,10 +148,7 @@ class NCService: NSObject {
             return
         }
 
-        if global.printLog,
-           NCKeychain().log == .verbose {
-            data.printJson()
-        }
+        data.printJson()
 
         self.database.addCapabilitiesJSon(data, account: account, sync: false)
 

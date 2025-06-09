@@ -78,10 +78,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup,
                                   delegate: networking)
 
-        NextcloudKit.configureLogger(printLog: (NCBrandOptions.shared.disable_log ? false : global.printLog),
-                                     printColor: (NCBrandOptions.shared.disable_log ? false : global.printColor),
-                                     logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCKeychain().log),
-                                     retentionDays: (NCBrandOptions.shared.disable_log ? 0 : global.retentionDays))
+        NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCKeychain().log))
 
         nkLog(debug: "Start session with level \(NCKeychain().log) " + versionNextcloudiOS)
 
