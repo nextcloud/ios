@@ -431,4 +431,9 @@ final class NCGlobal: Sendable {
     //
     let taskDescriptionRetrievesProperties  = "retrievesProperties"
     let taskDescriptionSynchronization      = "synchronization"
+
+    // LOG TAG
+    let logTagTask                          = "BG TASK"
+    let logTagE2EE                          = "E2EE"
+    let logTagPN                            = "PN"
 }

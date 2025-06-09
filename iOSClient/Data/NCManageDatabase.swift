@@ -119,7 +119,7 @@ final class NCManageDatabase: Sendable {
                     print("Realm is located at: \(url)")
                 }
             } catch let error {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE: \(error.localizedDescription)")
+                nkLog(error: "DATABASE: \(error.localizedDescription)")
             }
         } else {
             Realm.Configuration.defaultConfiguration =
@@ -139,7 +139,7 @@ final class NCManageDatabase: Sendable {
                 backupTableAccountToFile()
 
             } catch let error {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE: \(error.localizedDescription)")
+                nkLog(error: "DATABASE: \(error.localizedDescription)")
 
                 if let realmURL = databaseFileUrlPath {
                     let filesToDelete = [
@@ -162,7 +162,7 @@ final class NCManageDatabase: Sendable {
                     restoreTableAccountFromFile()
 
                 } catch let error {
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Account restoration: \(error.localizedDescription)")
+                    nkLog(error: "Account restoration: \(error.localizedDescription)")
                 }
             }
         }
@@ -189,7 +189,7 @@ final class NCManageDatabase: Sendable {
                     return nil // Return nil because the result is handled asynchronously
                 }
             } catch {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm read error: \(error)")
+                nkLog(error: "Realm read error: \(error)")
                 completion?(nil)
                 return nil // Return nil because the result is handled asynchronously
             }
@@ -201,7 +201,7 @@ final class NCManageDatabase: Sendable {
                         let realm = try Realm()
                         return try block(realm)
                     } catch {
-                        NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm read error: \(error)")
+                        nkLog(error: "Realm read error: \(error)")
                         return nil
                     }
                 }
@@ -213,7 +213,7 @@ final class NCManageDatabase: Sendable {
                         let result = try block(realm)
                         completion?(result)
                     } catch {
-                        NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm read error: \(error)")
+                        nkLog(error: "Realm read error: \(error)")
                         completion?(nil)
                     }
                 }
@@ -236,7 +236,7 @@ final class NCManageDatabase: Sendable {
                         try block(realm)
                     }
                 } catch {
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm write error: \(error)")
+                    nkLog(error: "Realm write error: \(error)")
                 }
             }
         }
@@ -264,7 +264,7 @@ final class NCManageDatabase: Sendable {
                 do {
                     try block(realm)
                 } catch {
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm write error: \(error)")
+                    nkLog(error: "Realm write error: \(error)")
                 }
                 continuation.resume()
             }
@@ -345,7 +345,7 @@ final class NCManageDatabase: Sendable {
             let realm = try Realm()
             return realm.resolve(tableRef)
         } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+            nkLog(error: "Realm could not write to database: \(error)")
         }
         return nil
     }
@@ -356,7 +356,7 @@ final class NCManageDatabase: Sendable {
                 let realm = try Realm()
                 realm.refresh()
             } catch let error as NSError {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not refresh database: \(error)")
+                nkLog(error: "Realm could not refresh database: \(error)")
             }
         }
     }

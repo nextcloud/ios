@@ -19,7 +19,6 @@ protocol NCLoginProviderDelegate: AnyObject {
 /// View which presents the web view to login at a Nextcloud instance.
 ///
 class NCLoginProvider: UIViewController {
-    var logger = NextcloudKit.shared.nkCommonInstance
     var webView: WKWebView!
     var titleView: String = ""
     var initialURLString = ""
@@ -36,7 +35,7 @@ class NCLoginProvider: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        logger.writeLog(info: "Login provider view did load.")
+        nkLog(debug: "Login provider view did load.")
         let configuration = WKWebViewConfiguration()
         configuration.websiteDataStore = WKWebsiteDataStore.nonPersistent()
 
@@ -65,7 +64,7 @@ class NCLoginProvider: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        logger.writeLog(info: "Login provider appeared.")
+        nkLog(debug: "Login provider appeared.")
 
         guard let url = URL(string: initialURLString) else {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_login_url_error_")
@@ -87,7 +86,7 @@ class NCLoginProvider: UIViewController {
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        logger.writeLog(info: "Login provider view did disappear.")
+        nkLog(debug: "Login provider view did disappear.")
 
         NCActivityIndicator.shared.stop()
 
@@ -95,7 +94,7 @@ class NCLoginProvider: UIViewController {
             return
         }
 
-        logger.writeLog(info: "Cancelling existing polling task because view did disappear...")
+        nkLog(debug: "Cancelling existing polling task because view did disappear...")
         pollingTask?.cancel()
         pollingTask = nil
     }
@@ -131,9 +130,9 @@ class NCLoginProvider: UIViewController {
     /// Start checking the status of the login flow in the background periodally.
     ///
     func startPolling(loginFlowV2Token: String, loginFlowV2Endpoint: String, loginFlowV2Login: String) {
-        logger.writeLog(info: "Starting polling at \(loginFlowV2Endpoint) with token \(loginFlowV2Token)")
+        nkLog(debug: "Starting polling at \(loginFlowV2Endpoint) with token \(loginFlowV2Token)")
         pollingTask = createPollingTask(token: loginFlowV2Token, endpoint: loginFlowV2Endpoint)
-        logger.writeLog(info: "Polling task created.")
+        nkLog(debug: "Polling task created.")
     }
 
     ///
@@ -141,36 +140,33 @@ class NCLoginProvider: UIViewController {
     ///
     private func poll(token: String, endpoint: String, options: NKRequestOptions) async -> (urlBase: String, loginName: String, appPassword: String)? {
         await withCheckedContinuation { continuation in
-            NextcloudKit.shared.getLoginFlowV2Poll(token: token, endpoint: endpoint, options: options) { [weak self] server, loginName, appPassword, _, error in
-                guard let self else {
-                    return
-                }
+            NextcloudKit.shared.getLoginFlowV2Poll(token: token, endpoint: endpoint, options: options) {server, loginName, appPassword, _, error in
 
                 guard error == .success else {
-                    logger.writeLog(error: "Login poll result for token \"\(token)\" is not successful!")
+                    nkLog(error: "Login poll result for token \"\(token)\" is not successful!")
                     continuation.resume(returning: nil)
                     return
                 }
 
                 guard let urlBase = server else {
-                    logger.writeLog(error: "Login poll response field for server for token \"\(token)\" is nil!")
+                    nkLog(error: "Login poll response field for server for token \"\(token)\" is nil!")
                     continuation.resume(returning: nil)
                     return
                 }
 
                 guard let user = loginName else {
-                    logger.writeLog(error: "Login poll response field for user name for token \"\(token)\" is nil!")
+                    nkLog(error: "Login poll response field for user name for token \"\(token)\" is nil!")
                     continuation.resume(returning: nil)
                     return
                 }
 
                 guard let appPassword = appPassword else {
-                    logger.writeLog(error: "Login poll response field for app password for token \"\(token)\" is nil!")
+                    nkLog(error: "Login poll response field for app password for token \"\(token)\" is nil!")
                     continuation.resume(returning: nil)
                     return
                 }
 
-                logger.writeLog(info: "Returning login poll response for \"\(user)\" on \"\(urlBase)\" for token \"\(token)\".")
+                nkLog(debug: "Returning login poll response for \"\(user)\" on \"\(urlBase)\" for token \"\(token)\".")
                 continuation.resume(returning: (urlBase, user, appPassword))
             }
         }
@@ -180,16 +176,16 @@ class NCLoginProvider: UIViewController {
     /// Handle the values acquired by polling successfully.
     ///
     private func handleGrant(urlBase: String, loginName: String, appPassword: String) async {
-        logger.writeLog(info: "Handling login grant values for \(loginName) on \(urlBase)")
+        nkLog(debug: "Handling login grant values for \(loginName) on \(urlBase)")
 
         await withCheckedContinuation { continuation in
             if controller == nil {
-                logger.writeLog(info: "View controller is still undefined, will resolve root view controller of first window.")
+                nkLog(debug: "View controller is still undefined, will resolve root view controller of first window.")
                 controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
             }
 
             NCAccount().createAccount(viewController: self, urlBase: urlBase, user: loginName, password: appPassword, controller: controller) {
-                self.logger.writeLog(info: "Account creation for \(loginName) on \(urlBase) completed based on login grant values.")
+                nkLog(debug: "Account creation for \(loginName) on \(urlBase) completed based on login grant values.")
             continuation.resume()
             }
         }
@@ -215,7 +211,7 @@ class NCLoginProvider: UIViewController {
             }
 
             await handleGrant(urlBase: grantValues.urlBase, loginName: grantValues.loginName, appPassword: grantValues.appPassword)
-            logger.writeLog(info: "Polling task completed.")
+            nkLog(debug: "Polling task completed.")
         }
     }
 }
@@ -224,10 +220,10 @@ class NCLoginProvider: UIViewController {
 
 extension NCLoginProvider: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
-        logger.writeLog(info: "Web view did receive server redirect for provisional navigation.")
+        nkLog(debug: "Web view did receive server redirect for provisional navigation.")
 
         guard let currentWebViewURL = webView.url else {
-            logger.writeLog(error: "Web view does not have a URL after receiving a server redirect for provisional navigation!")
+            nkLog(error: "Web view does not have a URL after receiving a server redirect for provisional navigation!")
             return
         }
 
@@ -235,7 +231,7 @@ extension NCLoginProvider: WKNavigationDelegate {
 
         // Prevent HTTP redirects.
         if initialURLString.lowercased().hasPrefix("https://") && currentWebViewURLString.hasPrefix("http://") {
-            logger.writeLog(error: "Web view redirect degrades session from HTTPS to HTTP and must be cancelled!")
+            nkLog(error: "Web view redirect degrades session from HTTPS to HTTP and must be cancelled!")
 
             let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_prevent_http_redirection_", comment: ""), preferredStyle: .alert)
 
@@ -250,7 +246,7 @@ extension NCLoginProvider: WKNavigationDelegate {
 
         // Login via provider.
         if currentWebViewURLString.hasPrefix(NCBrandOptions.shared.webLoginAutenticationProtocol) && currentWebViewURLString.contains("login") {
-            logger.writeLog(info: "Web view redirect to provider login URL detected.")
+            nkLog(debug: "Web view redirect to provider login URL detected.")
 
             var server: String = ""
             var user: String = ""
@@ -278,7 +274,7 @@ extension NCLoginProvider: WKNavigationDelegate {
     }
 
     func webView(_ webView: WKWebView, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        logger.writeLog(info: "Web view did receive authentication challenge.")
+        nkLog(debug: "Web view did receive authentication challenge.")
 
         DispatchQueue.global().async {
             if let serverTrust = challenge.protectionSpace.serverTrust {
@@ -290,17 +286,17 @@ extension NCLoginProvider: WKNavigationDelegate {
     }
 
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        logger.writeLog(info: "Web view will allow navigation to \(navigationAction.request.url?.absoluteString ?? "nil")")
+        nkLog(debug: "Web view will allow navigation to \(navigationAction.request.url?.absoluteString ?? "nil")")
         decisionHandler(.allow)
     }
 
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-        logger.writeLog(info: "Web view did start provisional navigation.")
+        nkLog(debug: "Web view did start provisional navigation.")
         NCActivityIndicator.shared.startActivity(backgroundView: self.view, style: .medium, blurEffect: false)
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        logger.writeLog(info: "Web view did finish navigation to \(webView.url?.absoluteString ?? "nil")")
+        nkLog(debug: "Web view did finish navigation to \(webView.url?.absoluteString ?? "nil")")
         NCActivityIndicator.shared.stop()
     }
 }

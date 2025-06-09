@@ -43,13 +43,13 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
             presentSettingsAlert(from: viewController)
         } else {
             locationManager.startMonitoringSignificantLocationChanges()
-            NextcloudKit.shared.nkCommonInstance.writeLog("Location monitoring started")
+            nkLog(debug: "Location monitoring started")
         }
     }
 
     func stop() {
         locationManager.stopMonitoringSignificantLocationChanges()
-        NextcloudKit.shared.nkCommonInstance.writeLog("Location monitoring stopped")
+        nkLog(debug: "Location monitoring stopped")
     }
 
     func checkLocationServiceIsActive(completion: @escaping (Bool) -> Void) {
@@ -110,16 +110,16 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
 
         let location = locations.last
         let log = "Triggered by location change: \(location?.coordinate.latitude ?? 0), \(location?.coordinate.longitude ?? 0)"
-        NextcloudKit.shared.nkCommonInstance.writeLog(log)
+        nkLog(debug: log)
 
         Task.detached {
             let numTransfers = await self.appDelegate.autoUpload()
-            NextcloudKit.shared.nkCommonInstance.writeLog("Triggered upload completed with \(numTransfers) transfers")
+            nkLog(debug: "Triggered upload completed with \(numTransfers) transfers")
             self.isProcessing = false
         }
     }
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        NextcloudKit.shared.nkCommonInstance.writeLog("Location error: \(error.localizedDescription)")
+        nkLog(error: "Location error: \(error.localizedDescription)")
     }
 }

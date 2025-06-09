@@ -415,7 +415,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                     processor.hud.progress(progress.fractionCompleted)
                     fractionCompleted = Float(progress.fractionCompleted)
                 }
-            } completionHandler: { account, ocId, etag, _, _, _, afError, error in
+            } completionHandler: { account, ocId, etag, _, _, _, error in
                 if error == .success && etag != nil && ocId != nil {
                     let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)
                     self.utilityFileSystem.moveFile(atPath: fileNameLocalPath, toPath: toPath)
@@ -423,8 +423,6 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                     NCNetworking.shared.notifyAllDelegates { delegate in
                         delegate.transferRequestData(serverUrl: serverUrl)
                     }
-                } else if afError?.isExplicitlyCancelledError ?? false {
-                    print("cancel")
                 } else {
                     NCContentPresenter().showError(error: error)
                 }

@@ -68,6 +68,7 @@ class NCShareExtension: UIViewController {
     let hud = NCHud()
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
+    let global = NCGlobal.shared
     let database = NCManageDatabase.shared
     var account: String = ""
     var session: NCSession.Session {
@@ -121,12 +122,11 @@ class NCShareExtension: UIViewController {
         uploadView.addGestureRecognizer(uploadGesture)
 
         // LOG
-        let levelLog = NCKeychain().logLevel
         let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
 
-        NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
-        NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start Share session with level \(levelLog) " + versionNextcloudiOS)
+        NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCKeychain().log))
+
+        nkLog(debug: " Start Share session " + versionNextcloudiOS)
 
         NCBrandColor.shared.createUserColors()
     }
@@ -384,7 +384,7 @@ extension NCShareExtension {
             self.hud.progress(0)
         } progressHandler: { _, _, fractionCompleted in
             self.hud.progress(fractionCompleted)
-        } completion: { _, error in
+        } completion: {error in
             if error != .success {
                 self.database.deleteMetadataOcId(metadata.ocId)
                 self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))

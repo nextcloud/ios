@@ -44,7 +44,7 @@ extension NCNetworking {
             }
 
             let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Synchronization \(serverUrl) in \(diffDate)")
+            nkLog(debug: "Synchronization \(serverUrl) in \(diffDate)")
 
             self.database.addMetadatas(metadatasDirectory, sync: false)
             self.database.addDirectories(metadatas: metadatasDirectory, sync: false)
@@ -53,7 +53,7 @@ extension NCNetworking {
                                                             selector: self.global.selectorSynchronizationOffline)
             await self.database.setDirectorySynchronizationDateAsync(serverUrl: serverUrl, account: account)
         } else {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Synchronization \(serverUrl), \(results.error.errorCode)")
+            nkLog(debug: "Synchronization \(serverUrl), \(results.error.errorCode)")
         }
 
     }

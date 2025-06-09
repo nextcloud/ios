@@ -50,7 +50,7 @@ final class NCCameraRoll: CameraRollExtractor {
                 for item in result {
                     extracted += 1
                     progress?(extracted, total, item)
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[LOG] Extracted from camera roll: \(item.fileNameView)")
+                    nkLog(debug: "Extracted from camera roll: \(item.fileNameView)")
                 }
                 results.append(contentsOf: result)
             }
@@ -120,7 +120,7 @@ final class NCCameraRoll: CameraRollExtractor {
                 metadatas.append(self.database.addMetadata(livePhotoMetadata))
             }
         } catch {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Error during extraction: \(error.localizedDescription), of filename: \(metadataSource.fileNameView)")
+            nkLog(error: "Error during extraction: \(error.localizedDescription), of filename: \(metadataSource.fileNameView)")
         }
 
         return metadatas
