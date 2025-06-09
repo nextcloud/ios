@@ -220,7 +220,7 @@ struct NCUploadAssetsView: View {
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(isPresented: $showSelect) {
-            SelectView(serverUrl: $model.serverUrl, session: model.session)
+            SelectView(serverUrl: $model.serverUrl, includeDirectoryE2EEncryption: true ,session: model.session)
         }
         .sheet(isPresented: $showUploadConflict) {
             UploadConflictView(delegate: model, serverUrl: model.serverUrl, metadatasUploadInConflict: model.metadatasUploadInConflict, metadatasNOConflict: model.metadatasNOConflict)

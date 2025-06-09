@@ -54,7 +54,7 @@ struct NCAutoUploadView: View {
             Button(NSLocalizedString("_ok_", comment: ""), role: .cancel) { }
         }
         .sheet(isPresented: $showUploadFolder) {
-            SelectView(serverUrl: $model.serverUrl, session: model.session)
+            SelectView(serverUrl: $model.serverUrl, includeDirectoryE2EEncryption: false, session: model.session)
                 .onDisappear {
                     model.setAutoUploadDirectory(serverUrl: model.serverUrl)
                 }
