@@ -98,7 +98,9 @@ class NCNetworkingProcess {
                             await self.start()
                             self.hasRun = false
                         }
+
                     } else {
+
                         /// Remove Photo CameraRoll
                         ///
                         if NCKeychain().removePhotoCameraRoll,
