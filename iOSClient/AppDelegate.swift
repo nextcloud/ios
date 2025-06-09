@@ -259,7 +259,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     return numTransfers
                 }
 
-                nkLog(tag: self.global.logTagTask, emonji: .success, message: "Auto upload create folder \(serverUrl)")
+                nkLog(tag: self.global.logTagTask, message: "Auto upload create folder \(serverUrl)")
 
                 if resultsCreateFolder.serverExists == false {
                     numTransfers += 1
@@ -307,7 +307,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     let error = await self.networking.uploadFileInBackgroundAsync(metadata: tableMetadata(value: metadata))
 
                     if error == .success {
-                        nkLog(tag: self.global.logTagTask, emonji: .success, message: "Auto upload create new upload \(metadata.fileName) in \(metadata.serverUrl)")
+                        nkLog(tag: self.global.logTagTask, message: "Auto upload create new upload \(metadata.fileName) in \(metadata.serverUrl)")
                     } else {
                         nkLog(tag: self.global.logTagTask, emonji: .error, message: "Auto upload failure \(metadata.fileName) in \(metadata.serverUrl) with error \(error.errorDescription)")
                     }
