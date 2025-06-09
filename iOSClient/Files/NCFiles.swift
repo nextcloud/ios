@@ -295,7 +295,7 @@ class NCFiles: NCCollectionViewCommon {
                         let error = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: signature, serverUrl: self.serverUrl, session: self.session)
                         if error == .success {
                             if version == "v1", NCCapabilities.shared.getCapabilities(account: account).capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
-                                nkLog(info: "[E2EE] Conversion v1 to v2")
+                                nkLog(tag: self.global.logTagE2EE, typeTag: .debug, message: "Conversion v1 to v2")
                                 NCActivityIndicator.shared.start()
                                 Task {
                                     let serverUrl = metadataFolder.serverUrl + "/" + metadataFolder.fileName
