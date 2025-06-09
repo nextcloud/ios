@@ -43,13 +43,13 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
             presentSettingsAlert(from: viewController)
         } else {
             locationManager.startMonitoringSignificantLocationChanges()
-            nkLog(debug: "Location monitoring started")
+            nkLog(start: "Location monitoring started")
         }
     }
 
     func stop() {
         locationManager.stopMonitoringSignificantLocationChanges()
-        nkLog(debug: "Location monitoring stopped")
+        nkLog(stop: "Location monitoring stopped")
     }
 
     func checkLocationServiceIsActive(completion: @escaping (Bool) -> Void) {
@@ -109,8 +109,7 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
         isProcessing = true
 
         let location = locations.last
-        let log = "Triggered by location change: \(location?.coordinate.latitude ?? 0), \(location?.coordinate.longitude ?? 0)"
-        nkLog(debug: log)
+        nkLog(info: "Triggered by location change: \(location?.coordinate.latitude ?? 0), \(location?.coordinate.longitude ?? 0)")
 
         Task.detached {
             let numTransfers = await self.appDelegate.autoUpload()
