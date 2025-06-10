@@ -149,7 +149,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         } else if metadata.directory {
             database.setDirectory(serverUrl: serverUrl, offline: true, metadata: metadata)
             Task {
-                await NCNetworking.shared.synchronization(account: metadata.account, serverUrl: metadata.serverUrl, add: true)
+                await NCNetworking.shared.synchronization(account: metadata.account, serverUrl: metadata.serverUrl)
             }
         } else {
             var metadatasSynchronizationOffline: [tableMetadata] = []
@@ -209,14 +209,14 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                     NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: account, requestHandler: { request in
                         downloadRequest = request
                     }, taskHandler: { task in
-                        self.database.setMetadataSession(metadata: metadata,
+                        self.database.setMetadataSession(ocId: metadata.ocId,
                                                          sessionTaskIdentifier: task.taskIdentifier,
                                                          status: self.global.metadataStatusDownloading)
                     }, progressHandler: { progress in
                         hud.progress(progress.fractionCompleted)
                     }) { accountDownload, etag, _, _, _, _, error in
                         hud.dismiss()
-                        self.database.setMetadataSession(metadata: metadata,
+                        self.database.setMetadataSession(ocId: metadata.ocId,
                                                          session: "",
                                                          sessionTaskIdentifier: 0,
                                                          sessionError: "",
@@ -302,10 +302,12 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, controller: controller)
         for (metadata, url) in downloadMetadata {
             processor.execute { completion in
-                let metadata = self.database.setMetadataSessionInWaitDownload(metadata: metadata,
-                                                                              session: NCNetworking.shared.sessionDownload,
-                                                                              selector: "",
-                                                                              sceneIdentifier: controller.sceneIdentifier)
+                guard let metadata = self.database.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
+                                                                                    session: NCNetworking.shared.sessionDownload,
+                                                                                    selector: "",
+                                                                                    sceneIdentifier: controller.sceneIdentifier) else {
+                    return completion()
+                }
 
                 NCNetworking.shared.download(metadata: metadata) {
                 } progressHandler: { progress in
@@ -413,7 +415,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                     processor.hud.progress(progress.fractionCompleted)
                     fractionCompleted = Float(progress.fractionCompleted)
                 }
-            } completionHandler: { account, ocId, etag, _, _, _, afError, error in
+            } completionHandler: { account, ocId, etag, _, _, _, error in
                 if error == .success && etag != nil && ocId != nil {
                     let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)
                     self.utilityFileSystem.moveFile(atPath: fileNameLocalPath, toPath: toPath)
@@ -421,8 +423,6 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                     NCNetworking.shared.notifyAllDelegates { delegate in
                         delegate.transferRequestData(serverUrl: serverUrl)
                     }
-                } else if afError?.isExplicitlyCancelledError ?? false {
-                    print("cancel")
                 } else {
                     NCContentPresenter().showError(error: error)
                 }

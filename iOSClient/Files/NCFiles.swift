@@ -137,6 +137,15 @@ class NCFiles: NCCollectionViewCommon {
         if !isSearchingMode {
             getServerData()
         }
+
+        Task {
+            if let tblAccount = await self.database.getActiveTableAccountAsync(),
+               tblAccount.autoUploadStart {
+                await MainActor.run {
+                    NCBackgroundLocationUploadManager.shared.start(from: self)
+                }
+            }
+        }
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -228,11 +237,12 @@ class NCFiles: NCCollectionViewCommon {
                 if error == .success {
                     let metadatas: [tableMetadata] = metadatas ?? self.dataSource.getMetadatas()
                     for metadata in metadatas where !metadata.directory && downloadMetadata(metadata) {
-                        let metadata = self.database.setMetadataSessionInWaitDownload(metadata: metadata,
-                                                                                      session: NCNetworking.shared.sessionDownload,
-                                                                                      selector: NCGlobal.shared.selectorDownloadFile,
-                                                                                      sceneIdentifier: self.controller?.sceneIdentifier)
-                        NCNetworking.shared.download(metadata: metadata)
+                        if let metadata = self.database.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
+                                                                                         session: NCNetworking.shared.sessionDownload,
+                                                                                         selector: NCGlobal.shared.selectorDownloadFile,
+                                                                                         sceneIdentifier: self.controller?.sceneIdentifier) {
+                            NCNetworking.shared.download(metadata: metadata)
+                        }
                     }
                 }
                 DispatchQueue.main.async {
@@ -293,7 +303,7 @@ class NCFiles: NCCollectionViewCommon {
                         let error = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: signature, serverUrl: self.serverUrl, session: self.session)
                         if error == .success {
                             if version == "v1", NCCapabilities.shared.getCapabilities(account: account).capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
-                                NextcloudKit.shared.nkCommonInstance.writeLog("[E2EE] Conversion v1 to v2")
+                                nkLog(tag: self.global.logTagE2EE, message: "Conversion v1 to v2")
                                 NCActivityIndicator.shared.start()
                                 Task {
                                     let serverUrl = metadataFolder.serverUrl + "/" + metadataFolder.fileName

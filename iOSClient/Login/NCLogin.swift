@@ -110,7 +110,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         if let dirGroupApps = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupApps) {
             // Nextcloud update share accounts
             if let error = NCAccount().updateAppsShareAccounts() {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Create share accounts \(error.localizedDescription)")
+                nkLog(error: "Create share accounts \(error.localizedDescription)")
             }
             // Nextcloud get share accounts
             if let shareAccounts = NKShareAccounts().getShareAccount(at: dirGroupApps, application: UIApplication.shared) {
@@ -328,8 +328,9 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 NextcloudKit.shared.getLoginFlowV2(serverUrl: url, options: loginOptions) { [self] token, endpoint, login, _, error in
                     // Login Flow V2
                     if error == .success, let token, let endpoint, let login {
+                        nkLog(debug: "Successfully received login flow information.")
                         let safariVC = NCLoginProvider()
-                        safariVC.urlBase = login
+                        safariVC.initialURLString = login
                         safariVC.uiColor = textColor
                         safariVC.delegate = self
                         safariVC.startPolling(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
@@ -419,11 +420,15 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     }
 }
 
+// MARK: - NCShareAccountsDelegate
+
 extension NCLogin: NCShareAccountsDelegate {
     func selected(url: String, user: String) {
         isUrlValid(url: url, user: user)
     }
 }
+
+// MARK: - UIDocumentPickerDelegate
 
 extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
     func didAskForClientCertificate() {
@@ -465,6 +470,8 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
         }
     }
 }
+
+// MARK: - NCLoginProviderDelegate
 
 extension NCLogin: NCLoginProviderDelegate {
     func onBack() {

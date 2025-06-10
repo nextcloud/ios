@@ -157,7 +157,7 @@ class NCNetworkingE2EEUpload: NSObject {
         //
         await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
 
-        if let afError = resultsSendFile.afError, afError.isExplicitlyCancelledError {
+        if resultsSendFile.error == .errorChunkFileNull {
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
             self.database.deleteMetadataOcId(metadata.ocId)
         } else if resultsSendFile.error == .success, let ocId = resultsSendFile.ocId {
@@ -194,7 +194,7 @@ class NCNetworkingE2EEUpload: NSObject {
                 NCNetworking.shared.createLivePhoto(metadata: metadata)
             }
         } else {
-            self.database.setMetadataSession(metadata: metadata,
+            self.database.setMetadataSession(ocId: metadata.ocId,
                                              sessionTaskIdentifier: 0,
                                              sessionError: resultsSendFile.error.errorDescription,
                                              status: NCGlobal.shared.metadataStatusUploadError,
@@ -206,7 +206,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
     // BRIDGE for chunk
     //
-    private func sendFile(metadata: tableMetadata, e2eToken: String, hud: NCHud?, uploadE2EEDelegate: uploadE2EEDelegate? = nil, controller: UIViewController?) async -> (ocId: String?, etag: String?, date: Date?, afError: AFError?, error: NKError) {
+    private func sendFile(metadata: tableMetadata, e2eToken: String, hud: NCHud?, uploadE2EEDelegate: uploadE2EEDelegate? = nil, controller: UIViewController?) async -> (ocId: String?, etag: String?, date: Date?, error: NKError) {
 
         if metadata.chunk > 0 {
 
@@ -220,9 +220,9 @@ class NCNetworkingE2EEUpload: NSObject {
                     uploadE2EEDelegate?.start()
                 } progressHandler: {totalBytesExpected, totalBytes, fractionCompleted in
                     uploadE2EEDelegate?.uploadE2EEProgress(totalBytesExpected, totalBytes, fractionCompleted)
-                } completion: { _, file, afError, error in
+                } completion: { _, file, error in
                     DispatchQueue.main.async { hud?.dismiss() }
-                    continuation.resume(returning: (ocId: file?.ocId, etag: file?.etag, date: file?.date, afError: afError, error: error))
+                    continuation.resume(returning: (ocId: file?.ocId, etag: file?.etag, date: file?.date, error: error))
                 }
             })
 
@@ -235,8 +235,8 @@ class NCNetworkingE2EEUpload: NSObject {
                     uploadE2EEDelegate?.start()
                 } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
                     uploadE2EEDelegate?.uploadE2EEProgress(totalBytesExpected, totalBytes, fractionCompleted)
-                } completion: { _, ocId, etag, date, _, _, afError, error in
-                    continuation.resume(returning: (ocId: ocId, etag: etag, date: date, afError: afError, error: error))
+                } completion: { _, ocId, etag, date, _, _, error in
+                    continuation.resume(returning: (ocId: ocId, etag: etag, date: date, error: error))
                 }
             })
         }

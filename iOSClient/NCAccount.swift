@@ -36,6 +36,8 @@ class NCAccount: NSObject {
                        password: String,
                        controller: NCMainTabBarController?,
                        completion: @escaping () -> Void = {}) {
+        nkLog(debug: "Creating account...")
+
         var urlBase = urlBase
         if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
         let account: String = "\(user) \(urlBase)"
@@ -58,19 +60,24 @@ class NCAccount: NSObject {
         NextcloudKit.shared.getUserProfile(account: account) { account, userProfile, _, error in
             if error == .success, let userProfile {
                 /// Login log debug
-                NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Create new account \(account) with user \(user) and userId \(userProfile.userId)")
+                nkLog(debug: "Got user profile, creating new account \(account) with user \(user) and userId \(userProfile.userId)")
                 ///
                 NextcloudKit.shared.updateSession(account: account, userId: userProfile.userId)
                 NCSession.shared.appendSession(account: account, urlBase: urlBase, user: user, userId: userProfile.userId)
                 self.database.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
+
                 self.changeAccount(account, userProfile: userProfile, controller: controller) {
+                    nkLog(debug: "NCAccount changed user profile to \(userProfile.userId).")
                     NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
+
                     if let controller {
                         controller.account = account
+                        nkLog(debug: "Dismissing login provider view controller...")
                         viewController.dismiss(animated: true)
 
                         completion()
                     } else if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                        nkLog(debug: "Presenting initial view controller from main storyboard...")
                         controller.account = account
                         controller.modalPresentationStyle = .fullScreen
                         controller.view.alpha = 0
@@ -118,8 +125,9 @@ class NCAccount: NSObject {
             /// Start the service
             NCService().startRequestServicesServer(account: account, controller: controller)
             /// Start the auto upload
-            NCAutoUpload.shared.initAutoUpload(controller: nil, account: account) { num in
-                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(num) uploads")
+            Task {
+                let num = await NCAutoUpload.shared.initAutoUpload(controller: nil, account: account)
+                nkLog(tag: self.global.logTagAutoUpload, emonji: .start, message: "Auto upload with \(num) photo")
             }
             /// Networking Process
             NCNetworkingProcess.shared.setCurrentAccount(account)
@@ -238,7 +246,7 @@ class NCAccount: NSObject {
 
             if wipe {
                 NextcloudKit.shared.setRemoteWipeCompletition(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) { _, _, error in
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Set Remote Wipe Completition error code: \(error.errorCode)")
+                    nkLog(debug: "Set Remote Wipe Completition error code: \(error.errorCode)")
                     setAccount()
                 }
             } else {

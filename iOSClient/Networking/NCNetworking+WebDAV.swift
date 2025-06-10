@@ -207,14 +207,14 @@ extension NCNetworking {
                       overwrite: Bool,
                       session: NCSession.Session,
                       selector: String? = nil,
-                      options: NKRequestOptions = NKRequestOptions()) async -> NKError {
+                      options: NKRequestOptions = NKRequestOptions()) async -> (serverExists: Bool, error: NKError) {
 
         var fileNameFolder = utility.removeForbiddenCharacters(fileName.trimmingCharacters(in: .whitespacesAndNewlines))
         if !overwrite {
             fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: session.account)
         }
         if fileNameFolder.isEmpty {
-            return .success
+            return (false, NKError(errorCode: global.errorIncorrectFileName, errorDescription: ""))
         }
         let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
 
@@ -235,7 +235,7 @@ extension NCNetworking {
         if resultReadFile.error == .success,
             let metadata = resultReadFile.metadata {
             writeDirectoryMetadata(metadata)
-            return .success
+            return (true, .success)
         }
 
         /* create folder */
@@ -248,7 +248,7 @@ extension NCNetworking {
             }
         }
 
-        return resultCreateFolder.error
+        return (false, resultCreateFolder.error)
     }
 
     // MARK: - Delete
@@ -383,7 +383,7 @@ extension NCNetworking {
                 }
                 return
             }
-            self.database.setMetadataStatus(metadata: metadata,
+            self.database.setMetadataStatus(ocId: metadata.ocId,
                                             status: NCGlobal.shared.metadataStatusWaitDelete)
         }
     }

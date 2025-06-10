@@ -45,9 +45,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var loginFlowV2Endpoint = ""
     var loginFlowV2Login = ""
 
-    /// Init 
+    let backgroundQueue = DispatchQueue(label: "com.nextcloud.bgTaskQueue")
+
     let global = NCGlobal.shared
     let database = NCManageDatabase.shared
+    let networking = NCNetworking.shared
+
+    var isBackgroundAutoUpload: Bool = false
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         if isUiTestingEnabled {
@@ -73,17 +77,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCBrandColor.shared.createUserColors()
 
         NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup,
-                                  delegate: NCNetworking.shared)
+                                  delegate: networking)
 
-        if NCBrandOptions.shared.disable_log {
-            utilityFileSystem.removeFile(atPath: NextcloudKit.shared.nkCommonInstance.filenamePathLog)
-            utilityFileSystem.removeFile(atPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/" + NextcloudKit.shared.nkCommonInstance.filenameLog)
-        } else {
-            NextcloudKit.shared.setupLog(pathLog: utilityFileSystem.directoryGroup,
-                                         levelLog: NCKeychain().logLevel,
-                                         copyLogToDocumentDirectory: true)
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start session with level \(NCKeychain().logLevel) " + versionNextcloudiOS)
-        }
+        NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCKeychain().log))
+
+        nkLog(start: "Start session with level \(NCKeychain().log) " + versionNextcloudiOS)
 
         /// Push Notification & display notification
         UNUserNotificationCenter.current().getNotificationSettings { settings in
@@ -99,21 +97,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         review.showStoreReview()
 #endif
 
-        BGTaskScheduler.shared.register(forTaskWithIdentifier: global.refreshTask, using: nil) { task in
+        // BACKGROUND TASK
+
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: global.refreshTask, using: backgroundQueue) { task in
             guard let appRefreshTask = task as? BGAppRefreshTask else {
                 task.setTaskCompleted(success: false)
                 return
             }
             self.handleAppRefresh(appRefreshTask)
         }
+        scheduleAppRefresh()
 
-        BGTaskScheduler.shared.register(forTaskWithIdentifier: global.processingTask, using: nil) { task in
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: global.processingTask, using: backgroundQueue) { task in
             guard let processingTask = task as? BGProcessingTask else {
                 task.setTaskCompleted(success: false)
                 return
             }
             self.handleProcessingTask(processingTask)
         }
+        scheduleAppProcessing()
 
         if NCBrandOptions.shared.enforce_passcode_lock {
             NCKeychain().requestPasscodeAtStart = true
@@ -137,7 +139,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             notificationCenter.add(req)
         }
 
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] bye bye")
+        nkLog(debug: "bye bye")
     }
 
     // MARK: - UISceneSession Lifecycle
@@ -163,10 +165,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let request = BGAppRefreshTaskRequest(identifier: global.refreshTask)
 
         request.earliestBeginDate = Date(timeIntervalSinceNow: 60) // Refresh after 60 seconds.
+
         do {
             try BGTaskScheduler.shared.submit(request)
         } catch {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Refresh task failed to submit request: \(error)")
+            nkLog(tag: self.global.logTagTask, emonji: .error, message: "Refresh task failed to submit request: \(error)")
         }
     }
 
@@ -179,37 +182,45 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         request.earliestBeginDate = Date(timeIntervalSinceNow: 5 * 60) // Refresh after 5 minutes.
         request.requiresNetworkConnectivity = false
         request.requiresExternalPower = false
+
         do {
             try BGTaskScheduler.shared.submit(request)
         } catch {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Background Processing task failed to submit request: \(error)")
+            nkLog(tag: self.global.logTagTask, emonji: .error, message: "Processing task failed to submit request: \(error)")
         }
     }
 
     func handleAppRefresh(_ task: BGAppRefreshTask) {
-        NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start background refresh task")
+        nkLog(tag: self.global.logTagTask, emonji: .start, message: "Start refresh task")
+
         scheduleAppRefresh()
-        isAppSuspending = false
+        isAppSuspending = false // now you can read/write in Realm
 
         task.expirationHandler = {
-            // clear resource in progress
-        }
-
-        task.setTaskCompleted(success: true)
-    }
-
-    func handleProcessingTask(_ task: BGProcessingTask) {
-        NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start background processing task")
-        scheduleAppProcessing()
-        isAppSuspending = false
-
-        task.expirationHandler = {
-            // clear resource in progress
+            nkLog(tag: self.global.logTagTask, emonji: .warning, message: "Refresh task expiration handler")
         }
 
         Task {
             let numTransfers = await autoUpload()
-            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Background processing task with \(numTransfers) transfers")
+            nkLog(tag: self.global.logTagTask, emonji: .success, message: "Refresh task completed with \(numTransfers) transfers of auto upload")
+
+            task.setTaskCompleted(success: true)
+        }
+    }
+
+    func handleProcessingTask(_ task: BGProcessingTask) {
+        nkLog(tag: self.global.logTagTask, emonji: .start, message: "Start processing task")
+
+        scheduleAppProcessing()
+        isAppSuspending = false // now you can read/write in Realm
+
+        task.expirationHandler = {
+            nkLog(tag: self.global.logTagTask, emonji: .warning, message: "Processing task expiration handler")
+        }
+
+        Task {
+            let numTransfers = await autoUpload()
+            nkLog(tag: self.global.logTagTask, emonji: .success, message: "Processing task completed with \(numTransfers) transfers of auto upload")
 
             task.setTaskCompleted(success: true)
         }
@@ -217,76 +228,115 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func autoUpload() async -> Int {
         var numTransfers: Int = 0
-        func initAutoUpload(controller: NCMainTabBarController? = nil, account: String) async -> Int {
-            await withUnsafeContinuation({ continuation in
-                NCAutoUpload.shared.initAutoUpload(controller: controller, account: account) { num in
-                    continuation.resume(returning: num)
-                }
-            })
-        }
+        var counterUploading: Int = 0
+        let maxUploading: Int = NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload
+        let tblAccount = await self.database.getActiveTableAccountAsync()
 
-        guard let tblAccount = NCManageDatabase.shared.getActiveTableAccount()
-        else {
+        guard !isBackgroundAutoUpload,
+              let tblAccount,
+              tblAccount.autoUploadStart else {
             return numTransfers
         }
 
-        /// AUTO UPLOAD ONLY FOR NEW PHOTO
+        /// Background processing start
+        self.isBackgroundAutoUpload = true
+
+        /// INIT AUTO UPLOAD ONLY FOR NEW PHOTO
         if tblAccount.autoUploadOnlyNew {
-            let newAutoUpload = await initAutoUpload(account: tblAccount.account)
-            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Auto upload with \(newAutoUpload) uploads")
+            let num = await NCAutoUpload.shared.initAutoUpload(account: tblAccount.account)
+            nkLog(tag: self.global.logTagAutoUpload, emonji: .start, message: "Auto upload with \(num) photo")
         }
 
-        /// Creation folders
-        let metadatasWaitCreateFolder = await self.database.getResultsMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@", self.global.metadataStatusWaitCreateFolder, self.global.selectorUploadAutoUpload), limit: nil)
+        /// CREATION FOLDERS
+        let metadatasWaitCreateFolder = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@", self.global.metadataStatusWaitCreateFolder, self.global.selectorUploadAutoUpload), limit: nil)
 
         if let metadatasWaitCreateFolder {
             for metadata in metadatasWaitCreateFolder {
-                let errorCreateFolder = await NCNetworking.shared.createFolder(fileName: metadata.fileName,
-                                                                               serverUrl: metadata.serverUrl,
-                                                                               overwrite: true,
-                                                                               session: NCSession.shared.getSession(account: metadata.account),
-                                                                               selector: metadata.sessionSelector)
+                let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+                let resultsCreateFolder = await self.networking.createFolder(fileName: metadata.fileName,
+                                                                             serverUrl: metadata.serverUrl,
+                                                                             overwrite: true,
+                                                                             session: NCSession.shared.getSession(account: metadata.account),
+                                                                             selector: metadata.sessionSelector)
 
-                NextcloudKit.shared.nkCommonInstance.writeLog("Create auto upload folder with \(errorCreateFolder.errorCode)")
+                guard resultsCreateFolder.error == .success else {
+                    nkLog(tag: self.global.logTagAutoUpload, emonji: .error, message: "Auto upload create folder \(serverUrl) with error: \(resultsCreateFolder.error.errorCode)")
 
-                guard errorCreateFolder == .success else {
+                    self.isBackgroundAutoUpload = false
                     return numTransfers
                 }
 
-                numTransfers += 1
-            }
+                nkLog(tag: self.global.logTagAutoUpload, message: "Auto upload create folder \(serverUrl)")
 
-            return numTransfers
+                if resultsCreateFolder.serverExists == false {
+                    numTransfers += 1
+                }
+            }
         }
 
-        let metadatasUploading = await self.database.getResultsMetadatasAsync(predicate: NSPredicate(format: "status == %d", self.global.metadataStatusUploading), limit: nil)
+        if numTransfers == 0 {
+            nkLog(tag: self.global.logTagAutoUpload, message: "Auto upload no creations folders required")
+        }
 
-        let counterUploading: Int = metadatasUploading?.count ?? 0
-        let limitUpload = NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload - counterUploading
-        if limitUpload > 0 {
+        if let metadatasUploading = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d", self.global.metadataStatusUploading), limit: nil) {
+
+            counterUploading = metadatasUploading.count
+
+            // Verify if the file is already uploaded (fileExists) -> metadataStatusServerUploaded
+            for metadata in metadatasUploading {
+                let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+                let results = await self.networking.fileExists(serverUrlFileName: serverUrlFileName, account: tblAccount.account)
+                if results.exists {
+                    await self.database.setMetadataStatusAsync(ocId: metadata.ocId, status: self.global.metadataStatusServerUploaded)
+                    counterUploading -= 1
+
+                    nkLog(tag: self.global.logTagAutoUpload, emonji: .warning, message: "Auto upload file \(metadata.fileName) in \(metadata.serverUrl), already uploaded, skipped.")
+                }
+            }
+        }
+        let counterUploadingAvailable = min(maxUploading - counterUploading, maxUploading)
+
+        /// UPLOAD
+        if counterUploadingAvailable > 0 {
+            nkLog(tag: self.global.logTagAutoUpload, emonji: .start, message: "Auto upload start with limit \(counterUploadingAvailable)")
+
             let sortDescriptors = [
                 RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
             ]
-            let metadatasWaitUpload = await self.database.getResultsMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@ AND chunk == 0", self.global.metadataStatusWaitUpload, self.global.selectorUploadAutoUpload), sortDescriptors: sortDescriptors, limit: limitUpload)
 
-            for metadata in metadatasWaitUpload ?? [] {
-                NCNetworking.shared.upload(metadata: tableMetadata(value: metadata))
+            if let metadatasWaitUpload = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@ AND chunk == 0", self.global.metadataStatusWaitUpload, self.global.selectorUploadAutoUpload), sortDescriptors: sortDescriptors, limit: counterUploadingAvailable) {
 
-                NextcloudKit.shared.nkCommonInstance.writeLog("Create Upload \(metadata.fileName) in \(metadata.serverUrl)")
+                nkLog(tag: self.global.logTagAutoUpload, message: "Auto upload in wait upload \(String(describing: metadatasWaitUpload.count))")
 
-                numTransfers += 1
+                let metadatas = await NCCameraRoll().extractCameraRoll(from: metadatasWaitUpload)
+
+                for metadata in metadatas {
+                    let error = await self.networking.uploadFileInBackgroundAsync(metadata: tableMetadata(value: metadata))
+
+                    if error == .success {
+                        nkLog(tag: self.global.logTagAutoUpload, message: "Auto upload create new upload \(metadata.fileName) in \(metadata.serverUrl)")
+                    } else {
+                        nkLog(tag: self.global.logTagAutoUpload, emonji: .error, message: "Auto upload failure \(metadata.fileName) in \(metadata.serverUrl) with error \(error.errorDescription)")
+                    }
+
+                    numTransfers += 1
+                }
             }
         } else {
-            numTransfers = counterUploading
+            nkLog(tag: self.global.logTagAutoUpload, emonji: .warning, message: "Auto upload uploading is full")
+
+            self.isBackgroundAutoUpload = false
+            return 0
         }
 
+        self.isBackgroundAutoUpload = false
         return numTransfers
     }
 
     // MARK: - Background Networking Session
 
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
-        NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start handle Events For Background URLSession: \(identifier)")
+        nkLog(debug: "Handle vvents For background URLSession: \(identifier)")
         WidgetCenter.shared.reloadAllTimelines()
         backgroundSessionCompletionHandler = completionHandler
     }
@@ -325,7 +375,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func subscribingPushNotification(account: String, urlBase: String, user: String) {
 #if !targetEnvironment(simulator)
-        NCNetworking.shared.checkPushNotificationServerProxyCertificateUntrusted(viewController: UIApplication.shared.firstWindow?.rootViewController) { error in
+        self.networking.checkPushNotificationServerProxyCertificateUntrusted(viewController: UIApplication.shared.firstWindow?.rootViewController) { error in
             if error == .success {
                 NCPushNotification.shared.subscribingNextcloudServerPushNotification(account: account, urlBase: urlBase, user: user, pushKitToken: self.pushKitToken)
             }
@@ -343,7 +393,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         func openNotification(controller: NCMainTabBarController) {
             if app == NCGlobal.shared.termsOfServiceName {
-                NCNetworking.shared.notifyAllDelegates { delegate in
+                self.networking.notifyAllDelegates { delegate in
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         delegate.transferRequestData(serverUrl: nil)
                     }
@@ -392,7 +442,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let alertController = UIAlertController(title: title, message: NSLocalizedString("_server_is_trusted_", comment: ""), preferredStyle: .alert)
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { _ in
-            NCNetworking.shared.writeCertificate(host: host)
+            self.networking.writeCertificate(host: host)
         }))
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { _ in }))
@@ -414,7 +464,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func resetApplication() {
         let utilityFileSystem = NCUtilityFileSystem()
 
-        NCNetworking.shared.cancelAllTask()
+        networking.cancelAllTask()
 
         URLCache.shared.removeAllCachedResponses()
 

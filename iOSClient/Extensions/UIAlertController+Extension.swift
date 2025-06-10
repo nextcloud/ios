@@ -42,6 +42,7 @@ extension UIAlertController {
 
         let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in
             guard let fileNameFolder = alertController.textFields?.first?.text else { return }
+
             if markE2ee {
                 if NCNetworking.shared.isOffline {
                     return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_offline_not_allowed_"))
@@ -67,8 +68,8 @@ extension UIAlertController {
             } else {
 #if EXTENSION
                 Task {
-                    let error = await NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, overwrite: false, session: session)
-                    completion?(error)
+                    let results = await NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, overwrite: false, session: session)
+                    completion?(results.error)
                 }
 #else
                 var metadata = tableMetadata()
@@ -112,8 +113,9 @@ extension UIAlertController {
                 let folderName = text.trimmingCharacters(in: .whitespaces)
                 let isFileHidden = FileNameValidator.isFileHidden(text)
                 let textCheck = FileNameValidator.checkFileName(folderName, account: session.account)
+                let alreadyExists = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", session.account, serverUrl, folderName)) != nil
 
-                okAction.isEnabled = !text.isEmpty && textCheck?.error == nil
+                okAction.isEnabled = !text.isEmpty && textCheck?.error == nil && alreadyExists == false
 
                 var message = ""
                 var messageColor = UIColor.label
@@ -123,6 +125,8 @@ extension UIAlertController {
                     messageColor = .red
                 } else if isFileHidden {
                     message = NSLocalizedString("hidden_file_name_warning", comment: "")
+                } else if alreadyExists {
+                    message = NSLocalizedString("_item_with_same_name_already_exists_", comment: "")
                 }
 
                 let attributedString = NSAttributedString(string: message, attributes: [

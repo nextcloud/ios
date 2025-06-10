@@ -49,7 +49,7 @@ extension NCManageDatabase {
                 utilityFileSystem.removeFile(atPath: filePath)
             }
         } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+            nkLog(error: "Could not write to database: \(error)")
         }
     }
 

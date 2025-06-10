@@ -9,8 +9,6 @@
 	</array>
 	<key>CFBundleAllowMixedLocalizations</key>
 	<true/>
-	<key>LSMinimumSystemVersion</key>
-	<string>12.3</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -53,6 +51,8 @@
 		<string>nextcloudtalk</string>
 		<string>nextcloudnotes</string>
 	</array>
+	<key>LSMinimumSystemVersion</key>
+	<string>12.3</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
@@ -67,11 +67,11 @@
 	<key>NSFaceIDUsageDescription</key>
 	<string>Face ID is required to authenticate using face recognition.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>The app will show your location on a map.</string>
+	<string>This app needs access to your location even in the background to automatically start uploading files when significant movement is detected. GPS is not used.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>The app will show your location on a map.</string>
+	<string>The app uses your location to automatically trigger file uploads when you move between areas.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>The app will show your location on a map.</string>
+	<string>This app uses your location to detect movement and automatically upload files. It does not use GPS and does not store your location.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Microphone access is required to create voice notes.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
@@ -95,12 +95,30 @@
 		<string>Inconsolata-ExtraBold.ttf</string>
 		<string>Inconsolata-Black.ttf</string>
 	</array>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<true/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneConfigurationName</key>
+					<string>Default Configuration</string>
+					<key>UISceneDelegateClassName</key>
+					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
 		<string>fetch</string>
 		<string>processing</string>
 		<string>remote-notification</string>
+		<string>location</string>
 	</array>
 	<key>UIFileSharingEnabled</key>
 	<true/>
@@ -176,22 +194,5 @@
 			</dict>
 		</dict>
 	</array>
-	<key>UIApplicationSceneManifest</key>
-    	<dict>
-        	<key>UIApplicationSupportsMultipleScenes</key>
-        	<true/>
-        	<key>UISceneConfigurations</key>
-        	<dict>
-            		<key>UIWindowSceneSessionRoleApplication</key>
-            		<array>
-               			<dict>
-                  			<key>UISceneConfigurationName</key>
-                    			<string>Default Configuration</string>
-                    			<key>UISceneDelegateClassName</key>
-                    			<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
-               			</dict>
-            		</array>
-       		</dict>
-    </dict>
 </dict>
 </plist>

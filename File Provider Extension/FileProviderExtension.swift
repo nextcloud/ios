@@ -183,7 +183,7 @@ class FileProviderExtension: NSFileProviderExtension {
            tableLocalFile.etag == metadata.etag {
             return completionHandler(nil)
         } else {
-            self.database.setMetadataSession(metadata: metadata,
+            self.database.setMetadataSession(ocId: metadata.ocId,
                                              session: NCNetworking.shared.sessionDownload,
                                              sessionTaskIdentifier: 0,
                                              sessionError: "",
@@ -195,7 +195,7 @@ class FileProviderExtension: NSFileProviderExtension {
 
         NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, requestHandler: { _ in
         }, taskHandler: { task in
-            self.database.setMetadataSession(metadata: metadata,
+            self.database.setMetadataSession(ocId: metadata.ocId,
                                              sessionTaskIdentifier: task.taskIdentifier)
             fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(itemIdentifier.rawValue)) { _ in }
         }, progressHandler: { _ in
@@ -217,7 +217,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 self.database.addMetadata(metadata)
                 completionHandler(nil)
             } else if error.errorCode == 200 {
-                self.database.setMetadataStatus(metadata: metadata,
+                self.database.setMetadataStatus(ocId: metadata.ocId,
                                                 status: NCGlobal.shared.metadataStatusNormal)
                 completionHandler(nil)
             } else {
@@ -248,7 +248,7 @@ class FileProviderExtension: NSFileProviderExtension {
         }
         let serverUrlFileName = metadata.serverUrl + "/" + fileName
 
-        self.database.setMetadataSession(metadata: metadata,
+        self.database.setMetadataSession(ocId: metadata.ocId,
                                          session: NCNetworking.shared.sessionUploadBackgroundExt,
                                          sessionTaskIdentifier: 0,
                                          sessionError: "",
@@ -264,7 +264,7 @@ class FileProviderExtension: NSFileProviderExtension {
                                                                                                   sessionIdentifier: NCNetworking.shared.sessionUploadBackgroundExt)
 
         if let task, error == .success {
-            self.database.setMetadataSession(metadata: metadata,
+            self.database.setMetadataSession(ocId: metadata.ocId,
                                              sessionTaskIdentifier: task.taskIdentifier,
                                              status: NCGlobal.shared.metadataStatusUploading)
             fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(metadata.fileId)) { _ in }
@@ -344,7 +344,7 @@ class FileProviderExtension: NSFileProviderExtension {
                                                                                                                 account: metadataForUpload.account,
                                                                                                                 sessionIdentifier: metadataForUpload.session)
                 if let task, error == .success {
-                    self.database.setMetadataSession(metadata: metadataForUpload,
+                    self.database.setMetadataSession(ocId: metadataForUpload.ocId,
                                                      sessionTaskIdentifier: task.taskIdentifier,
                                                      status: NCGlobal.shared.metadataStatusUploading)
                     fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(ocIdTransfer)) { _ in }

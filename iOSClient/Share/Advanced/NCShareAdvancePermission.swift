@@ -70,7 +70,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
                         self.downloadLimit = .limited(limit: limit.limit, count: limit.count)
                     }
                 } catch {
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] There was an error while fetching the download limit for share with token \(persistedShare.token)!")
+                    nkLog(error: "There was an error while fetching the download limit for share with token \(persistedShare.token)!")
                 }
             }
         }

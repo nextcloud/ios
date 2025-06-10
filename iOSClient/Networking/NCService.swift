@@ -233,7 +233,7 @@ class NCService: NSObject {
         // Synchronize Directory
         let directories = await self.database.getTablesDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "serverUrl", ascending: true)
         for directory in directories {
-            await NCNetworking.shared.synchronization(account: account, serverUrl: directory.serverUrl, add: false)
+            await NCNetworking.shared.synchronization(account: account, serverUrl: directory.serverUrl)
         }
 
         // Synchronize Files
@@ -241,7 +241,7 @@ class NCService: NSObject {
         for file in files {
             if let metadata = await self.database.getMetadataFromOcIdAsync(file.ocId),
                await NCNetworking.shared.isSynchronizable(ocId: metadata.ocId, fileName: metadata.fileName, etag: metadata.etag) {
-                self.database.setMetadataSessionInWaitDownload(metadata: metadata,
+                self.database.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
                                                                session: NCNetworking.shared.sessionDownloadBackground,
                                                                selector: NCGlobal.shared.selectorSynchronizationOffline)
             }

@@ -24,6 +24,7 @@
 import Foundation
 import UIKit
 import KeychainAccess
+import NextcloudKit
 
 @objc class NCKeychain: NSObject {
 
@@ -218,16 +219,19 @@ import KeychainAccess
         }
     }
 
-    var logLevel: Int {
+    /// Stores and retrieves the current log level from the keychain.
+    var log: NKLogLevel {
         get {
             migrate(key: "logLevel")
-            if let value = try? keychain.get("logLevel"), let result = Int(value) {
-                return result
+            if let value = try? keychain.get("logLevel"),
+               let intValue = Int(value),
+               let level = NKLogLevel(rawValue: intValue) {
+                return level
             }
-            return 1
+            return NKLogLevel.normal
         }
         set {
-            keychain["logLevel"] = String(newValue)
+            keychain["logLevel"] = String(newValue.rawValue)
         }
     }
 

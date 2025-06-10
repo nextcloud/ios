@@ -62,10 +62,12 @@ class NCContextMenu: NSObject {
                                             error: .success)
                 }
             } else {
-                let metadata = self.database.setMetadataSessionInWaitDownload(metadata: self.metadata,
-                                                                              session: NCNetworking.shared.sessionDownload,
-                                                                              selector: NCGlobal.shared.selectorOpenIn,
-                                                                              sceneIdentifier: self.sceneIdentifier)
+                guard let metadata = self.database.setMetadataSessionInWaitDownload(ocId: self.metadata.ocId,
+                                                                                    session: NCNetworking.shared.sessionDownload,
+                                                                                    selector: NCGlobal.shared.selectorOpenIn,
+                                                                                    sceneIdentifier: self.sceneIdentifier) else  {
+                    return
+                }
 
                 hud.initHudRing(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
                     if let request = downloadRequest {
@@ -110,10 +112,12 @@ class NCContextMenu: NSObject {
                                             error: .success)
                 }
             } else {
-                let metadata = self.database.setMetadataSessionInWaitDownload(metadata: self.metadata,
-                                                                                 session: NCNetworking.shared.sessionDownload,
-                                                                                 selector: NCGlobal.shared.selectorLoadFileQuickLook,
-                                                                                 sceneIdentifier: self.sceneIdentifier)
+                guard let metadata = self.database.setMetadataSessionInWaitDownload(ocId: self.metadata.ocId,
+                                                                                    session: NCNetworking.shared.sessionDownload,
+                                                                                    selector: NCGlobal.shared.selectorLoadFileQuickLook,
+                                                                                    sceneIdentifier: self.sceneIdentifier) else {
+                    return
+                }
 
                 hud.initHudRing(text: NSLocalizedString("_downloading_", comment: "")) {
                     if let request = downloadRequest {

@@ -172,7 +172,13 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             if autoUploadOnlyNew {
                 database.updateAccountProperty(\.autoUploadOnlyNewSinceDate, value: Date.now, account: session.account)
             }
-            NCAutoUpload.shared.autoUploadSelectedAlbums(controller: self.controller, assetCollections: assetCollections, log: "Auto upload selected albums", account: session.account)
+            Task {
+                _ = await NCAutoUpload.shared.autoUploadSelectedAlbums(controller: self.controller, assetCollections: assetCollections, account: session.account)
+            }
+
+            if let controller = self.controller {
+                NCBackgroundLocationUploadManager.shared.start(from: controller)
+            }
         } else {
             database.clearMetadatasUpload(account: session.account)
         }
