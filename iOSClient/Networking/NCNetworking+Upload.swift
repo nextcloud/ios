@@ -394,7 +394,7 @@ extension NCNetworking {
                                                     sync: false)
             }
 
-            nkLog(success: "Upload complete " + metadata.serverUrl + "/" + metadata.fileName + ", result: success(\(size) bytes)")
+            nkLog(success: "Uploaded file: " + metadata.serverUrl + "/" + metadata.fileName + ", (\(size) bytes)")
 
             let userInfo: [String: Any] = ["ocId": metadata.ocId,
                                            "ocIdTransfer": metadata.ocIdTransfer,
@@ -416,7 +416,7 @@ extension NCNetworking {
                 }
             }
         } else {
-            nkLog(error: "Upload " + metadata.serverUrl + "/" + metadata.fileName + ", result: error \(error.errorCode), \(error.localizedDescription)")
+            nkLog(error: "Upload file: " + metadata.serverUrl + "/" + metadata.fileName + ", result: error \(error.errorCode)")
 
             if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
                 self.uploadCancelFile(metadata: metadata)
