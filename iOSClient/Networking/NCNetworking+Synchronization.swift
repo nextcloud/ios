@@ -40,11 +40,10 @@ extension NCNetworking {
                     metadatasDirectory.append(self.database.convertFileToMetadata(file, isDirectoryE2EE: false))
                 } else if await isFileDifferent(ocId: file.ocId, fileName: file.fileName, etag: file.etag, metadatasInDownload: metadatasInDownload) {
                     metadatasDownload.append(self.database.convertFileToMetadata(file, isDirectoryE2EE: false))
+
+                    nkLog(tag: self.global.logTagSync, emonji: .start, message: "File download: \(file.serverUrl)/\(file.fileName)")
                 }
             }
-
-            let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
-            nkLog(debug: "Synchronization \(serverUrl) in \(diffDate)")
 
             self.database.addMetadatas(metadatasDirectory, sync: false)
             self.database.addDirectories(metadatas: metadatasDirectory, sync: false)
@@ -53,20 +52,16 @@ extension NCNetworking {
                                                             selector: self.global.selectorSynchronizationOffline)
             await self.database.setDirectorySynchronizationDateAsync(serverUrl: serverUrl, account: account)
         } else {
-            nkLog(debug: "Synchronization \(serverUrl), \(results.error.errorCode)")
+            nkLog(tag: self.global.logTagSync, emonji: .error, message: "Synchronization \(serverUrl), \(results.error.errorCode)")
         }
-
     }
 
-    /* /*
-        if let metadata = await self.database.getMetadataFromOcIdAsync(ocId),
-           metadata.status == self.global.metadataStatusDownloading || metadata.status == self.global.metadataStatusWaitDownload {
+    internal func isFileDifferent(ocId: String, fileName: String, etag: String, metadatasInDownload: [tableMetadata]?) async -> Bool {
+        let match = metadatasInDownload?.contains { $0.ocId == ocId } ?? false
+        if match {
             return false
         }
-        */
-*/
 
-    internal func isFileDifferent(ocId: String, fileName: String, etag: String, metadatasInDownload: [tableMetadata]?) async -> Bool {
         let localFile = await self.database.getTableLocalFileAsync(predicate: NSPredicate(format: "ocId == %@", ocId))
         let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
         let size = await self.utilityFileSystem.fileSizeAsync(atPath: fileNamePath)

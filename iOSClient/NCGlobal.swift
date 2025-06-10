@@ -438,4 +438,5 @@ final class NCGlobal: Sendable {
     let logTagAutoUpload                    = "AUTOUPLOAD"
     let logTagE2EE                          = "E2EE"
     let logTagPN                            = "PUSH NOTIF"
+    let logTagSync                          = "SYNC"
 }
