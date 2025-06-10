@@ -386,7 +386,27 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         try? FileManager.default.linkItem(atPath: atPath, toPath: toPath)
     }
 
-    // MARK: - 
+    /// Asynchronously returns the size (in bytes) of the file at the given path.
+    /// - Parameter path: Full file system path as a String.
+    /// - Returns: Size in bytes, or `0` if the file doesn't exist or can't be accessed.
+    func fileSizeAsync(atPath path: String) async -> Int64 {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .utility).async {
+                do {
+                    let attributes = try FileManager.default.attributesOfItem(atPath: path)
+                    if let size = attributes[.size] as? NSNumber {
+                        continuation.resume(returning: size.int64Value)
+                    } else {
+                        continuation.resume(returning: 0)
+                    }
+                } catch {
+                    continuation.resume(returning: 0)
+                }
+            }
+        }
+    }
+
+    // MARK: -
 
     func getHomeServer(session: NCSession.Session) -> String {
         return getHomeServer(urlBase: session.urlBase, userId: session.userId)
