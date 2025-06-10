@@ -26,7 +26,6 @@ import NextcloudKit
 
 extension NCNetworking {
     internal func synchronization(account: String, serverUrl: String, metadatasInDownload: [tableMetadata]?) async {
-        let startDate = Date()
         let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: account)
         let options = NKRequestOptions(timeout: 300, taskDescription: NCGlobal.shared.taskDescriptionSynchronization, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         var metadatasDirectory: [tableMetadata] = []
