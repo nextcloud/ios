@@ -188,14 +188,12 @@ class NCFiles: NCCollectionViewCommon {
         self.metadataFolder = self.database.getMetadataFolder(session: self.session, serverUrl: self.serverUrl)
         self.richWorkspaceText = self.database.getTableDirectory(predicate: predicateDirectory)?.richWorkspace
 
-print("[TEST] reload " + (metadataFolder?.permissions ?? ""))
         if let metadataFolder {
+            NextcloudKit.shared.nkCommonInstance.writeLog("Inside [INFO] metadata folder \(metadataFolder.fileName) with permissions: \(metadataFolder.permissions)")
+
             // disable + button if no create permission
-            plusButton.isEnabled = NCMetadataPermissions.canCreateFolder(metadataFolder)
-            plusButton.backgroundColor = NCMetadataPermissions.canCreateFolder(metadataFolder) ? NCBrandColor.shared.customer : .lightGray
-
-            // disable option to delete files if no delete permission
-
+            plusButton.isEnabled = metadataFolder.isCreatable
+            plusButton.backgroundColor = metadataFolder.isCreatable ? NCBrandColor.shared.customer : .lightGray
         }
 
         self.database.getMetadatas(predicate: predicate,

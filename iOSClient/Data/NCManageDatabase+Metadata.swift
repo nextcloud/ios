@@ -191,6 +191,14 @@ extension tableMetadata {
         return isPDF || isImage
     }
 
+    var isCreatable: Bool {
+        if isDirectory {
+            return NCMetadataPermissions.canCreateFolder(self)
+        } else {
+            return NCMetadataPermissions.canCreateFile(self)
+        }
+    }
+
     var isDeletable: Bool {
         if (!isDirectoryE2EE && e2eEncrypted) || !NCMetadataPermissions.canDelete(self) {
             return false

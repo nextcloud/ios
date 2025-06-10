@@ -20,6 +20,10 @@ class NCMetadataPermissions: NSObject {
     static let permissionCanRename = "N"
     static let permissionCanMove = "V"
 
+    static func canCreateFile(_ metadata: tableMetadata) -> Bool {
+        return metadata.permissions.contains(permissionCanCreateFile)
+    }
+
     static func canCreateFolder(_ metadata: tableMetadata) -> Bool {
         return metadata.permissions.contains(permissionCanCreateFolder)
     }
