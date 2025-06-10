@@ -104,7 +104,7 @@
 "_view_in_folder_"          = "View in folder";
 "_leave_share_"             = "Leave this share";
 "_disabled_"                = "Disabled";
-"_trace_"                   = "Trace";
+"_compact_"                 = "Compact";
 "_normal_"                  = "Normal";
 "_verbose_"                 = "Verbose";
 "_standard_"                = "Standard";

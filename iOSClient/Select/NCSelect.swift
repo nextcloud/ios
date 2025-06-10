@@ -620,7 +620,8 @@ struct NCSelectViewControllerRepresentable: UIViewControllerRepresentable {
 
 struct SelectView: UIViewControllerRepresentable {
     @Binding var serverUrl: String
-    var session: NCSession.Session!
+    var includeDirectoryE2EEncryption: Bool
+    var session: NCSession.Session
 
     class Coordinator: NSObject, NCSelectDelegate {
         var parent: SelectView
@@ -643,7 +644,7 @@ struct SelectView: UIViewControllerRepresentable {
 
         viewController?.delegate = context.coordinator
         viewController?.typeOfCommandView = .selectCreateFolder
-        viewController?.includeDirectoryE2EEncryption = true
+        viewController?.includeDirectoryE2EEncryption = includeDirectoryE2EEncryption
         viewController?.session = session
 
         return navigationController!

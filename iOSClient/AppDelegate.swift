@@ -47,10 +47,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     let backgroundQueue = DispatchQueue(label: "com.nextcloud.bgTaskQueue")
 
-    /// Init 
     let global = NCGlobal.shared
     let database = NCManageDatabase.shared
     let networking = NCNetworking.shared
+
+    var isBackgroundAutoUpload: Bool = false
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         if isUiTestingEnabled {
@@ -80,7 +81,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCKeychain().log))
 
-        nkLog(debug: "Start session with level \(NCKeychain().log) " + versionNextcloudiOS)
+        nkLog(start: "Start session with level \(NCKeychain().log) " + versionNextcloudiOS)
 
         /// Push Notification & display notification
         UNUserNotificationCenter.current().getNotificationSettings { settings in
@@ -190,7 +191,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func handleAppRefresh(_ task: BGAppRefreshTask) {
-        nkLog(tag: self.global.logTagTask, message: "Start refresh task")
+        nkLog(tag: self.global.logTagTask, emonji: .start, message: "Start refresh task")
 
         scheduleAppRefresh()
         isAppSuspending = false // now you can read/write in Realm
@@ -201,14 +202,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         Task {
             let numTransfers = await autoUpload()
-            nkLog(tag: self.global.logTagTask, emonji: .success, message: "Refresh task completed with \(numTransfers) transfers")
+            nkLog(tag: self.global.logTagTask, emonji: .success, message: "Refresh task completed with \(numTransfers) transfers of auto upload")
 
             task.setTaskCompleted(success: true)
         }
     }
 
     func handleProcessingTask(_ task: BGProcessingTask) {
-        nkLog(tag: self.global.logTagTask, message: "Start processing task")
+        nkLog(tag: self.global.logTagTask, emonji: .start, message: "Start processing task")
 
         scheduleAppProcessing()
         isAppSuspending = false // now you can read/write in Realm
@@ -219,7 +220,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         Task {
             let numTransfers = await autoUpload()
-            nkLog(tag: self.global.logTagTask, emonji: .success, message: "Processing task completed with \(numTransfers) transfers")
+            nkLog(tag: self.global.logTagTask, emonji: .success, message: "Processing task completed with \(numTransfers) transfers of auto upload")
 
             task.setTaskCompleted(success: true)
         }
@@ -231,15 +232,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let maxUploading: Int = NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload
         let tblAccount = await self.database.getActiveTableAccountAsync()
 
-        guard let tblAccount,
+        guard !isBackgroundAutoUpload,
+              let tblAccount,
               tblAccount.autoUploadStart else {
             return numTransfers
         }
 
+        /// Background processing start
+        self.isBackgroundAutoUpload = true
+
         /// INIT AUTO UPLOAD ONLY FOR NEW PHOTO
         if tblAccount.autoUploadOnlyNew {
-            let newAutoUpload = await NCAutoUpload.shared.initAutoUpload(account: tblAccount.account)
-            nkLog(tag: self.global.logTagTask, message: "Auto upload with new \(newAutoUpload) photo or video")
+            let num = await NCAutoUpload.shared.initAutoUpload(account: tblAccount.account)
+            nkLog(tag: self.global.logTagAutoUpload, emonji: .start, message: "Auto upload with \(num) photo")
         }
 
         /// CREATION FOLDERS
@@ -255,11 +260,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                                                                              selector: metadata.sessionSelector)
 
                 guard resultsCreateFolder.error == .success else {
-                    nkLog(tag: self.global.logTagTask, emonji: .error, message: "Auto upload create folder \(serverUrl) with error: \(resultsCreateFolder.error.errorCode)")
+                    nkLog(tag: self.global.logTagAutoUpload, emonji: .error, message: "Auto upload create folder \(serverUrl) with error: \(resultsCreateFolder.error.errorCode)")
+
+                    self.isBackgroundAutoUpload = false
                     return numTransfers
                 }
 
-                nkLog(tag: self.global.logTagTask, message: "Auto upload create folder \(serverUrl)")
+                nkLog(tag: self.global.logTagAutoUpload, message: "Auto upload create folder \(serverUrl)")
 
                 if resultsCreateFolder.serverExists == false {
                     numTransfers += 1
@@ -268,7 +275,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         if numTransfers == 0 {
-            nkLog(tag: self.global.logTagTask, message: "Auto upload no creations folders required")
+            nkLog(tag: self.global.logTagAutoUpload, message: "Auto upload no creations folders required")
         }
 
         if let metadatasUploading = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d", self.global.metadataStatusUploading), limit: nil) {
@@ -283,7 +290,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     await self.database.setMetadataStatusAsync(ocId: metadata.ocId, status: self.global.metadataStatusServerUploaded)
                     counterUploading -= 1
 
-                    nkLog(tag: self.global.logTagTask, emonji: .warning, message: "Auto upload file \(metadata.fileName) in \(metadata.serverUrl), already uploaded, skipped.")
+                    nkLog(tag: self.global.logTagAutoUpload, emonji: .warning, message: "Auto upload file \(metadata.fileName) in \(metadata.serverUrl), already uploaded, skipped.")
                 }
             }
         }
@@ -291,7 +298,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         /// UPLOAD
         if counterUploadingAvailable > 0 {
-            nkLog(tag: self.global.logTagTask, message: "Auto upload start with limit \(counterUploadingAvailable)")
+            nkLog(tag: self.global.logTagAutoUpload, emonji: .start, message: "Auto upload start with limit \(counterUploadingAvailable)")
 
             let sortDescriptors = [
                 RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
@@ -299,7 +306,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
             if let metadatasWaitUpload = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@ AND chunk == 0", self.global.metadataStatusWaitUpload, self.global.selectorUploadAutoUpload), sortDescriptors: sortDescriptors, limit: counterUploadingAvailable) {
 
-                nkLog(tag: self.global.logTagTask, message: "Auto upload in wait upload \(String(describing: metadatasWaitUpload.count))")
+                nkLog(tag: self.global.logTagAutoUpload, message: "Auto upload in wait upload \(String(describing: metadatasWaitUpload.count))")
 
                 let metadatas = await NCCameraRoll().extractCameraRoll(from: metadatasWaitUpload)
 
@@ -307,19 +314,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     let error = await self.networking.uploadFileInBackgroundAsync(metadata: tableMetadata(value: metadata))
 
                     if error == .success {
-                        nkLog(tag: self.global.logTagTask, message: "Auto upload create new upload \(metadata.fileName) in \(metadata.serverUrl)")
+                        nkLog(tag: self.global.logTagAutoUpload, message: "Auto upload create new upload \(metadata.fileName) in \(metadata.serverUrl)")
                     } else {
-                        nkLog(tag: self.global.logTagTask, emonji: .error, message: "Auto upload failure \(metadata.fileName) in \(metadata.serverUrl) with error \(error.errorDescription)")
+                        nkLog(tag: self.global.logTagAutoUpload, emonji: .error, message: "Auto upload failure \(metadata.fileName) in \(metadata.serverUrl) with error \(error.errorDescription)")
                     }
 
                     numTransfers += 1
                 }
             }
         } else {
-            nkLog(tag: self.global.logTagTask, emonji: .warning, message: "Auto upload uploading is full")
+            nkLog(tag: self.global.logTagAutoUpload, emonji: .warning, message: "Auto upload uploading is full")
+
+            self.isBackgroundAutoUpload = false
             return 0
         }
 
+        self.isBackgroundAutoUpload = false
         return numTransfers
     }
 

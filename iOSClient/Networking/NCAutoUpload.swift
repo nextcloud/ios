@@ -12,6 +12,7 @@ class NCAutoUpload: NSObject {
     static let shared = NCAutoUpload()
 
     private let database = NCManageDatabase.shared
+    private let global = NCGlobal.shared
     private var endForAssetToUpload: Bool = false
 
     func initAutoUpload(controller: NCMainTabBarController? = nil, account: String) async -> Int {
@@ -62,7 +63,7 @@ class NCAutoUpload: NSObject {
         let fileSystem = NCUtilityFileSystem()
         let skipFileNames = await self.database.fetchSkipFileNames(account: tblAccount.account, autoUploadServerUrlBase: autoUploadServerUrlBase)
 
-       nkLog(info: " Automatic upload, new \(assets.count) assets found")
+        nkLog(tag: self.global.logTagAutoUpload, message: "Automatic upload, new \(assets.count) assets found")
 
         for (index, asset) in assets.enumerated() {
             let fileName = fileNames[index]

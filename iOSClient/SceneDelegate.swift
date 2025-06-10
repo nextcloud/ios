@@ -125,7 +125,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             Task {
                 let num = await NCAutoUpload.shared.initAutoUpload(account: session.account)
-                nkLog(debug: "Initialize Auto upload with \(num) uploads")
+                nkLog(tag: self.global.logTagAutoUpload, emonji: .start, message: "Auto upload with \(num) photo")
             }
         }
 
@@ -187,15 +187,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
 
-        if tableAccount.autoUploadStart {
-            nkLog(debug: "Auto upload: true")
-            let isBackgroundRefreshAvailable = UIApplication.shared.backgroundRefreshStatus == .available
-            nkLog(debug: "Refresh task in background: \(isBackgroundRefreshAvailable)")
-            NCBackgroundLocationUploadManager.shared.checkLocationServiceIsActive { active in
-               nkLog(debug: "Location service: \(active)")
-            }
-        } else {
-            nkLog(debug: "Auto upload: false")
+        nkLog(tag: self.global.logTagAutoUpload, emonji: .info, message: "Auto upload in background: \(tableAccount.autoUploadStart)")
+        nkLog(info: "Update in background: \(UIApplication.shared.backgroundRefreshStatus == .available)")
+        NCBackgroundLocationUploadManager.shared.checkLocationServiceIsActive { active in
+            nkLog(tag: self.global.logTagLocation, emonji: .info, message: "Location service: \(active)")
         }
 
         if let error = NCAccount().updateAppsShareAccounts() {

@@ -72,9 +72,9 @@ class NCNetworkingProcess {
                 else { return }
 
                 self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal), freeze: true) { metadatas in
-                    if let metadatas, !metadatas.isEmpty {
-                        self.hasRun = true
+                    self.hasRun = true
 
+                    if let metadatas, !metadatas.isEmpty {
                         /// Keep screen awake
                         ///
                         Task {
@@ -98,7 +98,9 @@ class NCNetworkingProcess {
                             await self.start()
                             self.hasRun = false
                         }
+
                     } else {
+
                         /// Remove Photo CameraRoll
                         ///
                         if NCKeychain().removePhotoCameraRoll,
