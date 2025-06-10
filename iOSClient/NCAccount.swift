@@ -127,7 +127,7 @@ class NCAccount: NSObject {
             /// Start the auto upload
             Task {
                 let num = await NCAutoUpload.shared.initAutoUpload(controller: nil, account: account)
-                nkLog(start: "Initialize Auto upload with \(num) uploads")
+                nkLog(tag: self.global.logTagAutoUpload, emonji: .start, message: "Auto upload with \(num) photo")
             }
             /// Networking Process
             NCNetworkingProcess.shared.setCurrentAccount(account)
