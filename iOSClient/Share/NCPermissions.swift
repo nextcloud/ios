@@ -33,7 +33,7 @@ class NCPermissions: NSObject {
     let permissionCreateShare: Int = 4
     let permissionDeleteShare: Int = 8
     let permissionShareShare: Int = 16
-    //
+
     let permissionMinFileShare: Int = 1
     let permissionMaxFileShare: Int = 19
     let permissionMinFolderShare: Int = 1

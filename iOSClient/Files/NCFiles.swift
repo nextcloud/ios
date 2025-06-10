@@ -198,7 +198,7 @@ class NCFiles: NCCollectionViewCommon {
         self.richWorkspaceText = self.database.getTableDirectory(predicate: predicateDirectory)?.richWorkspace
 
         if let metadataFolder {
-            NextcloudKit.shared.nkCommonInstance.writeLog("Inside [INFO] metadata folder \(metadataFolder.fileName) with permissions: \(metadataFolder.permissions)")
+            nkLog(info: "Inside metadata folder \(metadataFolder.fileName) with permissions: \(metadataFolder.permissions)")
 
             // disable + button if no create permission
             plusButton.isEnabled = metadataFolder.isCreatable
