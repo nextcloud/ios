@@ -42,7 +42,7 @@ class NCService: NSObject {
         self.database.clearAllAvatarLoaded(sync: false)
         self.addInternalTypeIdentifier(account: account)
 
-        Task(priority: .background) {
+        Task(priority: .utility) {
             let result = await requestServerStatus(account: account, controller: controller)
             if result {
                 await requestServerCapabilities(account: account, controller: controller)
