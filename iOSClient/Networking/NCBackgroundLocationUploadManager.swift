@@ -12,8 +12,8 @@ import NextcloudKit
 class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
     static let shared = NCBackgroundLocationUploadManager()
 
+    private let global = NCGlobal.shared
     private let locationManager = CLLocationManager()
-    private var isProcessing = false
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private weak var presentingViewController: UIViewController?
     private let explanationShownKey = "locationExplanationShown"
@@ -100,21 +100,18 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
     }
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard !isProcessing,
-              isAppInBackground else {
+        guard isAppInBackground else {
             return
         }
 
         isAppSuspending = false // now you can read/write in Realm
-        isProcessing = true
 
         let location = locations.last
-        nkLog(info: "Triggered by location change: \(location?.coordinate.latitude ?? 0), \(location?.coordinate.longitude ?? 0)")
+        nkLog(tag: self.global.logTagLocation, emonji: .start, message: "Triggered by location change: \(location?.coordinate.latitude ?? 0), \(location?.coordinate.longitude ?? 0)")
 
         Task.detached {
             let numTransfers = await self.appDelegate.autoUpload()
-            nkLog(debug: "Triggered upload completed with \(numTransfers) transfers")
-            self.isProcessing = false
+            nkLog(tag: self.global.logTagLocation, emonji: .success, message: "Triggered by location completed with \(numTransfers) transfers of auto upload")
         }
     }
 
