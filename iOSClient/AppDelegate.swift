@@ -281,8 +281,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let counterUploadingAvailable = min(maxUploading - counterUploading, maxUploading)
         let counterDownloadingAvailable = min(maxDownloading - counterDownloading, maxDownloading)
 
-        nkLog(tag: self.global.logTagBgSync, emonji: .warning, message: "Uploading available: \(counterUploadingAvailable)")
-        nkLog(tag: self.global.logTagBgSync, emonji: .warning, message: "Downloading available: \(counterDownloadingAvailable)")
+        nkLog(tag: self.global.logTagBgSync, emonji: .info, message: "Uploading available: \(counterUploadingAvailable)")
+        nkLog(tag: self.global.logTagBgSync, emonji: .info, message: "Downloading available: \(counterDownloadingAvailable)")
 
         /// INIT AUTO UPLOAD ONLY FOR NEW PHOTO
         if tblAccount.autoUploadStart,
@@ -320,7 +320,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         /// DOWNLOAD
-        if counterDownloading > 0 {
+        if counterDownloadingAvailable > 0 {
             nkLog(tag: self.global.logTagBgSync, emonji: .start, message: "Dowload start with limit \(counterDownloadingAvailable)")
 
             let sortDescriptors = [
