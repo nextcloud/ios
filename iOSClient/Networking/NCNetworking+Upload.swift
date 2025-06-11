@@ -342,6 +342,7 @@ extension NCNetworking {
         let selector = metadata.sessionSelector
 
         if error == .success, let ocId = ocId, size == metadata.size {
+            nkLog(success: "Uploaded file: " + metadata.serverUrl + "/" + metadata.fileName + ", (\(size) bytes)")
 
             var metadata = tableMetadata(value: metadata)
             metadata.uploadDate = (date as? NSDate) ?? NSDate()
@@ -393,8 +394,6 @@ extension NCNetworking {
                                                     date: metadata.creationDate as Date,
                                                     sync: false)
             }
-
-            nkLog(success: "Uploaded file: " + metadata.serverUrl + "/" + metadata.fileName + ", (\(size) bytes)")
 
             let userInfo: [String: Any] = ["ocId": metadata.ocId,
                                            "ocIdTransfer": metadata.ocIdTransfer,

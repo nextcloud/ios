@@ -184,6 +184,7 @@ extension NCNetworking {
             NextcloudKit.shared.nkCommonInstance.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
 
             if error == .success {
+                nkLog(success: "Downloaded file: " + metadata.serverUrl + "/" + metadata.fileName)
 #if !EXTENSION
                 if let result = self.database.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
                     NCEndToEndEncryption.shared().decryptFile(metadata.fileName, fileNameView: metadata.fileNameView, ocId: metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
@@ -199,43 +200,46 @@ extension NCNetworking {
                                                                    etag: etag) {
 
                     self.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusDownloaded,
-                                            metadata: metadata,
-                                            error: error)
-                }
-            }
-
-            } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
-                do {
-                    try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-                } catch { }
-                self.database.deleteLocalFileOcId(metadata.ocId, sync: false)
-                self.database.deleteMetadataOcId(metadata.ocId, sync: false)
-            } else if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
-                if let metadata = self.database.setMetadataSession(ocId: metadata.ocId,
-                                                                   session: "",
-                                                                   sessionTaskIdentifier: 0,
-                                                                   sessionError: "",
-                                                                   selector: "",
-                                                                   status: self.global.metadataStatusNormal) {
-                    self.notifyAllDelegates { delegate in
-                        delegate.transferChange(status: self.global.networkingStatusDownloadCancel,
+                        delegate.transferChange(status: self.global.networkingStatusDownloaded,
                                                 metadata: metadata,
-                                                error: .success)
+                                                error: error)
                     }
                 }
             } else {
-                if let metadata = self.database.setMetadataSession(ocId: metadata.ocId,
-                                                                   session: "",
-                                                                   sessionTaskIdentifier: 0,
-                                                                   sessionError: "",
-                                                                   selector: "",
-                                                                   status: self.global.metadataStatusNormal) {
+                nkLog(error: "Downloaded file: " + metadata.serverUrl + "/" + metadata.fileName + ", result: error \(error.errorCode)")
 
-                    self.notifyAllDelegates { delegate in
-                        delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
-                                                metadata: metadata,
-                                                error: error)
+                if error.errorCode == NCGlobal.shared.errorResourceNotFound {
+                    do {
+                        try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                    } catch { }
+                    self.database.deleteLocalFileOcId(metadata.ocId, sync: false)
+                    self.database.deleteMetadataOcId(metadata.ocId, sync: false)
+                } else if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
+                    if let metadata = self.database.setMetadataSession(ocId: metadata.ocId,
+                                                                       session: "",
+                                                                       sessionTaskIdentifier: 0,
+                                                                       sessionError: "",
+                                                                       selector: "",
+                                                                       status: self.global.metadataStatusNormal) {
+                        self.notifyAllDelegates { delegate in
+                            delegate.transferChange(status: self.global.networkingStatusDownloadCancel,
+                                                    metadata: metadata,
+                                                    error: .success)
+                        }
+                    }
+                } else {
+                    if let metadata = self.database.setMetadataSession(ocId: metadata.ocId,
+                                                                       session: "",
+                                                                       sessionTaskIdentifier: 0,
+                                                                       sessionError: "",
+                                                                       selector: "",
+                                                                       status: self.global.metadataStatusNormal) {
+
+                        self.notifyAllDelegates { delegate in
+                            delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
+                                                    metadata: metadata,
+                                                    error: error)
+                        }
                     }
                 }
             }
