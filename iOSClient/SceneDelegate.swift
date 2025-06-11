@@ -190,7 +190,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         nkLog(info: "Auto upload in background: \(tableAccount.autoUploadStart)")
         nkLog(info: "Update in background: \(UIApplication.shared.backgroundRefreshStatus == .available)")
         NCBackgroundLocationUploadManager.shared.checkLocationServiceIsActive { active in
-            nkLog(tag: self.global.logTagLocation, emonji: .info, message: "Location service: \(active)")
+            nkLog(tag: self.global.logTagLocation, emoji: .info, message: "Location service: \(active)")
         }
 
         if let error = NCAccount().updateAppsShareAccounts() {

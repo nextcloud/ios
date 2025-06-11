@@ -39,8 +39,7 @@ extension NCNetworking {
                     metadatasDirectory.append(self.database.convertFileToMetadata(file, isDirectoryE2EE: false))
                 } else if await isFileDifferent(ocId: file.ocId, fileName: file.fileName, etag: file.etag, metadatasInDownload: metadatasInDownload) {
                     metadatasDownload.append(self.database.convertFileToMetadata(file, isDirectoryE2EE: false))
-
-                    nkLog(tag: self.global.logTagSync, emonji: .start, message: "File download: \(file.serverUrl)/\(file.fileName)")
+                    nkLog(tag: self.global.logTagSync, emoji: .start, message: "File download: \(file.serverUrl)/\(file.fileName)")
                 }
             }
 
@@ -51,7 +50,7 @@ extension NCNetworking {
                                                             selector: self.global.selectorSynchronizationOffline)
             await self.database.setDirectorySynchronizationDateAsync(serverUrl: serverUrl, account: account)
         } else {
-            nkLog(tag: self.global.logTagSync, emonji: .error, message: "Synchronization \(serverUrl), \(results.error.errorCode)")
+            nkLog(tag: self.global.logTagSync, emoji: .error, message: "Synchronization \(serverUrl), \(results.error.errorCode)")
         }
     }
 

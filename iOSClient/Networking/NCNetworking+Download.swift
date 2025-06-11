@@ -98,7 +98,7 @@ extension NCNetworking {
                 if let downloadTask = downloadTask {
                     if let header = responseData?.response?.allHeaderFields,
                        let dateString = header["Last-Modified"] as? String {
-                        dateLastModified = NextcloudKit.shared.nkCommonInstance.convertDate(dateString, format: "EEE, dd MMM y HH:mm:ss zzz")
+                        dateLastModified = NKLogFileManager.shared.convertDate(dateString, format: "EEE, dd MMM y HH:mm:ss zzz")
                     }
                     if afError?.isExplicitlyCancelledError ?? false {
                         error = NKError(errorCode: self.global.errorRequestExplicityCancelled, errorDescription: "error request explicity cancelled")
