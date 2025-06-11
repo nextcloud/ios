@@ -243,6 +243,11 @@ extension NCNetworking {
                     }
                 }
             }
+#if !EXTENSION
+            Task {
+                await self.database.updateBadge()
+            }
+#endif
         }
     }
 

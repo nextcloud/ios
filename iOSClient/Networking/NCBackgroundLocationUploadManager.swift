@@ -109,7 +109,7 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
 
         Task.detached {
             let numTransfers = await self.appDelegate.backgroundSync()
-            nkLog(tag: self.global.logTagLocation, emoji: .success, message: "Triggered by location completed with \(numTransfers) transfers of auto upload")
+            nkLog(tag: self.global.logTagLocation, emoji: .success, message: "Triggered by location completed with \(numTransfers) transfers")
         }
     }
 

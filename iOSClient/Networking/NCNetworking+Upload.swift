@@ -496,6 +496,11 @@ extension NCNetworking {
                 }
             }
         }
+#if !EXTENSION
+        Task {
+            await self.database.updateBadge()
+        }
+#endif
     }
 
     func uploadProgress(_ progress: Float,
