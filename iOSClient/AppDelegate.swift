@@ -270,10 +270,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
 
-        if numTransfers == 0 {
-            nkLog(tag: self.global.logTagBgSync, message: "Auto upload no creations folders required")
-        }
-
         if let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d || status == %d", self.global.metadataStatusUploading, self.global.metadataStatusDownloading), limit: nil) {
             counterUploading = metadatas.filter { $0.status == self.global.metadataStatusUploading }.count
             counterDownloading = metadatas.filter { $0.status == self.global.metadataStatusDownloading }.count
@@ -299,15 +295,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
                 let metadatas = await NCCameraRoll().extractCameraRoll(from: metadatasWaitUpload)
 
-                if !metadatas.isEmpty {
-                    nkLog(tag: self.global.logTagBgSync, emonji: .start, message: "Upload start with limit \(counterUploadingAvailable)")
-                }
-
                 for metadata in metadatas {
                     let error = await self.networking.uploadFileInBackgroundAsync(metadata: tableMetadata(value: metadata))
 
                     if error == .success {
-                        nkLog(tag: self.global.logTagBgSync, message: "Upload create new upload \(metadata.fileName) in \(metadata.serverUrl)")
+                        nkLog(tag: self.global.logTagBgSync, message: "Create new upload \(metadata.fileName) in \(metadata.serverUrl)")
                     } else {
                         nkLog(tag: self.global.logTagBgSync, emonji: .error, message: "Upload failure \(metadata.fileName) in \(metadata.serverUrl) with error \(error.errorDescription)")
                     }
@@ -329,7 +321,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     let error = await self.networking.downloadFileInBackgroundAsync(metadata: metadata)
 
                     if error == .success {
-                        nkLog(tag: self.global.logTagBgSync, message: "Download create new download \(metadata.fileName) in \(metadata.serverUrl)")
+                        nkLog(tag: self.global.logTagBgSync, message: "Create new download \(metadata.fileName) in \(metadata.serverUrl)")
                     } else {
                         nkLog(tag: self.global.logTagBgSync, emonji: .error, message: "Download failure \(metadata.fileName) in \(metadata.serverUrl) with error \(error.errorDescription)")
                     }
