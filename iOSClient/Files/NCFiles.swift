@@ -139,11 +139,8 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         Task {
-            if let tblAccount = await self.database.getActiveTableAccountAsync(),
-               tblAccount.autoUploadStart {
-                await MainActor.run {
-                    NCBackgroundLocationUploadManager.shared.start(from: self)
-                }
+            await MainActor.run {
+                NCBackgroundLocationUploadManager.shared.start(from: self)
             }
         }
     }

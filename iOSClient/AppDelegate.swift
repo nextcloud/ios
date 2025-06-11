@@ -282,9 +282,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let counterUploadingAvailable = min(maxUploading - counterUploading, maxUploading)
         let counterDownloadingAvailable = min(maxDownloading - counterDownloading, maxDownloading)
 
-        nkLog(tag: self.global.logTagBgSync, emonji: .info, message: "Uploading available: \(counterUploadingAvailable)")
-        nkLog(tag: self.global.logTagBgSync, emonji: .info, message: "Downloading available: \(counterDownloadingAvailable)")
-
         /// INIT AUTO UPLOAD ONLY FOR NEW PHOTO
         if tblAccount.autoUploadStart,
            tblAccount.autoUploadOnlyNew {
@@ -294,17 +291,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         /// UPLOAD
         if !creationFolderAutoUploadInError, counterUploadingAvailable > 0 {
-            nkLog(tag: self.global.logTagBgSync, emonji: .start, message: "Upload start with limit \(counterUploadingAvailable)")
-
             let sortDescriptors = [
                 RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
             ]
 
             if let metadatasWaitUpload = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@ AND chunk == 0", self.global.metadataStatusWaitUpload, self.global.selectorUploadAutoUpload), sortDescriptors: sortDescriptors, limit: counterUploadingAvailable) {
 
-                nkLog(tag: self.global.logTagBgSync, message: "Upload in wait upload \(String(describing: metadatasWaitUpload.count))")
-
                 let metadatas = await NCCameraRoll().extractCameraRoll(from: metadatasWaitUpload)
+
+                if !metadatas.isEmpty {
+                    nkLog(tag: self.global.logTagBgSync, emonji: .start, message: "Upload start with limit \(counterUploadingAvailable)")
+                }
 
                 for metadata in metadatas {
                     let error = await self.networking.uploadFileInBackgroundAsync(metadata: tableMetadata(value: metadata))
@@ -322,8 +319,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         /// DOWNLOAD
         if counterDownloadingAvailable > 0 {
-            nkLog(tag: self.global.logTagBgSync, emonji: .start, message: "Dowload start with limit \(counterDownloadingAvailable)")
-
             let sortDescriptors = [
                 RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
             ]
@@ -351,7 +346,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Background Networking Session
 
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
-        nkLog(debug: "Handle vvents For background URLSession: \(identifier)")
+        nkLog(debug: "Handle events For background URLSession: \(identifier)")
         WidgetCenter.shared.reloadAllTimelines()
         backgroundSessionCompletionHandler = completionHandler
     }

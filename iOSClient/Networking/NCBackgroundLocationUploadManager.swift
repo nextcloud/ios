@@ -22,10 +22,8 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
         super.init()
 
         locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
-        locationManager.allowsBackgroundLocationUpdates = true
-        locationManager.pausesLocationUpdatesAutomatically = false
         locationManager.activityType = .fitness
+        locationManager.allowsBackgroundLocationUpdates = true
     }
 
     func start(from viewController: UIViewController) {
