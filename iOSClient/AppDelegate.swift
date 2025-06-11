@@ -230,6 +230,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         var numTransfers: Int = 0
         var counterDownloading: Int = 0
         var counterUploading: Int = 0
+        var creationFolderAutoUploadInError: Bool = false
         let maxUploading: Int = NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload
         let maxDownloading: Int = NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload
         let tblAccount = await self.database.getActiveTableAccountAsync()
@@ -257,8 +258,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 guard resultsCreateFolder.error == .success else {
                     nkLog(tag: self.global.logTagBgSync, emonji: .error, message: "Auto upload create folder \(serverUrl) with error: \(resultsCreateFolder.error.errorCode)")
 
-                    self.isBackgroundSync = false
-                    return numTransfers
+                    creationFolderAutoUploadInError = true
+                    break
                 }
 
                 nkLog(tag: self.global.logTagBgSync, message: "Auto upload create folder \(serverUrl)")
@@ -292,7 +293,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         /// UPLOAD
-        if counterUploadingAvailable > 0 {
+        if !creationFolderAutoUploadInError, counterUploadingAvailable > 0 {
             nkLog(tag: self.global.logTagBgSync, emonji: .start, message: "Upload start with limit \(counterUploadingAvailable)")
 
             let sortDescriptors = [
