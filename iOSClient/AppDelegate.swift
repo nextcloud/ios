@@ -243,7 +243,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         /// INIT AUTO UPLOAD ONLY FOR NEW PHOTO
         if tblAccount.autoUploadOnlyNew {
             let num = await NCAutoUpload.shared.initAutoUpload(account: tblAccount.account)
-            nkLog(tag: self.global.logTagAutoUpload, emonji: .start, message: "Auto upload with \(num) photo")
+            nkLog(tag: self.global.logTagAutoUpload, emonji: .start, message: "Auto upload with \(num) new photo for \(tblAccount.account)")
+        } else {
+            nkLog(tag: self.global.logTagAutoUpload, emonji: .start, message: "Backup auto upload photo for \(tblAccount.account)")
         }
 
         /// CREATION FOLDERS
