@@ -125,7 +125,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             Task {
                 let num = await NCAutoUpload.shared.initAutoUpload(account: session.account)
-                nkLog(tag: self.global.logTagAutoUpload, emonji: .start, message: "Auto upload with \(num) photo")
+                nkLog(start: "Auto upload with \(num) photo")
             }
         }
 
@@ -187,7 +187,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
 
-        nkLog(tag: self.global.logTagAutoUpload, emonji: .info, message: "Auto upload in background: \(tableAccount.autoUploadStart)")
+        nkLog(info: "Auto upload in background: \(tableAccount.autoUploadStart)")
         nkLog(info: "Update in background: \(UIApplication.shared.backgroundRefreshStatus == .available)")
         NCBackgroundLocationUploadManager.shared.checkLocationServiceIsActive { active in
             nkLog(tag: self.global.logTagLocation, emonji: .info, message: "Location service: \(active)")

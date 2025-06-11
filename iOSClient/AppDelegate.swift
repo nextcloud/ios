@@ -51,7 +51,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     let database = NCManageDatabase.shared
     let networking = NCNetworking.shared
 
-    var isBackgroundAutoUpload: Bool = false
+    var isBackgroundSync: Bool = false
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         if isUiTestingEnabled {
@@ -201,7 +201,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         Task {
-            let numTransfers = await autoUpload()
+            let numTransfers = await backgroundSync()
             nkLog(tag: self.global.logTagTask, emonji: .success, message: "Refresh task completed with \(numTransfers) transfers of auto upload")
 
             task.setTaskCompleted(success: true)
@@ -219,34 +219,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         Task {
-            let numTransfers = await autoUpload()
+            let numTransfers = await backgroundSync()
             nkLog(tag: self.global.logTagTask, emonji: .success, message: "Processing task completed with \(numTransfers) transfers of auto upload")
 
             task.setTaskCompleted(success: true)
         }
     }
 
-    func autoUpload() async -> Int {
+    func backgroundSync() async -> Int {
         var numTransfers: Int = 0
+        var counterDownloading: Int = 0
+        var counterUploading: Int = 0
         let maxUploading: Int = NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload
+        let maxDownloading: Int = NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload
         let tblAccount = await self.database.getActiveTableAccountAsync()
 
-        guard !isBackgroundAutoUpload,
-              let tblAccount,
-              tblAccount.autoUploadStart else {
+        guard !isBackgroundSync,
+              let tblAccount else {
             return numTransfers
         }
 
         /// Background processing start
-        self.isBackgroundAutoUpload = true
-
-        /// INIT AUTO UPLOAD ONLY FOR NEW PHOTO
-        if tblAccount.autoUploadOnlyNew {
-            let num = await NCAutoUpload.shared.initAutoUpload(account: tblAccount.account)
-            nkLog(tag: self.global.logTagAutoUpload, emonji: .start, message: "Auto upload with \(num) new photo for \(tblAccount.account)")
-        } else {
-            nkLog(tag: self.global.logTagAutoUpload, emonji: .start, message: "Backup auto upload photo for \(tblAccount.account)")
-        }
+        self.isBackgroundSync = true
 
         /// CREATION FOLDERS
         let metadatasWaitCreateFolder = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@", self.global.metadataStatusWaitCreateFolder, self.global.selectorUploadAutoUpload), limit: nil)
@@ -261,13 +255,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                                                                              selector: metadata.sessionSelector)
 
                 guard resultsCreateFolder.error == .success else {
-                    nkLog(tag: self.global.logTagAutoUpload, emonji: .error, message: "Auto upload create folder \(serverUrl) with error: \(resultsCreateFolder.error.errorCode)")
+                    nkLog(tag: self.global.logTagBgSync, emonji: .error, message: "Auto upload create folder \(serverUrl) with error: \(resultsCreateFolder.error.errorCode)")
 
-                    self.isBackgroundAutoUpload = false
+                    self.isBackgroundSync = false
                     return numTransfers
                 }
 
-                nkLog(tag: self.global.logTagAutoUpload, message: "Auto upload create folder \(serverUrl)")
+                nkLog(tag: self.global.logTagBgSync, message: "Auto upload create folder \(serverUrl)")
 
                 if resultsCreateFolder.serverExists == false {
                     numTransfers += 1
@@ -276,15 +270,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         if numTransfers == 0 {
-            nkLog(tag: self.global.logTagAutoUpload, message: "Auto upload no creations folders required")
+            nkLog(tag: self.global.logTagBgSync, message: "Auto upload no creations folders required")
         }
 
-        let counterUploading = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d", self.global.metadataStatusUploading), limit: nil)?.count ?? 0
+        if let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d || status == %d", self.global.metadataStatusUploading, self.global.metadataStatusDownloading), limit: nil) {
+            counterUploading = metadatas.filter { $0.status == self.global.metadataStatusUploading }.count
+            counterDownloading = metadatas.filter { $0.status == self.global.metadataStatusDownloading }.count
+        }
+
         let counterUploadingAvailable = min(maxUploading - counterUploading, maxUploading)
+        let counterDownloadingAvailable = min(maxDownloading - counterDownloading, maxDownloading)
+
+        nkLog(tag: self.global.logTagBgSync, emonji: .warning, message: "Uploading available: \(counterUploadingAvailable)")
+        nkLog(tag: self.global.logTagBgSync, emonji: .warning, message: "Downloading available: \(counterDownloadingAvailable)")
+
+        /// INIT AUTO UPLOAD ONLY FOR NEW PHOTO
+        if tblAccount.autoUploadStart,
+           tblAccount.autoUploadOnlyNew {
+            let num = await NCAutoUpload.shared.initAutoUpload(account: tblAccount.account)
+            nkLog(tag: self.global.logTagBgSync, emonji: .start, message: "Auto upload with \(num) new photo for \(tblAccount.account)")
+        }
 
         /// UPLOAD
         if counterUploadingAvailable > 0 {
-            nkLog(tag: self.global.logTagAutoUpload, emonji: .start, message: "Auto upload start with limit \(counterUploadingAvailable)")
+            nkLog(tag: self.global.logTagBgSync, emonji: .start, message: "Upload start with limit \(counterUploadingAvailable)")
 
             let sortDescriptors = [
                 RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
@@ -292,7 +301,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
             if let metadatasWaitUpload = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@ AND chunk == 0", self.global.metadataStatusWaitUpload, self.global.selectorUploadAutoUpload), sortDescriptors: sortDescriptors, limit: counterUploadingAvailable) {
 
-                nkLog(tag: self.global.logTagAutoUpload, message: "Auto upload in wait upload \(String(describing: metadatasWaitUpload.count))")
+                nkLog(tag: self.global.logTagBgSync, message: "Upload in wait upload \(String(describing: metadatasWaitUpload.count))")
 
                 let metadatas = await NCCameraRoll().extractCameraRoll(from: metadatasWaitUpload)
 
@@ -300,22 +309,41 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     let error = await self.networking.uploadFileInBackgroundAsync(metadata: tableMetadata(value: metadata))
 
                     if error == .success {
-                        nkLog(tag: self.global.logTagAutoUpload, message: "Auto upload create new upload \(metadata.fileName) in \(metadata.serverUrl)")
+                        nkLog(tag: self.global.logTagBgSync, message: "Upload create new upload \(metadata.fileName) in \(metadata.serverUrl)")
                     } else {
-                        nkLog(tag: self.global.logTagAutoUpload, emonji: .error, message: "Auto upload failure \(metadata.fileName) in \(metadata.serverUrl) with error \(error.errorDescription)")
+                        nkLog(tag: self.global.logTagBgSync, emonji: .error, message: "Upload failure \(metadata.fileName) in \(metadata.serverUrl) with error \(error.errorDescription)")
                     }
 
                     numTransfers += 1
                 }
             }
-        } else {
-            nkLog(tag: self.global.logTagAutoUpload, emonji: .warning, message: "Auto upload uploading is full")
-
-            self.isBackgroundAutoUpload = false
-            return 0
         }
 
-        self.isBackgroundAutoUpload = false
+        /// DOWNLOAD
+        if counterDownloading > 0 {
+            nkLog(tag: self.global.logTagBgSync, emonji: .start, message: "Dowload start with limit \(counterDownloadingAvailable)")
+
+            let sortDescriptors = [
+                RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
+            ]
+
+            if let metadatasWaitDownlod = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d", self.global.metadataStatusWaitDownload), sortDescriptors: sortDescriptors, limit: counterDownloadingAvailable) {
+
+                for metadata in metadatasWaitDownlod {
+                    let error = await self.networking.downloadFileInBackgroundAsync(metadata: metadata)
+
+                    if error == .success {
+                        nkLog(tag: self.global.logTagBgSync, message: "Download create new download \(metadata.fileName) in \(metadata.serverUrl)")
+                    } else {
+                        nkLog(tag: self.global.logTagBgSync, emonji: .error, message: "Download failure \(metadata.fileName) in \(metadata.serverUrl) with error \(error.errorDescription)")
+                    }
+
+                    numTransfers += 1
+                }
+            }
+        }
+
+        self.isBackgroundSync = false
         return numTransfers
     }
 

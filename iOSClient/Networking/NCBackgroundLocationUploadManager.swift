@@ -110,7 +110,7 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
         nkLog(tag: self.global.logTagLocation, emonji: .start, message: "Triggered by location change: \(location?.coordinate.latitude ?? 0), \(location?.coordinate.longitude ?? 0)")
 
         Task.detached {
-            let numTransfers = await self.appDelegate.autoUpload()
+            let numTransfers = await self.appDelegate.backgroundSync()
             nkLog(tag: self.global.logTagLocation, emonji: .success, message: "Triggered by location completed with \(numTransfers) transfers of auto upload")
         }
     }

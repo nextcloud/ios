@@ -145,6 +145,15 @@ extension NCNetworking {
         completion(error)
     }
 
+    func downloadFileInBackgroundAsync(metadata: tableMetadata) async -> NKError {
+        await withCheckedContinuation { continuation in
+            downloadFileInBackground(metadata: metadata,
+                                     completion: { error in
+                continuation.resume(returning: error)
+            })
+        }
+    }
+
     func downloadingFinish(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         if let httpResponse = (downloadTask.response as? HTTPURLResponse) {
             if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300,
