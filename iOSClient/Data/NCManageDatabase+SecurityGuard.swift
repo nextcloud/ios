@@ -47,7 +47,7 @@ extension NCManageDatabase {
     }
 
     func deleteDiagnosticsAsync(account: String, ids: [ObjectId]) async {
-        await performRealmWrite { realm in
+        await performRealmWriteAsync { realm in
             let results = realm.objects(TableSecurityGuardDiagnostics.self)
                 .filter("account == %@", account)
 
@@ -79,7 +79,7 @@ extension NCManageDatabase {
     }
 
     func getDiagnosticsAsync(account: String) async -> [TableSecurityGuardDiagnostics]? {
-        await performRealmRead { realm in
+        await performRealmReadAsync { realm in
             let results = realm.objects(TableSecurityGuardDiagnostics.self)
                 .filter("account == %@", account)
             return Array(results)

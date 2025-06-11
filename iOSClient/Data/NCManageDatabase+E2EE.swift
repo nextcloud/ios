@@ -218,7 +218,7 @@ extension NCManageDatabase {
     }
 
     func getE2EAllTokenLockAsync(account: String) async -> [tableE2eEncryptionLock] {
-        await performRealmRead { realm in
+        await performRealmReadAsync { realm in
             let results = realm.objects(tableE2eEncryptionLock.self)
                 .filter("account == %@", account)
             return results.map { tableE2eEncryptionLock(value: $0) }

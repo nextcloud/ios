@@ -89,7 +89,7 @@ extension NCManageDatabase {
     }
 
     func addDirectoriesAsync(metadatas: [tableMetadata]) async {
-        await performRealmWrite { realm in
+        await performRealmWriteAsync { realm in
             for metadata in metadatas {
                 let existing = realm.objects(tableDirectory.self)
                     .filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId)
@@ -211,7 +211,7 @@ extension NCManageDatabase {
     }
 
     func setDirectorySynchronizationDateAsync(serverUrl: String, account: String) async {
-        await performRealmWrite { realm in
+        await performRealmWriteAsync { realm in
             realm.objects(tableDirectory.self)
                 .filter("account == %@ AND serverUrl == %@", account, serverUrl)
                 .first?
@@ -328,7 +328,7 @@ extension NCManageDatabase {
     }
 
     func getTablesDirectoryAsync(predicate: NSPredicate, sorted: String, ascending: Bool) async -> [tableDirectory] {
-        await performRealmRead { realm in
+        await performRealmReadAsync { realm in
             realm.objects(tableDirectory.self)
             .filter(predicate)
             .sorted(byKeyPath: sorted, ascending: ascending)

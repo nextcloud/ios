@@ -157,7 +157,7 @@ extension NCManageDatabase {
     }
 
     func getTableLocalFileAsync(predicate: NSPredicate) async -> tableLocalFile? {
-        await performRealmRead { realm in
+        await performRealmReadAsync { realm in
             realm.objects(tableLocalFile.self)
                 .filter(predicate)
                 .first
@@ -206,7 +206,7 @@ extension NCManageDatabase {
     }
 
     func getTableLocalFilesAsync(predicate: NSPredicate, sorted: String, ascending: Bool) async -> [tableLocalFile] {
-        await performRealmRead { realm in
+        await performRealmReadAsync { realm in
             realm.objects(tableLocalFile.self)
                 .filter(predicate)
                 .sorted(byKeyPath: sorted, ascending: ascending)

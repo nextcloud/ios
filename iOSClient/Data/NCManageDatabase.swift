@@ -250,23 +250,49 @@ final class NCManageDatabase: Sendable {
 
     // MARK: - performRealmRead async/await, performRealmWrite async/await
 
-    func performRealmRead<T>(_ block: @escaping (Realm) throws -> T?) async -> T? {
+    func performRealmReadAsync<T>(_ block: @escaping (Realm) throws -> T?) async -> T? {
         await withCheckedContinuation { continuation in
-            _ = self.performRealmRead(block, sync: false) { result in
-                continuation.resume(returning: result)
+            realmQueue.async {
+                if isAppSuspending {
+                    // App is suspending — don't execute the block
+                    continuation.resume(returning: nil)
+                    return
+                }
+
+                autoreleasepool {
+                    do {
+                        let realm = try Realm()
+                        let result = try block(realm)
+                        continuation.resume(returning: result)
+                    } catch {
+                        nkLog(error: "Realm read error: \(error)")
+                        continuation.resume(returning: nil)
+                    }
+                }
             }
         }
     }
 
-    func performRealmWrite(_ block: @escaping (Realm) throws -> Void) async {
+    func performRealmWriteAsync(_ block: @escaping (Realm) throws -> Void) async {
         await withCheckedContinuation { continuation in
-            performRealmWrite(sync: false) { realm in
-                do {
-                    try block(realm)
-                } catch {
-                    nkLog(error: "Realm write error: \(error)")
+            realmQueue.async {
+                if isAppSuspending {
+                    // App is suspending — don't execute the block
+                    continuation.resume()
+                    return
                 }
-                continuation.resume()
+
+                autoreleasepool {
+                    do {
+                        let realm = try Realm()
+                        try realm.write {
+                            try block(realm)
+                        }
+                    } catch {
+                        nkLog(error: "Realm write error: \(error)")
+                    }
+                    continuation.resume()
+                }
             }
         }
     }

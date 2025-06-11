@@ -581,7 +581,7 @@ extension NCManageDatabase {
     }
 
     func addMetadatasAsync(_ metadatas: [tableMetadata]) async {
-        await performRealmWrite { realm in
+        await performRealmWriteAsync { realm in
             realm.add(metadatas, update: .all)
         }
     }
@@ -770,7 +770,7 @@ extension NCManageDatabase {
     func updateMetadatasFavoriteAsync(account: String, metadatas: [tableMetadata]) async {
         guard !metadatas.isEmpty else { return }
 
-        await performRealmWrite { realm in
+        await performRealmWriteAsync { realm in
             let oldFavorites = realm.objects(tableMetadata.self)
                 .filter("account == %@ AND favorite == true", account)
             for item in oldFavorites {
@@ -940,7 +940,7 @@ extension NCManageDatabase {
     func getMetadatasAsync(predicate: NSPredicate,
                            sortedByKeyPath: String,
                            ascending: Bool = false) async -> [tableMetadata]? {
-        return await performRealmRead { realm in
+        return await performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .sorted(byKeyPath: sortedByKeyPath, ascending: ascending)
@@ -971,7 +971,7 @@ extension NCManageDatabase {
     func getMetadataFromOcIdAsync(_ ocId: String?) async -> tableMetadata? {
         guard let ocId else { return nil }
 
-        return await performRealmRead { realm in
+        return await performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first
@@ -1123,7 +1123,7 @@ extension NCManageDatabase {
     }
 
     func getResultMetadataAsync(predicate: NSPredicate) async -> tableMetadata? {
-        return await performRealmRead { realm in
+        return await performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .first
@@ -1269,7 +1269,7 @@ extension NCManageDatabase {
     func getResultsMetadatasAsync(predicate: NSPredicate,
                                   sortDescriptors: [RealmSwift.SortDescriptor] = [],
                                   freeze: Bool = false) async -> Results<tableMetadata>? {
-        await performRealmRead { realm in
+        await performRealmReadAsync { realm in
             var results = realm.objects(tableMetadata.self).filter(predicate)
             if !sortDescriptors.isEmpty {
                 results = results.sorted(by: sortDescriptors)
@@ -1282,7 +1282,7 @@ extension NCManageDatabase {
                                   sortDescriptors: [RealmSwift.SortDescriptor] = [],
                                   freeze: Bool = false,
                                   limit: Int? = nil) async -> [tableMetadata]? {
-        await performRealmRead { realm in
+        await performRealmReadAsync { realm in
             var results = realm.objects(tableMetadata.self).filter(predicate)
 
             if !sortDescriptors.isEmpty {
@@ -1301,7 +1301,7 @@ extension NCManageDatabase {
     func getMetadatasAsync(predicate: NSPredicate,
                            sortDescriptors: [RealmSwift.SortDescriptor] = [],
                            limit: Int? = nil) async -> [tableMetadata]? {
-        await performRealmRead { realm in
+        await performRealmReadAsync { realm in
             var results = realm.objects(tableMetadata.self).filter(predicate)
 
             if !sortDescriptors.isEmpty {

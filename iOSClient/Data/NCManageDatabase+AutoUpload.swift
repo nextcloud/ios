@@ -49,7 +49,7 @@ extension NCManageDatabase {
     // MARK: - Realm Read
 
     func fetchSkipFileNames(account: String, autoUploadServerUrlBase: String) async -> Set<String> {
-        let result: Set<String>? = await performRealmRead { realm in
+        let result: Set<String>? = await performRealmReadAsync { realm in
             let metadatas = realm.objects(tableMetadata.self)
                 .filter("account == %@ AND autoUploadServerUrlBase == %@ AND status IN %@", account, autoUploadServerUrlBase, NCGlobal.shared.metadataStatusUploadingAllMode)
                 .map(\.fileNameView)
