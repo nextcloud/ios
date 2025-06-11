@@ -51,7 +51,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     let database = NCManageDatabase.shared
     let networking = NCNetworking.shared
 
-    var isBackgroundSync: Bool = false
+    var isBackgroundTask: Bool = false
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         if isUiTestingEnabled {
@@ -201,8 +201,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         Task {
-            let numTransfers = await backgroundSync()
-            nkLog(tag: self.global.logTagTask, emoji: .success, message: "Refresh task completed with \(numTransfers) transfers of auto upload")
+            if let tblAccount = await self.database.getActiveTableAccountAsync(),
+               !isBackgroundTask {
+                // start the BackgroundTask
+                self.isBackgroundTask = true
+
+                let numTransfers = await backgroundSync(tblAccount: tblAccount)
+                nkLog(tag: self.global.logTagTask, emoji: .success, message: "Refresh task completed with \(numTransfers) transfers of auto upload")
+            }
+
+            // end the BackgroundTask
+            self.isBackgroundTask = false
 
             task.setTaskCompleted(success: true)
         }
@@ -219,29 +228,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         Task {
-            let numTransfers = await backgroundSync()
-            nkLog(tag: self.global.logTagTask, emoji: .success, message: "Processing task completed with \(numTransfers) transfers of auto upload")
+            if let tblAccount = await self.database.getActiveTableAccountAsync(),
+               !isBackgroundTask {
+                // start the BackgroundTask
+                self.isBackgroundTask = true
+
+                await NCService().synchronize(account: tblAccount.account)
+                nkLog(tag: self.global.logTagTask, message: "Synchronize for \(tblAccount.account) completed.")
+
+                let numTransfers = await backgroundSync(tblAccount: tblAccount)
+                nkLog(tag: self.global.logTagTask, emoji: .success, message: "Processing task completed with \(numTransfers) transfers of auto upload")
+            }
+
+            // end the BackgroundTask
+            self.isBackgroundTask = false
 
             task.setTaskCompleted(success: true)
         }
     }
 
-    func backgroundSync() async -> Int {
+    func backgroundSync(tblAccount: tableAccount) async -> Int {
         var numTransfers: Int = 0
         var counterDownloading: Int = 0
         var counterUploading: Int = 0
         var creationFolderAutoUploadInError: Bool = false
         let maxUploading: Int = NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload
         let maxDownloading: Int = NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload
-        let tblAccount = await self.database.getActiveTableAccountAsync()
-
-        guard !isBackgroundSync,
-              let tblAccount else {
-            return numTransfers
-        }
-
-        /// Background processing start
-        self.isBackgroundSync = true
 
         /// CREATION FOLDERS
         let metadatasWaitCreateFolder = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@", self.global.metadataStatusWaitCreateFolder, self.global.selectorUploadAutoUpload), limit: nil)
@@ -331,7 +343,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
 
-        self.isBackgroundSync = false
         return numTransfers
     }
 

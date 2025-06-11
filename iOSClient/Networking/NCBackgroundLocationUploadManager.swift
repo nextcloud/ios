@@ -13,6 +13,7 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
     static let shared = NCBackgroundLocationUploadManager()
 
     private let global = NCGlobal.shared
+    private let database = NCManageDatabase.shared
     private let locationManager = CLLocationManager()
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private weak var presentingViewController: UIViewController?
@@ -108,8 +109,21 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
         nkLog(tag: self.global.logTagLocation, emoji: .start, message: "Triggered by location change: \(location?.coordinate.latitude ?? 0), \(location?.coordinate.longitude ?? 0)")
 
         Task.detached {
-            let numTransfers = await self.appDelegate.backgroundSync()
-            nkLog(tag: self.global.logTagLocation, emoji: .success, message: "Triggered by location completed with \(numTransfers) transfers")
+            if let tblAccount = await self.database.getActiveTableAccountAsync(),
+               await !self.appDelegate.isBackgroundTask {
+                // start the BackgroundTask
+                await MainActor.run {
+                    self.appDelegate.isBackgroundTask = true
+                }
+
+                let numTransfers = await self.appDelegate.backgroundSync(tblAccount: tblAccount)
+                nkLog(tag: self.global.logTagLocation, emoji: .success, message: "Triggered by location completed with \(numTransfers) transfers")
+
+                // end the BackgroundTask
+                await MainActor.run {
+                    self.appDelegate.isBackgroundTask = false
+                }
+            }
         }
     }
 
