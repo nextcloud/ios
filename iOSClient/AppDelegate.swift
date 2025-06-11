@@ -228,7 +228,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func autoUpload() async -> Int {
         var numTransfers: Int = 0
-        var counterUploading: Int = 0
         let maxUploading: Int = NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload
         let tblAccount = await self.database.getActiveTableAccountAsync()
 
@@ -278,22 +277,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             nkLog(tag: self.global.logTagAutoUpload, message: "Auto upload no creations folders required")
         }
 
-        if let metadatasUploading = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d", self.global.metadataStatusUploading), limit: nil) {
-
-            counterUploading = metadatasUploading.count
-
-            // Verify if the file is already uploaded (fileExists) -> metadataStatusServerUploaded
-            for metadata in metadatasUploading {
-                let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                let results = await self.networking.fileExists(serverUrlFileName: serverUrlFileName, account: tblAccount.account)
-                if results.exists {
-                    await self.database.setMetadataStatusAsync(ocId: metadata.ocId, status: self.global.metadataStatusServerUploaded)
-                    counterUploading -= 1
-
-                    nkLog(tag: self.global.logTagAutoUpload, emonji: .warning, message: "Auto upload file \(metadata.fileName) in \(metadata.serverUrl), already uploaded, skipped.")
-                }
-            }
-        }
+        let counterUploading = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d", self.global.metadataStatusUploading), limit: nil)?.count ?? 0
         let counterUploadingAvailable = min(maxUploading - counterUploading, maxUploading)
 
         /// UPLOAD
