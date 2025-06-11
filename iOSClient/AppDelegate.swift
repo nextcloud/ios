@@ -249,11 +249,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func backgroundSync(tblAccount: tableAccount) async -> Int {
         var numTransfers: Int = 0
-        var counterDownloading: Int = 0
-        var counterUploading: Int = 0
         var creationFolderAutoUploadInError: Bool = false
-        let maxUploading: Int = NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload
-        let maxDownloading: Int = NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload
+        let sortDescriptors = [
+            RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
+        ]
 
         /// CREATION FOLDERS
         let metadatasWaitCreateFolder = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@", self.global.metadataStatusWaitCreateFolder, self.global.selectorUploadAutoUpload), limit: nil)
@@ -282,15 +281,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
 
-        if let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d || status == %d", self.global.metadataStatusUploading, self.global.metadataStatusDownloading), limit: nil) {
-            counterUploading = metadatas.filter { $0.status == self.global.metadataStatusUploading }.count
-            counterDownloading = metadatas.filter { $0.status == self.global.metadataStatusDownloading }.count
-        }
-
-        let counterUploadingAvailable = min(maxUploading - counterUploading, maxUploading)
-        let counterDownloadingAvailable = min(maxDownloading - counterDownloading, maxDownloading)
-
-        /// INIT AUTO UPLOAD ONLY FOR NEW PHOTO
+        /// AUTO UPLOAD  for get new photo
         if tblAccount.autoUploadStart,
            tblAccount.autoUploadOnlyNew {
             let num = await NCAutoUpload.shared.initAutoUpload(account: tblAccount.account)
@@ -298,48 +289,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         /// UPLOAD
-        if !creationFolderAutoUploadInError, counterUploadingAvailable > 0 {
-            let sortDescriptors = [
-                RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
-            ]
+        if !creationFolderAutoUploadInError,
+           let metadatasWaitUpload = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@ AND chunk == 0", self.global.metadataStatusWaitUpload, self.global.selectorUploadAutoUpload), sortDescriptors: sortDescriptors, limit: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload) {
 
-            if let metadatasWaitUpload = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@ AND chunk == 0", self.global.metadataStatusWaitUpload, self.global.selectorUploadAutoUpload), sortDescriptors: sortDescriptors, limit: counterUploadingAvailable) {
+            let metadatas = await NCCameraRoll().extractCameraRoll(from: metadatasWaitUpload)
 
-                let metadatas = await NCCameraRoll().extractCameraRoll(from: metadatasWaitUpload)
+            for metadata in metadatas {
+                let error = await self.networking.uploadFileInBackgroundAsync(metadata: tableMetadata(value: metadata))
 
-                for metadata in metadatas {
-                    let error = await self.networking.uploadFileInBackgroundAsync(metadata: tableMetadata(value: metadata))
-
-                    if error == .success {
-                        nkLog(tag: self.global.logTagBgSync, message: "Create new upload \(metadata.fileName) in \(metadata.serverUrl)")
-                    } else {
-                        nkLog(tag: self.global.logTagBgSync, emoji: .error, message: "Upload failure \(metadata.fileName) in \(metadata.serverUrl) with error \(error.errorDescription)")
-                    }
-
-                    numTransfers += 1
+                if error == .success {
+                    nkLog(tag: self.global.logTagBgSync, message: "Create new upload \(metadata.fileName) in \(metadata.serverUrl)")
+                } else {
+                    nkLog(tag: self.global.logTagBgSync, emoji: .error, message: "Upload failure \(metadata.fileName) in \(metadata.serverUrl) with error \(error.errorDescription)")
                 }
+
+                numTransfers += 1
             }
         }
 
         /// DOWNLOAD
-        if counterDownloadingAvailable > 0 {
-            let sortDescriptors = [
-                RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
-            ]
+        if let metadatasWaitDownlod = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d", self.global.metadataStatusWaitDownload), sortDescriptors: sortDescriptors, limit: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload) {
 
-            if let metadatasWaitDownlod = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d", self.global.metadataStatusWaitDownload), sortDescriptors: sortDescriptors, limit: counterDownloadingAvailable) {
+            for metadata in metadatasWaitDownlod {
+                let error = await self.networking.downloadFileInBackgroundAsync(metadata: metadata)
 
-                for metadata in metadatasWaitDownlod {
-                    let error = await self.networking.downloadFileInBackgroundAsync(metadata: metadata)
-
-                    if error == .success {
-                        nkLog(tag: self.global.logTagBgSync, message: "Create new download \(metadata.fileName) in \(metadata.serverUrl)")
-                    } else {
-                        nkLog(tag: self.global.logTagBgSync, emoji: .error, message: "Download failure \(metadata.fileName) in \(metadata.serverUrl) with error \(error.errorDescription)")
-                    }
-
-                    numTransfers += 1
+                if error == .success {
+                    nkLog(tag: self.global.logTagBgSync, message: "Create new download \(metadata.fileName) in \(metadata.serverUrl)")
+                } else {
+                    nkLog(tag: self.global.logTagBgSync, emoji: .error, message: "Download failure \(metadata.fileName) in \(metadata.serverUrl) with error \(error.errorDescription)")
                 }
+
+                numTransfers += 1
             }
         }
 
