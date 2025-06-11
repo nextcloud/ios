@@ -87,7 +87,7 @@ class NCShares: NCCollectionViewCommon {
                     let home = self.utilityFileSystem.getHomeServer(session: self.session)
                     self.database.addShare(account: account, home: home, shares: shares)
                 }
-                self.backgroundTask = Task.detached(priority: .background) { [weak self] in
+                self.backgroundTask = Task.detached(priority: .utility) { [weak self] in
                     guard let self = self
                     else {
                         return

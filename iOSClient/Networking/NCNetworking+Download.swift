@@ -98,7 +98,7 @@ extension NCNetworking {
                 if let downloadTask = downloadTask {
                     if let header = responseData?.response?.allHeaderFields,
                        let dateString = header["Last-Modified"] as? String {
-                        dateLastModified = NextcloudKit.shared.nkCommonInstance.convertDate(dateString, format: "EEE, dd MMM y HH:mm:ss zzz")
+                        dateLastModified = NKLogFileManager.shared.convertDate(dateString, format: "EEE, dd MMM y HH:mm:ss zzz")
                     }
                     if afError?.isExplicitlyCancelledError ?? false {
                         error = NKError(errorCode: self.global.errorRequestExplicityCancelled, errorDescription: "error request explicity cancelled")
@@ -145,6 +145,15 @@ extension NCNetworking {
         completion(error)
     }
 
+    func downloadFileInBackgroundAsync(metadata: tableMetadata) async -> NKError {
+        await withCheckedContinuation { continuation in
+            downloadFileInBackground(metadata: metadata,
+                                     completion: { error in
+                continuation.resume(returning: error)
+            })
+        }
+    }
+
     func downloadingFinish(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         if let httpResponse = (downloadTask.response as? HTTPURLResponse) {
             if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300,
@@ -175,6 +184,7 @@ extension NCNetworking {
             NextcloudKit.shared.nkCommonInstance.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
 
             if error == .success {
+                nkLog(success: "Downloaded file: " + metadata.serverUrl + "/" + metadata.fileName)
 #if !EXTENSION
                 if let result = self.database.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
                     NCEndToEndEncryption.shared().decryptFile(metadata.fileName, fileNameView: metadata.fileNameView, ocId: metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
@@ -190,46 +200,54 @@ extension NCNetworking {
                                                                    etag: etag) {
 
                     self.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusDownloaded,
-                                            metadata: metadata,
-                                            error: error)
-                }
-            }
-
-            } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
-                do {
-                    try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-                } catch { }
-                self.database.deleteLocalFileOcId(metadata.ocId, sync: false)
-                self.database.deleteMetadataOcId(metadata.ocId, sync: false)
-            } else if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
-                if let metadata = self.database.setMetadataSession(ocId: metadata.ocId,
-                                                                   session: "",
-                                                                   sessionTaskIdentifier: 0,
-                                                                   sessionError: "",
-                                                                   selector: "",
-                                                                   status: self.global.metadataStatusNormal) {
-                    self.notifyAllDelegates { delegate in
-                        delegate.transferChange(status: self.global.networkingStatusDownloadCancel,
-                                                metadata: metadata,
-                                                error: .success)
-                    }
-                }
-            } else {
-                if let metadata = self.database.setMetadataSession(ocId: metadata.ocId,
-                                                                   session: "",
-                                                                   sessionTaskIdentifier: 0,
-                                                                   sessionError: "",
-                                                                   selector: "",
-                                                                   status: self.global.metadataStatusNormal) {
-
-                    self.notifyAllDelegates { delegate in
-                        delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
+                        delegate.transferChange(status: self.global.networkingStatusDownloaded,
                                                 metadata: metadata,
                                                 error: error)
                     }
                 }
+            } else {
+                nkLog(error: "Downloaded file: " + metadata.serverUrl + "/" + metadata.fileName + ", result: error \(error.errorCode)")
+
+                if error.errorCode == NCGlobal.shared.errorResourceNotFound {
+                    do {
+                        try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                    } catch { }
+                    self.database.deleteLocalFileOcId(metadata.ocId, sync: false)
+                    self.database.deleteMetadataOcId(metadata.ocId, sync: false)
+                } else if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
+                    if let metadata = self.database.setMetadataSession(ocId: metadata.ocId,
+                                                                       session: "",
+                                                                       sessionTaskIdentifier: 0,
+                                                                       sessionError: "",
+                                                                       selector: "",
+                                                                       status: self.global.metadataStatusNormal) {
+                        self.notifyAllDelegates { delegate in
+                            delegate.transferChange(status: self.global.networkingStatusDownloadCancel,
+                                                    metadata: metadata,
+                                                    error: .success)
+                        }
+                    }
+                } else {
+                    if let metadata = self.database.setMetadataSession(ocId: metadata.ocId,
+                                                                       session: "",
+                                                                       sessionTaskIdentifier: 0,
+                                                                       sessionError: "",
+                                                                       selector: "",
+                                                                       status: self.global.metadataStatusNormal) {
+
+                        self.notifyAllDelegates { delegate in
+                            delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
+                                                    metadata: metadata,
+                                                    error: error)
+                        }
+                    }
+                }
             }
+#if !EXTENSION
+            Task {
+                await self.database.updateBadge()
+            }
+#endif
         }
     }
 

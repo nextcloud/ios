@@ -279,7 +279,6 @@ final class NCGlobal: Sendable {
     let metadataStatusWaitUpload: Int           = 1
     let metadataStatusUploading: Int            = 2
     let metadataStatusUploadError: Int          = 3
-    let metadataStatusServerUploaded: Int       = 4
 
     let metadataStatusWaitCreateFolder: Int     = 10
     let metadataStatusWaitDelete: Int           = 11
@@ -435,7 +434,8 @@ final class NCGlobal: Sendable {
     // LOG TAG
     let logTagTask                          = "BGT"
     let logTagLocation                      = "LOCATION"
-    let logTagAutoUpload                    = "AUTOUPLOAD"
+    let logTagBgSync                        = "BGSYNC"
     let logTagE2EE                          = "E2EE"
     let logTagPN                            = "PUSH NOTIF"
+    let logTagSync                          = "SYNC"
 }

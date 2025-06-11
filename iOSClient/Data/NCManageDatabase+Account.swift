@@ -444,7 +444,7 @@ extension NCManageDatabase {
     }
 
     func getActiveTableAccountAsync() async -> tableAccount? {
-        await performRealmRead { realm in
+        await performRealmReadAsync { realm in
             realm.objects(tableAccount.self)
                 .filter("active == true")
                 .first

@@ -342,6 +342,7 @@ extension NCNetworking {
         let selector = metadata.sessionSelector
 
         if error == .success, let ocId = ocId, size == metadata.size {
+            nkLog(success: "Uploaded file: " + metadata.serverUrl + "/" + metadata.fileName + ", (\(size) bytes)")
 
             var metadata = tableMetadata(value: metadata)
             metadata.uploadDate = (date as? NSDate) ?? NSDate()
@@ -394,8 +395,6 @@ extension NCNetworking {
                                                     sync: false)
             }
 
-            nkLog(debug: "Upload complete " + metadata.serverUrl + "/" + metadata.fileName + ", result: success(\(size) bytes)")
-
             let userInfo: [String: Any] = ["ocId": metadata.ocId,
                                            "ocIdTransfer": metadata.ocIdTransfer,
                                            "session": metadata.session,
@@ -416,6 +415,8 @@ extension NCNetworking {
                 }
             }
         } else {
+            nkLog(error: "Upload file: " + metadata.serverUrl + "/" + metadata.fileName + ", result: error \(error.errorCode)")
+
             if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
                 self.uploadCancelFile(metadata: metadata)
             } else if error.errorCode == self.global.errorBadRequest || error.errorCode == self.global.errorUnsupportedMediaType {
@@ -495,6 +496,11 @@ extension NCNetworking {
                 }
             }
         }
+#if !EXTENSION
+        Task {
+            await self.database.updateBadge()
+        }
+#endif
     }
 
     func uploadProgress(_ progress: Float,

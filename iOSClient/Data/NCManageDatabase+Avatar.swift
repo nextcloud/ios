@@ -93,7 +93,7 @@ extension NCManageDatabase {
     }
 
     func getTableAvatarAsync(fileName: String) async -> tableAvatar? {
-        return await performRealmRead { realm in
+        return await performRealmReadAsync { realm in
             realm.objects(tableAvatar.self)
                 .filter("fileName == %@", fileName)
                 .first

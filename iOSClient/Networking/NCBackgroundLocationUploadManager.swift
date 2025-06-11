@@ -22,10 +22,8 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
         super.init()
 
         locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyKilometer
+        locationManager.activityType = .fitness
         locationManager.allowsBackgroundLocationUpdates = true
-        locationManager.pausesLocationUpdatesAutomatically = true
-        locationManager.activityType = .otherNavigation
     }
 
     func start(from viewController: UIViewController) {
@@ -107,11 +105,11 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
         isAppSuspending = false // now you can read/write in Realm
 
         let location = locations.last
-        nkLog(tag: self.global.logTagLocation, emonji: .start, message: "Triggered by location change: \(location?.coordinate.latitude ?? 0), \(location?.coordinate.longitude ?? 0)")
+        nkLog(tag: self.global.logTagLocation, emoji: .start, message: "Triggered by location change: \(location?.coordinate.latitude ?? 0), \(location?.coordinate.longitude ?? 0)")
 
         Task.detached {
-            let numTransfers = await self.appDelegate.autoUpload()
-            nkLog(tag: self.global.logTagLocation, emonji: .success, message: "Triggered by location completed with \(numTransfers) transfers of auto upload")
+            let numTransfers = await self.appDelegate.backgroundSync()
+            nkLog(tag: self.global.logTagLocation, emoji: .success, message: "Triggered by location completed with \(numTransfers) transfers")
         }
     }
 

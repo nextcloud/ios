@@ -190,7 +190,7 @@ extension NCManageDatabase {
     ///   - ocId: The unique identifier of the metadata.
     ///   - status: The new status value to set.
     func setMetadataStatusAsync(ocId: String, status: Int) async {
-        await performRealmWrite { realm in
+        await performRealmWriteAsync { realm in
             guard let metadata = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first else {
                 return
             }
@@ -217,4 +217,18 @@ extension NCManageDatabase {
                                                   fileName,
                                                   sessionTaskIdentifier))
     }
+
+#if !EXTENSION
+    func updateBadge() async {
+        let num = await performRealmReadAsync { realm in
+            realm.objects(tableMetadata.self)
+                .filter(NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal))
+                .count
+        } ?? 0
+        DispatchQueue.main.async {
+            UIApplication.shared.applicationIconBadgeNumber = num
+        }
+    }
+#endif
+
 }

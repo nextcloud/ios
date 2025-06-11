@@ -42,7 +42,7 @@ class NCService: NSObject {
         self.database.clearAllAvatarLoaded(sync: false)
         self.addInternalTypeIdentifier(account: account)
 
-        Task(priority: .background) {
+        Task(priority: .utility) {
             let result = await requestServerStatus(account: account, controller: controller)
             if result {
                 await requestServerCapabilities(account: account, controller: controller)
@@ -230,17 +230,20 @@ class NCService: NSObject {
             }
         }
 
+        // file already in dowloading
+        let metadatasInDownload = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND status == %d", account, self.global.metadataStatusDownloadingAllMode), limit: nil)
+
         // Synchronize Directory
         let directories = await self.database.getTablesDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "serverUrl", ascending: true)
         for directory in directories {
-            await NCNetworking.shared.synchronization(account: account, serverUrl: directory.serverUrl)
+            await NCNetworking.shared.synchronization(account: account, serverUrl: directory.serverUrl, metadatasInDownload: metadatasInDownload)
         }
 
         // Synchronize Files
         let files = await self.database.getTableLocalFilesAsync(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "fileName", ascending: true)
         for file in files {
             if let metadata = await self.database.getMetadataFromOcIdAsync(file.ocId),
-               await NCNetworking.shared.isSynchronizable(ocId: metadata.ocId, fileName: metadata.fileName, etag: metadata.etag) {
+               await NCNetworking.shared.isFileDifferent(ocId: metadata.ocId, fileName: metadata.fileName, etag: metadata.etag, metadatasInDownload: metadatasInDownload) {
                 self.database.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
                                                                session: NCNetworking.shared.sessionDownloadBackground,
                                                                selector: NCGlobal.shared.selectorSynchronizationOffline)

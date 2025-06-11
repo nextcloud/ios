@@ -25,8 +25,7 @@ import UIKit
 import NextcloudKit
 
 extension NCNetworking {
-    func synchronization(account: String, serverUrl: String) async {
-        let startDate = Date()
+    internal func synchronization(account: String, serverUrl: String, metadatasInDownload: [tableMetadata]?) async {
         let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: account)
         let options = NKRequestOptions(timeout: 300, taskDescription: NCGlobal.shared.taskDescriptionSynchronization, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         var metadatasDirectory: [tableMetadata] = []
@@ -38,13 +37,11 @@ extension NCNetworking {
             for file in files {
                 if file.directory {
                     metadatasDirectory.append(self.database.convertFileToMetadata(file, isDirectoryE2EE: false))
-                } else if await isSynchronizable(ocId: file.ocId, fileName: file.fileName, etag: file.etag) {
+                } else if await isFileDifferent(ocId: file.ocId, fileName: file.fileName, etag: file.etag, metadatasInDownload: metadatasInDownload) {
                     metadatasDownload.append(self.database.convertFileToMetadata(file, isDirectoryE2EE: false))
+                    nkLog(tag: self.global.logTagSync, emoji: .start, message: "File download: \(file.serverUrl)/\(file.fileName)")
                 }
             }
-
-            let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
-            nkLog(debug: "Synchronization \(serverUrl) in \(diffDate)")
 
             self.database.addMetadatas(metadatasDirectory, sync: false)
             self.database.addDirectories(metadatas: metadatasDirectory, sync: false)
@@ -53,20 +50,21 @@ extension NCNetworking {
                                                             selector: self.global.selectorSynchronizationOffline)
             await self.database.setDirectorySynchronizationDateAsync(serverUrl: serverUrl, account: account)
         } else {
-            nkLog(debug: "Synchronization \(serverUrl), \(results.error.errorCode)")
+            nkLog(tag: self.global.logTagSync, emoji: .error, message: "Synchronization \(serverUrl), \(results.error.errorCode)")
         }
-
     }
 
-    func isSynchronizable(ocId: String, fileName: String, etag: String) async -> Bool {
-        if let metadata = await self.database.getMetadataFromOcIdAsync(ocId),
-           metadata.status == self.global.metadataStatusDownloading || metadata.status == self.global.metadataStatusWaitDownload {
+    internal func isFileDifferent(ocId: String, fileName: String, etag: String, metadatasInDownload: [tableMetadata]?) async -> Bool {
+        let match = metadatasInDownload?.contains { $0.ocId == ocId } ?? false
+        if match {
             return false
         }
 
         let localFile = await self.database.getTableLocalFileAsync(predicate: NSPredicate(format: "ocId == %@", ocId))
-        let needsSync = (localFile?.etag != etag) || (NCUtilityFileSystem().fileProviderStorageSize(ocId, fileNameView: fileName) == 0)
+        let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
+        let size = await self.utilityFileSystem.fileSizeAsync(atPath: fileNamePath)
+        let isDifferent = (localFile?.etag != etag) || size == 0
 
-        return needsSync
+        return isDifferent
     }
 }
