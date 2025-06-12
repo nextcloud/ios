@@ -175,14 +175,52 @@ extension NCManageDatabase {
         return detached
     }
 
+    /// - Parameters:
+    ///   - metadatas: Array of metadata objects to update.
+    ///   - session: The session name to associate.
+    ///   - selector: The selector name to track the download.
+    ///   - sceneIdentifier: Optional scene ID.
     func setMetadatasSessionInWaitDownload(metadatas: [tableMetadata],
                                            session: String,
                                            selector: String,
                                            sceneIdentifier: String? = nil) {
-        guard !metadatas.isEmpty else { return }
+        guard !metadatas.isEmpty else {
+            return
+        }
         let detached = metadatas.map { tableMetadata(value: $0) }
 
         performRealmWrite(sync: true) { realm in
+            for metadata in detached {
+                metadata.sceneIdentifier = sceneIdentifier
+                metadata.session = session
+                metadata.sessionTaskIdentifier = 0
+                metadata.sessionError = ""
+                metadata.sessionSelector = selector
+                metadata.status = NCGlobal.shared.metadataStatusWaitDownload
+                metadata.sessionDate = Date()
+
+                realm.add(metadata, update: .all)
+            }
+        }
+    }
+
+    /// Asynchronously sets multiple metadata entries into "wait download" state.
+    /// - Parameters:
+    ///   - metadatas: Array of metadata objects to update.
+    ///   - session: The session name to associate.
+    ///   - selector: The selector name to track the download.
+    ///   - sceneIdentifier: Optional scene ID.
+    func setMetadatasSessionInWaitDownloadAsync(metadatas: [tableMetadata],
+                                                session: String,
+                                                selector: String,
+                                                sceneIdentifier: String? = nil) async {
+        guard !metadatas.isEmpty else {
+            return
+        }
+
+        let detached = metadatas.map { tableMetadata(value: $0) }
+
+        return await performRealmWriteAsync { realm in
             for metadata in detached {
                 metadata.sceneIdentifier = sceneIdentifier
                 metadata.session = session
