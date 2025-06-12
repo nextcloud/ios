@@ -487,7 +487,7 @@ extension NCNetworking {
 
 #if !EXTENSION
     func termsOfService(metadata: tableMetadata) {
-        NextcloudKit.shared.getTermsOfService(account: metadata.account, options: NKRequestOptions(checkInterceptor: false)) { _, tos, _, error in
+        NextcloudKit.shared.getTermsOfService(account: metadata.account, options: NKRequestOptions(checkInterceptor: false, queue: .main)) { _, tos, _, error in
             if error == .success, let tos, !tos.hasUserSigned() {
                 Task {
                     await self.uploadCancelFile(metadata: metadata)
