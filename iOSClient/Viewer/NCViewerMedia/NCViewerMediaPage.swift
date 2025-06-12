@@ -137,12 +137,10 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(pageViewController.disableSwipeGesture), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDisableSwipeGesture), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: UIApplication.didBecomeActiveNotification, object: nil)
 
-        if NCNetworking.shared.isOnline {
-            if currentViewController.metadata.isImage {
-                navigationItem.rightBarButtonItems = [moreNavigationItem, imageDetailNavigationItem]
-            } else {
-                navigationItem.rightBarButtonItems = [moreNavigationItem]
-            }
+        if currentViewController.metadata.isImage {
+            navigationItem.rightBarButtonItems = [moreNavigationItem, imageDetailNavigationItem]
+        } else {
+            navigationItem.rightBarButtonItems = [moreNavigationItem]
         }
 
         for view in self.pageViewController.view.subviews {
