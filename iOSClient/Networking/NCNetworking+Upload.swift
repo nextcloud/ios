@@ -375,7 +375,9 @@ extension NCNetworking {
                                                     toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
                 }
 
-                self.database.addLocalFile(metadata: metadata, sync: false)
+                Task {
+                    await self.database.addLocalFileAsync(metadata: metadata)
+                }
             } else {
 #if EXTENSION
                 self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer))
