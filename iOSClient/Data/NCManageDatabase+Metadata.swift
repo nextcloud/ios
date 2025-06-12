@@ -591,8 +591,10 @@ extension NCManageDatabase {
     }
 
     func addMetadatasAsync(_ metadatas: [tableMetadata]) async {
+        let detached = metadatas.map { tableMetadata(value: $0) }
+
         await performRealmWriteAsync { realm in
-            realm.add(metadatas, update: .all)
+            realm.add(detached, update: .all)
         }
     }
 
