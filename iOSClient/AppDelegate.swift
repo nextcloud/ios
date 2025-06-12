@@ -207,7 +207,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 self.isBackgroundTask = true
 
                 let numTransfers = await backgroundSync(tblAccount: tblAccount)
-                nkLog(tag: self.global.logTagTask, emoji: .success, message: "Refresh task completed with \(numTransfers) transfers of auto upload")
+                nkLog(tag: self.global.logTagTask, emoji: .success, message: "Refresh task completed with \(numTransfers) transfers")
             }
 
             // end the BackgroundTask
