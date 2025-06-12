@@ -343,6 +343,7 @@ extension NCNetworking {
 
         let selector = metadata.sessionSelector
 
+    
         if error == .success, let ocId = ocId, size == metadata.size {
             nkLog(success: "Uploaded file: " + metadata.serverUrl + "/" + metadata.fileName + ", (\(size) bytes)")
 
@@ -411,83 +412,45 @@ extension NCNetworking {
         } else {
             nkLog(error: "Upload file: " + metadata.serverUrl + "/" + metadata.fileName + ", result: error \(error.errorCode)")
 
-            if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
-                self.uploadCancelFile(metadata: metadata)
-            } else if error.errorCode == self.global.errorBadRequest || error.errorCode == self.global.errorUnsupportedMediaType {
-                self.uploadCancelFile(metadata: metadata)
-                NCContentPresenter().showError(error: NKError(errorCode: error.errorCode, errorDescription: "_virus_detect_"))
+            Task {
+                if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
+                    await uploadCancelFile(metadata: metadata)
+                } else if error.errorCode == self.global.errorBadRequest || error.errorCode == self.global.errorUnsupportedMediaType {
+                    await uploadCancelFile(metadata: metadata)
+                    NCContentPresenter().showError(error: NKError(errorCode: error.errorCode, errorDescription: "_virus_detect_"))
 
-                // Client Diagnostic
-                self.database.addDiagnostic(account: metadata.account, issue: self.global.diagnosticIssueVirusDetected, sync: false)
-            } else if error.errorCode == self.global.errorForbidden && !isAppInBackground {
+                    // Client Diagnostic
+                    await self.database.addDiagnosticAsync(account: metadata.account, issue: self.global.diagnosticIssueVirusDetected)
+                } else if error.errorCode == self.global.errorForbidden && !isAppInBackground {
 #if !EXTENSION
-                NextcloudKit.shared.getTermsOfService(account: metadata.account, options: NKRequestOptions(checkInterceptor: false)) { _, tos, _, error in
-                    if error == .success, let tos, !tos.hasUserSigned() {
-                        self.uploadCancelFile(metadata: metadata)
-                    } else {
-                        let newFileName = self.utilityFileSystem.createFileName(metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account)
-                        let alertController = UIAlertController(title: error.errorDescription, message: NSLocalizedString("_change_upload_filename_", comment: ""), preferredStyle: .alert)
-                        alertController.addAction(UIAlertAction(title: String(format: NSLocalizedString("_save_file_as_", comment: ""), newFileName), style: .default, handler: { _ in
-                            let atpath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileName
-                            let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + newFileName
-                            self.utilityFileSystem.moveFile(atPath: atpath, toPath: toPath)
-                            self.database.setMetadataSession(ocId: metadata.ocId,
-                                                             newFileName: newFileName,
-                                                             sessionTaskIdentifier: 0,
-                                                             sessionError: "",
-                                                             status: self.global.metadataStatusWaitUpload,
-                                                             errorCode: error.errorCode)
-                        }))
-                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive, handler: { _ in
-                            self.uploadCancelFile(metadata: metadata)
-                        }))
-
-                        // Select UIWindowScene active in serverUrl
-                        var controller = UIApplication.shared.firstWindow?.rootViewController
-                        let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
-                        for windowScene in windowScenes {
-                            if let rootViewController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
-                               rootViewController.currentServerUrl() == metadata.serverUrl {
-                                controller = rootViewController
-                                break
-                            }
-                        }
-                        controller?.present(alertController, animated: true)
-
-                        // Client Diagnostic
-                        self.database.addDiagnostic(account: metadata.account,
-                                                    issue: self.global.diagnosticIssueProblems,
-                                                    error: self.global.diagnosticProblemsForbidden,
-                                                    sync: false)
-                    }
-                }
+                self.termsOfService(metadata: metadata)
 #endif
-            } else {
-                if let metadata = self.database.setMetadataSession(ocId: metadata.ocId,
-                                                                   sessionTaskIdentifier: 0,
-                                                                   sessionError: error.errorDescription,
-                                                                   status: self.global.metadataStatusUploadError,
-                                                                   errorCode: error.errorCode) {
+                } else {
+                    if let metadata = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                                  sessionTaskIdentifier: 0,
+                                                                                  sessionError: error.errorDescription,
+                                                                                  status: self.global.metadataStatusUploadError,
+                                                                                  errorCode: error.errorCode) {
 
-                    self.notifyAllDelegates { delegate in
-                        delegate.transferChange(status: self.global.networkingStatusUploaded,
-                                                metadata: metadata,
-                                                error: error)
+                        self.notifyAllDelegates { delegate in
+                            delegate.transferChange(status: self.global.networkingStatusUploaded,
+                                                    metadata: metadata,
+                                                    error: error)
+                        }
+                    }
+
+                    // Client Diagnostic
+                    if error.errorCode == self.global.errorInternalServerError {
+                        await self.database.addDiagnosticAsync(account: metadata.account,
+                                                               issue: self.global.diagnosticIssueProblems,
+                                                               error: self.global.diagnosticProblemsBadResponse)
+                    } else {
+                        await self.database.addDiagnosticAsync(account: metadata.account,
+                                                               issue: self.global.diagnosticIssueProblems,
+                                                               error: self.global.diagnosticProblemsUploadServerError)
                     }
                 }
 
-                // Client Diagnostic
-                if error.errorCode == self.global.errorInternalServerError {
-                    self.database.addDiagnostic(account: metadata.account,
-                                                issue: self.global.diagnosticIssueProblems,
-                                                error: self.global.diagnosticProblemsBadResponse,
-                                                sync: false)
-                } else {
-                    self.database.addDiagnostic(account: metadata.account,
-                                                issue: self.global.diagnosticIssueProblems,
-                                                error: self.global.diagnosticProblemsUploadServerError,
-                                                sync: false)
-                }
             }
         }
 #if !EXTENSION
@@ -513,17 +476,64 @@ extension NCNetworking {
         }
     }
 
-    func uploadCancelFile(metadata: tableMetadata) {
+    func uploadCancelFile(metadata: tableMetadata) async {
 #if EXTENSION
                 self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer))
 #else
                 removeFileInBackgroundSafe(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer))
 #endif
-        self.database.deleteMetadataOcId(metadata.ocIdTransfer, sync: false)
+        await self.database.deleteMetadataOcIdAsync(metadata.ocIdTransfer)
         self.notifyAllDelegates { delegate in
             delegate.transferChange(status: self.global.networkingStatusUploadCancel,
                                     metadata: tableMetadata(value: metadata),
                                     error: .success)
         }
     }
+
+#if !EXTENSION
+    func termsOfService(metadata: tableMetadata) {
+        NextcloudKit.shared.getTermsOfService(account: metadata.account, options: NKRequestOptions(checkInterceptor: false)) { _, tos, _, error in
+            if error == .success, let tos, !tos.hasUserSigned() {
+                Task {
+                    await uploadCancelFile(metadata: metadata)
+                }
+            } else {
+                let newFileName = self.utilityFileSystem.createFileName(metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account)
+                let alertController = UIAlertController(title: error.errorDescription, message: NSLocalizedString("_change_upload_filename_", comment: ""), preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: String(format: NSLocalizedString("_save_file_as_", comment: ""), newFileName), style: .default, handler: { _ in
+                    let atpath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileName
+                    let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + newFileName
+                    self.utilityFileSystem.moveFile(atPath: atpath, toPath: toPath)
+                    self.database.setMetadataSession(ocId: metadata.ocId,
+                                                     newFileName: newFileName,
+                                                     sessionTaskIdentifier: 0,
+                                                     sessionError: "",
+                                                     status: self.global.metadataStatusWaitUpload,
+                                                     errorCode: error.errorCode)
+                }))
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive, handler: { _ in
+                    self.uploadCancelFile(metadata: metadata)
+                }))
+
+                // Select UIWindowScene active in serverUrl
+                var controller = UIApplication.shared.firstWindow?.rootViewController
+                let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+                for windowScene in windowScenes {
+                    if let rootViewController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
+                       rootViewController.currentServerUrl() == metadata.serverUrl {
+                        controller = rootViewController
+                        break
+                    }
+                }
+                controller?.present(alertController, animated: true)
+
+                // Client Diagnostic
+                self.database.addDiagnostic(account: metadata.account,
+                                            issue: self.global.diagnosticIssueProblems,
+                                            error: self.global.diagnosticProblemsForbidden,
+                                            sync: false)
+            }
+        }
+    }
+    #endif
 }

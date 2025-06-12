@@ -622,6 +622,16 @@ extension NCManageDatabase {
         }
     }
 
+    func deleteMetadataOcIdAsync(_ ocId: String?) async {
+        guard let ocId else { return }
+
+        await performRealmWriteAsync { realm in
+            let result = realm.objects(tableMetadata.self)
+                .filter("ocId == %@", ocId)
+            realm.delete(result)
+        }
+    }
+
     func deleteMetadataOcIds(_ ocIds: [String], sync: Bool = true) {
         performRealmWrite(sync: sync) { realm in
             let result = realm.objects(tableMetadata.self)

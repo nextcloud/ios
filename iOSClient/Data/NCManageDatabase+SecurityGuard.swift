@@ -46,6 +46,25 @@ extension NCManageDatabase {
         }
     }
 
+    func addDiagnosticAsync(account: String,
+                            issue: String,
+                            error: String? = nil) async {
+        await performRealmWriteAsync { realm in
+            let primaryKey = account + issue + (error ?? "")
+
+            if let result = realm.object(ofType: TableSecurityGuardDiagnostics.self, forPrimaryKey: primaryKey) {
+                result.counter += 1
+                result.oldest = Date().timeIntervalSince1970
+            } else {
+                let table = TableSecurityGuardDiagnostics(account: account,
+                                                          issue: issue,
+                                                          error: error,
+                                                          date: Date())
+                realm.add(table)
+            }
+        }
+    }
+
     func deleteDiagnosticsAsync(account: String, ids: [ObjectId]) async {
         await performRealmWriteAsync { realm in
             let results = realm.objects(TableSecurityGuardDiagnostics.self)
