@@ -235,15 +235,17 @@ extension NCNetworking {
             let (task, error) = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, account: metadata.account, sessionIdentifier: metadata.session)
             if let task, error == .success {
                 nkLog(debug: " Upload file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
-                if let metadata = self.database.setMetadataSession(ocId: metadata.ocId,
-                                                                   sessionTaskIdentifier: task.taskIdentifier,
-                                                                   status: self.global.metadataStatusUploading,
-                                                                   sync: false) {
 
-                    self.notifyAllDelegates { delegate in
-                        delegate.transferChange(status: self.global.networkingStatusUploading,
-                                                metadata: metadata,
-                                                error: .success)
+                Task {
+                    if let metadata = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                                  sessionTaskIdentifier: task.taskIdentifier,
+                                                                                  status: self.global.metadataStatusUploading) {
+
+                        self.notifyAllDelegates { delegate in
+                            delegate.transferChange(status: self.global.networkingStatusUploading,
+                                                    metadata: metadata,
+                                                    error: .success)
+                        }
                     }
                 }
             } else {
@@ -322,9 +324,9 @@ extension NCNetworking {
             }
         }
 #else
-        DispatchQueue.global().async {
+        Task {
             if let url = task.currentRequest?.url,
-               let metadata = self.database.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) {
+               let metadata = await self.database.getMetadataAsync(from: url, sessionTaskIdentifier: task.taskIdentifier) {
                 self.uploadComplete(metadata: metadata, ocId: ocId, etag: etag, date: date, size: size, error: error)
             }
         }
@@ -359,61 +361,52 @@ extension NCNetworking {
             metadata.sessionTaskIdentifier = 0
             metadata.status = self.global.metadataStatusNormal
 
-            self.database.deleteMetadata(predicate: NSPredicate(format: "ocIdTransfer == %@", metadata.ocIdTransfer), sync: false)
-            metadata = self.database.addMetadata(metadata)
+            Task {
+                await self.database.deleteMetadataAsync(predicate: NSPredicate(format: "ocIdTransfer == %@", metadata.ocIdTransfer))
+                let metadata = await self.database.addMetadataAsync(metadata)
 
-            if selector == self.global.selectorUploadFileNODelete {
-                if isAppInBackground {
-#if EXTENSION
-                    self.utilityFileSystem.moveFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer),
-                                                    toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
-#else
-                    moveFileSafely(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer), toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
-#endif
-                } else {
-                    self.utilityFileSystem.moveFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer),
-                                                    toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
-                }
+                if selector == self.global.selectorUploadFileNODelete {
+                    if isAppInBackground {
+    #if EXTENSION
+                        self.utilityFileSystem.moveFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer),
+                                                        toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
+    #else
+                        moveFileSafely(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer), toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
+    #endif
+                    } else {
+                        self.utilityFileSystem.moveFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer),
+                                                        toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
+                    }
 
-                Task {
                     await self.database.addLocalFileAsync(metadata: metadata)
-                }
-            } else {
-#if EXTENSION
-                self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer))
-#else
-                removeFileInBackgroundSafe(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer))
-#endif
-            }
 
-            /// Update the auto upload data
-            if selector == self.global.selectorUploadAutoUpload,
-               let serverUrlBase = metadata.autoUploadServerUrlBase {
-                self.database.addAutoUploadTransfer(account: metadata.account,
-                                                    serverUrlBase: serverUrlBase,
-                                                    fileName: metadata.fileNameView,
-                                                    assetLocalIdentifier: metadata.assetLocalIdentifier,
-                                                    date: metadata.creationDate as Date,
-                                                    sync: false)
-            }
-
-            let userInfo: [String: Any] = ["ocId": metadata.ocId,
-                                           "ocIdTransfer": metadata.ocIdTransfer,
-                                           "session": metadata.session,
-                                           "serverUrl": metadata.serverUrl,
-                                           "account": metadata.account,
-                                           "fileName": metadata.fileName,
-                                           "error": error]
-            if metadata.isLivePhoto,
-               NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable {
-                DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
-                    self.createLivePhoto(metadata: metadata, userInfo: userInfo)
+                } else {
+    #if EXTENSION
+                    self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer))
+    #else
+                    removeFileInBackgroundSafe(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer))
+    #endif
                 }
-            } else {
-                self.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusUploaded,
-                                            metadata: tableMetadata(value: metadata),
-                                            error: error)
+
+                /// Update the auto upload data
+                if selector == self.global.selectorUploadAutoUpload,
+                   let serverUrlBase = metadata.autoUploadServerUrlBase {
+                    await self.database.addAutoUploadTransferAsync(account: metadata.account,
+                                                                   serverUrlBase: serverUrlBase,
+                                                                   fileName: metadata.fileNameView,
+                                                                   assetLocalIdentifier: metadata.assetLocalIdentifier,
+                                                                   date: metadata.creationDate as Date)
+                }
+
+                if metadata.isLivePhoto,
+                    NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable {
+                    await self.createLivePhoto(metadata: metadata)
+                } else {
+                    self.notifyAllDelegates { delegate in
+                        delegate.transferChange(status: self.global.networkingStatusUploaded,
+                                                metadata: tableMetadata(value: metadata),
+                                                error: error)
+                    }
                 }
             }
         } else {

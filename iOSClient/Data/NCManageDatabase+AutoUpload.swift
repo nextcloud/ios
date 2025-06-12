@@ -38,6 +38,21 @@ extension NCManageDatabase {
         }
     }
 
+    func addAutoUploadTransferAsync(account: String,
+                                    serverUrlBase: String,
+                                    fileName: String,
+                                    assetLocalIdentifier: String,
+                                    date: Date) async {
+        await performRealmWriteAsync { realm in
+            let newAutoUpload = tableAutoUploadTransfer(account: account,
+                                                        serverUrlBase: serverUrlBase,
+                                                        fileName: fileName,
+                                                        assetLocalIdentifier: assetLocalIdentifier,
+                                                        date: date)
+            realm.add(newAutoUpload, update: .all)
+        }
+    }
+    
     func deleteAutoUploadTransfer(account: String, autoUploadServerUrlBase: String, sync: Bool = true) {
         performRealmWrite(sync: sync) { realm in
             let result = realm.objects(tableAutoUploadTransfer.self)

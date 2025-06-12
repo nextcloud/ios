@@ -572,6 +572,16 @@ extension NCManageDatabase {
         return tableMetadata(value: detached)
     }
 
+    func addMetadataAsync(_ metadata: tableMetadata) async -> tableMetadata {
+        let detached = tableMetadata(value: metadata)
+
+        await performRealmWriteAsync { realm in
+            realm.add(metadata, update: .all)
+        }
+
+        return tableMetadata(value: detached)
+    }
+
     func addMetadatas(_ metadatas: [tableMetadata], sync: Bool = true) {
         let detached = metadatas.map { tableMetadata(value: $0) }
 
@@ -588,6 +598,14 @@ extension NCManageDatabase {
 
     func deleteMetadata(predicate: NSPredicate, sync: Bool = true) {
         performRealmWrite(sync: sync) { realm in
+            let result = realm.objects(tableMetadata.self)
+                .filter(predicate)
+            realm.delete(result)
+        }
+    }
+
+    func deleteMetadataAsync(predicate: NSPredicate) async {
+        await performRealmWriteAsync { realm in
             let result = realm.objects(tableMetadata.self)
                 .filter(predicate)
             realm.delete(result)
@@ -740,8 +758,10 @@ extension NCManageDatabase {
         }
     }
 
-    func setMetadataLivePhotoByServer(account: String, ocId: String, livePhotoFile: String, sync: Bool = true) {
-        performRealmWrite(sync: sync) { realm in
+    func setMetadataLivePhotoByServerAsync(account: String,
+                                           ocId: String,
+                                           livePhotoFile: String) async {
+        await performRealmWriteAsync { realm in
             if let result = realm.objects(tableMetadata.self)
                 .filter("account == %@ AND ocId == %@", account, ocId)
                 .first {
@@ -898,7 +918,7 @@ extension NCManageDatabase {
         }
     }
 
-    func getMetadataAsync(predicate: NSPredicate, completion: @escaping (tableMetadata?) -> Void) {
+    func getMetadata(predicate: NSPredicate, completion: @escaping (tableMetadata?) -> Void) {
         performRealmRead({ realm in
             return realm.objects(tableMetadata.self)
                 .filter(predicate)
@@ -906,6 +926,15 @@ extension NCManageDatabase {
                 .map { tableMetadata(value: $0) }
         }, sync: false) { result in
             completion(result)
+        }
+    }
+
+    func getMetadataAsync(predicate: NSPredicate) async -> tableMetadata? {
+        return await performRealmReadAsync { realm in
+            realm.objects(tableMetadata.self)
+                .filter(predicate)
+                .first
+                .map { tableMetadata(value: $0) }
         }
     }
 
