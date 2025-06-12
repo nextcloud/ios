@@ -343,11 +343,10 @@ extension NCNetworking {
 
         let selector = metadata.sessionSelector
 
-    
-        if error == .success, let ocId = ocId, size == metadata.size {
-            nkLog(success: "Uploaded file: " + metadata.serverUrl + "/" + metadata.fileName + ", (\(size) bytes)")
+        Task {
+            if error == .success, let ocId = ocId, size == metadata.size {
+                nkLog(success: "Uploaded file: " + metadata.serverUrl + "/" + metadata.fileName + ", (\(size) bytes)")
 
-            Task {
                 metadata.uploadDate = (date as? NSDate) ?? NSDate()
                 metadata.etag = etag ?? ""
                 metadata.ocId = ocId
@@ -367,12 +366,12 @@ extension NCNetworking {
 
                 if selector == self.global.selectorUploadFileNODelete {
                     if isAppInBackground {
-    #if EXTENSION
+#if EXTENSION
                         self.utilityFileSystem.moveFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer),
                                                         toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
-    #else
+#else
                         moveFileSafely(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer), toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
-    #endif
+#endif
                     } else {
                         self.utilityFileSystem.moveFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer),
                                                         toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
@@ -381,11 +380,11 @@ extension NCNetworking {
                     await self.database.addLocalFileAsync(metadata: metadata)
 
                 } else {
-    #if EXTENSION
+#if EXTENSION
                     self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer))
-    #else
+#else
                     removeFileInBackgroundSafe(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer))
-    #endif
+#endif
                 }
 
                 /// Update the auto upload data
@@ -399,7 +398,7 @@ extension NCNetworking {
                 }
 
                 if metadata.isLivePhoto,
-                    NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable {
+                   NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable {
                     await self.createLivePhoto(metadata: metadata)
                 } else {
                     self.notifyAllDelegates { delegate in
@@ -408,11 +407,10 @@ extension NCNetworking {
                                                 error: error)
                     }
                 }
-            }
-        } else {
-            nkLog(error: "Upload file: " + metadata.serverUrl + "/" + metadata.fileName + ", result: error \(error.errorCode)")
 
-            Task {
+            } else {
+                nkLog(error: "Upload file: " + metadata.serverUrl + "/" + metadata.fileName + ", result: error \(error.errorCode)")
+
                 if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
                     await uploadCancelFile(metadata: metadata)
                 } else if error.errorCode == self.global.errorBadRequest || error.errorCode == self.global.errorUnsupportedMediaType {
@@ -423,7 +421,7 @@ extension NCNetworking {
                     await self.database.addDiagnosticAsync(account: metadata.account, issue: self.global.diagnosticIssueVirusDetected)
                 } else if error.errorCode == self.global.errorForbidden && !isAppInBackground {
 #if !EXTENSION
-                self.termsOfService(metadata: metadata)
+                    self.termsOfService(metadata: metadata)
 #endif
                 } else {
                     if let metadata = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
@@ -450,14 +448,11 @@ extension NCNetworking {
                                                                error: self.global.diagnosticProblemsUploadServerError)
                     }
                 }
-
             }
-        }
 #if !EXTENSION
-        Task {
-            await self.database.updateBadge()
-        }
+        await self.database.updateBadge()
 #endif
+        }
     }
 
     func uploadProgress(_ progress: Float,
@@ -495,7 +490,7 @@ extension NCNetworking {
         NextcloudKit.shared.getTermsOfService(account: metadata.account, options: NKRequestOptions(checkInterceptor: false)) { _, tos, _, error in
             if error == .success, let tos, !tos.hasUserSigned() {
                 Task {
-                    await uploadCancelFile(metadata: metadata)
+                    await self.uploadCancelFile(metadata: metadata)
                 }
             } else {
                 let newFileName = self.utilityFileSystem.createFileName(metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account)
@@ -512,7 +507,9 @@ extension NCNetworking {
                                                      errorCode: error.errorCode)
                 }))
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive, handler: { _ in
-                    self.uploadCancelFile(metadata: metadata)
+                    Task {
+                        await self.uploadCancelFile(metadata: metadata)
+                    }
                 }))
 
                 // Select UIWindowScene active in serverUrl
