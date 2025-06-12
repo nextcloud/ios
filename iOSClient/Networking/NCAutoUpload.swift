@@ -13,10 +13,11 @@ class NCAutoUpload: NSObject {
 
     private let database = NCManageDatabase.shared
     private let global = NCGlobal.shared
+    private let networking = NCNetworking.shared
     private var endForAssetToUpload: Bool = false
 
     func initAutoUpload(controller: NCMainTabBarController? = nil, account: String) async -> Int {
-        guard NCNetworking.shared.isOnline,
+        guard self.networking.isOnline,
               let tblAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
               tblAccount.autoUploadStart else {
             return 0
@@ -79,7 +80,7 @@ class NCAutoUpload: NSObject {
             let isLivePhoto = asset.mediaSubtypes.contains(.photoLive) && keychainLivePhoto
             let serverUrl = tblAccount.autoUploadCreateSubfolder ? fileSystem.createGranularityPath(asset: asset, serverUrlBase: autoUploadServerUrlBase) : autoUploadServerUrlBase
             let onWWAN = (mediaType == .image && tblAccount.autoUploadWWAnPhoto) || (mediaType == .video && tblAccount.autoUploadWWAnVideo)
-            let uploadSession = onWWAN ? NCNetworking.shared.sessionUploadBackgroundWWan : NCNetworking.shared.sessionUploadBackground
+            let uploadSession = onWWAN ? self.networking.sessionUploadBackgroundWWan : self.networking.sessionUploadBackground
 
             let metadata = await self.database.createMetadata(
                 fileName: fileName,

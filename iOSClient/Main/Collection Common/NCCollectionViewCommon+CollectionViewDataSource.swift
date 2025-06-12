@@ -47,7 +47,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 guard let metadata else {
                     return
                 }
-                for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
+                for case let operation as NCCollectionViewDownloadThumbnail in self.netwoking.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
                     operation.cancel()
                 }
             }
@@ -64,8 +64,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             if metadata.hasPreview,
                !existsImagePreview,
-               NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
-                NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView, ext: ext))
+               self.netwoking.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
+                self.netwoking.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView, ext: ext))
             }
         }
     }
@@ -317,8 +317,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                             }
 
                             if !(tblAvatar?.loaded ?? false),
-                               NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
-                                NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: ownerId, fileName: fileName, account: metadata.account, view: collectionView, isPreviewImageView: true))
+                               self.netwoking.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
+                                self.netwoking.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: ownerId, fileName: fileName, account: metadata.account, view: collectionView, isPreviewImageView: true))
                             }
                         }
                     }
@@ -406,8 +406,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
 
                 if !(tblAvatar?.loaded ?? false),
-                   NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
-                    NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: metadata.ownerId, fileName: fileName, account: metadata.account, view: collectionView))
+                   self.netwoking.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
+                    self.netwoking.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: metadata.ownerId, fileName: fileName, account: metadata.account, view: collectionView))
                 }
             }
         }

@@ -45,7 +45,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
 
         if canDeleteServer {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { _ in
-                NCNetworking.shared.setStatusWaitDelete(metadatas: metadatas, sceneIdentifier: self.controller?.sceneIdentifier)
+                self.netwoking.setStatusWaitDelete(metadatas: metadatas, sceneIdentifier: self.controller?.sceneIdentifier)
                 self.setEditMode(false)
                 self.reloadDataSource()
             })
@@ -57,7 +57,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
             Task {
                 var error = NKError()
                 for metadata in copyMetadatas where error == .success {
-                    error = await NCNetworking.shared.deleteCache(metadata, sceneIdentifier: self.controller?.sceneIdentifier)
+                    error = await self.netwoking.deleteCache(metadata, sceneIdentifier: self.controller?.sceneIdentifier)
                 }
             }
             self.setEditMode(false)
@@ -102,7 +102,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     func lock(isAnyLocked: Bool) {
         let metadatas = getSelectedMetadatas()
         for metadata in metadatas where metadata.lock == isAnyLocked {
-            NCNetworking.shared.lockUnlockFile(metadata, shoulLock: !isAnyLocked)
+            self.netwoking.lockUnlockFile(metadata, shoulLock: !isAnyLocked)
         }
         setEditMode(false)
     }
@@ -138,7 +138,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     func convertLivePhoto(metadataFirst: tableMetadata?, metadataLast: tableMetadata?) {
         if let metadataFirst, let metadataLast {
             Task {
-                await NCNetworking.shared.setLivePhoto(metadataFirst: metadataFirst, metadataLast: metadataLast)
+                await self.netwoking.setLivePhoto(metadataFirst: metadataFirst, metadataLast: metadataLast)
             }
         }
         setEditMode(false)
