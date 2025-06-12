@@ -81,7 +81,7 @@ extension NCNetworking {
                     NCContentPresenter().messageNotification("_error_files_upload_", error: error, delay: self.global.dismissAfterSecond, type: .error, afterDelay: 0.5)
                 case .errorChunkFileUpload:
                     break
-                    //self.database.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
+                    // self.database.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
                 case .errorChunkMoveFile:
                     self.database.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
                     NCContentPresenter().messageNotification("_chunk_move_", error: error, delay: self.global.dismissAfterSecond, type: .error, afterDelay: 0.5)
@@ -417,13 +417,26 @@ extension NCNetworking {
                 } else if error.errorCode == self.global.errorBadRequest || error.errorCode == self.global.errorUnsupportedMediaType {
                     await uploadCancelFile(metadata: metadata)
                     NCContentPresenter().showError(error: NKError(errorCode: error.errorCode, errorDescription: "_virus_detect_"))
-
                     // Client Diagnostic
                     await self.database.addDiagnosticAsync(account: metadata.account, issue: self.global.diagnosticIssueVirusDetected)
-                } else if error.errorCode == self.global.errorForbidden && !isAppInBackground {
-#if !EXTENSION
-                    self.termsOfService(metadata: metadata)
+                } else if error.errorCode == self.global.errorForbidden {
+                    if isAppInBackground {
+                        _ = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                        sessionTaskIdentifier: 0,
+                                                                        sessionError: error.errorDescription,
+                                                                        status: self.global.metadataStatusUploadError,
+                                                                        errorCode: error.errorCode)
+                    } else {
+#if EXTENSION
+                        await self.uploadCancelFile(metadata: metadata)
+#else
+                        if NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityTermsOfService {
+                            self.termsOfService(metadata: metadata)
+                        } else {
+                            self.uploadForbidden(metadata: metadata, error: error)
+                        }
 #endif
+                    }
                 } else {
                     if let metadata = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
                                                                                   sessionTaskIdentifier: 0,
@@ -487,6 +500,45 @@ extension NCNetworking {
     }
 
 #if !EXTENSION
+    func uploadForbidden(metadata: tableMetadata, error: NKError) {
+        let newFileName = self.utilityFileSystem.createFileName(metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account)
+        let alertController = UIAlertController(title: error.errorDescription, message: NSLocalizedString("_change_upload_filename_", comment: ""), preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: String(format: NSLocalizedString("_save_file_as_", comment: ""), newFileName), style: .default, handler: { _ in
+                let atpath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileName
+                let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + newFileName
+                self.utilityFileSystem.moveFile(atPath: atpath, toPath: toPath)
+                self.database.setMetadataSession(ocId: metadata.ocId,
+                                                 newFileName: newFileName,
+                                                 sessionTaskIdentifier: 0,
+                                                 sessionError: "",
+                                                 status: self.global.metadataStatusWaitUpload,
+                                                 errorCode: error.errorCode)
+            }))
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive, handler: { _ in
+                Task {
+                    await self.uploadCancelFile(metadata: metadata)
+                }
+            }))
+
+            // Select UIWindowScene active in serverUrl
+            var controller = UIApplication.shared.firstWindow?.rootViewController
+            let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+            for windowScene in windowScenes {
+                if let rootViewController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
+                   rootViewController.currentServerUrl() == metadata.serverUrl {
+                    controller = rootViewController
+                    break
+                }
+            }
+            controller?.present(alertController, animated: true)
+
+            // Client Diagnostic
+            self.database.addDiagnostic(account: metadata.account,
+                                        issue: self.global.diagnosticIssueProblems,
+                                        error: self.global.diagnosticProblemsForbidden)
+
+    }
+
     func termsOfService(metadata: tableMetadata) {
         NextcloudKit.shared.getTermsOfService(account: metadata.account, options: NKRequestOptions(checkInterceptor: false, queue: .main)) { _, tos, _, error in
             if error == .success, let tos, !tos.hasUserSigned() {

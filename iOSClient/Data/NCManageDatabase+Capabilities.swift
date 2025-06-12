@@ -68,6 +68,7 @@ extension NCManageDatabase {
                         let securityguard: SecurityGuard?
                         let assistant: Assistant?
                         let recommendations: Recommendations?
+                        let termsOfService: TermsOfService?
 
                         enum CodingKeys: String, CodingKey {
                             case downloadLimit = "downloadlimit"
@@ -80,6 +81,7 @@ extension NCManageDatabase {
                             case securityguard = "security_guard"
                             case assistant
                             case recommendations
+                            case termsOfService = "terms_of_service"
                         }
 
                         struct DownloadLimit: Codable {
@@ -194,6 +196,16 @@ extension NCManageDatabase {
 
                             enum CodingKeys: String, CodingKey {
                                 case ocsendpoints = "ocs-endpoints"
+                            }
+                        }
+
+                        struct TermsOfService: Codable {
+                            let enabled: Bool?
+                            let termuuid: String?
+
+                            enum CodingKeys: String, CodingKey {
+                                case enabled
+                                case termuuid = "term_uuid"
                             }
                         }
 
@@ -364,6 +376,7 @@ extension NCManageDatabase {
             capabilities.capabilityForbiddenFileNameExtensions = data.capabilities.files?.forbiddenFileNameExtensions ?? []
 
             capabilities.capabilityRecommendations = data.capabilities.recommendations?.enabled ?? false
+            capabilities.capabilityTermsOfService = data.capabilities.termsOfService?.enabled ?? false
 
             NCCapabilities.shared.appendCapabilities(account: account, capabilities: capabilities)
 
