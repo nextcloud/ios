@@ -75,6 +75,7 @@ final public class NCCapabilities: Sendable {
         var capabilityForbiddenFileNameCharacters: [String]         = []
         var capabilityForbiddenFileNameExtensions: [String]         = []
         var capabilityRecommendations: Bool                         = false
+        var capabilityTermsOfService: Bool                          = false
     }
 
     private var capabilities = ThreadSafeDictionary<String, Capabilities>()

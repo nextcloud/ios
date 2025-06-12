@@ -50,6 +50,7 @@ class NCViewerMedia: UIViewController {
     let utility = NCUtility()
     let global = NCGlobal.shared
     let database = NCManageDatabase.shared
+    let networking = NCNetworking.shared
     weak var viewerMediaPage: NCViewerMediaPage?
     var playerToolBar: NCPlayerToolBar?
     var ncplayer: NCPlayer?
@@ -145,7 +146,7 @@ class NCViewerMedia: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        NCNetworking.shared.addDelegate(self)
+        networking.addDelegate(self)
 
         // Set Last Opening Date
         self.database.setLastOpeningDate(metadata: metadata)
@@ -156,13 +157,13 @@ class NCViewerMedia: UIViewController {
             if let ncplayer = self.ncplayer {
                 if ncplayer.url == nil {
                     NCActivityIndicator.shared.startActivity(backgroundView: self.view, style: .medium)
-                    NCNetworking.shared.getVideoUrl(metadata: metadata) { url, autoplay, error in
+                    self.networking.getVideoUrl(metadata: metadata) { url, autoplay, error in
                         NCActivityIndicator.shared.stop()
                         if error == .success, let url = url {
                             ncplayer.openAVPlayer(url: url, autoplay: autoplay)
                         } else {
                             guard let metadata = self.database.setMetadataSessionInWaitDownload(ocId: self.metadata.ocId,
-                                                                                                session: NCNetworking.shared.sessionDownload,
+                                                                                                session: self.networking.sessionDownload,
                                                                                                 selector: "") else {
                                 return
                             }
@@ -175,7 +176,7 @@ class NCViewerMedia: UIViewController {
                                 }
                             }
 
-                            NCNetworking.shared.download(metadata: metadata) {
+                            self.networking.download(metadata: metadata) {
                             } requestHandler: { request in
                                 downloadRequest = request
                             } progressHandler: { progress in
@@ -220,7 +221,7 @@ class NCViewerMedia: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        NCNetworking.shared.removeDelegate(self)
+        self.networking.removeDelegate(self)
 
         if let ncplayer = ncplayer, ncplayer.isPlaying() {
             ncplayer.playerPause()
@@ -266,13 +267,13 @@ class NCViewerMedia: UIViewController {
         let fileNameExtension = (metadata.fileNameView as NSString).pathExtension.uppercased()
 
         if metadata.isLivePhoto,
-           NCNetworking.shared.isOnline,
+           self.networking.isOnline,
            let metadata = self.database.getMetadataLivePhoto(metadata: metadata),
            !utilityFileSystem.fileProviderStorageExists(metadata) {
             if let metadata = self.database.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
-                                                                             session: NCNetworking.shared.sessionDownload,
+                                                                             session: self.networking.sessionDownload,
                                                                              selector: "") {
-                NCNetworking.shared.download(metadata: metadata)
+                self.networking.download(metadata: metadata)
             }
         }
 
@@ -346,10 +347,10 @@ class NCViewerMedia: UIViewController {
 
     private func downloadImage(withSelector selector: String = "") {
         if let metadata = self.database.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
-                                                                         session: NCNetworking.shared.sessionDownload,
+                                                                         session: self.networking.sessionDownload,
                                                                          selector: selector) {
 
-            NCNetworking.shared.download(metadata: metadata) {
+            self.networking.download(metadata: metadata) {
             } requestHandler: { _ in
                 self.allowOpeningDetails = false
             } completion: { _, _ in

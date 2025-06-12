@@ -12,6 +12,7 @@ class NCContextMenu: NSObject {
     let utility = NCUtility()
     let database = NCManageDatabase.shared
     let global = NCGlobal.shared
+    let networking = NCNetworking.shared
 
     let metadata: tableMetadata
     let sceneIdentifier: String
@@ -44,7 +45,7 @@ class NCContextMenu: NSObject {
                                 NSLocalizedString("_remove_favorites_", comment: "") :
                                 NSLocalizedString("_add_favorites_", comment: ""),
                                 image: utility.loadImage(named: self.metadata.favorite ? "star.slash" : "star", colors: [NCBrandColor.shared.yellowFavorite])) { _ in
-            NCNetworking.shared.favoriteMetadata(self.metadata) { error in
+            self.networking.favoriteMetadata(self.metadata) { error in
                 if error != .success {
                     NCContentPresenter().showError(error: error)
                 }
@@ -54,17 +55,17 @@ class NCContextMenu: NSObject {
         let share = UIAction(title: NSLocalizedString("_share_", comment: ""),
                              image: utility.loadImage(named: "square.and.arrow.up") ) { _ in
             if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
-                NCNetworking.shared.notifyAllDelegates { delegate in
+                self.networking.notifyAllDelegates { delegate in
                     let metadata = tableMetadata(value: self.metadata)
-                    metadata.sessionSelector = NCGlobal.shared.selectorOpenIn
-                    delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
+                    metadata.sessionSelector = self.global.selectorOpenIn
+                    delegate.transferChange(status: self.global.networkingStatusDownloaded,
                                             metadata: metadata,
                                             error: .success)
                 }
             } else {
                 guard let metadata = self.database.setMetadataSessionInWaitDownload(ocId: self.metadata.ocId,
-                                                                                    session: NCNetworking.shared.sessionDownload,
-                                                                                    selector: NCGlobal.shared.selectorOpenIn,
+                                                                                    session: self.networking.sessionDownload,
+                                                                                    selector: self.global.selectorOpenIn,
                                                                                     sceneIdentifier: self.sceneIdentifier) else  {
                     return
                 }
@@ -75,7 +76,7 @@ class NCContextMenu: NSObject {
                     }
                 }
 
-                NCNetworking.shared.download(metadata: metadata) {
+                self.networking.download(metadata: metadata) {
                 } requestHandler: { request in
                     downloadRequest = request
                 } progressHandler: { progress in
@@ -97,24 +98,24 @@ class NCContextMenu: NSObject {
 
         let livePhotoSave = UIAction(title: NSLocalizedString("_livephoto_save_", comment: ""), image: utility.loadImage(named: "livephoto")) { _ in
             if let metadataMOV = metadataMOV {
-                NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: self.metadata, metadataMOV: metadataMOV, hudView: self.viewController.view))
+                self.networking.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: self.metadata, metadataMOV: metadataMOV, hudView: self.viewController.view))
             }
         }
 
         let modify = UIAction(title: NSLocalizedString("_modify_", comment: ""),
                               image: utility.loadImage(named: "pencil.tip.crop.circle")) { _ in
             if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
-                NCNetworking.shared.notifyAllDelegates { delegate in
+                self.networking.notifyAllDelegates { delegate in
                     let metadata = tableMetadata(value: self.metadata)
-                    metadata.sessionSelector = NCGlobal.shared.selectorLoadFileQuickLook
-                    delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
+                    metadata.sessionSelector = self.global.selectorLoadFileQuickLook
+                    delegate.transferChange(status: self.global.networkingStatusDownloaded,
                                             metadata: metadata,
                                             error: .success)
                 }
             } else {
                 guard let metadata = self.database.setMetadataSessionInWaitDownload(ocId: self.metadata.ocId,
-                                                                                    session: NCNetworking.shared.sessionDownload,
-                                                                                    selector: NCGlobal.shared.selectorLoadFileQuickLook,
+                                                                                    session: self.networking.sessionDownload,
+                                                                                    selector: self.global.selectorLoadFileQuickLook,
                                                                                     sceneIdentifier: self.sceneIdentifier) else {
                     return
                 }
@@ -125,7 +126,7 @@ class NCContextMenu: NSObject {
                     }
                 }
 
-                NCNetworking.shared.download(metadata: metadata) {
+                self.networking.download(metadata: metadata) {
                 } requestHandler: { request in
                     downloadRequest = request
                 } progressHandler: { progress in
@@ -149,7 +150,7 @@ class NCContextMenu: NSObject {
             }
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: alertStyle)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_file_", comment: ""), style: .destructive) { _ in
-                NCNetworking.shared.setStatusWaitDelete(metadatas: [self.metadata], sceneIdentifier: self.sceneIdentifier)
+                self.networking.setStatusWaitDelete(metadatas: [self.metadata], sceneIdentifier: self.sceneIdentifier)
                 if let viewController = self.viewController as? NCCollectionViewCommon {
                     viewController.reloadDataSource()
                 }
@@ -165,10 +166,10 @@ class NCContextMenu: NSObject {
                                           image: utility.loadImage(named: "trash"), attributes: .destructive) { _ in
             Task {
                 var metadatasError: [tableMetadata: NKError] = [:]
-                let error = await NCNetworking.shared.deleteCache(self.metadata, sceneIdentifier: self.sceneIdentifier)
+                let error = await self.networking.deleteCache(self.metadata, sceneIdentifier: self.sceneIdentifier)
                 metadatasError[tableMetadata(value: self.metadata)] = error
 
-                NCNetworking.shared.notifyAllDelegates { delegate in
+                self.networking.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusDelete,
                                             metadatasError: metadatasError)
                 }
@@ -184,7 +185,7 @@ class NCContextMenu: NSObject {
 
         var menu: [UIMenuElement] = []
 
-        if NCNetworking.shared.isOnline {
+        if self.networking.isOnline {
             if metadata.directory {
                 if metadata.isDirectoryE2EE || metadata.e2eEncrypted {
                     menu.append(favorite)

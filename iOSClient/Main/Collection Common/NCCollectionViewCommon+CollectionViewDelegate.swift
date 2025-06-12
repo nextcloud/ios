@@ -63,7 +63,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
             } else if NextcloudKit.shared.isNetworkReachable() {
                 guard let  metadata = database.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
-                                                                                session: NCNetworking.shared.sessionDownload,
+                                                                                session: self.netwoking.sessionDownload,
                                                                                 selector: global.selectorLoadFileView,
                                                                                 sceneIdentifier: self.controller?.sceneIdentifier) else {
                     return
@@ -79,7 +79,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                         }
                     }
 
-                    NCNetworking.shared.download(metadata: metadata) {
+                    self.netwoking.download(metadata: metadata) {
                     } requestHandler: { request in
                         downloadRequest = request
                     } progressHandler: { progress in
