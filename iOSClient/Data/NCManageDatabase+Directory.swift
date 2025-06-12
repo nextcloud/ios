@@ -89,8 +89,10 @@ extension NCManageDatabase {
     }
 
     func addDirectoriesAsync(metadatas: [tableMetadata]) async {
+        let detached = metadatas.map { tableMetadata(value: $0) }
+
         await performRealmWriteAsync { realm in
-            for metadata in metadatas {
+            for metadata in detached {
                 let existing = realm.objects(tableDirectory.self)
                     .filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId)
                     .first

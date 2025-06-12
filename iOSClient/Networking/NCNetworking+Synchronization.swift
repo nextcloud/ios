@@ -31,9 +31,13 @@ extension NCNetworking {
         var metadatasDirectory: [tableMetadata] = []
         var metadatasDownload: [tableMetadata] = []
 
+        nkLog(tag: self.global.logTagSync, emoji: .start, message: "Start read infinite folder: \(serverUrl)")
+
         let results = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrl, depth: "infinity", showHiddenFiles: showHiddenFiles, account: account, options: options)
 
         if results.error == .success, let files = results.files {
+            nkLog(tag: self.global.logTagSync, emoji: .success, message: "Read infinite folder: \(serverUrl)")
+
             for file in files {
                 if file.directory {
                     metadatasDirectory.append(self.database.convertFileToMetadata(file, isDirectoryE2EE: false))
@@ -43,15 +47,17 @@ extension NCNetworking {
                 }
             }
 
-            self.database.addMetadatas(metadatasDirectory, sync: false)
-            self.database.addDirectories(metadatas: metadatasDirectory, sync: false)
-            self.database.setMetadatasSessionInWaitDownload(metadatas: metadatasDownload,
-                                                            session: self.sessionDownloadBackground,
-                                                            selector: self.global.selectorSynchronizationOffline)
+            await self.database.addMetadatasAsync(metadatasDirectory)
+            await self.database.addDirectoriesAsync(metadatas: metadatasDirectory)
+            await self.database.setMetadatasSessionInWaitDownloadAsync(metadatas: metadatasDownload,
+                                                                       session: self.sessionDownloadBackground,
+                                                                       selector: self.global.selectorSynchronizationOffline)
             await self.database.setDirectorySynchronizationDateAsync(serverUrl: serverUrl, account: account)
         } else {
-            nkLog(tag: self.global.logTagSync, emoji: .error, message: "Synchronization \(serverUrl), \(results.error.errorCode)")
+            nkLog(tag: self.global.logTagSync, emoji: .error, message: "Read infinite folder: \(serverUrl), error: \(results.error.errorCode)")
         }
+
+        nkLog(tag: self.global.logTagSync, emoji: .stop, message: "Stop read infinite folder: \(serverUrl)")
     }
 
     internal func isFileDifferent(ocId: String, fileName: String, etag: String, metadatasInDownload: [tableMetadata]?) async -> Bool {

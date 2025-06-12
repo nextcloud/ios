@@ -189,10 +189,12 @@ class NCNetworkingE2EEUpload: NSObject {
             }
 
             // LIVE PHOTO
+            /*
             if metadata.isLivePhoto,
                NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable {
                 NCNetworking.shared.createLivePhoto(metadata: metadata)
             }
+            */
         } else {
             self.database.setMetadataSession(ocId: metadata.ocId,
                                              sessionTaskIdentifier: 0,

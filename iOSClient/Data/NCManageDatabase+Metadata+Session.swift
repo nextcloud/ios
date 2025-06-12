@@ -11,6 +11,17 @@ extension NCManageDatabase {
 
     // MARK: - Realm Write
 
+    /// - Parameters:
+    ///   - ocId: Unique identifier of the metadata entry.
+    ///   - newFileName: Optional new filename.
+    ///   - session: Optional session identifier.
+    ///   - sessionTaskIdentifier: Optional task ID.
+    ///   - sessionError: Optional error string (clears error code if empty).
+    ///   - selector: Optional session selector.
+    ///   - status: Optional metadata status (may reset sessionDate).
+    ///   - etag: Optional ETag string.
+    ///   - errorCode: Optional error code to persist.
+    /// - Returns: A detached copy of the updated `tableMetadata` object, or `nil` if not found.
     @discardableResult
     func setMetadataSession(ocId: String,
                             newFileName: String? = nil,
@@ -80,11 +91,102 @@ extension NCManageDatabase {
         return detached
     }
 
+    /// Updates session-related fields for a given `tableMetadata` object, in an async-safe Realm write.
+    ///
+    /// - Parameters:
+    ///   - ocId: Unique identifier of the metadata entry.
+    ///   - newFileName: Optional new filename.
+    ///   - session: Optional session identifier.
+    ///   - sessionTaskIdentifier: Optional task ID.
+    ///   - sessionError: Optional error string (clears error code if empty).
+    ///   - selector: Optional session selector.
+    ///   - status: Optional metadata status (may reset sessionDate).
+    ///   - etag: Optional ETag string.
+    ///   - errorCode: Optional error code to persist.
+    /// - Returns: A detached copy of the updated `tableMetadata` object, or `nil` if not found.
+    func setMetadataSessionAsync(
+        ocId: String,
+        newFileName: String? = nil,
+        session: String? = nil,
+        sessionTaskIdentifier: Int? = nil,
+        sessionError: String? = nil,
+        selector: String? = nil,
+        status: Int? = nil,
+        etag: String? = nil,
+        errorCode: Int? = nil
+    ) async -> tableMetadata? {
+        var detached: tableMetadata?
+
+        await performRealmWriteAsync { realm in
+            guard let metadata = realm.objects(tableMetadata.self)
+                .filter("ocId == %@", ocId)
+                .first else {
+                    return
+            }
+
+            if let name = newFileName {
+                metadata.fileName = name
+                metadata.fileNameView = name
+            }
+
+            if let session {
+                metadata.session = session
+            }
+
+            if let sessionTaskIdentifier {
+                metadata.sessionTaskIdentifier = sessionTaskIdentifier
+            }
+
+            if let sessionError {
+                metadata.sessionError = sessionError
+                if sessionError.isEmpty {
+                    metadata.errorCode = 0
+                }
+            }
+
+            if let selector {
+                metadata.sessionSelector = selector
+            }
+
+            if let status {
+                metadata.status = status
+                switch status {
+                case NCGlobal.shared.metadataStatusWaitDownload,
+                     NCGlobal.shared.metadataStatusWaitUpload:
+                    metadata.sessionDate = Date()
+                case NCGlobal.shared.metadataStatusNormal:
+                    metadata.sessionDate = nil
+                default: break
+                }
+            }
+
+            if let etag {
+                metadata.etag = etag
+            }
+
+            if let errorCode {
+                metadata.errorCode = errorCode
+            }
+
+            realm.add(metadata, update: .all)
+            detached = tableMetadata(value: metadata) // Detach from thread-confined Realm object
+        }
+
+        return detached
+    }
+
+    /// - Parameters:
+    ///   - metadatas: Array of metadata objects to update.
+    ///   - session: The session name to associate.
+    ///   - selector: The selector name to track the download.
+    ///   - sceneIdentifier: Optional scene ID.
     func setMetadatasSessionInWaitDownload(metadatas: [tableMetadata],
                                            session: String,
                                            selector: String,
                                            sceneIdentifier: String? = nil) {
-        guard !metadatas.isEmpty else { return }
+        guard !metadatas.isEmpty else {
+            return
+        }
         let detached = metadatas.map { tableMetadata(value: $0) }
 
         performRealmWrite(sync: true) { realm in
@@ -102,6 +204,43 @@ extension NCManageDatabase {
         }
     }
 
+    /// Asynchronously sets multiple metadata entries into "wait download" state.
+    /// - Parameters:
+    ///   - metadatas: Array of metadata objects to update.
+    ///   - session: The session name to associate.
+    ///   - selector: The selector name to track the download.
+    ///   - sceneIdentifier: Optional scene ID.
+    func setMetadatasSessionInWaitDownloadAsync(metadatas: [tableMetadata],
+                                                session: String,
+                                                selector: String,
+                                                sceneIdentifier: String? = nil) async {
+        guard !metadatas.isEmpty else {
+            return
+        }
+
+        let detached = metadatas.map { tableMetadata(value: $0) }
+
+        return await performRealmWriteAsync { realm in
+            for metadata in detached {
+                metadata.sceneIdentifier = sceneIdentifier
+                metadata.session = session
+                metadata.sessionTaskIdentifier = 0
+                metadata.sessionError = ""
+                metadata.sessionSelector = selector
+                metadata.status = NCGlobal.shared.metadataStatusWaitDownload
+                metadata.sessionDate = Date()
+
+                realm.add(metadata, update: .all)
+            }
+        }
+    }
+
+    /// - Parameters:
+    ///   - ocId: The object ID of the metadata.
+    ///   - session: The session name to associate.
+    ///   - selector: The selector name to track the download.
+    ///   - sceneIdentifier: Optional scene ID.
+    /// - Returns: An unmanaged copy of the updated metadata, or nil if not found.
     @discardableResult
     func setMetadataSessionInWaitDownload(ocId: String,
                                           session: String,
@@ -124,6 +263,43 @@ extension NCManageDatabase {
 
             realm.add(metadata, update: .all)
             detached = tableMetadata(value: metadata)
+        }
+
+        return detached
+    }
+
+    /// Asynchronously sets a metadata record into "wait download" state.
+    /// - Parameters:
+    ///   - ocId: The object ID of the metadata.
+    ///   - session: The session name to associate.
+    ///   - selector: The selector name to track the download.
+    ///   - sceneIdentifier: Optional scene ID.
+    /// - Returns: An unmanaged copy of the updated metadata, or nil if not found.
+    @discardableResult
+    func setMetadataSessionInWaitDownloadAsync(ocId: String,
+                                               session: String,
+                                               selector: String,
+                                               sceneIdentifier: String? = nil) async -> tableMetadata? {
+
+        var detached: tableMetadata?
+
+        await performRealmWriteAsync { realm in
+            guard let metadata = realm.objects(tableMetadata.self)
+                .filter("ocId == %@", ocId)
+                .first else {
+                return
+            }
+
+            metadata.sceneIdentifier = sceneIdentifier
+            metadata.session = session
+            metadata.sessionTaskIdentifier = 0
+            metadata.sessionError = ""
+            metadata.sessionSelector = selector
+            metadata.status = NCGlobal.shared.metadataStatusWaitDownload
+            metadata.sessionDate = Date()
+
+            realm.add(metadata, update: .all)
+            detached = tableMetadata(value: metadata) // Detach from thread-confined Realm object
         }
 
         return detached
@@ -216,6 +392,30 @@ extension NCManageDatabase {
                                                   serverUrl,
                                                   fileName,
                                                   sessionTaskIdentifier))
+    }
+
+    func getMetadataAsync(from url: URL?, sessionTaskIdentifier: Int) async -> tableMetadata? {
+        guard let url,
+              var serverUrl = url.deletingLastPathComponent().absoluteString.removingPercentEncoding
+        else {
+            return nil
+        }
+        let fileName = url.lastPathComponent
+
+        if serverUrl.hasSuffix("/") {
+            serverUrl = String(serverUrl.dropLast())
+        }
+        let predicate = NSPredicate(format: "serverUrl == %@ AND fileName == %@ AND sessionTaskIdentifier == %d",
+                                    serverUrl,
+                                    fileName,
+                                    sessionTaskIdentifier)
+
+        return await performRealmReadAsync { realm in
+            realm.objects(tableMetadata.self)
+                .filter(predicate)
+                .first
+                .map { tableMetadata(value: $0) }
+        }
     }
 
 #if !EXTENSION
