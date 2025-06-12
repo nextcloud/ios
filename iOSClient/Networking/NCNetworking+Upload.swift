@@ -233,10 +233,11 @@ extension NCNetworking {
             completion(NKError(errorCode: self.global.errorResourceNotFound, errorDescription: NSLocalizedString("_error_not_found_", value: "The requested resource could not be found", comment: "")))
         } else {
             let (task, error) = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, account: metadata.account, sessionIdentifier: metadata.session)
-            if let task, error == .success {
-                nkLog(debug: " Upload file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
 
-                Task {
+            Task {
+                if let task, error == .success {
+                    nkLog(debug: " Upload file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
+
                     if let metadata = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
                                                                                   sessionTaskIdentifier: task.taskIdentifier,
                                                                                   status: self.global.metadataStatusUploading) {
@@ -247,12 +248,12 @@ extension NCNetworking {
                                                     error: .success)
                         }
                     }
+                } else {
+                    await self.database.deleteMetadataOcIdAsync(metadata.ocId)
                 }
-            } else {
-                self.database.deleteMetadataOcId(metadata.ocId, sync: false)
-            }
 
-            completion(error)
+                completion(error)
+            }
         }
     }
 

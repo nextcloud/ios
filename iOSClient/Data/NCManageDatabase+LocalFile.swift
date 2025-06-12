@@ -106,6 +106,16 @@ extension NCManageDatabase {
         }
     }
 
+    func deleteLocalFileOcIdAsync(_ ocId: String?) async {
+        guard let ocId else { return }
+
+        await performRealmWriteAsync { realm in
+            let results = realm.objects(tableLocalFile.self)
+                .filter("ocId == %@", ocId)
+            realm.delete(results)
+        }
+    }
+
     func setLocalFile(ocId: String, fileName: String?) {
         performRealmWrite { realm in
             if let result = realm.objects(tableLocalFile.self)
