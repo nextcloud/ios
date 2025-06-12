@@ -222,6 +222,9 @@ class NCService: NSObject {
 
     func synchronize(account: String) async {
         let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: account)
+
+        nkLog(tag: self.global.logTagSync, emoji: .start, message: "Synchronize favorite for account: \(account)")
+
         let resultsFavorite = await NextcloudKit.shared.listingFavoritesAsync(showHiddenFiles: showHiddenFiles, account: account)
         if resultsFavorite.error == .success, let files = resultsFavorite.files {
             let resultsMetadatas = await self.database.convertFilesToMetadatasAsync(files, useFirstAsMetadataFolder: false)
@@ -244,9 +247,9 @@ class NCService: NSObject {
         for file in files {
             if let metadata = await self.database.getMetadataFromOcIdAsync(file.ocId),
                await NCNetworking.shared.isFileDifferent(ocId: metadata.ocId, fileName: metadata.fileName, etag: metadata.etag, metadatasInDownload: metadatasInDownload) {
-                self.database.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
-                                                               session: NCNetworking.shared.sessionDownloadBackground,
-                                                               selector: NCGlobal.shared.selectorSynchronizationOffline)
+                await self.database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
+                                                                          session: NCNetworking.shared.sessionDownloadBackground,
+                                                                          selector: NCGlobal.shared.selectorSynchronizationOffline)
             }
         }
     }
