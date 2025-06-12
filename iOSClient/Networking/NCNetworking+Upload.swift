@@ -346,22 +346,21 @@ extension NCNetworking {
         if error == .success, let ocId = ocId, size == metadata.size {
             nkLog(success: "Uploaded file: " + metadata.serverUrl + "/" + metadata.fileName + ", (\(size) bytes)")
 
-            var metadata = tableMetadata(value: metadata)
-            metadata.uploadDate = (date as? NSDate) ?? NSDate()
-            metadata.etag = etag ?? ""
-            metadata.ocId = ocId
-            metadata.chunk = 0
-
-            if let fileId = self.utility.ocIdToFileId(ocId: ocId) {
-                metadata.fileId = fileId
-            }
-
-            metadata.session = ""
-            metadata.sessionError = ""
-            metadata.sessionTaskIdentifier = 0
-            metadata.status = self.global.metadataStatusNormal
-
             Task {
+                metadata.uploadDate = (date as? NSDate) ?? NSDate()
+                metadata.etag = etag ?? ""
+                metadata.ocId = ocId
+                metadata.chunk = 0
+
+                if let fileId = self.utility.ocIdToFileId(ocId: ocId) {
+                    metadata.fileId = fileId
+                }
+
+                metadata.session = ""
+                metadata.sessionError = ""
+                metadata.sessionTaskIdentifier = 0
+                metadata.status = self.global.metadataStatusNormal
+
                 await self.database.deleteMetadataAsync(predicate: NSPredicate(format: "ocIdTransfer == %@", metadata.ocIdTransfer))
                 let metadata = await self.database.addMetadataAsync(metadata)
 
