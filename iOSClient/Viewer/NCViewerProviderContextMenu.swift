@@ -35,7 +35,7 @@ class NCViewerProviderContextMenu: UIViewController {
     private let utilityFileSystem = NCUtilityFileSystem()
     internal let global = NCGlobal.shared
     private let sizeIcon: CGFloat = 150
-    internal var sceneIdentifier: String  = ""
+    internal var sceneIdentifier: String = ""
 
     // MARK: - View Life Cycle
 

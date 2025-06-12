@@ -137,12 +137,6 @@ class NCFiles: NCCollectionViewCommon {
         if !isSearchingMode {
             getServerData()
         }
-
-        Task {
-            await MainActor.run {
-                NCBackgroundLocationUploadManager.shared.start(from: self)
-            }
-        }
     }
 
     override func viewDidDisappear(_ animated: Bool) {
