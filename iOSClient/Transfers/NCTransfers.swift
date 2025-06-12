@@ -27,6 +27,7 @@ import RealmSwift
 
 class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     private var metadataTemp: tableMetadata?
+    private var transferProgressMap: [String: Float] = [:]
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -152,6 +153,12 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.imageItem?.backgroundColor = nil
         cell.labelTitle.text = metadata.fileNameView
         cell.labelTitle.textColor = NCBrandColor.shared.textColor
+
+        // Restore previously cached progress for this file transfer, or reset to 0 if not found
+        let key = "\(metadata.serverUrl)|\(metadata.fileNameView)"
+        let progress = transferProgressMap[key] ?? 0
+        cell.setProgress(progress: progress)
+
         let serverUrlHome = utilityFileSystem.getHomeServer(session: session)
         var pathText = metadata.serverUrl.replacingOccurrences(of: serverUrlHome, with: "")
         if pathText.isEmpty { pathText = "/" }
@@ -274,6 +281,9 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     }
 
     override func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) {
+        let key = "\(serverUrl)|\(fileName)"
+        transferProgressMap[key] = progress
+
         DispatchQueue.main.async {
             for case let cell as NCTransferCell in self.collectionView.visibleCells {
                 if cell.serverUrl == serverUrl && cell.fileName == fileName {
