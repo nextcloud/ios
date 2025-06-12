@@ -123,24 +123,27 @@ extension NCNetworking {
         let (task, error) = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account)
 
         if let task, error == .success {
-            if let metadata = database.setMetadataSession(ocId: metadata.ocId,
-                                                          sessionTaskIdentifier: task.taskIdentifier,
-                                                          status: self.global.metadataStatusDownloading) {
+            Task {
+                if let metadata = await database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                         sessionTaskIdentifier: task.taskIdentifier,
+                                                                         status: self.global.metadataStatusDownloading) {
 
-                self.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusDownloading,
-                                            metadata: metadata,
-                                            error: .success)
+                    self.notifyAllDelegates { delegate in
+                        delegate.transferChange(status: self.global.networkingStatusDownloading,
+                                                metadata: metadata,
+                                                error: .success)
+                    }
                 }
             }
-
         } else {
-            database.setMetadataSession(ocId: metadata.ocId,
-                                        session: "",
-                                        sessionTaskIdentifier: 0,
-                                        sessionError: "",
-                                        selector: "",
-                                        status: self.global.metadataStatusNormal)
+            Task {
+                await database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                       session: "",
+                                                       sessionTaskIdentifier: 0,
+                                                       sessionError: "",
+                                                       selector: "",
+                                                       status: self.global.metadataStatusNormal)
+            }
         }
         completion(error)
     }
