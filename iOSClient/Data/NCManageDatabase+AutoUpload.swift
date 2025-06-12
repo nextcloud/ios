@@ -52,7 +52,7 @@ extension NCManageDatabase {
             realm.add(newAutoUpload, update: .all)
         }
     }
-    
+
     func deleteAutoUploadTransfer(account: String, autoUploadServerUrlBase: String, sync: Bool = true) {
         performRealmWrite(sync: sync) { realm in
             let result = realm.objects(tableAutoUploadTransfer.self)
