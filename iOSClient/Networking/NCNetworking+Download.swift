@@ -190,19 +190,20 @@ extension NCNetworking {
                     NCEndToEndEncryption.shared().decryptFile(metadata.fileName, fileNameView: metadata.fileNameView, ocId: metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
                 }
 #endif
-                self.database.addLocalFile(metadata: metadata, sync: false)
+                Task {
+                    await self.database.addLocalFileAsync(metadata: metadata)
 
-                if let metadata = self.database.setMetadataSession(ocId: metadata.ocId,
-                                                                   session: "",
-                                                                   sessionTaskIdentifier: 0,
-                                                                   sessionError: "",
-                                                                   status: self.global.metadataStatusNormal,
-                                                                   etag: etag) {
-
-                    self.notifyAllDelegates { delegate in
-                        delegate.transferChange(status: self.global.networkingStatusDownloaded,
-                                                metadata: metadata,
-                                                error: error)
+                    if let updatedMetadata = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                                         session: "",
+                                                                                         sessionTaskIdentifier: 0,
+                                                                                         sessionError: "",
+                                                                                         status: self.global.metadataStatusNormal,
+                                                                                         etag: etag) {
+                        self.notifyAllDelegates { delegate in
+                            delegate.transferChange(status: self.global.networkingStatusDownloaded,
+                                                    metadata: updatedMetadata,
+                                                    error: error)
+                        }
                     }
                 }
             } else {

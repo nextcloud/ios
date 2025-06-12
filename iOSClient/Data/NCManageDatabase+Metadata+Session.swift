@@ -80,6 +80,90 @@ extension NCManageDatabase {
         return detached
     }
 
+    /// Updates session-related fields for a given `tableMetadata` object, in an async-safe Realm write.
+    ///
+    /// - Parameters:
+    ///   - ocId: Unique identifier of the metadata entry.
+    ///   - newFileName: Optional new filename.
+    ///   - session: Optional session identifier.
+    ///   - sessionTaskIdentifier: Optional task ID.
+    ///   - sessionError: Optional error string (clears error code if empty).
+    ///   - selector: Optional session selector.
+    ///   - status: Optional metadata status (may reset sessionDate).
+    ///   - etag: Optional ETag string.
+    ///   - errorCode: Optional error code to persist.
+    /// - Returns: A detached copy of the updated `tableMetadata` object, or `nil` if not found.
+    func setMetadataSessionAsync(
+        ocId: String,
+        newFileName: String? = nil,
+        session: String? = nil,
+        sessionTaskIdentifier: Int? = nil,
+        sessionError: String? = nil,
+        selector: String? = nil,
+        status: Int? = nil,
+        etag: String? = nil,
+        errorCode: Int? = nil
+    ) async -> tableMetadata? {
+        var detached: tableMetadata?
+
+        await performRealmWriteAsync { realm in
+            guard let metadata = realm.objects(tableMetadata.self)
+                .filter("ocId == %@", ocId)
+                .first else {
+                    return
+            }
+
+            if let name = newFileName {
+                metadata.fileName = name
+                metadata.fileNameView = name
+            }
+
+            if let session {
+                metadata.session = session
+            }
+
+            if let sessionTaskIdentifier {
+                metadata.sessionTaskIdentifier = sessionTaskIdentifier
+            }
+
+            if let sessionError {
+                metadata.sessionError = sessionError
+                if sessionError.isEmpty {
+                    metadata.errorCode = 0
+                }
+            }
+
+            if let selector {
+                metadata.sessionSelector = selector
+            }
+
+            if let status {
+                metadata.status = status
+                switch status {
+                case NCGlobal.shared.metadataStatusWaitDownload,
+                     NCGlobal.shared.metadataStatusWaitUpload:
+                    metadata.sessionDate = Date()
+                case NCGlobal.shared.metadataStatusNormal:
+                    metadata.sessionDate = nil
+                default: break
+                }
+            }
+
+            if let etag {
+                metadata.etag = etag
+            }
+
+            if let errorCode {
+                metadata.errorCode = errorCode
+            }
+
+            realm.add(metadata, update: .all)
+            detached = tableMetadata(value: metadata) // Detach from thread-confined Realm object
+        }
+
+        return detached
+    }
+
     func setMetadatasSessionInWaitDownload(metadatas: [tableMetadata],
                                            session: String,
                                            selector: String,
