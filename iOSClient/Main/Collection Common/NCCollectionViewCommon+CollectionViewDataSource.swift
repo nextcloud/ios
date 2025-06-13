@@ -146,7 +146,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         let ext = global.getSizeExtension(column: self.numberOfColumns)
 
         defer {
-            if !metadata.isSharable() || NCCapabilities.shared.disableSharesView(account: metadata.account) {
+            if !metadata.isSharable() || (!capabilities.fileSharingApiEnabled && !capabilities.filesComments && capabilities.activity.isEmpty) {
                 cell.hideButtonShare(true)
             }
         }

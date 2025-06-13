@@ -23,6 +23,7 @@
 
 import UIKit
 import OSLog
+import NextcloudKit
 
 protocol NCShareCellConfig {
     var title: String { get }
@@ -81,7 +82,8 @@ enum NCUserPermission: CaseIterable, NCPermission {
     }
 
     static func forDirectoryE2EE(account: String) -> [NCPermission] {
-        if NCCapabilities.shared.getCapabilities(account: account).capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
+        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account)
+        if capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
             return NCUserPermission.allCases
         }
         return []
@@ -104,7 +106,8 @@ enum NCUserPermission: CaseIterable, NCPermission {
 
 enum NCLinkEmailPermission: CaseIterable, NCPermission {
     static func forDirectoryE2EE(account: String) -> [any NCPermission] {
-        if NCCapabilities.shared.getCapabilities(account: account).capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
+        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account)
+        if capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
             return NCUserPermission.allCases
         }
         return []
@@ -224,10 +227,7 @@ struct NCShareConfig {
         self.permissions = parentMetadata.directory ? (parentMetadata.e2eEncrypted ? type.forDirectoryE2EE(account: parentMetadata.account) : type.forDirectory) : type.forFile
 
         if share.shareType == NCShareCommon().SHARE_TYPE_LINK {
-            let hasDownloadLimitCapability = NCCapabilities
-                .shared
-                .getCapabilities(account: parentMetadata.account)
-                .capabilityFileSharingDownloadLimit
+            let hasDownloadLimitCapability = NCCapabilities.shared.getCapabilitiesBlocking(for: parentMetadata.account).fileSharingDownloadLimit
 
             if parentMetadata.isDirectory || hasDownloadLimitCapability == false {
                 self.advanced = NCAdvancedPermission.forLink.filter { $0 != .limitDownload }

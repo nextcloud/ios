@@ -40,8 +40,11 @@ struct NCSettingsView: View {
     /// Object of ViewModel of this view
     @ObservedObject var model: NCSettingsModel
 
+    var capabilities: NCCapabilities.Capabilities {
+        NCCapabilities.shared.getCapabilitiesBlocking(for: model.controller?.account)
+    }
+
     var body: some View {
-        let capabilities = NCCapabilities.shared.getCapabilities(account: model.controller?.account)
         Form {
             /// `Auto Upload` Section
             Section(content: {
@@ -187,7 +190,7 @@ struct NCSettingsView: View {
                 Text(NSLocalizedString("_users_footer_", comment: ""))
             })
             /// E2EEncryption` Section
-            if capabilities.capabilityE2EEEnabled && NCGlobal.shared.e2eeVersions.contains(capabilities.capabilityE2EEApiVersion) {
+            if capabilities.e2EEEnabled && NCGlobal.shared.e2eeVersions.contains(capabilities.e2EEApiVersion) {
                 E2EESection(model: model)
             }
             /// `Advanced` Section

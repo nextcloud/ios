@@ -135,6 +135,8 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         let session = NCSession.shared.getSession(controller: self.controller)
+        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: session.account)
+
         if isViewerMedia,
            let urlIn = urls.first,
            let url = self.copySecurityScopedResource(url: urlIn, urlOut: FileManager.default.temporaryDirectory.appendingPathComponent(urlIn.lastPathComponent)),
@@ -154,7 +156,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 metadata.classFile = NKCommon.TypeClassFile.video.rawValue
             }
 
-            if let fileNameError = FileNameValidator.checkFileName(metadata.fileNameView, account: self.controller.account) {
+            if let fileNameError = FileNameValidator.checkFileName(metadata.fileNameView, account: self.controller.account, capabilities: capabilities) {
                 self.controller.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
             } else {
                 let metadata = database.addMetadata(metadata)
@@ -201,7 +203,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
             var invalidNameIndexes: [Int] = []
 
             for (index, metadata) in metadatas.enumerated() {
-                if let fileNameError = FileNameValidator.checkFileName(metadata.fileName, account: session.account) {
+                if let fileNameError = FileNameValidator.checkFileName(metadata.fileName, account: session.account, capabilities: capabilities) {
                     if metadatas.count == 1 {
                         let alert = UIAlertController.renameFile(fileName: metadata.fileName, account: session.account) { newFileName in
                             metadatas[index].fileName = newFileName

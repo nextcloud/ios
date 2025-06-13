@@ -77,7 +77,7 @@ extension NCCollectionViewCommon {
         // DETAILS
         //
         if NCNetworking.shared.isOnline,
-           !NCCapabilities.shared.disableSharesView(account: metadata.account) {
+           !(!capabilities.fileSharingApiEnabled && !capabilities.filesComments && capabilities.activity.isEmpty) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
@@ -149,7 +149,7 @@ extension NCCollectionViewCommon {
         if NCNetworking.shared.isOnline,
            !metadata.directory,
            metadata.canUnlock(as: metadata.userId),
-           !NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityFilesLockVersion.isEmpty {
+           !capabilities.filesLockVersion.isEmpty {
             actions.append(NCMenuAction.lockUnlockFiles(shouldLock: !metadata.lock, metadatas: [metadata], order: 30, sender: sender))
         }
 
@@ -336,7 +336,7 @@ extension NCCollectionViewCommon {
         // COPY - MOVE
         //
         if metadata.isCopyableMovable {
-            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], viewController: self, order: 130, sender: sender))
+            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], account: metadata.account, viewController: self, order: 130, sender: sender))
         }
 
         //

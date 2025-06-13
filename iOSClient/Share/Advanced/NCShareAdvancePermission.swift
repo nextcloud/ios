@@ -242,9 +242,10 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
 
             if isNewShare {
                 let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+                let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
 
                 if share.shareType != NCShareCommon().SHARE_TYPE_LINK, metadata.e2eEncrypted,
-                   NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
+                   capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
 
                     if NCNetworkingE2EE().isInUpload(account: metadata.account, serverUrl: serverUrl) {
                         let error = NKError(errorCode: NCGlobal.shared.errorE2EEUploadInProgress, errorDescription: NSLocalizedString("_e2e_in_upload_", comment: ""))

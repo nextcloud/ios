@@ -60,6 +60,7 @@ extension NCMedia {
         else { return }
         let limit = max(self.collectionView.visibleCells.count * 3, 300)
         let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) })
+        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: session.account)
 
         DispatchQueue.global(qos: .utility).async {
             self.semaphoreSearchMedia.wait()
@@ -105,7 +106,7 @@ extension NCMedia {
 
             nkLog(start: "Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate), limit \(limit)")
 
-            if NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityServerVersionMajor >= self.global.nextcloudVersion31 {
+            if capabilities.serverVersionMajor >= self.global.nextcloudVersion31 {
                 elementDate = "nc:metadata-photos-original_date_time"
                 lessDateAny = Int((lessDate as AnyObject).timeIntervalSince1970)
                 greaterDateAny = Int((greaterDate as AnyObject).timeIntervalSince1970)

@@ -109,7 +109,9 @@ class NCSharePaging: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if NCCapabilities.shared.disableSharesView(account: metadata.account) {
+        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
+
+        if !capabilities.fileSharingApiEnabled && !capabilities.filesComments && capabilities.activity.isEmpty {
             self.dismiss(animated: false, completion: nil)
         }
 

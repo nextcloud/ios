@@ -32,11 +32,12 @@ extension NCViewer {
         var actions = [NCMenuAction]()
         let localFile = self.database.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         let isOffline = localFile?.offline == true
+        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
 
         //
         // DETAIL
         //
-        if !NCCapabilities.shared.disableSharesView(account: metadata.account) {
+        if !(!capabilities.fileSharingApiEnabled && !capabilities.filesComments && capabilities.activity.isEmpty) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),

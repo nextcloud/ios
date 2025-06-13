@@ -51,7 +51,6 @@ class NCAccount: NSObject {
                                           userId: user,
                                           password: password,
                                           userAgent: userAgent,
-                                          nextcloudVersion: NCCapabilities.shared.getCapabilities(account: account).capabilityServerVersionMajor,
                                           httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
                                           httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
                                           httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
@@ -115,7 +114,7 @@ class NCAccount: NSObject {
             /// Set account
             controller?.account = account
             /// Set capabilities
-            database.setCapabilities(account: account)
+            database.setNKCapabilitiesBlocking(account: account)
             /// Set User Profile
             if let userProfile {
                 database.setAccountUserProfile(account: account, userProfile: userProfile)

@@ -153,6 +153,7 @@ class NCFiles: NCCollectionViewCommon {
         guard let controller else { return }
         let fileFolderPath = NCUtilityFileSystem().getFileNamePath("", serverUrl: serverUrl, session: NCSession.shared.getSession(controller: controller))
         let fileFolderName = (serverUrl as NSString).lastPathComponent
+        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: controller.account)
 
         if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", controller.account, serverUrl)) {
             if !directory.permissions.contains("CK") {
@@ -162,7 +163,7 @@ class NCFiles: NCCollectionViewCommon {
             }
         }
 
-        if !FileNameValidator.checkFolderPath(fileFolderPath, account: controller.account) {
+        if !FileNameValidator.checkFolderPath(fileFolderPath, account: controller.account, capabilities: capabilities) {
             controller.present(UIAlertController.warning(message: "\(String(format: NSLocalizedString("_file_name_validator_error_reserved_name_", comment: ""), fileFolderName)) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
             return
         }
@@ -284,8 +285,9 @@ class NCFiles: NCCollectionViewCommon {
                 NCNetworkingE2EE().getMetadata(fileId: metadataFolder.ocId, e2eToken: lock?.e2eToken, account: account) { account, version, e2eMetadata, signature, _, error in
                     if error == .success, let e2eMetadata {
                         let error = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: signature, serverUrl: self.serverUrl, session: self.session)
+                        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: self.session.account)
                         if error == .success {
-                            if version == "v1", NCCapabilities.shared.getCapabilities(account: account).capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
+                            if version == "v1", capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
                                 nkLog(tag: self.global.logTagE2EE, message: "Conversion v1 to v2")
                                 NCActivityIndicator.shared.start()
                                 Task {

@@ -153,7 +153,7 @@ class NCService: NSObject {
         await self.database.addCapabilitiesJSONAsync(data: data, account: account)
 
         // Recommendations
-        if !capabilities.capabilityRecommendations {
+        if !capabilities.recommendations {
             self.database.deleteAllRecommendedFiles(account: account, sync: false)
         }
 
@@ -163,7 +163,7 @@ class NCService: NSObject {
         }
 
         // Text direct editor detail
-        if capabilities.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion18 {
+        if capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion18 {
             let results = await NextcloudKit.shared.textObtainEditorDetailsAsync(account: account)
             if results.error == .success {
                 self.database.addDirectEditing(account: account, editors: results.editors, creators: results.creators, sync: false)
@@ -171,7 +171,7 @@ class NCService: NSObject {
         }
 
         // External file Server
-        if capabilities.capabilityExternalSites {
+        if capabilities.externalSites {
             let results = await NextcloudKit.shared.getExternalSiteAsync(account: account)
             if results.error == .success {
                 self.database.deleteExternalSites(account: account, sync: false)
@@ -184,7 +184,7 @@ class NCService: NSObject {
         }
 
         // User Status
-        if capabilities.capabilityUserStatusEnabled {
+        if capabilities.userStatusEnabled {
             let results = await NextcloudKit.shared.getUserStatusAsync(account: account)
             if results.error == .success {
                 self.database.setAccountUserStatus(userStatusClearAt: results.clearAt,
@@ -199,7 +199,7 @@ class NCService: NSObject {
         }
 
         // Added UTI for Collabora
-        capabilities.capabilityRichDocumentsMimetypes.forEach { mimeType in
+        capabilities.richDocumentsMimetypes.forEach { mimeType in
             NextcloudKit.shared.nkCommonInstance.addInternalTypeIdentifier(typeIdentifier: mimeType, classFile: NKCommon.TypeClassFile.document.rawValue, editor: NCGlobal.shared.editorCollabora, iconName: NKCommon.TypeIconFile.document.rawValue, name: "document", account: account)
         }
 
@@ -253,7 +253,8 @@ class NCService: NSObject {
     // MARK: -
 
     func sendClientDiagnosticsRemoteOperation(account: String) async {
-        guard NCCapabilities.shared.getCapabilities(account: account).capabilitySecurityGuardDiagnostics,
+        let capabilities = await NCCapabilities.shared.getCapabilities(for: account)
+        guard capabilities.securityGuardDiagnostics,
               self.database.existsDiagnostics(account: account) else {
             return
         }

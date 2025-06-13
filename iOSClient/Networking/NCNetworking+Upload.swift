@@ -436,7 +436,7 @@ extension NCNetworking {
                                                                         status: self.global.metadataStatusUploadError,
                                                                         errorCode: error.errorCode)
 #else
-                        if capabilities.capabilityTermsOfService {
+                        if capabilities.termsOfService {
                             self.termsOfService(metadata: metadata)
                         } else {
                             self.uploadForbidden(metadata: metadata, error: error)
