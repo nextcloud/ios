@@ -63,8 +63,7 @@ extension NCShareExtension: NCAccountRequestDelegate {
             return
         }
         self.account = account
-
-        self.database.setNKCapabilitiesBlocking(account: account)
+        self.database.applyCachedCapabilitiesBlocking(account: account)
 
         // COLORS
         NCBrandColor.shared.settingThemingColor(account: account)

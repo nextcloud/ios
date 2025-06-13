@@ -51,7 +51,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             nkLog(debug: "Account active \(activeTableAccount.account)")
 
             NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
-
             NCNetworkingProcess.shared.setCurrentAccount(activeTableAccount.account)
 
             for tableAccount in self.database.getAllTableAccount() {
@@ -65,6 +64,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                                                   httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
                                                   httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
                                                   groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+                Task {
+                    await self.database.applyCachedCapabilitiesAsync(account: tableAccount.account)
+                }
                 NCSession.shared.appendSession(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId)
             }
 

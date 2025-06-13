@@ -53,7 +53,7 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
     }
 
     guard let activeTableAccount,
-          let capabilities = NCManageDatabase.shared.setNKCapabilitiesBlocking(account: activeTableAccount.account) else {
+          let capabilities = NCManageDatabase.shared.applyCachedCapabilitiesBlocking(account: activeTableAccount.account) else {
         return completion(LockscreenData(date: Date(), isPlaceholder: true, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: false))
     }
 

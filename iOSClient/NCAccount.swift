@@ -113,8 +113,6 @@ class NCAccount: NSObject {
         if let tblAccount = database.setAccountActive(account) {
             /// Set account
             controller?.account = account
-            /// Set capabilities
-            database.setNKCapabilitiesBlocking(account: account)
             /// Set User Profile
             if let userProfile {
                 database.setAccountUserProfile(account: account, userProfile: userProfile)

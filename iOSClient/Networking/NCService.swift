@@ -150,7 +150,7 @@ class NCService: NSObject {
             return
         }
 
-        await self.database.addCapabilitiesJSONAsync(data: data, account: account)
+        await self.database.addCapabilitiesAsync(data: data, account: account)
 
         // Recommendations
         if !capabilities.recommendations {
