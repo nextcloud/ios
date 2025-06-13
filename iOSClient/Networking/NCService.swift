@@ -144,20 +144,16 @@ class NCService: NSObject {
 
     private func requestServerCapabilities(account: String, controller: NCMainTabBarController?) async {
         let resultsCapabilities = await NextcloudKit.shared.getCapabilitiesAsync(account: account)
-        guard resultsCapabilities.error == .success, let data = resultsCapabilities.responseData?.data else {
+        guard resultsCapabilities.error == .success,
+              let data = resultsCapabilities.responseData?.data,
+              let capabilities = resultsCapabilities.capabilities else {
             return
         }
 
-        data.printJson()
-
-        self.database.addCapabilitiesJSon(data, account: account, sync: false)
-
-        guard let capability = self.database.setCapabilities(account: account, data: data) else {
-            return
-        }
+        await self.database.addCapabilitiesJSONAsync(data: data, account: account)
 
         // Recommendations
-        if !NCCapabilities.shared.getCapabilities(account: account).capabilityRecommendations {
+        if !capabilities.capabilityRecommendations {
             self.database.deleteAllRecommendedFiles(account: account, sync: false)
         }
 
@@ -167,7 +163,7 @@ class NCService: NSObject {
         }
 
         // Text direct editor detail
-        if capability.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion18 {
+        if capabilities.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion18 {
             let results = await NextcloudKit.shared.textObtainEditorDetailsAsync(account: account)
             if results.error == .success {
                 self.database.addDirectEditing(account: account, editors: results.editors, creators: results.creators, sync: false)
@@ -175,7 +171,7 @@ class NCService: NSObject {
         }
 
         // External file Server
-        if capability.capabilityExternalSites {
+        if capabilities.capabilityExternalSites {
             let results = await NextcloudKit.shared.getExternalSiteAsync(account: account)
             if results.error == .success {
                 self.database.deleteExternalSites(account: account, sync: false)
@@ -188,7 +184,7 @@ class NCService: NSObject {
         }
 
         // User Status
-        if capability.capabilityUserStatusEnabled {
+        if capabilities.capabilityUserStatusEnabled {
             let results = await NextcloudKit.shared.getUserStatusAsync(account: account)
             if results.error == .success {
                 self.database.setAccountUserStatus(userStatusClearAt: results.clearAt,
@@ -203,7 +199,7 @@ class NCService: NSObject {
         }
 
         // Added UTI for Collabora
-        capability.capabilityRichDocumentsMimetypes.forEach { mimeType in
+        capabilities.capabilityRichDocumentsMimetypes.forEach { mimeType in
             NextcloudKit.shared.nkCommonInstance.addInternalTypeIdentifier(typeIdentifier: mimeType, classFile: NKCommon.TypeClassFile.document.rawValue, editor: NCGlobal.shared.editorCollabora, iconName: NKCommon.TypeIconFile.document.rawValue, name: "document", account: account)
         }
 

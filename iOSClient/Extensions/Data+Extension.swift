@@ -25,7 +25,6 @@ import Foundation
 import UIKit
 
 extension Data {
-
     func printJson() {
         do {
             let json = try JSONSerialization.jsonObject(with: self, options: [])

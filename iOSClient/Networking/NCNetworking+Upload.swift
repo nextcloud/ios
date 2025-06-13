@@ -399,7 +399,8 @@ extension NCNetworking {
                 }
 
                 if metadata.isLivePhoto,
-                   NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable {
+                   let capabilities = await NCCapabilities.shared.getCapabilities(for: metadata.account),
+                   capabilities.isLivePhotoServerAvailable {
                     await self.createLivePhoto(metadata: metadata)
                 } else {
                     self.notifyAllDelegates { delegate in
@@ -434,7 +435,8 @@ extension NCNetworking {
                                                                         status: self.global.metadataStatusUploadError,
                                                                         errorCode: error.errorCode)
 #else
-                        if NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityTermsOfService {
+                        if let capabilities = await NCCapabilities.shared.getCapabilities(for: metadata.account),
+                           capabilities.capabilityTermsOfService {
                             self.termsOfService(metadata: metadata)
                         } else {
                             self.uploadForbidden(metadata: metadata, error: error)

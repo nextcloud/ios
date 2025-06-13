@@ -50,7 +50,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if let activeTableAccount = self.database.getActiveTableAccount() {
             nkLog(debug: "Account active \(activeTableAccount.account)")
 
-            let capability = self.database.setCapabilities(account: activeTableAccount.account)
             NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
 
             NCNetworkingProcess.shared.setCurrentAccount(activeTableAccount.account)
@@ -62,7 +61,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                                                   userId: tableAccount.userId,
                                                   password: NCKeychain().getPassword(account: tableAccount.account),
                                                   userAgent: userAgent,
-                                                  nextcloudVersion: capability?.capabilityServerVersionMajor ?? 0,
                                                   httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
                                                   httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
                                                   httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,

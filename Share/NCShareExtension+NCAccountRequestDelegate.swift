@@ -80,7 +80,6 @@ extension NCShareExtension: NCAccountRequestDelegate {
                                           userId: tableAccount.userId,
                                           password: NCKeychain().getPassword(account: tableAccount.account),
                                           userAgent: userAgent,
-                                          nextcloudVersion: capabilities.capabilityServerVersionMajor,
                                           httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
                                           httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
                                           httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
