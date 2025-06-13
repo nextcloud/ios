@@ -428,7 +428,11 @@ extension NCNetworking {
                                                                         errorCode: error.errorCode)
                     } else {
 #if EXTENSION
-                        await self.uploadCancelFile(metadata: metadata)
+                        _ = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                        sessionTaskIdentifier: 0,
+                                                                        sessionError: error.errorDescription,
+                                                                        status: self.global.metadataStatusUploadError,
+                                                                        errorCode: error.errorCode)
 #else
                         if NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityTermsOfService {
                             self.termsOfService(metadata: metadata)
