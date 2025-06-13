@@ -502,7 +502,7 @@ extension NCLivePhoto {
 
     func setLivePhoto(metadata1: tableMetadata, metadata2: tableMetadata) {
         Task {
-            let capabilities = await NCCapabilities.shared.getCapabilities(for: metadata1.account)
+            let capabilities = await NCCapabilities.shared.getCapabilitiesAsync(for: metadata1.account)
             guard capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion28,
                   (!metadata1.livePhotoFile.isEmpty && !metadata2.livePhotoFile.isEmpty) else {
                 return

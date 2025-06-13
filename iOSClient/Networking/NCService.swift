@@ -253,7 +253,7 @@ class NCService: NSObject {
     // MARK: -
 
     func sendClientDiagnosticsRemoteOperation(account: String) async {
-        let capabilities = await NCCapabilities.shared.getCapabilities(for: account)
+        let capabilities = await NCCapabilities.shared.getCapabilitiesAsync(for: account)
         guard capabilities.securityGuardDiagnostics,
               self.database.existsDiagnostics(account: account) else {
             return
