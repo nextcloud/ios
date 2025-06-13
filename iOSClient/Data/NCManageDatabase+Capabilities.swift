@@ -36,7 +36,8 @@ extension NCManageDatabase {
         }
     }
 
-    func getCapabilitiesJSONAsync(account: String) async -> NCCapabilities.Capabilities? {
+    @discardableResult
+    func setNKCapabilitiesAsync(account: String) async -> NCCapabilities.Capabilities? {
         let data = await performRealmReadAsync { realm in
             realm.object(ofType: tableCapabilities.self, forPrimaryKey: account)?.jsondata
         }
@@ -46,5 +47,33 @@ extension NCManageDatabase {
         }
 
         return nil
+    }
+
+    /// Synchronously retrieves and parses capabilities JSON from Realm for the given account.
+    /// - Important: This blocks the current thread. Do not call from an async context.
+    @discardableResult
+    public func setNKCapabilitiesBlocking(account: String) -> NCCapabilities.Capabilities? {
+        var result: NCCapabilities.Capabilities?
+        let group = DispatchGroup()
+
+        group.enter()
+        Task {
+            let data = await performRealmReadAsync { realm in
+                realm.object(ofType: tableCapabilities.self, forPrimaryKey: account)?.jsondata
+            }
+
+            if let data {
+                do {
+                    let caps = try await NextcloudKit.shared.setCapabilitiesAsync(account: account, data: data)
+                    result = caps
+                } catch {
+                    nkLog(debug: "Error decoding capabilities from JSON: \(error)")
+                }
+            }
+
+            group.leave()
+        }
+        group.wait()
+        return result
     }
 }

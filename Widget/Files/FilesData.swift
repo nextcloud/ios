@@ -118,7 +118,6 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                                       userId: activeTableAccount.userId,
                                       password: password,
                                       userAgent: userAgent,
-                                      nextcloudVersion: NCCapabilities.shared.getCapabilities(account: activeTableAccount.account).capabilityServerVersionMajor,
                                       httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
                                       httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
                                       httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,

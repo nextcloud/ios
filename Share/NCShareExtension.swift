@@ -285,6 +285,8 @@ extension NCShareExtension {
         var conflicts: [tableMetadata] = []
         var invalidNameIndexes: [Int] = []
 
+        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account)
+
         for (index, fileName) in filesName.enumerated() {
             let newFileName = FileAutoRenamer.rename(fileName, account: session.account)
 
@@ -292,7 +294,7 @@ extension NCShareExtension {
                 renameFile(oldName: fileName, newName: newFileName, account: session.account)
             }
 
-            if let fileNameError = FileNameValidator.checkFileName(newFileName, account: session.account) {
+            if let fileNameError = FileNameValidator.checkFileName(newFileName, account: session.account, capabilities: capabilities) {
                 if filesName.count == 1 {
                     showRenameFileDialog(named: fileName, account: account)
                     return

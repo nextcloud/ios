@@ -35,22 +35,22 @@ final class NCUtility: NSObject, Sendable {
     func isTypeFileRichDocument(_ metadata: tableMetadata) -> Bool {
         guard metadata.fileNameView != "." else { return false }
         let fileExtension = (metadata.fileNameView as NSString).pathExtension
+        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
         guard !fileExtension.isEmpty,
-              let mimeType = UTType(tag: fileExtension.uppercased(), tagClass: .filenameExtension, conformingTo: nil)?.identifier,
-              let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: metadata.account) else {
+              let mimeType = UTType(tag: fileExtension.uppercased(), tagClass: .filenameExtension, conformingTo: nil)?.identifier else {
             return false
         }
 
         /// contentype
-        if !capabilities.capabilityRichDocumentsMimetypes.filter({ $0.contains(metadata.contentType) || $0.contains("text/plain") }).isEmpty {
+        if !capabilities.richDocumentsMimetypes.filter({ $0.contains(metadata.contentType) || $0.contains("text/plain") }).isEmpty {
             return true
         }
 
         /// mimetype
-        if !capabilities.capabilityRichDocumentsMimetypes.isEmpty && mimeType.components(separatedBy: ".").count > 2 {
+        if !capabilities.richDocumentsMimetypes.isEmpty && mimeType.components(separatedBy: ".").count > 2 {
             let mimeTypeArray = mimeType.components(separatedBy: ".")
             let mimeType = mimeTypeArray[mimeTypeArray.count - 2] + "." + mimeTypeArray[mimeTypeArray.count - 1]
-            if !capabilities.capabilityRichDocumentsMimetypes.filter({ $0.contains(mimeType) }).isEmpty {
+            if !capabilities.richDocumentsMimetypes.filter({ $0.contains(mimeType) }).isEmpty {
                 return true
             }
         }

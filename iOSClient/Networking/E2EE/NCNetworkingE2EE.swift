@@ -46,7 +46,8 @@ class NCNetworkingE2EE: NSObject {
     }
 
     func getOptions(account: String) -> NKRequestOptions {
-        let version = NCCapabilities.shared.getCapabilities(account: account).capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 ? e2EEApiVersion2 : e2EEApiVersion1
+        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account)
+        let version = capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 ? e2EEApiVersion2 : e2EEApiVersion1
         return NKRequestOptions(version: version)
     }
 
@@ -56,7 +57,9 @@ class NCNetworkingE2EE: NSObject {
                      e2eToken: String?,
                      account: String,
                      completion: @escaping (_ account: String, _ version: String?, _ e2eMetadata: String?, _ signature: String?, _ responseData: AFDataResponse<Data>?, _ error: NKError) -> Void) {
-        switch NCCapabilities.shared.getCapabilities(account: account).capabilityE2EEApiVersion {
+        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account)
+
+        switch capabilities.e2EEApiVersion {
         case NCGlobal.shared.e2eeVersionV11, NCGlobal.shared.e2eeVersionV12:
             NextcloudKit.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken, account: account, options: NKRequestOptions(version: e2EEApiVersion1)) { account, e2eMetadata, signature, data, error in
                 return completion(account, self.e2EEApiVersion1, e2eMetadata, signature, data, error)
@@ -173,6 +176,7 @@ class NCNetworkingE2EE: NSObject {
             self.database.addDiagnostic(account: session.account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
             return resultsEncodeMetadata.error
         }
+        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: session.account)
 
         let putE2EEMetadataResults = await NextcloudKit.shared.putE2EEMetadataAsync(fileId: fileId, e2eToken: e2eToken, e2eMetadata: e2eMetadata, signature: resultsEncodeMetadata.signature, method: method, account: session.account, options: NCNetworkingE2EE().getOptions(account: session.account))
         guard putE2EEMetadataResults.error == .success else {
@@ -181,7 +185,7 @@ class NCNetworkingE2EE: NSObject {
 
         // COUNTER
         //
-        if NCCapabilities.shared.getCapabilities(account: session.account).capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
+        if capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
             self.database.updateCounterE2eMetadata(account: session.account, ocIdServerUrl: ocIdServerUrl, counter: resultsEncodeMetadata.counter)
         }
 
@@ -218,12 +222,13 @@ class NCNetworkingE2EE: NSObject {
         guard let directory = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) else {
             return (nil, nil, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_"))
         }
+        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account)
 
         if let tableLock = self.database.getE2ETokenLock(account: account, serverUrl: serverUrl) {
             e2eToken = tableLock.e2eToken
         }
 
-        if NCCapabilities.shared.getCapabilities(account: account).capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20,
+        if capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20,
            var counter = self.database.getCounterE2eMetadata(account: account, ocIdServerUrl: directory.ocId) {
             counter += 1
             e2eCounter = "\(counter)"

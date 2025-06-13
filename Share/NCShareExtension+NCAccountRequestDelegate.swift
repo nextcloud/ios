@@ -58,15 +58,13 @@ extension NCShareExtension: NCAccountRequestDelegate {
     func accountRequestAddAccount() { }
 
     func accountRequestChangeAccount(account: String, controller: UIViewController?) {
-        guard let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
-              let capabilities = self.database.setCapabilities(account: account) else {
+        guard let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
             cancel(with: NCShareExtensionError.noAccount)
             return
         }
         self.account = account
 
-        // CAPABILITIES
-        database.setCapabilities(account: account)
+        self.database.setNKCapabilitiesBlocking(account: account)
 
         // COLORS
         NCBrandColor.shared.settingThemingColor(account: account)

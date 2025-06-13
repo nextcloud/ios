@@ -223,13 +223,10 @@ final class NCBrandColor: @unchecked Sendable {
         var colorThemingColorText: UIColor?
 
         if NCBrandOptions.shared.use_themingColor {
-            guard let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account) else {
-                return false
-            }
-
-            let themingColor = capabilities.capabilityThemingColor
-            let themingColorElement = capabilities.capabilityThemingColorElement
-            let themingColorText = capabilities.capabilityThemingColorText
+            let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account)
+            let themingColor = capabilities.themingColor
+            let themingColorElement = capabilities.themingColorElement
+            let themingColorText = capabilities.themingColorText
 
             // THEMING COLOR
             if themingColor.first == "#" {
