@@ -27,18 +27,18 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
         locationManager.allowsBackgroundLocationUpdates = true
     }
 
-    func start(from viewController: UIViewController) {
+    func start(from viewController: UIViewController?) {
         self.presentingViewController = viewController
 
         let status = locationManager.authorizationStatus
 
-        if status == .notDetermined {
+        if status == .notDetermined, let viewController {
             if !UserDefaults.standard.bool(forKey: explanationShownKey) {
                 presentInitialExplanation(from: viewController)
             } else {
                 locationManager.requestAlwaysAuthorization()
             }
-        } else if status != .authorizedAlways {
+        } else if status != .authorizedAlways, let viewController {
             presentSettingsAlert(from: viewController)
         } else {
             locationManager.startMonitoringSignificantLocationChanges()
