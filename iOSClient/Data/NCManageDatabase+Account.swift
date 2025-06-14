@@ -313,6 +313,43 @@ extension NCManageDatabase {
         }
     }
 
+    /// Asynchronously sets the user profile properties for a specific account in the Realm database.
+    /// - Parameters:
+    ///   - account: The account identifier.
+    ///   - userProfile: A `NKUserProfile` instance containing updated user profile data.
+    ///   - async: Whether the Realm write should be executed asynchronously (default is true).
+    func setAccountUserProfileAsync(account: String, userProfile: NKUserProfile) async {
+        await performRealmWriteAsync { realm in
+            if let result = realm.objects(tableAccount.self)
+                .filter("account == %@", account)
+                .first {
+                result.address = userProfile.address
+                result.backend = userProfile.backend
+                result.backendCapabilitiesSetDisplayName = userProfile.backendCapabilitiesSetDisplayName
+                result.backendCapabilitiesSetPassword = userProfile.backendCapabilitiesSetPassword
+                result.displayName = userProfile.displayName
+                result.email = userProfile.email
+                result.enabled = userProfile.enabled
+                result.groups = userProfile.groups.joined(separator: ",")
+                result.language = userProfile.language
+                result.lastLogin = userProfile.lastLogin
+                result.locale = userProfile.locale
+                result.organisation = userProfile.organisation
+                result.phone = userProfile.phone
+                result.quota = userProfile.quota
+                result.quotaFree = userProfile.quotaFree
+                result.quotaRelative = userProfile.quotaRelative
+                result.quotaTotal = userProfile.quotaTotal
+                result.quotaUsed = userProfile.quotaUsed
+                result.storageLocation = userProfile.storageLocation
+                result.subadmin = userProfile.subadmin.joined(separator: ",")
+                result.twitter = userProfile.twitter
+                result.userId = userProfile.userId
+                result.website = userProfile.website
+            }
+        }
+    }
+
     func setAccountMediaPath(_ path: String, account: String) {
         performRealmWrite { realm in
             if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {

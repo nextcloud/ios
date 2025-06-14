@@ -39,10 +39,9 @@ class NCService: NSObject {
             return
         }
 
-        self.database.clearAllAvatarLoaded(sync: false)
-        self.addInternalTypeIdentifier(account: account)
-
         Task(priority: .utility) {
+            self.addInternalTypeIdentifier(account: account)
+            await self.database.clearAllAvatarLoadedAsync()
             let result = await requestServerStatus(account: account, controller: controller)
             if result {
                 await requestServerCapabilities(account: account, controller: controller)
@@ -114,7 +113,7 @@ class NCService: NSObject {
         if resultUserProfile.error == .success,
            let userProfile = resultUserProfile.userProfile,
            userId == userProfile.userId {
-            self.database.setAccountUserProfile(account: resultUserProfile.account, userProfile: userProfile, sync: false)
+            await self.database.setAccountUserProfileAsync(account: resultUserProfile.account, userProfile: userProfile)
             return true
         } else {
             return false
@@ -135,10 +134,10 @@ class NCService: NSObject {
         if  resultsDownload.error == .success,
             let etag = resultsDownload.etag,
             etag != tblAvatar?.etag {
-            self.database.addAvatar(fileName: fileName, etag: etag, sync: false)
+            await self.database.addAvatarAsync(fileName: fileName, etag: etag)
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: ["error": resultsDownload.error])
         } else {
-            self.database.setAvatarLoaded(fileName: fileName, sync: false)
+            await self.database.setAvatarLoadedAsync(fileName: fileName)
         }
     }
 
@@ -154,7 +153,7 @@ class NCService: NSObject {
 
         // Recommendations
         if !capabilities.recommendations {
-            self.database.deleteAllRecommendedFiles(account: account, sync: false)
+            await self.database.deleteAllRecommendedFilesAsync(account: account)
         }
 
         // Theming
@@ -166,7 +165,7 @@ class NCService: NSObject {
         if capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion18 {
             let results = await NextcloudKit.shared.textObtainEditorDetailsAsync(account: account)
             if results.error == .success {
-                self.database.addDirectEditing(account: account, editors: results.editors, creators: results.creators, sync: false)
+                await self.database.addDirectEditingAsync(account: account, editors: results.editors, creators: results.creators)
             }
         }
 
@@ -174,13 +173,13 @@ class NCService: NSObject {
         if capabilities.externalSites {
             let results = await NextcloudKit.shared.getExternalSiteAsync(account: account)
             if results.error == .success {
-                self.database.deleteExternalSites(account: account, sync: false)
+                await self.database.deleteExternalSitesAsync(account: account)
                 for site in results.externalSite {
-                    self.database.addExternalSites(site, account: account, sync: false)
+                    await self.database.addExternalSitesAsync(site, account: account)
                 }
             }
         } else {
-            self.database.deleteExternalSites(account: account, sync: false)
+            await self.database.deleteExternalSitesAsync(account: account)
         }
 
         // User Status
@@ -204,11 +203,9 @@ class NCService: NSObject {
         }
 
         // Added UTI for ONLYOFFICE & Text
-        self.database.getDirectEditingCreators(account: account,
-                                               dispatchOnMainQueue: false) { tblDirectEditingCreators in
-            for directEditing in tblDirectEditingCreators {
-                NextcloudKit.shared.nkCommonInstance.addInternalTypeIdentifier(typeIdentifier: directEditing.mimetype, classFile: NKCommon.TypeClassFile.document.rawValue, editor: directEditing.editor, iconName: NKCommon.TypeIconFile.document.rawValue, name: "document", account: account)
-            }
+        let tblDirectEditingCreators = await self.database.getDirectEditingCreatorsAsync(account: account)
+        for directEditing in tblDirectEditingCreators {
+            NextcloudKit.shared.nkCommonInstance.addInternalTypeIdentifier(typeIdentifier: directEditing.mimetype, classFile: NKCommon.TypeClassFile.document.rawValue, editor: directEditing.editor, iconName: NKCommon.TypeIconFile.document.rawValue, name: "document", account: account)
         }
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateNotification)
