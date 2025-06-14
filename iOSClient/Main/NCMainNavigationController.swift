@@ -247,14 +247,11 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                                       personalFilesOnly: UIAction,
                                       showDescription: UIAction,
                                       showRecommendedFiles: UIAction?)? {
-        var showRecommendedFiles: UIAction?
-
-        guard let collectionViewCommon,
-              let layoutForView = database.getLayoutForView(account: session.account, key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl)
-        else {
+        guard let collectionViewCommon else {
             return nil
         }
-
+        var showRecommendedFiles: UIAction?
+        let layoutForView = database.getLayoutForView(account: session.account, key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl)
         let select = UIAction(title: NSLocalizedString("_select_", comment: ""),
                               image: utility.loadImage(named: "checkmark.circle"),
                               attributes: (collectionViewCommon.dataSource.isEmpty() || NCNetworking.shared.isOffline) ? .disabled : []) { _ in
@@ -384,11 +381,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     }
 
     func createTrashRightMenuActions() -> [UIMenuElement]? {
-        guard let trashViewController,
-              let layoutForView = self.database.getLayoutForView(account: session.account, key: trashViewController.layoutKey, serverUrl: "")
-        else {
+        guard let trashViewController else {
             return nil
         }
+        let layoutForView = self.database.getLayoutForView(account: session.account, key: trashViewController.layoutKey, serverUrl: "")
         var isSelectAvailable: Bool = false
 
         if let datasource = trashViewController.datasource, !datasource.isEmpty {
