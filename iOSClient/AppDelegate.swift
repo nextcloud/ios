@@ -253,12 +253,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let sortDescriptors = [
             RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
         ]
-        let limitCreateFolders: Int = 5
+        let limitTansfers: Int = 5
+
+        /// AUTO UPLOAD  for get new photo
+        let num = await NCAutoUpload.shared.initAutoUpload(tblAccount: tblAccount)
+        nkLog(tag: self.global.logTagBgSync, emoji: .start, message: "Auto upload with \(num) new photo for \(tblAccount.account)")
 
         /// CREATION FOLDERS
-        let metadatasWaitCreateFolder = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@", self.global.metadataStatusWaitCreateFolder, self.global.selectorUploadAutoUpload), limit: limitCreateFolders)
+        let metadatasWaitCreateFolder = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@", self.global.metadataStatusWaitCreateFolder, self.global.selectorUploadAutoUpload), limit: limitTansfers)
 
-        if let metadatasWaitCreateFolder {
+        if let metadatasWaitCreateFolder,
+            !metadatasWaitCreateFolder.isEmpty {
             for metadata in metadatasWaitCreateFolder {
                 let serverUrl = metadata.serverUrl + "/" + metadata.fileName
                 let resultsCreateFolder = await self.networking.createFolder(fileName: metadata.fileName,
@@ -280,17 +285,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     numTransfers += 1
                 }
             }
+        }
 
+        if numTransfers >= limitTansfers {
             return numTransfers
         }
 
-        /// AUTO UPLOAD  for get new photo
-        let num = await NCAutoUpload.shared.initAutoUpload(tblAccount: tblAccount)
-        nkLog(tag: self.global.logTagBgSync, emoji: .start, message: "Auto upload with \(num) new photo for \(tblAccount.account)")
-
         /// UPLOAD
         if !creationFolderAutoUploadInError,
-           let metadatasWaitUpload = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@ AND chunk == 0", self.global.metadataStatusWaitUpload, self.global.selectorUploadAutoUpload), sortDescriptors: sortDescriptors, limit: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload) {
+           let metadatasWaitUpload = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@ AND chunk == 0", self.global.metadataStatusWaitUpload, self.global.selectorUploadAutoUpload), sortDescriptors: sortDescriptors, limit: limitTansfers) {
 
             let metadatas = await NCCameraRoll().extractCameraRoll(from: metadatasWaitUpload)
 
@@ -305,6 +308,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
                 numTransfers += 1
             }
+        }
+
+        if numTransfers >= limitTansfers {
+            return numTransfers
         }
 
         /// DOWNLOAD
