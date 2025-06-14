@@ -461,6 +461,15 @@ extension NCManageDatabase {
         }
     }
 
+    func getTableAccountAsync(account: String) async -> tableAccount? {
+        await performRealmReadAsync { realm in
+            realm.objects(tableAccount.self)
+                .filter("account == %@", account)
+                .first
+                .map { tableAccount(value: $0) }
+        }
+    }
+
     func getAccounts() -> [String]? {
         performRealmRead { realm in
             let results = realm.objects(tableAccount.self)

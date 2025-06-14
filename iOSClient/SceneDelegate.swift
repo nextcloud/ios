@@ -124,8 +124,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             Task {
-                let num = await NCAutoUpload.shared.initAutoUpload(account: session.account)
-                nkLog(start: "Auto upload with \(num) photo")
+                if let tableAccount = await self.database.getTableAccountAsync(account: session.account) {
+                    let num = await NCAutoUpload.shared.initAutoUpload(tblAccount: tableAccount)
+                    nkLog(start: "Auto upload with \(num) photo")
+                }
             }
         }
 
