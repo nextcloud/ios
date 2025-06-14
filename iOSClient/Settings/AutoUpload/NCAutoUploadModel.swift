@@ -164,7 +164,9 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     /// Updates the auto-upload full content setting.
     func handleAutoUploadChange(newValue: Bool, assetCollections: [PHAssetCollection]) {
-        if let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)), tableAccount.autoUploadStart == newValue { return }
+        if let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)), tableAccount.autoUploadStart == newValue {
+            return
+        }
 
         database.updateAccountProperty(\.autoUploadStart, value: newValue, account: session.account)
 
@@ -173,7 +175,9 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
                 database.updateAccountProperty(\.autoUploadOnlyNewSinceDate, value: Date.now, account: session.account)
             }
             Task {
-                _ = await NCAutoUpload.shared.autoUploadSelectedAlbums(controller: self.controller, assetCollections: assetCollections, account: session.account)
+                _ = await NCAutoUpload.shared.startManualAutoUploadForAlbums(controller: self.controller,
+                                                                             assetCollections: assetCollections,
+                                                                             account: session.account)
             }
 
             if let controller = self.controller {

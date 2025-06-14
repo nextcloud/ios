@@ -123,7 +123,7 @@ class NCAccount: NSObject {
             NCService().startRequestServicesServer(account: account, controller: controller)
             /// Start the auto upload
             Task {
-                let num = await NCAutoUpload.shared.initAutoUpload(controller: nil, account: account)
+                let num = await NCAutoUpload.shared.initAutoUpload(tblAccount: tblAccount)
                 nkLog(start: "Auto upload with \(num) photo")
             }
             /// Networking Process

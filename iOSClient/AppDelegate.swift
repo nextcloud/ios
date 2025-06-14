@@ -285,11 +285,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         /// AUTO UPLOAD  for get new photo
-        if tblAccount.autoUploadStart,
-           tblAccount.autoUploadOnlyNew {
-            let num = await NCAutoUpload.shared.initAutoUpload(account: tblAccount.account)
-            nkLog(tag: self.global.logTagBgSync, emoji: .start, message: "Auto upload with \(num) new photo for \(tblAccount.account)")
-        }
+        let num = await NCAutoUpload.shared.initAutoUpload(tblAccount: tblAccount)
+        nkLog(tag: self.global.logTagBgSync, emoji: .start, message: "Auto upload with \(num) new photo for \(tblAccount.account)")
 
         /// UPLOAD
         if !creationFolderAutoUploadInError,

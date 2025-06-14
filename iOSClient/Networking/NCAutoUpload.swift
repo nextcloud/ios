@@ -16,16 +16,16 @@ class NCAutoUpload: NSObject {
     private let networking = NCNetworking.shared
     private var endForAssetToUpload: Bool = false
 
-    func initAutoUpload(controller: NCMainTabBarController? = nil, account: String) async -> Int {
+    func initAutoUpload(controller: NCMainTabBarController? = nil, tblAccount: tableAccount) async -> Int {
         guard self.networking.isOnline,
-              let tblAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
-              tblAccount.autoUploadStart else {
+              tblAccount.autoUploadStart,
+              tblAccount.autoUploadOnlyNew else {
             return 0
         }
-        let albumIds = NCKeychain().getAutoUploadAlbumIds(account: account)
+        let albumIds = NCKeychain().getAutoUploadAlbumIds(account: tblAccount.account)
         let selectedAlbums = PHAssetCollection.allAlbums.filter({albumIds.contains($0.localIdentifier)})
 
-        let result = await getCameraRollAssets(controller: controller, assetCollections: selectedAlbums, tblAccount: tableAccount(value: tblAccount))
+        let result = await getCameraRollAssets(controller: nil, assetCollections: selectedAlbums, tblAccount: tableAccount(value: tblAccount))
 
         guard let assets = result.assets,
               !assets.isEmpty,
@@ -33,12 +33,14 @@ class NCAutoUpload: NSObject {
             return 0
         }
 
-        let num = await uploadAssets(controller: controller, tblAccount: tableAccount(value: tblAccount), assets: assets, fileNames: fileNames)
+        let num = await uploadAssets(tblAccount: tableAccount(value: tblAccount), assets: assets, fileNames: fileNames)
 
         return num
     }
 
-    func autoUploadSelectedAlbums(controller: NCMainTabBarController?, assetCollections: [PHAssetCollection], account: String) async {
+    func startManualAutoUploadForAlbums(controller: NCMainTabBarController?,
+                                        assetCollections: [PHAssetCollection],
+                                        account: String) async {
         guard let tblAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account))
         else {
             return
@@ -55,7 +57,7 @@ class NCAutoUpload: NSObject {
         _ = await uploadAssets(controller: controller, tblAccount: tblAccount, assets: assets, fileNames: fileNames)
     }
 
-    private func uploadAssets(controller: NCMainTabBarController?, tblAccount: tableAccount, assets: [PHAsset], fileNames: [String]) async -> Int {
+    private func uploadAssets(controller: NCMainTabBarController? = nil, tblAccount: tableAccount, assets: [PHAsset], fileNames: [String]) async -> Int {
         let session = NCSession.shared.getSession(account: tblAccount.account)
         let autoUploadServerUrlBase = self.database.getAccountAutoUploadServerUrlBase(account: tblAccount.account, urlBase: tblAccount.urlBase, userId: tblAccount.userId)
         var metadatas: [tableMetadata] = []
