@@ -176,7 +176,16 @@ class NCUserStatus: UIViewController {
 
         NextcloudKit.shared.getUserStatus(account: account) { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, _, _, error in
             if error == .success {
-                NCManageDatabase.shared.setAccountUserStatus(userStatusClearAt: clearAt, userStatusIcon: icon, userStatusMessage: message, userStatusMessageId: messageId, userStatusMessageIsPredefined: messageIsPredefined, userStatusStatus: status, userStatusStatusIsUserDefined: statusIsUserDefined, account: account)
+                Task {
+                    await NCManageDatabase.shared.setAccountUserStatusAsync(userStatusClearAt: clearAt,
+                                                                            userStatusIcon: icon,
+                                                                            userStatusMessage: message,
+                                                                            userStatusMessageId: messageId,
+                                                                            userStatusMessageIsPredefined: messageIsPredefined,
+                                                                            userStatusStatus: status,
+                                                                            userStatusStatusIsUserDefined: statusIsUserDefined,
+                                                                            account: account)
+                }
             }
         }
     }

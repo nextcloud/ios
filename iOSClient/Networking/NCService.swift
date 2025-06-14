@@ -187,14 +187,14 @@ class NCService: NSObject {
         if capabilities.userStatusEnabled {
             let results = await NextcloudKit.shared.getUserStatusAsync(account: account)
             if results.error == .success {
-                self.database.setAccountUserStatus(userStatusClearAt: results.clearAt,
-                                                   userStatusIcon: results.icon,
-                                                   userStatusMessage: results.message,
-                                                   userStatusMessageId: results.messageId,
-                                                   userStatusMessageIsPredefined: results.messageIsPredefined,
-                                                   userStatusStatus: results.status,
-                                                   userStatusStatusIsUserDefined: results.statusIsUserDefined,
-                                                   account: results.account, sync: false)
+                await self.database.setAccountUserStatusAsync(userStatusClearAt: results.clearAt,
+                                                              userStatusIcon: results.icon,
+                                                              userStatusMessage: results.message,
+                                                              userStatusMessageId: results.messageId,
+                                                              userStatusMessageIsPredefined: results.messageIsPredefined,
+                                                              userStatusStatus: results.status,
+                                                              userStatusStatusIsUserDefined: results.statusIsUserDefined,
+                                                              account: results.account)
             }
         }
 

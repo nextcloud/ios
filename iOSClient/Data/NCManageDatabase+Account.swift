@@ -321,20 +321,19 @@ extension NCManageDatabase {
         }
     }
 
-    func setAccountUserStatus(userStatusClearAt: Date?,
-                              userStatusIcon: String?,
-                              userStatusMessage: String?,
-                              userStatusMessageId: String?,
-                              userStatusMessageIsPredefined: Bool,
-                              userStatusStatus: String?,
-                              userStatusStatusIsUserDefined: Bool,
-                              account: String,
-                              sync: Bool = true) {
-        performRealmWrite(sync: sync) { realm in
+    func setAccountUserStatusAsync(userStatusClearAt: Date?,
+                                   userStatusIcon: String?,
+                                   userStatusMessage: String?,
+                                   userStatusMessageId: String?,
+                                   userStatusMessageIsPredefined: Bool,
+                                   userStatusStatus: String?,
+                                   userStatusStatusIsUserDefined: Bool,
+                                   account: String) async {
+        await performRealmWriteAsync { realm in
             if let result = realm.objects(tableAccount.self)
                 .filter("account == %@", account)
                 .first {
-                result.userStatusClearAt = userStatusClearAt as? NSDate
+                result.userStatusClearAt = userStatusClearAt as NSDate?
                 result.userStatusIcon = userStatusIcon
                 result.userStatusMessage = userStatusMessage
                 result.userStatusMessageId = userStatusMessageId
@@ -344,7 +343,6 @@ extension NCManageDatabase {
             }
         }
     }
-
     // MARK: - Realm Read
 
     func getTableAccount(predicate: NSPredicate) -> tableAccount? {
