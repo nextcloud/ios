@@ -191,6 +191,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         nkLog(info: "Auto upload in background: \(tableAccount.autoUploadStart)")
         nkLog(info: "Update in background: \(UIApplication.shared.backgroundRefreshStatus == .available)")
+
+        NCBackgroundLocationUploadManager.shared.start(from: nil)
         NCBackgroundLocationUploadManager.shared.checkLocationServiceIsActive { active in
             nkLog(tag: self.global.logTagLocation, emoji: .info, message: "Location service: \(active)")
         }
