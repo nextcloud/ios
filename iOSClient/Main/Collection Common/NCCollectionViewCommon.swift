@@ -122,7 +122,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     var isRecommendationActived: Bool {
         self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session) &&
-        NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations
+        capabilities.recommendations
     }
 
     var infoLabelsSeparator: String {
@@ -165,6 +165,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     var isPinchGestureActive: Bool {
         return pinchGesture.state == .began || pinchGesture.state == .changed
+    }
+
+    var capabilities:NCCapabilities.Capabilities {
+        NCCapabilities.shared.getCapabilitiesBlocking(for: session.account)
     }
 
     internal let debouncer = NCDebouncer(delay: 1)
@@ -741,7 +745,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.refreshControl.beginRefreshing()
         self.reloadDataSource()
 
-        if NCCapabilities.shared.getCapabilities(account: session.account).capabilityServerVersionMajor >= global.nextcloudVersion20 {
+        if capabilities.serverVersionMajor >= global.nextcloudVersion20 {
             self.netwoking.unifiedSearchFiles(literal: literalSearch, account: session.account) { task in
                 self.dataSourceTask = task
                 self.reloadDataSource()

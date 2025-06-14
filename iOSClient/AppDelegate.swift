@@ -253,9 +253,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let sortDescriptors = [
             RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
         ]
+        let limitCreateFolders: Int = 5
 
         /// CREATION FOLDERS
-        let metadatasWaitCreateFolder = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@", self.global.metadataStatusWaitCreateFolder, self.global.selectorUploadAutoUpload), limit: nil)
+        let metadatasWaitCreateFolder = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@", self.global.metadataStatusWaitCreateFolder, self.global.selectorUploadAutoUpload), limit: limitCreateFolders)
 
         if let metadatasWaitCreateFolder {
             for metadata in metadatasWaitCreateFolder {
@@ -270,7 +271,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     nkLog(tag: self.global.logTagBgSync, emoji: .error, message: "Auto upload create folder \(serverUrl) with error: \(resultsCreateFolder.error.errorCode)")
 
                     creationFolderAutoUploadInError = true
-                    break
+                    return numTransfers
                 }
 
                 nkLog(tag: self.global.logTagBgSync, message: "Auto upload create folder \(serverUrl)")
@@ -279,6 +280,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     numTransfers += 1
                 }
             }
+
+            return numTransfers
         }
 
         /// AUTO UPLOAD  for get new photo

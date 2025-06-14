@@ -29,7 +29,7 @@ import Alamofire
 extension NCCollectionViewCommon: UICollectionViewDelegate {
     func didSelectMetadata(_ metadata: tableMetadata, withOcIds: Bool) {
         if metadata.e2eEncrypted {
-            if NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityE2EEEnabled {
+            if capabilities.e2EEEnabled {
                 if !NCKeychain().isEndToEndEnabled(account: metadata.account) {
                     let e2ee = NCEndToEndInitialize()
                     e2ee.delegate = self

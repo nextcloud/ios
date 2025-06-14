@@ -148,8 +148,8 @@ class NCMainTabBarController: UITabBarController {
                 }
                 /// Update Activity tab bar
                 if let item = self.tabBar.items?[3] {
-                    let capabilities = NCCapabilities.shared.getCapabilities(account: self.account)
-                    item.isEnabled = capabilities.capabilityActivityEnabled
+                    let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: self.account)
+                    item.isEnabled = capabilities.activityEnabled
                 }
 
                 self.timerCheck()

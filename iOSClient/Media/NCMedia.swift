@@ -125,7 +125,7 @@ class NCMedia: UIViewController {
 
         layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
         collectionView.collectionViewLayout = layout
-        layoutType = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "")?.layout ?? global.mediaLayoutRatio
+        layoutType = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "", layout: global.mediaLayoutRatio).layout
 
         tabBarSelect = NCMediaSelectTabBar(controller: self.tabBarController, delegate: self)
 
@@ -167,7 +167,7 @@ class NCMedia: UIViewController {
         collectionView.addGestureRecognizer(pinchGesture)
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: global.notificationCenterChangeUser), object: nil, queue: nil) { _ in
-            self.layoutType = self.database.getLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "")?.layout ?? self.global.mediaLayoutRatio
+            self.layoutType = self.database.getLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "").layout
             self.imageCache.removeAll()
             self.loadDataSource()
             self.searchMediaUI(true)

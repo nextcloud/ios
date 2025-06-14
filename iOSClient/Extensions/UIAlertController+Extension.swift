@@ -109,10 +109,13 @@ extension UIAlertController {
             forName: UITextField.textDidChangeNotification,
             object: alertController.textFields?.first,
             queue: .main) { _ in
-                guard let text = alertController.textFields?.first?.text else { return }
+                let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: session.account)
+                guard let text = alertController.textFields?.first?.text else {
+                    return
+                }
                 let folderName = text.trimmingCharacters(in: .whitespaces)
                 let isFileHidden = FileNameValidator.isFileHidden(text)
-                let textCheck = FileNameValidator.checkFileName(folderName, account: session.account)
+                let textCheck = FileNameValidator.checkFileName(folderName, account: session.account, capabilities: capabilities)
                 let alreadyExists = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", session.account, serverUrl, folderName)) != nil
 
                 okAction.isEnabled = !text.isEmpty && textCheck?.error == nil && alreadyExists == false
@@ -192,6 +195,7 @@ extension UIAlertController {
     }
 
     static func renameFile(fileName: String, isDirectory: Bool = false, account: String, completion: @escaping (_ newFileName: String) -> Void) -> UIAlertController {
+        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account) ?? NCCapabilities.Capabilities()
         let alertController = UIAlertController(title: NSLocalizedString(isDirectory ? "_rename_folder_" : "_rename_file_", comment: ""), message: nil, preferredStyle: .alert)
 
         let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in
@@ -212,7 +216,7 @@ extension UIAlertController {
         let oldExtension = fileName.fileExtension
 
         let text = alertController.textFields?.first?.text ?? ""
-        let textCheck = FileNameValidator.checkFileName(text, account: account)
+        let textCheck = FileNameValidator.checkFileName(text, account: account, capabilities: capabilities)
         var message = textCheck?.error.localizedDescription ?? ""
         var messageColor = UIColor.red
 
@@ -242,7 +246,7 @@ extension UIAlertController {
                 guard let text = alertController.textFields?.first?.text else { return }
                 let newExtension = text.fileExtension
 
-                let textCheck = FileNameValidator.checkFileName(text, account: account)
+                let textCheck = FileNameValidator.checkFileName(text, account: account, capabilities: capabilities)
                 let isFileHidden = FileNameValidator.isFileHidden(text)
 
                 okAction.isEnabled = !text.isEmpty && textCheck?.error == nil

@@ -144,8 +144,9 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         let folderPath = utilityFileSystem.getFileNamePath("", serverUrl: serverUrl, session: session)
+        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: session.account)
 
-        if serverUrl.isEmpty || !FileNameValidator.checkFolderPath(folderPath, account: session.account) {
+        if serverUrl.isEmpty || !FileNameValidator.checkFolderPath(folderPath, account: session.account, capabilities: capabilities) {
             serverUrl = utilityFileSystem.getHomeServer(session: session)
             titleCurrentFolder = NCBrandOptions.shared.brand
         }
@@ -234,9 +235,9 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     // MARK: - Push metadata
 
     func pushMetadata(_ metadata: tableMetadata) {
-
         let serverUrlPush = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
         guard let viewController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect else { return }
+        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
 
         self.serverUrlPush = serverUrlPush
 
@@ -252,7 +253,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         viewController.serverUrl = serverUrlPush
         viewController.session = session
 
-        if let fileNameError = FileNameValidator.checkFileName(metadata.fileNameView, account: session.account) {
+        if let fileNameError = FileNameValidator.checkFileName(metadata.fileNameView, account: session.account, capabilities: capabilities) {
             present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
         } else {
             navigationController?.pushViewController(viewController, animated: true)

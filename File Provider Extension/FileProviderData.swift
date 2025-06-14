@@ -109,7 +109,6 @@ class fileProviderData: NSObject {
                                           userId: tblAccount.userId,
                                           password: NCKeychain().getPassword(account: tblAccount.account),
                                           userAgent: userAgent,
-                                          nextcloudVersion: NCCapabilities.shared.getCapabilities(account: tblAccount.account).capabilityServerVersionMajor,
                                           httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
                                           httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
                                           httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,

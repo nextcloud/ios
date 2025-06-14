@@ -50,7 +50,8 @@ extension NCMedia: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let numberOfItemsInSection = dataSource.metadatas.count
-        let assistantEnabled = NCCapabilities.shared.getCapabilities(account: session.account).capabilityAssistantEnabled
+        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: session.account)
+        let assistantEnabled =  capabilities.assistantEnabled
         if assistantEnabled {
             assistantButton.isHidden = false
         } else {

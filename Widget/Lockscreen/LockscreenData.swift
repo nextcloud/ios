@@ -53,11 +53,11 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
     }
 
     guard let activeTableAccount,
-          let capabilities = NCManageDatabase.shared.setCapabilities(account: activeTableAccount.account) else {
+          let capabilities = NCManageDatabase.shared.applyCachedCapabilitiesBlocking(account: activeTableAccount.account) else {
         return completion(LockscreenData(date: Date(), isPlaceholder: true, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: false))
     }
 
-    if capabilities.capabilityServerVersionMajor < NCGlobal.shared.nextcloudVersion25 {
+    if capabilities.serverVersionMajor < NCGlobal.shared.nextcloudVersion25 {
         completion(LockscreenData(date: Date(), isPlaceholder: false, activity: NSLocalizedString("_widget_available_nc25_", comment: ""), link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: true))
     }
 
@@ -71,7 +71,6 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
                                       userId: activeTableAccount.userId,
                                       password: password,
                                       userAgent: userAgent,
-                                      nextcloudVersion: capabilities.capabilityServerVersionMajor,
                                       httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
                                       httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
                                       httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,

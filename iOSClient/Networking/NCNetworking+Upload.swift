@@ -345,6 +345,8 @@ extension NCNetworking {
         let selector = metadata.sessionSelector
 
         Task {
+            let capabilities = await NCCapabilities.shared.getCapabilitiesAsync(for: metadata.account)
+
             if error == .success, let ocId = ocId, size == metadata.size {
                 nkLog(success: "Uploaded file: " + metadata.serverUrl + "/" + metadata.fileName + ", (\(size) bytes)")
 
@@ -399,7 +401,7 @@ extension NCNetworking {
                 }
 
                 if metadata.isLivePhoto,
-                   NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable {
+                   capabilities.isLivePhotoServerAvailable {
                     await self.createLivePhoto(metadata: metadata)
                 } else {
                     self.notifyAllDelegates { delegate in
@@ -428,9 +430,13 @@ extension NCNetworking {
                                                                         errorCode: error.errorCode)
                     } else {
 #if EXTENSION
-                        await self.uploadCancelFile(metadata: metadata)
+                        _ = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                        sessionTaskIdentifier: 0,
+                                                                        sessionError: error.errorDescription,
+                                                                        status: self.global.metadataStatusUploadError,
+                                                                        errorCode: error.errorCode)
 #else
-                        if NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityTermsOfService {
+                        if capabilities.termsOfService {
                             self.termsOfService(metadata: metadata)
                         } else {
                             self.uploadForbidden(metadata: metadata, error: error)

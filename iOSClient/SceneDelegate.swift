@@ -50,9 +50,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if let activeTableAccount = self.database.getActiveTableAccount() {
             nkLog(debug: "Account active \(activeTableAccount.account)")
 
-            let capability = self.database.setCapabilities(account: activeTableAccount.account)
             NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
-
             NCNetworkingProcess.shared.setCurrentAccount(activeTableAccount.account)
 
             for tableAccount in self.database.getAllTableAccount() {
@@ -62,11 +60,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                                                   userId: tableAccount.userId,
                                                   password: NCKeychain().getPassword(account: tableAccount.account),
                                                   userAgent: userAgent,
-                                                  nextcloudVersion: capability?.capabilityServerVersionMajor ?? 0,
                                                   httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
                                                   httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
                                                   httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
                                                   groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+                Task {
+                    await self.database.applyCachedCapabilitiesAsync(account: tableAccount.account)
+                }
                 NCSession.shared.appendSession(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId)
             }
 

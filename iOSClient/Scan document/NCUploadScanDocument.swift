@@ -325,6 +325,10 @@ struct UploadScanDocumentView: View {
 
     var metadatasConflict: [tableMetadata] = []
 
+    var capabilities: NCCapabilities.Capabilities {
+        NCCapabilities.shared.getCapabilitiesBlocking(for: model.session.account)
+    }
+
     init(model: NCUploadScanDocument) {
         self.model = model
     }
@@ -375,7 +379,7 @@ struct UploadScanDocumentView: View {
                             TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $fileName)
                                 .multilineTextAlignment(.trailing)
                                 .onChange(of: fileName) { _ in
-                                    if let fileNameError = FileNameValidator.checkFileName(fileName, account: self.model.controller?.account) {
+                                    if let fileNameError = FileNameValidator.checkFileName(fileName, account: self.model.controller?.account, capabilities: capabilities) {
                                         footer = fileNameError.errorDescription
                                     } else {
                                         footer = ""

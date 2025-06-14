@@ -104,8 +104,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }), for: .touchUpInside)
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterUpdateNotification), object: nil, queue: nil) { _ in
-            let capabilities = NCCapabilities.shared.getCapabilities(account: self.session.account)
-            if capabilities.capabilityNotification.count > 0 {
+            let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: self.session.account)
+            if capabilities.notification.count > 0 {
                 NextcloudKit.shared.getNotifications(account: self.session.account) { _ in
                 } completion: { _, notifications, _, error in
                     if error == .success,
@@ -178,7 +178,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             return
         }
 
-        let capabilities = NCCapabilities.shared.getCapabilities(account: session.account)
+        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: session.account)
         let resultsCount = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", self.global.metadataStatusNormal))?.count ?? 0
         var tempRightBarButtonItems: [UIBarButtonItem] = createRightMenu() == nil ? [] : [self.menuBarButtonItem]
         var tempTotalTags = tempRightBarButtonItems.count == 0 ? 0 : self.menuBarButtonItem.tag
@@ -190,7 +190,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             }
         }
 
-        if capabilities.capabilityAssistantEnabled {
+        if capabilities.assistantEnabled {
             tempRightBarButtonItems.append(self.assistantButtonItem)
             tempTotalTags = tempTotalTags + self.assistantButtonItem.tag
         }
@@ -247,14 +247,11 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                                       personalFilesOnly: UIAction,
                                       showDescription: UIAction,
                                       showRecommendedFiles: UIAction?)? {
-        var showRecommendedFiles: UIAction?
-
-        guard let collectionViewCommon,
-              let layoutForView = database.getLayoutForView(account: session.account, key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl)
-        else {
+        guard let collectionViewCommon else {
             return nil
         }
-
+        var showRecommendedFiles: UIAction?
+        let layoutForView = database.getLayoutForView(account: session.account, key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl)
         let select = UIAction(title: NSLocalizedString("_select_", comment: ""),
                               image: utility.loadImage(named: "checkmark.circle"),
                               attributes: (collectionViewCommon.dataSource.isEmpty() || NCNetworking.shared.isOffline) ? .disabled : []) { _ in
@@ -371,7 +368,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
 
         let showRecommendedFilesKeychain = NCKeychain().showRecommendedFiles
-        let capabilityRecommendations = NCCapabilities.shared.getCapabilities(account: session.account).capabilityRecommendations
+        let capabilityRecommendations = NCCapabilities.shared.getCapabilitiesBlocking(for: session.account).recommendations
         if capabilityRecommendations {
             showRecommendedFiles = UIAction(title: NSLocalizedString("_show_recommended_files_", comment: ""), state: showRecommendedFilesKeychain ? .on : .off) { _ in
                 NCKeychain().showRecommendedFiles = !showRecommendedFilesKeychain
@@ -384,11 +381,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     }
 
     func createTrashRightMenuActions() -> [UIMenuElement]? {
-        guard let trashViewController,
-              let layoutForView = self.database.getLayoutForView(account: session.account, key: trashViewController.layoutKey, serverUrl: "")
-        else {
+        guard let trashViewController else {
             return nil
         }
+        let layoutForView = self.database.getLayoutForView(account: session.account, key: trashViewController.layoutKey, serverUrl: "")
         var isSelectAvailable: Bool = false
 
         if let datasource = trashViewController.datasource, !datasource.isEmpty {

@@ -35,6 +35,7 @@ class NCNetworkingE2EEMarkFolder: NSObject {
         }
         let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolderAsync(fileId: file.fileId, delete: false, account: account, options: NCNetworkingE2EE().getOptions(account: account))
         guard resultsMarkE2EEFolder.error == .success else { return resultsMarkE2EEFolder.error }
+        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account)
 
         file.e2eEncrypted = true
 
@@ -42,7 +43,7 @@ class NCNetworkingE2EEMarkFolder: NSObject {
 
         self.database.addDirectory(e2eEncrypted: true, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
         self.database.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrlFileName))
-        if NCCapabilities.shared.getCapabilities(account: account).capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
+        if capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
             self.database.updateCounterE2eMetadata(account: account, ocIdServerUrl: metadata.ocId, counter: 0)
         }
 

@@ -39,7 +39,7 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
         NCSession.shared.getSession(controller: controller)
     }
     var capabilities: NCCapabilities.Capabilities {
-        NCCapabilities.shared.getCapabilities(account: session.account)
+        NCCapabilities.shared.getCapabilitiesBlocking(for: session.account)
     }
 
     init(controller: NCMainTabBarController?) {
@@ -51,7 +51,7 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
 
     /// Triggered when the view appears.
     func onViewAppear() {
-        if capabilities.capabilityE2EEEnabled && NCGlobal.shared.e2eeVersions.contains(capabilities.capabilityE2EEApiVersion) {
+        if capabilities.e2EEEnabled && NCGlobal.shared.e2eeVersions.contains(capabilities.e2EEApiVersion) {
             isEndToEndEnabled = NCKeychain().isEndToEndEnabled(account: session.account)
             if isEndToEndEnabled {
                 statusOfService = NSLocalizedString("_status_e2ee_configured_", comment: "")

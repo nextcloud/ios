@@ -25,6 +25,7 @@ import Foundation
 import UIKit
 import SafariServices
 import SwiftUI
+import NextcloudKit
 
 class NCMoreAppSuggestionsCell: BaseNCMoreCell {
     @IBOutlet weak var assistantView: UIStackView!
@@ -50,7 +51,9 @@ class NCMoreAppSuggestionsCell: BaseNCMoreCell {
     }
 
     override func setupCell(account: String, controller: NCMainTabBarController?) {
-        assistantView.isHidden = !NCCapabilities.shared.getCapabilities(account: account).capabilityAssistantEnabled
+        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account)
+
+        assistantView.isHidden = !capabilities.assistantEnabled
         self.controller = controller
     }
 

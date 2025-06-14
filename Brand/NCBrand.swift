@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
+import NextcloudKit
 
 let userAgent: String = {
     let appVersion: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
@@ -222,9 +223,10 @@ final class NCBrandColor: @unchecked Sendable {
         var colorThemingColorText: UIColor?
 
         if NCBrandOptions.shared.use_themingColor {
-            let themingColor = NCCapabilities.shared.getCapabilities(account: account).capabilityThemingColor
-            let themingColorElement = NCCapabilities.shared.getCapabilities(account: account).capabilityThemingColorElement
-            let themingColorText = NCCapabilities.shared.getCapabilities(account: account).capabilityThemingColorText
+            let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account)
+            let themingColor = capabilities.themingColor
+            let themingColorElement = capabilities.themingColorElement
+            let themingColorText = capabilities.themingColorText
 
             // THEMING COLOR
             if themingColor.first == "#" {

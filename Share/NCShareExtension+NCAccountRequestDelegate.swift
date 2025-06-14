@@ -58,15 +58,12 @@ extension NCShareExtension: NCAccountRequestDelegate {
     func accountRequestAddAccount() { }
 
     func accountRequestChangeAccount(account: String, controller: UIViewController?) {
-        guard let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
-              let capabilities = self.database.setCapabilities(account: account) else {
+        guard let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
             cancel(with: NCShareExtensionError.noAccount)
             return
         }
         self.account = account
-
-        // CAPABILITIES
-        database.setCapabilities(account: account)
+        self.database.applyCachedCapabilitiesBlocking(account: account)
 
         // COLORS
         NCBrandColor.shared.settingThemingColor(account: account)
@@ -80,7 +77,6 @@ extension NCShareExtension: NCAccountRequestDelegate {
                                           userId: tableAccount.userId,
                                           password: NCKeychain().getPassword(account: tableAccount.account),
                                           userAgent: userAgent,
-                                          nextcloudVersion: capabilities.capabilityServerVersionMajor,
                                           httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
                                           httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
                                           httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,

@@ -240,6 +240,8 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
     func openShare(viewController: UIViewController, metadata: tableMetadata, page: NCBrandOptions.NCInfoPagingTab) {
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         var page = page
+        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
+
 
         NCActivityIndicator.shared.start(backgroundView: viewController.view)
         NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: metadata.account, queue: .main) { account, metadata, error in
@@ -254,7 +256,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                     pages.append(value)
                 }
 
-                if NCCapabilities.shared.getCapabilities(account: account).capabilityActivity.isEmpty, let idx = pages.firstIndex(of: .activity) {
+                if capabilities.activity.isEmpty, let idx = pages.firstIndex(of: .activity) {
                     pages.remove(at: idx)
                 }
                 if !metadata.isSharable(), let idx = pages.firstIndex(of: .sharing) {
@@ -532,8 +534,10 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         let topViewController = navigationController?.topViewController as? NCSelect
         var listViewController = [NCSelect]()
         var copyItems: [tableMetadata] = []
+        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: controller?.account ?? "")
+
         for item in items {
-            if let fileNameError = FileNameValidator.checkFileName(item.fileNameView, account: controller?.account) {
+            if let fileNameError = FileNameValidator.checkFileName(item.fileNameView, account: controller?.account, capabilities: capabilities) {
                 controller?.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
                 return
             }

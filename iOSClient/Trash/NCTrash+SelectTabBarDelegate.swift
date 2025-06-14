@@ -60,7 +60,11 @@ extension NCTrash: NCTrashSelectTabBarDelegate {
     }
 
     func delete() {
-        selectOcId.forEach(deleteItem)
+        if selectOcId.count > 0, selectOcId.count == datasource?.count {
+            emptyTrash()
+        } else {
+            selectOcId.forEach(deleteItem)
+        }
         setEditMode(false)
     }
 

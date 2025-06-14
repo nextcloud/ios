@@ -264,8 +264,11 @@ extension tableMetadata {
         let utility = NCUtility()
         let directEditingEditors = utility.editorsDirectEditing(account: account, contentType: contentType)
         let richDocumentEditor = utility.isTypeFileRichDocument(self)
+        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account)
 
-        if NCCapabilities.shared.getCapabilities(account: account).capabilityRichDocumentsEnabled && richDocumentEditor && directEditingEditors.isEmpty {
+        if capabilities.richDocumentsEnabled,
+           richDocumentEditor,
+           directEditingEditors.isEmpty {
             // RichDocument: Collabora
             return true
         } else if directEditingEditors.contains(NCGlobal.shared.editorText) || directEditingEditors.contains(NCGlobal.shared.editorOnlyoffice) {
@@ -276,8 +279,9 @@ extension tableMetadata {
     }
 
     var isAvailableRichDocumentEditorView: Bool {
+        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account)
         guard classFile == NKCommon.TypeClassFile.document.rawValue,
-              NCCapabilities.shared.getCapabilities(account: account).capabilityRichDocumentsEnabled,
+              capabilities.richDocumentsEnabled,
               NextcloudKit.shared.isNetworkReachable() else { return false }
 
         if NCUtility().isTypeFileRichDocument(self) {
@@ -307,7 +311,8 @@ extension tableMetadata {
 
     // Return if is sharable
     func isSharable() -> Bool {
-        if !NCCapabilities.shared.getCapabilities(account: account).capabilityFileSharingApiEnabled || (NCCapabilities.shared.getCapabilities(account: account).capabilityE2EEEnabled && isDirectoryE2EE) {
+        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account)
+        if !capabilities.fileSharingApiEnabled || (capabilities.e2EEEnabled && isDirectoryE2EE) {
             return false
         }
         return true
