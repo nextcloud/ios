@@ -34,28 +34,40 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     let notificationsButtonTag = 102
     let transfersButtonTag = 103
 
-    let menuButton = UIButton(type: .system)
+    lazy var menuButton: UIButton = {
+        let button = UIButton(type: .system)
+        return button
+    }()
     var menuBarButtonItem: UIBarButtonItem {
         let item = UIBarButtonItem(customView: menuButton)
         item.tag = menuButtonTag
         return item
     }
 
-    let assistantButton = UIButton(type: .system)
+    lazy var assistantButton: UIButton = {
+        let button = UIButton(type: .system)
+        return button
+    }()
     var assistantButtonItem: UIBarButtonItem {
         let item = UIBarButtonItem(customView: assistantButton)
         item.tag = assistantButtonTag
         return item
     }
 
-    let notificationsButton = UIButton(type: .system)
+    lazy var notificationsButton: UIButton = {
+        let button = UIButton(type: .system)
+        return button
+    }()
     var notificationsButtonItem: UIBarButtonItem {
         let item = UIBarButtonItem(customView: notificationsButton)
         item.tag = notificationsButtonTag
         return item
     }
 
-    let transfersButton = UIButton(type: .system)
+    lazy var transfersButton: UIButton = {
+        let button = UIButton(type: .system)
+        return button
+    }()
     var transfersButtonItem: UIBarButtonItem {
         let item = UIBarButtonItem(customView: transfersButton)
         item.tag = transfersButtonTag
