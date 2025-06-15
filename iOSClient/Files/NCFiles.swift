@@ -73,7 +73,7 @@ class NCFiles: NCCollectionViewCommon {
                 self.plusButton.backgroundColor = NCBrandColor.shared.getElement(account: activeTableAccount.account)
             }
         }
-
+        
         if self.serverUrl.isEmpty {
 
             ///
@@ -188,6 +188,14 @@ class NCFiles: NCCollectionViewCommon {
 
         self.metadataFolder = self.database.getMetadataFolder(session: self.session, serverUrl: self.serverUrl)
         self.richWorkspaceText = self.database.getTableDirectory(predicate: predicateDirectory)?.richWorkspace
+
+        if let metadataFolder {
+            nkLog(info: "Inside metadata folder \(metadataFolder.fileName) with permissions: \(metadataFolder.permissions)")
+
+            // disable + button if no create permission
+            plusButton.isEnabled = metadataFolder.isCreatable
+            plusButton.backgroundColor = metadataFolder.isCreatable ? NCBrandColor.shared.customer : .lightGray
+        }
 
         self.database.getMetadatas(predicate: predicate,
                                    layoutForView: self.layoutForView,
