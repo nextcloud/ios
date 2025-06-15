@@ -16,8 +16,8 @@ protocol DateCompareable {
 final class NCManageDatabase: Sendable {
     static let shared = NCManageDatabase()
 
-    private let realmQueue = DispatchQueue(label: "com.nextcloud.realmQueue") // serial queue
-    private let realmQueueKey = DispatchSpecificKey<Bool>()
+    internal let realmQueue = DispatchQueue(label: "com.nextcloud.realmQueue") // serial queue
+    internal let realmQueueKey = DispatchSpecificKey<Bool>()
 
     let utilityFileSystem = NCUtilityFileSystem()
 
@@ -136,7 +136,9 @@ final class NCManageDatabase: Sendable {
                     print("Realm is located at: \(url)")
                 }
 
-                backupTableAccountToFile()
+                Task {
+                    await backupTableAccountToFileAsync()
+                }
 
             } catch let error {
                 nkLog(error: "DATABASE: \(error.localizedDescription)")
@@ -159,8 +161,9 @@ final class NCManageDatabase: Sendable {
                 do {
                     _ = try Realm()
 
-                    restoreTableAccountFromFile()
-
+                    Task {
+                        await restoreTableAccountFromFileAsync()
+                    }
                 } catch let error {
                     nkLog(error: "Account restoration: \(error.localizedDescription)")
                 }
