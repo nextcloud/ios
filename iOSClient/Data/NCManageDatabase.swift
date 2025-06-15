@@ -119,7 +119,7 @@ final class NCManageDatabase: Sendable {
                     print("Realm is located at: \(url)")
                 }
             } catch let error {
-                nkLog(error: "DATABASE: \(error.localizedDescription)")
+                nkLog(error: "Realm: \(error)")
             }
         } else {
             Realm.Configuration.defaultConfiguration =
@@ -141,7 +141,7 @@ final class NCManageDatabase: Sendable {
                 }
 
             } catch let error {
-                nkLog(error: "DATABASE: \(error.localizedDescription)")
+                nkLog(error: "Realm: \(error)")
 
                 if let realmURL = databaseFileUrlPath {
                     let filesToDelete = [
@@ -165,7 +165,7 @@ final class NCManageDatabase: Sendable {
                         await restoreTableAccountFromFileAsync()
                     }
                 } catch let error {
-                    nkLog(error: "Account restoration: \(error.localizedDescription)")
+                    nkLog(error: "Account restoration: \(error)")
                 }
             }
         }
