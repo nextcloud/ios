@@ -375,6 +375,19 @@ extension NCManageDatabase {
         }
     }
 
+    /// Updates the `status` field for multiple `tableMetadata` objects with matching `ocId`s.
+    func setMetadataStatusAsync(ocIds: [String], status: Int) async {
+        await performRealmWriteAsync { realm in
+            let metadatas = realm.objects(tableMetadata.self)
+                .filter("ocId IN %@", ocIds)
+
+            for metadata in metadatas {
+                metadata.status = status
+                realm.add(metadata, update: .all)
+            }
+        }
+    }
+
     // MARK: - Realm Read
 
     func getMetadata(from url: URL?, sessionTaskIdentifier: Int) -> tableMetadata? {
