@@ -418,6 +418,18 @@ import NextcloudKit
         }
     }
 
+    var location: Bool {
+        get {
+            if let value = try? keychain.get("location"), let result = Bool(value) {
+                return result
+            }
+            return false
+        }
+        set {
+            keychain["location"] = String(newValue)
+        }
+    }
+
     // MARK: -
 
     @objc func getPassword(account: String) -> String {

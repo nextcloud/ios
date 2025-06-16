@@ -51,7 +51,7 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
         nkLog(stop: "Location monitoring stopped")
     }
 
-    func checkLocationServiceIsActive(completion: @escaping (Bool) -> Void) {
+    func checkLocationAuthorizationStatus(completion: @escaping (Bool) -> Void) {
         DispatchQueue.global(qos: .userInitiated).async {
             guard CLLocationManager.locationServicesEnabled() else {
                 return completion(false)
