@@ -266,7 +266,7 @@ class NCNetworkingProcess {
                                             metadata: metadata,
                                             error: resultsCreateFolder.error)
                 } others: { delegate in
-                    delegate.transferReloadData(serverUrl: metadata.serverUrl)
+                    delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
                 }
             } else {
                 NCNetworking.shared.notifyAllDelegates { delegate in
