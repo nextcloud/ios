@@ -61,7 +61,23 @@ class tableAccount: Object {
     }
 
     func tableAccountToCodable() -> tableAccountCodable {
-        return tableAccountCodable(account: self.account, active: self.active, alias: self.alias, autoUploadCreateSubfolder: self.autoUploadCreateSubfolder, autoUploadSubfolderGranularity: self.autoUploadSubfolderGranularity, autoUploadDirectory: self.autoUploadDirectory, autoUploadFileName: self.autoUploadFileName, autoUploadStart: self.autoUploadStart, autoUploadImage: self.autoUploadImage, autoUploadVideo: self.autoUploadVideo, autoUploadWWAnPhoto: self.autoUploadWWAnPhoto, autoUploadWWAnVideo: self.autoUploadWWAnVideo, user: self.user, userId: self.userId, urlBase: self.urlBase)
+        return tableAccountCodable(account: self.account,
+                                   active: self.active,
+                                   alias: self.alias,
+                                   autoUploadCreateSubfolder: self.autoUploadCreateSubfolder,
+                                   autoUploadSubfolderGranularity: self.autoUploadSubfolderGranularity,
+                                   autoUploadDirectory: self.autoUploadDirectory,
+                                   autoUploadFileName: self.autoUploadFileName,
+                                   autoUploadStart: self.autoUploadStart,
+                                   autoUploadImage: self.autoUploadImage,
+                                   autoUploadVideo: self.autoUploadVideo,
+                                   autoUploadWWAnPhoto: self.autoUploadWWAnPhoto,
+                                   autoUploadWWAnVideo: self.autoUploadWWAnVideo,
+                                   autoUploadOnlyNew: self.autoUploadOnlyNew,
+                                   autoUploadOnlyNewSinceDate: self.autoUploadOnlyNewSinceDate,
+                                   user: self.user,
+                                   userId: self.userId,
+                                   urlBase: self.urlBase)
     }
 
     convenience init(codableObject: tableAccountCodable) {
@@ -100,6 +116,8 @@ struct tableAccountCodable: Codable {
     var autoUploadVideo: Bool
     var autoUploadWWAnPhoto: Bool
     var autoUploadWWAnVideo: Bool
+    var autoUploadOnlyNew: Bool
+    var autoUploadOnlyNewSinceDate: Date
 
     var user: String
     var userId: String
