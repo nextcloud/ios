@@ -66,6 +66,52 @@ extension NCManageDatabase {
         }
     }
 
+    /// Asynchronously updates the direct editing creators and editors for a given account in the Realm database.
+    /// - Parameters:
+    ///   - account: The account identifier.
+    ///   - editors: A list of editor definitions to store.
+    ///   - creators: A list of creator definitions to store.
+    ///   - async: Whether the Realm write should be executed asynchronously (default is true).
+    func addDirectEditingAsync(account: String,
+                               editors: [NKEditorDetailsEditors],
+                               creators: [NKEditorDetailsCreators]) async {
+        await performRealmWriteAsync { realm in
+            // Remove existing creators and editors for the account
+            let resultsCreators = realm.objects(tableDirectEditingCreators.self).filter("account == %@", account)
+            realm.delete(resultsCreators)
+
+            let resultsEditors = realm.objects(tableDirectEditingEditors.self).filter("account == %@", account)
+            realm.delete(resultsEditors)
+
+            // Add new creators
+            for creator in creators {
+                let object = tableDirectEditingCreators()
+                object.account = account
+                object.editor = creator.editor
+                object.ext = creator.ext
+                object.identifier = creator.identifier
+                object.mimetype = creator.mimetype
+                object.name = creator.name
+                object.templates = creator.templates
+                realm.add(object)
+            }
+
+            // Add new editors
+            for editor in editors {
+                let object = tableDirectEditingEditors()
+                object.account = account
+                object.name = editor.name
+                object.editor = editor.name.lowercased() == NCGlobal.shared.editorOnlyoffice
+                    ? NCGlobal.shared.editorOnlyoffice
+                    : NCGlobal.shared.editorText
+                object.mimetypes.append(objectsIn: editor.mimetypes)
+                object.optionalMimetypes.append(objectsIn: editor.optionalMimetypes)
+                object.secure = editor.secure
+                realm.add(object)
+            }
+        }
+    }
+
     // MARK: - Realm read
 
     func getDirectEditingCreators(account: String) -> [tableDirectEditingCreators]? {
@@ -94,6 +140,23 @@ extension NCManageDatabase {
                 completion(resultArray)
             }
         }
+    }
+
+    /// Asynchronously retrieves the list of `tableDirectEditingCreators` for the given account.
+    /// - Parameters:
+    ///   - account: The account identifier.
+    ///   - async: Whether the Realm read should be executed asynchronously (default is true).
+    /// - Returns: An array of `tableDirectEditingCreators` objects.
+    func getDirectEditingCreatorsAsync(account: String, async: Bool = true) async -> [tableDirectEditingCreators] {
+        var resultArray: [tableDirectEditingCreators] = []
+
+        await performRealmReadAsync { realm in
+            let objects = realm.objects(tableDirectEditingCreators.self)
+                .filter("account == %@", account)
+            resultArray = objects.map { tableDirectEditingCreators(value: $0) }
+        }
+
+        return resultArray
     }
 
     func getDirectEditingCreators(predicate: NSPredicate) -> [tableDirectEditingCreators]? {

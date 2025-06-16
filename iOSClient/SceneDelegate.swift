@@ -183,7 +183,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneDidEnterBackground(_ scene: UIScene) {
         nkLog(debug: "Scene did enter in background")
-        database.backupTableAccountToFile()
+        Task {
+            await database.backupTableAccountToFileAsync()
+        }
         let session = SceneManager.shared.getSession(scene: scene)
         guard let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
             return

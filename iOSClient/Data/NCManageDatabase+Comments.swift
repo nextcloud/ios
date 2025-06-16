@@ -23,6 +23,8 @@ class tableComments: Object, DateCompareable {
     @objc dynamic var path = ""
     @objc dynamic var verb = ""
 
+    @objc dynamic var verbss = ""
+
     override static func primaryKey() -> String {
         return "messageId"
     }

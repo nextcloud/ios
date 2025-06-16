@@ -92,7 +92,7 @@ extension NCNetworking {
         if metadata.status == global.metadataStatusWaitDelete {
             if let metadata = database.setMetadataStatus(ocId: metadata.ocId,
                                                          status: global.metadataStatusNormal) {
-                
+
                 NCNetworking.shared.notifyAllDelegates { delegate in
                     delegate.transferReloadData(serverUrl: metadata.serverUrl)
                 }
