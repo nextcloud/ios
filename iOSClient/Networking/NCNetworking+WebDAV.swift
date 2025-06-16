@@ -306,7 +306,7 @@ extension NCNetworking {
             deleteLocalFile(metadata: metadata)
 
             self.notifyAllDelegates { delegate in
-                delegate.transferReloadData(serverUrl: metadata.serverUrl)
+                delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
             }
         }
 
@@ -393,10 +393,11 @@ extension NCNetworking {
 
             self.notifyAllDelegates { delegate in
                 Task {
+                    let status = self.global.metadataStatusWaitDelete
                     await self.database.setMetadataStatusAsync(ocIds: Array(ocIds),
-                                                               status: NCGlobal.shared.metadataStatusWaitDelete)
+                                                               status: status)
                     serverUrls.forEach { serverUrl in
-                        delegate.transferReloadData(serverUrl: serverUrl)
+                        delegate.transferReloadData(serverUrl: serverUrl, status: status)
                     }
                 }
             }
@@ -427,8 +428,9 @@ extension NCNetworking {
         } else {
             self.notifyAllDelegates { delegate in
                 Task {
-                    await self.database.renameMetadataAsync(fileNameNew: fileNameNew, ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusWaitRename)
-                    delegate.transferReloadData(serverUrl: metadata.serverUrl)
+                    let status = self.global.metadataStatusWaitRename
+                    await self.database.renameMetadataAsync(fileNameNew: fileNameNew, ocId: metadata.ocId, status: status)
+                    delegate.transferReloadData(serverUrl: metadata.serverUrl, status: status)
                 }
             }
         }
@@ -446,8 +448,9 @@ extension NCNetworking {
 
         self.notifyAllDelegates { delegate in
             Task {
-                await self.database.setMetadataCopyMoveAsync(ocId: metadata.ocId, serverUrlTo: serverUrlTo, overwrite: overwrite.description, status: NCGlobal.shared.metadataStatusWaitMove)
-                delegate.transferReloadData(serverUrl: metadata.serverUrl)
+                let status = self.global.metadataStatusWaitMove
+                await self.database.setMetadataCopyMoveAsync(ocId: metadata.ocId, serverUrlTo: serverUrlTo, overwrite: overwrite.description, status: status)
+                delegate.transferReloadData(serverUrl: metadata.serverUrl, status: status)
             }
         }
     }
@@ -464,8 +467,9 @@ extension NCNetworking {
 
         self.notifyAllDelegates { delegate in
             Task {
-                await self.database.setMetadataCopyMoveAsync(ocId: metadata.ocId, serverUrlTo: serverUrlTo, overwrite: overwrite.description, status: NCGlobal.shared.metadataStatusWaitCopy)
-                delegate.transferReloadData(serverUrl: metadata.serverUrl)
+                let status = self.global.metadataStatusWaitCopy
+                await self.database.setMetadataCopyMoveAsync(ocId: metadata.ocId, serverUrlTo: serverUrlTo, overwrite: overwrite.description, status: status)
+                delegate.transferReloadData(serverUrl: metadata.serverUrl, status: status)
             }
         }
     }
@@ -480,8 +484,9 @@ extension NCNetworking {
 
         self.notifyAllDelegates { delegate in
             Task {
-                await self.database.setMetadataFavoriteAsync(ocId: metadata.ocId, favorite: !metadata.favorite, saveOldFavorite: metadata.favorite.description, status: global.metadataStatusWaitFavorite)
-                delegate.transferReloadData(serverUrl: metadata.serverUrl)
+                let status = self.global.metadataStatusWaitFavorite
+                await self.database.setMetadataFavoriteAsync(ocId: metadata.ocId, favorite: !metadata.favorite, saveOldFavorite: metadata.favorite.description, status: status)
+                delegate.transferReloadData(serverUrl: metadata.serverUrl, status: status)
             }
         }
     }
@@ -501,7 +506,7 @@ extension NCNetworking {
                 self.database.addMetadata(metadata)
 
                 self.notifyAllDelegates { delegate in
-                    delegate.transferReloadData(serverUrl: metadata.serverUrl)
+                    delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
                 }
             }
         }

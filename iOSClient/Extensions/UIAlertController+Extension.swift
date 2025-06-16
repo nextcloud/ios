@@ -285,9 +285,6 @@ extension UIAlertController {
 
             NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew)
 
-            NCNetworking.shared.notifyAllDelegates { delegate in
-                delegate.transferReloadData(serverUrl: metadata.serverUrl)
-            }
             completion(fileNameNew)
         }
     }

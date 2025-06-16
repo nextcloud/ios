@@ -60,7 +60,7 @@ extension NCNetworking {
             database.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite, saveOldFavorite: nil, status: global.metadataStatusNormal)
 
             NCNetworking.shared.notifyAllDelegates { delegate in
-                delegate.transferReloadData(serverUrl: metadata.serverUrl)
+                delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
             }
             return
         }
@@ -71,7 +71,7 @@ extension NCNetworking {
             database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
 
             NCNetworking.shared.notifyAllDelegates { delegate in
-                delegate.transferReloadData(serverUrl: metadata.serverUrl)
+                delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
             }
             return
         }
@@ -82,7 +82,7 @@ extension NCNetworking {
             database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
 
             NCNetworking.shared.notifyAllDelegates { delegate in
-                delegate.transferReloadData(serverUrl: metadata.serverUrl)
+                delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
             }
             return
         }
@@ -94,7 +94,7 @@ extension NCNetworking {
                                                          status: global.metadataStatusNormal) {
 
                 NCNetworking.shared.notifyAllDelegates { delegate in
-                    delegate.transferReloadData(serverUrl: metadata.serverUrl)
+                    delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
                 }
             }
             return
@@ -106,7 +106,7 @@ extension NCNetworking {
             database.restoreMetadataFileName(ocId: metadata.ocId)
 
             NCNetworking.shared.notifyAllDelegates { delegate in
-                delegate.transferReloadData(serverUrl: metadata.serverUrl)
+                delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
             }
             return
         }
@@ -121,7 +121,7 @@ extension NCNetworking {
             }
 
             NCNetworking.shared.notifyAllDelegates { delegate in
-                delegate.transferReloadData(serverUrl: metadata.serverUrl)
+                delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
             }
             return
         }
@@ -133,7 +133,7 @@ extension NCNetworking {
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
 
             NCNetworking.shared.notifyAllDelegates { delegate in
-                delegate.transferReloadData(serverUrl: metadata.serverUrl)
+                delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
             }
             return
         }
@@ -179,7 +179,7 @@ extension NCNetworking {
         }
 
         NCNetworking.shared.notifyAllDelegates { delegate in
-            delegate.transferReloadData(serverUrl: nil)
+            delegate.transferReloadData(serverUrl: nil, status: global.metadataStatusNormal)
         }
     }
 

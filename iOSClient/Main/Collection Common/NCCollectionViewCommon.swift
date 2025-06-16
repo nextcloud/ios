@@ -439,9 +439,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    func transferReloadData(serverUrl: String?) {
+    func transferReloadData(serverUrl: String?, status: Int?) {
         self.debouncer.call {
             if self.isSearchingMode {
+                guard status != self.global.metadataStatusWaitDelete,
+                      status != self.global.metadataStatusWaitRename,
+                      status != self.global.metadataStatusWaitMove,
+                      status != self.global.metadataStatusWaitCopy,
+                      status != self.global.metadataStatusWaitFavorite else {
+                    return
+                }
                 self.networkSearch()
             } else if ( self.serverUrl == serverUrl) || serverUrl == nil {
                 self.reloadDataSource()

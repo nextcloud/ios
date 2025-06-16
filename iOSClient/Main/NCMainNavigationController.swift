@@ -337,7 +337,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             NCKeychain().setFavoriteOnTop(account: self.session.account, value: !favoriteOnTop)
 
             NCNetworking.shared.notifyAllDelegates { delegate in
-                delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl)
+                delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, status: nil)
             }
             self.updateRightMenu()
         }
@@ -347,7 +347,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             NCKeychain().setDirectoryOnTop(account: self.session.account, value: !directoryOnTop)
 
             NCNetworking.shared.notifyAllDelegates { delegate in
-                delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl)
+                delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, status: nil)
             }
             self.updateRightMenu()
         }
@@ -364,7 +364,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             NCKeychain().setPersonalFilesOnly(account: self.session.account, value: !personalFilesOnly)
 
             NCNetworking.shared.notifyAllDelegates { delegate in
-                delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl)
+                delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, status: nil)
             }
             self.updateRightMenu()
         }
@@ -374,7 +374,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             NCKeychain().showDescription = !showDescriptionKeychain
 
             NCNetworking.shared.notifyAllDelegates { delegate in
-                delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl)
+                delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, status: nil)
             }
             self.updateRightMenu()
         }

@@ -102,7 +102,7 @@ final class NCImageCache: @unchecked Sendable {
                     if !self.isDidEnterBackground {
                         for file in files where !file.serverUrl.isEmpty {
                             NCNetworking.shared.notifyAllDelegates { delegate in
-                                delegate.transferReloadData(serverUrl: file.serverUrl)
+                                delegate.transferReloadData(serverUrl: file.serverUrl, status: nil)
                             }
                         }
                     }
