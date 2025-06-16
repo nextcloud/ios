@@ -195,7 +195,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         nkLog(info: "Auto upload in background: \(tableAccount.autoUploadStart)")
         nkLog(info: "Update in background: \(UIApplication.shared.backgroundRefreshStatus == .available)")
 
-        if (CLLocationManager().authorizationStatus == .authorizedAlways && NCKeychain().location)  {
+        if CLLocationManager().authorizationStatus == .authorizedAlways && NCKeychain().location && tableAccount.autoUploadStart {
             NCBackgroundLocationUploadManager.shared.start()
         } else {
             NCBackgroundLocationUploadManager.shared.stop()
