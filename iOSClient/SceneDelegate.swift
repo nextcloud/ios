@@ -27,6 +27,7 @@ import NextcloudKit
 import WidgetKit
 import SwiftEntryKit
 import SwiftUI
+import CoreLocation
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
@@ -194,13 +195,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         nkLog(info: "Auto upload in background: \(tableAccount.autoUploadStart)")
         nkLog(info: "Update in background: \(UIApplication.shared.backgroundRefreshStatus == .available)")
 
-        if NCKeychain().location {
-            NCBackgroundLocationUploadManager.shared.start(from: nil)
+        if (CLLocationManager().authorizationStatus == .authorizedAlways && NCKeychain().location)  {
+            NCBackgroundLocationUploadManager.shared.start()
         } else {
             NCBackgroundLocationUploadManager.shared.stop()
-        }
-        NCBackgroundLocationUploadManager.shared.checkLocationAuthorizationStatus { active in
-            nkLog(tag: self.global.logTagLocation, emoji: .info, message: "Location authorization status: \(active)")
         }
 
         if let error = NCAccount().updateAppsShareAccounts() {

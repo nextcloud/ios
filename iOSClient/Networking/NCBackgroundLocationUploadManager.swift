@@ -15,9 +15,9 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
     private let global = NCGlobal.shared
     private let database = NCManageDatabase.shared
     private let locationManager = CLLocationManager()
-    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private weak var presentingViewController: UIViewController?
     private let explanationShownKey = "locationExplanationShown"
+    private var continuation: CheckedContinuation<CLAuthorizationStatus, Never>?
 
     private override init() {
         super.init()
@@ -27,40 +27,47 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
         locationManager.allowsBackgroundLocationUpdates = true
     }
 
-    func start(from viewController: UIViewController?) {
-        self.presentingViewController = viewController
+    func start() {
+        // let status = locationManager.authorizationStatus
+        locationManager.startMonitoringSignificantLocationChanges()
+    }
 
+    /// Requests `.authorizedAlways` location permission asynchronously.
+    /// - Parameter viewController: A view controller to present UI if needed.
+    /// - Returns: `true` if `.authorizedAlways` permission is granted, otherwise `false`.
+    @MainActor
+    func requestAuthorizationAlwaysAsync(from viewController: UIViewController?) async -> Bool {
         let status = locationManager.authorizationStatus
 
-        if status == .notDetermined, let viewController {
-            if !UserDefaults.standard.bool(forKey: explanationShownKey) {
+        switch status {
+        case .authorizedAlways:
+            // Permission already granted
+            return true
+
+        case .notDetermined:
+            // Show explanation view if needed before requesting permission
+            if let viewController, !UserDefaults.standard.bool(forKey: "locationExplanationShown") {
                 presentInitialExplanation(from: viewController)
-            } else {
-                locationManager.requestAlwaysAuthorization()
+                return false
             }
-        } else if status != .authorizedAlways, let viewController {
-            presentSettingsAlert(from: viewController)
-        } else {
-            locationManager.startMonitoringSignificantLocationChanges()
-            nkLog(start: "Location monitoring started")
+
+            return await withCheckedContinuation { (continuation: CheckedContinuation<CLAuthorizationStatus, Never>) in
+                self.continuation = continuation
+                locationManager.requestAlwaysAuthorization()
+            } == .authorizedAlways
+
+        default:
+            // Present alert guiding user to settings if permission is denied or restricted
+            if let viewController {
+                presentSettingsAlert(from: viewController)
+            }
+            return false
         }
     }
 
     func stop() {
         locationManager.stopMonitoringSignificantLocationChanges()
         nkLog(stop: "Location monitoring stopped")
-    }
-
-    func checkLocationAuthorizationStatus(completion: @escaping (Bool) -> Void) {
-        DispatchQueue.global(qos: .userInitiated).async {
-            guard CLLocationManager.locationServicesEnabled() else {
-                return completion(false)
-            }
-            let status = self.locationManager.authorizationStatus
-            let isActive = (status == .authorizedAlways)
-
-            completion(isActive)
-        }
     }
 
     private func presentInitialExplanation(from viewController: UIViewController) {
@@ -102,7 +109,7 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
         guard isAppInBackground else {
             return
         }
-
+        let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
         isAppSuspending = false // now you can read/write in Realm
 
         let location = locations.last
@@ -110,18 +117,18 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
 
         Task.detached {
             if let tblAccount = await self.database.getActiveTableAccountAsync(),
-               await !self.appDelegate.isBackgroundTask {
+               await !appDelegate.isBackgroundTask {
                 // start the BackgroundTask
                 await MainActor.run {
-                    self.appDelegate.isBackgroundTask = true
+                    appDelegate.isBackgroundTask = true
                 }
 
-                let numTransfers = await self.appDelegate.backgroundSync(tblAccount: tblAccount)
+                let numTransfers = await appDelegate.backgroundSync(tblAccount: tblAccount)
                 nkLog(tag: self.global.logTagLocation, emoji: .success, message: "Triggered by location completed with \(numTransfers) transfers")
 
                 // end the BackgroundTask
                 await MainActor.run {
-                    self.appDelegate.isBackgroundTask = false
+                    appDelegate.isBackgroundTask = false
                 }
             }
         }

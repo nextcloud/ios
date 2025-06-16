@@ -58,6 +58,8 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     @Published var showUploadAllPhotosWarning = false
     /// A state variable that indicates whether Photos permissions have been granted or not.
     @Published var photosPermissionsGranted = true
+    ///
+    @Published var permissionGranted: Bool = false
 
     /// A state variable that shows error in view in case of an error
     @Published var showErrorAlert: Bool = false
@@ -96,6 +98,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     /// Triggered when the view appears.
     func onViewAppear() {
+        self.checkPermission()
         if let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) {
             autoUploadImage = tableAccount.autoUploadImage
             autoUploadWWAnPhoto = tableAccount.autoUploadWWAnPhoto
@@ -179,10 +182,6 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
                                                                              assetCollections: assetCollections,
                                                                              account: session.account)
             }
-
-            if let controller = self.controller {
-                NCBackgroundLocationUploadManager.shared.start(from: controller)
-            }
         } else {
             database.clearMetadatasUpload(account: session.account)
         }
@@ -243,6 +242,27 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     func deleteAutoUploadTransfer() {
         let autoUploadServerUrlBase = NCManageDatabase.shared.getAccountAutoUploadServerUrlBase(session: session)
         NCManageDatabase.shared.deleteAutoUploadTransfer(account: session.account, autoUploadServerUrlBase: autoUploadServerUrlBase)
+    }
+
+    /// Updates the auto-upload create subfolder setting.
+    func handleLocationChange(newValue: Bool) {
+        if let controller = self.controller {
+            if newValue {
+                Task { @MainActor in
+                    let result = await NCBackgroundLocationUploadManager.shared.requestAuthorizationAlwaysAsync(from: controller)
+                    self.permissionGranted = result
+                    NCKeychain().location = result
+                }
+            } else {
+                self.permissionGranted = false
+                NCKeychain().location = false
+            }
+        }
+    }
+
+    func checkPermission() {
+        let status = CLLocationManager().authorizationStatus
+        permissionGranted = (status == .authorizedAlways && NCKeychain().location)
     }
 }
 
