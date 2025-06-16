@@ -135,11 +135,6 @@ final class NCManageDatabase: Sendable {
                 if let realm, let url = realm.configuration.fileURL {
                     print("Realm is located at: \(url)")
                 }
-
-                Task {
-                    await backupTableAccountToFileAsync()
-                }
-
             } catch let error {
                 nkLog(error: "Realm: \(error)")
 
