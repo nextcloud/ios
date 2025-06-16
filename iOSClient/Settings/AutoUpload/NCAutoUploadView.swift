@@ -213,14 +213,14 @@ struct NCAutoUploadView: View {
 
                 /// Location
                 Section(content: {
-                    Toggle(NSLocalizedString("_set_location_", comment: ""), isOn: $model.permissionGranted)
+                    Toggle(NSLocalizedString("_enable_background_location_title_", comment: ""), isOn: $model.permissionGranted)
                         .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                         .opacity(model.autoUploadStart ? 0.15 : 1)
                         .onChange(of: model.permissionGranted) { newValue in
                             model.handleLocationChange(newValue: newValue)
                         }
                 }, footer: {
-                    Text(NSLocalizedString("_set_location_footer_", comment: ""))
+                    Text(NSLocalizedString("_enable_background_location_footer_", comment: ""))
                 })
             }
             .disabled(model.autoUploadStart)
