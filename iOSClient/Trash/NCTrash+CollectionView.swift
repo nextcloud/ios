@@ -98,7 +98,7 @@ extension NCTrash: UICollectionViewDataSource {
         return cell
     }
 
-    func setTextFooter(datasource: Results<tableTrash>) -> String {
+    func setTextFooter(datasource: [tableTrash]) -> String {
         var folders: Int = 0, foldersText = ""
         var files: Int = 0, filesText = ""
         var size: Int64 = 0
