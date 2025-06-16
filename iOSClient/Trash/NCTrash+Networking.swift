@@ -57,29 +57,28 @@ extension NCTrash {
         }
     }
 
-    func emptyTrash() {
+    func emptyTrash() async {
         let serverUrlFileName = session.urlBase + "/remote.php/dav/trashbin/" + session.userId + "/trash"
+        let response = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account)
 
-        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: session.account) { account, _, error in
-            guard error == .success else {
-                NCContentPresenter().showError(error: error)
-                return
-            }
-            self.database.deleteTrash(fileId: nil, account: account)
-            self.reloadDataSource()
+        if response.error != .success {
+            NCContentPresenter().showError(error: response.error)
         }
+        await self.database.deleteTrashAsync(fileId: nil, account: session.account)
+        self.reloadDataSource()
     }
 
-    func deleteItem(with fileId: String) {
-        guard let result = self.database.getResultTrash(fileId: fileId, account: session.account) else { return }
-        let serverUrlFileName = result.filePath + result.fileName
-
-        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: session.account) { account, _, error in
-            guard error == .success else {
-                NCContentPresenter().showError(error: error)
-                return
+    func deleteItems(with filesId: [String]) async {
+        for fileId in filesId {
+            guard let result = await self.database.getResultTrashAsync(fileId: fileId, account: session.account) else {
+                continue
             }
-            self.database.deleteTrash(fileId: fileId, account: account)
+            let serverUrlFileName = result.filePath + result.fileName
+            let response = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account)
+            if response.error != .success {
+                NCContentPresenter().showError(error: response.error)
+            }
+            await self.database.deleteTrashAsync(fileId: fileId, account: session.account)
             self.reloadDataSource()
         }
     }

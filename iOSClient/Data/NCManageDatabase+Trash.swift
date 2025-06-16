@@ -83,21 +83,57 @@ extension NCManageDatabase {
         }
     }
 
-    // MARK: - Realm read
+    /// Asynchronously deletes `tableTrash` objects matching the given `fileId` and `account`.
+    /// - Parameters:
+    ///   - fileId: Optional file ID to filter the trash entries. If `nil`, all entries for the account will be deleted.
+    ///   - account: The account associated with the trash entries.
+    func deleteTrashAsync(fileId: String?, account: String) async {
+        let predicate: NSPredicate
+        if let fileId {
+            predicate = NSPredicate(format: "account == %@ AND fileId == %@", account, fileId)
+        } else {
+            predicate = NSPredicate(format: "account == %@", account)
+        }
 
-    func getResultsTrash(filePath: String, account: String) -> Results<tableTrash>? {
-        performRealmRead { realm in
-            realm.objects(tableTrash.self)
-                .filter("account == %@ AND filePath == %@", account, filePath)
-                .sorted(byKeyPath: "trashbinDeletionTime", ascending: false)
+        await performRealmWriteAsync { realm in
+            let results = realm.objects(tableTrash.self).filter(predicate)
+            realm.delete(results)
         }
     }
+
+    // MARK: - Realm read
 
     func getResultTrash(fileId: String, account: String) -> tableTrash? {
         performRealmRead { realm in
             realm.objects(tableTrash.self)
                 .filter("account == %@ AND fileId == %@", account, fileId)
                 .first
+                .map { tableTrash(value: $0) }
+        }
+    }
+
+    /// Asynchronously retrieves sorted trash results by filePath and account.
+    /// - Returns: A `Results<tableTrash>` collection, or `nil` if Realm fails to open.
+    func getResultsTrashAsync(filePath: String, account: String) async -> [tableTrash] {
+        await performRealmReadAsync { realm in
+            let results = realm.objects(tableTrash.self)
+                .filter("account == %@ AND filePath == %@", account, filePath)
+                .sorted(byKeyPath: "trashbinDeletionTime", ascending: false)
+            return results.map { tableTrash(value: $0) }
+        } ?? []
+    }
+
+    /// Asynchronously retrieves the first `tableTrash` object matching the given `fileId` and `account`.
+    /// - Parameters:
+    ///   - fileId: The ID of the file to search for.
+    ///   - account: The account associated with the file.
+    /// - Returns: The matching `tableTrash` object, or `nil` if not found.
+    func getResultTrashAsync(fileId: String, account: String) async -> tableTrash? {
+        await performRealmReadAsync { realm in
+            return realm.objects(tableTrash.self)
+                .filter("account == %@ AND fileId == %@", account, fileId)
+                .first
+                .map { tableTrash(value: $0) }
         }
     }
 }

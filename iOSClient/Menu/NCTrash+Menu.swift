@@ -37,7 +37,9 @@ extension NCTrash {
         else {
             let alert = UIAlertController(title: NSLocalizedString("_want_delete_", comment: ""), message: resultTableTrash.trashbinFileName, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("_delete_", comment: ""), style: .destructive, handler: { _ in
-                self.deleteItem(with: objectId)
+                Task {
+                    await self.deleteItems(with: [objectId])
+                }
             }))
             alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
             self.present(alert, animated: true, completion: nil)
@@ -84,7 +86,9 @@ extension NCTrash {
                 icon: utility.loadImage(named: "trash", colors: [.red]),
                 sender: sender,
                 action: { _ in
-                    self.deleteItem(with: objectId)
+                    Task {
+                        await self.deleteItems(with: [objectId])
+                    }
                 }
             )
         )
