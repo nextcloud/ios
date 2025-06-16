@@ -160,7 +160,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     func reloadDataSource(withQueryDB: Bool = true) {
         Task {
             // Await async DB call off the main thread
-            let results = await self.database.getResultsTrashAsync(filePath: getFilePath(), account: session.account)
+            let results = await self.database.getTableTrashAsync(filePath: getFilePath(), account: session.account)
 
             // Switch back to main thread for UI updates
             await MainActor.run {

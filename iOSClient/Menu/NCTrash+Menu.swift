@@ -29,13 +29,13 @@ import NextcloudKit
 
 extension NCTrash {
     func toggleMenuMore(with objectId: String, image: UIImage?, isGridCell: Bool, sender: Any?) {
-        guard let resultTableTrash = self.database.getResultTrash(fileId: objectId, account: session.account)
+        guard let tblTrash = self.database.getTableTrash(fileId: objectId, account: session.account)
         else {
             return
         }
         guard isGridCell
         else {
-            let alert = UIAlertController(title: NSLocalizedString("_want_delete_", comment: ""), message: resultTableTrash.trashbinFileName, preferredStyle: .alert)
+            let alert = UIAlertController(title: NSLocalizedString("_want_delete_", comment: ""), message: tblTrash.trashbinFileName, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("_delete_", comment: ""), style: .destructive, handler: { _ in
                 Task {
                     await self.deleteItems(with: [objectId])
@@ -49,11 +49,11 @@ extension NCTrash {
         var actions: [NCMenuAction] = []
 
         var iconHeader: UIImage!
-        if let icon = utility.getImage(ocId: resultTableTrash.fileId, etag: resultTableTrash.fileName, ext: NCGlobal.shared.previewExt512) {
+        if let icon = utility.getImage(ocId: tblTrash.fileId, etag: tblTrash.fileName, ext: NCGlobal.shared.previewExt512) {
             iconHeader = icon
         } else {
-            if resultTableTrash.directory {
-                iconHeader = NCImageCache.shared.getFolder(account: resultTableTrash.account)
+            if tblTrash.directory {
+                iconHeader = NCImageCache.shared.getFolder(account: tblTrash.account)
             } else {
                 iconHeader = NCImageCache.shared.getImageFile()
             }
@@ -61,7 +61,7 @@ extension NCTrash {
 
         actions.append(
             NCMenuAction(
-                title: resultTableTrash.trashbinFileName,
+                title: tblTrash.trashbinFileName,
                 icon: iconHeader,
                 sender: sender,
                 action: nil

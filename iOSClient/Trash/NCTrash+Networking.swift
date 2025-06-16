@@ -43,7 +43,9 @@ extension NCTrash {
     }
 
     func restoreItem(with fileId: String) {
-        guard let result = self.database.getResultTrash(fileId: fileId, account: session.account) else { return }
+        guard let result = self.database.getTableTrash(fileId: fileId, account: session.account) else {
+            return
+        }
         let fileNameFrom = result.filePath + result.fileName
         let fileNameTo = session.urlBase + "/remote.php/dav/trashbin/" + session.userId + "/restore/" + result.fileName
 
@@ -70,7 +72,7 @@ extension NCTrash {
 
     func deleteItems(with filesId: [String]) async {
         for fileId in filesId {
-            guard let result = await self.database.getResultTrashAsync(fileId: fileId, account: session.account) else {
+            guard let result = await self.database.getTableTrashAsync(fileId: fileId, account: session.account) else {
                 continue
             }
             let serverUrlFileName = result.filePath + result.fileName

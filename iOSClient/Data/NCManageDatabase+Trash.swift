@@ -103,7 +103,7 @@ extension NCManageDatabase {
 
     // MARK: - Realm read
 
-    func getResultTrash(fileId: String, account: String) -> tableTrash? {
+    func getTableTrash(fileId: String, account: String) -> tableTrash? {
         performRealmRead { realm in
             realm.objects(tableTrash.self)
                 .filter("account == %@ AND fileId == %@", account, fileId)
@@ -114,7 +114,7 @@ extension NCManageDatabase {
 
     /// Asynchronously retrieves sorted trash results by filePath and account.
     /// - Returns: A `Results<tableTrash>` collection, or `nil` if Realm fails to open.
-    func getResultsTrashAsync(filePath: String, account: String) async -> [tableTrash] {
+    func getTableTrashAsync(filePath: String, account: String) async -> [tableTrash] {
         await performRealmReadAsync { realm in
             let results = realm.objects(tableTrash.self)
                 .filter("account == %@ AND filePath == %@", account, filePath)
@@ -128,7 +128,7 @@ extension NCManageDatabase {
     ///   - fileId: The ID of the file to search for.
     ///   - account: The account associated with the file.
     /// - Returns: The matching `tableTrash` object, or `nil` if not found.
-    func getResultTrashAsync(fileId: String, account: String) async -> tableTrash? {
+    func getTableTrashAsync(fileId: String, account: String) async -> tableTrash? {
         await performRealmReadAsync { realm in
             return realm.objects(tableTrash.self)
                 .filter("account == %@ AND fileId == %@", account, fileId)
