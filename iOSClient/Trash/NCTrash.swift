@@ -40,7 +40,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     var isEditMode = false
     var selectOcId: [String] = []
     var tabBarSelect: NCTrashSelectTabBar!
-    var datasource: Results<tableTrash>?
+    var datasource: [tableTrash]?
     var layoutForView: NCDBLayoutForView?
     var listLayout: NCListLayout!
     var gridLayout: NCGridLayout!
@@ -82,8 +82,6 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         collectionView.refreshControl = refreshControl
         refreshControl.tintColor = NCBrandColor.shared.textColor2
         refreshControl.addTarget(self, action: #selector(loadListingTrash(_:)), for: .valueChanged)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSource), object: nil)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -159,23 +157,32 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     // MARK: - DataSource
 
-    @objc func reloadDataSource(withQueryDB: Bool = true) {
-        datasource = self.database.getResultsTrash(filePath: getFilePath(), account: session.account)
-        collectionView.reloadData()
-        (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
+    func reloadDataSource(withQueryDB: Bool = true) {
+        Task {
+            // Await async DB call off the main thread
+            let results = await self.database.getTableTrashAsync(filePath: getFilePath(), account: session.account)
 
-        guard let blinkFileId, let datasource else { return }
-        for itemIx in 0..<datasource.count where datasource[itemIx].fileId.contains(blinkFileId) {
-            let indexPath = IndexPath(item: itemIx, section: 0)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                UIView.animate(withDuration: 0.3) {
-                    self.collectionView.scrollToItem(at: indexPath, at: .centeredVertically, animated: false)
-                } completion: { _ in
-                    guard let cell = self.collectionView.cellForItem(at: indexPath) else { return }
-                    cell.backgroundColor = .darkGray
-                    UIView.animate(withDuration: 2) {
-                        cell.backgroundColor = .clear
-                        self.blinkFileId = nil
+            // Switch back to main thread for UI updates
+            await MainActor.run {
+                self.datasource = results
+                self.collectionView.reloadData()
+                (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
+
+                guard let blinkFileId = self.blinkFileId else { return }
+
+                for itemIx in 0..<results.count where results[itemIx].fileId.contains(blinkFileId) {
+                    let indexPath = IndexPath(item: itemIx, section: 0)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        UIView.animate(withDuration: 0.3) {
+                            self.collectionView.scrollToItem(at: indexPath, at: .centeredVertically, animated: false)
+                        } completion: { _ in
+                            guard let cell = self.collectionView.cellForItem(at: indexPath) else { return }
+                            cell.backgroundColor = .darkGray
+                            UIView.animate(withDuration: 2) {
+                                cell.backgroundColor = .clear
+                                self.blinkFileId = nil
+                            }
+                        }
                     }
                 }
             }

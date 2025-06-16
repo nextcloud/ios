@@ -248,6 +248,55 @@ final class NCManageDatabase: Sendable {
         }
     }
 
+    // MARK: - performRealmRead async/await, performRealmWrite async/await
+
+    func performRealmReadAsync<T>(_ block: @escaping (Realm) throws -> T?) async -> T? {
+        await withCheckedContinuation { continuation in
+            realmQueue.async {
+                if isAppSuspending {
+                    // App is suspending — don't execute the block
+                    continuation.resume(returning: nil)
+                    return
+                }
+
+                autoreleasepool {
+                    do {
+                        let realm = try Realm()
+                        let result = try block(realm)
+                        continuation.resume(returning: result)
+                    } catch {
+                        NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm read error: \(error)")
+                        continuation.resume(returning: nil)
+                    }
+                }
+            }
+        }
+    }
+
+    func performRealmWriteAsync(_ block: @escaping (Realm) throws -> Void) async {
+        await withCheckedContinuation { continuation in
+            realmQueue.async {
+                if isAppSuspending {
+                    // App is suspending — don't execute the block
+                    continuation.resume()
+                    return
+                }
+
+                autoreleasepool {
+                    do {
+                        let realm = try Realm()
+                        try realm.write {
+                            try block(realm)
+                        }
+                    } catch {
+                        NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm write error: \(error)")
+                    }
+                    continuation.resume()
+                }
+            }
+        }
+    }
+
     // MARK: -
 
     func clearTable(_ table: Object.Type, account: String? = nil) {

@@ -98,7 +98,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
             }
             if (responder as? UIViewController)!.navigationController != nil {
                 if let viewController = UIStoryboard(name: "NCTrash", bundle: nil).instantiateInitialViewController() as? NCTrash {
-                    if let result = NCManageDatabase.shared.getResultTrash(fileId: String(activityPreview.fileId), account: activityPreview.account) {
+                    if let result = NCManageDatabase.shared.getTableTrash(fileId: String(activityPreview.fileId), account: activityPreview.account) {
                         viewController.blinkFileId = result.fileId
                         viewController.filePath = result.filePath
                         (responder as? UIViewController)!.navigationController?.pushViewController(viewController, animated: true)
