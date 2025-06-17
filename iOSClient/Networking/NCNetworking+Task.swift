@@ -212,7 +212,11 @@ extension NCNetworking {
 
     func cancelDownloadTasks(metadata: tableMetadata? = nil) {
         let targetTaskId = metadata?.sessionTaskIdentifier
-
+        let predicate = NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
+                                    self.global.metadataStatusWaitDownload,
+                                    self.global.metadataStatusDownloading,
+                                    self.global.metadataStatusDownloadError,
+                                    sessionDownload)
         Task {
             NextcloudKit.shared.nkCommonInstance.nksessions.forEach { session in
                 session.sessionData.session.getTasksWithCompletionHandler { _, _, downloadTasks in
@@ -226,17 +230,19 @@ extension NCNetworking {
 
             if let metadata {
                 await self.database.clearMetadataSessionAsync(metadata: metadata)
-            } else if let results = await self.database.getResultsMetadatasAsync(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
-                                                                                             self.global.metadataStatusWaitDownload,
-                                                                                             self.global.metadataStatusDownloading,
-                                                                                             self.global.metadataStatusDownloadError,
-                                                                                             sessionDownload)) {
-                await self.database.clearMetadatasSessionAsync(metadatas: Array(results))
+            } else if let metadatas = await self.database.getMetadatasAsync(predicate: predicate) {
+                await self.database.clearMetadatasSessionAsync(metadatas: metadatas)
             }
         }
     }
 
     func cancelDownloadBackgroundTask(metadata: tableMetadata? = nil) {
+        let predicate = NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
+                                    self.global.metadataStatusWaitDownload,
+                                    self.global.metadataStatusDownloading,
+                                    self.global.metadataStatusDownloadError,
+                                    sessionDownloadBackground)
+
         NextcloudKit.shared.nkCommonInstance.nksessions.forEach { session in
             Task {
                 let tasksBackground = await session.sessionDownloadBackground.tasks
@@ -249,12 +255,8 @@ extension NCNetworking {
 
                 if let metadata {
                     await self.database.clearMetadataSessionAsync(metadata: metadata)
-                } else if let results = await self.database.getResultsMetadatasAsync(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
-                                                                                                 self.global.metadataStatusWaitDownload,
-                                                                                                 self.global.metadataStatusDownloading,
-                                                                                                 self.global.metadataStatusDownloadError,
-                                                                                                 sessionDownloadBackground)) {
-                    await self.database.clearMetadatasSessionAsync(metadatas: Array(results))
+                } else if let metadatas = await self.database.getMetadatasAsync(predicate: predicate) {
+                    await self.database.clearMetadatasSessionAsync(metadatas: metadatas)
                 }
             }
         }
@@ -265,6 +267,11 @@ extension NCNetworking {
     func cancelUploadTasks(metadata: tableMetadata? = nil) {
         let targetTaskId = metadata?.sessionTaskIdentifier
         let account = metadata?.account
+        let predicate = NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
+                                    self.global.metadataStatusWaitUpload,
+                                    self.global.metadataStatusUploading,
+                                    self.global.metadataStatusUploadError,
+                                    sessionUpload)
 
         Task {
             NextcloudKit.shared.nkCommonInstance.nksessions.forEach { nkSession in
@@ -279,17 +286,21 @@ extension NCNetworking {
 
             if let metadata {
                 await self.database.deleteMetadataOcIdAsync(metadata.ocId)
-            } else if let results = await self.database.getResultsMetadatasAsync(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
-                                                                                             self.global.metadataStatusWaitUpload,
-                                                                                             self.global.metadataStatusUploading,
-                                                                                             self.global.metadataStatusUploadError,
-                                                                                             sessionUpload)) {
-                await self.database.deleteMetadatasAsync(Array(results))
+            } else if let metadatas = await self.database.getMetadatasAsync(predicate: predicate) {
+                await self.database.deleteMetadatasAsync(metadatas)
             }
         }
     }
 
     func cancelUploadBackgroundTask(metadata: tableMetadata? = nil) {
+        let predicate = NSPredicate(format: "(status == %d || status == %d || status == %d) AND (session == %@ || session == %@ || session == %@)",
+                                    self.global.metadataStatusWaitUpload,
+                                    self.global.metadataStatusUploading,
+                                    self.global.metadataStatusUploadError,
+                                    sessionUploadBackground,
+                                    sessionUploadBackgroundWWan,
+                                    sessionUploadBackgroundExt)
+
         NextcloudKit.shared.nkCommonInstance.nksessions.forEach { nkSession in
             Task {
                 let tasksBackground = await nkSession.sessionUploadBackground.tasks
@@ -321,14 +332,8 @@ extension NCNetworking {
 
                 if let metadata {
                     await self.database.deleteMetadataOcIdAsync(metadata.ocId)
-                } else if let results = await self.database.getResultsMetadatasAsync(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND (session == %@ || session == %@ || session == %@)",
-                                                                                                 self.global.metadataStatusWaitUpload,
-                                                                                                 self.global.metadataStatusUploading,
-                                                                                                 self.global.metadataStatusUploadError,
-                                                                                                 sessionUploadBackground,
-                                                                                                 sessionUploadBackgroundWWan,
-                                                                                                 sessionUploadBackgroundExt)) {
-                    await self.database.deleteMetadatasAsync(Array(results))
+                } else if let metadatas = await self.database.getMetadatasAsync(predicate: predicate) {
+                    await self.database.deleteMetadatasAsync(metadatas)
                 }
             }
         }
