@@ -129,6 +129,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             URLCache.shared.removeAllCachedResponses()
 
+            NCNetworking.shared.removeServerErrorAccount(self.session.account)
             NCManageDatabase.shared.clearDatabase()
 
             let ufs = NCUtilityFileSystem()
