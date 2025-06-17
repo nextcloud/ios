@@ -53,6 +53,34 @@ final class NCManageDatabase: Sendable {
 
             return shouldCompact
         }
+
+        func restoreDB() {
+            if let realmURL = databaseFileUrlPath {
+                let filesToDelete = [
+                    realmURL,
+                    realmURL.appendingPathExtension("lock"),
+                    realmURL.appendingPathExtension("note"),
+                    realmURL.appendingPathExtension("management")
+                ]
+
+                for file in filesToDelete {
+                    do {
+                        try FileManager.default.removeItem(at: file)
+                    } catch { }
+                }
+            }
+
+            do {
+                _ = try Realm()
+
+                Task {
+                    await restoreTableAccountFromFileAsync()
+                }
+            } catch let error {
+                nkLog(error: "Account restoration: \(error)")
+            }
+        }
+
         var realm: Realm?
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let databaseFileUrlPath = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
@@ -120,6 +148,7 @@ final class NCManageDatabase: Sendable {
                 }
             } catch let error {
                 nkLog(error: "Realm: \(error)")
+                restoreDB()
             }
         } else {
             Realm.Configuration.defaultConfiguration =
@@ -137,31 +166,7 @@ final class NCManageDatabase: Sendable {
                 }
             } catch let error {
                 nkLog(error: "Realm: \(error)")
-
-                if let realmURL = databaseFileUrlPath {
-                    let filesToDelete = [
-                        realmURL,
-                        realmURL.appendingPathExtension("lock"),
-                        realmURL.appendingPathExtension("note"),
-                        realmURL.appendingPathExtension("management")
-                    ]
-
-                    for file in filesToDelete {
-                        do {
-                            try FileManager.default.removeItem(at: file)
-                        } catch { }
-                    }
-                }
-
-                do {
-                    _ = try Realm()
-
-                    Task {
-                        await restoreTableAccountFromFileAsync()
-                    }
-                } catch let error {
-                    nkLog(error: "Account restoration: \(error)")
-                }
+                restoreDB()
             }
         }
     }

@@ -88,6 +88,20 @@ extension NCManageDatabase {
         }
     }
 
+    /// Asynchronously fetches the most recent auto-uploaded date for the given account and server base URL.
+    /// - Parameters:
+    ///   - account: The account identifier.
+    ///   - autoUploadServerUrlBase: The server base URL for auto-upload.
+    /// - Returns: The most recent upload `Date`, or `nil` if no entry exists.
+    func fetchLastAutoUploadedDateAsync(account: String, autoUploadServerUrlBase: String) async -> Date? {
+        await performRealmReadAsync { realm in
+            realm.objects(tableAutoUploadTransfer.self)
+                .filter("account == %@ AND serverUrlBase == %@", account, autoUploadServerUrlBase)
+                .sorted(byKeyPath: "date", ascending: false)
+                .first?.date
+        }
+    }
+
     func existsAutoUpload(account: String, autoUploadServerUrlBase: String) -> Bool {
         return performRealmRead { realm in
             realm.objects(tableAutoUploadTransfer.self)
