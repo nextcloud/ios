@@ -104,6 +104,7 @@ extension NCManageDatabase {
     ///   - etag: Optional ETag string.
     ///   - errorCode: Optional error code to persist.
     /// - Returns: A detached copy of the updated `tableMetadata` object, or `nil` if not found.
+    @discardableResult
     func setMetadataSessionAsync(
         ocId: String,
         newFileName: String? = nil,
@@ -305,7 +306,7 @@ extension NCManageDatabase {
         return detached
     }
 
-    func clearMetadataSession(metadatas: [tableMetadata]) {
+    func clearMetadatasSession(metadatas: [tableMetadata]) {
         guard !metadatas.isEmpty
         else {
             return
@@ -327,6 +328,36 @@ extension NCManageDatabase {
         }
     }
 
+    /// Asynchronously clears session-related metadata for a list of `tableMetadata` entries.
+    /// - Parameter metadatas: An array of `tableMetadata` objects to be cleared and updated.
+    func clearMetadatasSessionAsync(metadatas: [tableMetadata]) async {
+        guard !metadatas.isEmpty else {
+            return
+        }
+
+        // Detach objects before modifying
+        var detachedMetadatas = metadatas.map { tableMetadata(value: $0) }
+
+        // Apply modifications
+        detachedMetadatas = detachedMetadatas.map { metadata in
+            metadata.sceneIdentifier = nil
+            metadata.session = ""
+            metadata.sessionTaskIdentifier = 0
+            metadata.sessionError = ""
+            metadata.sessionSelector = ""
+            metadata.sessionDate = nil
+            metadata.status = NCGlobal.shared.metadataStatusNormal
+            return metadata
+        }
+
+        // Write to Realm asynchronously
+        await performRealmWriteAsync { realm in
+            detachedMetadatas.forEach { metadata in
+                realm.add(metadata, update: .all)
+            }
+        }
+    }
+
     func clearMetadataSession(metadata: tableMetadata) {
         let detached = tableMetadata(value: metadata)
 
@@ -339,6 +370,26 @@ extension NCManageDatabase {
         detached.status = NCGlobal.shared.metadataStatusNormal
 
         performRealmWrite(sync: true) { realm in
+            realm.add(detached, update: .all)
+        }
+    }
+
+    /// Asynchronously clears session-related metadata and resets the status to normal.
+    /// - Parameter metadata: The `tableMetadata` object to clear and update.
+    func clearMetadataSessionAsync(metadata: tableMetadata) async {
+        // Clone and modify the object outside of Realm thread
+        var detached = tableMetadata(value: metadata)
+
+        detached.sceneIdentifier = nil
+        detached.session = ""
+        detached.sessionTaskIdentifier = 0
+        detached.sessionError = ""
+        detached.sessionSelector = ""
+        detached.sessionDate = nil
+        detached.status = NCGlobal.shared.metadataStatusNormal
+
+        // Write the modified version to Realm
+        await performRealmWriteAsync { realm in
             realm.add(detached, update: .all)
         }
     }

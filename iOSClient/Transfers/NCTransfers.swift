@@ -280,6 +280,12 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         }
     }
 
+    override func transferReloadData(serverUrl: String?, status: Int?) {
+        debouncer.call {
+            self.reloadDataSource()
+        }
+    }
+
     override func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) {
         let key = "\(serverUrl)|\(fileName)"
         transferProgressMap[key] = progress
