@@ -41,7 +41,7 @@ class NCAutoUpload: NSObject {
     func startManualAutoUploadForAlbums(controller: NCMainTabBarController?,
                                         assetCollections: [PHAssetCollection],
                                         account: String) async {
-        guard let tblAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account))
+        guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", account))
         else {
             return
         }
@@ -120,12 +120,12 @@ class NCAutoUpload: NSObject {
         /// Set last date in autoUploadOnlyNewSinceDate
         if let metadata = metadatas.last {
             let date = metadata.creationDate as Date
-            self.database.updateAccountProperty(\.autoUploadOnlyNewSinceDate, value: date, account: session.account)
+            await self.database.updateAccountPropertyAsync(\.autoUploadOnlyNewSinceDate, value: date, account: session.account)
         }
 
         if !metadatas.isEmpty {
             let metadatasFolder = await self.database.createMetadatasFolder(assets: assets, useSubFolder: tblAccount.autoUploadCreateSubfolder, session: session)
-            self.database.addMetadatas(metadatasFolder + metadatas, sync: false)
+            await self.database.addMetadatasAsync(metadatasFolder + metadatas)
         }
 
         return metadatas.count
@@ -160,7 +160,7 @@ class NCAutoUpload: NSObject {
 
         if tblAccount.autoUploadOnlyNew {
             datePredicates.append(NSPredicate(format: "creationDate > %@", tblAccount.autoUploadOnlyNewSinceDate as NSDate))
-        } else if let lastDate = self.database.fetchLastAutoUploadedDate(account: tblAccount.account, autoUploadServerUrlBase: autoUploadServerUrlBase) {
+        } else if let lastDate = await self.database.fetchLastAutoUploadedDateAsync(account: tblAccount.account, autoUploadServerUrlBase: autoUploadServerUrlBase) {
             datePredicates.append(NSPredicate(format: "creationDate > %@", lastDate as NSDate))
         }
 

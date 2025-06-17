@@ -260,6 +260,28 @@ extension NCManageDatabase {
         }
     }
 
+    /// Asynchronously updates a specific property of a `tableAccount` object identified by account name.
+    /// - Parameters:
+    ///   - keyPath: A writable key path to the property to modify.
+    ///   - value: The new value to assign to the property.
+    ///   - account: The account identifier.
+    func updateAccountPropertyAsync<T>(_ keyPath: ReferenceWritableKeyPath<tableAccount, T>, value: T, account: String) async {
+        await performRealmWriteAsync { realm in
+            guard let original = realm.objects(tableAccount.self)
+                .filter("account == %@", account)
+                .first else {
+                return
+            }
+
+            // Clone and update
+            var detached = tableAccount(value: original)
+            detached[keyPath: keyPath] = value
+
+            // Persist update
+            realm.add(detached, update: .all)
+        }
+    }
+
     func setAccountAlias(_ account: String, alias: String) {
         let alias = alias.trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -437,6 +459,18 @@ extension NCManageDatabase {
 
     func getTableAccount(predicate: NSPredicate) -> tableAccount? {
         performRealmRead { realm in
+            realm.objects(tableAccount.self)
+                .filter(predicate)
+                .first
+                .map { tableAccount(value: $0) }
+        }
+    }
+
+    /// Asynchronously retrieves the first `tableAccount` matching the given predicate.
+    /// - Parameter predicate: The NSPredicate used to filter the `tableAccount` objects.
+    /// - Returns: A copy of the first matching `tableAccount`, or `nil` if none is found.
+    func getTableAccountAsync(predicate: NSPredicate) async -> tableAccount? {
+        await performRealmReadAsync { realm in
             realm.objects(tableAccount.self)
                 .filter(predicate)
                 .first
