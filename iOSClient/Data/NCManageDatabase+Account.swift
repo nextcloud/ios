@@ -274,7 +274,7 @@ extension NCManageDatabase {
             }
 
             // Clone and update
-            var detached = tableAccount(value: original)
+            let detached = tableAccount(value: original)
             detached[keyPath: keyPath] = value
 
             // Persist update
