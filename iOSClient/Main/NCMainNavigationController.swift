@@ -231,7 +231,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 }
                 fileItem?.badgeValue = tranfersCount == 0 ? nil : "\(tranfersCount)"
 #else
-                if resultsCount > 999 {
+                if tranfersCount > 999 {
                     UIApplication.shared.applicationIconBadgeNumber = 999
                     fileItem?.badgeValue = "999+"
                 } else {
