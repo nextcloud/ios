@@ -141,7 +141,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                                                                                        serverUrl,
                                                                                        NCGlobal.shared.selectorSynchronizationOffline,
                                                                                        NCGlobal.shared.metadataStatusWaitDownload)) {
-                    database.clearMetadataSession(metadatas: Array(results))
+                    database.clearMetadatasSession(metadatas: Array(results))
                 }
             } else {
                 database.setOffLocalFile(ocId: metadata.ocId)

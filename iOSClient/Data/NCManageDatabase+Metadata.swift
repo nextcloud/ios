@@ -653,6 +653,16 @@ extension NCManageDatabase {
         }
     }
 
+    // Asynchronously deletes an array of `tableMetadata` entries from the Realm database.
+    /// - Parameter metadatas: The `tableMetadata` objects to be deleted.
+    func deleteMetadatasAsync(_ metadatas: [tableMetadata]) async {
+        guard !metadatas.isEmpty else { return }
+
+        await performRealmWriteAsync { realm in
+            realm.delete(metadatas)
+        }
+    }
+
     func renameMetadata(fileNameNew: String, ocId: String, status: Int = NCGlobal.shared.metadataStatusNormal, sync: Bool = true) {
         performRealmWrite(sync: sync) { realm in
             if let result = realm.objects(tableMetadata.self)
@@ -812,6 +822,61 @@ extension NCManageDatabase {
 
                     self.utilityFileSystem.moveFile(atPath: atPath, toPath: toPath)
                 }
+            }
+        }
+    }
+
+    /// Asynchronously restores the file name of a metadata entry and updates related file system and Realm entries.
+    /// - Parameter ocId: The object ID (ocId) of the file to restore.
+    func restoreMetadataFileNameAsync(ocId: String) async {
+        await performRealmWriteAsync { realm in
+            guard let result = realm.objects(tableMetadata.self)
+                .filter("ocId == %@", ocId)
+                .first,
+                  let encodedURLString = result.serveUrlFileName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+                  let url = URL(string: encodedURLString)
+            else {
+                return
+            }
+
+            let fileIdMOV = result.livePhotoFile
+            let directoryServerUrl = self.utilityFileSystem.stringAppendServerUrl(result.serverUrl, addFileName: result.fileNameView)
+            let lastPathComponent = url.lastPathComponent
+            let fileName = lastPathComponent.removingPercentEncoding ?? lastPathComponent
+            let fileNameView = result.fileNameView
+
+            result.fileName = fileName
+            result.fileNameView = fileName
+            result.status = NCGlobal.shared.metadataStatusNormal
+            result.sessionDate = nil
+
+            if result.directory,
+               let resultDirectory = realm.objects(tableDirectory.self)
+                   .filter("account == %@ AND serverUrl == %@", result.account, directoryServerUrl)
+                   .first {
+                let serverUrlTo = self.utilityFileSystem.stringAppendServerUrl(result.serverUrl, addFileName: fileName)
+                resultDirectory.serverUrl = serverUrlTo
+            } else {
+                let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId) + "/" + fileNameView
+                let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId) + "/" + fileName
+                self.utilityFileSystem.moveFile(atPath: atPath, toPath: toPath)
+            }
+
+            if result.isLivePhoto,
+               let resultMOV = realm.objects(tableMetadata.self)
+                   .filter("fileId == %@ AND account == %@", fileIdMOV, result.account)
+                   .first {
+                let fileNameViewMOV = resultMOV.fileNameView
+                let baseName = (fileName as NSString).deletingPathExtension
+                let ext = (resultMOV.fileName as NSString).pathExtension
+                let fullFileName = baseName + "." + ext
+
+                resultMOV.fileName = fullFileName
+                resultMOV.fileNameView = fullFileName
+
+                let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(resultMOV.ocId) + "/" + fileNameViewMOV
+                let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(resultMOV.ocId) + "/" + fullFileName
+                self.utilityFileSystem.moveFile(atPath: atPath, toPath: toPath)
             }
         }
     }
