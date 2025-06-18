@@ -162,9 +162,8 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
 
         func createProcessUploads() {
             if !self.dismissView {
-                NCNetworkingProcess.shared.createProcessUploads(metadatas: metadatas, completion: { _ in
-                    self.dismissView = true
-                })
+                self.database.addMetadatas(metadatas)
+                self.dismissView = true
             }
         }
 

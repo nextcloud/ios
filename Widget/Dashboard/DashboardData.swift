@@ -100,7 +100,6 @@ func convertDataToImage(data: Data?, size: CGSize, fileNameToWrite: String?) -> 
 func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
-    let global = NCGlobal.shared
     let dashboardItems = getDashboardItems(displaySize: displaySize, withButton: false)
     let datasPlaceholder = Array(dashboardDatasTest[0...dashboardItems - 1])
     var activeTableAccount: tableAccount?

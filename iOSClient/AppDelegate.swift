@@ -83,6 +83,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         nkLog(start: "Start session with level \(NCKeychain().log) " + versionNextcloudiOS)
 
+        /// Try to restore accounts
+        if self.database.getActiveTableAccount() == nil {
+            self.database.restoreTableAccountFromFile()
+        }
+
         /// Push Notification & display notification
         UNUserNotificationCenter.current().getNotificationSettings { settings in
             self.notificationSettings = settings
@@ -498,7 +503,10 @@ extension AppDelegate: NCViewCertificateDetailsDelegate {
 
 extension AppDelegate: NCCreateFormUploadConflictDelegate {
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
-        guard let metadatas = metadatas, !metadatas.isEmpty else { return }
-        NCNetworkingProcess.shared.createProcessUploads(metadatas: metadatas)
+        if let metadatas {
+            Task {
+                await self.database.addMetadatasAsync(metadatas)
+            }
+        }
     }
 }

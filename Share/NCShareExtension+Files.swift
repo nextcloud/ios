@@ -28,7 +28,7 @@ import NextcloudKit
 
 extension NCShareExtension {
     @objc func reloadDatasource(withLoadFolder: Bool) {
-        let layoutForView = NCManageDatabase.shared.getLayoutForView(account: session.account, key: keyLayout, serverUrl: serverUrl) ?? NCDBLayoutForView()
+        let layoutForView = NCManageDatabase.shared.getLayoutForView(account: session.account, key: keyLayout, serverUrl: serverUrl)
         let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", session.account, serverUrl)
 
         self.database.getMetadatas(predicate: predicate,

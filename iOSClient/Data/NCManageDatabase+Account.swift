@@ -176,53 +176,36 @@ extension NCManageDatabase {
         }
     }
 
-    /// Asynchronously restores `tableAccount` entries from a JSON backup file.
-    /// Only restores entries that have a non-empty password in the Keychain.
-    func restoreTableAccountFromFileAsync() async {
-        guard let groupDirectory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup) else {
-            nkLog(error: "App group directory not found")
+    func restoreTableAccountFromFile() {
+        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+        guard let fileURL = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + tableAccountBackup) else {
             return
         }
-
-        let fileURL = groupDirectory
-            .appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud)
-            .appendingPathComponent(tableAccountBackup)
 
         nkLog(debug: "Trying to restore account from backup...")
 
-        guard FileManager.default.fileExists(atPath: fileURL.path) else {
-            nkLog(error: "Account restore backup not found at: \(fileURL.path)")
+        if !FileManager.default.fileExists(atPath: fileURL.path) {
             return
         }
 
-        await withCheckedContinuation { continuation in
-            realmQueue.async {
-                autoreleasepool {
-                    do {
-                        let realm = try Realm()
-                        let jsonData = try Data(contentsOf: fileURL)
+        do {
+            let realm = try Realm()
+            let jsonData = try Data(contentsOf: fileURL)
+            let decoder = JSONDecoder()
+            let codableObjects = try decoder.decode([tableAccountCodable].self, from: jsonData)
 
-                        let decoder = JSONDecoder()
-                        let codableObjects = try decoder.decode([tableAccountCodable].self, from: jsonData)
-
-                        try realm.write {
-                            for codableObject in codableObjects {
-                                let password = NCKeychain().getPassword(account: codableObject.account)
-                                if !password.isEmpty {
-                                    let accountObject = tableAccount(codableObject: codableObject)
-                                    realm.add(accountObject, update: .modified)
-                                }
-                            }
-                        }
-
-                        nkLog(debug: "Account restored successfully")
-                    } catch {
-                        nkLog(error: "Account restore error: \(error)")
+            try realm.write {
+                for codableObject in codableObjects {
+                    if !NCKeychain().getPassword(account: codableObject.account).isEmpty {
+                        let tableAccount = tableAccount(codableObject: codableObject)
+                        realm.add(tableAccount)
                     }
-
-                    continuation.resume()
                 }
             }
+
+            nkLog(debug: "Account restored successfully")
+        } catch {
+            nkLog(error: "Account restore error: \(error)")
         }
     }
 

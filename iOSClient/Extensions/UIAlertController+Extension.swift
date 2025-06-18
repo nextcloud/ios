@@ -195,7 +195,7 @@ extension UIAlertController {
     }
 
     static func renameFile(fileName: String, isDirectory: Bool = false, account: String, completion: @escaping (_ newFileName: String) -> Void) -> UIAlertController {
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account) ?? NCCapabilities.Capabilities()
+        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account)
         let alertController = UIAlertController(title: NSLocalizedString(isDirectory ? "_rename_folder_" : "_rename_file_", comment: ""), message: nil, preferredStyle: .alert)
 
         let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in

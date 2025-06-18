@@ -52,6 +52,7 @@ private var hasChangesQuickLook: Bool = false
     // used to display the save alert
     private var parentVC: UIViewController?
     private let utilityFileSystem = NCUtilityFileSystem()
+    private let database = NCManageDatabase.shared
 
     public var saveAsCopyAlert: Bool = true
     public var uploadMetadata: Bool = true
@@ -254,9 +255,8 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
         metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
         metadataForUpload.sessionDate = Date()
 
-        NCNetworkingProcess.shared.createProcessUploads(metadatas: [metadataForUpload]) { _ in
-            self.dismiss(animated: true)
-        }
+        self.database.addMetadata(metadataForUpload)
+        self.dismiss(animated: true)
     }
 
     func previewController(_ controller: QLPreviewController, didSaveEditedCopyOf previewItem: QLPreviewItem, at modifiedContentsURL: URL) {

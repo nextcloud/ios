@@ -242,9 +242,8 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         var page = page
         let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
 
-
         NCActivityIndicator.shared.start(backgroundView: viewController.view)
-        NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: metadata.account, queue: .main) { account, metadata, error in
+        NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: metadata.account, queue: .main) { _, metadata, error in
             NCActivityIndicator.shared.stop()
 
             if let metadata = metadata, error == .success {

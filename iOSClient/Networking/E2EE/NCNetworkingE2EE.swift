@@ -262,7 +262,7 @@ class NCNetworkingE2EE: NSObject {
         for result in results {
             let resultsLockE2EEFolder = await NextcloudKit.shared.lockE2EEFolderAsync(fileId: result.fileId, e2eToken: result.e2eToken, e2eCounter: nil, method: "DELETE", account: account, options: NCNetworkingE2EE().getOptions(account: account))
             if resultsLockE2EEFolder.error == .success {
-                self.database.deleteE2ETokenLock(account: account, serverUrl: result.serverUrl,sync: false)
+                self.database.deleteE2ETokenLock(account: account, serverUrl: result.serverUrl, sync: false)
             }
         }
     }

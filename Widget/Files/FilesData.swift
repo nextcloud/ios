@@ -88,7 +88,6 @@ func getFilesItems(displaySize: CGSize) -> Int {
 func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: FilesDataEntry) -> Void) {
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
-    let global = NCGlobal.shared
     let filesItems = getFilesItems(displaySize: displaySize)
     let datasPlaceholder = Array(filesDatasTest[0...filesItems - 1])
     var activeTableAccount: tableAccount?
