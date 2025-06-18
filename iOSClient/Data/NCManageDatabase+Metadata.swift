@@ -1529,19 +1529,6 @@ extension NCManageDatabase {
         }
     }
 
-    func fetchNetworkingProcessDownload(limit: Int, session: String) -> [tableMetadata] {
-        return performRealmRead { realm in
-            let metadatas = realm.objects(tableMetadata.self)
-                .filter("session == %@ AND status == %d", session, NCGlobal.shared.metadataStatusWaitDownload)
-                .sorted(byKeyPath: "sessionDate")
-
-            let safeLimit = min(limit, metadatas.count)
-            let limitedMetadatas = metadatas.prefix(safeLimit)
-
-            return limitedMetadatas.map { tableMetadata(value: $0) }
-        } ?? []
-    }
-
     func hasUploadingMetadataWithChunksOrE2EE() -> Bool {
         return performRealmRead { realm in
             realm.objects(tableMetadata.self)
