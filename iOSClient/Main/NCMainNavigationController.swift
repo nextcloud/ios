@@ -416,9 +416,16 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             trashViewController.onGridSelected()
             self.updateRightMenu()
         }
+
+        let emptyTrash = UIAction(title: NSLocalizedString("_empty_trash_", comment: ""), image: utility.loadImage(named: "trash", colors: [NCBrandColor.shared.iconImageColor])) { _ in
+            Task {
+                await trashViewController.emptyTrash()
+            }
+        }
+
         let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid])
 
-        return [select, viewStyleSubmenu]
+        return [select, viewStyleSubmenu, emptyTrash]
     }
 
     func isNotificationsButtonVisible() -> Bool {
