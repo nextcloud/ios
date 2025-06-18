@@ -39,8 +39,9 @@ class NCService: NSObject {
             return
         }
 
+        self.addInternalTypeIdentifier(account: account)
+
         Task(priority: .utility) {
-            self.addInternalTypeIdentifier(account: account)
             await self.database.clearAllAvatarLoadedAsync()
             let result = await requestServerStatus(account: account, controller: controller)
             if result {
