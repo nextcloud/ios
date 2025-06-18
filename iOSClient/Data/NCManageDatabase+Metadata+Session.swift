@@ -378,7 +378,7 @@ extension NCManageDatabase {
     /// - Parameter metadata: The `tableMetadata` object to clear and update.
     func clearMetadataSessionAsync(metadata: tableMetadata) async {
         // Clone and modify the object outside of Realm thread
-        var detached = tableMetadata(value: metadata)
+        let detached = tableMetadata(value: metadata)
 
         detached.sceneIdentifier = nil
         detached.session = ""

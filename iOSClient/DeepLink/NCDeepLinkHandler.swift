@@ -119,7 +119,7 @@ class NCDeepLinkHandler {
             let session = NCSession.shared.getSession(controller: controller)
             let fileFolderPath = NCUtilityFileSystem().getFileNamePath("", serverUrl: serverUrl, session: session)
             let fileFolderName = (serverUrl as NSString).lastPathComponent
-            let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for:controller.account)
+            let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: controller.account)
 
             if !FileNameValidator.checkFolderPath(fileFolderPath, account: controller.account, capabilities: capabilities) {
                 controller.present(UIAlertController.warning(message: "\(String(format: NSLocalizedString("_file_name_validator_error_reserved_name_", comment: ""), fileFolderName)) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)

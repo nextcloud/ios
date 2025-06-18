@@ -167,7 +167,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return pinchGesture.state == .began || pinchGesture.state == .changed
     }
 
-    var capabilities:NCCapabilities.Capabilities {
+    var capabilities: NCCapabilities.Capabilities {
         NCCapabilities.shared.getCapabilitiesBlocking(for: session.account)
     }
 

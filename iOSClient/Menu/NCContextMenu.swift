@@ -66,7 +66,7 @@ class NCContextMenu: NSObject {
                 guard let metadata = self.database.setMetadataSessionInWaitDownload(ocId: self.metadata.ocId,
                                                                                     session: self.networking.sessionDownload,
                                                                                     selector: self.global.selectorOpenIn,
-                                                                                    sceneIdentifier: self.sceneIdentifier) else  {
+                                                                                    sceneIdentifier: self.sceneIdentifier) else {
                     return
                 }
 
