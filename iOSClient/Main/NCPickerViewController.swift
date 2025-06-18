@@ -209,7 +209,9 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                             metadatas[index].fileName = newFileName
                             metadatas[index].fileNameView = newFileName
 
-                            NCNetworkingProcess.shared.createProcessUploads(metadatas: metadatas)
+                            Task {
+                                await self.database.addMetadatasAsync(metadatas)
+                            }
                         }
 
                         self.controller.present(alert, animated: true)
@@ -225,7 +227,9 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 metadatas.remove(at: index)
             }
 
-            NCNetworkingProcess.shared.createProcessUploads(metadatas: metadatas)
+            Task {
+                await self.database.addMetadatasAsync(metadatas)
+            }
 
             if !metadatasInConflict.isEmpty {
                 if let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {

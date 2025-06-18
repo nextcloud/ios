@@ -577,6 +577,7 @@ extension NCManageDatabase {
         return tableMetadata(value: detached)
     }
 
+    @discardableResult
     func addMetadataAsync(_ metadata: tableMetadata) async -> tableMetadata {
         let detached = tableMetadata(value: metadata)
 
