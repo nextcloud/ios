@@ -255,10 +255,8 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
         metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
         metadataForUpload.sessionDate = Date()
 
-        Task {
-            await self.database.addMetadataAsync(metadataForUpload)
-            self.dismiss(animated: true)
-        }
+        self.database.addMetadata(metadataForUpload)
+        self.dismiss(animated: true)
     }
 
     func previewController(_ controller: QLPreviewController, didSaveEditedCopyOf previewItem: QLPreviewItem, at modifiedContentsURL: URL) {

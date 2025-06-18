@@ -162,10 +162,8 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
 
         func createProcessUploads() {
             if !self.dismissView {
-                Task {
-                    await self.database.addMetadatasAsync(metadatas)
-                    self.dismissView = true
-                }
+                self.database.addMetadatas(metadatas)
+                self.dismissView = true
             }
         }
 

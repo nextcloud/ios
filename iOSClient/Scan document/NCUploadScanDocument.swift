@@ -112,9 +112,7 @@ class NCUploadScanDocument: ObservableObject {
                 try pdfData.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
                 metadata.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
 
-                Task {
-                    await self.database.addMetadataAsync(metadata)
-                }
+                self.database.addMetadata(metadata)
 
                 if self.removeAllFiles {
                     let path = self.utilityFileSystem.directoryScan

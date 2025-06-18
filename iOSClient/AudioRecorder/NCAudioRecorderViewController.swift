@@ -116,9 +116,7 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
         metadata.size = NCUtilityFileSystem().getFileSize(filePath: fileNamePath)
         NCUtilityFileSystem().copyFile(atPath: fileNamePath, toPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
 
-        Task {
-            await self.database.addMetadataAsync(metadata)
-        }
+        self.database.addMetadata(metadata)
     }
 
     func audioMeterDidUpdate(_ db: Float) {
