@@ -72,10 +72,7 @@ final class NCManageDatabase: Sendable {
 
             do {
                 _ = try Realm()
-
-                Task {
-                    await restoreTableAccountFromFileAsync()
-                }
+                restoreTableAccountFromFile()
             } catch let error {
                 nkLog(error: "Account restoration: \(error)")
             }

@@ -83,6 +83,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         nkLog(start: "Start session with level \(NCKeychain().log) " + versionNextcloudiOS)
 
+        /// Try to restore accounts
+        if self.database.getActiveTableAccount() == nil {
+            self.database.restoreTableAccountFromFile()
+        }
+
         /// Push Notification & display notification
         UNUserNotificationCenter.current().getNotificationSettings { settings in
             self.notificationSettings = settings
