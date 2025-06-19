@@ -38,8 +38,8 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
     }
-    var capabilities: NCCapabilities.Capabilities {
-        NCCapabilities.shared.getCapabilitiesBlocking(for: session.account)
+    var capabilities: NKCapabilities.Capabilities {
+        NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
     }
 
     init(controller: NCMainTabBarController?) {

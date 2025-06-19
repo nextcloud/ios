@@ -345,7 +345,7 @@ extension NCNetworking {
         let selector = metadata.sessionSelector
 
         Task {
-            let capabilities = await NCCapabilities.shared.getCapabilitiesAsync(for: metadata.account)
+            let capabilities = await NKCapabilities.shared.getCapabilitiesAsync(for: metadata.account)
 
             if error == .success, let ocId = ocId, size == metadata.size {
                 nkLog(success: "Uploaded file: " + metadata.serverUrl + "/" + metadata.fileName + ", (\(size) bytes)")

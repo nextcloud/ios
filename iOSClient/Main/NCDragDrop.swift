@@ -91,7 +91,7 @@ class NCDragDrop: NSObject {
 
         var invalidNameIndexes: [Int] = []
         let session = NCSession.shared.getSession(controller: controller)
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: session.account)
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
 
         for (index, metadata) in metadatas.enumerated() {
             if let fileNameError = FileNameValidator.checkFileName(metadata.fileName, account: session.account, capabilities: capabilities) {
@@ -129,7 +129,7 @@ class NCDragDrop: NSObject {
                 let session = NCSession.shared.getSession(controller: controller)
                 let newFileName = FileAutoRenamer.rename(url.lastPathComponent, account: session.account)
                 let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: newFileName)
-                let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: session.account)
+                let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
 
                 if let fileNameError = FileNameValidator.checkFileName(newFileName, account: session.account, capabilities: capabilities) {
                     await controller?.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)

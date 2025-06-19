@@ -97,7 +97,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
         var item = NKExternalSite()
         var quota: String = ""
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: tableAccount.account)
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: tableAccount.account)
 
         // Clear
         functionMenu.removeAll()

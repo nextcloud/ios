@@ -32,7 +32,7 @@ extension NCViewer {
         var actions = [NCMenuAction]()
         let localFile = self.database.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         let isOffline = localFile?.offline == true
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
 
         //
         // DETAIL

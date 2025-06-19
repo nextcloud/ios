@@ -547,7 +547,7 @@ import NextcloudKit
     }
 
     func isEndToEndEnabled(account: String) -> Bool {
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account)
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
         guard let certificate = getEndToEndCertificate(account: account), !certificate.isEmpty,
               let publicKey = getEndToEndPublicKey(account: account), !publicKey.isEmpty,
               let privateKey = getEndToEndPrivateKey(account: account), !privateKey.isEmpty,

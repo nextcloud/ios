@@ -240,7 +240,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
     func openShare(viewController: UIViewController, metadata: tableMetadata, page: NCBrandOptions.NCInfoPagingTab) {
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         var page = page
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
 
         NCActivityIndicator.shared.start(backgroundView: viewController.view)
         NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: metadata.account, queue: .main) { _, metadata, error in
@@ -434,7 +434,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
 
         for (index, items) in UIPasteboard.general.items.enumerated() {
             for item in items {
-                let results = NextcloudKit.shared.nkCommonInstance.getFileProperties(inUTI: item.key as CFString)
+                let results = NextcloudKit.shared.nkCommonInstance.getFileProperties(inUTI: item.key as CFString, account: account)
                 guard !results.ext.isEmpty,
                       let data = UIPasteboard.general.data(forPasteboardType: item.key, inItemSet: IndexSet([index]))?.first
                 else { continue }
@@ -533,7 +533,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         let topViewController = navigationController?.topViewController as? NCSelect
         var listViewController = [NCSelect]()
         var copyItems: [tableMetadata] = []
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: controller?.account ?? "")
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: controller?.account ?? "")
 
         for item in items {
             if let fileNameError = FileNameValidator.checkFileName(item.fileNameView, account: controller?.account, capabilities: capabilities) {

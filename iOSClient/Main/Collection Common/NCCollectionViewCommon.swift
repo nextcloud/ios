@@ -167,8 +167,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return pinchGesture.state == .began || pinchGesture.state == .changed
     }
 
-    var capabilities: NCCapabilities.Capabilities {
-        NCCapabilities.shared.getCapabilitiesBlocking(for: session.account)
+    var capabilities: NKCapabilities.Capabilities {
+        NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
     }
 
     internal let debouncer = NCDebouncer(delay: 1)

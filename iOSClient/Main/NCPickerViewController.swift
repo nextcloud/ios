@@ -135,7 +135,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         let session = NCSession.shared.getSession(controller: self.controller)
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: session.account)
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
 
         if isViewerMedia,
            let urlIn = urls.first,

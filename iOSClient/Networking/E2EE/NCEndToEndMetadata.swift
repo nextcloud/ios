@@ -37,7 +37,7 @@ class NCEndToEndMetadata: NSObject {
         guard let directory = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) else {
             return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_"))
         }
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: session.account)
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
 
         if capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV12 && NCGlobal.shared.e2eeVersions.contains(NCGlobal.shared.e2eeVersionV12) {
             return encodeMetadataV12(account: session.account, serverUrl: serverUrl, ocIdServerUrl: directory.ocId)

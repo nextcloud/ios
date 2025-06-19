@@ -153,7 +153,7 @@ class NCFiles: NCCollectionViewCommon {
         guard let controller else { return }
         let fileFolderPath = NCUtilityFileSystem().getFileNamePath("", serverUrl: serverUrl, session: NCSession.shared.getSession(controller: controller))
         let fileFolderName = (serverUrl as NSString).lastPathComponent
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: controller.account)
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: controller.account)
 
         if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", controller.account, serverUrl)) {
             if !directory.permissions.contains("CK") {
@@ -285,7 +285,7 @@ class NCFiles: NCCollectionViewCommon {
                 NCNetworkingE2EE().getMetadata(fileId: metadataFolder.ocId, e2eToken: lock?.e2eToken, account: account) { account, version, e2eMetadata, signature, _, error in
                     if error == .success, let e2eMetadata {
                         let error = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: signature, serverUrl: self.serverUrl, session: self.session)
-                        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: self.session.account)
+                        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: self.session.account)
                         if error == .success {
                             if version == "v1", capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
                                 nkLog(tag: self.global.logTagE2EE, message: "Conversion v1 to v2")

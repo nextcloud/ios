@@ -45,7 +45,7 @@ extension NCMedia {
     }
 
     func setSelectcancelButton() {
-        let assistantEnabled = NCCapabilities.shared.getCapabilitiesBlocking(for: session.account).assistantEnabled
+        let assistantEnabled = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account).assistantEnabled
 
         assistantButton.isHidden = true
         fileSelect.removeAll()

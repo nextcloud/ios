@@ -27,7 +27,7 @@ import NextcloudKit
 
 extension NCShare {
     func toggleShareMenu(for share: tableShare, sender: Any?) {
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: self.metadata.account)
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: self.metadata.account)
         var actions = [NCMenuAction]()
 
         if share.shareType == NCShareCommon().SHARE_TYPE_LINK, canReshare {

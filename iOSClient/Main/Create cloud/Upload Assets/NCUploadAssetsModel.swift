@@ -39,8 +39,8 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
         NCSession.shared.getSession(controller: controller)
     }
     /// Capabilities
-    var capabilities: NCCapabilities.Capabilities {
-        NCCapabilities.shared.getCapabilitiesBlocking(for: controller?.account)
+    var capabilities: NKCapabilities.Capabilities {
+        NKCapabilities.shared.getCapabilitiesBlocking(for: controller?.account)
     }
     let database = NCManageDatabase.shared
     let global = NCGlobal.shared

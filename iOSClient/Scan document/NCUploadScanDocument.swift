@@ -327,8 +327,8 @@ struct UploadScanDocumentView: View {
 
     var metadatasConflict: [tableMetadata] = []
 
-    var capabilities: NCCapabilities.Capabilities {
-        NCCapabilities.shared.getCapabilitiesBlocking(for: model.session.account)
+    var capabilities: NKCapabilities.Capabilities {
+        NKCapabilities.shared.getCapabilitiesBlocking(for: model.session.account)
     }
 
     init(model: NCUploadScanDocument) {

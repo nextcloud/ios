@@ -13,7 +13,7 @@ extension FileAutoRenamer {
         guard let account else {
             return filename
         }
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account)
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
         let autoRenamer = FileAutoRenamer(forbiddenFileNameCharacters: capabilities.forbiddenFileNameCharacters, forbiddenFileNameExtensions: capabilities.forbiddenFileNameExtensions)
         return autoRenamer.rename(filename: filename, isFolderPath: isFolderPath)
     }

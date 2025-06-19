@@ -27,7 +27,7 @@ class NCAssistantModel: ObservableObject {
     init(controller: NCMainTabBarController?) {
         self.controller = controller
         session = NCSession.shared.getSession(controller: controller)
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: controller?.account)
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: controller?.account)
 
         useV2 = capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion30
         // useV2 = false

@@ -191,7 +191,7 @@ class NCNetworkingE2EEUpload: NSObject {
             // LIVE PHOTO
             /*
             if metadata.isLivePhoto,
-               NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable {
+               NKCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable {
                 NCNetworking.shared.createLivePhoto(metadata: metadata)
             }
             */

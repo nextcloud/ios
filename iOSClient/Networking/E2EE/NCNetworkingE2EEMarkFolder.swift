@@ -35,7 +35,7 @@ class NCNetworkingE2EEMarkFolder: NSObject {
         }
         let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolderAsync(fileId: file.fileId, delete: false, account: account, options: NCNetworkingE2EE().getOptions(account: account))
         guard resultsMarkE2EEFolder.error == .success else { return resultsMarkE2EEFolder.error }
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account)
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
 
         file.e2eEncrypted = true
 

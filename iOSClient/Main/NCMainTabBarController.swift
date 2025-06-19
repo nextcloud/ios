@@ -148,7 +148,7 @@ class NCMainTabBarController: UITabBarController {
                 }
                 /// Update Activity tab bar
                 if let item = self.tabBar.items?[3] {
-                    let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: self.account)
+                    let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: self.account)
                     item.isEnabled = capabilities.activityEnabled
                 }
 
