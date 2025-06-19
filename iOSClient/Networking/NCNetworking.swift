@@ -90,17 +90,17 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     let global = NCGlobal.shared
     var requestsUnifiedSearch: [DataRequest] = []
     var lastReachability: Bool = true
-    var networkReachability: NKCommon.TypeReachability?
+    var networkReachability: NKTypeReachability?
     weak var certificateDelegate: ClientCertificateDelegate?
     var p12Data: Data?
     var p12Password: String?
     var tapHudStopDelete = false
 
     var isOffline: Bool {
-        return networkReachability == NKCommon.TypeReachability.notReachable || networkReachability == NKCommon.TypeReachability.unknown
+        return networkReachability == NKTypeReachability.notReachable || networkReachability == NKTypeReachability.unknown
     }
     var isOnline: Bool {
-        return networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi || networkReachability == NKCommon.TypeReachability.reachableCellular
+        return networkReachability == NKTypeReachability.reachableEthernetOrWiFi || networkReachability == NKTypeReachability.reachableCellular
     }
 
     /// Delegate for multi scene
@@ -173,8 +173,8 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 
     // MARK: - Communication Delegate
 
-    func networkReachabilityObserver(_ typeReachability: NKCommon.TypeReachability) {
-        if typeReachability == NKCommon.TypeReachability.reachableCellular || typeReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
+    func networkReachabilityObserver(_ typeReachability: NKTypeReachability) {
+        if typeReachability == NKTypeReachability.reachableCellular || typeReachability == NKTypeReachability.reachableEthernetOrWiFi {
             lastReachability = true
         } else {
             if lastReachability {

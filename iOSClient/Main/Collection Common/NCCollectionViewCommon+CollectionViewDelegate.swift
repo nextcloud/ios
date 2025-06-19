@@ -49,9 +49,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
             if !metadata.isDirectoryE2EE, metadata.isImage || metadata.isAudioOrVideo {
                 let metadatas = self.dataSource.getMetadatas()
-                let ocIds = metadatas.filter { $0.classFile == NKCommon.TypeClassFile.image.rawValue ||
-                                               $0.classFile == NKCommon.TypeClassFile.video.rawValue ||
-                                               $0.classFile == NKCommon.TypeClassFile.audio.rawValue }.map(\.ocId)
+                let ocIds = metadatas.filter { $0.classFile == NKTypeClassFile.image.rawValue ||
+                                               $0.classFile == NKTypeClassFile.video.rawValue ||
+                                               $0.classFile == NKTypeClassFile.audio.rawValue }.map(\.ocId)
 
                 return NCViewer().view(viewController: self, metadata: metadata, ocIds: withOcIds ? ocIds : nil, image: image)
 
@@ -122,7 +122,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         guard let metadata = self.dataSource.getMetadata(indexPath: indexPath),
-              metadata.classFile != NKCommon.TypeClassFile.url.rawValue,
+              metadata.classFile != NKTypeClassFile.url.rawValue,
               !isEditMode
         else {
             return nil

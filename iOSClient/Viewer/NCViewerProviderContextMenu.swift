@@ -88,7 +88,7 @@ class NCViewerProviderContextMenu: UIViewController {
                 if utilityFileSystem.fileProviderStorageExists(metadata) {
                     viewVideo(metadata: metadata)
                 } else {
-                    if self.networking.networkReachability == NKCommon.TypeReachability.reachableCellular {
+                    if self.networking.networkReachability == NKTypeReachability.reachableCellular {
                         maxDownload = NCGlobal.shared.maxAutoDownloadCellular
                     } else {
                         maxDownload = NCGlobal.shared.maxAutoDownload

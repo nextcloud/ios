@@ -35,7 +35,7 @@ class NCViewer: NSObject {
         let session = NCSession.shared.getSession(account: metadata.account)
 
         // URL
-        if metadata.classFile == NKCommon.TypeClassFile.url.rawValue {
+        if metadata.classFile == NKTypeClassFile.url.rawValue {
             // nextcloudtalk://open-conversation?server={serverURL}&user={userId}&withRoomToken={roomToken}
             if metadata.name == NCGlobal.shared.talkName {
                 let pathComponents = metadata.url.components(separatedBy: "/")
@@ -77,7 +77,7 @@ class NCViewer: NSObject {
         }
 
         // DOCUMENTS
-        if metadata.classFile == NKCommon.TypeClassFile.document.rawValue {
+        if metadata.classFile == NKTypeClassFile.document.rawValue {
             // Set Last Opening Date
             self.database.setLastOpeningDate(metadata: metadata)
             // PDF

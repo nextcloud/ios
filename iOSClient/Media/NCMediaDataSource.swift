@@ -244,9 +244,9 @@ public class NCMediaDataSource: NSObject {
         return Metadata(datePhotosOriginal: metadata.datePhotosOriginal as Date,
                         etag: metadata.etag,
                         imageSize: CGSize(width: metadata.width, height: metadata.height),
-                        isImage: metadata.classFile == NKCommon.TypeClassFile.image.rawValue,
+                        isImage: metadata.classFile == NKTypeClassFile.image.rawValue,
                         isLivePhoto: !metadata.livePhotoFile.isEmpty,
-                        isVideo: metadata.classFile == NKCommon.TypeClassFile.video.rawValue,
+                        isVideo: metadata.classFile == NKTypeClassFile.video.rawValue,
                         ocId: metadata.ocId)
     }
 

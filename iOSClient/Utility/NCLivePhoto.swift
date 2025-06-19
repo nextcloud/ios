@@ -472,9 +472,9 @@ extension NCLivePhoto {
         livePhotoFile2 = metadata.fileName
 
         if livePhotoFile.isEmpty {
-            if metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
+            if metadata.classFile == NKTypeClassFile.image.rawValue {
                 livePhotoFile = (metadata.fileName as NSString).deletingPathExtension + ".mov"
-            } else if metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
+            } else if metadata.classFile == NKTypeClassFile.video.rawValue {
                 livePhotoFile = (metadata.fileName as NSString).deletingPathExtension + ".jpg"
             }
         }

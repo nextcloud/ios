@@ -89,7 +89,7 @@ class NCCollectionViewDataSource: NSObject {
     internal func createSections() {
         for metadata in self.metadatas {
             /// skipped livePhoto VIDEO part
-            if metadata.isLivePhoto, metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
+            if metadata.isLivePhoto, metadata.classFile == NKTypeClassFile.video.rawValue {
                 continue
             }
             let section = NSLocalizedString(self.getSectionValue(metadata: metadata), comment: "")
@@ -462,7 +462,7 @@ class NCMetadataForSection: NSObject {
 
             // skipped livePhoto VIDEO part
             if metadata.isLivePhoto,
-               metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
+               metadata.classFile == NKTypeClassFile.video.rawValue {
                 continue
             }
 

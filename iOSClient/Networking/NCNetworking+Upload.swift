@@ -165,7 +165,7 @@ extension NCNetworking {
         let chunkFolder = self.database.getChunkFolder(account: metadata.account, ocId: metadata.ocId)
         let filesChunk = self.database.getChunks(account: metadata.account, ocId: metadata.ocId)
         var chunkSize = self.global.chunkSizeMBCellular
-        if networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
+        if networkReachability == NKTypeReachability.reachableEthernetOrWiFi {
             chunkSize = self.global.chunkSizeMBEthernetOrWiFi
         }
         let options = NKRequestOptions(customHeader: customHeaders, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)

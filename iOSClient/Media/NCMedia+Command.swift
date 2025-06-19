@@ -186,6 +186,8 @@ extension NCMedia {
                                                             serverUrl: "",
                                                             url: stringUrl,
                                                             contentType: "",
+                                                            iconName: NKTypeIconFile.video.rawValue,
+                                                            classFile: NKTypeClassFile.video.rawValue,
                                                             session: self.session,
                                                             sceneIdentifier: self.controller?.sceneIdentifier)
                 self.database.addMetadata(metadata)
