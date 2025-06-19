@@ -470,7 +470,7 @@
 "_personal_files_"                  = "Personal Files";
 
 "_trash_view_"                      = "Deleted files";
-"_empty_trash_"                     = "Empty trah";
+"_empty_trash_"                     = "Empty trash";
 "_trash_no_trash_"                  = "No files deleted";
 "_trash_no_trash_description_"      = "You can restore deleted files from here";
 "_confirm_delete_selected_"         = "Are you sure you want to delete the selected items?";
