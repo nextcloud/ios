@@ -294,7 +294,7 @@ extension tableMetadata {
         guard (classFile == NKCommon.TypeClassFile.document.rawValue) && NextcloudKit.shared.isNetworkReachable() else { return false }
         let editors = NCUtility().editorsDirectEditing(account: account, contentType: contentType)
 
-        if editors.contains("Nextcloud Text") || editors.contains("onlyoffice") {
+        if editors.contains("Nextcloud Text") || editors.contains("ONLYOFFICE") {
             return true
         }
         return false

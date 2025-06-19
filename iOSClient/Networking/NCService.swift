@@ -116,7 +116,7 @@ class NCService: NSObject {
 
         await self.database.addCapabilitiesAsync(data: data, account: account)
 
-        // Text direct editor detail
+        // Text direct editor (Nextcloud Text, Office, Collabora)
         _ = await NextcloudKit.shared.textObtainEditorDetailsAsync(account: account)
 
         // Recommendations

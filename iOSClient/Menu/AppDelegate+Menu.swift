@@ -74,7 +74,7 @@ extension AppDelegate {
                                      let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".md", account: session.account, serverUrl: serverUrl)
                                      let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
 
-                                     NCCreateDocument().createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "text", creatorId: creator.identifier, templateId: NCGlobal.shared.templateDocument, account: session.account)
+                                     NCCreateDocument().createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "text", creatorId: creator.identifier, templateId: "document", account: session.account)
                                  }
                 })
             )
@@ -169,7 +169,7 @@ extension AppDelegate {
         }
 
         if NextcloudKit.shared.isNetworkReachable(),
-           let creator = capabilities.directEditingCreators.first(where: { $0.editor == NCGlobal.shared.editorOnlyoffice && $0.identifier == NCGlobal.shared.onlyofficeDocx}) {
+           let creator = capabilities.directEditingCreators.first(where: { $0.editor == "onlyoffice" && $0.identifier == "onlyoffice_docx"}) {
 
             actions.append(
                 NCMenuAction(
@@ -180,11 +180,11 @@ extension AppDelegate {
                         let createDocument = NCCreateDocument()
 
                         Task {
-                            let templates = await createDocument.getTemplate(editorId: NCGlobal.shared.editorOnlyoffice, templateId: NCGlobal.shared.templateDocument, account: session.account)
+                            let templates = await createDocument.getTemplate(editorId: "onlyoffice", templateId: "document", account: session.account)
                             let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
                             let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
 
-                            createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: NCGlobal.shared.editorOnlyoffice, creatorId: creator.identifier, templateId: templates.selectedTemplate.identifier, account: session.account)
+                            createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "onlyoffice", creatorId: creator.identifier, templateId: templates.selectedTemplate.identifier, account: session.account)
                         }
                     }
                 )
@@ -192,7 +192,7 @@ extension AppDelegate {
         }
 
         if NextcloudKit.shared.isNetworkReachable(),
-           let creator = capabilities.directEditingCreators.first(where: { $0.editor == NCGlobal.shared.editorOnlyoffice && $0.identifier == NCGlobal.shared.onlyofficeXlsx}) {
+           let creator = capabilities.directEditingCreators.first(where: { $0.editor == "onlyoffice" && $0.identifier == "onlyoffice_xlsx"}) {
 
             actions.append(
                 NCMenuAction(
@@ -203,11 +203,11 @@ extension AppDelegate {
                         let createDocument = NCCreateDocument()
 
                         Task {
-                            let templates = await createDocument.getTemplate(editorId: NCGlobal.shared.editorOnlyoffice, templateId: NCGlobal.shared.templateSpreadsheet, account: session.account)
+                            let templates = await createDocument.getTemplate(editorId: "onlyoffice", templateId: "spreadsheet", account: session.account)
                             let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
                             let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
 
-                            createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: NCGlobal.shared.editorOnlyoffice, creatorId: creator.identifier, templateId: templates.selectedTemplate.identifier, account: session.account)
+                            createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "onlyoffice", creatorId: creator.identifier, templateId: templates.selectedTemplate.identifier, account: session.account)
                         }
                     }
                 )
@@ -215,7 +215,7 @@ extension AppDelegate {
         }
 
         if NextcloudKit.shared.isNetworkReachable(),
-           let creator = capabilities.directEditingCreators.first(where: { $0.editor == NCGlobal.shared.editorOnlyoffice && $0.identifier == NCGlobal.shared.onlyofficePptx}) {
+           let creator = capabilities.directEditingCreators.first(where: { $0.editor == "onlyoffice" && $0.identifier == "onlyoffice_pptx"}) {
 
             actions.append(
                 NCMenuAction(
@@ -226,11 +226,11 @@ extension AppDelegate {
                         let createDocument = NCCreateDocument()
 
                         Task {
-                            let templates = await createDocument.getTemplate(editorId: NCGlobal.shared.editorOnlyoffice, templateId: NCGlobal.shared.templatePresentation, account: session.account)
+                            let templates = await createDocument.getTemplate(editorId: "onlyoffice", templateId: "presentation", account: session.account)
                             let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
                             let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
 
-                            createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: NCGlobal.shared.editorOnlyoffice, creatorId: creator.identifier, templateId: templates.selectedTemplate.identifier, account: session.account)
+                            createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "onlyoffice", creatorId: creator.identifier, templateId: templates.selectedTemplate.identifier, account: session.account)
                         }
                     }
                 )
@@ -248,7 +248,7 @@ extension AppDelegate {
                             let createDocument = NCCreateDocument()
 
                             Task {
-                                let templates = await createDocument.getTemplate(editorId: "collabora", templateId: NCGlobal.shared.templateDocument, account: session.account)
+                                let templates = await createDocument.getTemplate(editorId: "collabora", templateId: "document", account: session.account)
                                 let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
                                 let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
 
@@ -267,7 +267,7 @@ extension AppDelegate {
                             let createDocument = NCCreateDocument()
 
                             Task {
-                                let templates = await createDocument.getTemplate(editorId: "collabora", templateId: NCGlobal.shared.templateSpreadsheet, account: session.account)
+                                let templates = await createDocument.getTemplate(editorId: "collabora", templateId: "spreadsheet", account: session.account)
                                 let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
                                 let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
 
@@ -286,7 +286,7 @@ extension AppDelegate {
                             let createDocument = NCCreateDocument()
 
                             Task {
-                                let templates = await createDocument.getTemplate(editorId: "collabora", templateId: NCGlobal.shared.templatePresentation, account: session.account)
+                                let templates = await createDocument.getTemplate(editorId: "collabora", templateId: "presentation", account: session.account)
                                 let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
                                 let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
 

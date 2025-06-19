@@ -72,7 +72,7 @@ class NCCapabilitiesModel: ObservableObject, ViewOnAppearHandling {
         for editor in editors {
             if editor.editor == "text" {
                 textEditor = true
-            } else if editor.editor == NCGlobal.shared.editorOnlyoffice {
+            } else if editor.editor == "onlyoffice" {
                 onlyofficeEditors = true
             }
         }
