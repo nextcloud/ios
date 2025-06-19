@@ -70,7 +70,7 @@ extension NCScan: UICollectionViewDataSource {
                     let fileNameToPath = NSTemporaryDirectory() + fileName
                     NCUtilityFileSystem().copyFile(atPath: fileNameAtPath, toPath: fileNameToPath)
                     let metadata = tableMetadata()
-                    metadata.classFile = NKCommon.TypeClassFile.image.rawValue
+                    metadata.classFile = NKTypeClassFile.image.rawValue
                     let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNameToPath), fileNameSource: fileName, isEditingEnabled: true, metadata: metadata)
                     viewerQuickLook.delegateQuickLook = self
                     viewerQuickLook.saveAsCopyAlert = false

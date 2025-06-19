@@ -58,12 +58,15 @@ class NCUploadScanDocument: ObservableObject {
         self.quality = quality
         self.removeAllFiles = removeAllFiles
 
+        let results = NKTypeIdentifiersHelper(actor: NKTypeIdentifiers()).getInternalTypeSync(fileName: fileName, mimeType: "", directory: false, account: session.account)
         metadata = self.database.createMetadata(fileName: fileName,
                                                 fileNameView: fileName,
                                                 ocId: UUID().uuidString,
                                                 serverUrl: serverUrl,
                                                 url: "",
-                                                contentType: "",
+                                                contentType: results.mimeType,
+                                                iconName: results.iconName,
+                                                classFile: results.classFile,
                                                 session: session,
                                                 sceneIdentifier: controller?.sceneIdentifier)
 
