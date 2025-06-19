@@ -125,8 +125,8 @@ class NCViewer: NSObject {
                 var options = NKRequestOptions()
                 var editor = ""
                 let editors = utility.editorsDirectEditing(account: metadata.account, contentType: metadata.contentType)
-                if editors.contains(NCGlobal.shared.editorText) {
-                    editor = NCGlobal.shared.editorText
+                if editors.contains("Nextcloud Text") {
+                    editor = "text"
                     options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentNCText())
                 } else if editors.contains(NCGlobal.shared.editorOnlyoffice) {
                     editor = NCGlobal.shared.editorOnlyoffice
@@ -141,7 +141,7 @@ class NCViewer: NSObject {
                             if let navigationController = viewController.navigationController,
                                let viewController: NCViewerNextcloudText = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as? NCViewerNextcloudText {
                                 viewController.metadata = metadata
-                                viewController.editor = editor
+                                viewController.editor = "Nextcloud Text"
                                 viewController.link = url!
                                 viewController.imageIcon = image
                                 navigationController.pushViewController(viewController, animated: true)
