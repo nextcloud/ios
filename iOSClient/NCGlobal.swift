@@ -172,9 +172,7 @@ final class NCGlobal: Sendable {
 
     // Text -  OnlyOffice - Collabora - QuickLook
     //
-    let editorText                                  = "text"
     let editorOnlyoffice                            = "onlyoffice"
-    let editorCollabora                             = "collabora"
     let editorQuickLook                             = "quicklook"
 
     let onlyofficeDocx                              = "onlyoffice_docx"

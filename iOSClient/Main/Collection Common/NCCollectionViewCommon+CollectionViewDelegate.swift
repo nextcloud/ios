@@ -55,9 +55,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
                 return NCViewer().view(viewController: self, metadata: metadata, ocIds: withOcIds ? ocIds : nil, image: image)
 
-            } else if metadata.isAvailableEditorView ||
-                      utilityFileSystem.fileProviderStorageExists(metadata) ||
-                        metadata.name == self.global.talkName {
+            } else if metadata.isAvailableEditorView || utilityFileSystem.fileProviderStorageExists(metadata) || metadata.name == self.global.talkName {
 
                 NCViewer().view(viewController: self, metadata: metadata, image: image)
 
