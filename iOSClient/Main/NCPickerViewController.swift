@@ -143,17 +143,21 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
            let viewController = self.viewController {
             let ocId = NSUUID().uuidString
             let fileName = url.lastPathComponent
+            let results = NKTypeIdentifiersHelper(actor: NKTypeIdentifiers()).getInternalTypeSync(fileName: fileName, mimeType: "", directory: false, account: session.account)
+
             let metadata = database.createMetadata(fileName: fileName,
                                                    fileNameView: fileName,
                                                    ocId: ocId,
                                                    serverUrl: "",
                                                    url: url.path,
-                                                   contentType: "",
+                                                   contentType: results.mimeType,
+                                                   iconName: results.iconName,
+                                                   classFile: results.classFile,
                                                    session: session,
                                                    sceneIdentifier: self.controller.sceneIdentifier)
 
-            if metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
-                metadata.classFile = NKCommon.TypeClassFile.video.rawValue
+            if metadata.classFile == NKTypeClassFile.unknow.rawValue {
+                metadata.classFile = NKTypeClassFile.video.rawValue
             }
 
             if let fileNameError = FileNameValidator.checkFileName(metadata.fileNameView, account: self.controller.account, capabilities: capabilities) {
@@ -178,12 +182,15 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
                 guard self.copySecurityScopedResource(url: urlIn, urlOut: urlOut) != nil else { continue }
 
+                let results = NKTypeIdentifiersHelper(actor: NKTypeIdentifiers()).getInternalTypeSync(fileName: newFileName, mimeType: "", directory: false, account: session.account)
                 let metadataForUpload = database.createMetadata(fileName: newFileName,
                                                                 fileNameView: newFileName,
                                                                 ocId: ocId,
                                                                 serverUrl: serverUrl,
                                                                 url: "",
-                                                                contentType: "",
+                                                                contentType: results.mimeType,
+                                                                iconName: results.iconName,
+                                                                classFile: results.classFile,
                                                                 session: session,
                                                                 sceneIdentifier: self.controller.sceneIdentifier)
 
