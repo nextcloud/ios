@@ -218,6 +218,8 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
                                                             serverUrl: serverUrl,
                                                             url: "",
                                                             contentType: "",
+                                                            iconName: NKTypeIconFile.image.rawValue,
+                                                            classFile: NKTypeClassFile.image.rawValue,
                                                             session: session,
                                                             sceneIdentifier: controller?.sceneIdentifier)
 
