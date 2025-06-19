@@ -271,7 +271,7 @@ extension tableMetadata {
            directEditingEditors.isEmpty {
             // RichDocument: Collabora
             return true
-        } else if directEditingEditors.contains(NCGlobal.shared.editorText) || directEditingEditors.contains(NCGlobal.shared.editorOnlyoffice) {
+        } else if directEditingEditors.contains("Nextcloud Text") || directEditingEditors.contains("onlyoffice") {
             // DirectEditing: Nextcloud Text - OnlyOffice
            return true
         }
@@ -294,7 +294,7 @@ extension tableMetadata {
         guard (classFile == NKCommon.TypeClassFile.document.rawValue) && NextcloudKit.shared.isNetworkReachable() else { return false }
         let editors = NCUtility().editorsDirectEditing(account: account, contentType: contentType)
 
-        if editors.contains(NCGlobal.shared.editorText) || editors.contains(NCGlobal.shared.editorOnlyoffice) {
+        if editors.contains("Nextcloud Text") || editors.contains("onlyoffice") {
             return true
         }
         return false
