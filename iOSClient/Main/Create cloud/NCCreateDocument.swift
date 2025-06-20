@@ -45,23 +45,24 @@ class NCCreateDocument: NSObject {
                 options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
             }
 
-            NextcloudKit.shared.textCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateId, account: account, options: options) { returnedAccount, url, _, error in
+            NextcloudKit.shared.textCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateId, account: account, options: options) { _, url, _, error in
                 guard error == .success, let url else {
                     return NCContentPresenter().showError(error: error)
                 }
-                if account == returnedAccount {
-                    let contentType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false, account: session.account).mimeType
-                    let metadata = self.database.createMetadata(fileName: fileName,
-                                                                fileNameView: fileName,
-                                                                ocId: UUID,
-                                                                serverUrl: serverUrl,
-                                                                url: url,
-                                                                contentType: contentType,
-                                                                session: session,
-                                                                sceneIdentifier: controller.sceneIdentifier)
 
-                    NCViewer().view(viewController: viewController, metadata: metadata)
-                }
+                let results = NKTypeIdentifiersHelper(actor: NKTypeIdentifiers()).getInternalTypeSync(fileName: fileName, mimeType: "", directory: false, account: session.account)
+                let metadata = self.database.createMetadata(fileName: fileName,
+                                                            fileNameView: fileName,
+                                                            ocId: UUID,
+                                                            serverUrl: serverUrl,
+                                                            url: url,
+                                                            contentType: results.mimeType,
+                                                            iconName: results.iconName,
+                                                            classFile: results.classFile,
+                                                            session: session,
+                                                            sceneIdentifier: controller.sceneIdentifier)
+
+                NCViewer().view(viewController: viewController, metadata: metadata)
             }
 
         } else if editorId == "collabora" {
@@ -71,13 +72,15 @@ class NCCreateDocument: NSObject {
                     return NCContentPresenter().showError(error: error)
                 }
                 if account == returnedAccount {
-                    let contentType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false, account: session.account).mimeType
+                    let results = NKTypeIdentifiersHelper(actor: NKTypeIdentifiers()).getInternalTypeSync(fileName: fileName, mimeType: "", directory: false, account: session.account)
                     let metadata = self.database.createMetadata(fileName: fileName,
                                                                 fileNameView: fileName,
                                                                 ocId: UUID,
                                                                 serverUrl: serverUrl,
                                                                 url: url,
-                                                                contentType: contentType,
+                                                                contentType: results.mimeType,
+                                                                iconName: results.iconName,
+                                                                classFile: results.classFile,
                                                                 session: session,
                                                                 sceneIdentifier: controller.sceneIdentifier)
 
