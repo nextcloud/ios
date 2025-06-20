@@ -113,7 +113,7 @@ final class NCManageDatabase: Sendable {
             do {
                 try FileManager.default.setAttributes([FileAttributeKey.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication], ofItemAtPath: folderPath)
             } catch {
-                print("Dangerous error")
+                nkLog(error: "Realm directory setAttributes error: \(error)")
             }
         }
 
