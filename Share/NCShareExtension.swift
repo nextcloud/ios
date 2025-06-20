@@ -318,13 +318,18 @@ extension NCShareExtension {
         for fileName in filesName {
             let ocId = NSUUID().uuidString
             let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
-            guard utilityFileSystem.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath) else { continue }
+            guard utilityFileSystem.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath) else {
+                continue
+            }
+            let results = NKTypeIdentifiersHelper(actor: NKTypeIdentifiers()).getInternalTypeSync(fileName: fileName, mimeType: "", directory: false, account: session.account)
             let metadataForUpload = self.database.createMetadata(fileName: fileName,
                                                                  fileNameView: fileName,
                                                                  ocId: ocId,
                                                                  serverUrl: serverUrl,
                                                                  url: "",
-                                                                 contentType: "",
+                                                                 contentType: results.mimeType,
+                                                                 iconName: results.iconName,
+                                                                 classFile: results.classFile,
                                                                  session: session,
                                                                  sceneIdentifier: nil)
 
@@ -361,14 +366,14 @@ extension NCShareExtension {
         guard uploadStarted else { return }
         guard uploadMetadata.count > counterUploaded else { return DispatchQueue.main.async { self.finishedUploading(dismissAfterUpload: dismissAfterUpload) } }
         let metadata = uploadMetadata[counterUploaded]
-        let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false, account: session.account)
-
+        let results = NKTypeIdentifiersHelper(actor: NKTypeIdentifiers()).getInternalTypeSync(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false, account: session.account)
         metadata.contentType = results.mimeType
         metadata.iconName = results.iconName
         metadata.classFile = results.classFile
+
         // CHUNK
         var chunkSize = NCGlobal.shared.chunkSizeMBCellular
-        if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
+        if NCNetworking.shared.networkReachability == NKTypeReachability.reachableEthernetOrWiFi {
             chunkSize = NCGlobal.shared.chunkSizeMBEthernetOrWiFi
         }
         if metadata.size > chunkSize {
