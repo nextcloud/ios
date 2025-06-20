@@ -105,7 +105,9 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
                                                               ocId: UUID().uuidString,
                                                               serverUrl: controller.currentServerUrl(),
                                                               url: "",
-                                                              contentType: "",
+                                                              contentType: "audio/x-m4a",
+                                                              iconName: NKTypeIconFile.audio.rawValue,
+                                                              classFile: NKTypeClassFile.audio.rawValue,
                                                               session: self.session,
                                                               sceneIdentifier: self.controller?.sceneIdentifier)
 
