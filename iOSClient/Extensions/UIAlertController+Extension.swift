@@ -83,6 +83,8 @@ extension UIAlertController {
                                                                       serverUrl: serverUrl,
                                                                       url: "",
                                                                       contentType: "httpd/unix-directory",
+                                                                      iconName: NKTypeIconFile.directory.rawValue,
+                                                                      classFile: NKTypeClassFile.document.rawValue,
                                                                       directory: true,
                                                                       session: session,
                                                                       sceneIdentifier: sceneIdentifier)
