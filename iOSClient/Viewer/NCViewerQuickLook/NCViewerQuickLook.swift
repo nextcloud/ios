@@ -235,7 +235,7 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
 
         let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: metadata.fileNameView)
         guard utilityFileSystem.copyFile(atPath: url.path, toPath: fileNamePath) else { return }
-        let results = NKTypeIdentifiersHelper(actor: NKTypeIdentifiers()).getInternalTypeSync(fileName: metadata.fileName, mimeType: "", directory: false, account: session.account)
+        let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: metadata.fileName, mimeType: "", directory: false, account: session.account)
 
         let metadataForUpload = NCManageDatabase.shared.createMetadata(fileName: metadata.fileName,
                                                                        fileNameView: metadata.fileNameView,

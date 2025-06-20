@@ -75,21 +75,12 @@ final class NCCameraRoll: CameraRollExtractor {
 
         guard !metadataSource.assetLocalIdentifier.isEmpty else {
             let filePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadataSource.ocId, fileNameView: metadataSource.fileName)
-            /*
-            let results = NextcloudKit.shared.nkCommonInstance.getInternalType(
-                fileName: metadataSource.fileNameView,
-                mimeType: metadataSource.contentType,
-                directory: false,
-                account: metadataSource.account
-            )
-            */
-
-            metadataSource.size = utilityFileSystem.getFileSize(filePath: filePath)
-            /*
+            let results = await NKTypeIdentifiers.shared.getInternalType(fileName: metadataSource.fileNameView, mimeType: metadataSource.contentType, directory: false, account: metadataSource.account)
+            
             metadataSource.contentType = results.mimeType
             metadataSource.iconName = results.iconName
             metadataSource.classFile = results.classFile
-            */
+            metadataSource.size = utilityFileSystem.getFileSize(filePath: filePath)
 
             if let date = utilityFileSystem.getFileCreationDate(filePath: filePath) {
                 metadataSource.creationDate = date

@@ -318,7 +318,7 @@ class FileProviderExtension: NSFileProviderExtension {
 
                 fileURL.stopAccessingSecurityScopedResource()
 
-                let results = NKTypeIdentifiersHelper(actor: NKTypeIdentifiers()).getInternalTypeSync(fileName: fileName, mimeType: "", directory: false, account: fileProviderData.shared.session.account)
+                let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: fileName, mimeType: "", directory: false, account: fileProviderData.shared.session.account)
                 let metadataForUpload = self.database.createMetadata(fileName: fileName,
                                                                      fileNameView: fileName,
                                                                      ocId: ocIdTransfer,

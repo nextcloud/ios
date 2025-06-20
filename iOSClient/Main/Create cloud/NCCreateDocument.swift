@@ -50,7 +50,7 @@ class NCCreateDocument: NSObject {
                     return NCContentPresenter().showError(error: error)
                 }
 
-                let results = NKTypeIdentifiersHelper(actor: NKTypeIdentifiers()).getInternalTypeSync(fileName: fileName, mimeType: "", directory: false, account: session.account)
+                let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: fileName, mimeType: "", directory: false, account: session.account)
                 let metadata = self.database.createMetadata(fileName: fileName,
                                                             fileNameView: fileName,
                                                             ocId: UUID,
@@ -72,7 +72,7 @@ class NCCreateDocument: NSObject {
                     return NCContentPresenter().showError(error: error)
                 }
                 if account == returnedAccount {
-                    let results = NKTypeIdentifiersHelper(actor: NKTypeIdentifiers()).getInternalTypeSync(fileName: fileName, mimeType: "", directory: false, account: session.account)
+                    let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: fileName, mimeType: "", directory: false, account: session.account)
                     let metadata = self.database.createMetadata(fileName: fileName,
                                                                 fileNameView: fileName,
                                                                 ocId: UUID,
