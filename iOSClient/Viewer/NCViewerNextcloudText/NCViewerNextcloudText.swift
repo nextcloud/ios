@@ -52,14 +52,17 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         }
         navigationController?.navigationBar.prefersLargeTitles = false
         navigationItem.title = metadata.fileNameView
-        navigationItem.hidesBackButton = true
+
+        if editor == "Nextcloud Text" {
+            navigationItem.hidesBackButton = true
+        }
 
         let config = WKWebViewConfiguration()
         config.websiteDataStore = WKWebsiteDataStore.nonPersistent()
         let contentController = config.userContentController
         contentController.add(self, name: "DirectEditingMobileInterface")
         // FIXME: ONLYOFFICE Due to the WK Shared Workers issue the editors cannot be opened on the devices with iOS 16.1.
-        if editor == NCGlobal.shared.editorOnlyoffice {
+        if editor == "onlyoffice" {
             let dropSharedWorkersScript = WKUserScript(source: "delete window.SharedWorker;", injectionTime: WKUserScriptInjectionTime.atDocumentStart, forMainFrameOnly: false)
             config.userContentController.addUserScript(dropSharedWorkersScript)
         }
@@ -76,9 +79,9 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         bottomConstraint = webView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 70)
         bottomConstraint?.isActive = true
 
-        if editor == NCGlobal.shared.editorOnlyoffice {
+        if editor == "onlyoffice" {
             webView.customUserAgent = utility.getCustomUserAgentOnlyOffice()
-        } else if editor == NCGlobal.shared.editorText {
+        } else if editor == "Nextcloud Text" {
             webView.customUserAgent = utility.getCustomUserAgentNCText()
         } // else: use default
 

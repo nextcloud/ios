@@ -212,7 +212,7 @@ extension NCMenuAction {
             sender: sender,
             action: { _ in
                 var fileNameError: NKError?
-                let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account)
+                let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
 
                 for metadata in selectedMetadatas {
                     if let sceneIdentifier = metadata.sceneIdentifier,

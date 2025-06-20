@@ -413,7 +413,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         // URL
-        if metadata.classFile == NKCommon.TypeClassFile.url.rawValue {
+        if metadata.classFile == NKTypeClassFile.url.rawValue {
             cell.fileLocalImage?.image = nil
             cell.hideButtonShare(true)
             cell.hideButtonMore(true)

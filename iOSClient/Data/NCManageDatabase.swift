@@ -330,8 +330,6 @@ final class NCManageDatabase: Sendable {
         self.clearTable(tableComments.self, account: account)
         self.clearTable(tableDashboardWidget.self, account: account)
         self.clearTable(tableDashboardWidgetButton.self, account: account)
-        self.clearTable(tableDirectEditingCreators.self, account: account)
-        self.clearTable(tableDirectEditingEditors.self, account: account)
         self.clearTable(tableDirectory.self, account: account)
         self.clearTablesE2EE(account: account)
         self.clearTable(tableExternalSites.self, account: account)

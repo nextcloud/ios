@@ -58,12 +58,15 @@ class NCUploadScanDocument: ObservableObject {
         self.quality = quality
         self.removeAllFiles = removeAllFiles
 
+        let results = NKTypeIdentifiersHelper(actor: NKTypeIdentifiers()).getInternalTypeSync(fileName: fileName, mimeType: "", directory: false, account: session.account)
         metadata = self.database.createMetadata(fileName: fileName,
                                                 fileNameView: fileName,
                                                 ocId: UUID().uuidString,
                                                 serverUrl: serverUrl,
                                                 url: "",
-                                                contentType: "",
+                                                contentType: results.mimeType,
+                                                iconName: results.iconName,
+                                                classFile: results.classFile,
                                                 session: session,
                                                 sceneIdentifier: controller?.sceneIdentifier)
 
@@ -327,8 +330,8 @@ struct UploadScanDocumentView: View {
 
     var metadatasConflict: [tableMetadata] = []
 
-    var capabilities: NCCapabilities.Capabilities {
-        NCCapabilities.shared.getCapabilitiesBlocking(for: model.session.account)
+    var capabilities: NKCapabilities.Capabilities {
+        NKCapabilities.shared.getCapabilitiesBlocking(for: model.session.account)
     }
 
     init(model: NCUploadScanDocument) {

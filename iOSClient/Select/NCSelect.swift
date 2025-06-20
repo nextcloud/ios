@@ -144,7 +144,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         let folderPath = utilityFileSystem.getFileNamePath("", serverUrl: serverUrl, session: session)
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: session.account)
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
 
         if serverUrl.isEmpty || !FileNameValidator.checkFolderPath(folderPath, account: session.account, capabilities: capabilities) {
             serverUrl = utilityFileSystem.getHomeServer(session: session)
@@ -237,7 +237,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     func pushMetadata(_ metadata: tableMetadata) {
         let serverUrlPush = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
         guard let viewController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect else { return }
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
 
         self.serverUrlPush = serverUrlPush
 

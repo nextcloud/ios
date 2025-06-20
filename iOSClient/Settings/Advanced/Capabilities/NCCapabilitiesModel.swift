@@ -44,7 +44,7 @@ class NCCapabilitiesModel: ObservableObject, ViewOnAppearHandling {
     func onViewAppear() {
         var textEditor = false
         var onlyofficeEditors = false
-        let cap = NCCapabilities.shared.getCapabilitiesBlocking(for: session.account)
+        let cap = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
         capabililies.removeAll()
 
         var image = utility.loadImage(named: "person.fill.badge.plus")
@@ -68,13 +68,12 @@ class NCCapabilitiesModel: ObservableObject, ViewOnAppearHandling {
         image = utility.loadImage(named: "trash")
         capabililies.append(Capability(text: "Deleted files", image: image, resize: false, available: cap.filesUndelete))
 
-        if let editors = NCManageDatabase.shared.getDirectEditingEditors(account: session.account) {
-            for editor in editors {
-                if editor.editor == NCGlobal.shared.editorText {
-                    textEditor = true
-                } else if editor.editor == NCGlobal.shared.editorOnlyoffice {
-                    onlyofficeEditors = true
-                }
+        let editors = cap.directEditingCreators
+        for editor in editors {
+            if editor.editor == "text" {
+                textEditor = true
+            } else if editor.editor == "onlyoffice" {
+                onlyofficeEditors = true
             }
         }
 

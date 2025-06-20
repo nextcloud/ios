@@ -38,14 +38,15 @@ class NCShareCell: UITableViewCell {
     @IBOutlet weak var sizeCell: UILabel!
     weak var delegate: (NCShareCellDelegate & UIViewController)?
     var fileName: String = ""
+    var iconName: String = ""
     var account: String = ""
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
 
-    func setup(fileName: String, account: String) {
+    func setup(fileName: String, iconName: String, account: String) {
         self.fileName = fileName
         self.account = account
-        let resultInternalType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false, account: account)
+        self.iconName = iconName
 
         backgroundColor = .systemBackground
         imageCell?.layer.cornerRadius = 6
@@ -55,7 +56,7 @@ class NCShareCell: UITableViewCell {
             imageCell.image = image
             imageCell.contentMode = .scaleAspectFill
         } else {
-            imageCell.image = utility.loadImage(named: resultInternalType.iconName, useTypeIconFile: true, account: account)
+            imageCell.image = utility.loadImage(named: iconName, useTypeIconFile: true, account: account)
             imageCell.contentMode = .scaleAspectFit
         }
 

@@ -116,7 +116,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }), for: .touchUpInside)
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterUpdateNotification), object: nil, queue: nil) { _ in
-            let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: self.session.account)
+            let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: self.session.account)
             if capabilities.notification.count > 0 {
                 NextcloudKit.shared.getNotifications(account: self.session.account) { _ in
                 } completion: { _, notifications, _, error in
@@ -194,7 +194,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             let tranfersCount = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status != %i", self.global.metadataStatusNormal))?.count ?? 0
 
             await MainActor.run {
-                let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: session.account)
+                let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
                 var tempRightBarButtonItems: [UIBarButtonItem] = createRightMenu() == nil ? [] : [self.menuBarButtonItem]
                 var tempTotalTags = tempRightBarButtonItems.count == 0 ? 0 : self.menuBarButtonItem.tag
                 var totalTags = 0
@@ -385,7 +385,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
 
         let showRecommendedFilesKeychain = NCKeychain().showRecommendedFiles
-        let capabilityRecommendations = NCCapabilities.shared.getCapabilitiesBlocking(for: session.account).recommendations
+        let capabilityRecommendations = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account).recommendations
         if capabilityRecommendations {
             showRecommendedFiles = UIAction(title: NSLocalizedString("_show_recommended_files_", comment: ""), state: showRecommendedFilesKeychain ? .on : .off) { _ in
                 NCKeychain().showRecommendedFiles = !showRecommendedFilesKeychain

@@ -270,11 +270,13 @@ extension NCEndToEndMetadata {
                                 // Update metadata on tableMetadata
                                 metadata.fileNameView = encrypted.filename
 
+                                /*
                                 let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory, account: session.account)
 
                                 metadata.contentType = results.mimeType
                                 metadata.iconName = results.iconName
                                 metadata.classFile = results.classFile
+                                */
 
                                 self.database.addMetadata(metadata)
                             }
@@ -328,7 +330,8 @@ extension NCEndToEndMetadata {
                                 // Update metadata on tableMetadata
                                 metadata.fileNameView = encrypted.filename
 
-                                let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory, account: session.account)
+                                // Update file type
+                                let results = NKTypeIdentifiersHelper(actor: NKTypeIdentifiers()).getInternalTypeSync(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory, account: session.account)
 
                                 metadata.contentType = results.mimeType
                                 metadata.iconName = results.iconName
@@ -445,11 +448,13 @@ extension NCEndToEndMetadata {
                                 // Update metadata on tableMetadata
                                 metadata.fileNameView = encrypted.filename
 
+                                /*
                                 let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory, account: session.account)
 
                                 metadata.contentType = results.mimeType
                                 metadata.iconName = results.iconName
                                 metadata.classFile = results.classFile
+                                */
 
                                 self.database.addMetadata(metadata)
                             }

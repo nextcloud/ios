@@ -40,8 +40,8 @@ struct NCSettingsView: View {
     /// Object of ViewModel of this view
     @ObservedObject var model: NCSettingsModel
 
-    var capabilities: NCCapabilities.Capabilities {
-        NCCapabilities.shared.getCapabilitiesBlocking(for: model.controller?.account)
+    var capabilities: NKCapabilities.Capabilities {
+        NKCapabilities.shared.getCapabilitiesBlocking(for: model.controller?.account)
     }
 
     var body: some View {

@@ -46,7 +46,7 @@ class NCNetworkingE2EE: NSObject {
     }
 
     func getOptions(account: String) -> NKRequestOptions {
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account)
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
         let version = capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 ? e2EEApiVersion2 : e2EEApiVersion1
         return NKRequestOptions(version: version)
     }
@@ -57,7 +57,7 @@ class NCNetworkingE2EE: NSObject {
                      e2eToken: String?,
                      account: String,
                      completion: @escaping (_ account: String, _ version: String?, _ e2eMetadata: String?, _ signature: String?, _ responseData: AFDataResponse<Data>?, _ error: NKError) -> Void) {
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account)
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
 
         switch capabilities.e2EEApiVersion {
         case NCGlobal.shared.e2eeVersionV11, NCGlobal.shared.e2eeVersionV12:
@@ -176,7 +176,7 @@ class NCNetworkingE2EE: NSObject {
             self.database.addDiagnostic(account: session.account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
             return resultsEncodeMetadata.error
         }
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: session.account)
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
 
         let putE2EEMetadataResults = await NextcloudKit.shared.putE2EEMetadataAsync(fileId: fileId, e2eToken: e2eToken, e2eMetadata: e2eMetadata, signature: resultsEncodeMetadata.signature, method: method, account: session.account, options: NCNetworkingE2EE().getOptions(account: session.account))
         guard putE2EEMetadataResults.error == .success else {
@@ -222,7 +222,7 @@ class NCNetworkingE2EE: NSObject {
         guard let directory = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl)) else {
             return (nil, nil, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_"))
         }
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account)
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
 
         if let tableLock = self.database.getE2ETokenLock(account: account, serverUrl: serverUrl) {
             e2eToken = tableLock.e2eToken

@@ -34,7 +34,7 @@ extension NCShareExtension: UICollectionViewDelegate {
             if metadata.e2eEncrypted && !NCKeychain().isEndToEndEnabled(account: self.session.account) {
                 self.showAlert(title: "_info_", description: "_e2e_goto_settings_for_enable_")
             }
-            let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: self.session.account)
+            let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: self.session.account)
 
             if let fileNameError = FileNameValidator.checkFileName(metadata.fileNameView, account: self.session.account, capabilities: capabilities) {
                 self.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
@@ -191,7 +191,7 @@ extension NCShareExtension: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCShareCell else { return UITableViewCell() }
         let fileName = filesName[indexPath.row]
-        cell.setup(fileName: fileName, account: session.account)
+        cell.setup(fileName: fileName, iconName: "", account: session.account)
         cell.delegate = self
         return cell
     }

@@ -106,7 +106,7 @@ private var hasChangesQuickLook: Bool = false
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        if let metadata = metadata, metadata.classFile != NKCommon.TypeClassFile.image.rawValue {
+        if let metadata = metadata, metadata.classFile != NKTypeClassFile.image.rawValue {
             dismissView(nil)
         }
     }
@@ -235,13 +235,16 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
 
         let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: metadata.fileNameView)
         guard utilityFileSystem.copyFile(atPath: url.path, toPath: fileNamePath) else { return }
+        let results = NKTypeIdentifiersHelper(actor: NKTypeIdentifiers()).getInternalTypeSync(fileName: metadata.fileName, mimeType: "", directory: false, account: session.account)
 
         let metadataForUpload = NCManageDatabase.shared.createMetadata(fileName: metadata.fileName,
                                                                        fileNameView: metadata.fileNameView,
                                                                        ocId: ocId,
                                                                        serverUrl: metadata.serverUrl,
                                                                        url: url.path,
-                                                                       contentType: "",
+                                                                       contentType: results.mimeType,
+                                                                       iconName: results.iconName,
+                                                                       classFile: results.classFile,
                                                                        session: session,
                                                                        sceneIdentifier: nil)
 

@@ -63,8 +63,8 @@ class NCShare: UIViewController, NCSharePagingContent {
 
     var shares: (firstShareLink: tableShare?, share: [tableShare]?) = (nil, nil)
 
-    var capabilities: NCCapabilities.Capabilities {
-         NCCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
+    var capabilities: NKCapabilities.Capabilities {
+        NKCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
     }
 
     private var dropDown = DropDown()

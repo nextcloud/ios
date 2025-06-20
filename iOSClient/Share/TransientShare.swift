@@ -28,7 +28,7 @@ class TransientShare: Shareable {
     var attributes: String?
 
     private init(shareType: Int, metadata: tableMetadata, password: String?) {
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
 
         if metadata.e2eEncrypted, capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV12 {
             self.permissions = NCPermissions().permissionCreateShare

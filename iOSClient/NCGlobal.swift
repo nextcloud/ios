@@ -170,23 +170,6 @@ final class NCGlobal: Sendable {
     let buttonMoreMore                              = "more"
     let buttonMoreLock                              = "moreLock"
 
-    // Text -  OnlyOffice - Collabora - QuickLook
-    //
-    let editorText                                  = "text"
-    let editorOnlyoffice                            = "onlyoffice"
-    let editorCollabora                             = "collabora"
-    let editorQuickLook                             = "quicklook"
-
-    let onlyofficeDocx                              = "onlyoffice_docx"
-    let onlyofficeXlsx                              = "onlyoffice_xlsx"
-    let onlyofficePptx                              = "onlyoffice_pptx"
-
-    // Template
-    //
-    let templateDocument                            = "document"
-    let templateSpreadsheet                         = "spreadsheet"
-    let templatePresentation                        = "presentation"
-
     // Rich Workspace
     //
     let fileNameRichWorkspace                       = "Readme.md"

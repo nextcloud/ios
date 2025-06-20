@@ -39,8 +39,8 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
         NCSession.shared.getSession(controller: controller)
     }
     /// Capabilities
-    var capabilities: NCCapabilities.Capabilities {
-        NCCapabilities.shared.getCapabilitiesBlocking(for: controller?.account)
+    var capabilities: NKCapabilities.Capabilities {
+        NKCapabilities.shared.getCapabilitiesBlocking(for: controller?.account)
     }
     let database = NCManageDatabase.shared
     let global = NCGlobal.shared
@@ -212,12 +212,15 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
                 continue
             }
 
+            let results = NKTypeIdentifiersHelper(actor: NKTypeIdentifiers()).getInternalTypeSync(fileName: fileName, mimeType: "", directory: false, account: session.account)
             let metadataForUpload = database.createMetadata(fileName: fileName,
                                                             fileNameView: fileName,
                                                             ocId: NSUUID().uuidString,
                                                             serverUrl: serverUrl,
                                                             url: "",
-                                                            contentType: "",
+                                                            contentType: results.mimeType,
+                                                            iconName: results.iconName,
+                                                            classFile: results.classFile,
                                                             session: session,
                                                             sceneIdentifier: controller?.sceneIdentifier)
 

@@ -149,37 +149,37 @@ extension tableMetadata {
     }
 
     var isSavebleInCameraRoll: Bool {
-        return (classFile == NKCommon.TypeClassFile.image.rawValue && contentType != "image/svg+xml") || classFile == NKCommon.TypeClassFile.video.rawValue
+        return (classFile == NKTypeClassFile.image.rawValue && contentType != "image/svg+xml") || classFile == NKTypeClassFile.video.rawValue
     }
 
     /*
     var isDocumentViewableOnly: Bool {
-        sharePermissionsCollaborationServices == NCPermissions().permissionReadShare && classFile == NKCommon.TypeClassFile.document.rawValue
+        sharePermissionsCollaborationServices == NCPermissions().permissionReadShare && classFile == NKTypeClassFile.document.rawValue
     }
     */
 
     var isAudioOrVideo: Bool {
-        return classFile == NKCommon.TypeClassFile.audio.rawValue || classFile == NKCommon.TypeClassFile.video.rawValue
+        return classFile == NKTypeClassFile.audio.rawValue || classFile == NKTypeClassFile.video.rawValue
     }
 
     var isImageOrVideo: Bool {
-        return classFile == NKCommon.TypeClassFile.image.rawValue || classFile == NKCommon.TypeClassFile.video.rawValue
+        return classFile == NKTypeClassFile.image.rawValue || classFile == NKTypeClassFile.video.rawValue
     }
 
     var isVideo: Bool {
-        return classFile == NKCommon.TypeClassFile.video.rawValue
+        return classFile == NKTypeClassFile.video.rawValue
     }
 
     var isAudio: Bool {
-        return classFile == NKCommon.TypeClassFile.audio.rawValue
+        return classFile == NKTypeClassFile.audio.rawValue
     }
 
     var isImage: Bool {
-        return classFile == NKCommon.TypeClassFile.image.rawValue
+        return classFile == NKTypeClassFile.image.rawValue
     }
 
     var isSavebleAsImage: Bool {
-        classFile == NKCommon.TypeClassFile.image.rawValue && contentType != "image/svg+xml"
+        classFile == NKTypeClassFile.image.rawValue && contentType != "image/svg+xml"
     }
 
     var isCopyableInPasteboard: Bool {
@@ -259,19 +259,19 @@ extension tableMetadata {
 
     var isAvailableEditorView: Bool {
         guard !isPDF,
-              classFile == NKCommon.TypeClassFile.document.rawValue,
+              classFile == NKTypeClassFile.document.rawValue,
               NextcloudKit.shared.isNetworkReachable() else { return false }
         let utility = NCUtility()
         let directEditingEditors = utility.editorsDirectEditing(account: account, contentType: contentType)
         let richDocumentEditor = utility.isTypeFileRichDocument(self)
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account)
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
 
         if capabilities.richDocumentsEnabled,
            richDocumentEditor,
            directEditingEditors.isEmpty {
             // RichDocument: Collabora
             return true
-        } else if directEditingEditors.contains(NCGlobal.shared.editorText) || directEditingEditors.contains(NCGlobal.shared.editorOnlyoffice) {
+        } else if directEditingEditors.contains("Nextcloud Text") || directEditingEditors.contains("onlyoffice") {
             // DirectEditing: Nextcloud Text - OnlyOffice
            return true
         }
@@ -279,8 +279,8 @@ extension tableMetadata {
     }
 
     var isAvailableRichDocumentEditorView: Bool {
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account)
-        guard classFile == NKCommon.TypeClassFile.document.rawValue,
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
+        guard classFile == NKTypeClassFile.document.rawValue,
               capabilities.richDocumentsEnabled,
               NextcloudKit.shared.isNetworkReachable() else { return false }
 
@@ -291,10 +291,10 @@ extension tableMetadata {
     }
 
     var isAvailableDirectEditingEditorView: Bool {
-        guard (classFile == NKCommon.TypeClassFile.document.rawValue) && NextcloudKit.shared.isNetworkReachable() else { return false }
+        guard (classFile == NKTypeClassFile.document.rawValue) && NextcloudKit.shared.isNetworkReachable() else { return false }
         let editors = NCUtility().editorsDirectEditing(account: account, contentType: contentType)
 
-        if editors.contains(NCGlobal.shared.editorText) || editors.contains(NCGlobal.shared.editorOnlyoffice) {
+        if editors.contains("Nextcloud Text") || editors.contains("ONLYOFFICE") {
             return true
         }
         return false
@@ -311,7 +311,7 @@ extension tableMetadata {
 
     // Return if is sharable
     func isSharable() -> Bool {
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account)
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
         if !capabilities.fileSharingApiEnabled || (capabilities.e2EEEnabled && isDirectoryE2EE) {
             return false
         }
@@ -395,8 +395,8 @@ extension NCManageDatabase {
         metadata.size = file.size
         metadata.classFile = file.classFile
         // iOS 12.0,* don't detect UTI text/markdown, text/x-markdown
-        if (metadata.contentType == "text/markdown" || metadata.contentType == "text/x-markdown") && metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
-            metadata.classFile = NKCommon.TypeClassFile.document.rawValue
+        if (metadata.contentType == "text/markdown" || metadata.contentType == "text/x-markdown") && metadata.classFile == NKTypeClassFile.unknow.rawValue {
+            metadata.classFile = NKTypeClassFile.document.rawValue
         }
         if let date = file.uploadDate {
             metadata.uploadDate = date as NSDate
@@ -418,7 +418,7 @@ extension NCManageDatabase {
         if isDirectoryE2EE || file.e2eEncrypted {
             if let tableE2eEncryption = getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", file.account, file.serverUrl, file.fileName)) {
                 metadata.fileNameView = tableE2eEncryption.fileName
-                let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory, account: file.account)
+                let results = NKTypeIdentifiersHelper(actor: NKTypeIdentifiers()).getInternalTypeSync(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory, account: file.account)
                 metadata.contentType = results.mimeType
                 metadata.iconName = results.iconName
                 metadata.classFile = results.classFile
@@ -479,29 +479,33 @@ extension NCManageDatabase {
         })
     }
 
-    func createMetadata(fileName: String, fileNameView: String, ocId: String, serverUrl: String, url: String, contentType: String, isUrl: Bool = false, name: String = NCGlobal.shared.appName, subline: String? = nil, iconName: String? = nil, iconUrl: String? = nil, directory: Bool = false, session: NCSession.Session, sceneIdentifier: String?) -> tableMetadata {
+    func createMetadata(fileName: String,
+                        fileNameView: String,
+                        ocId: String,
+                        serverUrl: String,
+                        url: String,
+                        contentType: String,
+                        iconName: String,
+                        classFile: String,
+                        isUrl: Bool = false,
+                        name: String = NCGlobal.shared.appName,
+                        subline: String? = nil,
+                        iconUrl: String? = nil,
+                        directory: Bool = false,
+                        session: NCSession.Session,
+                        sceneIdentifier: String?) -> tableMetadata {
         let metadata = tableMetadata()
 
         if isUrl {
             metadata.contentType = "text/uri-list"
-            if let iconName = iconName {
-                metadata.iconName = iconName
-            } else {
-                metadata.iconName = NKCommon.TypeClassFile.url.rawValue
-            }
-            metadata.classFile = NKCommon.TypeClassFile.url.rawValue
+            metadata.iconName = NKTypeClassFile.url.rawValue
+            metadata.classFile = NKTypeClassFile.url.rawValue
         } else {
-            let (mimeType, classFile, iconName, _, _, _) = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: contentType, directory: directory, account: session.account)
-            metadata.contentType = mimeType
+            metadata.contentType = contentType
             metadata.iconName = iconName
             metadata.classFile = classFile
-            // iOS 12.0,* don't detect UTI text/markdown, text/x-markdown
-            if classFile == NKCommon.TypeClassFile.unknow.rawValue && (mimeType == "text/x-markdown" || mimeType == "text/markdown") {
-                metadata.iconName = NKCommon.TypeIconFile.txt.rawValue
-                metadata.classFile = NKCommon.TypeClassFile.document.rawValue
-            }
         }
-        if let iconUrl = iconUrl {
+        if let iconUrl {
             metadata.iconUrl = iconUrl
         }
 
@@ -672,13 +676,9 @@ extension NCManageDatabase {
                 let fileNameView = result.fileNameView
                 let fileIdMOV = result.livePhotoFile
                 let directoryServerUrl = self.utilityFileSystem.stringAppendServerUrl(result.serverUrl, addFileName: fileNameView)
-                let resultsType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileNameNew, mimeType: "", directory: result.directory, account: result.account)
 
                 result.fileName = fileNameNew
                 result.fileNameView = fileNameNew
-                result.iconName = resultsType.iconName
-                result.contentType = resultsType.mimeType
-                result.classFile = resultsType.classFile
                 result.status = status
 
                 if status == NCGlobal.shared.metadataStatusNormal {
@@ -729,18 +729,8 @@ extension NCManageDatabase {
             let account = metadata.account
             let originalServerUrl = metadata.serverUrl
 
-            let resultsType = NextcloudKit.shared.nkCommonInstance.getInternalType(
-                fileName: fileNameNew,
-                mimeType: "",
-                directory: metadata.directory,
-                account: account
-            )
-
             metadata.fileName = fileNameNew
             metadata.fileNameView = fileNameNew
-            metadata.iconName = resultsType.iconName
-            metadata.contentType = resultsType.mimeType
-            metadata.classFile = resultsType.classFile
             metadata.status = status
             metadata.sessionDate = (status == NCGlobal.shared.metadataStatusNormal) ? nil : Date()
 
@@ -1564,6 +1554,8 @@ extension NCManageDatabase {
                                                                       serverUrl: serverUrl,
                                                                       url: "",
                                                                       contentType: "httpd/unix-directory",
+                                                                      iconName: NKTypeIconFile.directory.rawValue,
+                                                                      classFile: NKTypeClassFile.directory.rawValue,
                                                                       directory: true,
                                                                       session: session,
                                                                       sceneIdentifier: nil)

@@ -150,7 +150,7 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
                     isAnyOffline = localFile.offline
                 } // else: file is not offline, continue
             }
-            let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: controller?.account ?? "")
+            let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: controller?.account ?? "")
             enableLock = !isAnyDirectory && canUnlock && !capabilities.filesLockVersion.isEmpty
             // Convert Live Photo
             if metadatas.count == 2,

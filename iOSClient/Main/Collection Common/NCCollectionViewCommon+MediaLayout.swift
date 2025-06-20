@@ -74,7 +74,7 @@ extension NCCollectionViewCommon: NCMediaLayoutDelegate {
 
             if metadata.imageSize != CGSize.zero {
                 return metadata.imageSize
-            } else if metadata.classFile == NKCommon.TypeClassFile.document.rawValue {
+            } else if metadata.classFile == NKTypeClassFile.document.rawValue {
                 let ext = global.getSizeExtension(column: self.numberOfColumns)
                 if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
                     return image.size

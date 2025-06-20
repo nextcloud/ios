@@ -83,6 +83,8 @@ extension UIAlertController {
                                                                       serverUrl: serverUrl,
                                                                       url: "",
                                                                       contentType: "httpd/unix-directory",
+                                                                      iconName: NKTypeIconFile.directory.rawValue,
+                                                                      classFile: NKTypeClassFile.document.rawValue,
                                                                       directory: true,
                                                                       session: session,
                                                                       sceneIdentifier: sceneIdentifier)
@@ -109,7 +111,7 @@ extension UIAlertController {
             forName: UITextField.textDidChangeNotification,
             object: alertController.textFields?.first,
             queue: .main) { _ in
-                let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: session.account)
+                let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
                 guard let text = alertController.textFields?.first?.text else {
                     return
                 }
@@ -195,7 +197,7 @@ extension UIAlertController {
     }
 
     static func renameFile(fileName: String, isDirectory: Bool = false, account: String, completion: @escaping (_ newFileName: String) -> Void) -> UIAlertController {
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account)
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
         let alertController = UIAlertController(title: NSLocalizedString(isDirectory ? "_rename_folder_" : "_rename_file_", comment: ""), message: nil, preferredStyle: .alert)
 
         let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in

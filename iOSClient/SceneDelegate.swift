@@ -281,6 +281,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     case self.global.actionScanDocument:
                         NCDocumentCamera.shared.openScannerDocument(viewController: controller)
                     case self.global.actionTextDocument:
+                        break
+                        /*
                         let directEditingCreators = self.database.getDirectEditingCreators(account: session.account)
                         let directEditingCreator = directEditingCreators!.first(where: { $0.editor == self.global.editorText})!
                         let serverUrl = controller.currentServerUrl()
@@ -291,6 +293,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
                             NCCreateDocument().createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: self.global.editorText, creatorId: directEditingCreator.identifier, templateId: self.global.templateDocument, account: session.account)
                         }
+                        */
                     case self.global.actionVoiceMemo:
                         NCAskAuthorization().askAuthorizationAudioRecord(viewController: controller) { hasPermission in
                             if hasPermission {

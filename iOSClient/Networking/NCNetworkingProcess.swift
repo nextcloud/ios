@@ -162,7 +162,7 @@ class NCNetworkingProcess {
         }
 
         var httpMaximumConnectionsPerHostInUpload = NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload
-        let isWiFi = self.networking.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi
+        let isWiFi = self.networking.networkReachability == NKTypeReachability.reachableEthernetOrWiFi
         let sessionUploadSelectors = [self.global.selectorUploadFileNODelete, self.global.selectorUploadFile, self.global.selectorUploadAutoUpload]
         var counterUploading = metadatas.filter { $0.status == self.global.metadataStatusUploading }.count
         for sessionSelector in sessionUploadSelectors where counterUploading < httpMaximumConnectionsPerHostInUpload {

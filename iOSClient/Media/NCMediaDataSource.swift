@@ -60,7 +60,7 @@ extension NCMedia {
         else { return }
         let limit = max(self.collectionView.visibleCells.count * 3, 300)
         let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) })
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: session.account)
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
 
         DispatchQueue.global(qos: .utility).async {
             self.semaphoreSearchMedia.wait()
@@ -244,9 +244,9 @@ public class NCMediaDataSource: NSObject {
         return Metadata(datePhotosOriginal: metadata.datePhotosOriginal as Date,
                         etag: metadata.etag,
                         imageSize: CGSize(width: metadata.width, height: metadata.height),
-                        isImage: metadata.classFile == NKCommon.TypeClassFile.image.rawValue,
+                        isImage: metadata.classFile == NKTypeClassFile.image.rawValue,
                         isLivePhoto: !metadata.livePhotoFile.isEmpty,
-                        isVideo: metadata.classFile == NKCommon.TypeClassFile.video.rawValue,
+                        isVideo: metadata.classFile == NKTypeClassFile.video.rawValue,
                         ocId: metadata.ocId)
     }
 

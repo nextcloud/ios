@@ -35,7 +35,7 @@ final class NCUtility: NSObject, Sendable {
     func isTypeFileRichDocument(_ metadata: tableMetadata) -> Bool {
         guard metadata.fileNameView != "." else { return false }
         let fileExtension = (metadata.fileNameView as NSString).pathExtension
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
         guard !fileExtension.isEmpty,
               let mimeType = UTType(tag: fileExtension.uppercased(), tagClass: .filenameExtension, conformingTo: nil)?.identifier else {
             return false
@@ -58,30 +58,32 @@ final class NCUtility: NSObject, Sendable {
     }
 
     func editorsDirectEditing(account: String, contentType: String) -> [String] {
-        var editor: [String] = []
-        guard let results = NCManageDatabase.shared.getDirectEditingEditors(account: account) else { return editor }
+        var names: [String] = []
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
 
-        for result: tableDirectEditingEditors in results {
-            for mimetype in result.mimetypes {
+        capabilities.directEditingEditors.forEach { editor in
+            editor.mimetypes.forEach { mimetype in
                 if mimetype == contentType {
-                    editor.append(result.editor)
+                    names.append(editor.name)
                 }
                 // HARDCODE
                 // https://github.com/nextcloud/text/issues/913
                 if mimetype == "text/markdown" && contentType == "text/x-markdown" {
-                    editor.append(result.editor)
+                    names.append(editor.name)
                 }
                 if contentType == "text/html" {
-                    editor.append(result.editor)
+                    names.append(editor.name)
                 }
             }
-            for mimetype in result.optionalMimetypes {
+
+            editor.optionalMimetypes.forEach { mimetype in
                 if mimetype == contentType {
-                    editor.append(result.editor)
+                    names.append(editor.name)
                 }
             }
         }
-        return Array(Set(editor))
+
+        return Array(Set(names))
     }
 
     func permissionsContainsString(_ metadataPermissions: String, permissions: String) -> Bool {

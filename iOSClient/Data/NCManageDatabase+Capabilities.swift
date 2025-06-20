@@ -42,7 +42,7 @@ extension NCManageDatabase {
     }
 
     @discardableResult
-    func applyCachedCapabilitiesAsync(account: String) async -> NCCapabilities.Capabilities? {
+    func applyCachedCapabilitiesAsync(account: String) async -> NKCapabilities.Capabilities? {
         let data = await performRealmReadAsync { realm in
             realm.object(ofType: tableCapabilities.self, forPrimaryKey: account)?.jsondata
         }
@@ -58,8 +58,8 @@ extension NCManageDatabase {
     /// Synchronously retrieves and parses capabilities JSON from Realm for the given account.
     /// - Important: This blocks the current thread. Do not call from an async context.
     @discardableResult
-    public func applyCachedCapabilitiesBlocking(account: String) -> NCCapabilities.Capabilities? {
-        var result: NCCapabilities.Capabilities?
+    public func applyCachedCapabilitiesBlocking(account: String) -> NKCapabilities.Capabilities? {
+        var result: NKCapabilities.Capabilities?
         let group = DispatchGroup()
 
         group.enter()

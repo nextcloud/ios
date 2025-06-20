@@ -9,7 +9,7 @@ import NextcloudKit
 
 extension NCNetworking {
     func termsOfService(account: String, completion: @escaping () -> Void = {}) {
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account)
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
         guard capabilities.termsOfService,
               let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier),
               let controller = SceneManager.shared.getControllers().first(where: { $0.account == account }),
@@ -38,7 +38,7 @@ extension NCNetworking {
     }
 
     func signTermsOfService(account: String, termId: Int, completion: @escaping (NKError) -> Void) {
-        let capabilities = NCCapabilities.shared.getCapabilitiesBlocking(for: account)
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
         guard capabilities.termsOfService,
               let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier)
         else {
