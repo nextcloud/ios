@@ -144,7 +144,6 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
             let ocId = NSUUID().uuidString
             let fileName = url.lastPathComponent
             let results = NKTypeIdentifiersHelper(actor: NKTypeIdentifiers()).getInternalTypeSync(fileName: fileName, mimeType: "", directory: false, account: session.account)
-
             let metadata = database.createMetadata(fileName: fileName,
                                                    fileNameView: fileName,
                                                    ocId: ocId,

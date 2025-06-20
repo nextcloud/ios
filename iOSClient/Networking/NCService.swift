@@ -157,16 +157,6 @@ class NCService: NSObject {
             }
         }
 
-
-
-        // Added UTI for ONLYOFFICE & Text
-        /*
-        let tblDirectEditingCreators = await self.database.getDirectEditingCreatorsAsync(account: account)
-        for directEditing in tblDirectEditingCreators {
-            NextcloudKit.shared.nkCommonInstance.addInternalTypeIdentifier(typeIdentifier: directEditing.mimetype, classFile: NKCommon.TypeClassFile.document.rawValue, editor: directEditing.editor, iconName: NKCommon.TypeIconFile.document.rawValue, name: "document", account: account)
-        }
-        */
-
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateNotification)
     }
 

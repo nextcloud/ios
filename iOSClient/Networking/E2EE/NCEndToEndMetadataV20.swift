@@ -227,12 +227,12 @@ extension NCEndToEndMetadata {
         }
         let isDirectoryTop = utilityFileSystem.isDirectoryE2EETop(account: session.account, serverUrl: serverUrl)
 
-        func addE2eEncryption(fileNameIdentifier: String, filename: String, authenticationTag: String, key: String, initializationVector: String, metadataKey: String, mimetype: String) {
+        func addE2eEncryption(fileNameIdentifier: String, fileName: String, authenticationTag: String, key: String, initializationVector: String, metadataKey: String, mimetype: String) {
             if let metadata = self.database.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", session.account, fileNameIdentifier)) {
                 let object = tableE2eEncryption.init(account: session.account, ocIdServerUrl: ocIdServerUrl, fileNameIdentifier: fileNameIdentifier)
 
                 object.authenticationTag = authenticationTag
-                object.fileName = filename
+                object.fileName = fileName
                 object.key = key
                 object.initializationVector = initializationVector
                 object.metadataKey = metadataKey
@@ -244,10 +244,10 @@ extension NCEndToEndMetadata {
                 self.database.addE2eEncryption(object)
 
                 // Update metadata on tableMetadata
-                metadata.fileNameView = filename
+                metadata.fileNameView = fileName
 
-                let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: filename, mimeType: metadata.contentType, directory: metadata.directory, account: session.account)
-
+                // Update type
+                let results = NKTypeIdentifiersHelper(actor: NKTypeIdentifiers()).getInternalTypeSync(fileName: fileName, mimeType: "", directory: false, account: session.account)
                 metadata.contentType = results.mimeType
                 metadata.iconName = results.iconName
                 metadata.classFile = results.classFile
@@ -327,7 +327,7 @@ extension NCEndToEndMetadata {
                             if let jsonText = String(data: data, encoding: .utf8) { print(jsonText) }
                             let file = try JSONDecoder().decode(E2eeV20.Metadata.ciphertext.Files.self, from: data)
                             print(file)
-                            addE2eEncryption(fileNameIdentifier: fileNameIdentifier, filename: file.filename, authenticationTag: file.authenticationTag, key: file.key, initializationVector: file.nonce, metadataKey: filedropKey, mimetype: file.mimetype)
+                            addE2eEncryption(fileNameIdentifier: fileNameIdentifier, fileName: file.filename, authenticationTag: file.authenticationTag, key: file.key, initializationVector: file.nonce, metadataKey: filedropKey, mimetype: file.mimetype)
                         }
                     }
                 }
@@ -388,7 +388,7 @@ extension NCEndToEndMetadata {
             if let files = jsonCiphertextMetadata.files {
                 print("\nFILES ---------------------------------\n")
                 for file in files {
-                    addE2eEncryption(fileNameIdentifier: file.key, filename: file.value.filename, authenticationTag: file.value.authenticationTag, key: file.value.key, initializationVector: file.value.nonce, metadataKey: metadataKey, mimetype: file.value.mimetype)
+                    addE2eEncryption(fileNameIdentifier: file.key, fileName: file.value.filename, authenticationTag: file.value.authenticationTag, key: file.value.key, initializationVector: file.value.nonce, metadataKey: metadataKey, mimetype: file.value.mimetype)
 
                     print("filename: \(file.value.filename)")
                     print("fileNameIdentifier: \(file.key)")
@@ -400,7 +400,7 @@ extension NCEndToEndMetadata {
             if let folders = jsonCiphertextMetadata.folders {
                 print("FOLDERS--------------------------------\n")
                 for folder in folders {
-                    addE2eEncryption(fileNameIdentifier: folder.key, filename: folder.value, authenticationTag: metadata.authenticationTag, key: metadataKey, initializationVector: metadata.nonce, metadataKey: metadataKey, mimetype: "httpd/unix-directory")
+                    addE2eEncryption(fileNameIdentifier: folder.key, fileName: folder.value, authenticationTag: metadata.authenticationTag, key: metadataKey, initializationVector: metadata.nonce, metadataKey: metadataKey, mimetype: "httpd/unix-directory")
 
                     print("filename: \(folder.value)")
                     print("fileNameIdentifier: \(folder.key)")

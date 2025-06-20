@@ -91,6 +91,8 @@ class NCAutoUpload: NSObject {
                 serverUrl: serverUrl,
                 url: "",
                 contentType: "",
+                iconName: "",
+                classFile: "",
                 session: session,
                 sceneIdentifier: controller?.sceneIdentifier
             )
@@ -108,8 +110,8 @@ class NCAutoUpload: NSObject {
 
             metadata.classFile = {
                 switch mediaType {
-                case .video: return NKCommon.TypeClassFile.video.rawValue
-                case .image: return NKCommon.TypeClassFile.image.rawValue
+                case .video: return NKTypeClassFile.video.rawValue
+                case .image: return NKTypeClassFile.image.rawValue
                 default: return ""
                 }
             }()
