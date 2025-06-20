@@ -75,17 +75,21 @@ final class NCCameraRoll: CameraRollExtractor {
 
         guard !metadataSource.assetLocalIdentifier.isEmpty else {
             let filePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadataSource.ocId, fileNameView: metadataSource.fileName)
+            /*
             let results = NextcloudKit.shared.nkCommonInstance.getInternalType(
                 fileName: metadataSource.fileNameView,
                 mimeType: metadataSource.contentType,
                 directory: false,
                 account: metadataSource.account
             )
+            */
 
             metadataSource.size = utilityFileSystem.getFileSize(filePath: filePath)
+            /*
             metadataSource.contentType = results.mimeType
             metadataSource.iconName = results.iconName
             metadataSource.classFile = results.classFile
+            */
 
             if let date = utilityFileSystem.getFileCreationDate(filePath: filePath) {
                 metadataSource.creationDate = date
@@ -393,21 +397,19 @@ final class NCCameraRoll: CameraRollExtractor {
                     continuation.resume(returning: nil)
                     return
                 }
-
                 let session = NCSession.shared.getSession(account: metadata.account)
-                let metadataLivePhoto = self.database.createMetadata(
-                    fileName: fileName,
-                    fileNameView: fileName,
-                    ocId: ocId,
-                    serverUrl: metadata.serverUrl,
-                    url: "",
-                    contentType: "",
-                    session: session,
-                    sceneIdentifier: metadata.sceneIdentifier
-                )
+                let metadataLivePhoto = self.database.createMetadata(fileName: fileName,
+                                                                     fileNameView: fileName,
+                                                                     ocId: ocId,
+                                                                     serverUrl: metadata.serverUrl,
+                                                                     url: "",
+                                                                     contentType: "video/quicktime",
+                                                                     iconName: NKTypeIconFile.video.rawValue,
+                                                                     classFile: NKTypeClassFile.video.rawValue,
+                                                                     session: session,
+                                                                     sceneIdentifier: metadata.sceneIdentifier)
 
                 metadataLivePhoto.livePhotoFile = metadata.fileName
-                metadataLivePhoto.classFile = NKCommon.TypeClassFile.video.rawValue
                 metadataLivePhoto.isExtractFile = true
                 metadataLivePhoto.session = metadata.session
                 metadataLivePhoto.sessionSelector = metadata.sessionSelector
