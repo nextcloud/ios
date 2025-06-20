@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2017 Marino Faggiana
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+import Foundation
 import UIKit
 import RealmSwift
 import NextcloudKit
@@ -117,6 +118,8 @@ final class NCManageDatabase: Sendable {
             }
         }
 
+        // MARK: - Apex
+
         if isAppex {
             if bundleFileName == "File Provider Extension.appex" {
                 objectTypesAppex = [NCKeyValue.self,
@@ -148,6 +151,9 @@ final class NCManageDatabase: Sendable {
                 restoreDB()
             }
         } else {
+
+            // MARK: - Nextcloud iOS Main
+
             Realm.Configuration.defaultConfiguration =
             Realm.Configuration(fileURL: databaseFileUrlPath,
                                 schemaVersion: databaseSchemaVersion,
