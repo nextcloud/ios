@@ -117,7 +117,7 @@ class FileProviderExtension: NSFileProviderExtension {
             metadata.fileName = "root"
             metadata.fileNameView = "root"
             metadata.serverUrl = utilityFileSystem.getHomeServer(session: fileProviderData.shared.session)
-            metadata.classFile = NKCommon.TypeClassFile.directory.rawValue
+            metadata.classFile = NKTypeClassFile.directory.rawValue
             return FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue))
         } else {
             guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(identifier),
@@ -318,12 +318,15 @@ class FileProviderExtension: NSFileProviderExtension {
 
                 fileURL.stopAccessingSecurityScopedResource()
 
+                let results = NKTypeIdentifiersHelper(actor: NKTypeIdentifiers()).getInternalTypeSync(fileName: fileName, mimeType: "", directory: false, account: fileProviderData.shared.session.account)
                 let metadataForUpload = self.database.createMetadata(fileName: fileName,
                                                                      fileNameView: fileName,
                                                                      ocId: ocIdTransfer,
                                                                      serverUrl: tableDirectory.serverUrl,
                                                                      url: "",
-                                                                     contentType: "",
+                                                                     contentType: results.mimeType,
+                                                                     iconName: results.iconName,
+                                                                     classFile: results.classFile,
                                                                      session: fileProviderData.shared.session,
                                                                      sceneIdentifier: nil)
 
