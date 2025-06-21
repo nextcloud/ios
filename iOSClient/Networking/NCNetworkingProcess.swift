@@ -134,7 +134,7 @@ actor NCNetworkingProcess {
             return
         }
 
-        let success = await withCheckedContinuation { continuation in
+         _ = await withCheckedContinuation { continuation in
             PHPhotoLibrary.shared().performChanges({
                 PHAssetChangeRequest.deleteAssets(
                     PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil) as NSFastEnumeration
@@ -144,9 +144,7 @@ actor NCNetworkingProcess {
             })
         }
 
-        if success {
-            await self.database.clearAssetLocalIdentifiersAsync(localIdentifiers)
-        }
+        await self.database.clearAssetLocalIdentifiersAsync(localIdentifiers)
     }
 
     private func runMetadataPipelineAsync() async {
