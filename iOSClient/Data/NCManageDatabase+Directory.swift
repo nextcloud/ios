@@ -152,7 +152,6 @@ extension NCManageDatabase {
         }
     }
 
-
     func deleteDirectoryAndSubDirectoryAsync(serverUrl: String, account: String) async {
         await performRealmWriteAsync { realm in
             let directories = realm.objects(tableDirectory.self)

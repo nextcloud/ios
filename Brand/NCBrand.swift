@@ -68,9 +68,9 @@ final class NCBrandOptions: @unchecked Sendable {
     var cleanUpDay: Int = 0                                                                     // Set default "Delete all cached files older than" possible days value are: 0, 1, 7, 30, 90, 180, 365
 
     // Max request/download/upload concurrent
-    let httpMaximumConnectionsPerHost: Int = 6
-    let httpMaximumConnectionsPerHostInDownload: Int = 6
-    let httpMaximumConnectionsPerHostInUpload: Int = 6
+    let httpMaximumConnectionsPerHost: Int = 8
+    let httpMaximumConnectionsPerHostInDownload: Int = 8
+    let httpMaximumConnectionsPerHostInUpload: Int = 8
 
     // Number of failed attempts after reset app
     let resetAppPasscodeAttempts: Int = 10

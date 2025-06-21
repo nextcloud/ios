@@ -52,8 +52,7 @@ extension NCManageDatabase {
             } catch {
                 nkLog(error: "Error reading capabilities JSON in Realm \(error)")
             }
-        } 
-
+        }
         return nil
     }
 

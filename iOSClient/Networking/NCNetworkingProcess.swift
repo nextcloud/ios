@@ -85,8 +85,10 @@ actor NCNetworkingProcess {
     }
 
     private func handleTimerTick() async {
-        print("[NKLL \(self.lastUsedInterval)")
-        if currentTask != nil { return }
+        if currentTask != nil {
+            print("[NKLOG] current task is running")
+            return
+        }
 
         currentTask = Task {
             defer { currentTask = nil }
