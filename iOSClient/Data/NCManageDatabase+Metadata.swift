@@ -884,6 +884,18 @@ extension NCManageDatabase {
         }
     }
 
+    func setMetadataServeUrlFileNameStatusNormalAsync(ocId: String) async {
+        await performRealmWriteAsync { realm in
+            if let result = realm.objects(tableMetadata.self)
+                .filter("ocId == %@", ocId)
+                .first {
+                result.serveUrlFileName = self.utilityFileSystem.stringAppendServerUrl(result.serverUrl, addFileName: result.fileName)
+                result.status = NCGlobal.shared.metadataStatusNormal
+                result.sessionDate = nil
+            }
+        }
+    }
+
     func setMetadataEtagResource(ocId: String, etagResource: String?, sync: Bool = true) {
         guard let etagResource else { return }
 
@@ -1245,6 +1257,22 @@ extension NCManageDatabase {
         }
 
         return performRealmRead { realm in
+            realm.objects(tableMetadata.self)
+                .filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileId == %@",
+                                    metadata.account,
+                                    metadata.serverUrl,
+                                    metadata.livePhotoFile))
+                .first
+                .map { tableMetadata(value: $0) }
+        }
+    }
+
+    func getMetadataLivePhotoAsync(metadata: tableMetadata) async -> tableMetadata? {
+        guard metadata.isLivePhoto else {
+            return nil
+        }
+
+        return await performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
                 .filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileId == %@",
                                     metadata.account,

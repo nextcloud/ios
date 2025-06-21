@@ -152,6 +152,28 @@ extension NCManageDatabase {
         }
     }
 
+
+    func deleteDirectoryAndSubDirectoryAsync(serverUrl: String, account: String) async {
+        await performRealmWriteAsync { realm in
+            let directories = realm.objects(tableDirectory.self)
+                .filter("account == %@ AND serverUrl BEGINSWITH %@", account, serverUrl)
+
+            for directory in directories {
+                let metadatas = realm.objects(tableMetadata.self)
+                    .filter("account == %@ AND serverUrl == %@", account, directory.serverUrl)
+
+                let ocIds = Array(metadatas.map(\.ocId))
+                let localFiles = realm.objects(tableLocalFile.self)
+                    .filter("ocId IN %@", ocIds)
+
+                realm.delete(localFiles)
+                realm.delete(metadatas)
+            }
+
+            realm.delete(directories)
+        }
+    }
+
     func setDirectory(serverUrl: String, serverUrlTo: String? = nil, etag: String? = nil, ocId: String? = nil, fileId: String? = nil, encrypted: Bool, richWorkspace: String? = nil, account: String) {
         performRealmWrite { realm in
             if let result = realm.objects(tableDirectory.self)
