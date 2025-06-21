@@ -110,7 +110,8 @@ actor NCNetworkingProcess {
                     ScreenAwakeManager.shared.mode = resultsTransfer.isEmpty && !hasSyncTask ? .off : NCKeychain().screenAwakeMode
                 }
 
-                await start()
+                await runMetadataPipelineAsync()
+
                 if lastUsedInterval != minInterval {
                     await startTimer(interval: minInterval)
                 }
@@ -146,7 +147,7 @@ actor NCNetworkingProcess {
         }
     }
 
-    private func start() async {
+    private func runMetadataPipelineAsync() async {
         let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal))
         guard let metadatas, !metadatas.isEmpty else {
             return
