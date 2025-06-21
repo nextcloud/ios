@@ -137,10 +137,7 @@ final class NCManageDatabase: Sendable {
                                 schemaVersion: databaseSchemaVersion,
                                 migrationBlock: { migration, oldSchemaVersion in
                                     migrationSchema(migration, oldSchemaVersion)
-                                }, shouldCompactOnLaunch: { totalBytes, usedBytes in
-                                    compactDB(totalBytes, usedBytes)
                                 }, objectTypes: objectTypesAppex)
-
             do {
                 realm = try Realm()
                 if let realm, let url = realm.configuration.fileURL {
@@ -148,7 +145,6 @@ final class NCManageDatabase: Sendable {
                 }
             } catch let error {
                 nkLog(error: "Realm: \(error)")
-                restoreDB()
             }
         } else {
 
