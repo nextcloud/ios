@@ -163,6 +163,15 @@ extension NCManageDatabase {
         return nil
     }
 
+    func getE2eEncryptionAsync(predicate: NSPredicate) async -> tableE2eEncryption? {
+        await performRealmReadAsync { realm in
+            realm.objects(tableE2eEncryption.self)
+                .filter(predicate)
+                .first
+                .map { tableE2eEncryption(value: $0) }
+        }
+    }
+
     func getE2eEncryptions(predicate: NSPredicate) -> [tableE2eEncryption] {
         do {
             let realm = try Realm()

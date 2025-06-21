@@ -268,9 +268,17 @@ final class NCManageDatabase: Sendable {
     func performRealmReadAsync<T>(_ block: @escaping (Realm) throws -> T?) async -> T? {
         await withCheckedContinuation { continuation in
             realmQueue.async {
+                var didResume = false
+                defer {
+                    if !didResume {
+                        continuation.resume(returning: nil)
+                    }
+                }
+
                 if isAppSuspending {
                     // App is suspending — don't execute the block
                     continuation.resume(returning: nil)
+                    didResume = true
                     return
                 }
 
@@ -279,9 +287,9 @@ final class NCManageDatabase: Sendable {
                         let realm = try Realm()
                         let result = try block(realm)
                         continuation.resume(returning: result)
+                        didResume = true
                     } catch {
                         nkLog(error: "Realm read error: \(error)")
-                        continuation.resume(returning: nil)
                     }
                 }
             }
@@ -291,9 +299,16 @@ final class NCManageDatabase: Sendable {
     func performRealmWriteAsync(_ block: @escaping (Realm) throws -> Void) async {
         await withCheckedContinuation { continuation in
             realmQueue.async {
+                var didResume = false
+                defer {
+                    if !didResume {
+                        continuation.resume()
+                    }
+                }
+
                 if isAppSuspending {
-                    // App is suspending — don't execute the block
                     continuation.resume()
+                    didResume = true
                     return
                 }
 
@@ -307,6 +322,7 @@ final class NCManageDatabase: Sendable {
                         nkLog(error: "Realm write error: \(error)")
                     }
                     continuation.resume()
+                    didResume = true
                 }
             }
         }

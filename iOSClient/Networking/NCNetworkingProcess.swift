@@ -91,7 +91,9 @@ actor NCNetworkingProcess {
         }
 
         currentTask = Task {
-            defer { currentTask = nil }
+            defer {
+                currentTask = nil
+            }
 
             guard networking.isOnline,
                   !currentAccount.isEmpty,

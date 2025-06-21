@@ -357,8 +357,21 @@ extension NCNetworking {
     // MARK: -
 
     func verifyZombie() async {
-        /// UPLOADING-FOREGROUND
-        ///
+        // NO SESSION
+        //
+        if let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "session == '' AND status != %d",
+                                                                                        self.global.metadataStatusNormal)) {
+
+            for metadata in metadatas {
+                await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                            sessionError: "",
+                                                            selector: "",
+                                                            status: self.global.metadataStatusNormal)
+            }
+        }
+
+        // UPLOADING-FOREGROUND
+        //
         if let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "session == %@ AND status == %d",
                                                                                         sessionUpload,
                                                                                         self.global.metadataStatusUploading)) {
@@ -389,8 +402,8 @@ extension NCNetworking {
             }
         }
 
-        /// UPLOADING-BACKGROUND
-        ///
+        // UPLOADING-BACKGROUND
+        //
         if let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "(session == %@ OR session == %@ OR session == %@) AND status == %d",
                                                                                         sessionUploadBackground,
                                                                                         sessionUploadBackgroundWWan,
@@ -438,8 +451,8 @@ extension NCNetworking {
             }
         }
 
-        /// DOWNLOADING-FOREGROUND
-        ///
+        // DOWNLOADING-FOREGROUND
+        //
         if let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "session == %@ AND status IN %@",
                                                                                         sessionDownload,
                                                                                         self.global.metadataStatusDownloadingAllMode)) {
@@ -469,8 +482,8 @@ extension NCNetworking {
             }
         }
 
-        /// DOWNLOADING-BACKGROUND
-        ///
+        // DOWNLOADING-BACKGROUND
+        //
         if let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "session == %@ AND status == %d",
                                                                                         sessionDownloadBackground,
                                                                                         self.global.metadataStatusDownloading)) {

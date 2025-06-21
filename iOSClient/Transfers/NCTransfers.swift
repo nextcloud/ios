@@ -247,17 +247,19 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     // MARK: - DataSource
 
     override func reloadDataSource() {
-        let predicate = NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal)
-        let sortDescriptors = [
-            RealmSwift.SortDescriptor(keyPath: "status", ascending: false),
-            RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
-        ]
+        Task {
+            let predicate = NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal)
+            let sortDescriptors = [
+                RealmSwift.SortDescriptor(keyPath: "status", ascending: false),
+                RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
+            ]
 
-        self.database.getResultsMetadatas(predicate: predicate, sortDescriptors: sortDescriptors, freeze: true) { results in
-            guard let results else {
-                return self.dataSource.removeAll()
+            let metadatas = await self.database.getMetadatasAsync(predicate: predicate, sortDescriptors: sortDescriptors)
+            if let metadatas, !metadatas.isEmpty {
+                self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: self.layoutForView)
+            } else {
+                self.dataSource.removeAll()
             }
-            self.dataSource = NCCollectionViewDataSource(metadatas: Array(results), layoutForView: self.layoutForView)
 
             super.reloadDataSource()
         }
