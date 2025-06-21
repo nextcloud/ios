@@ -269,7 +269,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                         controller.present(alertController, animated: true, completion: { })
                         return
                     }
-                    let session = SceneManager.shared.getSession(scene: scene)
+                    // let session = SceneManager.shared.getSession(scene: scene)
 
                     switch actionScheme {
                     case self.global.actionUploadAsset:

@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2017 Marino Faggiana
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+import Foundation
 import UIKit
 import RealmSwift
 import NextcloudKit
@@ -113,9 +114,11 @@ final class NCManageDatabase: Sendable {
             do {
                 try FileManager.default.setAttributes([FileAttributeKey.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication], ofItemAtPath: folderPath)
             } catch {
-                print("Dangerous error")
+                nkLog(error: "Realm directory setAttributes error: \(error)")
             }
         }
+
+        // MARK: - Apex
 
         if isAppex {
             if bundleFileName == "File Provider Extension.appex" {
@@ -129,15 +132,25 @@ final class NCManageDatabase: Sendable {
                                     tableE2eEncryption.self]
             }
 
+            // TEST DB - READ ONLY
+            let config = Realm.Configuration(fileURL: databaseFileUrlPath,
+                                             readOnly: true,
+                                             schemaVersion: databaseSchemaVersion)
+
+            do {
+                _ = try Realm(configuration: config)
+            } catch let error {
+                nkLog(error: "Realm: \(error)")
+                return
+            }
+
+            // NORMAL START
             Realm.Configuration.defaultConfiguration =
             Realm.Configuration(fileURL: databaseFileUrlPath,
                                 schemaVersion: databaseSchemaVersion,
                                 migrationBlock: { migration, oldSchemaVersion in
                                     migrationSchema(migration, oldSchemaVersion)
-                                }, shouldCompactOnLaunch: { totalBytes, usedBytes in
-                                    compactDB(totalBytes, usedBytes)
                                 }, objectTypes: objectTypesAppex)
-
             do {
                 realm = try Realm()
                 if let realm, let url = realm.configuration.fileURL {
@@ -145,9 +158,11 @@ final class NCManageDatabase: Sendable {
                 }
             } catch let error {
                 nkLog(error: "Realm: \(error)")
-                restoreDB()
             }
         } else {
+
+            // MARK: - Nextcloud iOS Main
+
             Realm.Configuration.defaultConfiguration =
             Realm.Configuration(fileURL: databaseFileUrlPath,
                                 schemaVersion: databaseSchemaVersion,

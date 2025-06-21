@@ -90,7 +90,9 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
         buttonSignUp.setTitleColor(textColor, for: .normal)
         buttonSignUp.backgroundColor = NCBrandColor.shared.customer
         buttonSignUp.titleLabel?.adjustsFontSizeToFitWidth = true
-        buttonSignUp.titleEdgeInsets = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
+        var configButtonSignUp = UIButton.Configuration.filled()
+        configButtonSignUp.titlePadding = 10
+        buttonSignUp.configuration = configButtonSignUp
         buttonSignUp.setTitle(NSLocalizedString("_sign_up_", comment: ""), for: .normal)
 
         buttonHost.layer.cornerRadius = 20

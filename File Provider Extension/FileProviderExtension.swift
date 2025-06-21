@@ -277,7 +277,7 @@ class FileProviderExtension: NSFileProviderExtension {
         let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
         guard let metadata = self.database.getMetadataFromOcIdAndocIdTransfer(itemIdentifier.rawValue) else { return }
         if metadata.session == NCNetworking.shared.sessionDownload {
-            let session = NextcloudKit.shared.nkCommonInstance.getSession(account: metadata.session)?.sessionData.session
+            let session = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: metadata.session)?.sessionData.session
             session?.getTasksWithCompletionHandler { _, _, downloadTasks in
                 downloadTasks.forEach { task in
                     if metadata.sessionTaskIdentifier == task.taskIdentifier {
@@ -318,7 +318,7 @@ class FileProviderExtension: NSFileProviderExtension {
 
                 fileURL.stopAccessingSecurityScopedResource()
 
-                let results = NKTypeIdentifiersHelper(actor: NKTypeIdentifiers()).getInternalTypeSync(fileName: fileName, mimeType: "", directory: false, account: fileProviderData.shared.session.account)
+                let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: fileName, mimeType: "", directory: false, account: fileProviderData.shared.session.account)
                 let metadataForUpload = self.database.createMetadata(fileName: fileName,
                                                                      fileNameView: fileName,
                                                                      ocId: ocIdTransfer,

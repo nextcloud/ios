@@ -96,7 +96,7 @@ class NCAccount: NSObject {
                     }
                 }
             } else {
-                NextcloudKit.shared.removeSession(account: account)
+                NextcloudKit.shared.nkCommonInstance.nksessions.remove(account: account)
                 let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
                 viewController.present(alertController, animated: true)
@@ -167,7 +167,7 @@ class NCAccount: NSObject {
             database.clearTable(tableAutoUploadTransfer.self, account: account)
         }
         /// Remove session in NextcloudKit
-        NextcloudKit.shared.removeSession(account: account)
+        NextcloudKit.shared.nkCommonInstance.nksessions.remove(account: account)
         /// Remove session
         NCSession.shared.removeSession(account: account)
         /// Remove keychain security

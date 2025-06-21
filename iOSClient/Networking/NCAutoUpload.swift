@@ -116,10 +116,18 @@ class NCAutoUpload: NSObject {
                 }
             }()
 
+            metadata.iconName = {
+                switch mediaType {
+                case .video: return NKTypeIconFile.video.rawValue
+                case .image: return NKTypeIconFile.image.rawValue
+                default: return ""
+                }
+            }()
+
             metadatas.append(metadata)
         }
 
-        /// Set last date in autoUploadOnlyNewSinceDate
+        // Set last date in autoUploadOnlyNewSinceDate
         if let metadata = metadatas.last {
             let date = metadata.creationDate as Date
             await self.database.updateAccountPropertyAsync(\.autoUploadOnlyNewSinceDate, value: date, account: session.account)
