@@ -432,7 +432,7 @@ import NextcloudKit
 
     // MARK: -
 
-    @objc func getPassword(account: String) -> String {
+    func getPassword(account: String) -> String {
         let key = "password" + account
         migrate(key: key)
         let password = (try? keychain.get(key)) ?? ""

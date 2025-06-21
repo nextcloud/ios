@@ -132,6 +132,19 @@ final class NCManageDatabase: Sendable {
                                     tableE2eEncryption.self]
             }
 
+            // TEST DB - READ ONLY
+            let config = Realm.Configuration(fileURL: databaseFileUrlPath,
+                                             readOnly: true,
+                                             schemaVersion: databaseSchemaVersion)
+
+            do {
+                _ = try Realm(configuration: config)
+            } catch let error {
+                nkLog(error: "Realm: \(error)")
+                return
+            }
+
+            // NORMAL START
             Realm.Configuration.defaultConfiguration =
             Realm.Configuration(fileURL: databaseFileUrlPath,
                                 schemaVersion: databaseSchemaVersion,
