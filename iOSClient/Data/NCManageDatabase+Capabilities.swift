@@ -46,11 +46,13 @@ extension NCManageDatabase {
         let data = await performRealmReadAsync { realm in
             realm.object(ofType: tableCapabilities.self, forPrimaryKey: account)?.jsondata
         }
-        do {
-            return try await NextcloudKit.shared.setCapabilitiesAsync(account: account, data: data)
-        } catch {
-            nkLog(error: "Error storing capabilities JSON in Realm \(error)")
-        }
+        if let data {
+            do {
+                return try await NextcloudKit.shared.setCapabilitiesAsync(account: account, data: data)
+            } catch {
+                nkLog(error: "Error reading capabilities JSON in Realm \(error)")
+            }
+        } 
 
         return nil
     }
@@ -80,6 +82,7 @@ extension NCManageDatabase {
             group.leave()
         }
         group.wait()
+
         return result
     }
 }

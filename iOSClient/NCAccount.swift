@@ -42,7 +42,7 @@ class NCAccount: NSObject {
         if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
         let account: String = "\(user) \(urlBase)"
 
-        /// Remove Account Server in Error
+        // Remove Account Server in Error
         NCNetworking.shared.removeServerErrorAccount(account)
 
         NextcloudKit.shared.appendSession(account: account,
@@ -58,9 +58,9 @@ class NCAccount: NSObject {
 
         NextcloudKit.shared.getUserProfile(account: account) { account, userProfile, _, error in
             if error == .success, let userProfile {
-                /// Login log debug
+                // Login log debug
                 nkLog(debug: "Got user profile, creating new account \(account) with user \(user) and userId \(userProfile.userId)")
-                ///
+                //
                 NextcloudKit.shared.updateSession(account: account, userId: userProfile.userId)
                 NCSession.shared.appendSession(account: account, urlBase: urlBase, user: user, userId: userProfile.userId)
                 self.database.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
@@ -111,27 +111,29 @@ class NCAccount: NSObject {
                        controller: NCMainTabBarController?,
                        completion: () -> Void) {
         if let tblAccount = database.setAccountActive(account) {
-            /// Set account
+            // Set account
             controller?.account = account
-            /// Set User Profile
+            // Set User Profile
             if let userProfile {
                 database.setAccountUserProfile(account: account, userProfile: userProfile)
             }
-            /// Subscribing Push Notification
+            // Subscribing Push Notification
             appDelegate.subscribingPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user)
-            /// Start the service
+            // Start the service
             NCService().startRequestServicesServer(account: account, controller: controller)
-            /// Start the auto upload
+            // Start the auto upload
             Task {
                 let num = await NCAutoUpload.shared.initAutoUpload(tblAccount: tblAccount)
                 nkLog(start: "Auto upload with \(num) photo")
+
+                // Networking Process
+                await NCNetworkingProcess.shared.setCurrentAccount(account)
             }
-            /// Networking Process
-            NCNetworkingProcess.shared.setCurrentAccount(account)
-            /// Color
+
+            // Color
             NCBrandColor.shared.settingThemingColor(account: account)
             NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeTheming, userInfo: ["account": account])
-            /// Notification
+            // Notification
             if let controller {
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeUser, userInfo: ["account": account, "controller": controller])
             } else {
@@ -145,36 +147,36 @@ class NCAccount: NSObject {
     func deleteAccount(_ account: String, wipe: Bool = true, completion: () -> Void = {}) {
         UIApplication.shared.allSceneSessionDestructionExceptFirst()
 
-        /// Unsubscribing Push Notification
+        // Unsubscribing Push Notification
 #if !targetEnvironment(simulator)
         if let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) {
             NCPushNotification.shared.unsubscribingNextcloudServerPushNotification(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user)
         }
 #endif
-        /// Remove al local files
+        // Remove al local files
         if wipe {
             let results = database.getTableLocalFiles(predicate: NSPredicate(format: "account == %@", account), sorted: "ocId", ascending: false)
             let utilityFileSystem = NCUtilityFileSystem()
             for result in results {
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId))
             }
-            /// Remove account in all database
+            // Remove account in all database
             database.clearDatabase(account: account, removeAccount: true, removeAutoUpload: true)
         } else {
-            /// Remove account
+            // Remove account
             database.clearTable(tableAccount.self, account: account)
-            /// Remove autoupload
+            // Remove autoupload
             database.clearTable(tableAutoUploadTransfer.self, account: account)
         }
-        /// Remove session in NextcloudKit
+        // Remove session in NextcloudKit
         NextcloudKit.shared.nkCommonInstance.nksessions.remove(account: account)
-        /// Remove session
+        // Remove session
         NCSession.shared.removeSession(account: account)
-        /// Remove keychain security
+        // Remove keychain security
         NCKeychain().setPassword(account: account, password: nil)
         NCKeychain().clearAllKeysEndToEnd(account: account)
         NCKeychain().clearAllKeysPushNotification(account: account)
-        /// Remove Account Server in Error
+        // Remove Account Server in Error
         NCNetworking.shared.removeServerErrorAccount(account)
 
         completion()
@@ -238,7 +240,7 @@ class NCAccount: NSObject {
         NCContentPresenter().showCustomMessage(title: "", message: String(format: NSLocalizedString("_account_unauthorized_", comment: ""), account), priority: .high, delay: global.dismissAfterSecondLong, type: .error)
 
         NextcloudKit.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) { account, wipe, _, error in
-            /// REMOVE ACCOUNT
+            // REMOVE ACCOUNT
             NCAccount().deleteAccount(account, wipe: wipe)
 
             if wipe {

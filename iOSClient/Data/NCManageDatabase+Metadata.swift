@@ -989,8 +989,8 @@ extension NCManageDatabase {
         }
     }
 
-    func clearAssetLocalIdentifiers(_ assetLocalIdentifiers: [String], sync: Bool = true) {
-        performRealmWrite(sync: sync) { realm in
+    func clearAssetLocalIdentifiersAsync(_ assetLocalIdentifiers: [String]) async {
+        await performRealmWriteAsync { realm in
             let results = realm.objects(tableMetadata.self)
                 .filter("assetLocalIdentifier IN %@", assetLocalIdentifiers)
             for result in results {
@@ -1358,8 +1358,8 @@ extension NCManageDatabase {
         } ?? [:]
     }
 
-    func getAssetLocalIdentifiersUploaded() -> [String]? {
-        return performRealmRead { realm in
+    func getAssetLocalIdentifiersUploadedAsync() async -> [String]? {
+        return await performRealmReadAsync { realm in
             let results = realm.objects(tableMetadata.self).filter("assetLocalIdentifier != ''")
             return results.map { $0.assetLocalIdentifier }
         }
