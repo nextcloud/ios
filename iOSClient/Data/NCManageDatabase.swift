@@ -19,96 +19,19 @@ final class NCManageDatabase: Sendable {
 
     internal let realmQueue = DispatchQueue(label: "com.nextcloud.realmQueue") // serial queue
     internal let realmQueueKey = DispatchSpecificKey<Bool>()
-
-    let utilityFileSystem = NCUtilityFileSystem()
+    internal let utilityFileSystem = NCUtilityFileSystem()
 
     init() {
-        realmQueue.setSpecific(key: realmQueueKey, value: true)
-
-        func migrationSchema(_ migration: Migration, _ oldSchemaVersion: UInt64) {
-            if oldSchemaVersion < 365 {
-                migration.deleteData(forType: tableMetadata.className())
-                migration.enumerateObjects(ofType: tableDirectory.className()) { _, newObject in
-                    newObject?["etag"] = ""
-                }
-            }
-            if oldSchemaVersion < 383 {
-                migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
-                    if let oldDate = oldObject?["autoUploadSinceDate"] as? Date {
-                        newObject?["autoUploadOnlyNewSinceDate"] = oldDate
-                    } else {
-                        newObject?["autoUploadOnlyNewSinceDate"] = Date()
-                    }
-                    newObject?["autoUploadOnlyNew"] = true
-                }
-            }
-            if oldSchemaVersion < databaseSchemaVersion {
-                // automatic conversion for delete object / properties
-            }
-        }
-
-        func compactDB(_ totalBytes: Int, _ usedBytes: Int) -> Bool {
-            let usedPercentage = (Double(usedBytes) / Double(totalBytes)) * 100
-            /// Compact the database if more than 25% of the space is free
-            let shouldCompact = (usedPercentage < 75.0) && (totalBytes > 100 * 1024 * 1024)
-
-            return shouldCompact
-        }
-
-        func restoreDB() {
-            if let realmURL = databaseFileUrlPath {
-                let filesToDelete = [
-                    realmURL,
-                    realmURL.appendingPathExtension("lock"),
-                    realmURL.appendingPathExtension("note"),
-                    realmURL.appendingPathExtension("management")
-                ]
-
-                for file in filesToDelete {
-                    do {
-                        try FileManager.default.removeItem(at: file)
-                    } catch { }
-                }
-            }
-
-            do {
-                _ = try Realm()
-                restoreTableAccountFromFile()
-            } catch let error {
-                nkLog(error: "Account restoration: \(error)")
-            }
-        }
-
-        var realm: Realm?
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let databaseFileUrlPath = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
         let bundleUrl: URL = Bundle.main.bundleURL
         let bundlePathExtension: String = bundleUrl.pathExtension
         let bundleFileName: String = (bundleUrl.path as NSString).lastPathComponent
         let isAppex: Bool = bundlePathExtension == "appex"
-        var objectTypesAppex = [NCKeyValue.self,
-                                tableMetadata.self,
-                                tableLocalFile.self,
-                                tableDirectory.self,
-                                tableTag.self,
-                                tableAccount.self,
-                                tableCapabilities.self,
-                                tableE2eEncryption.self,
-                                tableE2eEncryptionLock.self,
-                                tableE2eMetadata12.self,
-                                tableE2eMetadata.self,
-                                tableE2eUsers.self,
-                                tableE2eCounter.self,
-                                tableShare.self,
-                                tableChunk.self,
-                                tableAvatar.self,
-                                tableDashboardWidget.self,
-                                tableDashboardWidgetButton.self,
-                                NCDBLayoutForView.self,
-                                TableSecurityGuardDiagnostics.self]
+
+        realmQueue.setSpecific(key: realmQueueKey, value: true)
 
         // Disable file protection for directory DB
-        // https://docs.mongodb.com/realm/sdk/ios/examples/configure-and-open-a-realm/#std-label-ios-open-a-local-realm
         if let folderPathURL = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud) {
             let folderPath = folderPathURL.path
             do {
@@ -118,68 +41,147 @@ final class NCManageDatabase: Sendable {
             }
         }
 
-        // MARK: - Apex
+        Task.detached(priority: .userInitiated) { [weak self] in
+            guard let self else { return }
 
-        if isAppex {
-            if bundleFileName == "File Provider Extension.appex" {
-                objectTypesAppex = [NCKeyValue.self,
-                                    tableMetadata.self,
-                                    tableLocalFile.self,
-                                    tableDirectory.self,
-                                    tableTag.self,
-                                    tableAccount.self,
-                                    tableCapabilities.self,
-                                    tableE2eEncryption.self]
+            if isAppex, bundleFileName == "File Provider Extension.appex" {
+                let objectTypes = [NCKeyValue.self,
+                                   tableMetadata.self,
+                                   tableLocalFile.self,
+                                   tableDirectory.self,
+                                   tableTag.self,
+                                   tableAccount.self,
+                                   tableCapabilities.self,
+                                   tableE2eEncryption.self]
+
+                openRealmAppex(path: databaseFileUrlPath, objectTypes: objectTypes)
+            } else if isAppex {
+                let objectTypes = [NCKeyValue.self,
+                                   tableMetadata.self,
+                                   tableLocalFile.self,
+                                   tableDirectory.self,
+                                   tableTag.self,
+                                   tableAccount.self,
+                                   tableCapabilities.self,
+                                   tableE2eEncryption.self,
+                                   tableE2eEncryptionLock.self,
+                                   tableE2eMetadata12.self,
+                                   tableE2eMetadata.self,
+                                   tableE2eUsers.self,
+                                   tableE2eCounter.self,
+                                   tableShare.self,
+                                   tableChunk.self,
+                                   tableAvatar.self,
+                                   tableDashboardWidget.self,
+                                   tableDashboardWidgetButton.self,
+                                   NCDBLayoutForView.self,
+                                   TableSecurityGuardDiagnostics.self]
+
+                openRealmAppex(path: databaseFileUrlPath, objectTypes: objectTypes)
+            } else {
+                openRealm(path: databaseFileUrlPath)
             }
+        }
+    }
 
-            // TEST DB - READ ONLY
-            let config = Realm.Configuration(fileURL: databaseFileUrlPath,
+    // MARK: - Nextcloud iOS Main
+
+    private func migrationSchema(_ migration: Migration, _ oldSchemaVersion: UInt64) {
+        if oldSchemaVersion < 365 {
+            migration.deleteData(forType: tableMetadata.className())
+            migration.enumerateObjects(ofType: tableDirectory.className()) { _, newObject in
+                newObject?["etag"] = ""
+            }
+        }
+        if oldSchemaVersion < 383 {
+            migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
+                if let oldDate = oldObject?["autoUploadSinceDate"] as? Date {
+                    newObject?["autoUploadOnlyNewSinceDate"] = oldDate
+                } else {
+                    newObject?["autoUploadOnlyNewSinceDate"] = Date()
+                }
+                newObject?["autoUploadOnlyNew"] = true
+            }
+        }
+        if oldSchemaVersion < databaseSchemaVersion {
+            // automatic conversion for delete object / properties
+        }
+    }
+
+    private func compactDB(_ totalBytes: Int, _ usedBytes: Int) -> Bool {
+        let usedPercentage = (Double(usedBytes) / Double(totalBytes)) * 100
+        /// Compact the database if more than 25% of the space is free
+        let shouldCompact = (usedPercentage < 75.0) && (totalBytes > 100 * 1024 * 1024)
+
+        return shouldCompact
+    }
+
+    private func restoreDB(path databaseFileUrlPath: URL?) {
+        if let realmURL = databaseFileUrlPath {
+            let filesToDelete = [
+                realmURL,
+                realmURL.appendingPathExtension("lock"),
+                realmURL.appendingPathExtension("note"),
+                realmURL.appendingPathExtension("management")
+            ]
+
+            for file in filesToDelete {
+                do {
+                    try FileManager.default.removeItem(at: file)
+                } catch { }
+            }
+        }
+
+        do {
+            _ = try Realm()
+            restoreTableAccountFromFile()
+        } catch let error {
+            nkLog(error: "Account restoration: \(error)")
+        }
+    }
+
+    private func openRealm(path databaseFileUrlPath: URL?) {
+        // DEFAULTCONFIGURATION
+        Realm.Configuration.defaultConfiguration =
+        Realm.Configuration(fileURL: databaseFileUrlPath,
+                            schemaVersion: databaseSchemaVersion,
+                            migrationBlock: { migration, oldSchemaVersion in
+            self.migrationSchema(migration, oldSchemaVersion)
+        }, shouldCompactOnLaunch: { totalBytes, usedBytes in
+            self.compactDB(totalBytes, usedBytes)
+        })
+
+        do {
+            let realm = try Realm()
+            if let url = realm.configuration.fileURL {
+                print("Realm is located at: \(url)")
+            }
+        } catch let error {
+            nkLog(error: "Realm: \(error)")
+            self.restoreDB(path: databaseFileUrlPath)
+        }
+    }
+
+    private func openRealmAppex(path databaseFileUrlPath: URL?, objectTypes: [Object.Type]) {
+        // TEST DB - READ ONLY
+        let testConfig = Realm.Configuration(fileURL: databaseFileUrlPath,
                                              readOnly: true,
                                              schemaVersion: databaseSchemaVersion)
 
-            do {
-                _ = try Realm(configuration: config)
-            } catch let error {
-                nkLog(error: "Realm: \(error)")
-                return
-            }
+        do {
+            _ = try Realm(configuration: testConfig)
 
-            // NORMAL START
-            Realm.Configuration.defaultConfiguration =
-            Realm.Configuration(fileURL: databaseFileUrlPath,
-                                schemaVersion: databaseSchemaVersion,
-                                migrationBlock: { migration, oldSchemaVersion in
-                                    migrationSchema(migration, oldSchemaVersion)
-                                }, objectTypes: objectTypesAppex)
-            do {
-                realm = try Realm()
-                if let realm, let url = realm.configuration.fileURL {
-                    print("Realm is located at: \(url)")
-                }
-            } catch let error {
-                nkLog(error: "Realm: \(error)")
-            }
-        } else {
+            // DEFAULTCONFIGURATION
+            Realm.Configuration.defaultConfiguration = Realm.Configuration(fileURL: databaseFileUrlPath,
+                                                                           schemaVersion: databaseSchemaVersion,
+                                                                           objectTypes: objectTypes)
 
-            // MARK: - Nextcloud iOS Main
-
-            Realm.Configuration.defaultConfiguration =
-            Realm.Configuration(fileURL: databaseFileUrlPath,
-                                schemaVersion: databaseSchemaVersion,
-                                migrationBlock: { migration, oldSchemaVersion in
-                                    migrationSchema(migration, oldSchemaVersion)
-                                }, shouldCompactOnLaunch: { totalBytes, usedBytes in
-                                    compactDB(totalBytes, usedBytes)
-                                })
-            do {
-                realm = try Realm()
-                if let realm, let url = realm.configuration.fileURL {
-                    print("Realm is located at: \(url)")
-                }
-            } catch let error {
-                nkLog(error: "Realm: \(error)")
-                restoreDB()
+            let realm = try Realm()
+            if let url = realm.configuration.fileURL {
+                print("Realm is located at: \(url)")
             }
+        } catch let error {
+            nkLog(error: "Realm: \(error)")
         }
     }
 
@@ -268,9 +270,17 @@ final class NCManageDatabase: Sendable {
     func performRealmReadAsync<T>(_ block: @escaping (Realm) throws -> T?) async -> T? {
         await withCheckedContinuation { continuation in
             realmQueue.async {
+                var didResume = false
+                defer {
+                    if !didResume {
+                        continuation.resume(returning: nil)
+                    }
+                }
+
                 if isAppSuspending {
                     // App is suspending — don't execute the block
                     continuation.resume(returning: nil)
+                    didResume = true
                     return
                 }
 
@@ -279,9 +289,9 @@ final class NCManageDatabase: Sendable {
                         let realm = try Realm()
                         let result = try block(realm)
                         continuation.resume(returning: result)
+                        didResume = true
                     } catch {
                         nkLog(error: "Realm read error: \(error)")
-                        continuation.resume(returning: nil)
                     }
                 }
             }
@@ -291,9 +301,16 @@ final class NCManageDatabase: Sendable {
     func performRealmWriteAsync(_ block: @escaping (Realm) throws -> Void) async {
         await withCheckedContinuation { continuation in
             realmQueue.async {
+                var didResume = false
+                defer {
+                    if !didResume {
+                        continuation.resume()
+                    }
+                }
+
                 if isAppSuspending {
-                    // App is suspending — don't execute the block
                     continuation.resume()
+                    didResume = true
                     return
                 }
 
@@ -307,6 +324,7 @@ final class NCManageDatabase: Sendable {
                         nkLog(error: "Realm write error: \(error)")
                     }
                     continuation.resume()
+                    didResume = true
                 }
             }
         }

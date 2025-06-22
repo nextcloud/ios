@@ -68,14 +68,16 @@ extension NCNetworking {
             requestHandler(request)
         }, taskHandler: { task in
             downloadTask = task
-            if let metadata = self.database.setMetadataSession(ocId: metadata.ocId,
-                                                               sessionTaskIdentifier: task.taskIdentifier,
-                                                               status: self.global.metadataStatusDownloading) {
+            Task {
+                if let metadata = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                              sessionTaskIdentifier: task.taskIdentifier,
+                                                                              status: self.global.metadataStatusDownloading) {
 
                 self.notifyAllDelegates { delegate in
-                delegate.transferChange(status: self.global.networkingStatusDownloading,
-                                        metadata: metadata,
-                                        error: .success)
+                    delegate.transferChange(status: self.global.networkingStatusDownloading,
+                                            metadata: metadata,
+                                            error: .success)
+                }
             }
         }
 
@@ -190,7 +192,7 @@ extension NCNetworking {
             if error == .success {
                 nkLog(success: "Downloaded file: " + metadata.serverUrl + "/" + metadata.fileName)
 #if !EXTENSION
-                if let result = self.database.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
+                if let result = await self.database.getE2eEncryptionAsync(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
                     NCEndToEndEncryption.shared().decryptFile(metadata.fileName, fileNameView: metadata.fileNameView, ocId: metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
                 }
 #endif

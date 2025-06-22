@@ -52,8 +52,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             nkLog(debug: "Account active \(activeTableAccount.account)")
 
             NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
-            NCNetworkingProcess.shared.setCurrentAccount(activeTableAccount.account)
-
+            Task {
+                await NCNetworkingProcess.shared.setCurrentAccount(activeTableAccount.account)
+            }
             for tableAccount in self.database.getAllTableAccount() {
                 NextcloudKit.shared.appendSession(account: tableAccount.account,
                                                   urlBase: tableAccount.urlBase,

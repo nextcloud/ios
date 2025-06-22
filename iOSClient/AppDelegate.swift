@@ -257,10 +257,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let sortDescriptors = [
             RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
         ]
-        let limitTansfers: Int = 5
 
-        /// DOWNLOAD
-        let metadatasWaitDownlod = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d", self.global.metadataStatusWaitDownload), sortDescriptors: sortDescriptors, limit: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload)
+        // DOWNLOAD
+        let predicateDownload = NSPredicate(format: "status == %d", self.global.metadataStatusWaitDownload)
+        let metadatasWaitDownlod = await self.database.getMetadatasAsync(predicate: predicateDownload,
+                                                                         sortDescriptors: sortDescriptors,
+                                                                         limit: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload)
 
         if let metadatasWaitDownlod,
            !metadatasWaitDownlod.isEmpty {
@@ -277,19 +279,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
 
-        if numTransfers >= limitTansfers {
+        if numTransfers >= NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload {
             return numTransfers
         }
 
-        /// AUTO UPLOAD  for get new photo
+        // AUTO UPLOAD  for get new photo
         let num = await NCAutoUpload.shared.initAutoUpload(tblAccount: tblAccount)
         nkLog(tag: self.global.logTagBgSync, emoji: .start, message: "Auto upload with \(num) new photo for \(tblAccount.account)")
 
-        /// CREATION FOLDERS
-        let metadatasWaitCreateFolder = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@", self.global.metadataStatusWaitCreateFolder, self.global.selectorUploadAutoUpload), limit: limitTansfers)
+        // CREATION FOLDERS
+        let predicateCreateFolder = NSPredicate(format: "status == %d AND sessionSelector == %@", self.global.metadataStatusWaitCreateFolder, self.global.selectorUploadAutoUpload)
+        let metadatasWaitCreateFolder = await self.database.getMetadatasAsync(predicate: predicateCreateFolder,
+                                                                              limit: NCBrandOptions.shared.httpMaximumConnectionsPerHost)
 
         if let metadatasWaitCreateFolder,
             !metadatasWaitCreateFolder.isEmpty {
+            var successCountCreateFolder: Int = 0
             for metadata in metadatasWaitCreateFolder {
                 let serverUrl = metadata.serverUrl + "/" + metadata.fileName
                 let resultsCreateFolder = await self.networking.createFolder(fileName: metadata.fileName,
@@ -308,16 +313,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
                 if resultsCreateFolder.serverExists == false {
                     numTransfers += 1
+                    successCountCreateFolder += 1
                 }
+            }
+
+            // Exit until there are no more folders to create
+            if successCountCreateFolder == metadatasWaitCreateFolder.count {
+                return numTransfers
             }
         }
 
-        if numTransfers >= limitTansfers {
+        if numTransfers >= NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload {
             return numTransfers
         }
 
-        /// UPLOAD
-        let metadatasWaitUpload = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status == %d AND sessionSelector == %@ AND chunk == 0", self.global.metadataStatusWaitUpload, self.global.selectorUploadAutoUpload), sortDescriptors: sortDescriptors, limit: limitTansfers)
+        // UPLOAD
+        let predicateUpload = NSPredicate(format: "status == %d AND sessionSelector == %@ AND chunk == 0", self.global.metadataStatusWaitUpload, self.global.selectorUploadAutoUpload)
+        let metadatasWaitUpload = await self.database.getMetadatasAsync(predicate: predicateUpload,
+                                                                        sortDescriptors: sortDescriptors,
+                                                                        limit: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload)
 
         if let metadatasWaitUpload,
            !metadatasWaitUpload.isEmpty {
