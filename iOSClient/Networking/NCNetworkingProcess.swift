@@ -23,7 +23,7 @@ actor NCNetworkingProcess {
     private let timerQueue = DispatchQueue(label: "com.nextcloud.timerProcess", qos: .utility)
     private var lastUsedInterval: TimeInterval = 3
     private let maxInterval: TimeInterval = 3
-    private let minInterval: TimeInterval = 1
+    private let minInterval: TimeInterval = 1.5
 
     private init() {
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayerIsPlaying), object: nil, queue: nil) { [weak self] _ in
