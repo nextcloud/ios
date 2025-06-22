@@ -284,6 +284,15 @@ extension NCManageDatabase {
         }
     }
 
+    func getTableDirectoryAsync(predicate: NSPredicate) async -> tableDirectory? {
+        await performRealmReadAsync { realm in
+            guard let result = realm.objects(tableDirectory.self).filter(predicate).first else {
+                return nil
+            }
+            return tableDirectory(value: result)
+        }
+    }
+
     func getTableDirectory(account: String, serverUrl: String) -> tableDirectory? {
         return performRealmRead { realm in
             realm.objects(tableDirectory.self)
