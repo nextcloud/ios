@@ -313,6 +313,7 @@ extension NCShareExtension {
                                                                  contentType: results.mimeType,
                                                                  iconName: results.iconName,
                                                                  classFile: results.classFile,
+                                                                 typeIdentifier: results.typeIdentifier,
                                                                  session: session,
                                                                  sceneIdentifier: nil)
 
@@ -353,6 +354,7 @@ extension NCShareExtension {
         metadata.contentType = results.mimeType
         metadata.iconName = results.iconName
         metadata.classFile = results.classFile
+        metadata.typeIdentifier = results.typeIdentifier
 
         // CHUNK
         var chunkSize = NCGlobal.shared.chunkSizeMBCellular

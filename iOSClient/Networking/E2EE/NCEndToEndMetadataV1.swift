@@ -275,6 +275,7 @@ extension NCEndToEndMetadata {
                                 metadata.contentType = results.mimeType
                                 metadata.iconName = results.iconName
                                 metadata.classFile = results.classFile
+                                metadata.typeIdentifier = results.typeIdentifier
 
                                 self.database.addMetadata(metadata)
                             }
@@ -334,6 +335,7 @@ extension NCEndToEndMetadata {
                                 metadata.contentType = results.mimeType
                                 metadata.iconName = results.iconName
                                 metadata.classFile = results.classFile
+                                metadata.typeIdentifier = results.typeIdentifier
 
                                 self.database.addMetadata(metadata)
                             }
@@ -452,6 +454,7 @@ extension NCEndToEndMetadata {
                                 metadata.contentType = results.mimeType
                                 metadata.iconName = results.iconName
                                 metadata.classFile = results.classFile
+                                metadata.typeIdentifier = results.typeIdentifier
 
                                 self.database.addMetadata(metadata)
                             }

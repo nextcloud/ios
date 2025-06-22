@@ -67,6 +67,7 @@ class NCUploadScanDocument: ObservableObject {
                                                 contentType: results.mimeType,
                                                 iconName: results.iconName,
                                                 classFile: results.classFile,
+                                                typeIdentifier: results.typeIdentifier,
                                                 session: session,
                                                 sceneIdentifier: controller?.sceneIdentifier)
 

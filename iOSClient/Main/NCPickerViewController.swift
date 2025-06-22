@@ -152,6 +152,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                                                    contentType: results.mimeType,
                                                    iconName: results.iconName,
                                                    classFile: results.classFile,
+                                                   typeIdentifier: results.typeIdentifier,
                                                    session: session,
                                                    sceneIdentifier: self.controller.sceneIdentifier)
 
@@ -190,6 +191,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                                                                 contentType: results.mimeType,
                                                                 iconName: results.iconName,
                                                                 classFile: results.classFile,
+                                                                typeIdentifier: results.typeIdentifier,
                                                                 session: session,
                                                                 sceneIdentifier: self.controller.sceneIdentifier)
 

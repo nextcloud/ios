@@ -188,6 +188,7 @@ extension NCMedia {
                                                             contentType: "",
                                                             iconName: NKTypeIconFile.video.rawValue,
                                                             classFile: NKTypeClassFile.video.rawValue,
+                                                            typeIdentifier: "com.apple.quicktime-movie",
                                                             session: self.session,
                                                             sceneIdentifier: self.controller?.sceneIdentifier)
                 self.database.addMetadata(metadata)

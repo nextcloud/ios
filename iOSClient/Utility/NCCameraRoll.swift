@@ -80,6 +80,8 @@ final class NCCameraRoll: CameraRollExtractor {
             metadataSource.contentType = results.mimeType
             metadataSource.iconName = results.iconName
             metadataSource.classFile = results.classFile
+            metadataSource.typeIdentifier = results.typeIdentifier
+
             metadataSource.size = utilityFileSystem.getFileSize(filePath: filePath)
 
             if let date = utilityFileSystem.getFileCreationDate(filePath: filePath) {
@@ -397,6 +399,7 @@ final class NCCameraRoll: CameraRollExtractor {
                                                                      contentType: "video/quicktime",
                                                                      iconName: NKTypeIconFile.video.rawValue,
                                                                      classFile: NKTypeClassFile.video.rawValue,
+                                                                     typeIdentifier: "com.apple.quicktime-movie",
                                                                      session: session,
                                                                      sceneIdentifier: metadata.sceneIdentifier)
 

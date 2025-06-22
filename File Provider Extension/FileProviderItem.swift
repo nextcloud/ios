@@ -17,8 +17,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         return metadata.fileNameView
     }
     var typeIdentifier: String {
-        let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: metadata.fileNameView, mimeType: "", directory: metadata.directory, account: metadata.account)
-        return results.typeIdentifier
+        return metadata.typeIdentifier
     }
     var capabilities: NSFileProviderItemCapabilities {
         if metadata.directory {

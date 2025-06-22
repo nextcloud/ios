@@ -123,6 +123,7 @@ class tableMetadata: Object {
     @objc dynamic var errorCode: Int = 0
     @objc dynamic var nativeFormat: Bool = false
     @objc dynamic var autoUploadServerUrlBase: String?
+    @objc dynamic var typeIdentifier: String = ""
 
     override static func primaryKey() -> String {
         return "ocId"
@@ -413,6 +414,7 @@ extension NCManageDatabase {
         metadata.width = Int(file.width)
         metadata.livePhotoFile = file.livePhotoFile
         metadata.isFlaggedAsLivePhotoByServer = file.isFlaggedAsLivePhotoByServer
+        metadata.typeIdentifier = file.typeIdentifier
 
         // E2EE find the fileName for fileNameView
         if isDirectoryE2EE || file.e2eEncrypted {
@@ -422,6 +424,7 @@ extension NCManageDatabase {
                 metadata.contentType = results.mimeType
                 metadata.iconName = results.iconName
                 metadata.classFile = results.classFile
+                metadata.typeIdentifier = results.typeIdentifier
             }
         }
         return metadata
@@ -487,6 +490,7 @@ extension NCManageDatabase {
                         contentType: String,
                         iconName: String,
                         classFile: String,
+                        typeIdentifier: String,
                         isUrl: Bool = false,
                         name: String = NCGlobal.shared.appName,
                         subline: String? = nil,
@@ -500,10 +504,12 @@ extension NCManageDatabase {
             metadata.contentType = "text/uri-list"
             metadata.iconName = NKTypeClassFile.url.rawValue
             metadata.classFile = NKTypeClassFile.url.rawValue
+            metadata.typeIdentifier = "public.url"
         } else {
             metadata.contentType = contentType
             metadata.iconName = iconName
             metadata.classFile = classFile
+            metadata.typeIdentifier = typeIdentifier
         }
         if let iconUrl {
             metadata.iconUrl = iconUrl
@@ -1584,6 +1590,7 @@ extension NCManageDatabase {
                                                                       contentType: "httpd/unix-directory",
                                                                       iconName: NKTypeIconFile.directory.rawValue,
                                                                       classFile: NKTypeClassFile.directory.rawValue,
+                                                                      typeIdentifier: "public.folder",
                                                                       directory: true,
                                                                       session: session,
                                                                       sceneIdentifier: nil)

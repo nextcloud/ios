@@ -245,6 +245,7 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
                                                                        contentType: results.mimeType,
                                                                        iconName: results.iconName,
                                                                        classFile: results.classFile,
+                                                                       typeIdentifier: results.typeIdentifier,
                                                                        session: session,
                                                                        sceneIdentifier: nil)
 
