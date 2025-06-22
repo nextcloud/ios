@@ -308,6 +308,7 @@ class FileProviderExtension: NSFileProviderExtension {
                                                                      contentType: results.mimeType,
                                                                      iconName: results.iconName,
                                                                      classFile: results.classFile,
+                                                                     typeIdentifier: results.typeIdentifier,
                                                                      session: fileProviderData.shared.session,
                                                                      sceneIdentifier: nil)
 

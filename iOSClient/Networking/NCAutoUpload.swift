@@ -93,6 +93,7 @@ class NCAutoUpload: NSObject {
                 contentType: "",
                 iconName: "",
                 classFile: "",
+                typeIdentifier: "",
                 session: session,
                 sceneIdentifier: controller?.sceneIdentifier
             )
@@ -120,6 +121,14 @@ class NCAutoUpload: NSObject {
                 switch mediaType {
                 case .video: return NKTypeIconFile.video.rawValue
                 case .image: return NKTypeIconFile.image.rawValue
+                default: return ""
+                }
+            }()
+
+            metadata.typeIdentifier = {
+                switch mediaType {
+                case .video: return "com.apple.quicktime-movie"
+                case .image: return "public.image"
                 default: return ""
                 }
             }()

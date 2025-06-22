@@ -108,6 +108,7 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
                                                               contentType: "audio/x-m4a",
                                                               iconName: NKTypeIconFile.audio.rawValue,
                                                               classFile: NKTypeClassFile.audio.rawValue,
+                                                              typeIdentifier: "com.apple.m4a-audio",
                                                               session: self.session,
                                                               sceneIdentifier: self.controller?.sceneIdentifier)
 

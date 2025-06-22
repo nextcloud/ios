@@ -59,6 +59,7 @@ class NCCreateDocument: NSObject {
                                                             contentType: results.mimeType,
                                                             iconName: results.iconName,
                                                             classFile: results.classFile,
+                                                            typeIdentifier: results.typeIdentifier,
                                                             session: session,
                                                             sceneIdentifier: controller.sceneIdentifier)
 
@@ -81,6 +82,7 @@ class NCCreateDocument: NSObject {
                                                                 contentType: results.mimeType,
                                                                 iconName: results.iconName,
                                                                 classFile: results.classFile,
+                                                                typeIdentifier: results.typeIdentifier,
                                                                 session: session,
                                                                 sceneIdentifier: controller.sceneIdentifier)
 
