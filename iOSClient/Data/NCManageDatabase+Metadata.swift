@@ -576,8 +576,7 @@ extension NCManageDatabase {
         }
     }
 
-    @discardableResult
-    func addMetadata(_ metadata: tableMetadata, sync: Bool = true) -> tableMetadata {
+    func addAndReturnMetadata(_ metadata: tableMetadata, sync: Bool = true) -> tableMetadata {
         let detached = tableMetadata(value: metadata)
 
         performRealmWrite(sync: sync) { realm in
@@ -585,6 +584,14 @@ extension NCManageDatabase {
         }
 
         return tableMetadata(value: detached)
+    }
+
+    func addMetadata(_ metadata: tableMetadata, sync: Bool = true) {
+        let detached = tableMetadata(value: metadata)
+
+        performRealmWrite(sync: sync) { realm in
+            realm.add(detached, update: .all)
+        }
     }
 
     @discardableResult
@@ -1129,6 +1136,7 @@ extension NCManageDatabase {
         }
     }
 
+    /*
     func getMetadatas(predicate: NSPredicate,
                       completion: @escaping ([tableMetadata]) -> Void) {
         performRealmRead({ realm in
@@ -1139,12 +1147,13 @@ extension NCManageDatabase {
             completion(results ?? [])
         }
     }
+    */
 
     func getMetadatas(predicate: NSPredicate) -> [tableMetadata] {
-        return performRealmRead { realm in
-            let result = realm.objects(tableMetadata.self)
+        performRealmRead { realm in
+            realm.objects(tableMetadata.self)
                 .filter(predicate)
-            return Array(result.map { tableMetadata(value: $0) })
+                .map { tableMetadata(value: $0) }
         } ?? []
     }
 

@@ -142,73 +142,90 @@ class FileProviderExtension: NSFileProviderExtension {
     }
 
     override func startProvidingItem(at url: URL, completionHandler: @escaping ((_ error: Error?) -> Void)) {
-        let pathComponents = url.pathComponents
-        let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
-        var metadata: tableMetadata?
-        if let result = fileProviderData.shared.getUploadMetadata(id: itemIdentifier.rawValue) {
-            metadata = result.metadata
-        } else {
-            metadata = self.database.getMetadataFromOcIdAndocIdTransfer(itemIdentifier.rawValue)
-        }
-        guard let metadata else {
-            return completionHandler(NSFileProviderError(.noSuchItem))
-        }
-        if metadata.directory || metadata.session == NCNetworking.shared.sessionUploadBackgroundExt {
-            return completionHandler(nil)
-        }
-        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-        let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
-        // Exists ? return
-        if let tableLocalFile = self.database.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)),
-           utilityFileSystem.fileProviderStorageExists(metadata),
-           tableLocalFile.etag == metadata.etag {
-            return completionHandler(nil)
-        } else {
+        autoreleasepool {
+            let pathComponents = url.pathComponents
+            let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
+            var metadata: tableMetadata?
+
+            if let result = fileProviderData.shared.getUploadMetadata(id: itemIdentifier.rawValue) {
+                metadata = result.metadata
+            } else {
+                metadata = self.database.getMetadataFromOcIdAndocIdTransfer(itemIdentifier.rawValue)
+            }
+
+            guard let metadata else {
+                return completionHandler(NSFileProviderError(.noSuchItem))
+            }
+
+            if metadata.directory || metadata.session == NCNetworking.shared.sessionUploadBackgroundExt {
+                return completionHandler(nil)
+            }
+
+            let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+            let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
+
+            // Exists ? return
+            if let tableLocalFile = self.database.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)),
+               utilityFileSystem.fileProviderStorageExists(metadata),
+               tableLocalFile.etag == metadata.etag {
+                return completionHandler(nil)
+            }
+
             self.database.setMetadataSession(ocId: metadata.ocId,
                                              session: NCNetworking.shared.sessionDownload,
                                              sessionTaskIdentifier: 0,
                                              sessionError: "",
                                              selector: "",
                                              status: NCGlobal.shared.metadataStatusDownloading)
-        }
-        /// SIGNAL
-        fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
 
-        NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, requestHandler: { _ in
-        }, taskHandler: { task in
+            // SIGNAL
+            fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
+
+            NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, requestHandler: { _ in
+            }, taskHandler: { task in
             self.database.setMetadataSession(ocId: metadata.ocId,
                                              sessionTaskIdentifier: task.taskIdentifier)
             fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(itemIdentifier.rawValue)) { _ in }
-        }, progressHandler: { _ in
-        }) { _, etag, date, _, _, _, error in
-            guard let metadata = self.providerUtility.getTableMetadataFromItemIdentifier(itemIdentifier) else {
-                return completionHandler(NSFileProviderError(.noSuchItem))
+            }, progressHandler: { _ in
+            }) { _, etag, date, _, _, _, error in
+                guard let metadata = self.providerUtility.getTableMetadataFromItemIdentifier(itemIdentifier) else {
+                    return completionHandler(NSFileProviderError(.noSuchItem))
+                }
+                if error == .success {
+                    metadata.sceneIdentifier = nil
+                    metadata.session = ""
+                    metadata.sessionError = ""
+                    metadata.sessionSelector = ""
+                    metadata.sessionDate = nil
+                    metadata.sessionTaskIdentifier = 0
+                    metadata.status = NCGlobal.shared.metadataStatusNormal
+                    metadata.date = (date as? NSDate) ?? NSDate()
+                    metadata.etag = etag ?? ""
+
+                    self.database.addLocalFile(metadata: metadata)
+                    self.database.addMetadata(metadata)
+
+                    completionHandler(nil)
+
+                } else if error.errorCode == 200 {
+
+                    self.database.setMetadataStatus(ocId: metadata.ocId,
+                                                    status: NCGlobal.shared.metadataStatusNormal)
+
+                    completionHandler(nil)
+
+                } else {
+                    metadata.status = NCGlobal.shared.metadataStatusDownloadError
+                    metadata.sessionError = error.errorDescription
+
+                    self.database.addMetadata(metadata)
+
+                    completionHandler(NSFileProviderError(.noSuchItem))
+                }
+
+                // SIGNAL
+                fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
             }
-            if error == .success {
-                metadata.sceneIdentifier = nil
-                metadata.session = ""
-                metadata.sessionError = ""
-                metadata.sessionSelector = ""
-                metadata.sessionDate = nil
-                metadata.sessionTaskIdentifier = 0
-                metadata.status = NCGlobal.shared.metadataStatusNormal
-                metadata.date = (date as? NSDate) ?? NSDate()
-                metadata.etag = etag ?? ""
-                self.database.addLocalFile(metadata: metadata)
-                self.database.addMetadata(metadata)
-                completionHandler(nil)
-            } else if error.errorCode == 200 {
-                self.database.setMetadataStatus(ocId: metadata.ocId,
-                                                status: NCGlobal.shared.metadataStatusNormal)
-                completionHandler(nil)
-            } else {
-                metadata.status = NCGlobal.shared.metadataStatusDownloadError
-                metadata.sessionError = error.errorDescription
-                self.database.addMetadata(metadata)
-                completionHandler(NSFileProviderError(.noSuchItem))
-            }
-            /// SIGNAL
-            fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
         }
     }
 

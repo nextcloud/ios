@@ -101,41 +101,6 @@ class fileProviderData: NSObject {
     // MARK: -
 
     @discardableResult
-    func signalEnumeratorAsync(ocId: String, type: TypeSignal) async -> FileProviderItem? {
-        guard let metadata = await self.database.getMetadataFromOcIdAsync(ocId),
-              let parentItemIdentifier = await fileProviderUtility().getParentItemIdentifierAsync(metadata: metadata) else {
-            return nil
-        }
-        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-
-        if type == .delete {
-            fileProviderData.shared.fileProviderSignalDeleteContainerItemIdentifier[item.itemIdentifier] = item.itemIdentifier
-            fileProviderData.shared.fileProviderSignalDeleteWorkingSetItemIdentifier[item.itemIdentifier] = item.itemIdentifier
-        }
-        if type == .update {
-            fileProviderData.shared.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-            fileProviderData.shared.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-        }
-        if type == .workingSet {
-            fileProviderData.shared.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-        }
-        if type == .delete || type == .update {
-            do {
-                try await fileProviderManager.signalEnumerator(for: parentItemIdentifier)
-            } catch {
-                return nil
-            }
-        }
-
-        do {
-            try await fileProviderManager.signalEnumerator(for: .workingSet)
-        } catch {
-            return nil
-        }
-
-        return item
-    }
-
     func signalEnumerator(ocId: String, type: TypeSignal) -> FileProviderItem? {
         guard let metadata = self.database.getMetadataFromOcId(ocId),
               let parentItemIdentifier = fileProviderUtility().getParentItemIdentifier(metadata: metadata) else {
@@ -174,4 +139,3 @@ class fileProviderData: NSObject {
         return uploadMetadata.filter({ $0.id == id }).first
     }
 }
-

@@ -91,15 +91,15 @@ extension NCNetworking {
                                                    serverUrl: metadata.serverUrl)
             }
             progressHandler(progress)
-        }) { _, etag, date, length, responseData, afError, error in
+        }) { _, etag, date, length, headers, afError, error in
             var error = error
             var dateLastModified: Date?
 
             // this delay was added because for small file the "taskHandler: { task" is not called, so this part of code is not executed
             NextcloudKit.shared.nkCommonInstance.backgroundQueue.asyncAfter(deadline: .now() + 0.5) {
                 if let downloadTask = downloadTask {
-                    if let header = responseData?.response?.allHeaderFields,
-                       let dateString = header["Last-Modified"] as? String {
+                    if let headers,
+                       let dateString = headers["Last-Modified"] as? String {
                         dateLastModified = NKLogFileManager.shared.convertDate(dateString, format: "EEE, dd MMM y HH:mm:ss zzz")
                     }
                     if afError?.isExplicitlyCancelledError ?? false {

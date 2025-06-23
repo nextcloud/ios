@@ -22,17 +22,16 @@ extension NCManageDatabase {
     ///   - etag: Optional ETag string.
     ///   - errorCode: Optional error code to persist.
     /// - Returns: A detached copy of the updated `tableMetadata` object, or `nil` if not found.
-    @discardableResult
-    func setMetadataSession(ocId: String,
-                            newFileName: String? = nil,
-                            session: String? = nil,
-                            sessionTaskIdentifier: Int? = nil,
-                            sessionError: String? = nil,
-                            selector: String? = nil,
-                            status: Int? = nil,
-                            etag: String? = nil,
-                            errorCode: Int? = nil,
-                            sync: Bool = true) -> tableMetadata? {
+    func setMetadataSessionAndReturn(ocId: String,
+                                     newFileName: String? = nil,
+                                     session: String? = nil,
+                                     sessionTaskIdentifier: Int? = nil,
+                                     sessionError: String? = nil,
+                                     selector: String? = nil,
+                                     status: Int? = nil,
+                                     etag: String? = nil,
+                                     errorCode: Int? = nil,
+                                     sync: Bool = true) -> tableMetadata? {
         var detached: tableMetadata?
 
         performRealmWrite(sync: sync) { realm in
@@ -89,6 +88,69 @@ extension NCManageDatabase {
         }
 
         return detached
+    }
+
+    func setMetadataSession(ocId: String,
+                            newFileName: String? = nil,
+                            session: String? = nil,
+                            sessionTaskIdentifier: Int? = nil,
+                            sessionError: String? = nil,
+                            selector: String? = nil,
+                            status: Int? = nil,
+                            etag: String? = nil,
+                            errorCode: Int? = nil,
+                            sync: Bool = true) {
+        performRealmWrite(sync: sync) { realm in
+            guard let metadata = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first else {
+                return
+            }
+
+            if let name = newFileName {
+                metadata.fileName = name
+                metadata.fileNameView = name
+            }
+
+            if let session {
+                metadata.session = session
+            }
+
+            if let sessionTaskIdentifier {
+                metadata.sessionTaskIdentifier = sessionTaskIdentifier
+            }
+
+            if let sessionError {
+                metadata.sessionError = sessionError
+                if sessionError.isEmpty {
+                    metadata.errorCode = 0
+                }
+            }
+
+            if let selector {
+                metadata.sessionSelector = selector
+            }
+
+            if let status {
+                metadata.status = status
+                switch status {
+                case NCGlobal.shared.metadataStatusWaitDownload,
+                     NCGlobal.shared.metadataStatusWaitUpload:
+                    metadata.sessionDate = Date()
+                case NCGlobal.shared.metadataStatusNormal:
+                    metadata.sessionDate = nil
+                default: break
+                }
+            }
+
+            if let etag {
+                metadata.etag = etag
+            }
+
+            if let errorCode {
+                metadata.errorCode = errorCode
+            }
+
+            realm.add(metadata, update: .all)
+        }
     }
 
     /// Updates session-related fields for a given `tableMetadata` object, in an async-safe Realm write.
@@ -394,9 +456,8 @@ extension NCManageDatabase {
         }
     }
 
-    @discardableResult
-    func setMetadataStatus(ocId: String,
-                           status: Int) -> tableMetadata? {
+    func setMetadataStatusAndReturn(ocId: String,
+                                    status: Int) -> tableMetadata? {
         var detached: tableMetadata?
 
         performRealmWrite(sync: true) { realm in
@@ -410,6 +471,18 @@ extension NCManageDatabase {
         }
 
         return detached
+    }
+
+    func setMetadataStatus(ocId: String,
+                           status: Int) {
+        performRealmWrite(sync: true) { realm in
+            guard let metadata = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first else {
+                return
+            }
+            metadata.status = status
+
+            realm.add(metadata, update: .all)
+        }
     }
 
     /// Updates the metadata status for the given `ocId` in the Realm database.

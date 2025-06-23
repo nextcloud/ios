@@ -47,9 +47,7 @@ final class NCManageDatabase: Sendable {
                                tableLocalFile.self,
                                tableDirectory.self,
                                tableTag.self,
-                               tableAccount.self,
-                               tableCapabilities.self,
-                               tableE2eEncryption.self]
+                               tableAccount.self]
 
             openRealmAppex(path: databaseFileUrlPath, objectTypes: objectTypes)
         } else if isAppex {

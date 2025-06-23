@@ -120,7 +120,9 @@ class NCShareNetworking: NSObject {
                     self.updateShare(template, downloadLimit: downloadLimit)
                     // Download limit update should happen implicitly on share update.
                 } else {
-                    if case let .limited(limit, _) = downloadLimit {
+                    let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: self.metadata.account)
+                    if case let .limited(limit, _) = downloadLimit,
+                        capabilities.fileSharingDownloadLimit {
                         self.setShareDownloadLimit(limit, token: share.token)
                     }
                 }
@@ -161,13 +163,17 @@ class NCShareNetworking: NSObject {
 
             if error == .success, let share = share {
                 let home = self.utilityFileSystem.getHomeServer(session: self.session)
+                let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: self.metadata.account)
+
                 self.database.addShare(account: self.metadata.account, home: home, shares: [share])
                 self.delegate?.readShareCompleted()
 
-                if case let .limited(limit, _) = downloadLimit {
-                    self.setShareDownloadLimit(limit, token: share.token)
-                } else {
-                    self.removeShareDownloadLimit(token: share.token)
+                if capabilities.fileSharingDownloadLimit {
+                    if case let .limited(limit, _) = downloadLimit {
+                        self.setShareDownloadLimit(limit, token: share.token)
+                    } else {
+                        self.removeShareDownloadLimit(token: share.token)
+                    }
                 }
 
                 NCNetworking.shared.notifyAllDelegates { delegate in

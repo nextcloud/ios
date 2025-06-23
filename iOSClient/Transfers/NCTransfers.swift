@@ -116,8 +116,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         Task {
             let metadatas = await cameraRoll.extractCameraRoll(from: metadata)
             for metadata in metadatas {
-                if let metadata = self.database.setMetadataStatus(ocId: metadata.ocId,
-                                                                  status: NCGlobal.shared.metadataStatusUploading) {
+                if let metadata = self.database.setMetadataStatusAndReturn(ocId: metadata.ocId,
+                                                                           status: NCGlobal.shared.metadataStatusUploading) {
                     NCNetworking.shared.upload(metadata: metadata)
                 }
             }

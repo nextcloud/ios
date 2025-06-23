@@ -395,6 +395,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func subscribingPushNotification(account: String, urlBase: String, user: String) {
+        if isAppInBackground {
+            return
+        }
+
 #if !targetEnvironment(simulator)
         self.networking.checkPushNotificationServerProxyCertificateUntrusted(viewController: UIApplication.shared.firstWindow?.rootViewController) { error in
             if error == .success {

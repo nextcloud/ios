@@ -39,22 +39,6 @@ class fileProviderUtility: NSObject {
         return nil
     }
 
-    func getParentItemIdentifierAsync(metadata: tableMetadata) async -> NSFileProviderItemIdentifier? {
-        let homeServerUrl = utilityFileSystem.getHomeServer(session: fileProviderData.shared.session)
-        if let directory = await self.database.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
-            if directory.serverUrl == homeServerUrl {
-                return NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue)
-            } else {
-                // get the metadata.ocId of parent Directory
-                if let metadata = await self.database.getMetadataFromOcIdAsync(directory.ocId) {
-                    let identifier = getItemIdentifier(metadata: metadata)
-                    return identifier
-                }
-            }
-        }
-        return nil
-    }
-
     func getTableDirectoryFromParentItemIdentifier(_ parentItemIdentifier: NSFileProviderItemIdentifier, account: String, homeServerUrl: String) -> tableDirectory? {
         var predicate: NSPredicate
         if parentItemIdentifier == .rootContainer {
