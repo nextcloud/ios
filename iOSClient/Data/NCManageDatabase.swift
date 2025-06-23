@@ -16,158 +16,170 @@ protocol DateCompareable {
 final class NCManageDatabase: Sendable {
     static let shared = NCManageDatabase()
 
-    private let realmQueue = DispatchQueue(label: "com.nextcloud.realmQueue")
-    private let realmQueueKey = DispatchSpecificKey<Bool>()
-
-    let utilityFileSystem = NCUtilityFileSystem()
+    internal let realmQueue = DispatchQueue(label: "com.nextcloud.realmQueue") // serial queue
+    internal let realmQueueKey = DispatchSpecificKey<Bool>()
+    internal let utilityFileSystem = NCUtilityFileSystem()
 
     init() {
-        realmQueue.setSpecific(key: realmQueueKey, value: true)
-
-        func migrationSchema(_ migration: Migration, _ oldSchemaVersion: UInt64) {
-            if oldSchemaVersion < 365 {
-                migration.deleteData(forType: tableMetadata.className())
-                migration.enumerateObjects(ofType: tableDirectory.className()) { _, newObject in
-                    newObject?["etag"] = ""
-                }
-            }
-            if oldSchemaVersion < 383 {
-                migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
-                    if let oldDate = oldObject?["autoUploadSinceDate"] as? Date {
-                        newObject?["autoUploadOnlyNewSinceDate"] = oldDate
-                    } else {
-                        newObject?["autoUploadOnlyNewSinceDate"] = Date()
-                    }
-                    newObject?["autoUploadOnlyNew"] = true
-                }
-            }
-            if oldSchemaVersion < databaseSchemaVersion {
-                // automatic conversion for delete object / properties
-            }
-        }
-
-        func compactDB(_ totalBytes: Int, _ usedBytes: Int) -> Bool {
-            let usedPercentage = (Double(usedBytes) / Double(totalBytes)) * 100
-            /// Compact the database if more than 25% of the space is free
-            let shouldCompact = (usedPercentage < 75.0) && (totalBytes > 100 * 1024 * 1024)
-
-            return shouldCompact
-        }
-        var realm: Realm?
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let databaseFileUrlPath = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
         let bundleUrl: URL = Bundle.main.bundleURL
         let bundlePathExtension: String = bundleUrl.pathExtension
         let bundleFileName: String = (bundleUrl.path as NSString).lastPathComponent
         let isAppex: Bool = bundlePathExtension == "appex"
-        var objectTypesAppex = [NCKeyValue.self,
-                                tableMetadata.self,
-                                tableLocalFile.self,
-                                tableDirectory.self,
-                                tableTag.self,
-                                tableAccount.self,
-                                tableCapabilities.self,
-                                tableE2eEncryption.self,
-                                tableE2eEncryptionLock.self,
-                                tableE2eMetadata12.self,
-                                tableE2eMetadata.self,
-                                tableE2eUsers.self,
-                                tableE2eCounter.self,
-                                tableShare.self,
-                                tableChunk.self,
-                                tableAvatar.self,
-                                tableDashboardWidget.self,
-                                tableDashboardWidgetButton.self,
-                                NCDBLayoutForView.self,
-                                TableSecurityGuardDiagnostics.self]
+
+        realmQueue.setSpecific(key: realmQueueKey, value: true)
 
         // Disable file protection for directory DB
-        // https://docs.mongodb.com/realm/sdk/ios/examples/configure-and-open-a-realm/#std-label-ios-open-a-local-realm
         if let folderPathURL = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud) {
             let folderPath = folderPathURL.path
             do {
                 try FileManager.default.setAttributes([FileAttributeKey.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication], ofItemAtPath: folderPath)
             } catch {
-                print("Dangerous error")
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm directory setAttributes error: \(error)")
             }
         }
 
-        if isAppex {
-            if bundleFileName == "File Provider Extension.appex" {
-                objectTypesAppex = [NCKeyValue.self,
-                                    tableMetadata.self,
-                                    tableLocalFile.self,
-                                    tableDirectory.self,
-                                    tableTag.self,
-                                    tableAccount.self,
-                                    tableCapabilities.self,
-                                    tableE2eEncryption.self]
-            }
+        if isAppex, bundleFileName == "File Provider Extension.appex" {
+            let objectTypes = [NCKeyValue.self,
+                               tableMetadata.self,
+                               tableLocalFile.self,
+                               tableDirectory.self,
+                               tableTag.self,
+                               tableAccount.self,
+                               tableCapabilities.self,
+                               tableE2eEncryption.self]
 
-            Realm.Configuration.defaultConfiguration =
-            Realm.Configuration(fileURL: databaseFileUrlPath,
-                                schemaVersion: databaseSchemaVersion,
-                                migrationBlock: { migration, oldSchemaVersion in
-                                    migrationSchema(migration, oldSchemaVersion)
-                                }, shouldCompactOnLaunch: { totalBytes, usedBytes in
-                                    compactDB(totalBytes, usedBytes)
-                                }, objectTypes: objectTypesAppex)
+            openRealmAppex(path: databaseFileUrlPath, objectTypes: objectTypes)
+        } else if isAppex {
+            let objectTypes = [NCKeyValue.self,
+                               tableMetadata.self,
+                               tableLocalFile.self,
+                               tableDirectory.self,
+                               tableTag.self,
+                               tableAccount.self,
+                               tableCapabilities.self,
+                               tableE2eEncryption.self,
+                               tableE2eEncryptionLock.self,
+                               tableE2eMetadata12.self,
+                               tableE2eMetadata.self,
+                               tableE2eUsers.self,
+                               tableE2eCounter.self,
+                               tableShare.self,
+                               tableChunk.self,
+                               tableAvatar.self,
+                               tableDashboardWidget.self,
+                               tableDashboardWidgetButton.self,
+                               NCDBLayoutForView.self,
+                               TableSecurityGuardDiagnostics.self]
 
-            do {
-                realm = try Realm()
-                if let realm, let url = realm.configuration.fileURL {
-                    print("Realm is located at: \(url)")
-                }
-            } catch let error {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE: \(error.localizedDescription)")
-            }
+            openRealmAppex(path: databaseFileUrlPath, objectTypes: objectTypes)
         } else {
-            Realm.Configuration.defaultConfiguration =
-            Realm.Configuration(fileURL: databaseFileUrlPath,
-                                schemaVersion: databaseSchemaVersion,
-                                migrationBlock: { migration, oldSchemaVersion in
-                                    migrationSchema(migration, oldSchemaVersion)
-                                }, shouldCompactOnLaunch: { totalBytes, usedBytes in
-                                    compactDB(totalBytes, usedBytes)
-                                })
-            do {
-                realm = try Realm()
-                if let realm, let url = realm.configuration.fileURL {
-                    print("Realm is located at: \(url)")
-                }
-
-                backupTableAccountToFile()
-
-            } catch let error {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE: \(error.localizedDescription)")
-
-                if let realmURL = databaseFileUrlPath {
-                    let filesToDelete = [
-                        realmURL,
-                        realmURL.appendingPathExtension("lock"),
-                        realmURL.appendingPathExtension("note"),
-                        realmURL.appendingPathExtension("management")
-                    ]
-
-                    for file in filesToDelete {
-                        do {
-                            try FileManager.default.removeItem(at: file)
-                        } catch { }
-                    }
-                }
-
-                do {
-                    _ = try Realm()
-
-                    restoreTableAccountFromFile()
-
-                } catch let error {
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Account restoration: \(error.localizedDescription)")
-                }
+            Task.detached(priority: .userInitiated) { [weak self] in
+                guard let self else { return }
+                openRealm(path: databaseFileUrlPath)
             }
         }
     }
 
+    private func migrationSchema(_ migration: Migration, _ oldSchemaVersion: UInt64) {
+        if oldSchemaVersion < 365 {
+            migration.deleteData(forType: tableMetadata.className())
+            migration.enumerateObjects(ofType: tableDirectory.className()) { _, newObject in
+                newObject?["etag"] = ""
+            }
+        }
+        if oldSchemaVersion < 383 {
+            migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
+                if let oldDate = oldObject?["autoUploadSinceDate"] as? Date {
+                    newObject?["autoUploadOnlyNewSinceDate"] = oldDate
+                } else {
+                    newObject?["autoUploadOnlyNewSinceDate"] = Date()
+                }
+                newObject?["autoUploadOnlyNew"] = true
+            }
+        }
+        if oldSchemaVersion < databaseSchemaVersion {
+            // automatic conversion for delete object / properties
+        }
+    }
+
+    private func compactDB(_ totalBytes: Int, _ usedBytes: Int) -> Bool {
+        let usedPercentage = (Double(usedBytes) / Double(totalBytes)) * 100
+        /// Compact the database if more than 25% of the space is free
+        let shouldCompact = (usedPercentage < 75.0) && (totalBytes > 100 * 1024 * 1024)
+
+        return shouldCompact
+    }
+
+    private func restoreDB(path databaseFileUrlPath: URL?) {
+        if let realmURL = databaseFileUrlPath {
+            let filesToDelete = [
+                realmURL,
+                realmURL.appendingPathExtension("lock"),
+                realmURL.appendingPathExtension("note"),
+                realmURL.appendingPathExtension("management")
+            ]
+
+            for file in filesToDelete {
+                do {
+                    try FileManager.default.removeItem(at: file)
+                } catch { }
+            }
+        }
+
+        do {
+            _ = try Realm()
+            restoreTableAccountFromFile()
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Account restoration: \(error)")
+        }
+    }
+
+    private func openRealm(path databaseFileUrlPath: URL?) {
+        // DEFAULTCONFIGURATION
+        Realm.Configuration.defaultConfiguration =
+        Realm.Configuration(fileURL: databaseFileUrlPath,
+                            schemaVersion: databaseSchemaVersion,
+                            migrationBlock: { migration, oldSchemaVersion in
+            self.migrationSchema(migration, oldSchemaVersion)
+        }, shouldCompactOnLaunch: { totalBytes, usedBytes in
+            self.compactDB(totalBytes, usedBytes)
+        })
+
+        do {
+            let realm = try Realm()
+            if let url = realm.configuration.fileURL {
+                print("Realm is located at: \(url)")
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm: \(error)")
+            self.restoreDB(path: databaseFileUrlPath)
+        }
+    }
+
+    private func openRealmAppex(path databaseFileUrlPath: URL?, objectTypes: [Object.Type]) {
+        // TEST DB - READ ONLY
+        let testConfig = Realm.Configuration(fileURL: databaseFileUrlPath,
+                                             readOnly: true,
+                                             schemaVersion: databaseSchemaVersion)
+
+        do {
+            _ = try Realm(configuration: testConfig)
+
+            // DEFAULTCONFIGURATION
+            Realm.Configuration.defaultConfiguration = Realm.Configuration(fileURL: databaseFileUrlPath,
+                                                                           schemaVersion: databaseSchemaVersion,
+                                                                           objectTypes: objectTypes)
+
+            let realm = try Realm()
+            if let url = realm.configuration.fileURL {
+                print("Realm is located at: \(url)")
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm: \(error)")
+        }
+    }
     // MARK: -
 
     @discardableResult
