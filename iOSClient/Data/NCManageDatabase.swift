@@ -41,44 +41,43 @@ final class NCManageDatabase: Sendable {
             }
         }
 
-        Task.detached(priority: .userInitiated) { [weak self] in
-            guard let self else { return }
+        if isAppex, bundleFileName == "File Provider Extension.appex" {
+            let objectTypes = [NCKeyValue.self,
+                               tableMetadata.self,
+                               tableLocalFile.self,
+                               tableDirectory.self,
+                               tableTag.self,
+                               tableAccount.self,
+                               tableCapabilities.self,
+                               tableE2eEncryption.self]
 
-            if isAppex, bundleFileName == "File Provider Extension.appex" {
-                let objectTypes = [NCKeyValue.self,
-                                   tableMetadata.self,
-                                   tableLocalFile.self,
-                                   tableDirectory.self,
-                                   tableTag.self,
-                                   tableAccount.self,
-                                   tableCapabilities.self,
-                                   tableE2eEncryption.self]
+            openRealmAppex(path: databaseFileUrlPath, objectTypes: objectTypes)
+        } else if isAppex {
+            let objectTypes = [NCKeyValue.self,
+                               tableMetadata.self,
+                               tableLocalFile.self,
+                               tableDirectory.self,
+                               tableTag.self,
+                               tableAccount.self,
+                               tableCapabilities.self,
+                               tableE2eEncryption.self,
+                               tableE2eEncryptionLock.self,
+                               tableE2eMetadata12.self,
+                               tableE2eMetadata.self,
+                               tableE2eUsers.self,
+                               tableE2eCounter.self,
+                               tableShare.self,
+                               tableChunk.self,
+                               tableAvatar.self,
+                               tableDashboardWidget.self,
+                               tableDashboardWidgetButton.self,
+                               NCDBLayoutForView.self,
+                               TableSecurityGuardDiagnostics.self]
 
-                openRealmAppex(path: databaseFileUrlPath, objectTypes: objectTypes)
-            } else if isAppex {
-                let objectTypes = [NCKeyValue.self,
-                                   tableMetadata.self,
-                                   tableLocalFile.self,
-                                   tableDirectory.self,
-                                   tableTag.self,
-                                   tableAccount.self,
-                                   tableCapabilities.self,
-                                   tableE2eEncryption.self,
-                                   tableE2eEncryptionLock.self,
-                                   tableE2eMetadata12.self,
-                                   tableE2eMetadata.self,
-                                   tableE2eUsers.self,
-                                   tableE2eCounter.self,
-                                   tableShare.self,
-                                   tableChunk.self,
-                                   tableAvatar.self,
-                                   tableDashboardWidget.self,
-                                   tableDashboardWidgetButton.self,
-                                   NCDBLayoutForView.self,
-                                   TableSecurityGuardDiagnostics.self]
-
-                openRealmAppex(path: databaseFileUrlPath, objectTypes: objectTypes)
-            } else {
+            openRealmAppex(path: databaseFileUrlPath, objectTypes: objectTypes)
+        } else {
+            Task.detached(priority: .userInitiated) { [weak self] in
+                guard let self else { return }
                 openRealm(path: databaseFileUrlPath)
             }
         }
