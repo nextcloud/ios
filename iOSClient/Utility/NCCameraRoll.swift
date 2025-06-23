@@ -97,7 +97,7 @@ final class NCCameraRoll: CameraRollExtractor {
             }
             metadataSource.isExtractFile = true
 
-            metadatas.append(self.database.addMetadata(metadataSource))
+            metadatas.append(self.database.addAndReturnMetadata(metadataSource))
             return metadatas
         }
 
@@ -114,7 +114,7 @@ final class NCCameraRoll: CameraRollExtractor {
             let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadataSource.assetLocalIdentifier], options: nil)
             if result.metadata.isLivePhoto, let asset = fetchAssets.firstObject,
                let livePhotoMetadata = await createMetadataLivePhoto(metadata: result.metadata, asset: asset) {
-                metadatas.append(self.database.addMetadata(livePhotoMetadata))
+                metadatas.append(self.database.addAndReturnMetadata(livePhotoMetadata))
             }
         } catch {
             nkLog(error: "Error during extraction: \(error.localizedDescription), of filename: \(metadataSource.fileNameView)")
@@ -246,7 +246,7 @@ final class NCCameraRoll: CameraRollExtractor {
             metadata.session = NCNetworking.shared.sessionUpload
         }
         metadata.isExtractFile = true
-        metadata = self.database.addMetadata(metadata)
+        metadata = self.database.addAndReturnMetadata(metadata)
     }
 
     private func extractImage(asset: PHAsset, ext: String, filePath: String, compatibilityFormat: Bool) async throws {

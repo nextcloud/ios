@@ -201,17 +201,25 @@ class FileProviderExtension: NSFileProviderExtension {
                     metadata.status = NCGlobal.shared.metadataStatusNormal
                     metadata.date = (date as? NSDate) ?? NSDate()
                     metadata.etag = etag ?? ""
+
                     self.database.addLocalFile(metadata: metadata)
                     self.database.addMetadata(metadata)
+
                     completionHandler(nil)
+
                 } else if error.errorCode == 200 {
+
                     self.database.setMetadataStatus(ocId: metadata.ocId,
                                                     status: NCGlobal.shared.metadataStatusNormal)
+
                     completionHandler(nil)
+
                 } else {
                     metadata.status = NCGlobal.shared.metadataStatusDownloadError
                     metadata.sessionError = error.errorDescription
+
                     self.database.addMetadata(metadata)
+
                     completionHandler(NSFileProviderError(.noSuchItem))
                 }
 

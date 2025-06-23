@@ -120,9 +120,9 @@ extension NCNetworking {
         NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, account: metadata.account, options: options, requestHandler: { request in
             requestHandler(request)
         }, taskHandler: { task in
-            if let metadata = self.database.setMetadataSession(ocId: metadata.ocId,
-                                                               sessionTaskIdentifier: task.taskIdentifier,
-                                                               status: self.global.metadataStatusUploading) {
+            if let metadata = self.database.setMetadataSessionAndReturn(ocId: metadata.ocId,
+                                                                        sessionTaskIdentifier: task.taskIdentifier,
+                                                                        status: self.global.metadataStatusUploading) {
 
                 self.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusUploading,
