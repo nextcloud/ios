@@ -27,7 +27,6 @@ import KeychainAccess
 import NextcloudKit
 
 @objc class NCKeychain: NSObject {
-
     let keychain = Keychain(service: "com.nextcloud.keychain")
 
     var showDescription: Bool {
