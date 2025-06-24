@@ -427,7 +427,7 @@ extension NCManageDatabase {
                 metadata.typeIdentifier = results.typeIdentifier
             }
         }
-        return metadata
+        return tableMetadata(value: metadata)
     }
 
     func convertFilesToMetadatas(_ files: [NKFile], useFirstAsMetadataFolder: Bool, completion: @escaping (_ metadataFolder: tableMetadata, _ metadatas: [tableMetadata]) -> Void) {
