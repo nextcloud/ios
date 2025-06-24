@@ -88,10 +88,10 @@ class NCNetworkingE2EEDelete: NSObject {
 
         // UPDATE DB
         //
-        self.database.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@",
-                                                                 metadata.account,
-                                                                 metadata.serverUrl,
-                                                                 metadata.fileName))
+        await self.database.deleteE2eEncryptionAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@",
+                                                                            metadata.account,
+                                                                            metadata.serverUrl,
+                                                                            metadata.fileName))
 
         // UPLOAD METADATA
         //

@@ -44,7 +44,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         if fileNameFolder.isEmpty {
             return NKError(errorCode: global.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
         }
-        guard let directory = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) else {
+        guard let directory = await self.database.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) else {
             return NKError(errorCode: global.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
         }
 
@@ -75,7 +75,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
             let object = tableE2eEncryption.init(account: session.account, ocIdServerUrl: directory.ocId, fileNameIdentifier: fileNameIdentifier)
             object.blob = "folders"
-            if let results = self.database.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) {
+            if let results = await self.database.getE2eEncryptionAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) {
                 object.metadataKey = results.metadataKey
                 object.metadataKeyIndex = results.metadataKeyIndex
             } else {
@@ -91,7 +91,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
             object.initializationVector = initializationVector
             object.mimeType = "httpd/unix-directory"
             object.serverUrl = serverUrl
-            self.database.addE2eEncryption(object)
+            await self.database.addE2eEncryptionAsync(object)
 
             // UPLOAD METADATA
             //
@@ -148,8 +148,8 @@ class NCNetworkingE2EECreateFolder: NSObject {
             return resultsReadFileOrFolder.error
         }
         let metadata = self.database.convertFileToMetadata(file, isDirectoryE2EE: true)
-        self.database.addMetadata(metadata)
-        self.database.addDirectory(e2eEncrypted: true, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
+        await self.database.addMetadataAsync(metadata)
+        await self.database.addDirectoryAsync(e2eEncrypted: true, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
 
         NCNetworking.shared.notifyAllDelegates { delegate in
             delegate.transferChange(status: self.global.networkingStatusCreateFolder,

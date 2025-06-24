@@ -224,7 +224,7 @@ class NCNetworkingE2EE: NSObject {
         }
         let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
 
-        if let tableLock = self.database.getE2ETokenLock(account: account, serverUrl: serverUrl) {
+        if let tableLock = await self.database.getE2ETokenLockAsync(account: account, serverUrl: serverUrl) {
             e2eToken = tableLock.e2eToken
         }
 
@@ -236,20 +236,20 @@ class NCNetworkingE2EE: NSObject {
 
         let resultsLockE2EEFolder = await NextcloudKit.shared.lockE2EEFolderAsync(fileId: directory.fileId, e2eToken: e2eToken, e2eCounter: e2eCounter, method: "POST", account: account, options: NCNetworkingE2EE().getOptions(account: account))
         if resultsLockE2EEFolder.error == .success, let e2eToken = resultsLockE2EEFolder.e2eToken {
-            self.database.setE2ETokenLock(account: account, serverUrl: serverUrl, fileId: directory.fileId, e2eToken: e2eToken)
+            await self.database.setE2ETokenLockAsync(account: account, serverUrl: serverUrl, fileId: directory.fileId, e2eToken: e2eToken)
         }
 
         return (directory.fileId, resultsLockE2EEFolder.e2eToken, resultsLockE2EEFolder.error)
     }
 
     func unlock(account: String, serverUrl: String) async {
-        guard let tableLock = self.database.getE2ETokenLock(account: account, serverUrl: serverUrl) else {
+        guard let tableLock = await self.database.getE2ETokenLockAsync(account: account, serverUrl: serverUrl) else {
             return
         }
 
         let resultsLockE2EEFolder = await NextcloudKit.shared.lockE2EEFolderAsync(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, e2eCounter: nil, method: "DELETE", account: account, options: NCNetworkingE2EE().getOptions(account: account))
         if resultsLockE2EEFolder.error == .success {
-            self.database.deleteE2ETokenLock(account: account, serverUrl: serverUrl)
+            await self.database.deleteE2ETokenLockAsync(account: account, serverUrl: serverUrl)
         }
 
         return
@@ -262,7 +262,7 @@ class NCNetworkingE2EE: NSObject {
         for result in results {
             let resultsLockE2EEFolder = await NextcloudKit.shared.lockE2EEFolderAsync(fileId: result.fileId, e2eToken: result.e2eToken, e2eCounter: nil, method: "DELETE", account: account, options: NCNetworkingE2EE().getOptions(account: account))
             if resultsLockE2EEFolder.error == .success {
-                self.database.deleteE2ETokenLock(account: account, serverUrl: result.serverUrl, sync: false)
+                await self.database.deleteE2ETokenLockAsync(account: account, serverUrl: result.serverUrl)
             }
         }
     }

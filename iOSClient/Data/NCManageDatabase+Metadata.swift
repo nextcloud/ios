@@ -586,6 +586,16 @@ extension NCManageDatabase {
         return tableMetadata(value: detached)
     }
 
+    func addAndReturnMetadataAsync(_ metadata: tableMetadata) async -> tableMetadata {
+        let detached = tableMetadata(value: metadata)
+
+        await performRealmWriteAsync { realm in
+            realm.add(detached, update: .all)
+        }
+
+        return tableMetadata(value: detached)
+    }
+
     func addMetadata(_ metadata: tableMetadata, sync: Bool = true) {
         let detached = tableMetadata(value: metadata)
 
@@ -995,8 +1005,26 @@ extension NCManageDatabase {
         }
     }
 
+    func setMetadataEncryptedAsync(ocId: String, encrypted: Bool) async {
+        await performRealmWriteAsync { realm in
+            let result = realm.objects(tableMetadata.self)
+                .filter("ocId == %@", ocId)
+                .first
+            result?.e2eEncrypted = encrypted
+        }
+    }
+
     func setMetadataFileNameView(serverUrl: String, fileName: String, newFileNameView: String, account: String, sync: Bool = true) {
         performRealmWrite(sync: sync) { realm in
+            let result = realm.objects(tableMetadata.self)
+                .filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName)
+                .first
+            result?.fileNameView = newFileNameView
+        }
+    }
+
+    func setMetadataFileNameViewAsync(serverUrl: String, fileName: String, newFileNameView: String, account: String) async {
+        await performRealmWriteAsync { realm in
             let result = realm.objects(tableMetadata.self)
                 .filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName)
                 .first

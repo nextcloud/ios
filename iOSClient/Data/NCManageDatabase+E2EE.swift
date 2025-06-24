@@ -140,6 +140,12 @@ extension NCManageDatabase {
         }
     }
 
+    func addE2eEncryptionAsync(_ object: tableE2eEncryption) async {
+        await performRealmWriteAsync { realm in
+            realm.add(object, update: .all)
+        }
+    }
+
     func deleteE2eEncryption(predicate: NSPredicate) {
         do {
             let realm = try Realm()
@@ -149,6 +155,13 @@ extension NCManageDatabase {
             }
         } catch let error {
             nkLog(error: "Could not write to database: \(error)")
+        }
+    }
+
+    func deleteE2eEncryptionAsync(predicate: NSPredicate) async {
+        await performRealmWriteAsync { realm in
+            let results = realm.objects(tableE2eEncryption.self).filter(predicate)
+            realm.delete(results)
         }
     }
 
@@ -184,19 +197,17 @@ extension NCManageDatabase {
         return []
     }
 
-    func renameFileE2eEncryption(account: String, serverUrl: String, fileNameIdentifier: String, newFileName: String, newFileNamePath: String) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                guard let result = realm.objects(tableE2eEncryption.self).filter("account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", account, serverUrl, fileNameIdentifier).first else { return }
-                result.fileName = newFileName
-                realm.add(result, update: .all)
-            }
-        } catch let error as NSError {
-            nkLog(error: "Could not write to database: \(error)")
+    func renameFileE2eEncryptionAsync(account: String, serverUrl: String, fileNameIdentifier: String, newFileName: String, newFileNamePath: String) async {
+        await performRealmWriteAsync { realm in
+            guard let result = realm.objects(tableE2eEncryption.self)
+                .filter("account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", account, serverUrl, fileNameIdentifier)
+                .first else { return }
+
+            result.fileName = newFileName
+
+            realm.add(result, update: .all)
         }
     }
-
     // MARK: -
     // MARK: Table e2e Encryption Lock
 
@@ -211,19 +222,13 @@ extension NCManageDatabase {
         return nil
     }
 
-    func getE2EAllTokenLock(account: String) -> [tableE2eEncryptionLock] {
-        do {
-            let realm = try Realm()
-            let results = realm.objects(tableE2eEncryptionLock.self).filter("account == %@", account)
-            if results.isEmpty {
-                return []
-            } else {
-                return Array(results.map { tableE2eEncryptionLock.init(value: $0) })
-            }
-        } catch let error as NSError {
-            nkLog(error: "Could not access database: \(error)")
+    func getE2ETokenLockAsync(account: String, serverUrl: String) async -> tableE2eEncryptionLock? {
+        await performRealmReadAsync { realm in
+            realm.objects(tableE2eEncryptionLock.self)
+                .filter("account == %@ AND serverUrl == %@", account, serverUrl)
+                .first
+                .map { tableE2eEncryptionLock(value: $0) }
         }
-        return []
     }
 
     func getE2EAllTokenLockAsync(account: String) async -> [tableE2eEncryptionLock] {
@@ -234,24 +239,20 @@ extension NCManageDatabase {
         } ?? []
     }
 
-    func setE2ETokenLock(account: String, serverUrl: String, fileId: String, e2eToken: String) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                let object = tableE2eEncryptionLock()
-                object.account = account
-                object.fileId = fileId
-                object.serverUrl = serverUrl
-                object.e2eToken = e2eToken
-                realm.add(object, update: .all)
-            }
-        } catch let error {
-            nkLog(error: "Could not write to database: \(error)")
+    func setE2ETokenLockAsync(account: String, serverUrl: String, fileId: String, e2eToken: String) async {
+        await performRealmWriteAsync { realm in
+            let object = tableE2eEncryptionLock()
+            object.account = account
+            object.fileId = fileId
+            object.serverUrl = serverUrl
+            object.e2eToken = e2eToken
+
+            realm.add(object, update: .all)
         }
     }
 
-    func deleteE2ETokenLock(account: String, serverUrl: String, sync: Bool = true) {
-        performRealmWrite(sync: sync) { realm in
+    func deleteE2ETokenLockAsync(account: String, serverUrl: String) async {
+        await performRealmWriteAsync { realm in
             let results = realm.objects(tableE2eEncryptionLock.self)
                 .filter("account == %@ AND serverUrl == %@", account, serverUrl)
             realm.delete(results)
@@ -389,6 +390,13 @@ extension NCManageDatabase {
             }
         } catch let error {
             nkLog(error: "Could not write to database: \(error)")
+        }
+    }
+
+    func updateCounterE2eMetadataAsync(account: String, ocIdServerUrl: String, counter: Int) async {
+        await performRealmWriteAsync { realm in
+            let object = tableE2eCounter(account: account, ocIdServerUrl: ocIdServerUrl, counter: counter)
+            realm.add(object, update: .all)
         }
     }
 
