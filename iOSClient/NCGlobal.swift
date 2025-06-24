@@ -421,4 +421,5 @@ final class NCGlobal: Sendable {
     let logTagE2EE                          = "E2EE"
     let logTagPN                            = "PUSH NOTIF"
     let logTagSync                          = "SYNC"
+    let logTagServiceProficer               = "SERVICE PROVIDER"
 }

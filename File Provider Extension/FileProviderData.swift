@@ -126,6 +126,30 @@ class fileProviderData: NSObject {
         return item
     }
 
+    func signalEnumeratorAsync(ocId: String, type: TypeSignal) async {
+        guard let metadata = await self.database.getMetadataFromOcIdAsync(ocId),
+              let parentItemIdentifier = await fileProviderUtility().getParentItemIdentifierAsync(metadata: metadata) else {
+            return 
+        }
+        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+
+        if type == .delete {
+            fileProviderData.shared.fileProviderSignalDeleteContainerItemIdentifier[item.itemIdentifier] = item.itemIdentifier
+            fileProviderData.shared.fileProviderSignalDeleteWorkingSetItemIdentifier[item.itemIdentifier] = item.itemIdentifier
+        }
+        if type == .update {
+            fileProviderData.shared.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+            fileProviderData.shared.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+        }
+        if type == .workingSet {
+            fileProviderData.shared.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+        }
+        if type == .delete || type == .update {
+            try? await fileProviderManager.signalEnumerator(for: parentItemIdentifier)
+        }
+        try? await fileProviderManager.signalEnumerator(for: .workingSet)
+    }
+
     // MARK: -
 
     func appendUploadMetadata(id: String, metadata: tableMetadata, task: URLSessionUploadTask?) {

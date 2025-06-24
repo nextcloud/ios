@@ -57,7 +57,7 @@ extension NCManageDatabase {
             realm.objects(tableLocalFile.self)
                 .filter(NSPredicate(format: "ocId == %@", metadata.ocId))
                 .first
-                .map { tableLocalFile(value: $0) } // Detach from Realm
+                .map { tableLocalFile(value: $0) }
         }
 
         await performRealmWriteAsync { realm in
