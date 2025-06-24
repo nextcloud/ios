@@ -29,7 +29,7 @@ class NCNetworkingE2EEDelete: NSObject {
 
     func delete(metadata: tableMetadata) async -> NKError {
         let session = NCSession.shared.getSession(account: metadata.account)
-        guard let directory = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
+        guard let directory = await self.database.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_")
         }
 
@@ -42,7 +42,11 @@ class NCNetworkingE2EEDelete: NSObject {
         // LOCK
         //
         let resultsLock = await networkingE2EE.lock(account: metadata.account, serverUrl: metadata.serverUrl)
-        guard resultsLock.error == .success, let e2eToken = resultsLock.e2eToken, let fileId = resultsLock.fileId else { return resultsLock.error }
+        guard resultsLock.error == .success,
+              let e2eToken = resultsLock.e2eToken,
+              let fileId = resultsLock.fileId else {
+            return resultsLock.error
+        }
 
         // DELETE FILE
         //
@@ -52,20 +56,21 @@ class NCNetworkingE2EEDelete: NSObject {
         if result.error == .success || result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
             do {
                 try FileManager.default.removeItem(atPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId))
-                database.deleteVideo(metadata: metadata)
-                database.deleteMetadataOcId(metadata.ocId)
-                database.deleteLocalFileOcId(metadata.ocId)
+                await database.deleteVideoAsync(metadata: metadata)
+                await database.deleteMetadataOcIdAsync(metadata.ocId)
+                await database.deleteLocalFileOcIdAsync(metadata.ocId)
                 // LIVE PHOTO SERVER
-                if let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata), metadataLive.isFlaggedAsLivePhotoByServer {
+                if let metadataLive = await self.database.getMetadataLivePhotoAsync(metadata: metadata),
+                    metadataLive.isFlaggedAsLivePhotoByServer {
                     do {
                         try FileManager.default.removeItem(atPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadataLive.ocId))
                     } catch { }
-                    self.database.deleteVideo(metadata: metadataLive)
-                    self.database.deleteMetadataOcId(metadataLive.ocId)
-                    self.database.deleteLocalFileOcId(metadataLive.ocId)
+                    await self.database.deleteVideoAsync(metadata: metadataLive)
+                    await self.database.deleteMetadataOcIdAsync(metadataLive.ocId)
+                    await self.database.deleteLocalFileOcIdAsync(metadataLive.ocId)
                 }
                 if metadata.directory {
-                    self.database.deleteDirectoryAndSubDirectory(serverUrl: NCUtilityFileSystem().stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: metadata.account)
+                    await self.database.deleteDirectoryAndSubDirectoryAsync(serverUrl: NCUtilityFileSystem().stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: metadata.account)
                 }
             } catch { }
         } else {
