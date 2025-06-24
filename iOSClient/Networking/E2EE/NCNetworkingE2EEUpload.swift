@@ -190,14 +190,6 @@ class NCNetworkingE2EEUpload: NSObject {
                                         metadata: tableMetadata(value: metadata),
                                         error: .success)
             }
-
-            // LIVE PHOTO
-            /*
-            if metadata.isLivePhoto,
-               NKCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable {
-                NCNetworking.shared.createLivePhoto(metadata: metadata)
-            }
-            */
         } else {
             await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
                                                         sessionTaskIdentifier: 0,
