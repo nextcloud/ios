@@ -126,14 +126,16 @@ struct NCSettingsView: View {
                 .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
             }
 
-            Section {
-                /// Splash screen when app inactive
-                Toggle(NSLocalizedString("_privacy_screen_", comment: ""), isOn: $model.privacyScreen)
-                    .onChange(of: model.privacyScreen) { _ in
-                        model.updatePrivacyScreenSetting()
-                    }
+            if !NCBrandOptions.shared.enforce_privacyScreenEnabled {
+                Section {
+                    /// Splash screen when app inactive
+                    Toggle(NSLocalizedString("_privacy_screen_", comment: ""), isOn: $model.privacyScreen)
+                        .onChange(of: model.privacyScreen) { _ in
+                            model.updatePrivacyScreenSetting()
+                        }
+                }
+                .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
             }
-            .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
 
             /// Display
             Section(header: Text(NSLocalizedString("_display_", comment: "")), content: {
