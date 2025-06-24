@@ -359,6 +359,15 @@ extension NCManageDatabase {
         }
     }
 
+    func getTableDirectoryAsync(account: String, serverUrl: String) async -> tableDirectory? {
+        await performRealmReadAsync { realm in
+            realm.objects(tableDirectory.self)
+                .filter("account == %@ AND serverUrl == %@", account, serverUrl)
+                .first
+                .map { tableDirectory(value: $0) } // detached copy
+        }
+    }
+
     func getTableDirectory(ocId: String) -> tableDirectory? {
         return performRealmRead { realm in
             guard let result = realm.objects(tableDirectory.self)

@@ -99,8 +99,8 @@ extension NCEndToEndMetadata {
     // --------------------------------------------------------------------------------------------
 
     func encodeMetadataV20(serverUrl: String, ocIdServerUrl: String, addUserId: String?, addCertificate: String?, removeUserId: String?, session: NCSession.Session) async -> (metadata: String?, signature: String?, counter: Int, error: NKError) {
-        guard let directoryTop = utilityFileSystem.getDirectoryE2EETop(serverUrl: serverUrl, account: session.account), let certificate = NCKeychain().getEndToEndCertificate(account: session.account) else {
-            return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_"))
+        guard let directoryTop = await utilityFileSystem.getDirectoryE2EETopAsync(serverUrl: serverUrl, account: session.account), let certificate = NCKeychain().getEndToEndCertificate(account: session.account) else {
+            return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_ \(NCGlobal.shared.errorUnexpectedResponseFromDB)"))
         }
 
         let isDirectoryTop = utilityFileSystem.isDirectoryE2EETop(account: session.account, serverUrl: serverUrl)
@@ -221,7 +221,7 @@ extension NCEndToEndMetadata {
 
     func decodeMetadataV20(_ json: String, signature: String?, serverUrl: String, ocIdServerUrl: String, session: NCSession.Session) async -> NKError {
         guard let data = json.data(using: .utf8),
-              let directoryTop = utilityFileSystem.getDirectoryE2EETop(serverUrl: serverUrl, account: session.account) else {
+              let directoryTop = await utilityFileSystem.getDirectoryE2EETopAsync(serverUrl: serverUrl, account: session.account) else {
             return NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadata, errorDescription: "_e2e_error_")
         }
         let isDirectoryTop = utilityFileSystem.isDirectoryE2EETop(account: session.account, serverUrl: serverUrl)
@@ -359,13 +359,17 @@ extension NCEndToEndMetadata {
             //
             if let resultCounter = await self.database.getCounterE2eMetadataAsync(account: session.account, ocIdServerUrl: ocIdServerUrl) {
                 print("Counter saved: \(resultCounter)")
+                print("Counter UPDATED: \(jsonCiphertextMetadata.counter)")
+                await self.database.updateCounterE2eMetadataAsync(account: session.account, ocIdServerUrl: ocIdServerUrl, counter: jsonCiphertextMetadata.counter)
+                /*
                 if jsonCiphertextMetadata.counter < resultCounter {
                     // TODO: whats happen with < ?
-                    NCContentPresenter().showError(error: NKError(errorCode: NCGlobal.shared.errorE2EECounter, errorDescription: NSLocalizedString("_e2e_error_", comment: "")))
+                    //NCContentPresenter().showError(error: NKError(errorCode: NCGlobal.shared.errorE2EECounter, errorDescription: NSLocalizedString("_e2e_error_", comment: "")))
                 } else if jsonCiphertextMetadata.counter > resultCounter {
                     print("Counter UPDATED: \(jsonCiphertextMetadata.counter)")
                     await self.database.updateCounterE2eMetadataAsync(account: session.account, ocIdServerUrl: ocIdServerUrl, counter: jsonCiphertextMetadata.counter)
                 }
+                */
             } else {
                 print("Counter RESET: \(jsonCiphertextMetadata.counter)")
                 await self.database.updateCounterE2eMetadataAsync(account: session.account, ocIdServerUrl: ocIdServerUrl, counter: jsonCiphertextMetadata.counter)
