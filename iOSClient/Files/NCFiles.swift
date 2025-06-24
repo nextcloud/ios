@@ -307,7 +307,7 @@ class NCFiles: NCCollectionViewCommon {
                             await self.database.addDiagnosticAsync(account: account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
                             NCContentPresenter().showError(error: error)
                         }
-                    } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
+                    } else if results.error.errorCode == NCGlobal.shared.errorResourceNotFound {
                         // no metadata found, send a new metadata
                         let serverUrl = metadataFolder.serverUrl + "/" + metadataFolder.fileName
                         let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, account: account)
