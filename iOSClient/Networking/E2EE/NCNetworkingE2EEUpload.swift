@@ -53,6 +53,7 @@ class NCNetworkingE2EEUpload: NSObject {
             metadata.fileName = networkingE2EE.generateRandomIdentifier()
         }
         metadata.session = NCNetworking.shared.sessionUpload
+        metadata.status = global.metadataStatusUploading
         metadata.sessionError = ""
 
         let metadata = await self.database.addAndReturnMetadataAsync(metadata)
@@ -162,6 +163,7 @@ class NCNetworkingE2EEUpload: NSObject {
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
             await self.database.deleteMetadataOcIdAsync(metadata.ocId)
         } else if resultsSendFile.error == .success, let ocId = resultsSendFile.ocId {
+            let metadata = tableMetadata(value: metadata)
 
             await self.database.deleteMetadataOcIdAsync(metadata.ocId)
             utilityFileSystem.moveFileInBackground(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId), toPath: utilityFileSystem.getDirectoryProviderStorageOcId(ocId))

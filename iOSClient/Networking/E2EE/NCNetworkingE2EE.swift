@@ -97,7 +97,6 @@ class NCNetworkingE2EE: NSObject {
         }
     }
 
-
     // MARK: -
 
     func uploadMetadata(serverUrl: String,
