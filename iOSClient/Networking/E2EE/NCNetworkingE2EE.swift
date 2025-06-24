@@ -55,43 +55,48 @@ class NCNetworkingE2EE: NSObject {
 
     func getMetadata(fileId: String,
                      e2eToken: String?,
-                     account: String,
-                     completion: @escaping (_ account: String, _ version: String?, _ e2eMetadata: String?, _ signature: String?, _ responseData: AFDataResponse<Data>?, _ error: NKError) -> Void) {
+                     account: String) async -> (account: String,
+                                                version: String?,
+                                                e2eMetadata: String?,
+                                                signature: String?,
+                                                responseData: AFDataResponse<Data>?,
+                                                error: NKError) {
         let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
 
         switch capabilities.e2EEApiVersion {
         case NCGlobal.shared.e2eeVersionV11, NCGlobal.shared.e2eeVersionV12:
-            NextcloudKit.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken, account: account, options: NKRequestOptions(version: e2EEApiVersion1)) { account, e2eMetadata, signature, data, error in
-                return completion(account, self.e2EEApiVersion1, e2eMetadata, signature, data, error)
+            let options = NKRequestOptions(version: e2EEApiVersion1)
+            let results = await NextcloudKit.shared.getE2EEMetadataAsync(fileId: fileId, e2eToken: e2eToken, account: account, options: options) { task in
+                print("Task started:", task)
             }
+            return (results.account, self.e2EEApiVersion1, results.e2eMetadata, results.signature, results.responseData, results.error)
         case NCGlobal.shared.e2eeVersionV20:
             var options = NKRequestOptions(version: e2EEApiVersion2)
-            NextcloudKit.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken, account: account, options: options) { account, e2eMetadata, signature, data, error in
-                if error == .success {
-                    return completion(account, self.e2EEApiVersion2, e2eMetadata, signature, data, error)
-                } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
-                    return completion(account, self.e2EEApiVersion2, e2eMetadata, signature, data, error)
+            let results = await NextcloudKit.shared.getE2EEMetadataAsync(fileId: fileId, e2eToken: e2eToken, account: account, options: options) { task in
+                print("Task started:", task)
+            }
+            if results.error == .success || results.error.errorCode == NCGlobal.shared.errorResourceNotFound {
+                return (results.account, self.e2EEApiVersion2, results.e2eMetadata, results.signature, results.responseData, results.error)
+            } else {
+                options = NKRequestOptions(version: self.e2EEApiVersion1)
+                let results = await NextcloudKit.shared.getE2EEMetadataAsync(fileId: fileId, e2eToken: e2eToken, account: account, options: options) { task in
+                    print("Task started:", task)
+                }
+                if results.error == .success || results.error.errorCode == NCGlobal.shared.errorResourceNotFound {
+                    return (results.account, self.e2EEApiVersion2, results.e2eMetadata, results.signature, results.responseData, results.error)
                 } else {
                     options = NKRequestOptions(version: self.e2EEApiVersion1)
-                    NextcloudKit.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken, account: account, options: options) { account, e2eMetadata, signature, data, error in
-                        completion(account, self.e2EEApiVersion1, e2eMetadata, signature, data, error)
+                    let results = await NextcloudKit.shared.getE2EEMetadataAsync(fileId: fileId, e2eToken: e2eToken, account: account, options: options) { task in
+                        print("Task started:", task)
                     }
+                    return (results.account, self.e2EEApiVersion1, results.e2eMetadata, results.signature, results.responseData, results.error)
                 }
             }
         default:
-            completion("", "", nil, nil, nil, NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "version e2ee not available"))
+            return ("", "", nil, nil, nil, NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "version e2ee not available"))
         }
     }
 
-    func getMetadataAsync(fileId: String,
-                          e2eToken: String?,
-                          account: String) async -> (account: String, version: String?, e2eMetadata: String?, signature: String?, responseData: AFDataResponse<Data>?, error: NKError) {
-        await withUnsafeContinuation({ continuation in
-            getMetadata(fileId: fileId, e2eToken: e2eToken, account: account) { account, version, e2eMetadata, signature, responseData, error in
-                continuation.resume(returning: (account: account, version: version, e2eMetadata: e2eMetadata, signature: signature, responseData: responseData, error: error))
-            }
-        })
-    }
 
     // MARK: -
 
@@ -128,7 +133,7 @@ class NCNetworkingE2EE: NSObject {
         if updateVersionV1V2 {
             method = "PUT"
         } else {
-            let resultsGetE2EEMetadata = await getMetadataAsync(fileId: fileId, e2eToken: e2eToken, account: session.account)
+            let resultsGetE2EEMetadata = await getMetadata(fileId: fileId, e2eToken: e2eToken, account: session.account)
             if resultsGetE2EEMetadata.error == .success {
                 method = "PUT"
             } else if resultsGetE2EEMetadata.error.errorCode != NCGlobal.shared.errorResourceNotFound {
@@ -198,7 +203,7 @@ class NCNetworkingE2EE: NSObject {
                           fileId: String,
                           e2eToken: String,
                           session: NCSession.Session) async -> NKError {
-        let resultsGetE2EEMetadata = await getMetadataAsync(fileId: fileId, e2eToken: e2eToken, account: session.account)
+        let resultsGetE2EEMetadata = await getMetadata(fileId: fileId, e2eToken: e2eToken, account: session.account)
         guard resultsGetE2EEMetadata.error == .success, let e2eMetadata = resultsGetE2EEMetadata.e2eMetadata else {
             return resultsGetE2EEMetadata.error
         }

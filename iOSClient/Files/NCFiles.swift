@@ -283,7 +283,7 @@ class NCFiles: NCCollectionViewCommon {
 
                     /// E2EE
                     let lock = await self.database.getE2ETokenLockAsync(account: account, serverUrl: self.serverUrl)
-                    let results = await NCNetworkingE2EE().getMetadataAsync(fileId: metadataFolder.ocId, e2eToken: lock?.e2eToken, account: account)
+                    let results = await NCNetworkingE2EE().getMetadata(fileId: metadataFolder.ocId, e2eToken: lock?.e2eToken, account: account)
 
                     if results.error == .success,
                        let e2eMetadata = results.e2eMetadata,
