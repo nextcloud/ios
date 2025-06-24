@@ -263,6 +263,9 @@ import NextcloudKit
     var privacyScreenEnabled: Bool {
         get {
             migrate(key: "privacyScreen")
+            if NCBrandOptions.shared.enforce_privacyScreenEnabled {
+                return true
+            }
             if let value = try? keychain.get("privacyScreen"), let result = Bool(value) {
                 return result
             }

@@ -34,8 +34,9 @@ import Alamofire
    -------------------------------------------------------------------------------------------------------------------------------------------- */
 
 class FileProviderExtension: NSFileProviderExtension {
-    let providerUtility = fileProviderUtility()
-    let utilityFileSystem = NCUtilityFileSystem()
+    lazy var providerUtility = fileProviderUtility()
+    lazy var utilityFileSystem = NCUtilityFileSystem()
+    let global = NCGlobal.shared
     let database = NCManageDatabase.shared
 
     override init() {
@@ -145,15 +146,8 @@ class FileProviderExtension: NSFileProviderExtension {
         autoreleasepool {
             let pathComponents = url.pathComponents
             let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
-            var metadata: tableMetadata?
 
-            if let result = fileProviderData.shared.getUploadMetadata(id: itemIdentifier.rawValue) {
-                metadata = result.metadata
-            } else {
-                metadata = self.database.getMetadataFromOcIdAndocIdTransfer(itemIdentifier.rawValue)
-            }
-
-            guard let metadata else {
+            guard let metadata = fileProviderData.shared.getUploadMetadata(id: itemIdentifier.rawValue)?.metadata ?? self.database.getMetadataFromOcIdAndocIdTransfer(itemIdentifier.rawValue) else {
                 return completionHandler(NSFileProviderError(.noSuchItem))
             }
 
@@ -164,9 +158,9 @@ class FileProviderExtension: NSFileProviderExtension {
             let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
             let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
 
-            // Exists ? return
+            // Exists
             if let tableLocalFile = self.database.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)),
-               utilityFileSystem.fileProviderStorageExists(metadata),
+               fileProviderUtility().fileProviderStorageExists(metadata),
                tableLocalFile.etag == metadata.etag {
                 return completionHandler(nil)
             }
@@ -188,43 +182,44 @@ class FileProviderExtension: NSFileProviderExtension {
             fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(itemIdentifier.rawValue)) { _ in }
             }, progressHandler: { _ in
             }) { _, etag, date, _, _, _, error in
-                guard let metadata = self.providerUtility.getTableMetadataFromItemIdentifier(itemIdentifier) else {
-                    return completionHandler(NSFileProviderError(.noSuchItem))
+                Task {
+                    defer {
+                        // SIGNAL
+                        fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
+                    }
+
+                    guard let metadata = await self.providerUtility.getTableMetadataFromItemIdentifierAsync(itemIdentifier) else {
+                        return completionHandler(nil)
+                    }
+
+                    if error == .success {
+                        metadata.sceneIdentifier = nil
+                        metadata.session = ""
+                        metadata.sessionError = ""
+                        metadata.sessionSelector = ""
+                        metadata.sessionDate = nil
+                        metadata.sessionTaskIdentifier = 0
+                        metadata.status = NCGlobal.shared.metadataStatusNormal
+                        metadata.date = (date as? NSDate) ?? NSDate()
+                        metadata.etag = etag ?? ""
+
+                        await self.database.addLocalFileAsync(metadata: metadata)
+                        await self.database.addMetadataAsync(metadata)
+
+                    } else if error.errorCode == 200 {
+
+                        await self.database.setMetadataStatusAsync(ocId: metadata.ocId,
+                                                                   status: NCGlobal.shared.metadataStatusNormal)
+
+                    } else {
+                        metadata.status = NCGlobal.shared.metadataStatusDownloadError
+                        metadata.sessionError = error.errorDescription
+
+                        await self.database.addMetadataAsync(metadata)
+                    }
+
+                    return completionHandler(nil)
                 }
-                if error == .success {
-                    metadata.sceneIdentifier = nil
-                    metadata.session = ""
-                    metadata.sessionError = ""
-                    metadata.sessionSelector = ""
-                    metadata.sessionDate = nil
-                    metadata.sessionTaskIdentifier = 0
-                    metadata.status = NCGlobal.shared.metadataStatusNormal
-                    metadata.date = (date as? NSDate) ?? NSDate()
-                    metadata.etag = etag ?? ""
-
-                    self.database.addLocalFile(metadata: metadata)
-                    self.database.addMetadata(metadata)
-
-                    completionHandler(nil)
-
-                } else if error.errorCode == 200 {
-
-                    self.database.setMetadataStatus(ocId: metadata.ocId,
-                                                    status: NCGlobal.shared.metadataStatusNormal)
-
-                    completionHandler(nil)
-
-                } else {
-                    metadata.status = NCGlobal.shared.metadataStatusDownloadError
-                    metadata.sessionError = error.errorDescription
-
-                    self.database.addMetadata(metadata)
-
-                    completionHandler(NSFileProviderError(.noSuchItem))
-                }
-
-                // SIGNAL
-                fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
             }
         }
     }

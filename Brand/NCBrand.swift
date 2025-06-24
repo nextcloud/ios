@@ -110,7 +110,6 @@ final class NCBrandOptions: @unchecked Sendable {
                 enforce_passcode_lock = (str as NSString).boolValue
             }
         }
-
 #if DEBUG
         pushNotificationServerProxy = "https://c0004.customerpush.nextcloud.com"
 #endif

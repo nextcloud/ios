@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
+import NextcloudKit
 
 class fileProviderUtility: NSObject {
     let fileManager = FileManager()
@@ -19,6 +20,11 @@ class fileProviderUtility: NSObject {
         return self.database.getMetadataFromOcId(ocId)
     }
 
+    func getTableMetadataFromItemIdentifierAsync(_ itemIdentifier: NSFileProviderItemIdentifier) async -> tableMetadata? {
+        let ocId = itemIdentifier.rawValue
+        return await self.database.getMetadataFromOcIdAsync(ocId)
+    }
+
     func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier {
         return NSFileProviderItemIdentifier(metadata.ocId)
     }
@@ -31,6 +37,22 @@ class fileProviderUtility: NSObject {
             } else {
                 // get the metadata.ocId of parent Directory
                 if let metadata = self.database.getMetadataFromOcId(directory.ocId) {
+                    let identifier = getItemIdentifier(metadata: metadata)
+                    return identifier
+                }
+            }
+        }
+        return nil
+    }
+
+    func getParentItemIdentifierAsync(metadata: tableMetadata) async -> NSFileProviderItemIdentifier? {
+        let homeServerUrl = utilityFileSystem.getHomeServer(session: fileProviderData.shared.session)
+        if let directory = await self.database.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
+            if directory.serverUrl == homeServerUrl {
+                return NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue)
+            } else {
+                // get the metadata.ocId of parent Directory
+                if let metadata = await self.database.getMetadataFromOcIdAsync(directory.ocId) {
                     let identifier = getItemIdentifier(metadata: metadata)
                     return identifier
                 }
@@ -94,6 +116,30 @@ class fileProviderUtility: NSObject {
         } catch {
             print("Error: \(error.localizedDescription)")
             return nil
+        }
+    }
+
+    func fileProviderStorageExists(_ metadata: tableMetadata) -> Bool {
+        let pathA = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
+        let pathB = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+
+        let sizeA = fileSize(at: pathA)
+        let sizeB = fileSize(at: pathB)
+
+        if metadata.isDirectoryE2EE == true {
+            return (sizeA == metadata.size || sizeB == metadata.size) && sizeB > 0
+        }
+
+        return sizeB == metadata.size && metadata.size > 0
+    }
+
+    private func fileSize(at path: String) -> UInt64 {
+        do {
+            let attr = try fileManager.attributesOfItem(atPath: path)
+            return attr[.size] as? UInt64 ?? 0
+        } catch {
+            nkLog(error: " [fileSize] Errore accesso a '\(path)': \(error)")
+            return 0
         }
     }
 }

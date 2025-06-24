@@ -142,8 +142,12 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// Is the user an Admin
     func isAdminGroup() -> Bool {
         guard let tblAccount else { return false }
+#if DEBUG
+        return true
+#else
         let groups = database.getAccountGroups(account: tblAccount.account)
         return groups.contains(NCGlobal.shared.groupAdmin)
+#endif
     }
 
     /// Function to know the height of "account" data
