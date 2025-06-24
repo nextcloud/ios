@@ -151,12 +151,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 return completionHandler(NSFileProviderError(.noSuchItem))
             }
 
-            if metadata.directory {
-                return completionHandler(nil)
-            }
-
-            if metadata.session == NCNetworking.shared.sessionUploadBackgroundExt {
-                nkLog(tag: self.global.logTagServiceProficer, emoji: .debug, message: "Already in download")
+            if metadata.directory || metadata.session == NCNetworking.shared.sessionUploadBackgroundExt {
                 return completionHandler(nil)
             }
 
@@ -167,7 +162,6 @@ class FileProviderExtension: NSFileProviderExtension {
             if let tableLocalFile = self.database.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)),
                fileProviderUtility().fileProviderStorageExists(metadata),
                tableLocalFile.etag == metadata.etag {
-                nkLog(tag: self.global.logTagServiceProficer, emoji: .debug, message: "Download, file already exists")
                 return completionHandler(nil)
             }
 
@@ -190,11 +184,11 @@ class FileProviderExtension: NSFileProviderExtension {
             }) { _, etag, date, _, _, _, error in
                 Task {
                     defer {
+                        // SIGNAL
                         fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
                     }
 
                     guard let metadata = await self.providerUtility.getTableMetadataFromItemIdentifierAsync(itemIdentifier) else {
-                        nkLog(tag: self.global.logTagServiceProficer, emoji: .error, message: "Metadata download not found")
                         return completionHandler(nil)
                     }
 
@@ -222,9 +216,6 @@ class FileProviderExtension: NSFileProviderExtension {
                         metadata.sessionError = error.errorDescription
 
                         await self.database.addMetadataAsync(metadata)
-
-                        nkLog(tag: self.global.logTagServiceProficer, emoji: .error, message: "Download error: \(error)")
-
                     }
 
                     return completionHandler(nil)
