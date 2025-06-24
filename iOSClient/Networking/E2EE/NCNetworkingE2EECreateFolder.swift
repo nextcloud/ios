@@ -50,7 +50,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
         // TEST UPLOAD IN PROGRESS
         //
-        if networkingE2EE.isInUpload(account: session.account, serverUrl: serverUrl) {
+        if await networkingE2EE.isInUpload(account: session.account, serverUrl: serverUrl) {
             return NKError(errorCode: global.errorE2EEUploadInProgress, errorDescription: NSLocalizedString("_e2e_in_upload_", comment: ""))
         }
 

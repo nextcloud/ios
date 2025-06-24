@@ -29,12 +29,12 @@ class NCNetworkingE2EE: NSObject {
     let e2EEApiVersion1 = "v1"
     let e2EEApiVersion2 = "v2"
 
-    func isInUpload(account: String, serverUrl: String) -> Bool {
-        let counter = self.database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)",
-                                                                        account,
-                                                                        serverUrl,
-                                                                        NCGlobal.shared.metadataStatusWaitUpload,
-                                                                        NCGlobal.shared.metadataStatusUploading)).count
+    func isInUpload(account: String, serverUrl: String) async -> Bool {
+        let counter = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (status == %d OR status == %d)",
+                                                                                   account,
+                                                                                   serverUrl,
+                                                                                   NCGlobal.shared.metadataStatusWaitUpload,
+                                                                                   NCGlobal.shared.metadataStatusUploading))?.count ?? 0
 
         return counter > 0 ? true : false
     }
@@ -83,9 +83,9 @@ class NCNetworkingE2EE: NSObject {
         }
     }
 
-    func getMetadata(fileId: String,
-                     e2eToken: String?,
-                     account: String) async -> (account: String, version: String?, e2eMetadata: String?, signature: String?, responseData: AFDataResponse<Data>?, error: NKError) {
+    func getMetadataAsync(fileId: String,
+                          e2eToken: String?,
+                          account: String) async -> (account: String, version: String?, e2eMetadata: String?, signature: String?, responseData: AFDataResponse<Data>?, error: NKError) {
         await withUnsafeContinuation({ continuation in
             getMetadata(fileId: fileId, e2eToken: e2eToken, account: account) { account, version, e2eMetadata, signature, responseData, error in
                 continuation.resume(returning: (account: account, version: version, e2eMetadata: e2eMetadata, signature: signature, responseData: responseData, error: error))
@@ -128,7 +128,7 @@ class NCNetworkingE2EE: NSObject {
         if updateVersionV1V2 {
             method = "PUT"
         } else {
-            let resultsGetE2EEMetadata = await getMetadata(fileId: fileId, e2eToken: e2eToken, account: session.account)
+            let resultsGetE2EEMetadata = await getMetadataAsync(fileId: fileId, e2eToken: e2eToken, account: session.account)
             if resultsGetE2EEMetadata.error == .success {
                 method = "PUT"
             } else if resultsGetE2EEMetadata.error.errorCode != NCGlobal.shared.errorResourceNotFound {
@@ -169,7 +169,7 @@ class NCNetworkingE2EE: NSObject {
                         addCertificate: String? = nil,
                         removeUserId: String? = nil,
                         session: NCSession.Session) async -> NKError {
-        let resultsEncodeMetadata = NCEndToEndMetadata().encodeMetadata(serverUrl: serverUrl, addUserId: addUserId, addCertificate: addCertificate, removeUserId: removeUserId, session: session)
+        let resultsEncodeMetadata = await NCEndToEndMetadata().encodeMetadata(serverUrl: serverUrl, addUserId: addUserId, addCertificate: addCertificate, removeUserId: removeUserId, session: session)
         guard resultsEncodeMetadata.error == .success,
               let e2eMetadata = resultsEncodeMetadata.metadata else {
             // Client Diagnostic
@@ -186,7 +186,7 @@ class NCNetworkingE2EE: NSObject {
         // COUNTER
         //
         if capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
-            self.database.updateCounterE2eMetadata(account: session.account, ocIdServerUrl: ocIdServerUrl, counter: resultsEncodeMetadata.counter)
+            await self.database.updateCounterE2eMetadataAsync(account: session.account, ocIdServerUrl: ocIdServerUrl, counter: resultsEncodeMetadata.counter)
         }
 
         return NKError()
@@ -198,12 +198,12 @@ class NCNetworkingE2EE: NSObject {
                           fileId: String,
                           e2eToken: String,
                           session: NCSession.Session) async -> NKError {
-        let resultsGetE2EEMetadata = await getMetadata(fileId: fileId, e2eToken: e2eToken, account: session.account)
+        let resultsGetE2EEMetadata = await getMetadataAsync(fileId: fileId, e2eToken: e2eToken, account: session.account)
         guard resultsGetE2EEMetadata.error == .success, let e2eMetadata = resultsGetE2EEMetadata.e2eMetadata else {
             return resultsGetE2EEMetadata.error
         }
 
-        let resultsDecodeMetadataError = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: resultsGetE2EEMetadata.signature, serverUrl: serverUrl, session: session)
+        let resultsDecodeMetadataError = await NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: resultsGetE2EEMetadata.signature, serverUrl: serverUrl, session: session)
         guard resultsDecodeMetadataError == .success else {
             // Client Diagnostic
             self.database.addDiagnostic(account: session.account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
@@ -229,7 +229,7 @@ class NCNetworkingE2EE: NSObject {
         }
 
         if capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20,
-           var counter = self.database.getCounterE2eMetadata(account: account, ocIdServerUrl: directory.ocId) {
+           var counter = await self.database.getCounterE2eMetadataAsync(account: account, ocIdServerUrl: directory.ocId) {
             counter += 1
             e2eCounter = "\(counter)"
         }

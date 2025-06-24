@@ -40,7 +40,7 @@ class NCNetworkingE2EERename: NSObject {
 
         // TEST UPLOAD IN PROGRESS
         //
-        if networkingE2EE.isInUpload(account: metadata.account, serverUrl: metadata.serverUrl) {
+        if await networkingE2EE.isInUpload(account: metadata.account, serverUrl: metadata.serverUrl) {
             return NKError(errorCode: NCGlobal.shared.errorE2EEUploadInProgress, errorDescription: NSLocalizedString("_e2e_in_upload_", comment: ""))
         }
 
