@@ -139,4 +139,16 @@ extension NCManageDatabase {
                 .map { tableDashboardWidget(value: $0) }
         } ?? []
     }
+
+    func getDashboardWidgetApplicationsAsync(account: String) async -> [tableDashboardWidget] {
+        await performRealmReadAsync { realm in
+            realm.objects(tableDashboardWidget.self)
+                .filter("account == %@", account)
+                .sorted(by: [
+                    SortDescriptor(keyPath: "order", ascending: true),
+                    SortDescriptor(keyPath: "title", ascending: true)
+                ])
+                .map { tableDashboardWidget(value: $0) } // detached copy
+        } ?? []
+    }
 }

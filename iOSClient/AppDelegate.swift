@@ -54,6 +54,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var isBackgroundTask: Bool = false
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        //
+        // OPEN REALM
+        //
+        database.openRealm()
+
         if isUiTestingEnabled {
             NCAccount().deleteAllAccounts()
         }
@@ -196,6 +201,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func handleAppRefresh(_ task: BGAppRefreshTask) {
+        // OPEN REALM
+        database.openRealm()
+
         nkLog(tag: self.global.logTagTask, emoji: .start, message: "Start refresh task")
 
         scheduleAppRefresh()
@@ -223,6 +231,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func handleProcessingTask(_ task: BGProcessingTask) {
+        // OPEN REALM
+        database.openRealm()
+
         nkLog(tag: self.global.logTagTask, emoji: .start, message: "Start processing task")
 
         scheduleAppProcessing()

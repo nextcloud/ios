@@ -471,6 +471,18 @@ extension NCManageDatabase {
         } ?? []
     }
 
+    func getAllTableAccountAsync() async -> [tableAccount] {
+        await performRealmReadAsync { realm in
+            let sorted = [
+                SortDescriptor(keyPath: "active", ascending: false),
+                SortDescriptor(keyPath: "user", ascending: true)
+            ]
+            let results = realm.objects(tableAccount.self)
+                               .sorted(by: sorted)
+            return results.map { tableAccount(value: $0) } // detached copy
+        } ?? []
+    }
+
     func getAllAccountOrderAlias() -> [tableAccount] {
         performRealmRead { realm in
             let sorted = [SortDescriptor(keyPath: "active", ascending: false),

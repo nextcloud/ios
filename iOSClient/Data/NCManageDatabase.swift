@@ -14,16 +14,29 @@ protocol DateCompareable {
     var dateKey: Date { get }
 }
 
-final class NCManageDatabase: Sendable {
+private actor RealmState {
+    private var hasOpenedRealm = false
+
+    func get() -> Bool {
+        return hasOpenedRealm
+    }
+
+    func setOpened() {
+        hasOpenedRealm = true
+    }
+}
+
+final class NCManageDatabase: @unchecked Sendable {
     static let shared = NCManageDatabase()
 
     internal let realmQueue = DispatchQueue(label: "com.nextcloud.realmQueue") // serial queue
     internal let realmQueueKey = DispatchSpecificKey<Bool>()
     internal let utilityFileSystem = NCUtilityFileSystem()
+    private let realmState = RealmState()
 
     init() {
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-        let databaseFileUrlPath = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
+        let databaseFileUrl = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
         let bundleUrl: URL = Bundle.main.bundleURL
         let bundlePathExtension: String = bundleUrl.pathExtension
         let bundleFileName: String = (bundleUrl.path as NSString).lastPathComponent
@@ -41,47 +54,95 @@ final class NCManageDatabase: Sendable {
             }
         }
 
-        if isAppex, bundleFileName == "File Provider Extension.appex" {
-            let objectTypes = [NCKeyValue.self,
-                               tableMetadata.self,
-                               tableLocalFile.self,
-                               tableDirectory.self,
-                               tableTag.self,
-                               tableAccount.self]
+        if isAppex {
+            var objectTypes = [
+                NCKeyValue.self, tableMetadata.self, tableLocalFile.self,
+                tableDirectory.self, tableTag.self, tableAccount.self
+            ]
 
-            openRealmAppex(path: databaseFileUrlPath, objectTypes: objectTypes)
-        } else if isAppex {
-            let objectTypes = [NCKeyValue.self,
-                               tableMetadata.self,
-                               tableLocalFile.self,
-                               tableDirectory.self,
-                               tableTag.self,
-                               tableAccount.self,
-                               tableCapabilities.self,
-                               tableE2eEncryption.self,
-                               tableE2eEncryptionLock.self,
-                               tableE2eMetadata12.self,
-                               tableE2eMetadata.self,
-                               tableE2eUsers.self,
-                               tableE2eCounter.self,
-                               tableShare.self,
-                               tableChunk.self,
-                               tableAvatar.self,
-                               tableDashboardWidget.self,
-                               tableDashboardWidgetButton.self,
-                               NCDBLayoutForView.self,
-                               TableSecurityGuardDiagnostics.self]
+            if bundleFileName != "File Provider Extension.appex" {
+                objectTypes += [
+                    tableCapabilities.self, tableE2eEncryption.self, tableE2eEncryptionLock.self,
+                    tableE2eMetadata12.self, tableE2eMetadata.self, tableE2eUsers.self,
+                    tableE2eCounter.self, tableShare.self, tableChunk.self, tableAvatar.self,
+                    tableDashboardWidget.self, tableDashboardWidgetButton.self,
+                    NCDBLayoutForView.self, TableSecurityGuardDiagnostics.self
+                ]
+            }
 
-            openRealmAppex(path: databaseFileUrlPath, objectTypes: objectTypes)
-        } else {
-            Task.detached(priority: .userInitiated) { [weak self] in
-                guard let self else { return }
-                openRealm(path: databaseFileUrlPath)
+            self.openRealmAppex(path: databaseFileUrl, objectTypes: objectTypes)
+        }
+    }
+
+    // MARK: -
+
+    public func openRealm() {
+        Task.detached(priority: .userInitiated) { [weak self] in
+            guard let self else { return }
+
+            let alreadyOpened = await self.realmState.get()
+            if alreadyOpened {
+                nkLog(debug: "Realm already initialized")
+                return
+            }
+
+            let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+            let databaseFileUrl = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
+
+            await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+                self.realmQueue.async {
+                    defer {
+                        continuation.resume()
+                    }
+
+                    autoreleasepool {
+                        // DEFAULTCONFIGURATION
+                        Realm.Configuration.defaultConfiguration =
+                        Realm.Configuration(fileURL: databaseFileUrl,
+                                            schemaVersion: databaseSchemaVersion,
+                                            migrationBlock: { migration, oldSchemaVersion in
+                            self.migrationSchema(migration, oldSchemaVersion)
+                        }, shouldCompactOnLaunch: { totalBytes, usedBytes in
+                            self.compactDB(totalBytes, usedBytes)
+                        })
+
+                        do {
+                            let realm = try Realm()
+                            if let url = realm.configuration.fileURL {
+                                nkLog(start: "Realm is located at: \(url.path)")
+                            }
+                        } catch let error {
+                            nkLog(error: "Realm open failed: \(error)")
+                            self.restoreDB(path: databaseFileUrl)
+                        }
+                    }
+                }
             }
         }
     }
 
-    // MARK: - Nextcloud iOS Main
+    private func openRealmAppex(path databaseFileUrlPath: URL?, objectTypes: [Object.Type]) {
+        // TEST DB - READ ONLY
+        let testConfig = Realm.Configuration(fileURL: databaseFileUrlPath,
+                                             readOnly: true,
+                                             schemaVersion: databaseSchemaVersion)
+
+        do {
+            _ = try Realm(configuration: testConfig)
+
+            // DEFAULTCONFIGURATION
+            Realm.Configuration.defaultConfiguration = Realm.Configuration(fileURL: databaseFileUrlPath,
+                                                                           schemaVersion: databaseSchemaVersion,
+                                                                           objectTypes: objectTypes)
+
+            let realm = try Realm()
+            if let url = realm.configuration.fileURL {
+                print("Realm is located at: \(url)")
+            }
+        } catch let error {
+            nkLog(error: "Realm: \(error)")
+        }
+    }
 
     private func migrationSchema(_ migration: Migration, _ oldSchemaVersion: UInt64) {
         if oldSchemaVersion < 365 {
@@ -134,51 +195,6 @@ final class NCManageDatabase: Sendable {
             restoreTableAccountFromFile()
         } catch let error {
             nkLog(error: "Account restoration: \(error)")
-        }
-    }
-
-    private func openRealm(path databaseFileUrlPath: URL?) {
-        // DEFAULTCONFIGURATION
-        Realm.Configuration.defaultConfiguration =
-        Realm.Configuration(fileURL: databaseFileUrlPath,
-                            schemaVersion: databaseSchemaVersion,
-                            migrationBlock: { migration, oldSchemaVersion in
-            self.migrationSchema(migration, oldSchemaVersion)
-        }, shouldCompactOnLaunch: { totalBytes, usedBytes in
-            self.compactDB(totalBytes, usedBytes)
-        })
-
-        do {
-            let realm = try Realm()
-            if let url = realm.configuration.fileURL {
-                print("Realm is located at: \(url)")
-            }
-        } catch let error {
-            nkLog(error: "Realm: \(error)")
-            self.restoreDB(path: databaseFileUrlPath)
-        }
-    }
-
-    private func openRealmAppex(path databaseFileUrlPath: URL?, objectTypes: [Object.Type]) {
-        // TEST DB - READ ONLY
-        let testConfig = Realm.Configuration(fileURL: databaseFileUrlPath,
-                                             readOnly: true,
-                                             schemaVersion: databaseSchemaVersion)
-
-        do {
-            _ = try Realm(configuration: testConfig)
-
-            // DEFAULTCONFIGURATION
-            Realm.Configuration.defaultConfiguration = Realm.Configuration(fileURL: databaseFileUrlPath,
-                                                                           schemaVersion: databaseSchemaVersion,
-                                                                           objectTypes: objectTypes)
-
-            let realm = try Realm()
-            if let url = realm.configuration.fileURL {
-                print("Realm is located at: \(url)")
-            }
-        } catch let error {
-            nkLog(error: "Realm: \(error)")
         }
     }
 
