@@ -26,7 +26,7 @@ import UIKit
 /// Used for read/write in Realm
 var isAppSuspending: Bool = false
 /// Used for know if the app in in Background mode
-var isAppInBackground: Bool = false
+var isAppInBackground: Bool = true
 
 final class NCGlobal: Sendable {
     static let shared = NCGlobal()
