@@ -14,15 +14,30 @@ protocol DateCompareable {
     var dateKey: Date { get }
 }
 
-private actor RealmState {
-    private var hasOpenedRealm = false
+actor RealmState {
+    private var isOpened: Bool = false
+    private var isOpening: Bool = false
 
-    func get() -> Bool {
-        return hasOpenedRealm
+    func shouldOpen() -> Bool {
+        if isOpened || isOpening {
+            return false
+        }
+        isOpening = true
+        return true
     }
 
-    func setOpened() {
-        hasOpenedRealm = true
+    func get() -> Bool {
+        return isOpened
+    }
+
+    func markOpened() {
+        isOpened = true
+        isOpening = false
+    }
+
+    func markFailed() {
+        isOpened = false
+        isOpening = false
     }
 }
 
@@ -80,9 +95,9 @@ final class NCManageDatabase: @unchecked Sendable {
         Task.detached(priority: .userInitiated) { [weak self] in
             guard let self else { return }
 
-            let alreadyOpened = await self.realmState.get()
-            if alreadyOpened {
-                nkLog(debug: "Realm already initialized")
+            let shouldOpen = await self.realmState.shouldOpen()
+            if !shouldOpen {
+                nkLog(debug: "⏩ Realm already opened or opening in progress")
                 return
             }
 
@@ -111,9 +126,11 @@ final class NCManageDatabase: @unchecked Sendable {
                             if let url = realm.configuration.fileURL {
                                 nkLog(start: "Realm is located at: \(url.path)")
                             }
+                            Task { await self.realmState.markOpened() }
                         } catch let error {
                             nkLog(error: "Realm open failed: \(error)")
                             self.restoreDB(path: databaseFileUrl)
+                            Task { await self.realmState.markFailed() }
                         }
                     }
                 }
