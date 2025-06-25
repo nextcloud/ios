@@ -97,7 +97,7 @@ final class NCManageDatabase: @unchecked Sendable {
 
             let shouldOpen = await self.realmState.shouldOpen()
             if !shouldOpen {
-                nkLog(debug: "⏩ Realm already opened or opening in progress")
+                nkLog(debug: "Realm already opened or opening in progress")
                 return
             }
 
