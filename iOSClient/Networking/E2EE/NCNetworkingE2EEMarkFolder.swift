@@ -26,8 +26,7 @@ import NextcloudKit
 class NCNetworkingE2EEMarkFolder: NSObject {
     let database = NCManageDatabase.shared
 
-    func markFolderE2ee(account: String, fileName: String, serverUrl: String, userId: String) async -> NKError {
-        let serverUrlFileName = serverUrl + "/" + fileName
+    func markFolderE2ee(account: String, serverUrlFileName: String, userId: String) async -> NKError {
         let resultsReadFileOrFolder = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrlFileName, depth: "0", account: account)
         guard resultsReadFileOrFolder.error == .success,
               var file = resultsReadFileOrFolder.files?.first else {
@@ -47,6 +46,12 @@ class NCNetworkingE2EEMarkFolder: NSObject {
         await self.database.deleteE2eEncryptionAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrlFileName))
         if capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
             await self.database.updateCounterE2eMetadataAsync(account: account, ocIdServerUrl: metadata.ocId, counter: 0)
+        }
+
+        // upload e2ee metadata
+        let errorUploadMetadata = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrlFileName, account: account)
+        guard errorUploadMetadata == .success else {
+            return errorUploadMetadata
         }
 
         NCNetworking.shared.notifyAllDelegates { delegate in
