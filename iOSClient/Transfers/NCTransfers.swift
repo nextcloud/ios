@@ -118,7 +118,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             for metadata in metadatas {
                 if let metadata = self.database.setMetadataStatusAndReturn(ocId: metadata.ocId,
                                                                            status: NCGlobal.shared.metadataStatusUploading) {
-                    NCNetworking.shared.upload(metadata: metadata)
+                    NCNetworking.shared.uploadHub(metadata: metadata)
                 }
             }
         }

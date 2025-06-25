@@ -44,8 +44,18 @@ class NCNetworkingE2EEUpload: NSObject {
     var numChunks: Int = 0
 
     func upload(metadata: tableMetadata, uploadE2EEDelegate: uploadE2EEDelegate?, controller: UIViewController?) async -> NKError {
+        var finalError: NKError = .success
         let session = NCSession.shared.getSession(account: metadata.account)
         let hud = await NCHud(controller?.view)
+        let ocId = metadata.ocIdTransfer
+
+        defer {
+            if finalError != .success {
+                Task {
+                    await self.database.deleteMetadataOcIdAsync(ocId)
+                }
+            }
+        }
 
         if let result = await self.database.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileNameView == %@ AND ocId != %@", metadata.serverUrl, metadata.fileNameView, metadata.ocId)) {
             metadata.fileName = result.fileName
@@ -59,7 +69,8 @@ class NCNetworkingE2EEUpload: NSObject {
         let metadata = await self.database.addAndReturnMetadataAsync(metadata)
 
         guard let directory = await self.database.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
-            return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+            finalError = NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+            return finalError
         }
 
         func sendE2ee(e2eToken: String, fileId: String) async -> NKError {
@@ -69,10 +80,12 @@ class NCNetworkingE2EEUpload: NSObject {
             // ENCRYPT FILE
             //
             if NCEndToEndEncryption.shared().encryptFile(metadata.fileNameView, fileNameIdentifier: metadata.fileName, directory: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId), key: &key, initializationVector: &initializationVector, authenticationTag: &authenticationTag) == false {
-                return NKError(errorCode: NCGlobal.shared.errorE2EEEncryptFile, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+                finalError = NKError(errorCode: NCGlobal.shared.errorE2EEEncryptFile, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+                return finalError
             }
             guard let key = key as? String, let initializationVector = initializationVector as? String else {
-                return NKError(errorCode: NCGlobal.shared.errorE2EEEncodedKey, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+                finalError = NKError(errorCode: NCGlobal.shared.errorE2EEEncodedKey, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+                return finalError
             }
 
             // DOWNLOAD METADATA
@@ -81,7 +94,8 @@ class NCNetworkingE2EEUpload: NSObject {
             if errorDownloadMetadata == .success {
                 method = "PUT"
             } else if errorDownloadMetadata.errorCode != NCGlobal.shared.errorResourceNotFound {
-                return errorDownloadMetadata
+                finalError = errorDownloadMetadata
+                return finalError
             }
 
             // CREATE E2E METADATA
@@ -93,7 +107,8 @@ class NCNetworkingE2EEUpload: NSObject {
                 object.metadataKeyIndex = results.metadataKeyIndex
             } else {
                 guard let key = NCEndToEndEncryption.shared().generateKey() as NSData? else {
-                    return NKError(errorCode: NCGlobal.shared.errorE2EEGenerateKey, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+                    finalError = NKError(errorCode: NCGlobal.shared.errorE2EEGenerateKey, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+                    return finalError
                 }
                 object.metadataKey = key.base64EncodedString()
                 object.metadataKeyIndex = 0
@@ -116,7 +131,8 @@ class NCNetworkingE2EEUpload: NSObject {
                                                                           method: method,
                                                                           session: session)
 
-            return uploadMetadataError
+            finalError = uploadMetadataError
+            return finalError
         }
 
         // LOCK
@@ -127,7 +143,8 @@ class NCNetworkingE2EEUpload: NSObject {
                 resultsLock.error == .success
         else {
             await self.database.deleteMetadataAsync(predicate: NSPredicate(format: "ocIdTransfer == %@", metadata.ocIdTransfer))
-            return NKError(errorCode: NCGlobal.shared.errorE2EELock, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+            finalError = NKError(errorCode: NCGlobal.shared.errorE2EELock, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+            return finalError
         }
 
         // HUD ENCRYPTION
@@ -141,7 +158,8 @@ class NCNetworkingE2EEUpload: NSObject {
             hud.dismiss()
             await self.database.deleteMetadataAsync(predicate: NSPredicate(format: "ocIdTransfer == %@", metadata.ocIdTransfer))
             await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
-            return sendE2eeError
+            finalError = sendE2eeError
+            return finalError
         }
 
         // HUD CHUNK
@@ -159,10 +177,7 @@ class NCNetworkingE2EEUpload: NSObject {
         //
         await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
 
-        if resultsSendFile.error == .errorChunkFileNull {
-            utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-            await self.database.deleteMetadataOcIdAsync(metadata.ocId)
-        } else if resultsSendFile.error == .success, let ocId = resultsSendFile.ocId {
+        if resultsSendFile.error == .success, let ocId = resultsSendFile.ocId {
             let metadata = tableMetadata(value: metadata)
 
             await self.database.deleteMetadataOcIdAsync(metadata.ocId)
@@ -190,15 +205,10 @@ class NCNetworkingE2EEUpload: NSObject {
                                         metadata: tableMetadata(value: metadata),
                                         error: .success)
             }
-        } else {
-            await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                        sessionTaskIdentifier: 0,
-                                                        sessionError: resultsSendFile.error.errorDescription,
-                                                        status: NCGlobal.shared.metadataStatusUploadError,
-                                                        errorCode: resultsSendFile.error.errorCode)
         }
 
-        return (resultsSendFile.error)
+        finalError = resultsSendFile.error
+        return finalError
     }
 
     // BRIDGE for chunk

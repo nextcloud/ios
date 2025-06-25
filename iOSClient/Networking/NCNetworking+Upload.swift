@@ -34,13 +34,13 @@ protocol UploadProgressDelegate: AnyObject {
 }
 
 extension NCNetworking {
-    func upload(metadata: tableMetadata,
-                uploadE2EEDelegate: uploadE2EEDelegate? = nil,
-                controller: UIViewController? = nil,
-                start: @escaping () -> Void = { },
-                requestHandler: @escaping (_ request: UploadRequest) -> Void = { _ in },
-                progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
-                completion: @escaping (_ error: NKError) -> Void = { _ in }) {
+    func uploadHub(metadata: tableMetadata,
+                   uploadE2EEDelegate: uploadE2EEDelegate? = nil,
+                   controller: UIViewController? = nil,
+                   start: @escaping () -> Void = { },
+                   requestHandler: @escaping (_ request: UploadRequest) -> Void = { _ in },
+                   progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
+                   completion: @escaping (_ error: NKError) -> Void = { _ in }) {
         let metadata = tableMetadata.init(value: metadata)
         var numChunks: Int = 0
         var hud: NCHud?
