@@ -167,7 +167,6 @@ extension NCEndToEndMetadata {
             }
         }
 
-
         // COUNTER + 1
         //
         if let resultCounter = await self.database.getCounterE2eMetadataAsync(account: session.account, ocIdServerUrl: ocIdServerUrl) {

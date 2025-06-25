@@ -213,12 +213,16 @@ class NCNetworkingE2EEUpload: NSObject {
                 } counterChunk: { counter in
                     hud?.progress(num: Float(counter), total: Float(self.numChunks))
                 } start: {
-                    hud?.dismiss()
+                    Task { @MainActor in
+                        hud?.dismiss()
+                    }
                     uploadE2EEDelegate?.start()
                 } progressHandler: {totalBytesExpected, totalBytes, fractionCompleted in
                     uploadE2EEDelegate?.uploadE2EEProgress(totalBytesExpected, totalBytes, fractionCompleted)
                 } completion: { _, file, error in
-                    DispatchQueue.main.async { hud?.dismiss() }
+                    Task { @MainActor in
+                        hud?.dismiss()
+                    }
                     continuation.resume(returning: (ocId: file?.ocId, etag: file?.etag, date: file?.date, error: error))
                 }
             })
@@ -228,7 +232,9 @@ class NCNetworkingE2EEUpload: NSObject {
             let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
             return await withCheckedContinuation({ continuation in
                 NCNetworking.shared.uploadFile(metadata: metadata, fileNameLocalPath: fileNameLocalPath, withUploadComplete: false, customHeaders: ["e2e-token": e2eToken], controller: controller) {
-                    DispatchQueue.main.async { hud?.dismiss() }
+                    Task { @MainActor in
+                        hud?.dismiss()
+                    }
                     uploadE2EEDelegate?.start()
                 } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
                     uploadE2EEDelegate?.uploadE2EEProgress(totalBytesExpected, totalBytes, fractionCompleted)
