@@ -427,7 +427,7 @@ extension NCManageDatabase {
                 metadata.typeIdentifier = results.typeIdentifier
             }
         }
-        return metadata
+        return tableMetadata(value: metadata)
     }
 
     func convertFilesToMetadatas(_ files: [NKFile], useFirstAsMetadataFolder: Bool, completion: @escaping (_ metadataFolder: tableMetadata, _ metadatas: [tableMetadata]) -> Void) {
@@ -584,6 +584,17 @@ extension NCManageDatabase {
         }
 
         return tableMetadata(value: detached)
+    }
+
+    func addAndReturnMetadataAsync(_ metadata: tableMetadata) async -> tableMetadata {
+        var copy: tableMetadata!
+
+        await performRealmWriteAsync { realm in
+            realm.add(metadata, update: .all)
+            copy = tableMetadata(value: metadata)
+        }
+
+        return copy
     }
 
     func addMetadata(_ metadata: tableMetadata, sync: Bool = true) {
@@ -995,8 +1006,26 @@ extension NCManageDatabase {
         }
     }
 
+    func setMetadataEncryptedAsync(ocId: String, encrypted: Bool) async {
+        await performRealmWriteAsync { realm in
+            let result = realm.objects(tableMetadata.self)
+                .filter("ocId == %@", ocId)
+                .first
+            result?.e2eEncrypted = encrypted
+        }
+    }
+
     func setMetadataFileNameView(serverUrl: String, fileName: String, newFileNameView: String, account: String, sync: Bool = true) {
         performRealmWrite(sync: sync) { realm in
+            let result = realm.objects(tableMetadata.self)
+                .filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName)
+                .first
+            result?.fileNameView = newFileNameView
+        }
+    }
+
+    func setMetadataFileNameViewAsync(serverUrl: String, fileName: String, newFileNameView: String, account: String) async {
+        await performRealmWriteAsync { realm in
             let result = realm.objects(tableMetadata.self)
                 .filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName)
                 .first
@@ -1135,19 +1164,6 @@ extension NCManageDatabase {
                 .map { tableMetadata(value: $0) }
         }
     }
-
-    /*
-    func getMetadatas(predicate: NSPredicate,
-                      completion: @escaping ([tableMetadata]) -> Void) {
-        performRealmRead({ realm in
-            let results = realm.objects(tableMetadata.self)
-                .filter(predicate)
-            return Array(results.map { tableMetadata(value: $0) })
-        }, sync: false) { results in
-            completion(results ?? [])
-        }
-    }
-    */
 
     func getMetadatas(predicate: NSPredicate) -> [tableMetadata] {
         performRealmRead { realm in

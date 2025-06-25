@@ -81,16 +81,6 @@ extension NCManageDatabase {
         }
     }
 
-    func deleteVideo(metadata: tableMetadata) {
-        performRealmWrite { realm in
-            if let result = realm.objects(tableVideo.self)
-                .filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId)
-                .first {
-                realm.delete(result)
-            }
-        }
-    }
-
     func deleteVideoAsync(metadata: tableMetadata) async {
         await performRealmWriteAsync { realm in
             if let result = realm.objects(tableVideo.self)

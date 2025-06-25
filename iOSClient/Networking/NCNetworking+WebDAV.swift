@@ -267,13 +267,13 @@ extension NCNetworking {
             return num
         }
 
-        func deleteLocalFile(metadata: tableMetadata) {
-            if let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata) {
-                self.database.deleteLocalFileOcId(metadataLive.ocId)
+        func deleteLocalFile(metadata: tableMetadata) async {
+            if let metadataLive = await self.database.getMetadataLivePhotoAsync(metadata: metadata) {
+                await self.database.deleteLocalFileOcIdAsync(metadataLive.ocId)
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId))
             }
-            self.database.deleteVideo(metadata: metadata)
-            self.database.deleteLocalFileOcId(metadata.ocId)
+            await self.database.deleteVideoAsync(metadata: metadata)
+            await self.database.deleteLocalFileOcIdAsync(metadata.ocId)
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
 #if !EXTENSION
             NCImageCache.shared.removeImageCache(ocIdPlusEtag: metadata.ocId + metadata.etag)
@@ -291,19 +291,20 @@ extension NCNetworking {
             }
 #endif
             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-            let metadatas = self.database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, serverUrl))
-            let total = Float(metadatas.count)
-            for metadata in metadatas {
-                deleteLocalFile(metadata: metadata)
-                let num = numIncrement()
-                ncHud.progress(num: num, total: total)
-                if tapHudStopDelete { break }
+            if let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, serverUrl)) {
+                let total = Float(metadatas.count)
+                for metadata in metadatas {
+                    await deleteLocalFile(metadata: metadata)
+                    let num = numIncrement()
+                    ncHud.progress(num: num, total: total)
+                    if tapHudStopDelete { break }
             }
+        }
 #if !EXTENSION
             ncHud.dismiss()
 #endif
         } else {
-            deleteLocalFile(metadata: metadata)
+            await deleteLocalFile(metadata: metadata)
 
             self.notifyAllDelegates { delegate in
                 delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)

@@ -233,20 +233,18 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         return true
     }
 
-    func getDirectoryE2EETop(serverUrl: String, account: String) -> tableDirectory? {
+    func getDirectoryE2EETopAsync(serverUrl: String, account: String) async -> tableDirectory? {
         guard var serverUrl = serverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return nil }
         var top: tableDirectory?
 
         while let url = URL(string: serverUrl)?.deletingLastPathComponent(),
               let serverUrlencoding = serverUrl.removingPercentEncoding,
-              let directory = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: serverUrlencoding) {
-
+              let directory = await NCManageDatabase.shared.getTableDirectoryAsync(account: account, serverUrl: serverUrlencoding) {
             if directory.e2eEncrypted {
                 top = directory
             } else {
                 return top
             }
-
             serverUrl = String(url.absoluteString.dropLast())
         }
 

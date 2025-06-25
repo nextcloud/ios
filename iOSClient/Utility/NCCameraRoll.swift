@@ -76,7 +76,7 @@ final class NCCameraRoll: CameraRollExtractor {
         guard !metadataSource.assetLocalIdentifier.isEmpty else {
             let filePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadataSource.ocId, fileNameView: metadataSource.fileName)
             let results = await NKTypeIdentifiers.shared.getInternalType(fileName: metadataSource.fileNameView, mimeType: metadataSource.contentType, directory: false, account: metadataSource.account)
-            
+
             metadataSource.contentType = results.mimeType
             metadataSource.iconName = results.iconName
             metadataSource.classFile = results.classFile

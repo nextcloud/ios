@@ -188,14 +188,15 @@ extension NCCollectionViewCommon {
                     order: 30,
                     sender: sender,
                     action: { _ in
-                        NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: true, account: metadata.account) { _, _, error in
-                            if error == .success {
-                                self.database.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl))
-                                self.database.setDirectory(serverUrl: serverUrl, encrypted: false, account: metadata.account)
-                                self.database.setMetadataEncrypted(ocId: metadata.ocId, encrypted: false)
+                        Task {
+                            let results = await NextcloudKit.shared.markE2EEFolderAsync(fileId: metadata.fileId, delete: true, account: metadata.account)
+                            if results.error == .success {
+                                await self.database.deleteE2eEncryptionAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl))
+                                await self.database.setDirectoryAsync(serverUrl: serverUrl, encrypted: false, account: metadata.account)
+                                await self.database.setMetadataEncryptedAsync(ocId: metadata.ocId, encrypted: false)
                                 self.reloadDataSource()
                             } else {
-                                NCContentPresenter().messageNotification(NSLocalizedString("_e2e_error_", comment: ""), error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
+                                NCContentPresenter().messageNotification(NSLocalizedString("_e2e_error_", comment: ""), error: results.error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
                             }
                         }
                     }

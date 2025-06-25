@@ -34,17 +34,19 @@ class NCNetworkingE2EEMarkFolder: NSObject {
             return resultsReadFileOrFolder.error
         }
         let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolderAsync(fileId: file.fileId, delete: false, account: account, options: NCNetworkingE2EE().getOptions(account: account))
-        guard resultsMarkE2EEFolder.error == .success else { return resultsMarkE2EEFolder.error }
+        guard resultsMarkE2EEFolder.error == .success else {
+            return resultsMarkE2EEFolder.error
+        }
         let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
 
         file.e2eEncrypted = true
 
-        let metadata = self.database.addAndReturnMetadata(self.database.convertFileToMetadata(file, isDirectoryE2EE: false))
+        let metadata = await self.database.addAndReturnMetadataAsync(self.database.convertFileToMetadata(file, isDirectoryE2EE: false))
 
-        self.database.addDirectory(e2eEncrypted: true, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
-        self.database.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrlFileName))
+        await self.database.addDirectoryAsync(e2eEncrypted: true, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
+        await self.database.deleteE2eEncryptionAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrlFileName))
         if capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
-            self.database.updateCounterE2eMetadata(account: account, ocIdServerUrl: metadata.ocId, counter: 0)
+            await self.database.updateCounterE2eMetadataAsync(account: account, ocIdServerUrl: metadata.ocId, counter: 0)
         }
 
         NCNetworking.shared.notifyAllDelegates { delegate in

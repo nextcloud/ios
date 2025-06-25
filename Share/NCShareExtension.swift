@@ -372,7 +372,7 @@ extension NCShareExtension {
         hud.initHudRing(view: self.view,
                         text: NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(self.filesName.count)")
 
-        NCNetworking.shared.upload(metadata: metadata, uploadE2EEDelegate: self, controller: self) {
+        NCNetworking.shared.uploadHub(metadata: metadata, uploadE2EEDelegate: self, controller: self) {
             self.hud.progress(0)
         } progressHandler: { _, _, fractionCompleted in
             self.hud.progress(fractionCompleted)
