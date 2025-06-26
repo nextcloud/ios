@@ -159,15 +159,7 @@ final class NCManageDatabase: Sendable {
     }
 
     private func openRealmAppex(path databaseFileUrlPath: URL?, objectTypes: [Object.Type]) {
-        // TEST DB - READ ONLY
-        let testConfig = Realm.Configuration(fileURL: databaseFileUrlPath,
-                                             readOnly: true,
-                                             schemaVersion: databaseSchemaVersion)
-
         do {
-            _ = try Realm(configuration: testConfig)
-
-            // DEFAULTCONFIGURATION
             Realm.Configuration.defaultConfiguration = Realm.Configuration(fileURL: databaseFileUrlPath,
                                                                            schemaVersion: databaseSchemaVersion,
                                                                            objectTypes: objectTypes)
@@ -178,8 +170,10 @@ final class NCManageDatabase: Sendable {
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Realm: \(error)")
+            exit(1)
         }
     }
+
     // MARK: -
 
     @discardableResult
