@@ -390,11 +390,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        if isAppInBackground {
+            return
+        }
+
         if let pushKitToken = NCPushNotificationEncryption.shared().string(withDeviceToken: deviceToken) {
             self.pushKitToken = pushKitToken
-            // https://github.com/nextcloud/talk-ios/issues/691
-            for tblAccount in NCManageDatabase.shared.getAllTableAccount() {
-                subscribingPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user)
+            Task {
+                let tblAccounts = await self.database.getAllTableAccountAsync()
+                for tblAccount in tblAccounts {
+                    subscribingPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user)
+                }
             }
         }
     }
@@ -406,10 +412,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func subscribingPushNotification(account: String, urlBase: String, user: String) {
-        if isAppInBackground {
-            return
-        }
-
 #if !targetEnvironment(simulator)
         self.networking.checkPushNotificationServerProxyCertificateUntrusted(viewController: UIApplication.shared.firstWindow?.rootViewController) { error in
             if error == .success {
