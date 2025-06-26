@@ -49,15 +49,6 @@ extension NCManageDatabase {
         }
     }
 
-    func clearAllAvatarLoaded(sync: Bool = true) {
-        performRealmWrite(sync: sync) { realm in
-            let results = realm.objects(tableAvatar.self)
-            for result in results {
-                result.loaded = false
-            }
-        }
-    }
-
     func clearAllAvatarLoadedAsync() async {
         await performRealmWriteAsync { realm in
             let results = realm.objects(tableAvatar.self)

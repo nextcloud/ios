@@ -160,7 +160,7 @@ class NCNetworkingE2EE: NSObject {
         guard resultsEncodeMetadata.error == .success,
               let e2eMetadata = resultsEncodeMetadata.metadata else {
             // Client Diagnostic
-            self.database.addDiagnostic(account: session.account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
+            await self.database.addDiagnosticAsync(account: session.account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
             return resultsEncodeMetadata.error
         }
         let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
@@ -193,7 +193,7 @@ class NCNetworkingE2EE: NSObject {
         let resultsDecodeMetadataError = await NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: resultsGetE2EEMetadata.signature, serverUrl: serverUrl, session: session)
         guard resultsDecodeMetadataError == .success else {
             // Client Diagnostic
-            self.database.addDiagnostic(account: session.account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
+            await self.database.addDiagnosticAsync(account: session.account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
             return resultsDecodeMetadataError
         }
 

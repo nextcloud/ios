@@ -240,8 +240,11 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     }
 
     func deleteAutoUploadTransfer() {
-        let autoUploadServerUrlBase = NCManageDatabase.shared.getAccountAutoUploadServerUrlBase(session: session)
-        NCManageDatabase.shared.deleteAutoUploadTransfer(account: session.account, autoUploadServerUrlBase: autoUploadServerUrlBase)
+        Task {
+            let autoUploadServerUrlBase = NCManageDatabase.shared.getAccountAutoUploadServerUrlBase(session: session)
+            await NCManageDatabase.shared.deleteAutoUploadTransferAsync(account: session.account,
+                                                                        autoUploadServerUrlBase: autoUploadServerUrlBase)
+        }
     }
 
     /// Updates the auto-upload create subfolder setting.
