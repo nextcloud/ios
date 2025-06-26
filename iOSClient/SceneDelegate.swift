@@ -224,30 +224,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let scheme = url.scheme
         let action = url.host
 
-        func getMatchedAccount(userId: String, url: String, completion: @escaping (_ tableAccount: tableAccount?) -> Void) {
-            var match: Bool = false
+        func getMatchedAccount(userId: String, url: String) async -> tableAccount? {
+            let tblAccounts = await self.database.getAllTableAccountAsync()
 
-            if let activeTableAccount = self.database.getActiveTableAccount() {
-                let urlBase = URL(string: activeTableAccount.urlBase)
-                if url.contains(urlBase?.host ?? "") && userId == activeTableAccount.userId {
-                    completion(activeTableAccount)
-                } else {
-                    for tableAccount in self.database.getAllTableAccount() {
-                        let urlBase = URL(string: tableAccount.urlBase)
-                        if url.contains(urlBase?.host ?? "") && userId == tableAccount.userId {
-                            match = true
-                            NCAccount().changeAccount(tableAccount.account, userProfile: nil, controller: controller) {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                    completion(tableAccount)
-                                }
-                            }
-                        }
-                    }
-                    if !match {
-                        completion(nil)
-                    }
+            for tblAccount in tblAccounts {
+                let urlBase = URL(string: tblAccount.urlBase)
+                if url.contains(urlBase?.host ?? "") && userId == tblAccount.userId {
+                    await NCAccount().changeAccountAsync(tblAccount.account, userProfile: nil, controller: controller)
+                    // wait switch account
+                    try? await Task.sleep(nanoseconds: 1_000_000_000)
+                    return tblAccount
                 }
             }
+            return nil
         }
 
         /*
@@ -259,10 +248,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 let queryItems = urlComponents.queryItems
                 guard let actionScheme = queryItems?.filter({ $0.name == "action" }).first?.value,
                       let userScheme = queryItems?.filter({ $0.name == "user" }).first?.value,
-                      let urlScheme = queryItems?.filter({ $0.name == "url" }).first?.value else { return }
+                      let urlScheme = queryItems?.filter({ $0.name == "url" }).first?.value else {
+                    return
+                }
 
-                getMatchedAccount(userId: userScheme, url: urlScheme) { tableAccount in
-                    if tableAccount == nil {
+                Task {
+                    if await getMatchedAccount(userId: userScheme, url: urlScheme) == nil {
                         let message = NSLocalizedString("_the_account_", comment: "") + " " + userScheme + NSLocalizedString("_of_", comment: "") + " " + urlScheme + " " + NSLocalizedString("_does_not_exist_", comment: "")
                         let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
                         alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
@@ -270,7 +261,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                         controller.present(alertController, animated: true, completion: { })
                         return
                     }
-                    // let session = SceneManager.shared.getSession(scene: scene)
 
                     switch actionScheme {
                     case self.global.actionUploadAsset:
@@ -282,19 +272,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     case self.global.actionScanDocument:
                         NCDocumentCamera.shared.openScannerDocument(viewController: controller)
                     case self.global.actionTextDocument:
-                        break
-                        /*
-                        let directEditingCreators = self.database.getDirectEditingCreators(account: session.account)
-                        let directEditingCreator = directEditingCreators!.first(where: { $0.editor == self.global.editorText})!
-                        let serverUrl = controller.currentServerUrl()
-
-                        Task {
-                            let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".md", account: session.account, serverUrl: serverUrl)
-                            let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
-
-                            NCCreateDocument().createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: self.global.editorText, creatorId: directEditingCreator.identifier, templateId: self.global.templateDocument, account: session.account)
+                        let session = SceneManager.shared.getSession(scene: scene)
+                        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
+                        guard let creator = capabilities.directEditingCreators.first(where: { $0.editor == "text" }) else {
+                            return
                         }
-                        */
+                        let serverUrl = controller.currentServerUrl()
+                        let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".md", account: session.account, serverUrl: serverUrl)
+                        let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
+
+                        NCCreateDocument().createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "text", creatorId: creator.identifier, templateId: "document", account: session.account)
                     case self.global.actionVoiceMemo:
                         NCAskAuthorization().askAuthorizationAudioRecord(viewController: controller) { hasPermission in
                             if hasPermission {
@@ -326,9 +313,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                       let pathScheme = queryItems?.filter({ $0.name == "path" }).first?.value,
                       let linkScheme = queryItems?.filter({ $0.name == "link" }).first?.value else { return}
 
-                getMatchedAccount(userId: userScheme, url: linkScheme) { tableAccount in
-                    guard let tableAccount else {
+                Task {
+                    guard let tblAccount = await getMatchedAccount(userId: userScheme, url: linkScheme) else {
                         guard let domain = URL(string: linkScheme)?.host else { return }
+
                         fileName = (pathScheme as NSString).lastPathComponent
                         let message = String(format: NSLocalizedString("_account_not_available_", comment: ""), userScheme, domain, fileName)
                         let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
@@ -337,14 +325,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                         controller.present(alertController, animated: true, completion: { })
                         return
                     }
-                    let davFiles = "remote.php/dav/files/" + tableAccount.userId
+                    let davFiles = "remote.php/dav/files/" + tblAccount.userId
 
                     if pathScheme.contains("/") {
                         fileName = (pathScheme as NSString).lastPathComponent
-                        serverUrl = tableAccount.urlBase + "/" + davFiles + "/" + (pathScheme as NSString).deletingLastPathComponent
+                        serverUrl = tblAccount.urlBase + "/" + davFiles + "/" + (pathScheme as NSString).deletingLastPathComponent
                     } else {
                         fileName = pathScheme
-                        serverUrl = tableAccount.urlBase + "/" + davFiles
+                        serverUrl = tblAccount.urlBase + "/" + davFiles
                     }
 
                     NCDownloadAction.shared.openFileViewInFolder(serverUrl: serverUrl, fileNameBlink: nil, fileNameOpen: fileName, sceneIdentifier: controller.sceneIdentifier)
@@ -356,12 +344,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
          */
 
         } else if scheme == self.global.appScheme && action == "open-and-switch-account" {
-            guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return }
+            guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+                return
+            }
             let queryItems = urlComponents.queryItems
             guard let userScheme = queryItems?.filter({ $0.name == "user" }).first?.value,
-                  let urlScheme = queryItems?.filter({ $0.name == "url" }).first?.value else { return }
-            // If the account doesn't exist, return false which will open the app without switching
-            getMatchedAccount(userId: userScheme, url: urlScheme) { _ in }
+                  let urlScheme = queryItems?.filter({ $0.name == "url" }).first?.value else {
+                return
+            }
+
+            Task {
+                _ = await getMatchedAccount(userId: userScheme, url: urlScheme)
+            }
         } else if let action {
             if DeepLink(rawValue: action) != nil {
                 NCDeepLinkHandler().parseDeepLink(url, controller: controller)

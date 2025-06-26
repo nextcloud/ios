@@ -144,6 +144,16 @@ class NCAccount: NSObject {
         completion()
     }
 
+    func changeAccountAsync(_ account: String,
+                            userProfile: NKUserProfile?,
+                            controller: NCMainTabBarController?) async {
+        await withCheckedContinuation { continuation in
+            changeAccount(account, userProfile: userProfile, controller: controller) {
+                continuation.resume()
+            }
+        }
+    }
+
     func deleteAccount(_ account: String, wipe: Bool = true, completion: () -> Void = {}) {
         UIApplication.shared.allSceneSessionDestructionExceptFirst()
 
