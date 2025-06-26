@@ -25,26 +25,34 @@ import SwiftUI
 import WidgetKit
 
 struct ToolbarWidgetView: View {
-
     var entry: ToolbarDataEntry
 
+    @ViewBuilder
     var body: some View {
+        if #available(iOS 17.0, *) {
+            mainContent
+                .containerBackground(Color.black, for: .widget)
+        } else {
+            mainContent
+                .background(Color.black)
+        }
+    }
 
+    private var mainContent: some View {
         let parameterLink = "&user=\(entry.userId)&url=\(entry.url)"
-        let linkNoAction: URL = URL(string: NCGlobal.shared.widgetActionNoAction + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionNoAction + parameterLink)! : URL(string: NCGlobal.shared.widgetActionNoAction)!
-        let linkActionUploadAsset: URL = URL(string: NCGlobal.shared.widgetActionUploadAsset + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionUploadAsset + parameterLink)! : URL(string: NCGlobal.shared.widgetActionUploadAsset)!
-        let linkActionScanDocument: URL = URL(string: NCGlobal.shared.widgetActionScanDocument + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionScanDocument + parameterLink)! : URL(string: NCGlobal.shared.widgetActionScanDocument)!
-        let linkActionTextDocument: URL = URL(string: NCGlobal.shared.widgetActionTextDocument + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionTextDocument + parameterLink)! : URL(string: NCGlobal.shared.widgetActionTextDocument)!
-        let linkActionVoiceMemo: URL = URL(string: NCGlobal.shared.widgetActionVoiceMemo + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionVoiceMemo + parameterLink)! : URL(string: NCGlobal.shared.widgetActionVoiceMemo)!
+        let safeUrl = { (base: String) in
+            URL(string: base + parameterLink) ?? URL(string: base)!
+        }
+        let linkNoAction = safeUrl(NCGlobal.shared.widgetActionNoAction)
+        let linkActionUploadAsset = safeUrl(NCGlobal.shared.widgetActionUploadAsset)
+        let linkActionScanDocument = safeUrl(NCGlobal.shared.widgetActionScanDocument)
+        let linkActionTextDocument = safeUrl(NCGlobal.shared.widgetActionTextDocument)
+        let linkActionVoiceMemo = safeUrl(NCGlobal.shared.widgetActionVoiceMemo)
+        let sizeButton: CGFloat = 65
 
-        GeometryReader { geo in
-
+        return GeometryReader { geo in
             ZStack(alignment: .topLeading) {
-
                 HStack(spacing: 0) {
-
-                    let sizeButton: CGFloat = 65
-
                     Link(destination: entry.isPlaceholder ? linkNoAction : linkActionUploadAsset, label: {
                         Image("addImage")
                             .resizable()
@@ -112,7 +120,6 @@ struct ToolbarWidgetView: View {
                 .frame(maxWidth: geo.size.width - 5, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
             }
         }
-        .widgetBackground(Color.black.opacity(0.9))
     }
 }
 
