@@ -97,7 +97,6 @@ final class NCManageDatabase: @unchecked Sendable {
 
             let shouldOpen = await self.realmState.shouldOpen()
             if !shouldOpen {
-                nkLog(debug: "Realm already opened or opening in progress")
                 return
             }
 
@@ -111,7 +110,6 @@ final class NCManageDatabase: @unchecked Sendable {
                     }
 
                     autoreleasepool {
-                        // DEFAULTCONFIGURATION
                         Realm.Configuration.defaultConfiguration =
                         Realm.Configuration(fileURL: databaseFileUrl,
                                             schemaVersion: databaseSchemaVersion,
@@ -139,15 +137,7 @@ final class NCManageDatabase: @unchecked Sendable {
     }
 
     private func openRealmAppex(path databaseFileUrlPath: URL?, objectTypes: [Object.Type]) {
-        // TEST DB - READ ONLY
-        let testConfig = Realm.Configuration(fileURL: databaseFileUrlPath,
-                                             readOnly: true,
-                                             schemaVersion: databaseSchemaVersion)
-
         do {
-            _ = try Realm(configuration: testConfig)
-
-            // DEFAULTCONFIGURATION
             Realm.Configuration.defaultConfiguration = Realm.Configuration(fileURL: databaseFileUrlPath,
                                                                            schemaVersion: databaseSchemaVersion,
                                                                            objectTypes: objectTypes)
@@ -158,6 +148,7 @@ final class NCManageDatabase: @unchecked Sendable {
             }
         } catch let error {
             nkLog(error: "Realm: \(error)")
+            exit(1)
         }
     }
 
