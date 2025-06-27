@@ -119,7 +119,11 @@ class NCService: NSObject {
         await self.database.addCapabilitiesAsync(data: data, account: account)
 
         // Text direct editor (Nextcloud Text, Office, Collabora)
-        _ = await NextcloudKit.shared.textObtainEditorDetailsAsync(account: account)
+        let resultsTextEditor = await NextcloudKit.shared.textObtainEditorDetailsAsync(account: account)
+        if resultsTextEditor.error == .success,
+           let data = resultsTextEditor.responseData?.data {
+            await self.database.addCapabilitiesEditorsAsync(data: data, account: account)
+        }
 
         // Recommendations
         if !capabilities.recommendations {

@@ -153,6 +153,9 @@ final class NCManageDatabase: @unchecked Sendable {
     }
 
     private func migrationSchema(_ migration: Migration, _ oldSchemaVersion: UInt64) {
+
+        // MANUAL MIGRATIONS (custom logic required)
+
         if oldSchemaVersion < 365 {
             migration.deleteData(forType: tableMetadata.className())
             migration.enumerateObjects(ofType: tableDirectory.className()) { _, newObject in
@@ -169,8 +172,21 @@ final class NCManageDatabase: @unchecked Sendable {
                 newObject?["autoUploadOnlyNew"] = true
             }
         }
+        if oldSchemaVersion < 390 {
+            migration.enumerateObjects(ofType: tableCapabilities.className()) { oldObject, newObject in
+                if let oldData = oldObject?["jsondata"] as? Data {
+                    newObject?["capabilities"] = oldData
+                }
+            }
+        }
+
+        // AUTOMATIC MIGRATIONS (Realm handles these internally)
+
         if oldSchemaVersion < databaseSchemaVersion {
-            // automatic conversion for delete object / properties
+            // Realm automatically handles:
+            // -> Added properties with default values or optionals
+            // -> Removed properties
+            // -> Schema reordering
         }
     }
 
