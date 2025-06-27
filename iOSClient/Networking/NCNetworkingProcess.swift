@@ -397,9 +397,9 @@ actor NCNetworkingProcess {
         for metadata in metadatasWaitFavorite {
             let session = NCSession.Session(account: metadata.account, urlBase: metadata.urlBase, user: metadata.user, userId: metadata.userId)
             let fileName = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
-            let errorFavorite = await NextcloudKit.shared.setFavoriteAsync(fileName: fileName, favorite: metadata.favorite, account: metadata.account)
+            let resultsFavorite = await NextcloudKit.shared.setFavoriteAsync(fileName: fileName, favorite: metadata.favorite, account: metadata.account)
 
-            if errorFavorite == .success {
+            if resultsFavorite.error == .success {
                 await self.database.setMetadataFavoriteAsync(ocId: metadata.ocId,
                                                              favorite: nil,
                                                              saveOldFavorite: nil,
@@ -415,11 +415,11 @@ actor NCNetworkingProcess {
             NCNetworking.shared.notifyAllDelegates { delegate in
                 delegate.transferChange(status: self.global.networkingStatusFavorite,
                                         metadata: metadata,
-                                        error: errorFavorite)
+                                        error: resultsFavorite.error)
             }
 
-            if errorFavorite != .success {
-                return errorFavorite
+            if resultsFavorite.error != .success {
+                return resultsFavorite.error
             }
         }
 
