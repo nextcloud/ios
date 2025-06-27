@@ -73,6 +73,23 @@ class fileProviderUtility: NSObject {
         return directory
     }
 
+    func getTableDirectoryFromParentItemIdentifierAsync(_ parentItemIdentifier: NSFileProviderItemIdentifier, account: String, homeServerUrl: String) async -> tableDirectory? {
+        var predicate: NSPredicate
+        if parentItemIdentifier == .rootContainer {
+            predicate = NSPredicate(format: "account == %@ AND serverUrl == %@", account, homeServerUrl)
+        } else {
+            guard let metadata = await getTableMetadataFromItemIdentifierAsync(parentItemIdentifier) else {
+                return nil
+            }
+            predicate = NSPredicate(format: "ocId == %@", metadata.ocId)
+        }
+        guard let directory = await self.database.getTableDirectoryAsync(predicate: predicate) else {
+            return nil
+        }
+
+        return directory
+    }
+
     func copyFile(_ atPath: String, toPath: String) {
         if !fileManager.fileExists(atPath: atPath) { return }
 
