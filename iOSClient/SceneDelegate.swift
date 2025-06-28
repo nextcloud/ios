@@ -106,7 +106,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneWillEnterForeground(_ scene: UIScene) {
-        nkLog(debug: "Scene will enter in foreground")
         let session = SceneManager.shared.getSession(scene: scene)
         let controller = SceneManager.shared.getController(scene: scene)
         guard !session.account.isEmpty else { return }
@@ -148,7 +147,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
-        nkLog(debug: "Scene did become active")
         let session = SceneManager.shared.getSession(scene: scene)
         guard !session.account.isEmpty else { return }
 
@@ -184,7 +182,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
-        nkLog(debug: "Scene did enter in background")
         Task {
             await database.backupTableAccountToFileAsync()
         }

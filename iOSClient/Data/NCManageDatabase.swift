@@ -62,11 +62,13 @@ final class NCManageDatabase: @unchecked Sendable {
             self.openRealm(path: databaseFileUrl)
         }
 
-        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { _ in
-            if isAppex {
-                self.openRealmAppex(path: databaseFileUrl, objectTypes: objectTypes)
-            } else {
-                self.openRealm(path: databaseFileUrl)
+        NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
+            if hasBecomeActiveOnce {
+                if isAppex {
+                    self.openRealmAppex(path: databaseFileUrl, objectTypes: objectTypes)
+                } else {
+                    self.openRealm(path: databaseFileUrl)
+                }
             }
         }
     }
