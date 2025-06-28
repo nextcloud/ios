@@ -1,12 +1,24 @@
 import UIKit
 import NextcloudKit
 
+/// Global flag indicating whether the app has ever become active since launch.
 var hasBecomeActiveOnce: Bool = false
-/// Used for read/write in Realm
+
+/// Global flag used to control Realm write/read operations during app suspension.
 var isAppSuspending: Bool = false
-/// Used for know if the app in in Background mode
+
+/// Global flag indicating whether the app is currently in background mode.
 var isAppInBackground: Bool = true
 
+/// Singleton responsible for monitoring and managing app state transitions.
+///
+/// This class observes system notifications related to app lifecycle events and updates global flags accordingly:
+///
+/// - `hasBecomeActiveOnce`: set to `true` the first time the app enters foreground.
+/// - `isAppSuspending`: set to `true` when the app enters background (useful to safely close Realm writes).
+/// - `isAppInBackground`: indicates whether the app is currently running in background.
+///
+/// Additionally, it logs lifecycle transitions using `nkLog(debug:)`.
 final class NCAppStateManager {
     static let shared = NCAppStateManager()
 
