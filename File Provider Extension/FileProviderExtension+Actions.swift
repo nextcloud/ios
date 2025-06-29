@@ -192,67 +192,92 @@ extension FileProviderExtension {
     }
 
     override func setFavoriteRank(_ favoriteRank: NSNumber?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-        guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(itemIdentifier) else {
-            return completionHandler(nil, NSFileProviderError(.noSuchItem))
-        }
-        var favorite = false
-        let ocId = metadata.ocId
-
-        if favoriteRank == nil {
-            fileProviderData.shared.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
-        } else {
-            if fileProviderData.shared.listFavoriteIdentifierRank[itemIdentifier.rawValue] == nil {
-                fileProviderData.shared.listFavoriteIdentifierRank[itemIdentifier.rawValue] = favoriteRank
+        Task {
+            guard let metadata = await providerUtility.getTableMetadataFromItemIdentifierAsync(itemIdentifier) else {
+                completionHandler(nil, NSFileProviderError(.noSuchItem))
+                return
             }
-            favorite = true
-        }
+            var favorite = false
+            let ocId = metadata.ocId
 
-        if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
-            let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: fileProviderData.shared.session)
-            NextcloudKit.shared.setFavorite(fileName: fileNamePath, favorite: favorite, account: metadata.account) { _, _, error in
-                if error == .success {
-                    guard let metadata = self.database.getMetadataFromOcId(ocId) else {
-                        return completionHandler(nil, NSFileProviderError(.noSuchItem))
+            if favoriteRank == nil {
+                fileProviderData.shared.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
+            } else {
+                if fileProviderData.shared.listFavoriteIdentifierRank[itemIdentifier.rawValue] == nil {
+                    fileProviderData.shared.listFavoriteIdentifierRank[itemIdentifier.rawValue] = favoriteRank
+                }
+                favorite = true
+            }
+
+            if (favorite == true && !metadata.favorite) || (!favorite && metadata.favorite) {
+                let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: fileProviderData.shared.session)
+                let resultsFavorite = await  NextcloudKit.shared.setFavoriteAsync(fileName: fileNamePath, favorite: favorite, account: metadata.account)
+
+                if resultsFavorite.error == .success {
+                    guard let metadata = await self.database.getMetadataFromOcIdAsync(ocId) else {
+                        completionHandler(nil, NSFileProviderError(.noSuchItem))
+                        return
                     }
+
                     // Change DB
                     metadata.favorite = favorite
-                    self.database.addMetadata(metadata)
+                    let metadataDetached = await self.database.addMetadataAsync(metadata)
+
                     /// SIGNAL
-                    let item = fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .workingSet)
+                    let item = fileProviderData.shared.signalEnumerator(ocId: metadataDetached.ocId, type: .workingSet)
+
                     completionHandler(item, nil)
+                    return
+
                 } else {
-                    guard let metadata = self.database.getMetadataFromOcId(ocId) else {
-                        return completionHandler(nil, NSFileProviderError(.noSuchItem))
+                    guard let metadata = await self.database.getMetadataFromOcIdAsync(ocId) else {
+                        completionHandler(nil, NSFileProviderError(.noSuchItem))
+                        return
                     }
+
                     // Errore, remove from listFavoriteIdentifierRank
                     fileProviderData.shared.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
-                    /// SIGNAL
+
+                    // SIGNAL
                     let item = fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .workingSet)
+
                     completionHandler(item, NSFileProviderError(.serverUnreachable))
+                    return
                 }
             }
         }
     }
 
     override func setTagData(_ tagData: Data?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-        guard let metadataForTag = providerUtility.getTableMetadataFromItemIdentifier(itemIdentifier) else {
-            return completionHandler(nil, NSFileProviderError(.noSuchItem))
-        }
-        let ocId = metadataForTag.ocId
-        let account = metadataForTag.account
+        Task {
+            guard let metadataForTag = await providerUtility.getTableMetadataFromItemIdentifierAsync(itemIdentifier) else {
+                completionHandler(nil, NSFileProviderError(.noSuchItem))
+                return
+            }
+            let ocId = metadataForTag.ocId
+            let account = metadataForTag.account
 
-        self.database.addTag(ocId, tagIOS: tagData, account: account)
-        /// SIGNAL WORKINGSET
-        let item = fileProviderData.shared.signalEnumerator(ocId: ocId, type: .workingSet)
-        completionHandler(item, nil)
+            await self.database.addTagAsunc(ocId, tagIOS: tagData, account: account)
+
+            // SIGNAL WORKINGSET
+            let item = fileProviderData.shared.signalEnumerator(ocId: ocId, type: .workingSet)
+
+            completionHandler(item, nil)
+        }
     }
 
     override func setLastUsedDate(_ lastUsedDate: Date?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-        guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(itemIdentifier),
-              let parentItemIdentifier = providerUtility.getParentItemIdentifier(metadata: metadata) else {
-            return completionHandler(nil, NSFileProviderError(.noSuchItem))
+
+        Task {
+            guard let metadata = await providerUtility.getTableMetadataFromItemIdentifierAsync(itemIdentifier),
+                  let parentItemIdentifier = await providerUtility.getParentItemIdentifierAsync(metadata: metadata) else {
+                completionHandler(nil, NSFileProviderError(.noSuchItem))
+                return
+            }
+
+            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+            
+            completionHandler(item, nil)
         }
-        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-        completionHandler(item, nil)
     }
 }

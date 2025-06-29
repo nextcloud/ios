@@ -21,21 +21,13 @@ extension NCManageDatabase {
 
     // MARK: - Realm write
 
-    func addTag(_ ocId: String, tagIOS: Data?, account: String) {
-        performRealmWrite { realm in
+    func addTagAsunc(_ ocId: String, tagIOS: Data?, account: String) async {
+        await performRealmWriteAsync { realm in
             let addObject = tableTag()
             addObject.account = account
             addObject.ocId = ocId
             addObject.tagIOS = tagIOS
             realm.add(addObject, update: .all)
-        }
-    }
-
-    func deleteTag(_ ocId: String) {
-        performRealmWrite { realm in
-            let results = realm.objects(tableTag.self)
-                .filter("ocId == %@", ocId)
-            realm.delete(results)
         }
     }
 

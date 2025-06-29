@@ -56,19 +56,22 @@ class fileProviderData: NSObject {
     // MARK: - 
 
     func setupAccount(domain: NSFileProviderDomain?, providerExtension: NSFileProviderExtension) -> tableAccount? {
-        self.domain = domain
-        if let domain, let fileProviderManager = NSFileProviderManager(for: domain) {
+        let version = NSString(format: NCBrandOptions.shared.textCopyrightNextcloudiOS as NSString, NCUtility().getVersionApp()) as String
+        var tblAccount = self.database.getActiveTableAccount()
+        var tblAccounts = self.database.getAllTableAccount()
+
+        if let domain,
+           let fileProviderManager = NSFileProviderManager(for: domain) {
             self.fileProviderManager = fileProviderManager
         }
-        let version = NSString(format: NCBrandOptions.shared.textCopyrightNextcloudiOS as NSString, NCUtility().getVersionApp()) as String
+        self.domain = domain
 
         NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCKeychain().log))
 
         nkLog(debug: "Start File Provider session " + version + " (File Provider Extension)")
 
-        var tblAccount = self.database.getActiveTableAccount()
         if let domain {
-            for tableAccount in self.database.getAllTableAccount() {
+            for tableAccount in tblAccounts {
                 guard let urlBase = NSURL(string: tableAccount.urlBase) else { continue }
                 guard let host = urlBase.host else { continue }
                 let accountDomain = tableAccount.userId + " (" + host + ")"
@@ -79,12 +82,14 @@ class fileProviderData: NSObject {
                 }
             }
         }
+
         guard let tblAccount else {
             return nil
         }
 
         self.account = tblAccount.account
-        /// NextcloudKit Session
+
+        // NextcloudKit Session
         NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup, delegate: NCNetworking.shared)
         NextcloudKit.shared.appendSession(account: tblAccount.account,
                                           urlBase: tblAccount.urlBase,
@@ -97,7 +102,7 @@ class fileProviderData: NSObject {
                                           httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
                                           groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
-        return tableAccount(value: tblAccount)
+        return tblAccount
     }
 
     // MARK: -
@@ -125,6 +130,7 @@ class fileProviderData: NSObject {
             fileProviderManager.signalEnumerator(for: parentItemIdentifier) { _ in }
         }
         fileProviderManager.signalEnumerator(for: .workingSet) { _ in }
+
         return item
     }
 
