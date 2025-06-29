@@ -392,14 +392,8 @@ final class NCCameraRoll: CameraRollExtractor {
                 }
                 let session = NCSession.shared.getSession(account: metadata.account)
                 let metadataLivePhoto = self.database.createMetadata(fileName: fileName,
-                                                                     fileNameView: fileName,
                                                                      ocId: ocId,
                                                                      serverUrl: metadata.serverUrl,
-                                                                     url: "",
-                                                                     contentType: "video/quicktime",
-                                                                     iconName: NKTypeIconFile.video.rawValue,
-                                                                     classFile: NKTypeClassFile.video.rawValue,
-                                                                     typeIdentifier: "com.apple.quicktime-movie",
                                                                      session: session,
                                                                      sceneIdentifier: metadata.sceneIdentifier)
 

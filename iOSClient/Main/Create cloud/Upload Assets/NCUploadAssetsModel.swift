@@ -216,16 +216,9 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
                 continue
             }
 
-            let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: fileName, mimeType: "", directory: false, account: session.account)
             let metadataForUpload = database.createMetadata(fileName: fileName,
-                                                            fileNameView: fileName,
                                                             ocId: NSUUID().uuidString,
                                                             serverUrl: serverUrl,
-                                                            url: "",
-                                                            contentType: results.mimeType,
-                                                            iconName: results.iconName,
-                                                            classFile: results.classFile,
-                                                            typeIdentifier: results.typeIdentifier,
                                                             session: session,
                                                             sceneIdentifier: controller?.sceneIdentifier)
 

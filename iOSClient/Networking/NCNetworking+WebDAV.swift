@@ -594,7 +594,9 @@ extension NCNetworking {
         } providers: { account, searchProviders in
             providers(account, searchProviders)
         } update: { account, partialResult, provider, _ in
-            guard let partialResult = partialResult else { return }
+            guard let partialResult = partialResult else {
+                return
+            }
             var metadatas: [tableMetadata] = []
 
             switch provider.id {
@@ -635,14 +637,9 @@ extension NCNetworking {
             default:
                 partialResult.entries.forEach({ entry in
                     let metadata = self.database.createMetadata(fileName: entry.title,
-                                                                fileNameView: entry.title,
                                                                 ocId: NSUUID().uuidString,
                                                                 serverUrl: session.urlBase,
                                                                 url: entry.resourceURL,
-                                                                contentType: "",
-                                                                iconName: entry.icon,
-                                                                classFile: "",
-                                                                typeIdentifier: "",
                                                                 isUrl: true,
                                                                 name: partialResult.id,
                                                                 subline: entry.subline,
@@ -709,14 +706,9 @@ extension NCNetworking {
             default:
                 searchResult.entries.forEach({ entry in
                     let newMetadata = self.database.createMetadata(fileName: entry.title,
-                                                                   fileNameView: entry.title,
                                                                    ocId: NSUUID().uuidString,
                                                                    serverUrl: session.urlBase,
                                                                    url: entry.resourceURL,
-                                                                   contentType: "",
-                                                                   iconName: entry.icon,
-                                                                   classFile: "",
-                                                                   typeIdentifier: "",
                                                                    isUrl: true,
                                                                    name: searchResult.name.lowercased(),
                                                                    subline: entry.subline,

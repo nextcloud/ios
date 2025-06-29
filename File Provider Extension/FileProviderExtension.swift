@@ -323,22 +323,11 @@ class FileProviderExtension: NSFileProviderExtension {
                                                           toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTransfer, fileNameView: fileName))
                     }
 
-                    let resultsType = NKTypeIdentifiersHelper().getInternalTypeSync(fileName: fileName,
-                                                                                    mimeType: "",
-                                                                                    directory: false,
-                                                                                    account: fileProviderData.shared.session.account)
-
                     fileURL.stopAccessingSecurityScopedResource()
 
                     let metadata = self.database.createMetadata(fileName: fileName,
-                                                                fileNameView: fileName,
                                                                 ocId: ocIdTransfer,
                                                                 serverUrl: tableDirectory.serverUrl,
-                                                                url: "",
-                                                                contentType: resultsType.mimeType,
-                                                                iconName: resultsType.iconName,
-                                                                classFile: resultsType.classFile,
-                                                                typeIdentifier: resultsType.typeIdentifier,
                                                                 session: fileProviderData.shared.session,
                                                                 sceneIdentifier: nil
                     )

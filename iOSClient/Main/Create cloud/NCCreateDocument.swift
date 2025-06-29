@@ -50,16 +50,10 @@ class NCCreateDocument: NSObject {
                     return NCContentPresenter().showError(error: error)
                 }
 
-                let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: fileName, mimeType: "", directory: false, account: session.account)
                 let metadata = self.database.createMetadata(fileName: fileName,
-                                                            fileNameView: fileName,
                                                             ocId: UUID,
                                                             serverUrl: serverUrl,
                                                             url: url,
-                                                            contentType: results.mimeType,
-                                                            iconName: results.iconName,
-                                                            classFile: results.classFile,
-                                                            typeIdentifier: results.typeIdentifier,
                                                             session: session,
                                                             sceneIdentifier: controller.sceneIdentifier)
 
@@ -73,16 +67,10 @@ class NCCreateDocument: NSObject {
                     return NCContentPresenter().showError(error: error)
                 }
                 if account == returnedAccount {
-                    let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: fileName, mimeType: "", directory: false, account: session.account)
                     let metadata = self.database.createMetadata(fileName: fileName,
-                                                                fileNameView: fileName,
                                                                 ocId: UUID,
                                                                 serverUrl: serverUrl,
                                                                 url: url,
-                                                                contentType: results.mimeType,
-                                                                iconName: results.iconName,
-                                                                classFile: results.classFile,
-                                                                typeIdentifier: results.typeIdentifier,
                                                                 session: session,
                                                                 sceneIdentifier: controller.sceneIdentifier)
 

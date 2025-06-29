@@ -79,7 +79,9 @@ class fileProviderData: NSObject {
                 }
             }
         }
-        guard let tblAccount else { return nil }
+        guard let tblAccount else {
+            return nil
+        }
 
         self.account = tblAccount.account
         /// NextcloudKit Session

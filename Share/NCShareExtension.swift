@@ -304,16 +304,9 @@ extension NCShareExtension {
             guard utilityFileSystem.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath) else {
                 continue
             }
-            let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: fileName, mimeType: "", directory: false, account: session.account)
             let metadataForUpload = self.database.createMetadata(fileName: fileName,
-                                                                 fileNameView: fileName,
                                                                  ocId: ocId,
                                                                  serverUrl: serverUrl,
-                                                                 url: "",
-                                                                 contentType: results.mimeType,
-                                                                 iconName: results.iconName,
-                                                                 classFile: results.classFile,
-                                                                 typeIdentifier: results.typeIdentifier,
                                                                  session: session,
                                                                  sceneIdentifier: nil)
 

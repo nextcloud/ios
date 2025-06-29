@@ -78,18 +78,11 @@ extension UIAlertController {
                 if let result = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", session.account, serverUrl, fileNameFolder)) {
                     metadata = result
                 } else {
-                    metadata = NCManageDatabase.shared.createMetadata(fileName: fileNameFolder,
-                                                                      fileNameView: fileNameFolder,
-                                                                      ocId: NSUUID().uuidString,
-                                                                      serverUrl: serverUrl,
-                                                                      url: "",
-                                                                      contentType: "httpd/unix-directory",
-                                                                      iconName: NKTypeIconFile.directory.rawValue,
-                                                                      classFile: NKTypeClassFile.document.rawValue,
-                                                                      typeIdentifier: "public.folder",
-                                                                      directory: true,
-                                                                      session: session,
-                                                                      sceneIdentifier: sceneIdentifier)
+                    metadata = NCManageDatabase.shared.createMetadataDirectory(fileName: fileNameFolder,
+                                                                               ocId: NSUUID().uuidString,
+                                                                               serverUrl: serverUrl,
+                                                                               session: session,
+                                                                               sceneIdentifier: sceneIdentifier)
                 }
 
                 metadata.status = NCGlobal.shared.metadataStatusWaitCreateFolder

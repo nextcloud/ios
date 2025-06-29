@@ -210,9 +210,25 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                                                       richWorkspace: metadataFolder.richWorkspace,
                                                       serverUrl: serverUrl,
                                                       account: metadataFolder.account)
+            }
 
-                /// FILES
-                await self.database.addMetadatasAsync(metadatas)
+            // METADATA
+            await self.database.addMetadatasAsync(metadatas)
+
+            // DIRECTORY
+            for metadata in metadatas {
+                if metadata.isDirectory {
+                    let serverUrl = serverUrl + "/" + metadata.fileName
+                    await self.database.addDirectoryAsync(e2eEncrypted: metadata.e2eEncrypted,
+                                                          favorite: metadata.favorite,
+                                                          ocId: metadata.ocId,
+                                                          fileId: metadata.fileId,
+                                                          etag: metadata.etag,
+                                                          permissions: metadata.permissions,
+                                                          richWorkspace: metadata.richWorkspace,
+                                                          serverUrl: serverUrl,
+                                                          account: metadata.account)
+                }
             }
 
             return(metadatas, isPaginated)
