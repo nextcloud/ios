@@ -276,7 +276,7 @@ extension FileProviderExtension {
             }
 
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-            
+
             completionHandler(item, nil)
         }
     }

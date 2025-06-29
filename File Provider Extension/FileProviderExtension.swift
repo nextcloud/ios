@@ -38,6 +38,7 @@ class FileProviderExtension: NSFileProviderExtension {
     lazy var utilityFileSystem = NCUtilityFileSystem()
     let global = NCGlobal.shared
     let database = NCManageDatabase.shared
+    let backgroundSession = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance)
 
     override init() {
         super.init()
@@ -177,7 +178,7 @@ class FileProviderExtension: NSFileProviderExtension {
                         return
                     }
 
-                    guard var metadata = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                    guard let metadata = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
                                                                                      session: NCNetworking.shared.sessionDownload,
                                                                                      sessionTaskIdentifier: 0,
                                                                                      sessionError: "",
@@ -190,41 +191,22 @@ class FileProviderExtension: NSFileProviderExtension {
                     // SIGNAL
                     fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
 
-                    let resultsDownload = await NextcloudKit.shared.downloadAsync(serverUrlFileName: serverUrlFileName,
-                                                                                  fileNameLocalPath: fileNameLocalPath,
-                                                                                  account: account) { request in
-                        print(request)
-                    } taskHandler: { task in
-                        Task {
-                            await self.database.setMetadataSessionAsync(ocId: ocId,
-                                                                        sessionTaskIdentifier: task.taskIdentifier)
+                    let (task, error) = backgroundSession.download(serverUrlFileName: serverUrlFileName,
+                                                                   fileNameLocalPath: fileNameLocalPath,
+                                                                   account: account,
+                                                                   automaticResume: false,
+                                                                   sessionIdentifier: NCNetworking.shared.sessionDownloadBackgroundExt)
 
-                            try await NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(itemIdentifier.rawValue))
+                    if let task, error == .success {
+                        await self.database.setMetadataSessionAsync(ocId: ocId,
+                                                                    sessionTaskIdentifier: task.taskIdentifier)
+                        try await NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(itemIdentifier.rawValue))
+                        fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
 
-                            fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
-                        }
+                        fileProviderData.shared.downloadPendingCompletionHandlers[task.taskIdentifier] = completionHandler
+
+                        task.resume()
                     }
-
-                    metadata.sceneIdentifier = nil
-                    metadata.session = ""
-                    metadata.sessionError = ""
-                    metadata.sessionSelector = ""
-                    metadata.sessionDate = nil
-                    metadata.sessionTaskIdentifier = 0
-                    metadata.status = NCGlobal.shared.metadataStatusNormal
-                    metadata.date = (resultsDownload.date as? NSDate) ?? NSDate()
-                    metadata.etag = resultsDownload.etag ?? ""
-
-                    metadata = await self.database.addMetadataAsync(metadata)
-
-                    if resultsDownload.nkError == .success {
-                        await self.database.addLocalFileAsync(metadata: metadata)
-                    }
-
-                    completionHandler(nil)
-                    fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
-
-                    return
                 }
             }
         }

@@ -122,7 +122,10 @@ extension NCNetworking {
 
         start()
 
-        let (task, error) = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account)
+        let (task, error) = backgroundSession.download(serverUrlFileName: serverUrlFileName,
+                                                       fileNameLocalPath: fileNameLocalPath,
+                                                       account: metadata.account,
+                                                       sessionIdentifier: sessionDownloadBackground)
 
         Task {
             if let task, error == .success {
@@ -187,15 +190,23 @@ extension NCNetworking {
                 return
             }
 
+#if EXTENSION_FILE_PROVIDER_EXTENSION
+            await fileProviderData.shared.downloadComplete(metadata: metadata, task: task, etag: etag, error: error)
+#else
             NextcloudKit.shared.nkCommonInstance.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
 
             if error == .success {
                 nkLog(success: "Downloaded file: " + metadata.serverUrl + "/" + metadata.fileName)
-#if !EXTENSION
+                #if !EXTENSION
                 if let result = await self.database.getE2eEncryptionAsync(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
-                    NCEndToEndEncryption.shared().decryptFile(metadata.fileName, fileNameView: metadata.fileNameView, ocId: metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
+                    NCEndToEndEncryption.shared().decryptFile(metadata.fileName,
+                                                              fileNameView: metadata.fileNameView,
+                                                              ocId: metadata.ocId,
+                                                              key: result.key,
+                                                              initializationVector: result.initializationVector,
+                                                              authenticationTag: result.authenticationTag)
                 }
-#endif
+                #endif
                 await self.database.addLocalFileAsync(metadata: metadata)
 
                 if let updatedMetadata = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
@@ -214,11 +225,11 @@ extension NCNetworking {
                 nkLog(error: "Downloaded file: " + metadata.serverUrl + "/" + metadata.fileName + ", result: error \(error.errorCode)")
 
                 if error.errorCode == NCGlobal.shared.errorResourceNotFound {
-#if EXTENSION
-                    self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-#else
-                    removeFileInBackgroundSafe(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-#endif
+                #if EXTENSION
+                self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                #else
+                removeFileInBackgroundSafe(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                #endif
                     await self.database.deleteLocalFileOcIdAsync(metadata.ocId)
                     await self.database.deleteMetadataOcIdAsync(metadata.ocId)
                 } else if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
@@ -249,9 +260,10 @@ extension NCNetworking {
                         }
                     }
                 }
+                #if !EXTENSION
+                await self.database.updateBadge()
+                #endif
             }
-#if !EXTENSION
-            await self.database.updateBadge()
 #endif
         }
     }

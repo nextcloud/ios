@@ -79,6 +79,8 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 
     let sessionDownload = NextcloudKit.shared.nkCommonInstance.identifierSessionDownload
     let sessionDownloadBackground = NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground
+    let sessionDownloadBackgroundExt = NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackgroundExt
+
     let sessionUpload = NextcloudKit.shared.nkCommonInstance.identifierSessionUpload
     let sessionUploadBackground = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground
     let sessionUploadBackgroundWWan = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundWWan
@@ -88,6 +90,8 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     let utility = NCUtility()
     let database = NCManageDatabase.shared
     let global = NCGlobal.shared
+    let backgroundSession = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance)
+
     var requestsUnifiedSearch: [DataRequest] = []
     var lastReachability: Bool = true
     var networkReachability: NKTypeReachability?
