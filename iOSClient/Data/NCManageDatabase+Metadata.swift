@@ -997,6 +997,32 @@ extension NCManageDatabase {
         }
     }
 
+    /// Updates metadata files in Realm asynchronously.
+    /// - Parameters:
+    ///   - metadatas: Array of `tableMetadata` objects to insert or update.
+    ///   - serverUrl: Server URL identifier.
+    ///   - account: Account identifier.
+    func updateMetadatasFilesAsync(_ metadatas: [tableMetadata], serverUrl: String, account: String) async {
+        await performRealmWriteAsync { realm in
+            let ocIdsToSkip = Set(
+                realm.objects(tableMetadata.self)
+                    .filter("status != %d", NCGlobal.shared.metadataStatusNormal)
+                    .map(\.ocId)
+            )
+
+            let resultsToDelete = realm.objects(tableMetadata.self)
+                .filter("account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
+                .filter { !ocIdsToSkip.contains($0.ocId) }
+
+            realm.delete(resultsToDelete)
+
+            for metadata in metadatas {
+                guard !ocIdsToSkip.contains(metadata.ocId) else { continue }
+                realm.add(tableMetadata(value: metadata), update: .all)
+            }
+        }
+    }
+
     func setMetadataEncrypted(ocId: String, encrypted: Bool, sync: Bool = true) {
         performRealmWrite(sync: sync) { realm in
             let result = realm.objects(tableMetadata.self)
@@ -1416,6 +1442,26 @@ extension NCManageDatabase {
             return listIdentifierRank
         } ?? [:]
     }
+
+    func getTableMetadatasDirectoryFavoriteIdentifierRankAsync(account: String) async -> [String: NSNumber] {
+        let result = await performRealmReadAsync { realm in
+            var listIdentifierRank: [String: NSNumber] = [:]
+            var counter = Int64(10)
+
+            let results = realm.objects(tableMetadata.self)
+                .filter("account == %@ AND directory == true AND favorite == true", account)
+                .sorted(byKeyPath: "fileNameView", ascending: true)
+
+            results.forEach { item in
+                counter += 1
+                listIdentifierRank[item.ocId] = NSNumber(value: counter)
+            }
+
+            return listIdentifierRank
+        }
+        return result ?? [:]
+    }
+
 
     func getAssetLocalIdentifiersUploadedAsync() async -> [String]? {
         return await performRealmReadAsync { realm in
