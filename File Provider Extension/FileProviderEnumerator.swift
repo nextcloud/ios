@@ -192,7 +192,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
         if resultsRead.error == .success, let files = resultsRead.files {
             if pageNumber == 0 {
-                await self.database.deleteMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.session.account, serverUrl))
+                await self.database.deleteMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", fileProviderData.shared.session.account, serverUrl, NCGlobal.shared.metadataStatusNormal))
                 useFirstAsMetadataFolder = true
             }
 
@@ -213,7 +213,13 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
 
             // METADATA
-            await self.database.addMetadatasAsync(metadatas)
+            var metadataToInsert: [tableMetadata] = []
+            for metadata in metadatas {
+                if await self.database.getMetadataFromOcIdAsync(metadata.ocId) == nil {
+                    metadataToInsert.append(metadata)
+                }
+            }
+            await self.database.addMetadatasAsync(metadataToInsert)
 
             // DIRECTORY
             for metadata in metadatas {
