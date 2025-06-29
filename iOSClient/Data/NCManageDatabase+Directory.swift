@@ -268,6 +268,16 @@ extension NCManageDatabase {
         }
     }
 
+    func renameDirectoryAsync(ocId: String, serverUrl: String) async {
+        await performRealmWriteAsync { realm in
+            if let result = realm.objects(tableDirectory.self)
+                .filter("ocId == %@", ocId)
+                .first {
+                result.serverUrl = serverUrl
+            }
+        }
+    }
+
     func setDirectory(serverUrl: String, offline: Bool, metadata: tableMetadata) {
         performRealmWrite { realm in
             if let result = realm.objects(tableDirectory.self)

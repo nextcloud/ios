@@ -852,6 +852,16 @@ extension NCManageDatabase {
         }
     }
 
+    func moveMetadataAsync(ocId: String, serverUrlTo: String) async {
+        await performRealmWriteAsync { realm in
+            if let result = realm.objects(tableMetadata.self)
+                .filter("ocId == %@", ocId)
+                .first {
+                result.serverUrl = serverUrlTo
+            }
+        }
+    }
+
     func clearAssetLocalIdentifiersAsync(_ assetLocalIdentifiers: [String]) async {
         await performRealmWriteAsync { realm in
             let results = realm.objects(tableMetadata.self)
@@ -1244,7 +1254,6 @@ extension NCManageDatabase {
         }
         return result ?? [:]
     }
-
 
     func getAssetLocalIdentifiersUploadedAsync() async -> [String]? {
         return await performRealmReadAsync { realm in

@@ -59,7 +59,6 @@ extension NCManageDatabase {
         }
     }
 
-
     func getTag(predicate: NSPredicate) -> tableTag? {
         var tag: tableTag?
 

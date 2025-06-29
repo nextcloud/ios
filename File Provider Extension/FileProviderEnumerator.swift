@@ -154,6 +154,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
     func currentSyncAnchor(completionHandler: @escaping (NSFileProviderSyncAnchor?) -> Void) {
         let data = "\(self.anchor)".data(using: .utf8)
+
         completionHandler(NSFileProviderSyncAnchor(data!))
     }
 
@@ -238,12 +239,17 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
 
             return(metadatas, isPaginated)
+
         } else {
             if isPaginated {
-                return(nil, isPaginated)
+
+                return (nil, isPaginated)
+
             } else {
+
                 let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.session.account, serverUrl))
-                return(metadatas, isPaginated)
+
+                return (metadatas, isPaginated)
             }
         }
     }

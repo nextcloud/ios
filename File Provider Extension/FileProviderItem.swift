@@ -8,7 +8,7 @@ import NextcloudKit
 import UniformTypeIdentifiers
 
 class FileProviderItem: NSObject, NSFileProviderItem {
-    
+
     var metadata: tableMetadata
     /// Providing Required Properties
     var itemIdentifier: NSFileProviderItemIdentifier {
