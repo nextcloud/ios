@@ -1077,6 +1077,19 @@ extension NCManageDatabase {
         }
     }
 
+    func getMetadataFromOcIdAndocIdTransferAsync(_ ocId: String?) async -> tableMetadata? {
+        guard let ocId else {
+            return nil
+        }
+
+        return await performRealmReadAsync { realm in
+            realm.objects(tableMetadata.self)
+                .filter("ocId == %@ OR ocIdTransfer == %@", ocId, ocId)
+                .first
+                .map { tableMetadata(value: $0) }
+        }
+    }
+
     func getMetadataFolder(session: NCSession.Session, serverUrl: String) -> tableMetadata? {
         var serverUrl = serverUrl
         var fileName = ""

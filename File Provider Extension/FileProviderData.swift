@@ -6,10 +6,7 @@ import UIKit
 import NextcloudKit
 
 class fileProviderData: NSObject {
-    static let shared: fileProviderData = {
-        let instance = fileProviderData()
-        return instance
-    }()
+    static let shared = fileProviderData()
 
     var domain: NSFileProviderDomain?
     var fileProviderManager: NSFileProviderManager = NSFileProviderManager.default
