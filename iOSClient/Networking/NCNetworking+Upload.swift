@@ -51,13 +51,13 @@ extension NCNetworking {
         }
 
         if metadata.isDirectoryE2EE {
-#if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_WIDGET
+            #if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_WIDGET
             let detachedMetadata = tableMetadata(value: metadata)
             Task {
                 let error = await NCNetworkingE2EEUpload().upload(metadata: detachedMetadata, uploadE2EEDelegate: uploadE2EEDelegate, controller: controller)
                 completion(error)
             }
-#endif
+            #endif
         } else if metadata.chunk > 0 {
             DispatchQueue.main.async {
                 hud = NCHud(controller?.view)
@@ -267,6 +267,7 @@ extension NCNetworking {
         }
     }
 
+    // wrapper async
     func uploadFileInBackgroundAsync(metadata: tableMetadata, controller: UIViewController? = nil) async -> NKError {
         await withCheckedContinuation { continuation in
             uploadFileInBackground(metadata: metadata,
@@ -287,7 +288,7 @@ extension NCNetworking {
                         task: URLSessionTask,
                         error: NKError) {
         Task {
-#if EXTENSION_FILE_PROVIDER_EXTENSION
+            #if EXTENSION_FILE_PROVIDER_EXTENSION
             await fileProviderData.shared.uploadComplete(fileName: fileName,
                                                          serverUrl: serverUrl,
                                                          ocId: ocId,
@@ -296,12 +297,12 @@ extension NCNetworking {
                                                          size: size,
                                                          task: task,
                                                          error: error)
-#else
+            return
+            #endif
             if let url = task.currentRequest?.url,
                let metadata = await self.database.getMetadataAsync(from: url, sessionTaskIdentifier: task.taskIdentifier) {
                 await uploadComplete(withMetadata: metadata, ocId: ocId, etag: etag, date: date, size: size, error: error)
             }
-#endif
         }
     }
 
@@ -391,19 +392,19 @@ extension NCNetworking {
                                                                     status: self.global.metadataStatusUploadError,
                                                                     errorCode: error.errorCode)
                 } else {
-#if EXTENSION
+                    #if EXTENSION
                     _ = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
                                                                     sessionTaskIdentifier: 0,
                                                                     sessionError: error.errorDescription,
                                                                     status: self.global.metadataStatusUploadError,
                                                                     errorCode: error.errorCode)
-#else
+                    #else
                     if capabilities.termsOfService {
                         termsOfService(metadata: metadata)
                     } else {
                         uploadForbidden(metadata: metadata, error: error)
                     }
-#endif
+                    #endif
                 }
             } else {
                 if let metadata = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
@@ -431,9 +432,7 @@ extension NCNetworking {
                 }
             }
         }
-#if !EXTENSION
         await self.database.updateBadge()
-#endif
     }
 
     func uploadProgress(_ progress: Float,
@@ -548,5 +547,5 @@ extension NCNetworking {
             }
         }
     }
-    #endif
+#endif
 }
