@@ -12,7 +12,7 @@ extension NCManageDatabase {
     func convertFileToMetadata(_ file: NKFile, isDirectoryE2EE: Bool) -> tableMetadata {
         let metadata = self.createMetadata(file)
 
-        #if EXTENSION_FILE_PROVIDER_EXTENSION
+        #if !EXTENSION_FILE_PROVIDER_EXTENSION
         // E2EE find the fileName for fileNameView
         if isDirectoryE2EE || file.e2eEncrypted {
             if let tableE2eEncryption = getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", file.account, file.serverUrl, file.fileName)) {
@@ -393,5 +393,4 @@ extension NCManageDatabase {
             }
         }
     }
-
 }
