@@ -68,7 +68,7 @@ final class NCCameraRoll: CameraRollExtractor {
         }
 
         var metadatas: [tableMetadata] = []
-        let metadataSource = tableMetadata(value: metadata)
+        let metadataSource = metadata.detachedCopy()
         let chunkSize = NCNetworking.shared.networkReachability == .reachableEthernetOrWiFi
             ? NCGlobal.shared.chunkSizeMBEthernetOrWiFi
             : NCGlobal.shared.chunkSizeMBCellular
@@ -155,7 +155,7 @@ final class NCCameraRoll: CameraRollExtractor {
         metadata originalMetadata: tableMetadata,
         modifyMetadataForUpload: Bool
     ) async throws -> ExtractedAsset {
-        var metadata = tableMetadata(value: originalMetadata)
+        var metadata = originalMetadata.detachedCopy()
 
         // Determine the appropriate chunk size based on the current network connection
         let chunkSize = NCNetworking.shared.networkReachability == .reachableEthernetOrWiFi

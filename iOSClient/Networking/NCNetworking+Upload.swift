@@ -52,7 +52,7 @@ extension NCNetworking {
 
         if metadata.isDirectoryE2EE {
             #if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_WIDGET
-            let detachedMetadata = tableMetadata(value: metadata)
+            let detachedMetadata = metadata.detachedCopy()
             Task {
                 let error = await NCNetworkingE2EEUpload().upload(metadata: detachedMetadata, uploadE2EEDelegate: uploadE2EEDelegate, controller: controller)
                 completion(error)
@@ -185,7 +185,7 @@ extension NCNetworking {
                                     filesChunk: filesChunk)
             self.notifyAllDelegates { delegate in
                 delegate.transferChange(status: self.global.networkingStatusUploading,
-                                        metadata: tableMetadata(value: metadata),
+                                        metadata: metadata.detachedCopy(),
                                         error: .success)
             }
         } requestHandler: { _ in
@@ -336,7 +336,7 @@ extension NCNetworking {
             metadata.status = self.global.metadataStatusNormal
 
             await self.database.deleteMetadataAsync(predicate: NSPredicate(format: "ocIdTransfer == %@", metadata.ocIdTransfer))
-            let metadata = await self.database.addMetadataAsync(metadata)
+            await self.database.addMetadataAsync(metadata)
 
             if selector == self.global.selectorUploadFileNODelete {
                 if isAppInBackground {
@@ -369,7 +369,7 @@ extension NCNetworking {
             } else {
                 self.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusUploaded,
-                                            metadata: tableMetadata(value: metadata),
+                                            metadata: metadata.detachedCopy(),
                                             error: error)
                 }
             }
@@ -456,7 +456,7 @@ extension NCNetworking {
         await self.database.deleteMetadataOcIdAsync(metadata.ocIdTransfer)
         self.notifyAllDelegates { delegate in
             delegate.transferChange(status: self.global.networkingStatusUploadCancel,
-                                    metadata: tableMetadata(value: metadata),
+                                    metadata: metadata.detachedCopy(),
                                     error: .success)
         }
     }

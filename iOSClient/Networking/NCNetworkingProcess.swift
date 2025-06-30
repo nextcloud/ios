@@ -479,9 +479,9 @@ actor NCNetworkingProcess {
                                                                                 account: metadata.account)
                     }
 
-                    metadatasError[tableMetadata(value: metadata)] = .success
+                    metadatasError[metadata.detachedCopy()] = .success
                 } else {
-                    metadatasError[tableMetadata(value: metadata)] = resultDelete.error
+                    metadatasError[metadata.detachedCopy()] = resultDelete.error
                     returnError = resultDelete.error
                 }
             }

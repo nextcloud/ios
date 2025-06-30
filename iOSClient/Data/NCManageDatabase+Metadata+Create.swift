@@ -11,12 +11,14 @@ extension NCManageDatabase {
     func convertFileToMetadata(_ file: NKFile, isDirectoryE2EE: Bool) -> tableMetadata {
         let metadata = self.createMetadata(file)
 
+        #if EXTENSION_FILE_PROVIDER_EXTENSION
         // E2EE find the fileName for fileNameView
         if isDirectoryE2EE || file.e2eEncrypted {
             if let tableE2eEncryption = getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", file.account, file.serverUrl, file.fileName)) {
                 metadata.fileNameView = tableE2eEncryption.fileName
             }
         }
+        #endif
 
         if !metadata.directory {
             let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory, account: file.account)
@@ -32,12 +34,14 @@ extension NCManageDatabase {
     func convertFileToMetadataAsync(_ file: NKFile, isDirectoryE2EE: Bool) async -> tableMetadata {
         let metadata = self.createMetadata(file)
 
+        #if !EXTENSION_FILE_PROVIDER_EXTENSION
         // E2EE find the fileName for fileNameView
         if isDirectoryE2EE || file.e2eEncrypted {
             if let tableE2eEncryption = await getE2eEncryptionAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", file.account, file.serverUrl, file.fileName)) {
                 metadata.fileNameView = tableE2eEncryption.fileName
             }
         }
+        #endif
 
         if !metadata.directory {
             let results = await NKTypeIdentifiers.shared.getInternalType(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory, account: file.account)
@@ -48,7 +52,7 @@ extension NCManageDatabase {
             metadata.typeIdentifier = results.typeIdentifier
         }
 
-        return tableMetadata(value: metadata)
+        return metadata.detachedCopy()
     }
 
     func convertFilesToMetadatas(_ files: [NKFile], useFirstAsMetadataFolder: Bool, completion: @escaping (_ metadataFolder: tableMetadata, _ metadatas: [tableMetadata]) -> Void) {
@@ -76,7 +80,7 @@ extension NCManageDatabase {
 
             counter += 1
         }
-        completion(tableMetadata(value: metadataFolder), metadatas)
+        completion(metadataFolder.detachedCopy(), metadatas)
     }
 
     func convertFilesToMetadatasAsync(_ files: [NKFile], useFirstAsMetadataFolder: Bool) async -> (metadataFolder: tableMetadata, metadatas: [tableMetadata]) {
@@ -104,7 +108,7 @@ extension NCManageDatabase {
 
             counter += 1
         }
-        return (tableMetadata(value: metadataFolder), metadatas)
+        return (metadataFolder.detachedCopy(), metadatas)
     }
 
     func createMetadata(_ file: NKFile) -> tableMetadata {

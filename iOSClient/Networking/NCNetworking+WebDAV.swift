@@ -64,7 +64,7 @@ extension NCNetworking {
             self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { metadataFolder, metadatas in
                 storeFolder(metadataFolder)
                 self.database.updateMetadatasFiles(metadatas, serverUrl: serverUrl, account: account)
-                completion(account, tableMetadata(value: metadataFolder), metadatas, error)
+                completion(account, metadataFolder.detachedCopy(), metadatas, error)
             }
         }
     }
@@ -354,9 +354,9 @@ extension NCNetworking {
                 for metadata in metadatasE2EE {
                     let error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
                     if error == .success {
-                        metadatasError[tableMetadata(value: metadata)] = .success
+                        metadatasError[metadata.detachedCopy()] = .success
                     } else {
-                        metadatasError[tableMetadata(value: metadata)] = error
+                        metadatasError[metadata.detachedCopy()] = error
                     }
                     let num = numIncrement()
                     ncHud.progress(num: num, total: total)

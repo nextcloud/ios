@@ -22,6 +22,7 @@ class fileProviderData: NSObject {
     private var account: String = ""
 
     var downloadPendingCompletionHandlers: [Int: (Error?) -> Void] = [:]
+    var uploadPendingCompletionHandlers: [Int: (Error?) -> Void] = [:]
 
     var session: NCSession.Session {
         if !account.isEmpty,
@@ -45,14 +46,6 @@ class fileProviderData: NSObject {
         case update
         case workingSet
     }
-
-    struct UploadMetadata {
-        var id: String
-        var metadata: tableMetadata
-        var task: URLSessionUploadTask?
-    }
-
-    var uploadMetadata: [UploadMetadata] = []
 
     // MARK: - 
 
@@ -159,44 +152,29 @@ class fileProviderData: NSObject {
         try? await fileProviderManager.signalEnumerator(for: .workingSet)
     }
 
-    // MARK: -
-
-    func appendUploadMetadata(id: String, metadata: tableMetadata, task: URLSessionUploadTask?) {
-        if let index = uploadMetadata.firstIndex(where: { $0.id == id }) {
-            uploadMetadata.remove(at: index)
-        }
-        uploadMetadata.append(UploadMetadata(id: id, metadata: metadata, task: task))
-    }
-
-    func getUploadMetadata(id: String) -> UploadMetadata? {
-        return uploadMetadata.filter({ $0.id == id }).first
-    }
-
     // MARK: - DOWNLOAD
 
     func downloadComplete(metadata: tableMetadata, task: URLSessionTask, etag: String?, error: NKError) async {
         let ocId = metadata.ocId
         let taskIdentifier = task.taskIdentifier
 
-        if let metadata = await self.database.setMetadataSessionAsync(ocId: ocId,
-                                                                      session: "",
-                                                                      sessionTaskIdentifier: 0,
-                                                                      sessionError: "",
-                                                                      status: self.global.metadataStatusNormal,
-                                                                      etag: etag) {
-            await self.database.addMetadataAsync(metadata)
+        await self.database.setMetadataSessionAsync(ocId: ocId,
+                                                    session: "",
+                                                    sessionTaskIdentifier: 0,
+                                                    sessionError: "",
+                                                    status: self.global.metadataStatusNormal,
+                                                    etag: etag)
 
-            if error == .success {
-                if let metadata = await self.database.getMetadataFromOcIdAsync(ocId) {
-                    await self.database.addLocalFileAsync(metadata: metadata)
-                }
+        if error == .success {
+            if let metadata = await self.database.getMetadataFromOcIdAsync(ocId) {
+                await self.database.addLocalFileAsync(metadata: metadata)
             }
         }
 
         downloadPendingCompletionHandlers[taskIdentifier]?(nil)
         downloadPendingCompletionHandlers.removeValue(forKey: taskIdentifier)
 
-        signalEnumerator(ocId: metadata.ocId, type: .update)
+        signalEnumerator(ocId: ocId, type: .update)
     }
 
     // MARK: - UPLOAD
@@ -223,6 +201,7 @@ class fileProviderData: NSObject {
         if error == .success, let ocId {
             // SIGNAL
             signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
+
             if !metadata.ocIdTransfer.isEmpty, ocId != metadata.ocIdTransfer {
                 await self.database.deleteMetadataOcIdAsync(metadata.ocIdTransfer)
             }
@@ -245,11 +224,12 @@ class fileProviderData: NSObject {
             metadata.sessionTaskIdentifier = 0
             metadata.status = NCGlobal.shared.metadataStatusNormal
 
-            let metadata = await self.database.addMetadataAsync(metadata)
+            await self.database.addMetadataAsync(metadata)
             await self.database.addLocalFileAsync(metadata: metadata)
 
             // SIGNAL
-            fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
+            fileProviderData.shared.signalEnumerator(ocId: ocId, type: .update)
+
         } else {
 
             await self.database.deleteMetadataOcIdAsync(metadata.ocIdTransfer)

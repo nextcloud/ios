@@ -201,7 +201,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
             // FOLDER
             if useFirstAsMetadataFolder {
-                let metadataFolder = await self.database.addMetadataAsync(metadataFolder)
+                await self.database.addMetadataAsync(metadataFolder)
                 await self.database.addDirectoryAsync(e2eEncrypted: metadataFolder.e2eEncrypted,
                                                       favorite: metadataFolder.favorite,
                                                       ocId: metadataFolder.ocId,

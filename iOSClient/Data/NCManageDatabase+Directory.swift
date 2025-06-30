@@ -86,7 +86,7 @@ extension NCManageDatabase {
     }
 
     func addDirectories(metadatas: [tableMetadata], sync: Bool = true) {
-        let detached = metadatas.map { tableMetadata(value: $0) }
+        let detached = metadatas.map { $0.detachedCopy() }
 
         performRealmWrite(sync: sync) { realm in
             for metadata in detached {
@@ -118,7 +118,7 @@ extension NCManageDatabase {
     }
 
     func addDirectoriesAsync(metadatas: [tableMetadata]) async {
-        let detached = metadatas.map { tableMetadata(value: $0) }
+        let detached = metadatas.map { $0.detachedCopy() }
 
         await performRealmWriteAsync { realm in
             for metadata in detached {

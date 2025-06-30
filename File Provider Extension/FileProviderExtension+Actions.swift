@@ -35,8 +35,9 @@ extension FileProviderExtension {
                                                           serverUrl: serverUrlFileName,
                                                           account: metadata.account)
 
-                    let metadataDetached = await self.database.addMetadataAsync(metadata)
-                    let item = FileProviderItem(metadata: metadataDetached, parentItemIdentifier: parentItemIdentifier)
+                    await self.database.addMetadataAsync(metadata)
+
+                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
 
                     completionHandler(item, nil)
                     return
@@ -221,10 +222,10 @@ extension FileProviderExtension {
 
                     // Change DB
                     metadata.favorite = favorite
-                    let metadataDetached = await self.database.addMetadataAsync(metadata)
+                    await self.database.addMetadataAsync(metadata)
 
                     /// SIGNAL
-                    let item = fileProviderData.shared.signalEnumerator(ocId: metadataDetached.ocId, type: .workingSet)
+                    let item = fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .workingSet)
 
                     completionHandler(item, nil)
                     return

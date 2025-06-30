@@ -318,6 +318,24 @@ extension tableMetadata {
         }
         return true
     }
+
+    /// Returns a detached (unmanaged) deep copy of the current `tableMetadata` object.
+    ///
+    /// - Note: The Realm `List` properties containing primitive types (e.g., `tags`, `shareType`) are copied automatically
+    ///         by the Realm initializer `init(value:)`. For `List` containing Realm objects (e.g., `exifPhotos`), this method
+    ///         creates new instances to ensure the copy is fully detached and safe to use outside of a Realm context.
+    ///
+    /// - Returns: A new `tableMetadata` instance fully detached from Realm.
+    func detachedCopy() -> tableMetadata {
+        // Use Realm's built-in copy constructor for primitive properties and List of primitives
+        let detached = tableMetadata(value: self)
+
+        // Deep copy of List of Realm objects (exifPhotos)
+        detached.exifPhotos.removeAll()
+        detached.exifPhotos.append(objectsIn: self.exifPhotos.map { NCKeyValue(value: $0) })
+
+        return detached
+    }
 }
 
 extension NCManageDatabase {
@@ -360,47 +378,43 @@ extension NCManageDatabase {
     }
 
     func addAndReturnMetadata(_ metadata: tableMetadata, sync: Bool = true) -> tableMetadata {
-        let detached = tableMetadata(value: metadata)
+        let detached = metadata.detachedCopy()
 
         performRealmWrite(sync: sync) { realm in
             realm.add(detached, update: .all)
         }
 
-        return tableMetadata(value: detached)
+        return detached.detachedCopy()
     }
 
     func addAndReturnMetadataAsync(_ metadata: tableMetadata) async -> tableMetadata {
-        var copy: tableMetadata!
+        let detached = metadata.detachedCopy()
 
         await performRealmWriteAsync { realm in
-            realm.add(metadata, update: .all)
-            copy = tableMetadata(value: metadata)
+            realm.add(detached, update: .all)
         }
 
-        return copy
+        return detached.detachedCopy()
     }
 
     func addMetadata(_ metadata: tableMetadata, sync: Bool = true) {
-        let detached = tableMetadata(value: metadata)
+        let detached = metadata.detachedCopy()
 
         performRealmWrite(sync: sync) { realm in
             realm.add(detached, update: .all)
         }
     }
 
-    @discardableResult
-    func addMetadataAsync(_ metadata: tableMetadata) async -> tableMetadata {
-        let detached = tableMetadata(value: metadata)
+    func addMetadataAsync(_ metadata: tableMetadata) async {
+        let detached = metadata.detachedCopy()
 
         await performRealmWriteAsync { realm in
-            realm.add(metadata, update: .all)
+            realm.add(detached, update: .all)
         }
-
-        return tableMetadata(value: detached)
     }
 
     func addMetadatas(_ metadatas: [tableMetadata], sync: Bool = true) {
-        let detached = metadatas.map { tableMetadata(value: $0) }
+        let detached = metadatas.map { $0.detachedCopy() }
 
         performRealmWrite(sync: sync) { realm in
             realm.add(detached, update: .all)
@@ -408,7 +422,7 @@ extension NCManageDatabase {
     }
 
     func addMetadatasAsync(_ metadatas: [tableMetadata]) async {
-        let detached = metadatas.map { tableMetadata(value: $0) }
+        let detached = metadatas.map { $0.detachedCopy() }
 
         await performRealmWriteAsync { realm in
             realm.add(detached, update: .all)
@@ -757,6 +771,8 @@ extension NCManageDatabase {
     }
 
     func updateMetadatasFiles(_ metadatas: [tableMetadata], serverUrl: String, account: String) {
+        let detached = metadatas.map { $0.detachedCopy() }
+
         performRealmWrite(sync: false) { realm in
             let ocIdsToSkip = Set(
                 realm.objects(tableMetadata.self)
@@ -770,12 +786,12 @@ extension NCManageDatabase {
 
             realm.delete(resultsToDelete)
 
-            for metadata in metadatas {
+            for metadata in detached {
                 guard !ocIdsToSkip.contains(metadata.ocId)
                 else {
                     continue
                 }
-                realm.add(tableMetadata(value: metadata), update: .all)
+                realm.add(metadata, update: .all)
             }
         }
     }
@@ -801,7 +817,7 @@ extension NCManageDatabase {
 
             for metadata in metadatas {
                 guard !ocIdsToSkip.contains(metadata.ocId) else { continue }
-                realm.add(tableMetadata(value: metadata), update: .all)
+                realm.add(metadata.detachedCopy(), update: .all)
             }
         }
     }
@@ -960,7 +976,7 @@ extension NCManageDatabase {
             realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .first
-                .map { tableMetadata(value: $0) }
+                .map { $0.detachedCopy() }
         }
     }
 
@@ -969,7 +985,7 @@ extension NCManageDatabase {
             return realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .first
-                .map { tableMetadata(value: $0) }
+                .map { $0.detachedCopy() }
         }, sync: false) { result in
             completion(result)
         }
@@ -980,7 +996,7 @@ extension NCManageDatabase {
             realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .first
-                .map { tableMetadata(value: $0) }
+                .map { $0.detachedCopy() }
         }
     }
 
@@ -988,7 +1004,7 @@ extension NCManageDatabase {
         performRealmRead { realm in
             realm.objects(tableMetadata.self)
                 .filter(predicate)
-                .map { tableMetadata(value: $0) }
+                .map { $0.detachedCopy() }
         } ?? []
     }
 
@@ -997,7 +1013,7 @@ extension NCManageDatabase {
             realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .sorted(byKeyPath: sortedByKeyPath, ascending: ascending)
-                .map { tableMetadata(value: $0) }
+                .map { $0.detachedCopy() }
         }
     }
 
@@ -1008,7 +1024,7 @@ extension NCManageDatabase {
             realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .sorted(byKeyPath: sortedByKeyPath, ascending: ascending)
-                .map { tableMetadata(value: $0) }
+                .map { $0.detachedCopy() }
         }
     }
 
@@ -1017,7 +1033,8 @@ extension NCManageDatabase {
             let results = realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .sorted(byKeyPath: sorted, ascending: ascending)
-            return results.prefix(numItems).map { tableMetadata(value: $0) }
+            return results.prefix(numItems)
+                .map { $0.detachedCopy() }
         } ?? []
     }
 
@@ -1028,7 +1045,7 @@ extension NCManageDatabase {
             realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first
-                .map { tableMetadata(value: $0) }
+                .map { $0.detachedCopy() }
         }
     }
 
@@ -1039,7 +1056,7 @@ extension NCManageDatabase {
             realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first
-                .map { tableMetadata(value: $0) }
+                .map { $0.detachedCopy() }
         }
     }
 
@@ -1054,7 +1071,7 @@ extension NCManageDatabase {
             return realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first
-                .map { tableMetadata(value: $0) }
+                .map { $0.detachedCopy() }
         }, sync: false) { result in
             if dispatchOnMainQueue {
                 DispatchQueue.main.async {
@@ -1073,7 +1090,7 @@ extension NCManageDatabase {
             realm.objects(tableMetadata.self)
                 .filter("ocId == %@ OR ocIdTransfer == %@", ocId, ocId)
                 .first
-                .map { tableMetadata(value: $0) }
+                .map { $0.detachedCopy() }
         }
     }
 
@@ -1086,7 +1103,7 @@ extension NCManageDatabase {
             realm.objects(tableMetadata.self)
                 .filter("ocId == %@ OR ocIdTransfer == %@", ocId, ocId)
                 .first
-                .map { tableMetadata(value: $0) }
+                .map { $0.detachedCopy() }
         }
     }
 
@@ -1109,7 +1126,7 @@ extension NCManageDatabase {
             realm.objects(tableMetadata.self)
                 .filter("account == %@ AND serverUrl == %@ AND fileName == %@", session.account, serverUrl, fileName)
                 .first
-                .map { tableMetadata(value: $0) }
+                .map { $0.detachedCopy() }
         }
     }
 
@@ -1126,7 +1143,7 @@ extension NCManageDatabase {
                                     metadata.serverUrl,
                                     metadata.livePhotoFile))
                 .first
-                .map { tableMetadata(value: $0) }
+                .map { $0.detachedCopy() }
         }
     }
 
@@ -1142,7 +1159,7 @@ extension NCManageDatabase {
                                     metadata.serverUrl,
                                     metadata.livePhotoFile))
                 .first
-                .map { tableMetadata(value: $0) }
+                .map { $0.detachedCopy() }
         }
     }
 
@@ -1312,9 +1329,8 @@ extension NCManageDatabase {
         return performRealmRead { realm in
             realm.objects(tableMetadata.self)
                 .filter("fileId == %@", fileId)
-                .first.map {
-                    tableMetadata(value: $0)
-                }
+                .first
+                .map { $0.detachedCopy() }
         }
     }
 
@@ -1359,7 +1375,7 @@ extension NCManageDatabase {
                 return completion([], layoutForView, account)
             }
             let sorted = self.sortedResultsMetadata(layoutForView: layoutForView, account: account, metadatas: result)
-            let metadatas = sorted.map { tableMetadata(value: $0) }
+            let metadatas = sorted.map { $0.detachedCopy() }
 
             return completion(metadatas, layoutForView, account)
         }
@@ -1422,9 +1438,9 @@ extension NCManageDatabase {
 
             if let limit = limit {
                 let sliced = results.prefix(limit)
-                return sliced.map { tableMetadata(value: $0) }
+                return sliced.map { $0.detachedCopy() }
             } else {
-                return results.map { tableMetadata(value: $0) }
+                return results.map { $0.detachedCopy() }
             }
         }
     }
@@ -1456,7 +1472,7 @@ extension NCManageDatabase {
                 metadata.status = NCGlobal.shared.metadataStatusWaitCreateFolder
                 metadata.sessionSelector = NCGlobal.shared.selectorUploadAutoUpload
                 metadata.sessionDate = Date()
-                metadatas.append(tableMetadata(value: metadata))
+                metadatas.append(metadata.detachedCopy())
             } else {
                 let metadata = NCManageDatabase.shared.createMetadataDirectory(fileName: fileName,
                                                                                ocId: NSUUID().uuidString,
