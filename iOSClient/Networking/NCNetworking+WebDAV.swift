@@ -64,7 +64,7 @@ extension NCNetworking {
             self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { metadataFolder, metadatas in
                 storeFolder(metadataFolder)
                 self.database.updateMetadatasFiles(metadatas, serverUrl: serverUrl, account: account)
-                completion(account, tableMetadata(value: metadataFolder), metadatas, error)
+                completion(account, metadataFolder.detachedCopy(), metadatas, error)
             }
         }
     }
@@ -354,9 +354,9 @@ extension NCNetworking {
                 for metadata in metadatasE2EE {
                     let error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
                     if error == .success {
-                        metadatasError[tableMetadata(value: metadata)] = .success
+                        metadatasError[metadata.detachedCopy()] = .success
                     } else {
-                        metadatasError[tableMetadata(value: metadata)] = error
+                        metadatasError[metadata.detachedCopy()] = error
                     }
                     let num = numIncrement()
                     ncHud.progress(num: num, total: total)
@@ -594,7 +594,9 @@ extension NCNetworking {
         } providers: { account, searchProviders in
             providers(account, searchProviders)
         } update: { account, partialResult, provider, _ in
-            guard let partialResult = partialResult else { return }
+            guard let partialResult = partialResult else {
+                return
+            }
             var metadatas: [tableMetadata] = []
 
             switch provider.id {
@@ -635,14 +637,9 @@ extension NCNetworking {
             default:
                 partialResult.entries.forEach({ entry in
                     let metadata = self.database.createMetadata(fileName: entry.title,
-                                                                fileNameView: entry.title,
                                                                 ocId: NSUUID().uuidString,
                                                                 serverUrl: session.urlBase,
                                                                 url: entry.resourceURL,
-                                                                contentType: "",
-                                                                iconName: entry.icon,
-                                                                classFile: "",
-                                                                typeIdentifier: "",
                                                                 isUrl: true,
                                                                 name: partialResult.id,
                                                                 subline: entry.subline,
@@ -709,14 +706,9 @@ extension NCNetworking {
             default:
                 searchResult.entries.forEach({ entry in
                     let newMetadata = self.database.createMetadata(fileName: entry.title,
-                                                                   fileNameView: entry.title,
                                                                    ocId: NSUUID().uuidString,
                                                                    serverUrl: session.urlBase,
                                                                    url: entry.resourceURL,
-                                                                   contentType: "",
-                                                                   iconName: entry.icon,
-                                                                   classFile: "",
-                                                                   typeIdentifier: "",
                                                                    isUrl: true,
                                                                    name: searchResult.name.lowercased(),
                                                                    subline: entry.subline,

@@ -298,7 +298,7 @@ extension NCCollectionViewCommon {
                     action: { _ in
                         if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                             NCNetworking.shared.notifyAllDelegates { delegate in
-                                let metadata = tableMetadata(value: metadata)
+                                let metadata = metadata.detachedCopy()
                                 metadata.sessionSelector = NCGlobal.shared.selectorSaveAsScan
                                 delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
                                                         metadata: metadata,
@@ -355,7 +355,7 @@ extension NCCollectionViewCommon {
                     action: { _ in
                         if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                             NCNetworking.shared.notifyAllDelegates { delegate in
-                                let metadata = tableMetadata(value: metadata)
+                                let metadata = metadata.detachedCopy()
                                 metadata.sessionSelector = NCGlobal.shared.selectorLoadFileQuickLook
                                 delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
                                                         metadata: metadata,

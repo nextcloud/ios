@@ -9,6 +9,7 @@ import Alamofire
 
 extension FileProviderExtension {
     override func fetchThumbnails(for itemIdentifiers: [NSFileProviderItemIdentifier], requestedSize size: CGSize, perThumbnailCompletionHandler: @escaping (NSFileProviderItemIdentifier, Data?, Error?) -> Void, completionHandler: @escaping (Error?) -> Void) -> Progress {
+
         let progress = Progress(totalUnitCount: Int64(itemIdentifiers.count))
         var counterProgress: Int64 = 0
 
@@ -34,7 +35,9 @@ extension FileProviderExtension {
                 } else {
                     perThumbnailCompletionHandler(itemIdentifier, nil, NSFileProviderError(.serverUnreachable))
                 }
+
                 counterProgress += 1
+
                 if counterProgress == progress.totalUnitCount {
                     completionHandler(nil)
                 }

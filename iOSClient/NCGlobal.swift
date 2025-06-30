@@ -1,47 +1,13 @@
-//
-//  NCGlobal.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 22/02/21.
-//  Copyright © 2021 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2021 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
-
-/// Used for read/write in Realm
-var isAppSuspending: Bool = false
-/// Used for know if the app in in Background mode
-var isAppInBackground: Bool = true
 
 final class NCGlobal: Sendable {
     static let shared = NCGlobal()
 
-    init() {
-        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
-            isAppSuspending = true
-            isAppInBackground = true
-        }
-
-        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { _ in
-            isAppSuspending = false
-            isAppInBackground = false
-        }
-    }
+    init() { }
 
     // ENUM
     //

@@ -181,14 +181,9 @@ extension NCMedia {
                 guard let stringUrl = alert.textFields?.first?.text, !stringUrl.isEmpty, let url = URL(string: stringUrl) else { return }
                 let fileName = url.lastPathComponent
                 let metadata = self.database.createMetadata(fileName: fileName,
-                                                            fileNameView: fileName,
                                                             ocId: NSUUID().uuidString,
                                                             serverUrl: "",
                                                             url: stringUrl,
-                                                            contentType: "",
-                                                            iconName: NKTypeIconFile.video.rawValue,
-                                                            classFile: NKTypeClassFile.video.rawValue,
-                                                            typeIdentifier: "com.apple.quicktime-movie",
                                                             session: self.session,
                                                             sceneIdentifier: self.controller?.sceneIdentifier)
                 self.database.addMetadata(metadata)

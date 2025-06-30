@@ -68,7 +68,7 @@ final class NCCameraRoll: CameraRollExtractor {
         }
 
         var metadatas: [tableMetadata] = []
-        let metadataSource = tableMetadata(value: metadata)
+        let metadataSource = metadata.detachedCopy()
         let chunkSize = NCNetworking.shared.networkReachability == .reachableEthernetOrWiFi
             ? NCGlobal.shared.chunkSizeMBEthernetOrWiFi
             : NCGlobal.shared.chunkSizeMBCellular
@@ -155,7 +155,7 @@ final class NCCameraRoll: CameraRollExtractor {
         metadata originalMetadata: tableMetadata,
         modifyMetadataForUpload: Bool
     ) async throws -> ExtractedAsset {
-        var metadata = tableMetadata(value: originalMetadata)
+        var metadata = originalMetadata.detachedCopy()
 
         // Determine the appropriate chunk size based on the current network connection
         let chunkSize = NCNetworking.shared.networkReachability == .reachableEthernetOrWiFi
@@ -392,14 +392,8 @@ final class NCCameraRoll: CameraRollExtractor {
                 }
                 let session = NCSession.shared.getSession(account: metadata.account)
                 let metadataLivePhoto = self.database.createMetadata(fileName: fileName,
-                                                                     fileNameView: fileName,
                                                                      ocId: ocId,
                                                                      serverUrl: metadata.serverUrl,
-                                                                     url: "",
-                                                                     contentType: "video/quicktime",
-                                                                     iconName: NKTypeIconFile.video.rawValue,
-                                                                     classFile: NKTypeClassFile.video.rawValue,
-                                                                     typeIdentifier: "com.apple.quicktime-movie",
                                                                      session: session,
                                                                      sceneIdentifier: metadata.sceneIdentifier)
 

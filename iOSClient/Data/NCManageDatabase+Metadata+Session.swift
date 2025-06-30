@@ -84,7 +84,7 @@ extension NCManageDatabase {
             }
 
             realm.add(metadata, update: .all)
-            detached = tableMetadata(value: metadata)
+            detached = metadata.detachedCopy()
         }
 
         return detached
@@ -232,7 +232,7 @@ extension NCManageDatabase {
             }
 
             realm.add(metadata, update: .all)
-            detached = tableMetadata(value: metadata) // Detach from thread-confined Realm object
+            detached = metadata.detachedCopy()
         }
 
         return detached
@@ -250,7 +250,7 @@ extension NCManageDatabase {
         guard !metadatas.isEmpty else {
             return
         }
-        let detached = metadatas.map { tableMetadata(value: $0) }
+        let detached = metadatas.map { $0.detachedCopy() }
 
         performRealmWrite(sync: true) { realm in
             for metadata in detached {
@@ -281,7 +281,7 @@ extension NCManageDatabase {
             return
         }
 
-        let detached = metadatas.map { tableMetadata(value: $0) }
+        let detached = metadatas.map { $0.detachedCopy() }
 
         return await performRealmWriteAsync { realm in
             for metadata in detached {
@@ -325,7 +325,7 @@ extension NCManageDatabase {
             metadata.sessionDate = Date()
 
             realm.add(metadata, update: .all)
-            detached = tableMetadata(value: metadata)
+            detached = metadata.detachedCopy()
         }
 
         return detached
@@ -362,7 +362,7 @@ extension NCManageDatabase {
             metadata.sessionDate = Date()
 
             realm.add(metadata, update: .all)
-            detached = tableMetadata(value: metadata) // Detach from thread-confined Realm object
+            detached = metadata.detachedCopy()
         }
 
         return detached
@@ -373,10 +373,10 @@ extension NCManageDatabase {
         else {
             return
         }
-        let detachedMetadatas = metadatas.map { tableMetadata(value: $0) }
+        let detached = metadatas.map { $0.detachedCopy() }
 
         performRealmWrite(sync: true) { realm in
-            detachedMetadatas.forEach { metadata in
+            detached.forEach { metadata in
                 metadata.sceneIdentifier = nil
                 metadata.session = ""
                 metadata.sessionTaskIdentifier = 0
@@ -398,7 +398,7 @@ extension NCManageDatabase {
         }
 
         // Detach objects before modifying
-        var detachedMetadatas = metadatas.map { tableMetadata(value: $0) }
+        var detachedMetadatas = metadatas.map { $0.detachedCopy() }
 
         // Apply modifications
         detachedMetadatas = detachedMetadatas.map { metadata in
@@ -421,7 +421,7 @@ extension NCManageDatabase {
     }
 
     func clearMetadataSession(metadata: tableMetadata) {
-        let detached = tableMetadata(value: metadata)
+        let detached = metadata.detachedCopy()
 
         detached.sceneIdentifier = nil
         detached.session = ""
@@ -440,7 +440,7 @@ extension NCManageDatabase {
     /// - Parameter metadata: The `tableMetadata` object to clear and update.
     func clearMetadataSessionAsync(metadata: tableMetadata) async {
         // Clone and modify the object outside of Realm thread
-        let detached = tableMetadata(value: metadata)
+        let detached = metadata.detachedCopy()
 
         detached.sceneIdentifier = nil
         detached.session = ""
@@ -467,7 +467,7 @@ extension NCManageDatabase {
             metadata.status = status
 
             realm.add(metadata, update: .all)
-            detached = tableMetadata(value: metadata)
+            detached = metadata.detachedCopy()
         }
 
         return detached
@@ -551,12 +551,12 @@ extension NCManageDatabase {
             realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .first
-                .map { tableMetadata(value: $0) }
+                .map { $0.detachedCopy() }
         }
     }
 
-#if !EXTENSION
     func updateBadge() async {
+        #if !EXTENSION
         let num = await performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
                 .filter(NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal))
@@ -565,7 +565,6 @@ extension NCManageDatabase {
         DispatchQueue.main.async {
             UIApplication.shared.applicationIconBadgeNumber = num
         }
+        #endif
     }
-#endif
-
 }

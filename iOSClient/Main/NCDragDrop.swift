@@ -137,19 +137,12 @@ class NCDragDrop: NSObject {
                 }
 
                 let fileName = await NCNetworking.shared.createFileName(fileNameBase: newFileName, account: session.account, serverUrl: serverUrl)
-                let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: fileName, mimeType: "", directory: false, account: session.account)
 
                 try data.write(to: URL(fileURLWithPath: fileNamePath))
 
                 let metadataForUpload = await database.createMetadata(fileName: fileName,
-                                                                      fileNameView: fileName,
                                                                       ocId: ocId,
                                                                       serverUrl: serverUrl,
-                                                                      url: "",
-                                                                      contentType: results.mimeType,
-                                                                      iconName: results.iconName,
-                                                                      classFile: results.classFile,
-                                                                      typeIdentifier: results.typeIdentifier,
                                                                       session: session,
                                                                       sceneIdentifier: controller?.sceneIdentifier)
 

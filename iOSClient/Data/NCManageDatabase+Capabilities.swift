@@ -39,11 +39,6 @@ extension NCManageDatabase {
 
             realm.add(addObject, update: .all)
         }
-        do {
-            _ = try await NextcloudKit.shared.setCapabilitiesAsync(account: account, data: data)
-        } catch {
-            nkLog(error: "Error storing capabilities JSON in Realm \(error)")
-        }
     }
 
     /// Stores the raw JSON editors data in Realm associated with an account.
@@ -67,11 +62,6 @@ extension NCManageDatabase {
             addObject.editors = data
 
             realm.add(addObject, update: .all)
-        }
-        do {
-            _ = try await NextcloudKit.shared.setCapabilitiesAsync(account: account, data: data)
-        } catch {
-            nkLog(error: "Error storing capabilities JSON in Realm \(error)")
         }
     }
 

@@ -9,6 +9,7 @@ import UniformTypeIdentifiers
 
 class FileProviderItem: NSObject, NSFileProviderItem {
     var metadata: tableMetadata
+
     /// Providing Required Properties
     var itemIdentifier: NSFileProviderItemIdentifier {
         return fileProviderUtility().getItemIdentifier(metadata: metadata)
@@ -124,7 +125,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
 
     init(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier) {
-        self.metadata = tableMetadata(value: metadata)
+        self.metadata = metadata.detachedCopy()
         self.parentItemIdentifier = parentItemIdentifier
     }
 }

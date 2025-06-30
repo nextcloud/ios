@@ -56,7 +56,7 @@ class NCContextMenu: NSObject {
                              image: utility.loadImage(named: "square.and.arrow.up") ) { _ in
             if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
                 self.networking.notifyAllDelegates { delegate in
-                    let metadata = tableMetadata(value: self.metadata)
+                    let metadata = self.metadata.detachedCopy()
                     metadata.sessionSelector = self.global.selectorOpenIn
                     delegate.transferChange(status: self.global.networkingStatusDownloaded,
                                             metadata: metadata,
@@ -106,7 +106,7 @@ class NCContextMenu: NSObject {
                               image: utility.loadImage(named: "pencil.tip.crop.circle")) { _ in
             if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
                 self.networking.notifyAllDelegates { delegate in
-                    let metadata = tableMetadata(value: self.metadata)
+                    let metadata = self.metadata.detachedCopy()
                     metadata.sessionSelector = self.global.selectorLoadFileQuickLook
                     delegate.transferChange(status: self.global.networkingStatusDownloaded,
                                             metadata: metadata,
@@ -167,7 +167,7 @@ class NCContextMenu: NSObject {
             Task {
                 var metadatasError: [tableMetadata: NKError] = [:]
                 let error = await self.networking.deleteCache(self.metadata, sceneIdentifier: self.sceneIdentifier)
-                metadatasError[tableMetadata(value: self.metadata)] = error
+                metadatasError[self.metadata.detachedCopy()] = error
 
                 self.networking.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusDelete,

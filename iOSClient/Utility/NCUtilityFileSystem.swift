@@ -221,6 +221,19 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         return false
     }
 
+    func isDirectoryE2EEAsync(file: NKFile) async -> Bool {
+        let session = NCSession.Session(account: file.account, urlBase: file.urlBase, user: file.user, userId: file.userId)
+        return await isDirectoryE2EEAsync(session: session, serverUrl: file.serverUrl)
+    }
+
+    func isDirectoryE2EEAsync(session: NCSession.Session, serverUrl: String) async -> Bool {
+        if serverUrl == getHomeServer(session: session) || serverUrl == ".." { return false }
+        if let directory = await NCManageDatabase.shared.getTableDirectoryAsync(account: session.account, serverUrl: serverUrl) {
+            return directory.e2eEncrypted
+        }
+        return false
+    }
+
     func isDirectoryE2EETop(account: String, serverUrl: String) -> Bool {
         guard let serverUrl = serverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return false }
 

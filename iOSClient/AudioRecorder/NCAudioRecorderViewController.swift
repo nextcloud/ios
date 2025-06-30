@@ -101,14 +101,8 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
     func uploadMetadata() {
         let fileNamePath = NSTemporaryDirectory() + self.fileName
         let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName,
-                                                              fileNameView: fileName,
                                                               ocId: UUID().uuidString,
                                                               serverUrl: controller.currentServerUrl(),
-                                                              url: "",
-                                                              contentType: "audio/x-m4a",
-                                                              iconName: NKTypeIconFile.audio.rawValue,
-                                                              classFile: NKTypeClassFile.audio.rawValue,
-                                                              typeIdentifier: "com.apple.m4a-audio",
                                                               session: self.session,
                                                               sceneIdentifier: self.controller?.sceneIdentifier)
 

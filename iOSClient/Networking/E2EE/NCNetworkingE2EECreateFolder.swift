@@ -136,7 +136,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
         NCNetworking.shared.notifyAllDelegates { delegate in
             delegate.transferChange(status: self.global.networkingStatusCreateFolder,
-                                    metadata: tableMetadata(value: metadata),
+                                    metadata: metadata.detachedCopy(),
                                     error: .success)
         }
 

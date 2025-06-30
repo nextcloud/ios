@@ -21,8 +21,8 @@ extension NCManageDatabase {
 
     // MARK: - Realm write
 
-    func addTag(_ ocId: String, tagIOS: Data?, account: String) {
-        performRealmWrite { realm in
+    func addTagAsunc(_ ocId: String, tagIOS: Data?, account: String) async {
+        await performRealmWriteAsync { realm in
             let addObject = tableTag()
             addObject.account = account
             addObject.ocId = ocId
@@ -31,24 +31,24 @@ extension NCManageDatabase {
         }
     }
 
-    func deleteTag(_ ocId: String) {
-        performRealmWrite { realm in
+    // MARK: - Realm read
+
+    /// Asynchronously fetch an array of tableTag objects matching a predicate.
+    func getTagsAsync(predicate: NSPredicate) async -> [tableTag]? {
+        await performRealmReadAsync { realm in
             let results = realm.objects(tableTag.self)
-                .filter("ocId == %@", ocId)
-            realm.delete(results)
+                .filter(predicate)
+            return results.compactMap { tableTag(value: $0) }
         }
     }
 
-    // MARK: - Realm read
-
-    func getTags(predicate: NSPredicate) -> [tableTag] {
-        var tags: [tableTag] = []
-        performRealmRead { realm in
-            let results = realm.objects(tableTag.self)
+    /// Asynchronously fetch a single tableTag object matching a predicate.
+    func getTagAsync(predicate: NSPredicate) async -> tableTag? {
+        await performRealmReadAsync { realm in
+            return realm.objects(tableTag.self)
                 .filter(predicate)
-            tags = results.compactMap { tableTag(value: $0) }
+                .first.map { tableTag(value: $0) }
         }
-        return tags
     }
 
     func getTag(predicate: NSPredicate) -> tableTag? {

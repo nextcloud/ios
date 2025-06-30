@@ -86,7 +86,7 @@ extension NCManageDatabase {
     }
 
     func addDirectories(metadatas: [tableMetadata], sync: Bool = true) {
-        let detached = metadatas.map { tableMetadata(value: $0) }
+        let detached = metadatas.map { $0.detachedCopy() }
 
         performRealmWrite(sync: sync) { realm in
             for metadata in detached {
@@ -118,7 +118,7 @@ extension NCManageDatabase {
     }
 
     func addDirectoriesAsync(metadatas: [tableMetadata]) async {
-        let detached = metadatas.map { tableMetadata(value: $0) }
+        let detached = metadatas.map { $0.detachedCopy() }
 
         await performRealmWriteAsync { realm in
             for metadata in detached {
@@ -260,6 +260,16 @@ extension NCManageDatabase {
 
     func renameDirectory(ocId: String, serverUrl: String) {
         performRealmWrite { realm in
+            if let result = realm.objects(tableDirectory.self)
+                .filter("ocId == %@", ocId)
+                .first {
+                result.serverUrl = serverUrl
+            }
+        }
+    }
+
+    func renameDirectoryAsync(ocId: String, serverUrl: String) async {
+        await performRealmWriteAsync { realm in
             if let result = realm.objects(tableDirectory.self)
                 .filter("ocId == %@", ocId)
                 .first {

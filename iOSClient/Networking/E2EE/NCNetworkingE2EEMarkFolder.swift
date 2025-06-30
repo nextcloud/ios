@@ -39,7 +39,7 @@ class NCNetworkingE2EEMarkFolder: NSObject {
 
         NCNetworking.shared.notifyAllDelegates { delegate in
             delegate.transferChange(status: NCGlobal.shared.networkingStatusCreateFolder,
-                                    metadata: tableMetadata(value: metadata),
+                                    metadata: metadata.detachedCopy(),
                                     error: .success)
         }
 

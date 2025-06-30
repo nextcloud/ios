@@ -270,7 +270,7 @@ class NCFiles: NCCollectionViewCommon {
                     }
                     /// Updata folder
                     if let metadataFolder {
-                        self.metadataFolder = tableMetadata(value: metadataFolder)
+                        self.metadataFolder = metadataFolder.detachedCopy()
                         self.richWorkspaceText = metadataFolder.richWorkspace
                     }
 

@@ -1,25 +1,7 @@
-//
-//  AppDelegate.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 04/09/14 (19/02/21 swift).
-//  Copyright (c) 2014 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2014 Marino Faggiana [Start 04/09/14]
+// SPDX-FileCopyrightText: 2021 Marino Faggiana [Swift 19/02/21]
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 import BackgroundTasks
@@ -54,11 +36,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var isBackgroundTask: Bool = false
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        //
-        // OPEN REALM
-        //
-        database.openRealm()
-
         if isUiTestingEnabled {
             NCAccount().deleteAllAccounts()
         }
@@ -132,6 +109,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         /// Activation singleton
+        _ = NCAppStateManager.shared
         _ = NCNetworking.shared
         _ = NCDownloadAction.shared
         _ = NCNetworkingProcess.shared
@@ -201,9 +179,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func handleAppRefresh(_ task: BGAppRefreshTask) {
-        // OPEN REALM
-        database.openRealm()
-
         nkLog(tag: self.global.logTagTask, emoji: .start, message: "Start refresh task")
 
         scheduleAppRefresh()
@@ -231,9 +206,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func handleProcessingTask(_ task: BGProcessingTask) {
-        // OPEN REALM
-        database.openRealm()
-
         nkLog(tag: self.global.logTagTask, emoji: .start, message: "Start processing task")
 
         scheduleAppProcessing()
@@ -350,7 +322,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             let metadatas = await NCCameraRoll().extractCameraRoll(from: metadatasWaitUpload)
 
             for metadata in metadatas {
-                let error = await self.networking.uploadFileInBackgroundAsync(metadata: tableMetadata(value: metadata))
+                let error = await self.networking.uploadFileInBackgroundAsync(metadata: metadata.detachedCopy())
 
                 if error == .success {
                     nkLog(tag: self.global.logTagBgSync, message: "Create new upload \(metadata.fileName) in \(metadata.serverUrl)")

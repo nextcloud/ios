@@ -161,7 +161,7 @@ class NCNetworkingE2EEUpload: NSObject {
         await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
 
         if resultsSendFile.error == .success, let ocId = resultsSendFile.ocId {
-            let metadata = tableMetadata(value: metadata)
+            let metadata = metadata.detachedCopy()
 
             await self.database.deleteMetadataOcIdAsync(metadata.ocId)
             utilityFileSystem.moveFileInBackground(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId), toPath: utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
@@ -179,13 +179,13 @@ class NCNetworkingE2EEUpload: NSObject {
             metadata.sessionError = ""
             metadata.status = NCGlobal.shared.metadataStatusNormal
 
-            await self.database.addMetadataAsync(tableMetadata(value: metadata))
-            await self.database.addLocalFileAsync(metadata: tableMetadata(value: metadata))
+            await self.database.addMetadataAsync(metadata)
+            await self.database.addLocalFileAsync(metadata: metadata)
             utility.createImageFileFrom(metadata: metadata)
 
             NCNetworking.shared.notifyAllDelegates { delegate in
                 delegate.transferChange(status: global.networkingStatusUploaded,
-                                        metadata: tableMetadata(value: metadata),
+                                        metadata: metadata,
                                         error: .success)
             }
         }

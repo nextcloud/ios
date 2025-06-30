@@ -117,14 +117,18 @@ extension NCNetworking {
                                           requestHandler: @escaping (_ request: DownloadRequest) -> Void = { _ in },
                                           progressHandler: @escaping (_ progress: Progress) -> Void = { _ in },
                                           completion: @escaping (_ error: NKError) -> Void) {
-        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-        let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
-
-        start()
-
-        let (task, error) = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account)
 
         Task {
+            let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+            let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+
+            start()
+
+            let (task, error) = await backgroundSession.downloadAsync(serverUrlFileName: serverUrlFileName,
+                                                                      fileNameLocalPath: fileNameLocalPath,
+                                                                      account: metadata.account,
+                                                                      sessionIdentifier: sessionDownloadBackground)
+
             if let task, error == .success {
                 if let metadata = await database.setMetadataSessionAsync(ocId: metadata.ocId,
                                                                          sessionTaskIdentifier: task.taskIdentifier,
@@ -149,6 +153,7 @@ extension NCNetworking {
         }
     }
 
+    // Async wrapper
     func downloadFileInBackgroundAsync(metadata: tableMetadata) async -> NKError {
         await withCheckedContinuation { continuation in
             downloadFileInBackground(metadata: metadata,
@@ -189,13 +194,23 @@ extension NCNetworking {
 
             NextcloudKit.shared.nkCommonInstance.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
 
+            #if EXTENSION_FILE_PROVIDER_EXTENSION
+            await fileProviderData.shared.downloadComplete(metadata: metadata, task: task, etag: etag, error: error)
+            return
+            #endif
+
             if error == .success {
                 nkLog(success: "Downloaded file: " + metadata.serverUrl + "/" + metadata.fileName)
-#if !EXTENSION
+                #if !EXTENSION
                 if let result = await self.database.getE2eEncryptionAsync(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
-                    NCEndToEndEncryption.shared().decryptFile(metadata.fileName, fileNameView: metadata.fileNameView, ocId: metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
+                    NCEndToEndEncryption.shared().decryptFile(metadata.fileName,
+                                                              fileNameView: metadata.fileNameView,
+                                                              ocId: metadata.ocId,
+                                                              key: result.key,
+                                                              initializationVector: result.initializationVector,
+                                                              authenticationTag: result.authenticationTag)
                 }
-#endif
+                #endif
                 await self.database.addLocalFileAsync(metadata: metadata)
 
                 if let updatedMetadata = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
@@ -214,11 +229,8 @@ extension NCNetworking {
                 nkLog(error: "Downloaded file: " + metadata.serverUrl + "/" + metadata.fileName + ", result: error \(error.errorCode)")
 
                 if error.errorCode == NCGlobal.shared.errorResourceNotFound {
-#if EXTENSION
                     self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-#else
-                    removeFileInBackgroundSafe(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-#endif
+
                     await self.database.deleteLocalFileOcIdAsync(metadata.ocId)
                     await self.database.deleteMetadataOcIdAsync(metadata.ocId)
                 } else if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
@@ -228,11 +240,11 @@ extension NCNetworking {
                                                                                   sessionError: "",
                                                                                   selector: "",
                                                                                   status: self.global.metadataStatusNormal) {
-                        self.notifyAllDelegates { delegate in
-                            delegate.transferChange(status: self.global.networkingStatusDownloadCancel,
-                                                    metadata: metadata,
-                                                    error: .success)
-                        }
+                            self.notifyAllDelegates { delegate in
+                                delegate.transferChange(status: self.global.networkingStatusDownloadCancel,
+                                                        metadata: metadata,
+                                                        error: .success)
+                            }
                     }
                 } else {
                     if let metadata = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
@@ -249,10 +261,8 @@ extension NCNetworking {
                         }
                     }
                 }
+                await self.database.updateBadge()
             }
-#if !EXTENSION
-            await self.database.updateBadge()
-#endif
         }
     }
 
