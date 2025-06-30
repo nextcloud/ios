@@ -555,8 +555,8 @@ extension NCManageDatabase {
         }
     }
 
-#if !EXTENSION
     func updateBadge() async {
+        #if !EXTENSION
         let num = await performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
                 .filter(NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal))
@@ -565,7 +565,6 @@ extension NCManageDatabase {
         DispatchQueue.main.async {
             UIApplication.shared.applicationIconBadgeNumber = num
         }
+        #endif
     }
-#endif
-
 }

@@ -339,12 +339,8 @@ extension NCNetworking {
 
             if selector == self.global.selectorUploadFileNODelete {
                 if isAppInBackground {
-#if EXTENSION
                     self.utilityFileSystem.moveFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer),
                                                     toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
-#else
-                    moveFileSafely(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer), toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
-#endif
                 } else {
                     self.utilityFileSystem.moveFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer),
                                                     toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
@@ -353,11 +349,7 @@ extension NCNetworking {
                 await self.database.addLocalFileAsync(metadata: metadata)
 
             } else {
-#if EXTENSION
                 self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer))
-#else
-                removeFileInBackgroundSafe(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer))
-#endif
             }
 
             // Update the auto upload data
@@ -461,11 +453,7 @@ extension NCNetworking {
     }
 
     func uploadCancelFile(metadata: tableMetadata) async {
-#if EXTENSION
-                self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer))
-#else
-                removeFileInBackgroundSafe(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer))
-#endif
+        self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer))
         await self.database.deleteMetadataOcIdAsync(metadata.ocIdTransfer)
         self.notifyAllDelegates { delegate in
             delegate.transferChange(status: self.global.networkingStatusUploadCancel,

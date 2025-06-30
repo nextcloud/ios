@@ -117,17 +117,18 @@ extension NCNetworking {
                                           requestHandler: @escaping (_ request: DownloadRequest) -> Void = { _ in },
                                           progressHandler: @escaping (_ progress: Progress) -> Void = { _ in },
                                           completion: @escaping (_ error: NKError) -> Void) {
-        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-        let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
-
-        start()
-
-        let (task, error) = backgroundSession.download(serverUrlFileName: serverUrlFileName,
-                                                       fileNameLocalPath: fileNameLocalPath,
-                                                       account: metadata.account,
-                                                       sessionIdentifier: sessionDownloadBackground)
 
         Task {
+            let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+            let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+
+            start()
+
+            let (task, error) = await backgroundSession.downloadAsync(serverUrlFileName: serverUrlFileName,
+                                                                      fileNameLocalPath: fileNameLocalPath,
+                                                                      account: metadata.account,
+                                                                      sessionIdentifier: sessionDownloadBackground)
+
             if let task, error == .success {
                 if let metadata = await database.setMetadataSessionAsync(ocId: metadata.ocId,
                                                                          sessionTaskIdentifier: task.taskIdentifier,
@@ -152,6 +153,7 @@ extension NCNetworking {
         }
     }
 
+    // Async wrapper
     func downloadFileInBackgroundAsync(metadata: tableMetadata) async -> NKError {
         await withCheckedContinuation { continuation in
             downloadFileInBackground(metadata: metadata,
@@ -190,10 +192,12 @@ extension NCNetworking {
                 return
             }
 
-#if EXTENSION_FILE_PROVIDER_EXTENSION
-            await fileProviderData.shared.downloadComplete(metadata: metadata, task: task, etag: etag, error: error)
-#else
             NextcloudKit.shared.nkCommonInstance.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
+
+            #if EXTENSION_FILE_PROVIDER_EXTENSION
+            await fileProviderData.shared.downloadComplete(metadata: metadata, task: task, etag: etag, error: error)
+            return
+            #endif
 
             if error == .success {
                 nkLog(success: "Downloaded file: " + metadata.serverUrl + "/" + metadata.fileName)
@@ -225,11 +229,8 @@ extension NCNetworking {
                 nkLog(error: "Downloaded file: " + metadata.serverUrl + "/" + metadata.fileName + ", result: error \(error.errorCode)")
 
                 if error.errorCode == NCGlobal.shared.errorResourceNotFound {
-                #if EXTENSION
-                self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-                #else
-                removeFileInBackgroundSafe(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-                #endif
+                    self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+
                     await self.database.deleteLocalFileOcIdAsync(metadata.ocId)
                     await self.database.deleteMetadataOcIdAsync(metadata.ocId)
                 } else if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
@@ -239,11 +240,11 @@ extension NCNetworking {
                                                                                   sessionError: "",
                                                                                   selector: "",
                                                                                   status: self.global.metadataStatusNormal) {
-                        self.notifyAllDelegates { delegate in
-                            delegate.transferChange(status: self.global.networkingStatusDownloadCancel,
-                                                    metadata: metadata,
-                                                    error: .success)
-                        }
+                            self.notifyAllDelegates { delegate in
+                                delegate.transferChange(status: self.global.networkingStatusDownloadCancel,
+                                                        metadata: metadata,
+                                                        error: .success)
+                            }
                     }
                 } else {
                     if let metadata = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
@@ -260,11 +261,8 @@ extension NCNetworking {
                         }
                     }
                 }
-                #if !EXTENSION
                 await self.database.updateBadge()
-                #endif
             }
-#endif
         }
     }
 
