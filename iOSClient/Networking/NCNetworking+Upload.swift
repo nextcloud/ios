@@ -299,6 +299,7 @@ extension NCNetworking {
                                                          error: error)
             return
             #endif
+
             if let url = task.currentRequest?.url,
                let metadata = await self.database.getMetadataAsync(from: url, sessionTaskIdentifier: task.taskIdentifier) {
                 await uploadComplete(withMetadata: metadata, ocId: ocId, etag: etag, date: date, size: size, error: error)
