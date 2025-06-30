@@ -437,7 +437,7 @@ final class NCManageDatabase: @unchecked Sendable {
     // MARK: -
     // MARK: Utils
 
-    func sortedResultsMetadata(layoutForView: NCDBLayoutForView?, account: String, metadatas: Results<tableMetadata>) -> [tableMetadata] {
+    func sortedMetadata(layoutForView: NCDBLayoutForView?, account: String, metadatas: [tableMetadata]) -> [tableMetadata] {
         let layout: NCDBLayoutForView = layoutForView ?? NCDBLayoutForView()
         let directoryOnTop = NCKeychain().getDirectoryOnTop(account: account)
         let favoriteOnTop = NCKeychain().getFavoriteOnTop(account: account)

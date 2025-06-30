@@ -6,6 +6,7 @@ import Foundation
 import UIKit
 import RealmSwift
 import NextcloudKit
+import Photos
 
 extension NCManageDatabase {
     func convertFileToMetadata(_ file: NKFile, isDirectoryE2EE: Bool) -> tableMetadata {
@@ -305,6 +306,92 @@ extension NCManageDatabase {
         metadata.typeIdentifier = "public.folder"
 
         return metadata
+    }
+
+    func createMetadatasFolder(assets: [PHAsset],
+                               useSubFolder: Bool,
+                               session: NCSession.Session, completion: @escaping ([tableMetadata]) -> Void) {
+        var foldersCreated: Set<String> = []
+        var metadatas: [tableMetadata] = []
+        let serverUrlBase = getAccountAutoUploadDirectory(session: session)
+        let fileNameBase = getAccountAutoUploadFileName(account: session.account)
+        let predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == true", session.account, serverUrlBase)
+
+        func createMetadata(serverUrl: String, fileName: String, metadata: tableMetadata?) {
+            guard !foldersCreated.contains(serverUrl + "/" + fileName) else {
+                return
+            }
+            foldersCreated.insert(serverUrl + "/" + fileName)
+
+            if let metadata {
+                metadata.status = NCGlobal.shared.metadataStatusWaitCreateFolder
+                metadata.sessionSelector = NCGlobal.shared.selectorUploadAutoUpload
+                metadata.sessionDate = Date()
+                metadatas.append(metadata.detachedCopy())
+            } else {
+                let metadata = NCManageDatabase.shared.createMetadataDirectory(fileName: fileName,
+                                                                               ocId: NSUUID().uuidString,
+                                                                               serverUrl: serverUrl,
+                                                                               session: session)
+                metadata.status = NCGlobal.shared.metadataStatusWaitCreateFolder
+                metadata.sessionSelector = NCGlobal.shared.selectorUploadAutoUpload
+                metadata.sessionDate = Date()
+                metadatas.append(metadata)
+            }
+        }
+
+        let metadatasFolder = getMetadatas(predicate: predicate)
+        let targetPath = serverUrlBase + "/" + fileNameBase
+        let metadata = metadatasFolder.first(where: { $0.serverUrl + "/" + $0.fileNameView == targetPath })
+        createMetadata(serverUrl: serverUrlBase, fileName: fileNameBase, metadata: metadata)
+
+        if useSubFolder {
+            let autoUploadServerUrlBase = self.getAccountAutoUploadServerUrlBase(session: session)
+            let autoUploadSubfolderGranularity = self.getAccountAutoUploadSubfolderGranularity()
+            let folders = Set(assets.map { self.utilityFileSystem.createGranularityPath(asset: $0) }).sorted()
+
+            for folder in folders {
+                let componentsDate = folder.split(separator: "/")
+                let year = componentsDate[0]
+                let serverUrl = autoUploadServerUrlBase
+                let fileName = String(year)
+                let targetPath = serverUrl + "/" + fileName
+                let metadata = metadatasFolder.first(where: { $0.serverUrl + "/" + $0.fileNameView == targetPath })
+
+                createMetadata(serverUrl: serverUrl, fileName: fileName, metadata: metadata)
+
+                if autoUploadSubfolderGranularity >= NCGlobal.shared.subfolderGranularityMonthly {
+                    let month = componentsDate[1]
+                    let serverUrl = autoUploadServerUrlBase + "/" + year
+                    let fileName = String(month)
+                    let targetPath = serverUrl + "/" + fileName
+                    let metadata = metadatasFolder.first(where: { $0.serverUrl + "/" + $0.fileNameView == targetPath })
+
+                    createMetadata(serverUrl: serverUrl, fileName: fileName, metadata: metadata)
+
+                    if autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityDaily {
+                        let day = componentsDate[2]
+                        let serverUrl = autoUploadServerUrlBase + "/" + year + "/" + month
+                        let fileName = String(day)
+                        let targetPath = serverUrl + "/" + fileName
+                        let metadata = metadatasFolder.first(where: { $0.serverUrl + "/" + $0.fileNameView == targetPath })
+
+                        createMetadata(serverUrl: serverUrl, fileName: fileName, metadata: metadata)
+                    }
+                }
+            }
+            completion(metadatas)
+        } else {
+            completion(metadatas)
+        }
+    }
+
+    func createMetadatasFolder(assets: [PHAsset], useSubFolder: Bool, session: NCSession.Session) async -> [tableMetadata] {
+        await withCheckedContinuation { continuation in
+            createMetadatasFolder(assets: assets, useSubFolder: useSubFolder, session: session) { result in
+                continuation.resume(returning: result)
+            }
+        }
     }
 
 }
