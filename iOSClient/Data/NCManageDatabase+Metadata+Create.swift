@@ -230,7 +230,7 @@ extension NCManageDatabase {
             metadata.iconName = NKTypeClassFile.url.rawValue
             metadata.typeIdentifier = "public.url"
         } else {
-            let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: metadata.fileNameView, mimeType: "", directory: false, account: session.account)
+            let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: fileName, mimeType: "", directory: false, account: session.account)
             metadata.classFile = results.classFile
             metadata.contentType = results.mimeType
             metadata.iconName = results.iconName
