@@ -6,6 +6,7 @@ import UIKit
 import NextcloudKit
 
 class FileProviderDomain: NSObject {
+    /*
     func registerDomains() async {
         do {
             let fileProviderDomains = try await NSFileProviderManager.domains()
@@ -74,4 +75,5 @@ class FileProviderDomain: NSObject {
             nkLog(error: "RegisterDomains error: \(error)")
         }
     }
+    */
 }
