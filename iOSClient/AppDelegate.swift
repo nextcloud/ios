@@ -48,9 +48,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0)
 
         UserDefaults.standard.register(defaults: ["UserAgent": userAgent])
+
+        #if !DEBUG
         if !NCKeychain().disableCrashservice, !NCBrandOptions.shared.disable_crash_service {
             FirebaseApp.configure()
         }
+        #endif
 
         utilityFileSystem.createDirectoryStandard()
         utilityFileSystem.emptyTemporaryDirectory()

@@ -224,8 +224,7 @@ extension FileProviderExtension {
                     metadata.favorite = favorite
                     await self.database.addMetadataAsync(metadata)
 
-                    /// SIGNAL
-                    let item = fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .workingSet)
+                    let item = await fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .workingSet)
 
                     completionHandler(item, nil)
                     return
@@ -239,8 +238,7 @@ extension FileProviderExtension {
                     // Errore, remove from listFavoriteIdentifierRank
                     fileProviderData.shared.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
 
-                    // SIGNAL
-                    let item = fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .workingSet)
+                    let item = await fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .workingSet)
 
                     completionHandler(item, NSFileProviderError(.serverUnreachable))
                     return
@@ -260,8 +258,7 @@ extension FileProviderExtension {
 
             await self.database.addTagAsunc(ocId, tagIOS: tagData, account: account)
 
-            // SIGNAL WORKINGSET
-            let item = fileProviderData.shared.signalEnumerator(ocId: ocId, type: .workingSet)
+            let item = await fileProviderData.shared.signalEnumerator(ocId: ocId, type: .workingSet)
 
             completionHandler(item, nil)
         }
