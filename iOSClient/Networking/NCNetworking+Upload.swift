@@ -289,7 +289,7 @@ extension NCNetworking {
                         error: NKError) {
         Task {
             #if EXTENSION_FILE_PROVIDER_EXTENSION
-            await fileProviderData.shared.uploadComplete(fileName: fileName,
+            await FileProviderData.shared.uploadComplete(fileName: fileName,
                                                          serverUrl: serverUrl,
                                                          ocId: ocId,
                                                          etag: etag,

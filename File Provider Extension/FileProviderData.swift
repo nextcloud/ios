@@ -5,8 +5,8 @@
 import UIKit
 import NextcloudKit
 
-class fileProviderData: NSObject {
-    static let shared = fileProviderData()
+class FileProviderData: NSObject {
+    static let shared = FileProviderData()
 
     var domain: NSFileProviderDomain?
     var fileProviderManager: NSFileProviderManager = NSFileProviderManager.default
@@ -48,7 +48,7 @@ class fileProviderData: NSObject {
 
     // MARK: - 
 
-    func setupAccount(domain: NSFileProviderDomain?, providerExtension: NSFileProviderExtension) -> tableAccount? {
+    func setupAccount(providerExtension: NSFileProviderExtension) -> tableAccount? {
         let version = NSString(format: NCBrandOptions.shared.textCopyrightNextcloudiOS as NSString, NCUtility().getVersionApp()) as String
         var tblAccount = self.database.getActiveTableAccount()
         let tblAccounts = self.database.getAllTableAccount()
@@ -57,7 +57,6 @@ class fileProviderData: NSObject {
            let fileProviderManager = NSFileProviderManager(for: domain) {
             self.fileProviderManager = fileProviderManager
         }
-        self.domain = domain
 
         NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCKeychain().log))
 
@@ -201,7 +200,7 @@ class fileProviderData: NSObject {
             await self.database.addMetadataAsync(metadata)
             await self.database.addLocalFileAsync(metadata: metadata)
 
-            await fileProviderData.shared.signalEnumerator(ocId: ocId, type: .update)
+            await signalEnumerator(ocId: ocId, type: .update)
 
         } else {
 

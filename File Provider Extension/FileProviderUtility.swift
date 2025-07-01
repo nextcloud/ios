@@ -30,7 +30,7 @@ class fileProviderUtility: NSObject {
     }
 
     func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier? {
-        let homeServerUrl = utilityFileSystem.getHomeServer(session: fileProviderData.shared.session)
+        let homeServerUrl = utilityFileSystem.getHomeServer(session: FileProviderData.shared.session)
         if let directory = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
             if directory.serverUrl == homeServerUrl {
                 return NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue)
@@ -46,7 +46,7 @@ class fileProviderUtility: NSObject {
     }
 
     func getParentItemIdentifierAsync(metadata: tableMetadata) async -> NSFileProviderItemIdentifier? {
-        let homeServerUrl = utilityFileSystem.getHomeServer(session: fileProviderData.shared.session)
+        let homeServerUrl = utilityFileSystem.getHomeServer(session: FileProviderData.shared.session)
         if let directory = await self.database.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
             if directory.serverUrl == homeServerUrl {
                 return NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue)

@@ -137,15 +137,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneWillResignActive(_ scene: UIScene) {
         nkLog(debug: "Scene will resign active")
 
-        NSFileProviderManager.removeAllDomains { _ in
-            /*
-            if !NCKeychain().disableFilesApp,
-             self.database.getAllTableAccount().count > 1 {
-                FileProviderDomain().registerDomains()
-            }
-            */
-        }
-
         WidgetCenter.shared.reloadAllTimelines()
 
         let session = SceneManager.shared.getSession(scene: scene)
