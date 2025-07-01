@@ -209,7 +209,7 @@ extension NCNetworking {
                       selector: String? = nil,
                       options: NKRequestOptions = NKRequestOptions()) async -> (serverExists: Bool, error: NKError) {
 
-        var fileNameFolder = utility.removeForbiddenCharacters(fileName.trimmingCharacters(in: .whitespacesAndNewlines))
+        var fileNameFolder = FileAutoRenamer.rename(fileName, isFolderPath: true, account: session.account)
         if !overwrite {
             fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: session.account)
         }

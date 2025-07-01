@@ -78,7 +78,7 @@ class NCFileNameModel: ObservableObject, ViewOnAppearHandling {
 
     /// Submits the changed file name.
     func submitChangedName() {
-        let fileNameWithoutForbiddenChars = NCUtility().removeForbiddenCharacters(changedName)
+        let fileNameWithoutForbiddenChars = FileAutoRenamer.rename(changedName, account: session.account)
         if changedName != fileNameWithoutForbiddenChars {
             changedName = fileNameWithoutForbiddenChars
             let errorDescription = String(format: NSLocalizedString("_forbidden_characters_", comment: ""), NCGlobal.shared.forbiddenCharacters.joined(separator: " "))

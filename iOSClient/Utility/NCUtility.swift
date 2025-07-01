@@ -275,14 +275,6 @@ final class NCUtility: NSObject, Sendable {
         return (usedmegabytes, totalmegabytes)
     }
 
-    func removeForbiddenCharacters(_ fileName: String) -> String {
-        var fileName = fileName
-        for character in global.forbiddenCharacters {
-            fileName = fileName.replacingOccurrences(of: character, with: "")
-        }
-        return fileName
-    }
-
     func getHeightHeaderEmptyData(view: UIView, portraitOffset: CGFloat, landscapeOffset: CGFloat) -> CGFloat {
         var height: CGFloat = 0
         if UIDevice.current.orientation.isPortrait {
