@@ -46,6 +46,10 @@ class NCAccount: NSObject {
                 NCSession.shared.appendSession(account: account, urlBase: urlBase, user: user, userId: userProfile.userId)
                 self.database.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
 
+                Task {
+                    try? await FileProviderDomain().ensureDomainRegistered(userId: userProfile.userId, urlBase: urlBase)
+                }
+
                 self.changeAccount(account, userProfile: userProfile, controller: controller) {
                     nkLog(debug: "NCAccount changed user profile to \(userProfile.userId).")
                     NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
@@ -138,12 +142,14 @@ class NCAccount: NSObject {
     func deleteAccount(_ account: String, wipe: Bool = true, completion: () -> Void = {}) {
         UIApplication.shared.allSceneSessionDestructionExceptFirst()
 
-        // Unsubscribing Push Notification
-#if !targetEnvironment(simulator)
-        if let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) {
-            NCPushNotification.shared.unsubscribingNextcloudServerPushNotification(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user)
+        // Unsubscribing Push Notification & Domain
+        if let tblAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) {
+            NCPushNotification.shared.unsubscribingNextcloudServerPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user)
+
+            Task {
+                try? await FileProviderDomain().ensureDomainRemoved(userId: tblAccount.userId, urlBase: tblAccount.urlBase)
+            }
         }
-#endif
         // Remove al local files
         if wipe {
             let results = database.getTableLocalFiles(predicate: NSPredicate(format: "account == %@", account), sorted: "ocId", ascending: false)
