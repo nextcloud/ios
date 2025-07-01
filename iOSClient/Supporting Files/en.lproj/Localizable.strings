@@ -395,6 +395,7 @@
 "_share_file_drop_"             = "File request";
 "_share_secure_file_drop_"      = "Secure file drop (upload only)";
 "_share_hide_download_"         = "Hide download";
+"_share_allowed_downloads_"     = "Allowed downloads";
 "_share_limit_download_"        = "Limit downloads";
 "_remaining_"                   = "%d remaining";
 "_share_password_protect_"      = "Password protection";
