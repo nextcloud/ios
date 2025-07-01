@@ -35,6 +35,8 @@ class NCShareDownloadLimitTableViewController: UITableViewController {
         NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityFileSharingDownloadLimitDefaultLimit
     }
 
+    @IBOutlet var allowedDownloadsCell: UITableViewCell!
+    @IBOutlet var limitDownloadCell: UITableViewCell!
     @IBOutlet var limitSwitch: UISwitch!
     @IBOutlet var limitTextField: UITextField!
 
@@ -47,6 +49,14 @@ class NCShareDownloadLimitTableViewController: UITableViewController {
         } else {
             limitSwitch.isOn = false
         }
+
+        var allowedDownloadsCellConfiguration = UIListContentConfiguration.cell()
+        allowedDownloadsCellConfiguration.text = NSLocalizedString("_share_allowed_downloads_", comment: "")
+        allowedDownloadsCell.contentConfiguration = allowedDownloadsCellConfiguration
+
+        var limitDownloadCellConfiguration = UIListContentConfiguration.cell()
+        limitDownloadCellConfiguration.text = NSLocalizedString("_share_limit_download_", comment: "")
+        limitDownloadCell.contentConfiguration = limitDownloadCellConfiguration
     }
 
     @IBAction func switchDownloadLimit(_ sender: UISwitch) {
