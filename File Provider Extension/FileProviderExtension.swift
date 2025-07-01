@@ -189,8 +189,7 @@ class FileProviderExtension: NSFileProviderExtension {
                         return
                     }
 
-                    // SIGNAL
-                    fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
+                    await fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
 
                     let (task, error) = backgroundSession.download(serverUrlFileName: serverUrlFileName,
                                                                    fileNameLocalPath: fileNameLocalPath,
@@ -202,7 +201,7 @@ class FileProviderExtension: NSFileProviderExtension {
                         await self.database.setMetadataSessionAsync(ocId: ocId,
                                                                     sessionTaskIdentifier: task.taskIdentifier)
                         try await NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(itemIdentifier.rawValue))
-                        fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
+                        await fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
 
                         fileProviderData.shared.downloadPendingCompletionHandlers[task.taskIdentifier] = completionHandler
 
@@ -250,7 +249,7 @@ class FileProviderExtension: NSFileProviderExtension {
                                                                     status: NCGlobal.shared.metadataStatusUploading)
 
                         try await NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(itemIdentifier.rawValue))
-                        fileProviderData.shared.signalEnumerator(ocId: ocId, type: .update)
+                        await fileProviderData.shared.signalEnumerator(ocId: ocId, type: .update)
 
                         task.resume()
                     }
@@ -359,7 +358,7 @@ class FileProviderExtension: NSFileProviderExtension {
                                                                     status: NCGlobal.shared.metadataStatusUploading)
 
                         try await NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(ocIdTransfer))
-                        fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
+                        await fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
 
                         task.resume()
 

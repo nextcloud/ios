@@ -22,7 +22,6 @@ class fileProviderData: NSObject {
     private var account: String = ""
 
     var downloadPendingCompletionHandlers: [Int: (Error?) -> Void] = [:]
-    var uploadPendingCompletionHandlers: [Int: (Error?) -> Void] = [:]
 
     var session: NCSession.Session {
         if !account.isEmpty,
@@ -102,36 +101,10 @@ class fileProviderData: NSObject {
     // MARK: -
 
     @discardableResult
-    func signalEnumerator(ocId: String, type: TypeSignal) -> FileProviderItem? {
-        guard let metadata = self.database.getMetadataFromOcId(ocId),
-              let parentItemIdentifier = fileProviderUtility().getParentItemIdentifier(metadata: metadata) else {
-            return nil
-        }
-        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-
-        if type == .delete {
-            fileProviderSignalDeleteContainerItemIdentifier[item.itemIdentifier] = item.itemIdentifier
-            fileProviderSignalDeleteWorkingSetItemIdentifier[item.itemIdentifier] = item.itemIdentifier
-        }
-        if type == .update {
-            fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-            fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-        }
-        if type == .workingSet {
-            fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-        }
-        if type == .delete || type == .update {
-            fileProviderManager.signalEnumerator(for: parentItemIdentifier) { _ in }
-        }
-        fileProviderManager.signalEnumerator(for: .workingSet) { _ in }
-
-        return item
-    }
-
-    func signalEnumeratorAsync(ocId: String, type: TypeSignal) async {
+    func signalEnumerator(ocId: String, type: TypeSignal) async -> FileProviderItem? {
         guard let metadata = await self.database.getMetadataFromOcIdAsync(ocId),
               let parentItemIdentifier = await fileProviderUtility().getParentItemIdentifierAsync(metadata: metadata) else {
-            return
+            return nil
         }
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
 
@@ -150,6 +123,8 @@ class fileProviderData: NSObject {
             try? await fileProviderManager.signalEnumerator(for: parentItemIdentifier)
         }
         try? await fileProviderManager.signalEnumerator(for: .workingSet)
+
+        return item
     }
 
     // MARK: - DOWNLOAD
@@ -174,7 +149,7 @@ class fileProviderData: NSObject {
         downloadPendingCompletionHandlers[taskIdentifier]?(nil)
         downloadPendingCompletionHandlers.removeValue(forKey: taskIdentifier)
 
-        signalEnumerator(ocId: ocId, type: .update)
+        await signalEnumerator(ocId: ocId, type: .update)
     }
 
     // MARK: - UPLOAD
@@ -199,8 +174,7 @@ class fileProviderData: NSObject {
         }
 
         if error == .success, let ocId {
-            // SIGNAL
-            signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
+            await  signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
 
             if !metadata.ocIdTransfer.isEmpty, ocId != metadata.ocIdTransfer {
                 await self.database.deleteMetadataOcIdAsync(metadata.ocIdTransfer)
@@ -227,15 +201,13 @@ class fileProviderData: NSObject {
             await self.database.addMetadataAsync(metadata)
             await self.database.addLocalFileAsync(metadata: metadata)
 
-            // SIGNAL
-            fileProviderData.shared.signalEnumerator(ocId: ocId, type: .update)
+            await fileProviderData.shared.signalEnumerator(ocId: ocId, type: .update)
 
         } else {
 
             await self.database.deleteMetadataOcIdAsync(metadata.ocIdTransfer)
 
-            // SIGNAL
-            signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
+            await signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
         }
     }
 }
