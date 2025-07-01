@@ -36,21 +36,23 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             Task {
                 await NCNetworkingProcess.shared.setCurrentAccount(activeTableAccount.account)
             }
-            for tableAccount in self.database.getAllTableAccount() {
-                NextcloudKit.shared.appendSession(account: tableAccount.account,
-                                                  urlBase: tableAccount.urlBase,
-                                                  user: tableAccount.user,
-                                                  userId: tableAccount.userId,
-                                                  password: NCKeychain().getPassword(account: tableAccount.account),
+            for tblAccount in self.database.getAllTableAccount() {
+                NextcloudKit.shared.appendSession(account: tblAccount.account,
+                                                  urlBase: tblAccount.urlBase,
+                                                  user: tblAccount.user,
+                                                  userId: tblAccount.userId,
+                                                  password: NCKeychain().getPassword(account: tblAccount.account),
                                                   userAgent: userAgent,
                                                   httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
                                                   httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
                                                   httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
                                                   groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
                 Task {
-                    await self.database.applyCachedCapabilitiesAsync(account: tableAccount.account)
+                    await self.database.applyCachedCapabilitiesAsync(account: tblAccount.account)
+
+                    try? await FileProviderDomain().ensureDomainRegistered(userId: tblAccount.userId, urlBase: tblAccount.urlBase)
                 }
-                NCSession.shared.appendSession(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId)
+                NCSession.shared.appendSession(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user, userId: tblAccount.userId)
             }
 
             /// Main.storyboard
