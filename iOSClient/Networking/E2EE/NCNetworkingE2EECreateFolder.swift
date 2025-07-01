@@ -17,11 +17,6 @@ class NCNetworkingE2EECreateFolder: NSObject {
     func createFolder(fileName: String, serverUrl: String, sceneIdentifier: String?, session: NCSession.Session) async -> NKError {
         var fileNameFolder = FileAutoRenamer.rename(fileName, isFolderPath: true, account: session.account)
 
-        if fileName != fileNameFolder {
-            let errorDescription = String(format: NSLocalizedString("_forbidden_characters_", comment: ""), global.forbiddenCharacters.joined(separator: " "))
-            let error = NKError(errorCode: global.errorConflict, errorDescription: errorDescription)
-            return error
-        }
         let fileNameIdentifier = networkingE2EE.generateRandomIdentifier()
         let serverUrlFileName = serverUrl + "/" + fileNameIdentifier
         fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: session.account)
