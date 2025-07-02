@@ -170,6 +170,9 @@ class NCService: NSObject {
 
     func synchronize(account: String) async {
         let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: account)
+        guard let tblAccount = await self.database.getTableAccountAsync(account: account) else {
+            return
+        }
 
         nkLog(tag: self.global.logTagSync, emoji: .start, message: "Synchronize favorite for account: \(account)")
 
@@ -187,14 +190,23 @@ class NCService: NSObject {
         // Synchronize Directory
         let directories = await self.database.getTablesDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "serverUrl", ascending: true)
         for directory in directories {
-            await NCNetworking.shared.synchronization(account: account, serverUrl: directory.serverUrl, metadatasInDownload: metadatasInDownload)
+            await NCNetworking.shared.synchronization(account: account,
+                                                      serverUrl: directory.serverUrl,
+                                                      userId: tblAccount.userId,
+                                                      urlBase: tblAccount.urlBase,
+                                                      metadatasInDownload: metadatasInDownload)
         }
 
         // Synchronize Files
         let files = await self.database.getTableLocalFilesAsync(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "fileName", ascending: true)
         for file in files {
             if let metadata = await self.database.getMetadataFromOcIdAsync(file.ocId),
-               await NCNetworking.shared.isFileDifferent(ocId: metadata.ocId, fileName: metadata.fileName, etag: metadata.etag, metadatasInDownload: metadatasInDownload) {
+               await NCNetworking.shared.isFileDifferent(ocId: metadata.ocId,
+                                                         fileName: metadata.fileName,
+                                                         etag: metadata.etag,
+                                                         metadatasInDownload: metadatasInDownload,
+                                                         userId: metadata.userId,
+                                                         urlBase: metadata.urlBase) {
                 await self.database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
                                                                           session: NCNetworking.shared.sessionDownloadBackground,
                                                                           selector: NCGlobal.shared.selectorSynchronizationOffline)

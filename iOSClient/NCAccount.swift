@@ -141,9 +141,10 @@ class NCAccount: NSObject {
 
     func deleteAccount(_ account: String, wipe: Bool = true, completion: () -> Void = {}) {
         UIApplication.shared.allSceneSessionDestructionExceptFirst()
+        let tblAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", account))
 
         // Unsubscribing Push Notification & Domain
-        if let tblAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) {
+        if let tblAccount {
             NCPushNotification.shared.unsubscribingNextcloudServerPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user)
 
             Task {
@@ -154,8 +155,10 @@ class NCAccount: NSObject {
         if wipe {
             let results = database.getTableLocalFiles(predicate: NSPredicate(format: "account == %@", account), sorted: "ocId", ascending: false)
             let utilityFileSystem = NCUtilityFileSystem()
-            for result in results {
-                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId))
+            if let tblAccount {
+                for result in results {
+                    utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId, userId: tblAccount.userId, urlBase: tblAccount.urlBase))
+                }
             }
             // Remove account in all database
             database.clearDatabase(account: account, removeAccount: true, removeAutoUpload: true)

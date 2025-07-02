@@ -74,7 +74,10 @@ final class NCCameraRoll: CameraRollExtractor {
             : NCGlobal.shared.chunkSizeMBCellular
 
         guard !metadataSource.assetLocalIdentifier.isEmpty else {
-            let filePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadataSource.ocId, fileNameView: metadataSource.fileName)
+            let filePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadataSource.ocId,
+                                                                             fileNameView: metadataSource.fileName,
+                                                                             userId: metadataSource.userId,
+                                                                             urlBase: metadata.urlBase)
             let results = await NKTypeIdentifiers.shared.getInternalType(fileName: metadataSource.fileNameView, mimeType: metadataSource.contentType, directory: false, account: metadataSource.account)
 
             metadataSource.contentType = results.mimeType
@@ -107,7 +110,10 @@ final class NCCameraRoll: CameraRollExtractor {
                 modifyMetadataForUpload: true
             )
 
-            let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.metadata.ocId, fileNameView: result.metadata.fileNameView)
+            let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.metadata.ocId,
+                                                                                fileNameView: result.metadata.fileNameView,
+                                                                                userId: result.metadata.userId,
+                                                                                urlBase: result.metadata.urlBase)
             self.utilityFileSystem.moveFile(atPath: result.filePath, toPath: toPath)
             metadatas.append(result.metadata)
 
@@ -345,7 +351,10 @@ final class NCCameraRoll: CameraRollExtractor {
         let options = PHLivePhotoRequestOptions()
         let ocId = UUID().uuidString
         let fileName = (metadata.fileName as NSString).deletingPathExtension + ".mov"
-        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
+        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId,
+                                                                             fileNameView: fileName,
+                                                                             userId: metadata.userId,
+                                                                             urlBase: metadata.urlBase)
         let chunkSize = NCNetworking.shared.networkReachability == .reachableEthernetOrWiFi
             ? NCGlobal.shared.chunkSizeMBEthernetOrWiFi
             : NCGlobal.shared.chunkSizeMBCellular

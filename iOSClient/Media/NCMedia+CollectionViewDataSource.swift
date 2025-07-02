@@ -89,7 +89,7 @@ extension NCMedia: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return }
 
-        if !utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag),
+        if !utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: self.session.userId, urlBase: self.session.urlBase),
            NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
             NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, media: self))
         }
@@ -125,10 +125,10 @@ extension NCMedia: UICollectionViewDataSource {
 
         if cell.imageItem.image == nil {
             if isPinchGestureActive || ext == global.previewExt512 || ext == global.previewExt1024 {
-                cell.imageItem.image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
+                cell.imageItem.image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: self.session.userId, urlBase: self.session.urlBase)
             } else {
                 DispatchQueue.global(qos: .userInteractive).async {
-                    let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
+                    let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: self.session.userId, urlBase: self.session.urlBase)
                     DispatchQueue.main.async {
                         if let currentCell = collectionView.cellForItem(at: indexPath) as? NCMediaCell,
                            currentCell.ocId == metadata.ocId, let image {

@@ -128,7 +128,7 @@ class NCDragDrop: NSObject {
                 let ocId = NSUUID().uuidString
                 let session = NCSession.shared.getSession(controller: controller)
                 let newFileName = FileAutoRenamer.rename(url.lastPathComponent, account: session.account)
-                let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: newFileName)
+                let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: newFileName, userId: session.userId, urlBase: session.urlBase)
                 let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
 
                 if let fileNameError = FileNameValidator.checkFileName(newFileName, account: session.account, capabilities: capabilities) {

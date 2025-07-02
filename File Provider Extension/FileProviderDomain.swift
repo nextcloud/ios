@@ -26,7 +26,11 @@ class FileProviderDomain: NSObject {
             return
         }
         let domainIdentifier = userId + " (" + host + ")"
-        let relativePath = NSFileProviderManager.default.documentStorageURL.lastPathComponent
+        let relativePath = "(userId)-\(host)"
+            .replacingOccurrences(of: " ", with: "-")
+            .replacingOccurrences(of: ".", with: "-")
+            .replacingOccurrences(of: "@", with: "-")
+            .lowercased()
         let domains = try await NSFileProviderManager.domains()
 
         if domains.contains(where: { $0.identifier.rawValue == domainIdentifier }) {

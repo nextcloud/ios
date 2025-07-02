@@ -154,7 +154,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     /// Asynchronously calculates the size of cache directory and updates the footer title.
     func calculateSize() {
         let ufs = NCUtilityFileSystem()
-        let directory = ufs.directoryProviderStorage
+        let directory = ufs.getDirectoryProviderStorage()
         let totalSize = ufs.getDirectorySize(directory: directory)
         DispatchQueue.main.async {
             self.footerTitle = "\(NSLocalizedString("_clear_cache_footer_", comment: "")). (\(NSLocalizedString("_used_space_", comment: "")) \(ufs.transformedSize(totalSize)))"
