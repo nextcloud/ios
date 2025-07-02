@@ -511,6 +511,15 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         return fileNamePath
     }
 
+    func getFileNamePath(_ fileName: String, serverUrl: String, urlBase: String, userId: String) -> String {
+        let home = getHomeServer(urlBase: urlBase, userId: userId)
+        var fileNamePath = serverUrl.replacingOccurrences(of: home, with: "") + "/" + fileName
+        if fileNamePath.first == "/" {
+            fileNamePath.removeFirst()
+        }
+        return fileNamePath
+    }
+
     func createFileName(_ fileName: String, fileDate: Date, fileType: PHAssetMediaType, notUseMask: Bool = false) -> String {
         var fileName = fileName
         let keychain = NCKeychain()

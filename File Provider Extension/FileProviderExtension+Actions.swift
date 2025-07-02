@@ -9,10 +9,11 @@ import NextcloudKit
 extension FileProviderExtension {
     override func createDirectory(withName directoryName: String, inParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         Task {
-            guard let tableDirectory = await providerUtility.getTableDirectoryFromParentItemIdentifierAsync(parentItemIdentifier, account: fileProviderData.session.account, homeServerUrl: utilityFileSystem.getHomeServer(session: fileProviderData.session)) else {
+            guard let session = fileProviderData.session,
+                  let tableDirectory = await providerUtility.getTableDirectoryFromParentItemIdentifierAsync(parentItemIdentifier, account: session.account, homeServerUrl: utilityFileSystem.getHomeServer(session: session)) else {
                 return completionHandler(nil, NSFileProviderError(.noSuchItem))
             }
-            let account = fileProviderData.session.account
+            let account = session.account
             let directoryName = utilityFileSystem.createFileName(directoryName, serverUrl: tableDirectory.serverUrl, account: account)
             let serverUrlFileName = tableDirectory.serverUrl + "/" + directoryName
             let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: account)
@@ -112,7 +113,7 @@ extension FileProviderExtension {
             let fileNameFrom = serverUrlFrom + "/" + itemFrom.filename
             let account = metadataFrom.account
 
-            guard let tableDirectoryTo = await providerUtility.getTableDirectoryFromParentItemIdentifierAsync(parentItemIdentifier, account: account, homeServerUrl: utilityFileSystem.getHomeServer(session: fileProviderData.session)) else {
+            guard let tableDirectoryTo = await providerUtility.getTableDirectoryFromParentItemIdentifierAsync(parentItemIdentifier, account: account, homeServerUrl: utilityFileSystem.getHomeServer(urlBase: metadataFrom.urlBase, userId: metadataFrom.userId)) else {
                 completionHandler(nil, NSFileProviderError(.noSuchItem))
                 return
             }
@@ -211,7 +212,7 @@ extension FileProviderExtension {
             }
 
             if (favorite == true && !metadata.favorite) || (!favorite && metadata.favorite) {
-                let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: fileProviderData.session)
+                let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
                 let resultsFavorite = await  NextcloudKit.shared.setFavoriteAsync(fileName: fileNamePath, favorite: favorite, account: metadata.account)
 
                 if resultsFavorite.error == .success {

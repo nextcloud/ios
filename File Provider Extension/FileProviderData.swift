@@ -13,27 +13,15 @@ class FileProviderData: NSObject {
     let database = NCManageDatabase.shared
 
     var domain: NSFileProviderDomain?
+    var session: NCSession.Session?
 
     var listFavoriteIdentifierRank: [String: NSNumber] = [:]
     var fileProviderSignalDeleteContainerItemIdentifier: [NSFileProviderItemIdentifier: NSFileProviderItemIdentifier] = [:]
     var fileProviderSignalUpdateContainerItem: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
     var fileProviderSignalDeleteWorkingSetItemIdentifier: [NSFileProviderItemIdentifier: NSFileProviderItemIdentifier] = [:]
     var fileProviderSignalUpdateWorkingSetItem: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
-    private var account: String = ""
 
     var downloadPendingCompletionHandlers: [Int: (Error?) -> Void] = [:]
-
-    var session: NCSession.Session {
-        if !account.isEmpty,
-           let tableAccount = self.database.getTableAccount(account: account) {
-            return NCSession.Session(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId)
-        } else if let activeTableAccount = self.database.getActiveTableAccount() {
-            self.account = activeTableAccount.account
-            return NCSession.Session(account: activeTableAccount.account, urlBase: activeTableAccount.urlBase, user: activeTableAccount.user, userId: activeTableAccount.userId)
-        } else {
-            return NCSession.Session(account: "", urlBase: "", user: "", userId: "")
-        }
-    }
 
     enum FileProviderError: Error {
         case downloadError
@@ -75,7 +63,10 @@ class FileProviderData: NSObject {
         guard let matchAccount else {
             return nil
         }
-        self.account = matchAccount.account
+        self.session = NCSession.Session(account: matchAccount.account,
+                                         urlBase: matchAccount.urlBase,
+                                         user: matchAccount.user,
+                                         userId: matchAccount.userId)
 
         nkLog(start: "Start File Provider session " + version + " (File Provider Extension) with account: \(matchAccount.account)")
 
