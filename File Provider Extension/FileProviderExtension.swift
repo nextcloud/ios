@@ -94,6 +94,7 @@ final class FileProviderExtension: NSFileProviderExtension {
 
         if identifier == .rootContainer {
             let metadata = tableMetadata()
+
             metadata.account = session.account
             metadata.directory = true
             metadata.ocId = NSFileProviderItemIdentifier.rootContainer.rawValue
@@ -101,7 +102,8 @@ final class FileProviderExtension: NSFileProviderExtension {
             metadata.fileNameView = "root"
             metadata.serverUrl = utilityFileSystem.getHomeServer(session: session)
             metadata.classFile = NKTypeClassFile.directory.rawValue
-            return FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue))
+
+            return FileProviderItem(metadata: metadata, parentItemIdentifier: .rootContainer)
         } else {
             guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(identifier),
                   let parentItemIdentifier = providerUtility.getParentItemIdentifier(metadata: metadata) else {
