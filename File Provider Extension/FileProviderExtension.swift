@@ -109,8 +109,12 @@ final class FileProviderExtension: NSFileProviderExtension {
     }
 
     override func urlForItem(withPersistentIdentifier identifier: NSFileProviderItemIdentifier) -> URL? {
-        guard let item = try? item(for: identifier) else { return nil }
-        var url = NSFileProviderManager.default.documentStorageURL.appendingPathComponent(identifier.rawValue, isDirectory: true)
+        guard let item = try? item(for: identifier),
+              let rootURL = fileProviderUtility().getDocumentStorageURL(for: domain, userId: fileProviderData.session.userId, urlBase: fileProviderData.session.urlBase) else {
+            return nil
+        }
+
+        var url = rootURL.appendingPathComponent(identifier.rawValue, isDirectory: true)
 
         // (fix copy/paste directory -> isDirectory = false)
         url = url.appendingPathComponent(item.filename, isDirectory: false)

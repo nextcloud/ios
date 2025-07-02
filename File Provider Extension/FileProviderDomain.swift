@@ -26,11 +26,7 @@ class FileProviderDomain: NSObject {
             return
         }
         let domainIdentifier = userId + " (" + host + ")"
-        let relativePath = "\(userId)-\(host)"
-            .replacingOccurrences(of: " ", with: "-")
-            .replacingOccurrences(of: ".", with: "-")
-            .replacingOccurrences(of: "@", with: "-")
-            .lowercased()
+        let relativePath = NCUtilityFileSystem().getPathDomain(userId: userId, host: host)
         let domains = try await NSFileProviderManager.domains()
 
         if domains.contains(where: { $0.identifier.rawValue == domainIdentifier }) {
