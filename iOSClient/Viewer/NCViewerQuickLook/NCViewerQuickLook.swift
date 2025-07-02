@@ -233,7 +233,7 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
             metadata.fileNameView = fileName
         }
 
-        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: metadata.fileNameView)
+        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
         guard utilityFileSystem.copyFile(atPath: url.path, toPath: fileNamePath) else { return }
 
         let metadataForUpload = NCManageDatabase.shared.createMetadata(fileName: metadata.fileName,

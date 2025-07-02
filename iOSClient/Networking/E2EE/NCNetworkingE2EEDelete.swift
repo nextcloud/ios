@@ -38,7 +38,7 @@ class NCNetworkingE2EEDelete: NSObject {
         let result = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: serverUrlFileName, account: metadata.account, options: options)
         if result.error == .success || result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
             do {
-                try FileManager.default.removeItem(atPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId))
+                try FileManager.default.removeItem(atPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
                 await database.deleteVideoAsync(metadata: metadata)
                 await database.deleteMetadataOcIdAsync(metadata.ocId)
                 await database.deleteLocalFileOcIdAsync(metadata.ocId)
@@ -46,7 +46,7 @@ class NCNetworkingE2EEDelete: NSObject {
                 if let metadataLive = await self.database.getMetadataLivePhotoAsync(metadata: metadata),
                     metadataLive.isFlaggedAsLivePhotoByServer {
                     do {
-                        try FileManager.default.removeItem(atPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadataLive.ocId))
+                        try FileManager.default.removeItem(atPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadataLive.ocId, userId: metadataLive.userId, urlBase: metadataLive.urlBase))
                     } catch { }
                     await self.database.deleteVideoAsync(metadata: metadataLive)
                     await self.database.deleteMetadataOcIdAsync(metadataLive.ocId)

@@ -71,7 +71,11 @@ final class NCImageCache: @unchecked Sendable {
                                     self.cache.removeAllValues()
                                     break
                                 }
-                                if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) {
+                                if let image = self.utility.getImage(ocId: metadata.ocId,
+                                                                     etag: metadata.etag,
+                                                                     ext: self.global.previewExt256,
+                                                                     userId: metadata.userId,
+                                                                     urlBase: metadata.urlBase) {
                                     self.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: self.global.previewExt256, cost: cost)
                                     cost += 1
                                 }

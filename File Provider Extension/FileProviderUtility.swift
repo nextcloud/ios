@@ -137,8 +137,8 @@ class fileProviderUtility: NSObject {
     }
 
     func fileProviderStorageExists(_ metadata: tableMetadata) -> Bool {
-        let pathA = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
-        let pathB = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+        let pathA = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
+        let pathB = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
 
         let sizeA = fileSize(at: pathA)
         let sizeB = fileSize(at: pathB)

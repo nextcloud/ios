@@ -311,7 +311,7 @@ class NCCollectionViewDataSource: NSObject {
             ///
             if metadata.isImageOrVideo,
                NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) == nil,
-               let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) {
+               let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256, userId: metadata.userId, urlBase: metadata.urlBase) {
                 NCImageCache.shared.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: self.global.previewExt256, cost: counter)
             }
 

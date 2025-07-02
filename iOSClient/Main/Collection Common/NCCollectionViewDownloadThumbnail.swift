@@ -44,7 +44,7 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation, @unchecked Sendabl
         guard !isCancelled else { return self.finish() }
         var etagResource: String?
 
-        if utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag) {
+        if utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase) {
             etagResource = metadata.etagResource
         }
 
@@ -57,7 +57,7 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation, @unchecked Sendabl
 
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                 NCUtility().createImageFileFrom(data: data, metadata: self.metadata)
-                let image = self.utility.getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: self.ext)
+                let image = self.utility.getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: self.ext, userId: self.metadata.userId, urlBase: self.metadata.urlBase)
 
                 DispatchQueue.main.async {
                     for case let cell as NCCellProtocol in collectionView.visibleCells where cell.fileOcId == self.metadata.ocId {

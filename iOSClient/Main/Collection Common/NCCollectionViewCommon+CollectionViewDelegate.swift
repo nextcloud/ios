@@ -45,7 +45,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         if metadata.directory {
             pushMetadata(metadata)
         } else {
-            let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt1024)
+            let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
 
             if !metadata.isDirectoryE2EE, metadata.isImage || metadata.isAudioOrVideo {
                 let metadatas = self.dataSource.getMetadatas()
@@ -128,7 +128,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             return nil
         }
         let identifier = indexPath as NSCopying
-        var image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024)
+        var image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
 
         if image == nil {
             let cell = collectionView.cellForItem(at: indexPath)

@@ -57,7 +57,7 @@ extension NCNetworking {
                               completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void = { _, _ in }) {
         var downloadTask: URLSessionTask?
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-        let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
+        let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
         let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
         if metadata.status == global.metadataStatusDownloading || metadata.status == global.metadataStatusUploading {
@@ -120,7 +120,7 @@ extension NCNetworking {
 
         Task {
             let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-            let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+            let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
 
             start()
 
@@ -171,7 +171,7 @@ extension NCNetworking {
                 let fileName = url.lastPathComponent
                 if serverUrl.hasSuffix("/") { serverUrl = String(serverUrl.dropLast()) }
                 if let metadata = database.getResultMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) {
-                    let destinationFilePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
+                    let destinationFilePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
                     utilityFileSystem.copyFile(at: location, to: NSURL.fileURL(withPath: destinationFilePath))
                 }
             }
@@ -229,7 +229,7 @@ extension NCNetworking {
                 nkLog(error: "Downloaded file: " + metadata.serverUrl + "/" + metadata.fileName + ", result: error \(error.errorCode)")
 
                 if error.errorCode == NCGlobal.shared.errorResourceNotFound {
-                    self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                    self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
 
                     await self.database.deleteLocalFileOcIdAsync(metadata.ocId)
                     await self.database.deleteMetadataOcIdAsync(metadata.ocId)

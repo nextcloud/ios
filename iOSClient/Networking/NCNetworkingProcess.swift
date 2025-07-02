@@ -365,7 +365,7 @@ actor NCNetworkingProcess {
                                                                             account: result.account)
                 } else {
                     do {
-                        try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                        try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
                     } catch { }
                     await self.database.deleteVideoAsync(metadata: metadata)
                     await self.database.deleteMetadataOcIdAsync(metadata.ocId)
@@ -373,7 +373,7 @@ actor NCNetworkingProcess {
                     // LIVE PHOTO
                     if let metadataLive = await self.database.getMetadataLivePhotoAsync(metadata: metadata) {
                         do {
-                            try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId))
+                            try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId, userId: metadataLive.userId, urlBase: metadataLive.urlBase))
                         } catch { }
                         await self.database.deleteVideoAsync(metadata: metadataLive)
                         await self.database.deleteMetadataOcIdAsync(metadataLive.ocId)
@@ -464,7 +464,7 @@ actor NCNetworkingProcess {
 
                 if resultDelete.error == .success || resultDelete.error.errorCode == NCGlobal.shared.errorResourceNotFound {
                     do {
-                        try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                        try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
                     } catch { }
 
                     NCImageCache.shared.removeImageCache(ocIdPlusEtag: metadata.ocId + metadata.etag)

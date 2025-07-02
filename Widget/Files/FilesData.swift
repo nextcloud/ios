@@ -214,14 +214,26 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 guard let url = URL(string: urlString) else { continue }
 
                 // IMAGE
-                image = utility.getImage(ocId: file.ocId, etag: file.etag, ext: NCGlobal.shared.previewExt512)
+                image = utility.getImage(ocId: file.ocId,
+                                         etag: file.etag,
+                                         ext: NCGlobal.shared.previewExt512,
+                                         userId: activeTableAccount.userId,
+                                         urlBase: activeTableAccount.urlBase)
                 if image == nil, file.hasPreview {
                     let result = await NextcloudKit.shared.downloadPreviewAsync(fileId: file.fileId,
                                                                                 account: activeTableAccount.account,
                                                                                 options: options)
                     if result.error == .success, let data = result.responseData?.data {
-                        utility.createImageFileFrom(data: data, ocId: file.ocId, etag: file.etag)
-                        image = utility.getImage(ocId: file.ocId, etag: file.etag, ext: NCGlobal.shared.previewExt256)
+                        utility.createImageFileFrom(data: data,
+                                                    ocId: file.ocId,
+                                                    etag: file.etag,
+                                                    userId: activeTableAccount.userId,
+                                                    urlBase: activeTableAccount.urlBase)
+                        image = utility.getImage(ocId: file.ocId,
+                                                 etag: file.etag,
+                                                 ext: NCGlobal.shared.previewExt256,
+                                                 userId: activeTableAccount.userId,
+                                                 urlBase: activeTableAccount.urlBase)
                     }
                 }
                 if image == nil {

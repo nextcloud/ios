@@ -47,7 +47,7 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
         var etagResource: String?
         var image: UIImage?
 
-        if utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag) {
+        if utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: session.userId, urlBase: session.urlBase) {
             etagResource = tblMetadata.etagResource
         }
 
@@ -60,7 +60,11 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
                 self.media.filesExists.append(self.metadata.ocId)
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                 NCUtility().createImageFileFrom(data: data, metadata: tblMetadata)
-                image = NCUtility().getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: NCGlobal.shared.getSizeExtension(column: self.media.numberOfColumns))
+                image = NCUtility().getImage(ocId: self.metadata.ocId,
+                                             etag: self.metadata.etag,
+                                             ext: NCGlobal.shared.getSizeExtension(column: self.media.numberOfColumns),
+                                             userId: self.session.userId,
+                                             urlBase: self.session.urlBase)
             }
 
             Task { @MainActor in
