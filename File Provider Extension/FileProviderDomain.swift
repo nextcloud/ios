@@ -26,7 +26,7 @@ class FileProviderDomain: NSObject {
             return
         }
         let domainIdentifier = userId + " (" + host + ")"
-        let relativePath = "(userId)-\(host)"
+        let relativePath = "\(userId)-\(host)"
             .replacingOccurrences(of: " ", with: "-")
             .replacingOccurrences(of: ".", with: "-")
             .replacingOccurrences(of: "@", with: "-")
