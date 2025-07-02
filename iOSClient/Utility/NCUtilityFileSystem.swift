@@ -66,6 +66,15 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
 
     // MARK: -
 
+    func getPathDomain(userId: String, host: String) -> String {
+        let path = "\(userId)-\(host)"
+            .replacingOccurrences(of: " ", with: "-")
+            .replacingOccurrences(of: ".", with: "-")
+            .replacingOccurrences(of: "@", with: "-")
+            .lowercased()
+        return path
+    }
+
     func getDirectoryProviderStorage() -> String {
         guard let directoryGroup = fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup) else {
             return ""
@@ -89,15 +98,10 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
               let host = urlBase.host else {
             return ""
         }
-
-        let sanitizedDomain = "\(userId)-\(host)"
-            .replacingOccurrences(of: " ", with: "-")
-            .replacingOccurrences(of: "@", with: "-")
-            .replacingOccurrences(of: ".", with: "-")
-
+        let relativePath = NCUtilityFileSystem().getPathDomain(userId: userId, host: host)
         let path = groupURL
                 .appendingPathComponent(NCGlobal.shared.directoryProviderStorage, isDirectory: true)
-                .appendingPathComponent(sanitizedDomain, isDirectory: true)
+                .appendingPathComponent(relativePath, isDirectory: true)
                 .path
 
         // Create directory if needed
