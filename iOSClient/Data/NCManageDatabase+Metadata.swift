@@ -982,6 +982,12 @@ extension NCManageDatabase {
 
     // MARK: - Realm Read
 
+    func getAllTableMetadataAsync() async -> [tableMetadata] {
+        return await performRealmReadAsync { realm in
+            realm.objects(tableMetadata.self).map { tableMetadata(value: $0) }
+        } ?? []
+    }
+
     func getMetadata(predicate: NSPredicate) -> tableMetadata? {
         return performRealmRead { realm in
             realm.objects(tableMetadata.self)
