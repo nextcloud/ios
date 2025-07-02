@@ -200,7 +200,18 @@ final class FileProviderExtension: NSFileProviderExtension {
                     if let task, error == .success {
                         await self.database.setMetadataSessionAsync(ocId: ocId,
                                                                     sessionTaskIdentifier: task.taskIdentifier)
-                        try await NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(itemIdentifier.rawValue))
+
+                        do {
+                            if let domain = self.domain,
+                               let manager = NSFileProviderManager(for: domain) {
+                                try await manager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(itemIdentifier.rawValue))
+                            } else {
+                                try await NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(itemIdentifier.rawValue))
+                            }
+                        } catch {
+                            print(error)
+                        }
+
                         await fileProviderData.signalEnumerator(ocId: metadata.ocId, type: .update)
 
                         fileProviderData.downloadPendingCompletionHandlers[task.taskIdentifier] = completionHandler
@@ -248,7 +259,17 @@ final class FileProviderExtension: NSFileProviderExtension {
                                                                     sessionTaskIdentifier: task.taskIdentifier,
                                                                     status: NCGlobal.shared.metadataStatusUploading)
 
-                        try await NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(itemIdentifier.rawValue))
+                        do {
+                            if let domain = self.domain,
+                               let manager = NSFileProviderManager(for: domain) {
+                                try await manager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(itemIdentifier.rawValue))
+                            } else {
+                                try await NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(itemIdentifier.rawValue))
+                            }
+                        } catch {
+                            print(error)
+                        }
+
                         await fileProviderData.signalEnumerator(ocId: ocId, type: .update)
 
                         task.resume()
@@ -363,7 +384,17 @@ final class FileProviderExtension: NSFileProviderExtension {
                                                                     sessionTaskIdentifier: task.taskIdentifier,
                                                                     status: NCGlobal.shared.metadataStatusUploading)
 
-                        try await NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(ocIdTransfer))
+                        do {
+                            if let domain = self.domain,
+                               let manager = NSFileProviderManager(for: domain) {
+                                try await manager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(ocIdTransfer))
+                            } else {
+                                try await NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(ocIdTransfer))
+                            }
+                        } catch {
+                            print(error)
+                        }
+
                         await fileProviderData.signalEnumerator(ocId: metadata.ocId, type: .update)
 
                         task.resume()

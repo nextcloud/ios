@@ -8,10 +8,11 @@ import NextcloudKit
 class FileProviderData: NSObject {
     static let shared = FileProviderData()
 
-    var fileProviderManager: NSFileProviderManager = NSFileProviderManager.default
     let utilityFileSystem = NCUtilityFileSystem()
     let global = NCGlobal.shared
     let database = NCManageDatabase.shared
+
+    var domain: NSFileProviderDomain?
 
     var listFavoriteIdentifierRank: [String: NSNumber] = [:]
     var fileProviderSignalDeleteContainerItemIdentifier: [NSFileProviderItemIdentifier: NSFileProviderItemIdentifier] = [:]
@@ -55,14 +56,10 @@ class FileProviderData: NSObject {
         let tblAccounts = self.database.getAllTableAccount()
         var matchAccount: tableAccount?
 
-        if let domain,
-           let fileProviderManager = NSFileProviderManager(for: domain) {
-            self.fileProviderManager = fileProviderManager
-        }
-
         NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCKeychain().log))
 
         if let domain {
+            self.domain = domain
             // Match the domain identifier with one of the stored accounts
             matchAccount = tblAccounts.first(where: {
                 guard let urlBase = NSURL(string: $0.urlBase), let host = urlBase.host else {
@@ -120,9 +117,26 @@ class FileProviderData: NSObject {
             fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
         }
         if type == .delete || type == .update {
-            try? await fileProviderManager.signalEnumerator(for: parentItemIdentifier)
+            do {
+                if let domain = self.domain {
+                    try await NSFileProviderManager(for: domain)?.signalEnumerator(for: parentItemIdentifier)
+                } else {
+                    try await NSFileProviderManager.default.signalEnumerator(for: parentItemIdentifier)
+                }
+            } catch {
+                print(error)
+            }
         }
-        try? await fileProviderManager.signalEnumerator(for: .workingSet)
+
+        do {
+            if let domain {
+                try await NSFileProviderManager(for: domain)?.signalEnumerator(for: .workingSet)
+            } else {
+                try await NSFileProviderManager.default.signalEnumerator(for: .workingSet)
+            }
+        } catch {
+            print(error)
+        }
 
         return item
     }
@@ -174,7 +188,7 @@ class FileProviderData: NSObject {
         }
 
         if error == .success, let ocId {
-            await  signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
+            await signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
 
             if !metadata.ocIdTransfer.isEmpty, ocId != metadata.ocIdTransfer {
                 await self.database.deleteMetadataOcIdAsync(metadata.ocIdTransfer)
