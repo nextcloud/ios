@@ -81,7 +81,6 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         return path
     }
 
-
     /// Returns a stable document storage path as String, based on the shared App Group and domain info.
     /// Useful for storing per-domain data (DB, cache, etc.) accessible from both app and File Provider extension.
     func getDocumentStorage(userId: String, urlBase: String) -> String {
@@ -91,7 +90,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
             return ""
         }
 
-        let sanitizedDomain = "provider-\(userId)-\(host)"
+        let sanitizedDomain = "\(userId)-\(host)"
             .replacingOccurrences(of: " ", with: "-")
             .replacingOccurrences(of: "@", with: "-")
             .replacingOccurrences(of: ".", with: "-")
