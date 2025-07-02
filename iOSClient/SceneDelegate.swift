@@ -186,7 +186,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Clear older files
         let days = NCKeychain().cleanUpDay
         let utilityFileSystem = NCUtilityFileSystem()
-        utilityFileSystem.cleanUp(directory: utilityFileSystem.getDirectoryProviderStorage(), days: TimeInterval(days))
+        utilityFileSystem.cleanUp(session: session, days: TimeInterval(days))
     }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {

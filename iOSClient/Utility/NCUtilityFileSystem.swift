@@ -695,19 +695,20 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         return formatter.string(fromByteCount: bytes)
     }
 
-    func cleanUp(directory: String, days: TimeInterval) {
+    func cleanUp(session: NCSession.Session, days: TimeInterval) {
         DispatchQueue.global().async {
             if days == 0 { return}
             let minimumDate = Date().addingTimeInterval(-days * 24 * 60 * 60)
+            let directory = NCUtilityFileSystem().getDocumentStorage(userId: session.userId, urlBase: session.urlBase)
             let url = URL(fileURLWithPath: directory)
             var offlineDir: [String] = []
 
-            if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "offline == true"), sorted: "serverUrl", ascending: true) {
+            if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", session.account), sorted: "serverUrl", ascending: true) {
                 for directory: tableDirectory in directories {
-                    //offlineDir.append(self.getDirectoryProviderStorageOcId(directory.ocId))
+                    offlineDir.append(self.getDirectoryProviderStorageOcId(directory.ocId, userId: session.userId, urlBase: session.urlBase))
                 }
             }
-            let resultsLocalFile = NCManageDatabase.shared.getResultsTableLocalFile(predicate: NSPredicate(format: "offline == false"), sorted: "lastOpeningDate", ascending: true)
+            let resultsLocalFile = NCManageDatabase.shared.getResultsTableLocalFile(predicate: NSPredicate(format: "account == %@ AND offline == false", session.account), sorted: "lastOpeningDate", ascending: true)
 
             let manager = FileManager.default
             if let enumerator = manager.enumerator(at: url, includingPropertiesForKeys: [.isRegularFileKey], options: []) {
