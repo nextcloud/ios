@@ -126,6 +126,10 @@ class FileProviderItem: NSObject, NSFileProviderItem {
 
     init(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier) {
         self.metadata = metadata.detachedCopy()
-        self.parentItemIdentifier = parentItemIdentifier
+        if metadata.ocId == "root" {
+            self.parentItemIdentifier = .rootContainer
+        } else {
+            self.parentItemIdentifier = parentItemIdentifier
+        }
     }
 }
