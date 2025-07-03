@@ -1418,7 +1418,7 @@ extension NCManageDatabase {
     /// Asynchronously retrieves and sorts `tableMetadata` objects matching a given predicate and layout.
     func getMetadatasAsync(predicate: NSPredicate,
                            layoutForView: NCDBLayoutForView?,
-                           account: String) async -> (metadatas: [tableMetadata], layoutForView: NCDBLayoutForView?, account: String) {
+                           account: String) async -> [tableMetadata] {
         let detachedMetadatas = await performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
                 .filter(predicate)
@@ -1427,7 +1427,7 @@ extension NCManageDatabase {
 
         let sorted = self.sortedMetadata(layoutForView: layoutForView, account: account, metadatas: detachedMetadatas)
 
-        return (sorted, layoutForView, account)
+        return sorted
     }
 
     func getMetadatasAsync(predicate: NSPredicate,

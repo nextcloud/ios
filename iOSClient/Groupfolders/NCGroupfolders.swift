@@ -59,20 +59,19 @@ class NCGroupfolders: NCCollectionViewCommon {
     // MARK: - DataSource
 
     override func reloadDataSource() async {
-        if self.serverUrl.isEmpty {
-            let metadatas = database.getMetadatasFromGroupfolders(session: session, layoutForView: layoutForView)
-            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
-            await self.dataSource.cachingAsync(metadatas: metadatas)
-            await super.reloadDataSource()
+        var metadatas: [tableMetadata] = []
 
+        if self.serverUrl.isEmpty {
+            metadatas = database.getMetadatasFromGroupfolders(session: session, layoutForView: layoutForView)
         } else {
-            let (metadatas, layoutForView, account) = await database.getMetadatasAsync(predicate: defaultPredicate,
-                                                                                       layoutForView: layoutForView,
-                                                                                       account: session.account)
-            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
-            await self.dataSource.cachingAsync(metadatas: metadatas)
-            await super.reloadDataSource()
+            metadatas = await database.getMetadatasAsync(predicate: defaultPredicate,
+                                                         layoutForView: layoutForView,
+                                                         account: session.account)
         }
+
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
+        await self.dataSource.cachingAsync(metadatas: metadatas)
+        await super.reloadDataSource()
     }
 
     override func getServerData() async {

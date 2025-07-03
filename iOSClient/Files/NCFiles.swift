@@ -197,11 +197,11 @@ class NCFiles: NCCollectionViewCommon {
         if let tblDirectory = await self.database.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.session.account, self.serverUrl)) {
             self.richWorkspaceText = tblDirectory.richWorkspace
         }
-        let (metadatas, layoutForView, account) = await self.database.getMetadatasAsync(predicate: predicate,
-                                                                                        layoutForView: self.layoutForView,
-                                                                                        account: self.session.account)
+        let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
+                                                              layoutForView: self.layoutForView,
+                                                              account: self.session.account)
 
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
         await super.reloadDataSource()
 
         let dataSource = self.dataSource

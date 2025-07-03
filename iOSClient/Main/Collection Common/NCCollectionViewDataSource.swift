@@ -30,13 +30,13 @@ class NCCollectionViewDataSource: NSObject {
     private let utility = NCUtility()
     private let global = NCGlobal.shared
     private let database = NCManageDatabase.shared
+
     private var sectionsValue: [String] = []
     private var providers: [NKSearchProvider]?
     private var searchResults: [NKSearchResult]?
     private var metadatas: [tableMetadata] = []
     private var metadatasForSection: [NCMetadataForSection] = []
     private var layoutForView: NCDBLayoutForView?
-   // private var metadataIndexPath: [IndexPath: tableMetadata] = [:]
     private var directoryOnTop: Bool = true
     private var favoriteOnTop: Bool = true
 
@@ -200,7 +200,9 @@ class NCCollectionViewDataSource: NSObject {
     }
 
     func getIndexPathMetadata(ocId: String) -> IndexPath? {
-        guard self.sectionsValue.isEmpty else { return nil }
+        guard self.sectionsValue.isEmpty else {
+            return nil
+        }
 
         if let rowIndex = metadatas.firstIndex(where: {$0.ocId == ocId}) {
             return IndexPath(row: rowIndex, section: 0)
@@ -210,7 +212,9 @@ class NCCollectionViewDataSource: NSObject {
     }
 
     func numberOfSections() -> Int {
-        guard !self.sectionsValue.isEmpty else { return 1 }
+        guard !self.sectionsValue.isEmpty else {
+            return 1
+        }
 
         return self.sectionsValue.count
     }
@@ -221,8 +225,7 @@ class NCCollectionViewDataSource: NSObject {
         }
 
         guard !self.metadatas.isEmpty,
-              let metadataForSection = getMetadataForSection(section)
-        else {
+              let metadataForSection = getMetadataForSection(section) else {
             return 0
         }
 
@@ -299,26 +302,10 @@ class NCCollectionViewDataSource: NSObject {
         return nil
     }
 
-    func caching(metadatas: [tableMetadata], completion: @escaping () -> Void) {
-        for (cost, metadata) in metadatas.enumerated() {
-            /// caching preview
-            ///
-            if metadata.isImageOrVideo,
-               NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) == nil,
-               let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) {
-                NCImageCache.shared.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: self.global.previewExt256, cost: cost)
-            }
-        }
-
-        DispatchQueue.main.async {
-            return completion()
-        }
-    }
-
     func cachingAsync(metadatas: [tableMetadata]) async {
         for (cost, metadata) in metadatas.enumerated() {
-            /// caching preview
-            ///
+            // caching preview
+            //
             if metadata.isImageOrVideo,
                NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) == nil,
                let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) {

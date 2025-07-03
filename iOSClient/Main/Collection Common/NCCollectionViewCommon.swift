@@ -837,11 +837,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                            account: self.session.account) { metadatas, layoutForView, account  in
                     self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, providers: self.providers, searchResults: self.searchResults, account: account)
                     self.networkSearchInProgress = false
-                    self.dataSource.caching(metadatas: metadatas) {
-                        self.refreshControlEndRefreshing()
-                        Task {
-                            await self.reloadDataSource()
-                        }
+                    self.refreshControlEndRefreshing()
+                    Task {
+                        await self.reloadDataSource()
                     }
                 }
             }
