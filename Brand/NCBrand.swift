@@ -26,7 +26,7 @@ final class NCBrandOptions: @unchecked Sendable {
     var textCopyrightNextcloudiOS: String = "Nextcloud Matheria for iOS %@ © 2025"
     var textCopyrightNextcloudServer: String = "Nextcloud Server %@"
     var loginBaseUrl: String = "https://cloud.nextcloud.com"
-    var pushNotificationServerProxy: String = "https://push-notifications.nextcloud.com"
+    var pushNotificationServerProxy: String = ""
     var linkLoginHost: String = "https://nextcloud.com/install"
     var linkloginPreferredProviders: String = "https://nextcloud.com/signup-ios"
     var webLoginAutenticationProtocol: String = "nc://"                                        // example "abc://"
@@ -110,9 +110,14 @@ final class NCBrandOptions: @unchecked Sendable {
                 enforce_passcode_lock = (str as NSString).boolValue
             }
         }
-#if DEBUG
+        #if DEBUG
         pushNotificationServerProxy = "https://c0004.customerpush.nextcloud.com"
-#endif
+        #else
+        if pushNotificationServerProxy.isEmpty,
+            brand == "Nextcloud" {
+            pushNotificationServerProxy = "https://push-notifications.nextcloud.com"
+        }
+        #endif
     }
 
     @objc func getUserAgent() -> String {
