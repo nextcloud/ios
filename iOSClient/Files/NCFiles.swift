@@ -181,9 +181,9 @@ class NCFiles: NCCollectionViewCommon {
 
     override func reloadDataSource() async {
         guard !isSearchingMode else {
-                await super.reloadDataSource()
-                return
-            }
+            await super.reloadDataSource()
+            return
+        }
 
         let predicate: NSPredicate = {
             if NCKeychain().getPersonalFilesOnly(account: self.session.account) {
@@ -204,10 +204,7 @@ class NCFiles: NCCollectionViewCommon {
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
         await super.reloadDataSource()
 
-        let dataSource = self.dataSource
-        Task.detached(priority: .userInitiated) {
-            await dataSource.cachingAsync(metadatas: metadatas)
-        }
+        cachingAsync(metadatas: metadatas)
     }
 
     override func getServerData() async {

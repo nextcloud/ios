@@ -307,7 +307,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.removeObserver(self, name: UIApplication.willResignActiveNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterCloseRichWorkspaceWebView), object: nil)
 
-        dataSource.removeImageCache()
+        removeImageCache(metadatas: self.dataSource.getMetadatas())
     }
 
     func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {

@@ -654,4 +654,26 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
         return ownerId
     }
+
+    func cachingAsync(metadatas: [tableMetadata]) {
+        DispatchQueue.global().async {
+            for (cost, metadata) in metadatas.enumerated() {
+                // caching preview
+                //
+                if metadata.isImageOrVideo,
+                   NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) == nil,
+                   let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) {
+                    NCImageCache.shared.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: self.global.previewExt256, cost: cost)
+                }
+            }
+        }
+    }
+
+    func removeImageCache(metadatas: [tableMetadata]) {
+        DispatchQueue.global().async {
+            for metadata in metadatas {
+                NCImageCache.shared.removeImageCache(ocIdPlusEtag: metadata.ocId + metadata.etag)
+            }
+        }
+    }
 }

@@ -63,7 +63,8 @@ class NCRecent: NCCollectionViewCommon {
         if let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND fileName != '.'", session.account), sortedByKeyPath: "date", ascending: false) {
 
             self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
-            await self.dataSource.cachingAsync(metadatas: metadatas)
+
+            cachingAsync(metadatas: metadatas)
         }
 
         layoutForView?.sort = "date"

@@ -78,10 +78,7 @@ class NCOffline: NCCollectionViewCommon {
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
         await super.reloadDataSource()
 
-        let dataSource = self.dataSource
-        Task.detached(priority: .userInitiated) {
-            await dataSource.cachingAsync(metadatas: metadatas)
-        }
+        cachingAsync(metadatas: metadatas)
     }
 
     override func getServerData() async {

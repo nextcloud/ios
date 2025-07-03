@@ -74,8 +74,9 @@ class NCShares: NCCollectionViewCommon {
 
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
 
-        await self.dataSource.cachingAsync(metadatas: metadatas)
         await super.reloadDataSource()
+
+        cachingAsync(metadatas: metadatas)
     }
 
     override func getServerData() async {
