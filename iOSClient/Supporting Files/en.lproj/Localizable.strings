@@ -622,8 +622,6 @@
 "_recent_activity_"         = "Recent activity";
 "_maintenance_mode_"        = "The server is currently in maintenance mode, which may take a while.";
 "_account_disabled_"        = "Account disabled";
-
-//Video
 "_user_"                    = "User";
 "_add_subtitle_"            = "Add an external subtitle";
 "_add_audio_"               = "Add an external audio";
@@ -714,3 +712,10 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_auto_upload_all_photos_warning_title_" = "Are you sure you want to upload all photos?";
 "_auto_upload_all_photos_warning_message_" = "This can take some time to process depending on the amount of photos.";
 "_item_with_same_name_already_exists_" = "An item with the same name already exists.";
+
+// MARK: Migration Multi Domains
+
+"_preparing_migration_" = "Preparing migration …";
+"_scanning_files_" = "Scanning files …";
+"_moving_items_to_domain_" = "Moving items to correct domain …";
+"_finishing_up_" = "Finishing up …";

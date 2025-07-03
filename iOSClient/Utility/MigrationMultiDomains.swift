@@ -7,10 +7,12 @@ import SwiftUI
 import RealmSwift
 import NextcloudKit
 
+/// A modal SwiftUI view responsible for migrating existing folders under File Provider Storage
+/// to the appropriate domain subdirectories. This is used when transitioning to multi-domain support.
 struct MigrationMultiDomains: View {
     let onCompleted: () -> Void
 
-    @State private var progressText: String = "Preparing migration..."
+    @State private var progressText: String = NSLocalizedString("_preparing_migration_", comment: "")
     @State private var isMigrating: Bool = true
     @State private var progress: Double = 0.0
 
@@ -50,19 +52,21 @@ struct MigrationMultiDomains: View {
         }
     }
 
+    /// Executes the migration pipeline: scan directories, move them, and finalize.
+    /// 
     private func startMigration() async {
         do {
-            progressText = "Scanning files..."
+            progressText = NSLocalizedString("_scanning_files_", comment: "")
 
             let ocIds = await getAllSubdirectoriesUnderFileProviderStorage()
 
-            progressText = "Moving items to correct domain..."
+            progressText = NSLocalizedString("_moving_items_to_domain_", comment: "")
             await performMigrationLogic(ocIds: ocIds)
 
-            progressText = "Finishing up..."
+            progressText = NSLocalizedString("_finishing_up_", comment: "")
             try await Task.sleep(nanoseconds: 500_000_000)
         } catch {
-            progressText = "Migration failed: \(error.localizedDescription)"
+            print("Migration failed: \(error.localizedDescription)")
         }
 
         isMigrating = false
@@ -111,6 +115,9 @@ struct MigrationMultiDomains: View {
         return directories
     }
 
+    /// Performs the actual migration of each directory to its domain destination.
+    ///
+    /// - Parameter ocIds: The list of directory names (matching ocId) to be moved.
     private func performMigrationLogic(ocIds: [String]) async {
         let allMetadatas = await NCManageDatabase.shared.getAllTableMetadataAsync()
         let fileManager = FileManager.default
