@@ -193,56 +193,66 @@ class NCFiles: NCCollectionViewCommon {
                 }
             }()
 
-            let predicateDirectory = NSPredicate(format: "account == %@ AND serverUrl == %@", self.session.account, self.serverUrl)
+            self.metadataFolder = await self.database.getMetadataFolderAsync(session: self.session, serverUrl: self.serverUrl)
+            if let tblDirectory = await self.database.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.session.account, self.serverUrl)) {
+                self.richWorkspaceText = tblDirectory.richWorkspace
+            }
+            let (metadatas, layoutForView, account) = await self.database.getMetadatasAsync(predicate: predicate,
+                                                                                            layoutForView: self.layoutForView,
+                                                                                            account: self.session.account)
 
-            async let metadataFolder = self.database.getMetadataFolderAsync(session: self.session, serverUrl: self.serverUrl)
-            async let richWorkspaceText = self.database.getTableDirectoryAsync(predicate: predicateDirectory)
-            async let result = self.database.getMetadatasAsync(predicate: predicate,
-                                                               layoutForView: self.layoutForView,
-                                                               account: self.session.account)
+            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
+            await self.dataSource.cachingAsync(metadatas: metadatas)
 
-            let (folder, directory, (metadatas, layoutForView, account)) = await (metadataFolder, richWorkspaceText, result)
+        Task.detached(priority: .userInitiated) { [weak self] in
+                guard let self = self else { return }
+                await self.dataSource.cachingAsync(metadatas: metadatas)
+                await reloadDataSourceAfterCaching()
+            }
+    }
 
-            let newDataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
-            await newDataSource.cachingAsync(metadatas: metadatas)
-
-            self.metadataFolder = folder
-            self.richWorkspaceText = directory?.richWorkspace
-            self.dataSource = newDataSource
-            await super.reloadDataSource()
+    private func reloadDataSourceAfterCaching() async {
+        await super.reloadDataSource()
     }
 
     override func getServerData() async {
+        defer {
+            self.refreshControlEndRefreshing()
+        }
+
         guard !isSearchingMode else {
             return networkSearch()
         }
 
-        func downloadMetadata(_ metadata: tableMetadata) -> Bool {
+        func downloadMetadata(_ metadata: tableMetadata) async -> Bool {
             let fileSize = utilityFileSystem.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
             guard fileSize > 0 else { return false }
 
-            if let localFile = database.getResultsTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))?.first {
-                if localFile.etag != metadata.etag {
+            if let tblLocalFile = await database.getTableLocalFileAsync(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
+                if tblLocalFile.etag != metadata.etag {
                     return true
                 }
             }
             return false
         }
 
-        let (metadatas, error) = await networkReadFolderAsync(serverUrl: self.serverUrl)
-        if error == .success {
-            let metadatas: [tableMetadata] = metadatas ?? self.dataSource.getMetadatas()
-            for metadata in metadatas where !metadata.directory && downloadMetadata(metadata) {
+        let resultsReadFolder = await networkReadFolderAsync(serverUrl: self.serverUrl)
+        guard resultsReadFolder.error == .success else {
+            return
+        }
+
+        let metadatas: [tableMetadata] = resultsReadFolder.metadatas ?? self.dataSource.getMetadatas()
+        for metadata in metadatas where !metadata.directory {
+            if await downloadMetadata(metadata) {
                 if let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
                                                                                             session: NCNetworking.shared.sessionDownload,
                                                                                             selector: NCGlobal.shared.selectorDownloadFile,
                                                                                             sceneIdentifier: self.controller?.sceneIdentifier) {
                     NCNetworking.shared.download(metadata: metadata)
                 }
-                self.refreshControlEndRefreshing()
-                await self.reloadDataSource()
             }
         }
+        await self.reloadDataSource()
     }
 
     private func networkReadFolderAsync(serverUrl: String) async -> (metadatas: [tableMetadata]?, error: NKError) {
