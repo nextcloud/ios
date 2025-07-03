@@ -98,15 +98,21 @@ struct MigrationMultiDomains: View {
         let sourceURL = URL(fileURLWithPath: NCUtilityFileSystem().getDirectoryProviderStorage())
 
         for ocId in ocIds {
+            let sourcePath = sourceURL.appendingPathComponent(ocId)
+
             guard let metadata = allMetadatas.first(where: { $0.ocId == ocId }) else {
                 print("Metadata not found for ocId: \(ocId)")
+                do {
+                    try fileManager.removeItem(at: sourcePath)
+                } catch {
+                    print("Error delete \(ocId): \(error)")
+                }
                 continue
             }
+
             let domainPath = utilityFileSystem.getDocumentStorage(userId: metadata.userId, urlBase: metadata.urlBase)
             let documentStorageURL = URL(fileURLWithPath: domainPath)
-
             let destinationPath = documentStorageURL.appendingPathComponent(ocId)
-            let sourcePath = sourceURL.appendingPathComponent(ocId)
 
             if fileManager.fileExists(atPath: sourcePath.path) {
             do {
