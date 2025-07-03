@@ -202,10 +202,13 @@ class NCFiles: NCCollectionViewCommon {
                                                                                         account: self.session.account)
 
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
-        await self.dataSource.cachingAsync(metadatas: metadatas)
         await super.reloadDataSource()
-    }
 
+        let dataSource = self.dataSource
+        Task.detached(priority: .userInitiated) { 
+            await dataSource.cachingAsync(metadatas: metadatas)
+        }
+    }
 
     override func getServerData() async {
         defer {
