@@ -36,7 +36,7 @@ class NCCollectionViewDataSource: NSObject {
     private var metadatas: [tableMetadata] = []
     private var metadatasForSection: [NCMetadataForSection] = []
     private var layoutForView: NCDBLayoutForView?
-    private var metadataIndexPath: [IndexPath: tableMetadata] = [:]
+   // private var metadataIndexPath: [IndexPath: tableMetadata] = [:]
     private var directoryOnTop: Bool = true
     private var favoriteOnTop: Bool = true
 
@@ -51,12 +51,6 @@ class NCCollectionViewDataSource: NSObject {
         removeAll()
 
         self.metadatas = metadatas
-
-        for (row, metadata) in metadatas.enumerated() {
-            let indexPath = IndexPath(row: row, section: 0)
-            self.metadataIndexPath[indexPath] = metadata
-        }
-
         self.layoutForView = layoutForView
         if let account {
             self.directoryOnTop = NCKeychain().getDirectoryOnTop(account: account)
@@ -75,7 +69,6 @@ class NCCollectionViewDataSource: NSObject {
 
     func removeAll() {
         self.metadatas.removeAll()
-        self.metadataIndexPath.removeAll()
         self.metadatasForSection.removeAll()
         self.sectionsValue.removeAll()
         self.providers = nil
@@ -280,7 +273,7 @@ class NCCollectionViewDataSource: NSObject {
                 result = metadataForSection.metadatas[indexPath.row]
             }
         } else if indexPath.row < self.metadatas.count {
-            result = metadataIndexPath[indexPath]
+            result = self.metadatas[indexPath.row]
         }
 
         if let result {
@@ -299,7 +292,7 @@ class NCCollectionViewDataSource: NSObject {
                 return metadataForSection.metadatas[indexPath.row].detachedCopy()
             }
         } else if indexPath.row < self.metadatas.count {
-            let metadata = metadataIndexPath[indexPath]
+            let metadata = self.metadatas[indexPath.row]
             return metadata
         }
 
