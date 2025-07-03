@@ -205,7 +205,7 @@ class NCFiles: NCCollectionViewCommon {
         await super.reloadDataSource()
 
         let dataSource = self.dataSource
-        Task.detached(priority: .userInitiated) { 
+        Task.detached(priority: .userInitiated) {
             await dataSource.cachingAsync(metadatas: metadatas)
         }
     }

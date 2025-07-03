@@ -217,19 +217,19 @@ extension NCManageDatabase {
     /// - Parameter account: The account identifier to filter the shares.
     /// - Returns: An array of detached `tableShare` objects.
     func getTableSharesAsync(account: String) async -> [tableShare] {
-        guard let results = await performRealmReadAsync({ realm in
+        let results: [tableShare]? = await performRealmReadAsync { realm in
             let sortProperties = [
                 SortDescriptor(keyPath: "shareType", ascending: false),
                 SortDescriptor(keyPath: "idShare", ascending: false)
             ]
-            return realm.objects(tableShare.self)
+            let objects = realm.objects(tableShare.self)
                 .filter("account == %@", account)
                 .sorted(by: sortProperties)
-        }) else {
-            return []
+
+            return objects.map { tableShare(value: $0) }
         }
 
-        return results.map { tableShare(value: $0) }
+        return results ?? []
     }
 
     func getTableShares(metadata: tableMetadata) -> (firstShareLink: tableShare?, share: [tableShare]?) {

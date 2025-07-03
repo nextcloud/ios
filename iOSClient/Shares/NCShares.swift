@@ -102,7 +102,6 @@ class NCShares: NCCollectionViewCommon {
             await self.database.addShareAsync(account: session.account, home: home, shares: shares)
         }
 
-
         self.backgroundTask = Task.detached(priority: .utility) { [weak self] in
             guard let self = self
             else {

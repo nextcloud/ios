@@ -55,8 +55,12 @@ extension NCTrash: NCTrashSelectTabBarDelegate {
     }
 
     func recover() {
-        selectOcId.forEach(restoreItem)
         setEditMode(false)
+        Task {
+            for id in self.selectOcId {
+                await restoreItem(with: id)
+            }
+        }
     }
 
     func delete() {

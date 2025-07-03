@@ -32,8 +32,13 @@ extension NCManageDatabase {
 
     // MARK: - Realm write
 
-    func addTrash(account: String, items: [NKTrash]) {
-        performRealmWrite { realm in
+    /// Adds a list of `NKTrash` items to the Realm database, associated with the given account.
+    /// This function creates new `tableTrash` objects and inserts or updates them in the Realm, wrapped in an async write operation.
+    /// - Parameters:
+    ///   - account: The account string used to associate each trash item.
+    ///   - items: An array of `NKTrash` items to be added to the database.
+    func addTrashAsync(items: [NKTrash], account: String) async {
+        await performRealmWriteAsync { realm in
             items.forEach { trash in
                 let object = tableTrash()
                 object.account = account

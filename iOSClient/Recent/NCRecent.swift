@@ -156,7 +156,6 @@ class NCRecent: NCCollectionViewCommon {
             }
         }
 
-       
         guard resultsSearch.error == .success, let files = resultsSearch.files else {
             return
         }
