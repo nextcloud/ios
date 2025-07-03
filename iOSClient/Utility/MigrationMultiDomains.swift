@@ -12,30 +12,41 @@ struct MigrationMultiDomains: View {
 
     @State private var progressText: String = "Preparing migration..."
     @State private var isMigrating: Bool = true
+    @State private var progress: Double = 0.0
 
     var body: some View {
-        VStack(spacing: 20) {
-            Spacer()
+        ZStack {
+            Color(NCBrandColor.shared.customer)
+                .ignoresSafeArea()
+            VStack(spacing: 20) {
+                Spacer()
 
-            Image(systemName: "externaldrive.fill.badge.arrow.down")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 80, height: 80)
-                .foregroundColor(.blue)
+                Image(systemName: "externaldrive.fill.badge.icloud")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 80, height: 80)
+                    .foregroundColor(.white)
 
-            Text(progressText)
-                .font(.headline)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
+                Text(progressText)
+                    .font(.headline)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+                    .foregroundColor(.white)
 
-            ProgressView()
-                .progressViewStyle(CircularProgressViewStyle())
-                .padding()
+                ProgressView(value: progress)
+                    .progressViewStyle(LinearProgressViewStyle(tint: .white))
+                    .frame(width: 240)
+                    .padding(.bottom, 4)
 
-            Spacer()
-        }
-        .task {
-            await startMigration()
+                Text(String(format: "%.0f%%", progress * 100))
+                    .font(.subheadline)
+                    .foregroundColor(.white)
+
+                Spacer()
+            }
+            .task {
+                await startMigration()
+            }
         }
     }
 
@@ -73,15 +84,24 @@ struct MigrationMultiDomains: View {
         let baseURL = URL(fileURLWithPath: basePath)
         var directories: [String] = []
 
+        self.progress = 0.0
+
         do {
             let contents = try fileManager.contentsOfDirectory(at: baseURL, includingPropertiesForKeys: [.isDirectoryKey], options: [.skipsHiddenFiles])
+            let totalCount = contents.count
 
-            for url in contents {
+            for (index, url) in contents.enumerated() {
                 let resourceValues = try url.resourceValues(forKeys: [.isDirectoryKey])
                 if resourceValues.isDirectory == true {
                     // Relative path
                     let relativePath = url.path.replacingOccurrences(of: baseURL.path + "/", with: "")
                     directories.append(relativePath)
+                }
+
+                // Update progress (first 50% of total migration)
+                let scanProgress = Double(index + 1) / Double(max(totalCount, 1)) * 0.5
+                await MainActor.run {
+                    self.progress = scanProgress
                 }
             }
         } catch {
@@ -97,7 +117,9 @@ struct MigrationMultiDomains: View {
         let utilityFileSystem = NCUtilityFileSystem()
         let sourceURL = URL(fileURLWithPath: NCUtilityFileSystem().getDirectoryProviderStorage())
 
-        for ocId in ocIds {
+        self.progress = 0.0
+
+        for (index, ocId) in ocIds.enumerated() {
             let sourcePath = sourceURL.appendingPathComponent(ocId)
 
             guard let metadata = allMetadatas.first(where: { $0.ocId == ocId }) else {
@@ -126,6 +148,11 @@ struct MigrationMultiDomains: View {
                 }
             } else {
                 print("Source path does not exist: \(sourceURL.path)")
+            }
+
+            // Update progress
+            await MainActor.run {
+                self.progress = Double(index + 1) / Double(ocIds.count)
             }
         }
     }
