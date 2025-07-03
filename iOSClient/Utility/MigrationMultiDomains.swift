@@ -124,11 +124,6 @@ struct MigrationMultiDomains: View {
 
             guard let metadata = allMetadatas.first(where: { $0.ocId == ocId }) else {
                 print("Metadata not found for ocId: \(ocId)")
-                do {
-                    try fileManager.removeItem(at: sourcePath)
-                } catch {
-                    print("Error delete \(ocId): \(error)")
-                }
                 continue
             }
 
