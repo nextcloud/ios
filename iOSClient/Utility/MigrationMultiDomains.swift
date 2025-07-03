@@ -132,11 +132,11 @@ struct MigrationMultiDomains: View {
             let destinationPath = documentStorageURL.appendingPathComponent(ocId)
 
             if fileManager.fileExists(atPath: sourcePath.path) {
-            do {
-                if fileManager.fileExists(atPath: destinationPath.path) {
-                    try fileManager.removeItem(at: destinationPath)
-                }
-                try fileManager.moveItem(at: sourcePath, to: destinationPath)
+                do {
+                    if fileManager.fileExists(atPath: destinationPath.path) {
+                        try fileManager.removeItem(at: destinationPath)
+                    }
+                    try fileManager.moveItem(at: sourcePath, to: destinationPath)
                     print("Moved \(ocId)")
                 } catch {
                     print("Error moving \(ocId): \(error)")
