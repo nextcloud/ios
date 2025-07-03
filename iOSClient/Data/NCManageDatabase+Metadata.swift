@@ -213,10 +213,6 @@ extension tableMetadata {
         return session.isEmpty && !directory && !NCBrandOptions.shared.disable_openin_file
     }
 
-    var canSetDirectoryAsE2EE: Bool {
-        return directory && size == 0 && !e2eEncrypted && NCKeychain().isEndToEndEnabled(account: account)
-    }
-
     var canUnsetDirectoryAsE2EE: Bool {
         return !isDirectoryE2EE && directory && size == 0 && e2eEncrypted && NCKeychain().isEndToEndEnabled(account: account)
     }

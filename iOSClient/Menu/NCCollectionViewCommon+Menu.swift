@@ -157,7 +157,11 @@ extension NCCollectionViewCommon {
         // SET FOLDER E2EE
         //
         if NCNetworking.shared.isOnline,
-           metadata.canSetDirectoryAsE2EE {
+           metadata.directory,
+           metadata.size == 0,
+           !metadata.e2eEncrypted,
+           NCKeychain().isEndToEndEnabled(account: metadata.account),
+           metadata.serverUrl == NCUtilityFileSystem().getHomeServer(urlBase: metadata.urlBase, userId: metadata.userId) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_set_folder_encrypted_", comment: ""),
