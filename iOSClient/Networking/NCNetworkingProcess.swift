@@ -324,7 +324,7 @@ actor NCNetworkingProcess {
                                                        status: global.metadataStatusNormal)
 
             if resultCopy.error == .success {
-                let result = await NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileNameDestination, account: metadata.account)
+                let result = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrlFileNameDestination, account: metadata.account)
                 if result.error == .success, let metadata = result.metadata {
                     await self.database.addMetadataAsync(metadata)
                 }
@@ -354,7 +354,7 @@ actor NCNetworkingProcess {
                                                        status: global.metadataStatusNormal)
 
             if resultMove.error == .success {
-                let result = await NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileNameDestination, account: metadata.account)
+                let result = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrlFileNameDestination, account: metadata.account)
                 if result.error == .success, let metadata = result.metadata {
                     await self.database.addMetadataAsync(metadata)
                 }
