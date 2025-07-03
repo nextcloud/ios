@@ -68,7 +68,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         nkLog(debug: "Account active \(activeTblAccount.account)")
 
         // Save migration state
-       // UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
+        UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
 
         // Apply theming
         NCBrandColor.shared.settingThemingColor(account: activeTblAccount.account)
