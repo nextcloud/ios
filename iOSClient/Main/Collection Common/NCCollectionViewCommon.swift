@@ -218,7 +218,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
-            self.getServerData()
+            Task {
+                await self.getServerData()
+            }
         }
 
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPressCollecationView(_:)))
@@ -364,7 +366,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if self.isSearchingMode {
                 self.networkSearch()
             } else if needLoadDataSource {
-                self.reloadDataSource()
+                Task {
+                    await self.reloadDataSource()
+                }
             } else {
                 if isRecommendationActived {
                     Task.detached {
@@ -392,21 +396,29 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     if self.isSearchingMode {
                         self.networkSearch()
                     } else if self.serverUrl == metadata.serverUrl {
-                        self.reloadDataSource()
+                        Task {
+                            await self.reloadDataSource()
+                        }
                     }
                 }
             /// DOWNLOAD
             case self.global.networkingStatusDownloading:
-                if metadata.serverUrl == self.serverUrl {
-                    self.reloadDataSource()
+                Task {
+                    if metadata.serverUrl == self.serverUrl {
+                        await self.reloadDataSource()
+                    }
                 }
             case self.global.networkingStatusDownloaded:
-                if metadata.serverUrl == self.serverUrl {
-                    self.reloadDataSource()
+                Task {
+                    if metadata.serverUrl == self.serverUrl {
+                        await self.reloadDataSource()
+                    }
                 }
             case self.global.networkingStatusDownloadCancel:
-                if metadata.serverUrl == self.serverUrl {
-                    self.reloadDataSource()
+                Task {
+                    if metadata.serverUrl == self.serverUrl {
+                        await self.reloadDataSource()
+                    }
                 }
             /// CREATE FOLDER
             case self.global.networkingStatusCreateFolder:
@@ -419,7 +431,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     if self.isSearchingMode {
                         self.networkSearch()
                     } else if self.serverUrl == metadata.serverUrl {
-                        self.reloadDataSource()
+                        Task {
+                            await self.reloadDataSource()
+                        }
                     }
                 }
             /// FAVORITE
@@ -428,9 +442,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     if self.isSearchingMode {
                         self.networkSearch()
                     } else if self is NCFavorite {
-                        self.reloadDataSource()
+                        Task {
+                            await self.reloadDataSource()
+                        }
                     } else if self.serverUrl == metadata.serverUrl {
-                        self.reloadDataSource()
+                        Task {
+                            await self.reloadDataSource()
+                        }
                     }
                 }
             default:
@@ -451,7 +469,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 }
                 self.networkSearch()
             } else if ( self.serverUrl == serverUrl) || serverUrl == nil {
-                self.reloadDataSource()
+                Task {
+                    await self.reloadDataSource()
+                }
             }
         }
     }
@@ -461,7 +481,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if self.isSearchingMode {
                 self.networkSearch()
             } else if ( self.serverUrl == serverUrl) || serverUrl == nil {
-                self.getServerData()
+                Task {
+                    await self.getServerData()
+                }
             }
         }
     }
@@ -475,7 +497,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return networkSearch()
         }
         if metadata.serverUrl == self.serverUrl {
-            reloadDataSource()
+            Task {
+                await self.reloadDataSource()
+            }
         }
     }
 
@@ -488,7 +512,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return networkSearch()
         }
         if metadata.serverUrl == self.serverUrl {
-            reloadDataSource()
+            Task {
+                await self.reloadDataSource()
+            }
         }
     }
 
@@ -499,11 +525,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func changeTheming(_ notification: NSNotification) {
-        self.reloadDataSource()
+        Task {
+            await self.reloadDataSource()
+        }
     }
 
     @objc func closeRichWorkspaceWebView() {
-        reloadDataSource()
+        Task {
+            await self.reloadDataSource()
+        }
     }
 
     // MARK: - Layout
@@ -511,7 +541,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func changeLayout(layoutForView: NCDBLayoutForView) {
         if self.layoutForView?.layout == layoutForView.layout {
             self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
-            self.reloadDataSource()
+            Task {
+                await self.reloadDataSource()
+            }
             return
         }
 
@@ -553,8 +585,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func isHiddenPlusButton(_ isHidden: Bool) { }
 
     func refreshControlEndRefreshing() {
-        refreshControl.endRefreshing()
-        resetPlusButtonAlpha()
+        DispatchQueue.main.async {
+            self.refreshControl.endRefreshing()
+            self.resetPlusButtonAlpha()
+        }
     }
 
     // MARK: - SEARCH
@@ -578,7 +612,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         isSearchingMode = true
         self.providers?.removeAll()
         self.dataSource.removeAll()
-        self.reloadDataSource()
+        Task {
+            await self.reloadDataSource()
+        }
         // TIP
         dismissTip()
         //
@@ -598,7 +634,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.literalSearch = ""
         self.providers?.removeAll()
         self.dataSource.removeAll()
-        self.reloadDataSource()
+        Task {
+            await self.reloadDataSource()
+        }
         //
         isHiddenPlusButton(false)
     }
@@ -711,7 +749,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - DataSource
 
-    func reloadDataSource() {
+    func reloadDataSource() async {
         if isSearchingMode {
             isDirectoryEncrypted = false
         } else {
@@ -735,7 +773,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    func getServerData() {}
+    func getServerData() async {}
 
     @objc func networkSearch() {
         guard !networkSearchInProgress else {
@@ -750,12 +788,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.networkSearchInProgress = true
         self.dataSource.removeAll()
         self.refreshControl.beginRefreshing()
-        self.reloadDataSource()
+        Task {
+            await self.reloadDataSource()
+        }
 
         if capabilities.serverVersionMajor >= global.nextcloudVersion20 {
             self.netwoking.unifiedSearchFiles(literal: literalSearch, account: session.account) { task in
                 self.dataSourceTask = task
-                self.reloadDataSource()
+                Task {
+                    await self.reloadDataSource()
+                }
             } providers: { account, searchProviders in
                 self.providers = searchProviders
                 self.searchResults = []
@@ -765,22 +807,26 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.netwoking.unifiedSearchQueue.addOperation(NCCollectionViewUnifiedSearch(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult))
             } completion: { _, _ in
                 self.refreshControlEndRefreshing()
-                self.reloadDataSource()
+                Task {
+                    await self.reloadDataSource()
+                }
                 self.networkSearchInProgress = false
             }
         } else {
             self.netwoking.searchFiles(literal: literalSearch, account: session.account) { task in
                 self.dataSourceTask = task
-                self.reloadDataSource()
+                Task {
+                    await self.reloadDataSource()
+                }
             } completion: { metadatasSearch, error in
                 guard let metadatasSearch,
                         error == .success,
                         self.isSearchingMode
                 else {
                     self.networkSearchInProgress = false
-                    DispatchQueue.main.async {
-                        self.refreshControlEndRefreshing()
-                        self.reloadDataSource()
+                    self.refreshControlEndRefreshing()
+                    Task {
+                        await self.reloadDataSource()
                     }
                     return
                 }
@@ -793,7 +839,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     self.networkSearchInProgress = false
                     self.dataSource.caching(metadatas: metadatas) {
                         self.refreshControlEndRefreshing()
-                        self.reloadDataSource()
+                        Task {
+                            await self.reloadDataSource()
+                        }
                     }
                 }
             }
@@ -808,7 +856,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         self.netwoking.unifiedSearchFilesProvider(id: lastSearchResult.id, term: term, limit: 5, cursor: cursor, account: session.account) { task in
             self.dataSourceTask = task
-            self.reloadDataSource()
+            Task {
+                await self.reloadDataSource()
+            }
         } completion: { _, searchResult, metadatas, error in
             if error != .success {
                 NCContentPresenter().showError(error: error)

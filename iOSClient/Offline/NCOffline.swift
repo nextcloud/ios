@@ -46,12 +46,14 @@ class NCOffline: NCCollectionViewCommon {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        reloadDataSource()
+        Task {
+            await self.reloadDataSource()
+        }
     }
 
     // MARK: - DataSource
 
-    override func reloadDataSource() {
+    override func reloadDataSource() async {
         var ocIds: [String] = []
 
         if self.serverUrl.isEmpty {
@@ -71,7 +73,9 @@ class NCOffline: NCCollectionViewCommon {
                                        account: session.account) { metadatas, layoutForView, account in
                 self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
                 self.dataSource.caching(metadatas: metadatas) {
-                    super.reloadDataSource()
+                    Task {
+                        await self.reloadDataSource()
+                    }
                 }
             }
         } else {
@@ -80,13 +84,15 @@ class NCOffline: NCCollectionViewCommon {
                                        account: session.account) { metadatas, layoutForView, account in
                 self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
                 self.dataSource.caching(metadatas: metadatas) {
-                    super.reloadDataSource()
+                    Task {
+                        await self.reloadDataSource()
+                    }
                 }
             }
         }
     }
 
-    override func getServerData() {
-        reloadDataSource()
+    override func getServerData() async {
+        await self.reloadDataSource()
     }
 }

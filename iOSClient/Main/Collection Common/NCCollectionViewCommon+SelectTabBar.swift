@@ -47,7 +47,9 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { _ in
                 self.netwoking.setStatusWaitDelete(metadatas: metadatas, sceneIdentifier: self.controller?.sceneIdentifier)
                 self.setEditMode(false)
-                self.reloadDataSource()
+                Task {
+                    await self.reloadDataSource()
+                }
             })
         }
 

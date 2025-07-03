@@ -46,13 +46,17 @@ class NCShares: NCCollectionViewCommon {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        reloadDataSource()
+        Task {
+            await reloadDataSource()
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        getServerData()
+        Task {
+            await getServerData()
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -63,18 +67,19 @@ class NCShares: NCCollectionViewCommon {
 
     // MARK: - DataSource
 
-    override func reloadDataSource() {
-        database.getMetadatas(predicate: NSPredicate(format: "ocId IN %@", ocIdShares),
-                              layoutForView: layoutForView,
-                              account: session.account) { metadatas, layoutForView, account in
-            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
-            self.dataSource.caching(metadatas: metadatas) {
-                super.reloadDataSource()
-            }
-        }
+    override func reloadDataSource() async {
+        let (metadatas, layoutForView, account) = await database.getMetadatasAsync(predicate: NSPredicate(format: "ocId IN %@", ocIdShares),
+                                                                                   layoutForView: layoutForView,
+                                                                                   account: session.account)
+
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
+
+        await self.dataSource.cachingAsync(metadatas: metadatas)
+        await reloadDataSource()
     }
 
-    override func getServerData() {
+    override func getServerData() async {
+
         NextcloudKit.shared.readShares(parameters: NKShareParameter(), account: session.account) { task in
             self.dataSourceTask = task
             if self.dataSource.isEmpty() {
@@ -115,13 +120,15 @@ class NCShares: NCCollectionViewCommon {
                         }
                     }
 
+                    Task {
+                        await self.reloadDataSource()
+                    }
                     await MainActor.run {
-                        self.reloadDataSource()
                         self.refreshControlEndRefreshing()
                     }
                 }
             } else {
-                self.reloadDataSource()
+                await self.reloadDataSource()
                 self.refreshControlEndRefreshing()
             }
         }

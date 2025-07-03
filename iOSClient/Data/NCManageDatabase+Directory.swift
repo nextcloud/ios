@@ -319,6 +319,15 @@ extension NCManageDatabase {
         }
     }
 
+    func updateDirectoryRichWorkspaceAsync(_ richWorkspace: String?, account: String, serverUrl: String) async {
+        await performRealmWriteAsync { realm in
+            realm.objects(tableDirectory.self)
+                .filter("account == %@ AND serverUrl == %@", account, serverUrl)
+                .first?
+                .richWorkspace = richWorkspace
+        }
+    }
+
     func updateDirectoryColorFolder(_ colorFolder: String?, metadata: tableMetadata, serverUrl: String) {
         performRealmWrite { realm in
             if let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", metadata.account, serverUrl).first {
@@ -387,6 +396,18 @@ extension NCManageDatabase {
                 return nil
             }
             return tableDirectory(value: result)
+        }
+    }
+
+    /// Asynchronously retrieves a detached copy of `tableDirectory` by ocId.
+    /// - Parameter ocId: The identifier to query.
+    /// - Returns: A detached copy of the matching `tableDirectory`, or `nil` if not found.
+    func getTableDirectoryAsync(ocId: String) async -> tableDirectory? {
+        await performRealmReadAsync { realm in
+            realm.objects(tableDirectory.self)
+                .filter("ocId == %@", ocId)
+                .first
+                .map { tableDirectory(value: $0) }
         }
     }
 

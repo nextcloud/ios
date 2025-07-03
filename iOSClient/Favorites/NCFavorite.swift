@@ -43,18 +43,22 @@ class NCFavorite: NCCollectionViewCommon {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        reloadDataSource()
+        Task {
+            await self.reloadDataSource()
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        getServerData()
+        Task {
+            await getServerData()
+        }
     }
 
     // MARK: - DataSource
 
-    override func reloadDataSource() {
+    override func reloadDataSource() async {
         var predicate = self.defaultPredicate
 
         if self.serverUrl.isEmpty {
@@ -66,12 +70,14 @@ class NCFavorite: NCCollectionViewCommon {
                                    account: session.account) { metadatas, layoutForView, account in
             self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
             self.dataSource.caching(metadatas: metadatas) {
-                super.reloadDataSource()
+                Task {
+                    await self.reloadDataSource()
+                }
             }
         }
     }
 
-    override func getServerData() {
+    override func getServerData() async {
         let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: session.account)
 
         NextcloudKit.shared.listingFavorites(showHiddenFiles: showHiddenFiles, account: session.account) { task in
@@ -83,7 +89,9 @@ class NCFavorite: NCCollectionViewCommon {
             if error == .success, let files {
                 self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
                     self.database.updateMetadatasFavorite(account: account, metadatas: metadatas)
-                    self.reloadDataSource()
+                    Task {
+                        await self.reloadDataSource()
+                    }
                 }
             }
             self.refreshControlEndRefreshing()

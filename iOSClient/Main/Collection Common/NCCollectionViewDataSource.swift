@@ -36,7 +36,7 @@ class NCCollectionViewDataSource: NSObject {
     private var metadatas: [tableMetadata] = []
     private var metadatasForSection: [NCMetadataForSection] = []
     private var layoutForView: NCDBLayoutForView?
-    private var metadataIndexPath = ThreadSafeDictionary<IndexPath, tableMetadata>()
+    private var metadataIndexPath: [IndexPath: tableMetadata] = [:]
     private var directoryOnTop: Bool = true
     private var favoriteOnTop: Bool = true
 
@@ -293,7 +293,8 @@ class NCCollectionViewDataSource: NSObject {
                 return metadataForSection.metadatas[indexPath.row].detachedCopy()
             }
         } else if indexPath.row < self.metadatas.count {
-            return metadataIndexPath[indexPath]
+            let metadata = metadataIndexPath[indexPath]
+            return metadata
         }
 
         return nil
@@ -320,6 +321,25 @@ class NCCollectionViewDataSource: NSObject {
 
         DispatchQueue.main.async {
             return completion()
+        }
+    }
+
+    func cachingAsync(metadatas: [tableMetadata]) async {
+        var counter: Int = 0
+
+        for metadata in metadatas {
+            let indexPath = IndexPath(row: counter, section: 0)
+            self.metadataIndexPath[indexPath] = metadata
+
+            /// caching preview
+            ///
+            if metadata.isImageOrVideo,
+               NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) == nil,
+               let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) {
+                NCImageCache.shared.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: self.global.previewExt256, cost: counter)
+            }
+
+            counter += 1
         }
     }
 

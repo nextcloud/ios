@@ -1137,6 +1137,31 @@ extension NCManageDatabase {
         }
     }
 
+    /// Asynchronously retrieves the metadata for a folder, based on its session and serverUrl.
+    /// Handles the home directory case (".") and detaches the Realm object before returning.
+    func getMetadataFolderAsync(session: NCSession.Session, serverUrl: String) async -> tableMetadata? {
+        var serverUrl = serverUrl
+        var fileName = ""
+        let serverUrlHome = utilityFileSystem.getHomeServer(session: session)
+
+        if serverUrlHome == serverUrl {
+            fileName = "."
+            serverUrl = ".."
+        } else {
+            fileName = (serverUrl as NSString).lastPathComponent
+            if let path = utilityFileSystem.deleteLastPath(serverUrlPath: serverUrl) {
+                serverUrl = path
+            }
+        }
+
+        return await performRealmReadAsync { realm in
+            realm.objects(tableMetadata.self)
+                .filter("account == %@ AND serverUrl == %@ AND fileName == %@", session.account, serverUrl, fileName)
+                .first
+                .map { $0.detachedCopy() }
+        }
+    }
+
     func getMetadataLivePhoto(metadata: tableMetadata) -> tableMetadata? {
         guard metadata.isLivePhoto else {
             return nil
@@ -1388,6 +1413,21 @@ extension NCManageDatabase {
 
             return completion(metadatas, layoutForView, account)
         }
+    }
+
+    /// Asynchronously retrieves and sorts `tableMetadata` objects matching a given predicate and layout.
+    func getMetadatasAsync(predicate: NSPredicate,
+                           layoutForView: NCDBLayoutForView?,
+                           account: String) async -> (metadatas: [tableMetadata], layoutForView: NCDBLayoutForView?, account: String) {
+        let detachedMetadatas = await performRealmReadAsync { realm in
+            realm.objects(tableMetadata.self)
+                .filter(predicate)
+                .map { $0.detachedCopy() }
+        } ?? []
+
+        let sorted = self.sortedMetadata(layoutForView: layoutForView, account: account, metadatas: detachedMetadatas)
+
+        return (sorted, layoutForView, account)
     }
 
     func getMetadatasAsync(predicate: NSPredicate,

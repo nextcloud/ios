@@ -199,7 +199,7 @@ extension NCCollectionViewCommon {
                                 await self.database.deleteE2eEncryptionAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl))
                                 await self.database.setDirectoryAsync(serverUrl: serverUrl, encrypted: false, account: metadata.account)
                                 await self.database.setMetadataEncryptedAsync(ocId: metadata.ocId, encrypted: false)
-                                self.reloadDataSource()
+                                await self.reloadDataSource()
                             } else {
                                 NCContentPresenter().messageNotification(NSLocalizedString("_e2e_error_", comment: ""), error: results.error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
                             }
@@ -235,7 +235,9 @@ extension NCCollectionViewCommon {
         if NCNetworking.shared.isOnline,
            metadata.canSetAsAvailableOffline {
             actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: self, order: 60, sender: sender, completion: {
-                self.reloadDataSource()
+                Task {
+                    await self.reloadDataSource()
+                }
             }))
         }
 
