@@ -51,6 +51,12 @@ class NCCollectionViewDataSource: NSObject {
         removeAll()
 
         self.metadatas = metadatas
+
+        for (row, metadata) in metadatas.enumerated() {
+            let indexPath = IndexPath(row: row, section: 0)
+            self.metadataIndexPath[indexPath] = metadata
+        }
+
         self.layoutForView = layoutForView
         if let account {
             self.directoryOnTop = NCKeychain().getDirectoryOnTop(account: account)
@@ -301,22 +307,14 @@ class NCCollectionViewDataSource: NSObject {
     }
 
     func caching(metadatas: [tableMetadata], completion: @escaping () -> Void) {
-        var counter: Int = 0
-
-        for metadata in metadatas {
-            let metadata = metadata.detachedCopy()
-            let indexPath = IndexPath(row: counter, section: 0)
-            self.metadataIndexPath[indexPath] = metadata.detachedCopy()
-
+        for (cost, metadata) in metadatas.enumerated() {
             /// caching preview
             ///
             if metadata.isImageOrVideo,
                NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) == nil,
                let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) {
-                NCImageCache.shared.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: self.global.previewExt256, cost: counter)
+                NCImageCache.shared.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: self.global.previewExt256, cost: cost)
             }
-
-            counter += 1
         }
 
         DispatchQueue.main.async {
@@ -325,21 +323,14 @@ class NCCollectionViewDataSource: NSObject {
     }
 
     func cachingAsync(metadatas: [tableMetadata]) async {
-        var counter: Int = 0
-
-        for metadata in metadatas {
-            let indexPath = IndexPath(row: counter, section: 0)
-            self.metadataIndexPath[indexPath] = metadata
-
+        for (cost, metadata) in metadatas.enumerated() {
             /// caching preview
             ///
             if metadata.isImageOrVideo,
                NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) == nil,
                let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) {
-                NCImageCache.shared.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: self.global.previewExt256, cost: counter)
+                NCImageCache.shared.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: self.global.previewExt256, cost: cost)
             }
-
-            counter += 1
         }
     }
 

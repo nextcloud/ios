@@ -185,35 +185,27 @@ class NCFiles: NCCollectionViewCommon {
                 return
             }
 
-            let predicate: NSPredicate = {
-                if NCKeychain().getPersonalFilesOnly(account: self.session.account) {
-                    return self.personalFilesOnlyPredicate
-                } else {
-                    return self.defaultPredicate
-                }
-            }()
-
-            self.metadataFolder = await self.database.getMetadataFolderAsync(session: self.session, serverUrl: self.serverUrl)
-            if let tblDirectory = await self.database.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.session.account, self.serverUrl)) {
-                self.richWorkspaceText = tblDirectory.richWorkspace
+        let predicate: NSPredicate = {
+            if NCKeychain().getPersonalFilesOnly(account: self.session.account) {
+                return self.personalFilesOnlyPredicate
+            } else {
+                return self.defaultPredicate
             }
-            let (metadatas, layoutForView, account) = await self.database.getMetadatasAsync(predicate: predicate,
-                                                                                            layoutForView: self.layoutForView,
-                                                                                            account: self.session.account)
+        }()
 
-            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
-            await self.dataSource.cachingAsync(metadatas: metadatas)
+        self.metadataFolder = await self.database.getMetadataFolderAsync(session: self.session, serverUrl: self.serverUrl)
+        if let tblDirectory = await self.database.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.session.account, self.serverUrl)) {
+            self.richWorkspaceText = tblDirectory.richWorkspace
+        }
+        let (metadatas, layoutForView, account) = await self.database.getMetadatasAsync(predicate: predicate,
+                                                                                        layoutForView: self.layoutForView,
+                                                                                        account: self.session.account)
 
-        Task.detached(priority: .userInitiated) { [weak self] in
-                guard let self = self else { return }
-                await self.dataSource.cachingAsync(metadatas: metadatas)
-                await reloadDataSourceAfterCaching()
-            }
-    }
-
-    private func reloadDataSourceAfterCaching() async {
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
+        await self.dataSource.cachingAsync(metadatas: metadatas)
         await super.reloadDataSource()
     }
+
 
     override func getServerData() async {
         defer {
