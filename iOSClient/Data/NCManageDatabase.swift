@@ -179,7 +179,6 @@ final class NCManageDatabase: @unchecked Sendable {
 
         do {
             _ = try Realm()
-            restoreTableAccountFromFile()
         } catch let error {
             nkLog(error: "Account restoration: \(error)")
         }
