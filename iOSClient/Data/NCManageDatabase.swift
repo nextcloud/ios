@@ -21,48 +21,19 @@ final class NCManageDatabase: @unchecked Sendable {
     internal let utilityFileSystem = NCUtilityFileSystem()
 
     init() {
-        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let bundleUrl: URL = Bundle.main.bundleURL
         let bundlePathExtension: String = bundleUrl.pathExtension
         let isAppex: Bool = bundlePathExtension == "appex"
-        var objectTypes: [Object.Type]
-
-        if bundleUrl.lastPathComponent == "File Provider Extension.appex" {
-            objectTypes = [
-                NCKeyValue.self, tableMetadata.self, tableLocalFile.self,
-                tableDirectory.self, tableTag.self, tableAccount.self
-            ]
-        } else {
-            objectTypes = [
-                NCKeyValue.self, tableMetadata.self, tableLocalFile.self,
-                tableDirectory.self, tableTag.self, tableAccount.self,
-                tableCapabilities.self, tableE2eEncryption.self, tableE2eEncryptionLock.self,
-                tableE2eMetadata12.self, tableE2eMetadata.self, tableE2eUsers.self,
-                tableE2eCounter.self, tableShare.self, tableChunk.self, tableAvatar.self,
-                tableDashboardWidget.self, tableDashboardWidgetButton.self,
-                NCDBLayoutForView.self, TableSecurityGuardDiagnostics.self
-            ]
-        }
-
-        // Disable file protection for directory DB
-        if let folderPathURL = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud) {
-            let folderPath = folderPathURL.path
-            do {
-                try FileManager.default.setAttributes([FileAttributeKey.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication], ofItemAtPath: folderPath)
-            } catch {
-                nkLog(error: "Realm directory setAttributes error: \(error)")
-            }
-        }
 
         // Open Realm
         if isAppex {
-            self.openRealmAppex(objectTypes: objectTypes)
+            self.openRealmAppex()
         }
     }
 
     // MARK: -
 
-    func startRealm() {
+    func openRealm() {
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let databaseFileUrl = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
 
@@ -132,9 +103,38 @@ final class NCManageDatabase: @unchecked Sendable {
     }
     */
 
-    private func openRealmAppex(objectTypes: [Object.Type]) {
+    private func openRealmAppex() {
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let databaseFileUrl = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
+        let bundleUrl: URL = Bundle.main.bundleURL
+        var objectTypes: [Object.Type]
+
+        if bundleUrl.lastPathComponent == "File Provider Extension.appex" {
+            objectTypes = [
+                NCKeyValue.self, tableMetadata.self, tableLocalFile.self,
+                tableDirectory.self, tableTag.self, tableAccount.self
+            ]
+        } else {
+            objectTypes = [
+                NCKeyValue.self, tableMetadata.self, tableLocalFile.self,
+                tableDirectory.self, tableTag.self, tableAccount.self,
+                tableCapabilities.self, tableE2eEncryption.self, tableE2eEncryptionLock.self,
+                tableE2eMetadata12.self, tableE2eMetadata.self, tableE2eUsers.self,
+                tableE2eCounter.self, tableShare.self, tableChunk.self, tableAvatar.self,
+                tableDashboardWidget.self, tableDashboardWidgetButton.self,
+                NCDBLayoutForView.self, TableSecurityGuardDiagnostics.self
+            ]
+        }
+
+        // Disable file protection for directory DB
+        if let folderPathURL = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud) {
+            let folderPath = folderPathURL.path
+            do {
+                try FileManager.default.setAttributes([FileAttributeKey.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication], ofItemAtPath: folderPath)
+            } catch {
+                nkLog(error: "Realm directory setAttributes error: \(error)")
+            }
+        }
 
         realmQueue.async {
             do {
