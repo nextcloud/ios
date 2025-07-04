@@ -790,7 +790,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    func getServerData(refresh: Bool = false) async {}
+    func getServerData(refresh: Bool = false) async {
+        dataSourceTask?.cancel()
+    }
 
     @objc func networkSearch() {
         guard !networkSearchInProgress else {

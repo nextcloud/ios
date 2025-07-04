@@ -276,6 +276,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     }
 
     override func getServerData(refresh: Bool = false) async {
+        await super.getServerData()
         await reloadDataSource()
     }
 

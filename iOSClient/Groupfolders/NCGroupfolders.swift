@@ -76,6 +76,8 @@ class NCGroupfolders: NCCollectionViewCommon {
     }
 
     override func getServerData(refresh: Bool = false) async {
+        await super.getServerData()
+
         let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
         let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: session.account)
 

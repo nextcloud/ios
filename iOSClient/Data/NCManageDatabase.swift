@@ -17,7 +17,7 @@ protocol DateCompareable {
 final class NCManageDatabase: @unchecked Sendable {
     static let shared = NCManageDatabase()
 
-    internal let realmQueue = DispatchQueue(label: "com.nextcloud.realmQueue") // serial queue
+    internal let realmQueue = DispatchQueue(label: "com.nextcloud.realmQueue", qos: .userInitiated) // serial queue
     internal let utilityFileSystem = NCUtilityFileSystem()
 
     init() {

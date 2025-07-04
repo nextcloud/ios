@@ -74,6 +74,8 @@ class NCRecent: NCCollectionViewCommon {
     }
 
     override func getServerData(refresh: Bool = false) async {
+        await super.getServerData()
+
         let requestBodyRecent =
         """
         <?xml version=\"1.0\"?>

@@ -82,6 +82,8 @@ class NCOffline: NCCollectionViewCommon {
     }
 
     override func getServerData(refresh: Bool = false) async {
+        await super.getServerData()
+
         await self.reloadDataSource()
     }
 }

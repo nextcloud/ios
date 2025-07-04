@@ -80,6 +80,8 @@ class NCShares: NCCollectionViewCommon {
     }
 
     override func getServerData(refresh: Bool = false) async {
+        await super.getServerData()
+
         let resultsReadShares = await NextcloudKit.shared.readSharesAsync(parameters: NKShareParameter(), account: session.account) { task in
             self.dataSourceTask = task
             if self.dataSource.isEmpty() {

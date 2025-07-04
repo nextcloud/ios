@@ -208,6 +208,8 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     override func getServerData(refresh: Bool = false) async {
+        await super.getServerData()
+
         guard !isSearchingMode else {
             return networkSearch()
         }
@@ -225,25 +227,28 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         let resultsReadFolder = await networkReadFolderAsync(serverUrl: self.serverUrl, refresh: refresh)
-        guard resultsReadFolder.error == .success else {
+        guard resultsReadFolder.error == .success, resultsReadFolder.reloadRequired else {
             return
         }
 
-        let metadatas: [tableMetadata] = resultsReadFolder.metadatas ?? self.dataSource.getMetadatas()
-        for metadata in metadatas where !metadata.directory {
-            if await downloadMetadata(metadata) {
-                if let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
-                                                                                            session: NCNetworking.shared.sessionDownload,
-                                                                                            selector: NCGlobal.shared.selectorDownloadFile,
-                                                                                            sceneIdentifier: self.controller?.sceneIdentifier) {
-                    NCNetworking.shared.download(metadata: metadata)
+        let metadatasForDownload: [tableMetadata] = resultsReadFolder.metadatas ?? self.dataSource.getMetadatas()
+        Task.detached(priority: .utility) {
+            for metadata in metadatasForDownload where !metadata.directory {
+                if await downloadMetadata(metadata) {
+                    if let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
+                                                                                                session: NCNetworking.shared.sessionDownload,
+                                                                                                selector: NCGlobal.shared.selectorDownloadFile,
+                                                                                                sceneIdentifier: self.controller?.sceneIdentifier) {
+                        NCNetworking.shared.download(metadata: metadata)
+                    }
                 }
             }
         }
+
         await self.reloadDataSource()
     }
 
-    private func networkReadFolderAsync(serverUrl: String, refresh: Bool) async -> (metadatas: [tableMetadata]?, error: NKError) {
+    private func networkReadFolderAsync(serverUrl: String, refresh: Bool) async -> (metadatas: [tableMetadata]?, error: NKError, reloadRequired: Bool) {
         let isDirectoryE2EE = await NCUtilityFileSystem().isDirectoryE2EEAsync(session: self.session, serverUrl: serverUrl)
         let resultsReadFile = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrl, account: session.account) { task in
             self.dataSourceTask = task
@@ -252,7 +257,7 @@ class NCFiles: NCCollectionViewCommon {
             }
         }
         guard resultsReadFile.error == .success, let metadata = resultsReadFile.metadata else {
-            return (nil, resultsReadFile.error)
+            return (nil, resultsReadFile.error, false)
         }
 
         await self.database.updateDirectoryRichWorkspaceAsync(metadata.richWorkspace, account: resultsReadFile.account, serverUrl: serverUrl)
@@ -266,7 +271,7 @@ class NCFiles: NCCollectionViewCommon {
         )
 
         if shouldSkipUpdate {
-            return (nil, NKError())
+            return (nil, NKError(), false)
         }
 
         await showLoadingTitle()
@@ -284,7 +289,7 @@ class NCFiles: NCCollectionViewCommon {
         await restoreDefaultTitle()
 
         guard error == .success else {
-            return (nil, error)
+            return (nil, error, false)
         }
 
         if let metadataFolder {
@@ -296,7 +301,7 @@ class NCFiles: NCCollectionViewCommon {
               isDirectoryE2EE,
               NCKeychain().isEndToEndEnabled(account: account),
               await !NCNetworkingE2EE().isInUpload(account: account, serverUrl: serverUrl) else {
-            return (metadatas, error)
+            return (metadatas, error, true)
         }
 
         /// E2EE
@@ -335,7 +340,7 @@ class NCFiles: NCCollectionViewCommon {
         } else {
             NCContentPresenter().showError(error: NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadata, errorDescription: "_e2e_error_"))
         }
-        return (metadatas, error)
+        return (metadatas, error, true)
     }
 
     func blinkCell(fileName: String?) {
