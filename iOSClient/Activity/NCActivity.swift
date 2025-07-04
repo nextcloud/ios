@@ -339,7 +339,7 @@ extension NCActivity: UITableViewDataSource {
             for key in keys {
                 if let result = database.getActivitySubjectRich(account: session.account, idActivity: activity.idActivity, key: key) {
                     orderKeysId.append(result.id)
-                    subject = subject.replacingOccurrences(of: "{\(key)}", with: "<bold>" + result.name + "</bold>")
+                    subject = subject.replacingOccurrences(of: "{\(key)}", with: "<bold>" + result.name.escapedForMarkup + "</bold>")
                 }
             }
 
