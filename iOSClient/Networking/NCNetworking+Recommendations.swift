@@ -30,7 +30,7 @@ extension NCNetworking {
 
                 if results.error == .success, let file = results.files?.first {
                     let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
-                    let metadata = self.database.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
+                    let metadata = await self.database.convertFileToMetadataAsync(file, isDirectoryE2EE: isDirectoryE2EE)
                     self.database.addMetadataIfNeeded(metadata, sync: false)
 
                     if metadata.isLivePhoto, metadata.isVideo {

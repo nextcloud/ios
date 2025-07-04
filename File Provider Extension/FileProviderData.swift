@@ -1,46 +1,28 @@
-//
-//  FileProviderData.swift
-//  Files
-//
-//  Created by Marino Faggiana on 27/05/18.
-//  Copyright © 2018 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2018 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 import NextcloudKit
 
 class fileProviderData: NSObject {
-    static let shared: fileProviderData = {
-        let instance = fileProviderData()
-        return instance
-    }()
+    static let shared = fileProviderData()
 
     var domain: NSFileProviderDomain?
     var fileProviderManager: NSFileProviderManager = NSFileProviderManager.default
     let utilityFileSystem = NCUtilityFileSystem()
     let global = NCGlobal.shared
     let database = NCManageDatabase.shared
+
     var listFavoriteIdentifierRank: [String: NSNumber] = [:]
     var fileProviderSignalDeleteContainerItemIdentifier: [NSFileProviderItemIdentifier: NSFileProviderItemIdentifier] = [:]
     var fileProviderSignalUpdateContainerItem: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
     var fileProviderSignalDeleteWorkingSetItemIdentifier: [NSFileProviderItemIdentifier: NSFileProviderItemIdentifier] = [:]
     var fileProviderSignalUpdateWorkingSetItem: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
     private var account: String = ""
+
+    var downloadPendingCompletionHandlers: [Int: (Error?) -> Void] = [:]
+
     var session: NCSession.Session {
         if !account.isEmpty,
            let tableAccount = self.database.getTableAccount(account: account) {
@@ -64,30 +46,25 @@ class fileProviderData: NSObject {
         case workingSet
     }
 
-    struct UploadMetadata {
-        var id: String
-        var metadata: tableMetadata
-        var task: URLSessionUploadTask?
-    }
-
-    var uploadMetadata: [UploadMetadata] = []
-
     // MARK: - 
 
     func setupAccount(domain: NSFileProviderDomain?, providerExtension: NSFileProviderExtension) -> tableAccount? {
-        self.domain = domain
-        if let domain, let fileProviderManager = NSFileProviderManager(for: domain) {
+        let version = NSString(format: NCBrandOptions.shared.textCopyrightNextcloudiOS as NSString, NCUtility().getVersionApp()) as String
+        var tblAccount = self.database.getActiveTableAccount()
+        let tblAccounts = self.database.getAllTableAccount()
+
+        if let domain,
+           let fileProviderManager = NSFileProviderManager(for: domain) {
             self.fileProviderManager = fileProviderManager
         }
-        let version = NSString(format: NCBrandOptions.shared.textCopyrightNextcloudiOS as NSString, NCUtility().getVersionApp()) as String
+        self.domain = domain
 
         NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCKeychain().log))
 
         nkLog(debug: "Start File Provider session " + version + " (File Provider Extension)")
 
-        var tblAccount = self.database.getActiveTableAccount()
         if let domain {
-            for tableAccount in self.database.getAllTableAccount() {
+            for tableAccount in tblAccounts {
                 guard let urlBase = NSURL(string: tableAccount.urlBase) else { continue }
                 guard let host = urlBase.host else { continue }
                 let accountDomain = tableAccount.userId + " (" + host + ")"
@@ -98,10 +75,14 @@ class fileProviderData: NSObject {
                 }
             }
         }
-        guard let tblAccount else { return nil }
+
+        guard let tblAccount else {
+            return nil
+        }
 
         self.account = tblAccount.account
-        /// NextcloudKit Session
+
+        // NextcloudKit Session
         NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup, delegate: NCNetworking.shared)
         NextcloudKit.shared.appendSession(account: tblAccount.account,
                                           urlBase: tblAccount.urlBase,
@@ -109,53 +90,124 @@ class fileProviderData: NSObject {
                                           userId: tblAccount.userId,
                                           password: NCKeychain().getPassword(account: tblAccount.account),
                                           userAgent: userAgent,
-                                          nextcloudVersion: NCCapabilities.shared.getCapabilities(account: tblAccount.account).capabilityServerVersionMajor,
                                           httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
                                           httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
                                           httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
                                           groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
-        return tableAccount(value: tblAccount)
+        return tblAccount
     }
 
     // MARK: -
 
     @discardableResult
-    func signalEnumerator(ocId: String, type: TypeSignal) -> FileProviderItem? {
-        guard let metadata = self.database.getMetadataFromOcId(ocId),
-              let parentItemIdentifier = fileProviderUtility().getParentItemIdentifier(metadata: metadata) else {
+    func signalEnumerator(ocId: String, type: TypeSignal) async -> FileProviderItem? {
+        guard let metadata = await self.database.getMetadataFromOcIdAsync(ocId),
+              let parentItemIdentifier = await fileProviderUtility().getParentItemIdentifierAsync(metadata: metadata) else {
             return nil
         }
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
 
         if type == .delete {
-            fileProviderData.shared.fileProviderSignalDeleteContainerItemIdentifier[item.itemIdentifier] = item.itemIdentifier
-            fileProviderData.shared.fileProviderSignalDeleteWorkingSetItemIdentifier[item.itemIdentifier] = item.itemIdentifier
+            fileProviderSignalDeleteContainerItemIdentifier[item.itemIdentifier] = item.itemIdentifier
+            fileProviderSignalDeleteWorkingSetItemIdentifier[item.itemIdentifier] = item.itemIdentifier
         }
         if type == .update {
-            fileProviderData.shared.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-            fileProviderData.shared.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+            fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+            fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
         }
         if type == .workingSet {
-            fileProviderData.shared.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+            fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
         }
         if type == .delete || type == .update {
-            fileProviderManager.signalEnumerator(for: parentItemIdentifier) { _ in }
+            try? await fileProviderManager.signalEnumerator(for: parentItemIdentifier)
         }
-        fileProviderManager.signalEnumerator(for: .workingSet) { _ in }
+        try? await fileProviderManager.signalEnumerator(for: .workingSet)
+
         return item
     }
 
-    // MARK: -
+    // MARK: - DOWNLOAD
 
-    func appendUploadMetadata(id: String, metadata: tableMetadata, task: URLSessionUploadTask?) {
-        if let index = uploadMetadata.firstIndex(where: { $0.id == id }) {
-            uploadMetadata.remove(at: index)
+    func downloadComplete(metadata: tableMetadata, task: URLSessionTask, etag: String?, error: NKError) async {
+        let ocId = metadata.ocId
+        let taskIdentifier = task.taskIdentifier
+
+        await self.database.setMetadataSessionAsync(ocId: ocId,
+                                                    session: "",
+                                                    sessionTaskIdentifier: 0,
+                                                    sessionError: "",
+                                                    status: self.global.metadataStatusNormal,
+                                                    etag: etag)
+
+        if error == .success {
+            if let metadata = await self.database.getMetadataFromOcIdAsync(ocId) {
+                await self.database.addLocalFileAsync(metadata: metadata)
+            }
         }
-        uploadMetadata.append(UploadMetadata(id: id, metadata: metadata, task: task))
+
+        downloadPendingCompletionHandlers[taskIdentifier]?(nil)
+        downloadPendingCompletionHandlers.removeValue(forKey: taskIdentifier)
+
+        await signalEnumerator(ocId: ocId, type: .update)
     }
 
-    func getUploadMetadata(id: String) -> UploadMetadata? {
-        return uploadMetadata.filter({ $0.id == id }).first
+    // MARK: - UPLOAD
+
+    func uploadComplete(fileName: String,
+                        serverUrl: String,
+                        ocId: String?,
+                        etag: String?,
+                        date: Date?,
+                        size: Int64,
+                        task: URLSessionTask,
+                        error: NKError) async {
+        guard let url = task.currentRequest?.url,
+              let metadata = await self.database.getMetadataAsync(from: url, sessionTaskIdentifier: task.taskIdentifier) else {
+            return
+        }
+
+        if let ocId, !metadata.ocIdTransfer.isEmpty {
+            let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer)
+            let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId)
+            self.utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
+        }
+
+        if error == .success, let ocId {
+            await  signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
+
+            if !metadata.ocIdTransfer.isEmpty, ocId != metadata.ocIdTransfer {
+                await self.database.deleteMetadataOcIdAsync(metadata.ocIdTransfer)
+            }
+
+            metadata.fileName = fileName
+            metadata.serverUrl = serverUrl
+            metadata.uploadDate = (date as? NSDate) ?? NSDate()
+            metadata.etag = etag ?? ""
+            metadata.ocId = ocId
+            metadata.size = size
+            if let fileId = NCUtility().ocIdToFileId(ocId: ocId) {
+                metadata.fileId = fileId
+            }
+
+            metadata.sceneIdentifier = nil
+            metadata.session = ""
+            metadata.sessionError = ""
+            metadata.sessionSelector = ""
+            metadata.sessionDate = nil
+            metadata.sessionTaskIdentifier = 0
+            metadata.status = NCGlobal.shared.metadataStatusNormal
+
+            await self.database.addMetadataAsync(metadata)
+            await self.database.addLocalFileAsync(metadata: metadata)
+
+            await fileProviderData.shared.signalEnumerator(ocId: ocId, type: .update)
+
+        } else {
+
+            await self.database.deleteMetadataOcIdAsync(metadata.ocIdTransfer)
+
+            await signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
+        }
     }
 }

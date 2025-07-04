@@ -9,15 +9,13 @@
 import NextcloudKit
 
 extension FileNameValidator {
-    static func checkFileName(_ filename: String, account: String?) -> NKError? {
-        let capabilities = NCCapabilities.shared.getCapabilities(account: account)
-        let fileNameValidator = FileNameValidator(forbiddenFileNames: capabilities.capabilityForbiddenFileNames, forbiddenFileNameBasenames: capabilities.capabilityForbiddenFileNameBasenames, forbiddenFileNameCharacters: capabilities.capabilityForbiddenFileNameCharacters, forbiddenFileNameExtensions: capabilities.capabilityForbiddenFileNameExtensions)
+    static func checkFileName(_ filename: String, account: String?, capabilities: NKCapabilities.Capabilities) -> NKError? {
+        let fileNameValidator = FileNameValidator(forbiddenFileNames: capabilities.forbiddenFileNames, forbiddenFileNameBasenames: capabilities.forbiddenFileNameBasenames, forbiddenFileNameCharacters: capabilities.forbiddenFileNameCharacters, forbiddenFileNameExtensions: capabilities.forbiddenFileNameExtensions)
         return fileNameValidator.checkFileName(filename)
     }
 
-    static func checkFolderPath(_ folderPath: String, account: String?) -> Bool {
-        let capabilities = NCCapabilities.shared.getCapabilities(account: account)
-        let fileNameValidator = FileNameValidator(forbiddenFileNames: capabilities.capabilityForbiddenFileNames, forbiddenFileNameBasenames: capabilities.capabilityForbiddenFileNameBasenames, forbiddenFileNameCharacters: capabilities.capabilityForbiddenFileNameCharacters, forbiddenFileNameExtensions: capabilities.capabilityForbiddenFileNameExtensions)
+    static func checkFolderPath(_ folderPath: String, account: String?, capabilities: NKCapabilities.Capabilities) -> Bool {
+        let fileNameValidator = FileNameValidator(forbiddenFileNames: capabilities.forbiddenFileNames, forbiddenFileNameBasenames: capabilities.forbiddenFileNameBasenames, forbiddenFileNameCharacters: capabilities.forbiddenFileNameCharacters, forbiddenFileNameExtensions: capabilities.forbiddenFileNameExtensions)
         return fileNameValidator.checkFolderPath(folderPath)
     }
 }

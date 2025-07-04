@@ -24,7 +24,7 @@
 import UIKit
 import Foundation
 
-class NCPermissions: NSObject {
+class NCSharePermissions: NSObject {
     // Share permission
     // permissions - (int) 1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all
     //

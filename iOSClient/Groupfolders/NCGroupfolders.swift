@@ -56,7 +56,7 @@ class NCGroupfolders: NCCollectionViewCommon {
 
     override func reloadDataSource() {
         if self.serverUrl.isEmpty {
-            let metadatas = database.getResultsMetadatasFromGroupfolders(session: session, layoutForView: layoutForView)
+            let metadatas = database.getMetadatasFromGroupfolders(session: session, layoutForView: layoutForView)
             self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
             self.dataSource.caching(metadatas: metadatas) {
                 super.reloadDataSource()

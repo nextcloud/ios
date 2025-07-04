@@ -1,27 +1,9 @@
-//
-//  FileProviderData.swift
-//  Files
-//
-//  Created by Marino Faggiana on 27/05/18.
-//  Copyright © 2018 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2018 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
+import NextcloudKit
 
 class fileProviderUtility: NSObject {
     let fileManager = FileManager()
@@ -36,6 +18,11 @@ class fileProviderUtility: NSObject {
     func getTableMetadataFromItemIdentifier(_ itemIdentifier: NSFileProviderItemIdentifier) -> tableMetadata? {
         let ocId = itemIdentifier.rawValue
         return self.database.getMetadataFromOcId(ocId)
+    }
+
+    func getTableMetadataFromItemIdentifierAsync(_ itemIdentifier: NSFileProviderItemIdentifier) async -> tableMetadata? {
+        let ocId = itemIdentifier.rawValue
+        return await self.database.getMetadataFromOcIdAsync(ocId)
     }
 
     func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier {
@@ -58,6 +45,22 @@ class fileProviderUtility: NSObject {
         return nil
     }
 
+    func getParentItemIdentifierAsync(metadata: tableMetadata) async -> NSFileProviderItemIdentifier? {
+        let homeServerUrl = utilityFileSystem.getHomeServer(session: fileProviderData.shared.session)
+        if let directory = await self.database.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
+            if directory.serverUrl == homeServerUrl {
+                return NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue)
+            } else {
+                // get the metadata.ocId of parent Directory
+                if let metadata = await self.database.getMetadataFromOcIdAsync(directory.ocId) {
+                    let identifier = getItemIdentifier(metadata: metadata)
+                    return identifier
+                }
+            }
+        }
+        return nil
+    }
+
     func getTableDirectoryFromParentItemIdentifier(_ parentItemIdentifier: NSFileProviderItemIdentifier, account: String, homeServerUrl: String) -> tableDirectory? {
         var predicate: NSPredicate
         if parentItemIdentifier == .rootContainer {
@@ -67,6 +70,23 @@ class fileProviderUtility: NSObject {
             predicate = NSPredicate(format: "ocId == %@", metadata.ocId)
         }
         guard let directory = self.database.getTableDirectory(predicate: predicate) else { return nil }
+        return directory
+    }
+
+    func getTableDirectoryFromParentItemIdentifierAsync(_ parentItemIdentifier: NSFileProviderItemIdentifier, account: String, homeServerUrl: String) async -> tableDirectory? {
+        var predicate: NSPredicate
+        if parentItemIdentifier == .rootContainer {
+            predicate = NSPredicate(format: "account == %@ AND serverUrl == %@", account, homeServerUrl)
+        } else {
+            guard let metadata = await getTableMetadataFromItemIdentifierAsync(parentItemIdentifier) else {
+                return nil
+            }
+            predicate = NSPredicate(format: "ocId == %@", metadata.ocId)
+        }
+        guard let directory = await self.database.getTableDirectoryAsync(predicate: predicate) else {
+            return nil
+        }
+
         return directory
     }
 
@@ -113,6 +133,30 @@ class fileProviderUtility: NSObject {
         } catch {
             print("Error: \(error.localizedDescription)")
             return nil
+        }
+    }
+
+    func fileProviderStorageExists(_ metadata: tableMetadata) -> Bool {
+        let pathA = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
+        let pathB = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+
+        let sizeA = fileSize(at: pathA)
+        let sizeB = fileSize(at: pathB)
+
+        if metadata.isDirectoryE2EE == true {
+            return (sizeA == metadata.size || sizeB == metadata.size) && sizeB > 0
+        }
+
+        return sizeB == metadata.size && metadata.size > 0
+    }
+
+    private func fileSize(at path: String) -> UInt64 {
+        do {
+            let attr = try fileManager.attributesOfItem(atPath: path)
+            return attr[.size] as? UInt64 ?? 0
+        } catch {
+            nkLog(error: " [fileSize] Errore accesso a '\(path)': \(error)")
+            return 0
         }
     }
 }

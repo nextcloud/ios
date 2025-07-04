@@ -109,7 +109,9 @@ class NCSharePaging: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if NCCapabilities.shared.disableSharesView(account: metadata.account) {
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
+
+        if !capabilities.fileSharingApiEnabled && !capabilities.filesComments && capabilities.activity.isEmpty {
             self.dismiss(animated: false, completion: nil)
         }
 
@@ -121,7 +123,7 @@ class NCSharePaging: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         NCNetworking.shared.notifyAllDelegates { delegate in
-            delegate.transferReloadData(serverUrl: metadata.serverUrl)
+            delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
         }
     }
 

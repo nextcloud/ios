@@ -1,25 +1,6 @@
-//
-//  FileProviderItem.swift
-//  Files
-//
-//  Created by Marino Faggiana on 26/03/18.
-//  Copyright © 2018 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2018 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 import FileProvider
@@ -28,6 +9,7 @@ import UniformTypeIdentifiers
 
 class FileProviderItem: NSObject, NSFileProviderItem {
     var metadata: tableMetadata
+
     /// Providing Required Properties
     var itemIdentifier: NSFileProviderItemIdentifier {
         return fileProviderUtility().getItemIdentifier(metadata: metadata)
@@ -36,8 +18,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         return metadata.fileNameView
     }
     var typeIdentifier: String {
-        let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadata.fileNameView, mimeType: "", directory: metadata.directory, account: metadata.account)
-        return results.typeIdentifier
+        return metadata.typeIdentifier
     }
     var capabilities: NSFileProviderItemCapabilities {
         if metadata.directory {
@@ -144,7 +125,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
 
     init(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier) {
-        self.metadata = tableMetadata(value: metadata)
+        self.metadata = metadata.detachedCopy()
         self.parentItemIdentifier = parentItemIdentifier
     }
 }

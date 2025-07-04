@@ -48,9 +48,10 @@ extension UIAlertController {
                     return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_offline_not_allowed_"))
                 }
                 Task {
-                    let createFolderResults = await NextcloudKit.shared.createFolderAsync(serverUrlFileName: serverUrl + "/" + fileNameFolder, account: session.account)
+                    let serverUrlFileName = serverUrl + "/" + fileNameFolder
+                    let createFolderResults = await NextcloudKit.shared.createFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account)
                     if createFolderResults.error == .success {
-                        let error = await NCNetworkingE2EEMarkFolder().markFolderE2ee(account: session.account, fileName: fileNameFolder, serverUrl: serverUrl, userId: session.userId)
+                        let error = await NCNetworkingE2EEMarkFolder().markFolderE2ee(account: session.account, serverUrlFileName: serverUrlFileName, userId: session.userId)
                         if error != .success {
                             NCContentPresenter().showError(error: error)
                         }
@@ -77,15 +78,11 @@ extension UIAlertController {
                 if let result = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", session.account, serverUrl, fileNameFolder)) {
                     metadata = result
                 } else {
-                    metadata = NCManageDatabase.shared.createMetadata(fileName: fileNameFolder,
-                                                                      fileNameView: fileNameFolder,
-                                                                      ocId: NSUUID().uuidString,
-                                                                      serverUrl: serverUrl,
-                                                                      url: "",
-                                                                      contentType: "httpd/unix-directory",
-                                                                      directory: true,
-                                                                      session: session,
-                                                                      sceneIdentifier: sceneIdentifier)
+                    metadata = NCManageDatabase.shared.createMetadataDirectory(fileName: fileNameFolder,
+                                                                               ocId: NSUUID().uuidString,
+                                                                               serverUrl: serverUrl,
+                                                                               session: session,
+                                                                               sceneIdentifier: sceneIdentifier)
                 }
 
                 metadata.status = NCGlobal.shared.metadataStatusWaitCreateFolder
@@ -109,10 +106,13 @@ extension UIAlertController {
             forName: UITextField.textDidChangeNotification,
             object: alertController.textFields?.first,
             queue: .main) { _ in
-                guard let text = alertController.textFields?.first?.text else { return }
+                let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
+                guard let text = alertController.textFields?.first?.text else {
+                    return
+                }
                 let folderName = text.trimmingCharacters(in: .whitespaces)
                 let isFileHidden = FileNameValidator.isFileHidden(text)
-                let textCheck = FileNameValidator.checkFileName(folderName, account: session.account)
+                let textCheck = FileNameValidator.checkFileName(folderName, account: session.account, capabilities: capabilities)
                 let alreadyExists = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", session.account, serverUrl, folderName)) != nil
 
                 okAction.isEnabled = !text.isEmpty && textCheck?.error == nil && alreadyExists == false
@@ -192,6 +192,7 @@ extension UIAlertController {
     }
 
     static func renameFile(fileName: String, isDirectory: Bool = false, account: String, completion: @escaping (_ newFileName: String) -> Void) -> UIAlertController {
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
         let alertController = UIAlertController(title: NSLocalizedString(isDirectory ? "_rename_folder_" : "_rename_file_", comment: ""), message: nil, preferredStyle: .alert)
 
         let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in
@@ -212,7 +213,7 @@ extension UIAlertController {
         let oldExtension = fileName.fileExtension
 
         let text = alertController.textFields?.first?.text ?? ""
-        let textCheck = FileNameValidator.checkFileName(text, account: account)
+        let textCheck = FileNameValidator.checkFileName(text, account: account, capabilities: capabilities)
         var message = textCheck?.error.localizedDescription ?? ""
         var messageColor = UIColor.red
 
@@ -242,7 +243,7 @@ extension UIAlertController {
                 guard let text = alertController.textFields?.first?.text else { return }
                 let newExtension = text.fileExtension
 
-                let textCheck = FileNameValidator.checkFileName(text, account: account)
+                let textCheck = FileNameValidator.checkFileName(text, account: account, capabilities: capabilities)
                 let isFileHidden = FileNameValidator.isFileHidden(text)
 
                 okAction.isEnabled = !text.isEmpty && textCheck?.error == nil
@@ -281,9 +282,6 @@ extension UIAlertController {
 
             NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew)
 
-            NCNetworking.shared.notifyAllDelegates { delegate in
-                delegate.transferReloadData(serverUrl: metadata.serverUrl)
-            }
             completion(fileNameNew)
         }
     }

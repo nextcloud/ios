@@ -95,7 +95,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
 
             if metadata.contentType.contains("opendocument") && !self.utility.isTypeFileRichDocument(metadata) {
                 self.openActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
-            } else if metadata.classFile == NKCommon.TypeClassFile.compress.rawValue || metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
+            } else if metadata.classFile == NKTypeClassFile.compress.rawValue || metadata.classFile == NKTypeClassFile.unknow.rawValue {
                 self.openActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
             } else {
                 if let viewController = controller.currentViewController() {
@@ -141,7 +141,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                                                                                        serverUrl,
                                                                                        NCGlobal.shared.selectorSynchronizationOffline,
                                                                                        NCGlobal.shared.metadataStatusWaitDownload)) {
-                    database.clearMetadataSession(metadatas: Array(results))
+                    database.clearMetadatasSession(metadatas: Array(results))
                 }
             } else {
                 database.setOffLocalFile(ocId: metadata.ocId)
@@ -149,7 +149,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         } else if metadata.directory {
             database.setDirectory(serverUrl: serverUrl, offline: true, metadata: metadata)
             Task {
-                await NCNetworking.shared.synchronization(account: metadata.account, serverUrl: metadata.serverUrl)
+                await NCService().synchronize(account: metadata.account)
             }
         } else {
             var metadatasSynchronizationOffline: [tableMetadata] = []
@@ -240,9 +240,10 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
     func openShare(viewController: UIViewController, metadata: tableMetadata, page: NCBrandOptions.NCInfoPagingTab) {
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         var page = page
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
 
         NCActivityIndicator.shared.start(backgroundView: viewController.view)
-        NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: metadata.account, queue: .main) { account, metadata, error in
+        NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: metadata.account, queue: .main) { _, metadata, error in
             NCActivityIndicator.shared.stop()
 
             if let metadata = metadata, error == .success {
@@ -254,7 +255,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                     pages.append(value)
                 }
 
-                if NCCapabilities.shared.getCapabilities(account: account).capabilityActivity.isEmpty, let idx = pages.firstIndex(of: .activity) {
+                if capabilities.activity.isEmpty, let idx = pages.firstIndex(of: .activity) {
                     pages.remove(at: idx)
                 }
                 if !metadata.isSharable(), let idx = pages.firstIndex(of: .sharing) {
@@ -433,10 +434,10 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
 
         for (index, items) in UIPasteboard.general.items.enumerated() {
             for item in items {
-                let results = NextcloudKit.shared.nkCommonInstance.getFileProperties(inUTI: item.key as CFString)
-                guard !results.ext.isEmpty,
-                      let data = UIPasteboard.general.data(forPasteboardType: item.key, inItemSet: IndexSet([index]))?.first
-                else { continue }
+                let results = NKFilePropertyResolver().resolve(inUTI: item.key, account: account)
+                guard let data = UIPasteboard.general.data(forPasteboardType: item.key, inItemSet: IndexSet([index]))?.first else {
+                    continue
+                }
                 let fileName = results.name + "_" + NCKeychain().incrementalNumber + "." + results.ext
                 let serverUrlFileName = serverUrl + "/" + fileName
                 let ocIdUpload = UUID().uuidString
@@ -532,8 +533,10 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         let topViewController = navigationController?.topViewController as? NCSelect
         var listViewController = [NCSelect]()
         var copyItems: [tableMetadata] = []
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: controller?.account ?? "")
+
         for item in items {
-            if let fileNameError = FileNameValidator.checkFileName(item.fileNameView, account: controller?.account) {
+            if let fileNameError = FileNameValidator.checkFileName(item.fileNameView, account: controller?.account, capabilities: capabilities) {
                 controller?.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
                 return
             }

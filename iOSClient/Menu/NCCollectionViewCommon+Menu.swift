@@ -77,7 +77,7 @@ extension NCCollectionViewCommon {
         // DETAILS
         //
         if NCNetworking.shared.isOnline,
-           !NCCapabilities.shared.disableSharesView(account: metadata.account) {
+           !(!capabilities.fileSharingApiEnabled && !capabilities.filesComments && capabilities.activity.isEmpty) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
@@ -149,7 +149,7 @@ extension NCCollectionViewCommon {
         if NCNetworking.shared.isOnline,
            !metadata.directory,
            metadata.canUnlock(as: metadata.userId),
-           !NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityFilesLockVersion.isEmpty {
+           !capabilities.filesLockVersion.isEmpty {
             actions.append(NCMenuAction.lockUnlockFiles(shouldLock: !metadata.lock, metadatas: [metadata], order: 30, sender: sender))
         }
 
@@ -166,7 +166,8 @@ extension NCCollectionViewCommon {
                     sender: sender,
                     action: { _ in
                         Task {
-                            let error = await NCNetworkingE2EEMarkFolder().markFolderE2ee(account: metadata.account, fileName: metadata.fileName, serverUrl: metadata.serverUrl, userId: metadata.userId)
+                            let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+                            let error = await NCNetworkingE2EEMarkFolder().markFolderE2ee(account: metadata.account, serverUrlFileName: serverUrlFileName, userId: metadata.userId)
                             if error != .success {
                                 NCContentPresenter().showError(error: error)
                             }
@@ -188,14 +189,15 @@ extension NCCollectionViewCommon {
                     order: 30,
                     sender: sender,
                     action: { _ in
-                        NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: true, account: metadata.account) { _, _, error in
-                            if error == .success {
-                                self.database.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl))
-                                self.database.setDirectory(serverUrl: serverUrl, encrypted: false, account: metadata.account)
-                                self.database.setMetadataEncrypted(ocId: metadata.ocId, encrypted: false)
+                        Task {
+                            let results = await NextcloudKit.shared.markE2EEFolderAsync(fileId: metadata.fileId, delete: true, account: metadata.account)
+                            if results.error == .success {
+                                await self.database.deleteE2eEncryptionAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl))
+                                await self.database.setDirectoryAsync(serverUrl: serverUrl, encrypted: false, account: metadata.account)
+                                await self.database.setMetadataEncryptedAsync(ocId: metadata.ocId, encrypted: false)
                                 self.reloadDataSource()
                             } else {
-                                NCContentPresenter().messageNotification(NSLocalizedString("_e2e_error_", comment: ""), error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
+                                NCContentPresenter().messageNotification(NSLocalizedString("_e2e_error_", comment: ""), error: results.error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
                             }
                         }
                     }
@@ -273,7 +275,7 @@ extension NCCollectionViewCommon {
                     action: { _ in
                         if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                             NCNetworking.shared.notifyAllDelegates { delegate in
-                                let metadata = tableMetadata(value: metadata)
+                                let metadata = metadata.detachedCopy()
                                 metadata.sessionSelector = NCGlobal.shared.selectorSaveAsScan
                                 delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
                                                         metadata: metadata,
@@ -313,7 +315,7 @@ extension NCCollectionViewCommon {
         // COPY - MOVE
         //
         if metadata.isCopyableMovable {
-            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], viewController: self, order: 130, sender: sender))
+            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], account: metadata.account, viewController: self, order: 130, sender: sender))
         }
 
         //
@@ -330,7 +332,7 @@ extension NCCollectionViewCommon {
                     action: { _ in
                         if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                             NCNetworking.shared.notifyAllDelegates { delegate in
-                                let metadata = tableMetadata(value: metadata)
+                                let metadata = metadata.detachedCopy()
                                 metadata.sessionSelector = NCGlobal.shared.selectorLoadFileQuickLook
                                 delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
                                                         metadata: metadata,
@@ -341,7 +343,6 @@ extension NCCollectionViewCommon {
                                                                                              session: NCNetworking.shared.sessionDownload,
                                                                                              selector: NCGlobal.shared.selectorLoadFileQuickLook,
                                                                                              sceneIdentifier: sceneIdentifier) {
-                                
                                 NCNetworking.shared.download(metadata: metadata)
                             }
                         }
@@ -378,7 +379,7 @@ extension NCCollectionViewCommon {
         // DELETE
         //
         if metadata.isDeletable {
-            actions.append(.deleteAction(selectedMetadatas: [metadata], metadataFolder: metadataFolder, controller: self.controller, order: 170, sender: sender))
+            actions.append(.deleteOrUnshareAction(selectedMetadatas: [metadata], metadataFolder: metadataFolder, controller: self.controller, order: 170, sender: sender))
         }
 
         applicationHandle.addCollectionViewCommonMenu(metadata: metadata, image: image, actions: &actions)

@@ -60,6 +60,18 @@ extension NCManageDatabase {
         }
     }
 
+    /// Asynchronously deletes all `tableRecommendedFiles` entries for a given account from the Realm database.
+    /// - Parameters:
+    ///   - account: The account identifier whose recommended files should be deleted.
+    ///   - async: Whether the Realm write should be executed asynchronously (default is true).
+    func deleteAllRecommendedFilesAsync(account: String) async {
+        await performRealmWriteAsync { realm in
+            let results = realm.objects(tableRecommendedFiles.self)
+                .filter("account == %@", account)
+            realm.delete(results)
+        }
+    }
+
     // MARK: - Realm read
 
     func getRecommendedFiles(account: String) -> [tableRecommendedFiles] {

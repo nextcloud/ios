@@ -48,10 +48,10 @@ extension NCMedia {
 
                 } completion: { _ in
 
-                    if let layoutForView = self.database.getLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "") {
-                        layoutForView.columnPhoto = self.numberOfColumns
-                        self.database.setLayoutForView(layoutForView: layoutForView)
+                    self.database.updateLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "") { layout in
+                        layout.columnPhoto = self.numberOfColumns
                     }
+
                 }
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {

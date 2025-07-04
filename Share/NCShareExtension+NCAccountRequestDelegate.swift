@@ -1,25 +1,7 @@
-//
-//  NCShareExtension.swift
-//  Share
-//
-//  Created by Marino Faggiana on 04.01.2022.
-//  Copyright © 2022 Henrik Storch. All rights reserved.
-//
-//  Author Henrik Storch <henrik.storch@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2021 Marino Faggiana
+// SPDX-FileCopyrightText: 2021 Henrik Storch
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import NextcloudKit
 import UIKit
@@ -58,15 +40,12 @@ extension NCShareExtension: NCAccountRequestDelegate {
     func accountRequestAddAccount() { }
 
     func accountRequestChangeAccount(account: String, controller: UIViewController?) {
-        guard let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
-              let capabilities = self.database.setCapabilities(account: account) else {
+        guard let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
             cancel(with: NCShareExtensionError.noAccount)
             return
         }
         self.account = account
-
-        // CAPABILITIES
-        database.setCapabilities(account: account)
+        self.database.applyCachedCapabilitiesBlocking(account: account)
 
         // COLORS
         NCBrandColor.shared.settingThemingColor(account: account)
@@ -80,7 +59,6 @@ extension NCShareExtension: NCAccountRequestDelegate {
                                           userId: tableAccount.userId,
                                           password: NCKeychain().getPassword(account: tableAccount.account),
                                           userAgent: userAgent,
-                                          nextcloudVersion: capabilities.capabilityServerVersionMajor,
                                           httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
                                           httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
                                           httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,

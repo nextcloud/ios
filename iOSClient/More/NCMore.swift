@@ -97,7 +97,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
         var item = NKExternalSite()
         var quota: String = ""
-        let capabilities = NCCapabilities.shared.getCapabilities(account: tableAccount.account)
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: tableAccount.account)
 
         // Clear
         functionMenu.removeAll()
@@ -128,7 +128,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
         */
 
-        if capabilities.capabilityAssistantEnabled, NCBrandOptions.shared.disable_show_more_nextcloud_apps_in_settings {
+        if capabilities.assistantEnabled, NCBrandOptions.shared.disable_show_more_nextcloud_apps_in_settings {
             // ITEM : Assistant
             item = NKExternalSite()
             item.name = "_assistant_"
@@ -139,7 +139,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
 
         // ITEM : Shares
-        if capabilities.capabilityFileSharingApiEnabled {
+        if capabilities.fileSharingApiEnabled {
             item = NKExternalSite()
             item.name = "_list_shares_"
             item.icon = "person.badge.plus"
@@ -157,7 +157,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         functionMenu.append(item)
 
         // ITEM : Groupfolders
-        if capabilities.capabilityGroupfoldersEnabled {
+        if capabilities.groupfoldersEnabled {
             item = NKExternalSite()
             item.name = "_group_folders_"
             item.icon = "person.2"

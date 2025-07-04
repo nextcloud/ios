@@ -69,6 +69,9 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     func onViewAppear() {
         let groups = NCManageDatabase.shared.getAccountGroups(account: session.account)
         isAdminGroup = groups.contains(NCGlobal.shared.groupAdmin)
+#if DEBUG
+        isAdminGroup = true
+#endif
         mostCompatible = keychain.formatCompatibility
         livePhoto = keychain.livePhoto
         removeFromCameraRoll = keychain.removePhotoCameraRoll
@@ -129,6 +132,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             URLCache.shared.removeAllCachedResponses()
 
+            NCNetworking.shared.removeServerErrorAccount(self.session.account)
             NCManageDatabase.shared.clearDatabase()
 
             let ufs = NCUtilityFileSystem()

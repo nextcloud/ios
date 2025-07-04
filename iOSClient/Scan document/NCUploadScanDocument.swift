@@ -59,11 +59,8 @@ class NCUploadScanDocument: ObservableObject {
         self.removeAllFiles = removeAllFiles
 
         metadata = self.database.createMetadata(fileName: fileName,
-                                                fileNameView: fileName,
                                                 ocId: UUID().uuidString,
                                                 serverUrl: serverUrl,
-                                                url: "",
-                                                contentType: "",
                                                 session: session,
                                                 sceneIdentifier: controller?.sceneIdentifier)
 
@@ -111,7 +108,9 @@ class NCUploadScanDocument: ObservableObject {
             do {
                 try pdfData.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
                 metadata.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
-                NCNetworkingProcess.shared.createProcessUploads(metadatas: [metadata])
+
+                self.database.addMetadata(metadata)
+
                 if self.removeAllFiles {
                     let path = self.utilityFileSystem.directoryScan
                     let filePaths = try FileManager.default.contentsOfDirectory(atPath: path)
@@ -325,6 +324,10 @@ struct UploadScanDocumentView: View {
 
     var metadatasConflict: [tableMetadata] = []
 
+    var capabilities: NKCapabilities.Capabilities {
+        NKCapabilities.shared.getCapabilitiesBlocking(for: model.session.account)
+    }
+
     init(model: NCUploadScanDocument) {
         self.model = model
     }
@@ -375,7 +378,7 @@ struct UploadScanDocumentView: View {
                             TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $fileName)
                                 .multilineTextAlignment(.trailing)
                                 .onChange(of: fileName) { _ in
-                                    if let fileNameError = FileNameValidator.checkFileName(fileName, account: self.model.controller?.account) {
+                                    if let fileNameError = FileNameValidator.checkFileName(fileName, account: self.model.controller?.account, capabilities: capabilities) {
                                         footer = fileNameError.errorDescription
                                     } else {
                                         footer = ""

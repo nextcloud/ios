@@ -29,7 +29,7 @@ import Alamofire
 extension NCCollectionViewCommon: UICollectionViewDelegate {
     func didSelectMetadata(_ metadata: tableMetadata, withOcIds: Bool) {
         if metadata.e2eEncrypted {
-            if NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityE2EEEnabled {
+            if capabilities.e2EEEnabled {
                 if !NCKeychain().isEndToEndEnabled(account: metadata.account) {
                     let e2ee = NCEndToEndInitialize()
                     e2ee.delegate = self
@@ -49,21 +49,19 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
             if !metadata.isDirectoryE2EE, metadata.isImage || metadata.isAudioOrVideo {
                 let metadatas = self.dataSource.getMetadatas()
-                let ocIds = metadatas.filter { $0.classFile == NKCommon.TypeClassFile.image.rawValue ||
-                                               $0.classFile == NKCommon.TypeClassFile.video.rawValue ||
-                                               $0.classFile == NKCommon.TypeClassFile.audio.rawValue }.map(\.ocId)
+                let ocIds = metadatas.filter { $0.classFile == NKTypeClassFile.image.rawValue ||
+                                               $0.classFile == NKTypeClassFile.video.rawValue ||
+                                               $0.classFile == NKTypeClassFile.audio.rawValue }.map(\.ocId)
 
                 return NCViewer().view(viewController: self, metadata: metadata, ocIds: withOcIds ? ocIds : nil, image: image)
 
-            } else if metadata.isAvailableEditorView ||
-                      utilityFileSystem.fileProviderStorageExists(metadata) ||
-                        metadata.name == self.global.talkName {
+            } else if metadata.isAvailableEditorView || utilityFileSystem.fileProviderStorageExists(metadata) || metadata.name == self.global.talkName {
 
                 NCViewer().view(viewController: self, metadata: metadata, image: image)
 
             } else if NextcloudKit.shared.isNetworkReachable() {
                 guard let  metadata = database.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
-                                                                                session: NCNetworking.shared.sessionDownload,
+                                                                                session: self.netwoking.sessionDownload,
                                                                                 selector: global.selectorLoadFileView,
                                                                                 sceneIdentifier: self.controller?.sceneIdentifier) else {
                     return
@@ -79,7 +77,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                         }
                     }
 
-                    NCNetworking.shared.download(metadata: metadata) {
+                    self.netwoking.download(metadata: metadata) {
                     } requestHandler: { request in
                         downloadRequest = request
                     } progressHandler: { progress in
@@ -124,7 +122,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         guard let metadata = self.dataSource.getMetadata(indexPath: indexPath),
-              metadata.classFile != NKCommon.TypeClassFile.url.rawValue,
+              metadata.classFile != NKTypeClassFile.url.rawValue,
               !isEditMode
         else {
             return nil
@@ -146,7 +144,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
             return NCViewerProviderContextMenu(metadata: metadata, image: image, sceneIdentifier: self.sceneIdentifier)
         }, actionProvider: { _ in
-            let contextMenu = NCContextMenu(metadata: tableMetadata(value: metadata), viewController: self, sceneIdentifier: self.sceneIdentifier, image: image)
+            let contextMenu = NCContextMenu(metadata: metadata.detachedCopy(), viewController: self, sceneIdentifier: self.sceneIdentifier, image: image)
             return contextMenu.viewMenu()
         })
     }

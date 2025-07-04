@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
+import NextcloudKit
 
 let userAgent: String = {
     let appVersion: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
@@ -25,7 +26,7 @@ final class NCBrandOptions: @unchecked Sendable {
     var textCopyrightNextcloudiOS: String = "Nextcloud Matheria for iOS %@ © 2025"
     var textCopyrightNextcloudServer: String = "Nextcloud Server %@"
     var loginBaseUrl: String = "https://cloud.nextcloud.com"
-    var pushNotificationServerProxy: String = "https://push-notifications.nextcloud.com"
+    var pushNotificationServerProxy: String = ""
     var linkLoginHost: String = "https://nextcloud.com/install"
     var linkloginPreferredProviders: String = "https://nextcloud.com/signup-ios"
     var webLoginAutenticationProtocol: String = "nc://"                                        // example "abc://"
@@ -59,6 +60,7 @@ final class NCBrandOptions: @unchecked Sendable {
     var doNotAskPasscodeAtStartup: Bool = false
     var disable_source_code_in_settings: Bool = false
     var enforce_passcode_lock = false
+    var enforce_privacyScreenEnabled = false
 
     // Example: (name: "Name 1", url: "https://cloud.nextcloud.com"),(name: "Name 2", url: "https://cloud.nextcloud.com")
     var enforce_servers: [(name: String, url: String)] = []
@@ -67,9 +69,9 @@ final class NCBrandOptions: @unchecked Sendable {
     var cleanUpDay: Int = 0                                                                     // Set default "Delete all cached files older than" possible days value are: 0, 1, 7, 30, 90, 180, 365
 
     // Max request/download/upload concurrent
-    let httpMaximumConnectionsPerHost: Int = 6
-    let httpMaximumConnectionsPerHostInDownload: Int = 6
-    let httpMaximumConnectionsPerHostInUpload: Int = 6
+    let httpMaximumConnectionsPerHost: Int = 8
+    let httpMaximumConnectionsPerHostInDownload: Int = 8
+    let httpMaximumConnectionsPerHostInUpload: Int = 8
 
     // Number of failed attempts after reset app
     let resetAppPasscodeAttempts: Int = 10
@@ -108,10 +110,14 @@ final class NCBrandOptions: @unchecked Sendable {
                 enforce_passcode_lock = (str as NSString).boolValue
             }
         }
-
-#if DEBUG
+        #if DEBUG
         pushNotificationServerProxy = "https://c0004.customerpush.nextcloud.com"
-#endif
+        #else
+        if pushNotificationServerProxy.isEmpty,
+            brand == "Nextcloud" {
+            pushNotificationServerProxy = "https://push-notifications.nextcloud.com"
+        }
+        #endif
     }
 
     @objc func getUserAgent() -> String {
@@ -222,9 +228,10 @@ final class NCBrandColor: @unchecked Sendable {
         var colorThemingColorText: UIColor?
 
         if NCBrandOptions.shared.use_themingColor {
-            let themingColor = NCCapabilities.shared.getCapabilities(account: account).capabilityThemingColor
-            let themingColorElement = NCCapabilities.shared.getCapabilities(account: account).capabilityThemingColorElement
-            let themingColorText = NCCapabilities.shared.getCapabilities(account: account).capabilityThemingColorText
+            let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
+            let themingColor = capabilities.themingColor
+            let themingColorElement = capabilities.themingColorElement
+            let themingColorText = capabilities.themingColorText
 
             // THEMING COLOR
             if themingColor.first == "#" {

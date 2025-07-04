@@ -47,6 +47,38 @@ extension NCManageDatabase {
         }
     }
 
+    /// - Parameters:
+    ///   - metadata: The `tableMetadata` containing file details.
+    ///   - offline: Optional flag to mark the file as available offline.
+    /// - Returns: Nothing. Realm write is performed asynchronously.
+    func addLocalFileAsync(metadata: tableMetadata, offline: Bool? = nil) async {
+        // Read (non-blocking): safely detach from Realm thread
+        let existing: tableLocalFile? = performRealmRead { realm in
+            realm.objects(tableLocalFile.self)
+                .filter(NSPredicate(format: "ocId == %@", metadata.ocId))
+                .first
+                .map { tableLocalFile(value: $0) }
+        }
+
+        await performRealmWriteAsync { realm in
+            let addObject = existing ?? tableLocalFile()
+
+            addObject.account = metadata.account
+            addObject.etag = metadata.etag
+            addObject.exifDate = NSDate()
+            addObject.exifLatitude = "-1"
+            addObject.exifLongitude = "-1"
+            addObject.ocId = metadata.ocId
+            addObject.fileName = metadata.fileName
+
+            if let offline {
+                addObject.offline = offline
+            }
+
+            realm.add(addObject, update: .all)
+        }
+    }
+
     func addLocalFile(account: String, etag: String, ocId: String, fileName: String, sync: Bool = true) {
         performRealmWrite(sync: sync) { realm in
            let addObject = tableLocalFile()
@@ -68,6 +100,16 @@ extension NCManageDatabase {
         }
 
         performRealmWrite(sync: sync) { realm in
+            let results = realm.objects(tableLocalFile.self)
+                .filter("ocId == %@", ocId)
+            realm.delete(results)
+        }
+    }
+
+    func deleteLocalFileOcIdAsync(_ ocId: String?) async {
+        guard let ocId else { return }
+
+        await performRealmWriteAsync { realm in
             let results = realm.objects(tableLocalFile.self)
                 .filter("ocId == %@", ocId)
             realm.delete(results)
@@ -157,7 +199,7 @@ extension NCManageDatabase {
     }
 
     func getTableLocalFileAsync(predicate: NSPredicate) async -> tableLocalFile? {
-        await performRealmRead { realm in
+        await performRealmReadAsync { realm in
             realm.objects(tableLocalFile.self)
                 .filter(predicate)
                 .first
@@ -206,7 +248,7 @@ extension NCManageDatabase {
     }
 
     func getTableLocalFilesAsync(predicate: NSPredicate, sorted: String, ascending: Bool) async -> [tableLocalFile] {
-        await performRealmRead { realm in
+        await performRealmReadAsync { realm in
             realm.objects(tableLocalFile.self)
                 .filter(predicate)
                 .sorted(byKeyPath: sorted, ascending: ascending)

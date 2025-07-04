@@ -463,15 +463,18 @@ fileprivate extension AVAsset {
 
 extension NCLivePhoto {
     func setLivephotoUpload(metadata: tableMetadata) {
-        guard NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion28 else { return }
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
+        guard capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion28 else {
+            return
+        }
 
         livePhotoFile = metadata.livePhotoFile
         livePhotoFile2 = metadata.fileName
 
         if livePhotoFile.isEmpty {
-            if metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
+            if metadata.classFile == NKTypeClassFile.image.rawValue {
                 livePhotoFile = (metadata.fileName as NSString).deletingPathExtension + ".mov"
-            } else if metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
+            } else if metadata.classFile == NKTypeClassFile.video.rawValue {
                 livePhotoFile = (metadata.fileName as NSString).deletingPathExtension + ".jpg"
             }
         }
@@ -498,10 +501,13 @@ extension NCLivePhoto {
     }
 
     func setLivePhoto(metadata1: tableMetadata, metadata2: tableMetadata) {
-        guard NCCapabilities.shared.getCapabilities(account: metadata1.account).capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion28,
-              (!metadata1.livePhotoFile.isEmpty && !metadata2.livePhotoFile.isEmpty) else { return }
-
         Task {
+            let capabilities = await NKCapabilities.shared.getCapabilitiesAsync(for: metadata1.account)
+            guard capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion28,
+                  (!metadata1.livePhotoFile.isEmpty && !metadata2.livePhotoFile.isEmpty) else {
+                return
+            }
+
             if metadata1.livePhotoFile.isEmpty {
                 let serverUrlfileNamePath = metadata1.urlBase + metadata1.path + metadata1.fileName
                 _ = await NextcloudKit.shared.setLivephotoAsync(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata2.fileName, account: metadata2.account)

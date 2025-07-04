@@ -100,7 +100,6 @@ func convertDataToImage(data: Data?, size: CGSize, fileNameToWrite: String?) -> 
 func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
-    let global = NCGlobal.shared
     let dashboardItems = getDashboardItems(displaySize: displaySize, withButton: false)
     let datasPlaceholder = Array(dashboardDatasTest[0...dashboardItems - 1])
     var activeTableAccount: tableAccount?
@@ -117,7 +116,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     }
 
     guard let activeTableAccount,
-          let capabilities = NCManageDatabase.shared.setCapabilities(account: activeTableAccount.account) else {
+          let capabilities = NCManageDatabase.shared.applyCachedCapabilitiesBlocking(account: activeTableAccount.account) else {
         return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", comment: ""), account: ""))
     }
 
@@ -125,7 +124,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     let result = NCManageDatabase.shared.getDashboardWidgetApplications(account: activeTableAccount.account).first
     let id: String = configuration?.applications?.identifier ?? (result?.id ?? "recommendations")
 
-    guard capabilities.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion25 else {
+    guard capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion25 else {
         return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_widget_available_nc25_", comment: ""), account: activeTableAccount.account))
     }
 
@@ -139,7 +138,6 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                                       userId: activeTableAccount.userId,
                                       password: password,
                                       userAgent: userAgent,
-                                      nextcloudVersion: capabilities.capabilityServerVersionMajor,
                                       httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
                                       httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
                                       httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,

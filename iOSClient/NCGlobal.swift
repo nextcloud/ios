@@ -1,47 +1,13 @@
-//
-//  NCGlobal.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 22/02/21.
-//  Copyright © 2021 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2021 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
-
-/// Used for read/write in Realm
-var isAppSuspending: Bool = false
-/// Used for know if the app in in Background mode
-var isAppInBackground: Bool = false
 
 final class NCGlobal: Sendable {
     static let shared = NCGlobal()
 
-    init() {
-        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
-            isAppSuspending = true
-            isAppInBackground = true
-        }
-
-        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { _ in
-            isAppSuspending = false
-            isAppInBackground = false
-        }
-    }
+    init() { }
 
     // ENUM
     //
@@ -170,23 +136,6 @@ final class NCGlobal: Sendable {
     let buttonMoreMore                              = "more"
     let buttonMoreLock                              = "moreLock"
 
-    // Text -  OnlyOffice - Collabora - QuickLook
-    //
-    let editorText                                  = "text"
-    let editorOnlyoffice                            = "onlyoffice"
-    let editorCollabora                             = "collabora"
-    let editorQuickLook                             = "quicklook"
-
-    let onlyofficeDocx                              = "onlyoffice_docx"
-    let onlyofficeXlsx                              = "onlyoffice_xlsx"
-    let onlyofficePptx                              = "onlyoffice_pptx"
-
-    // Template
-    //
-    let templateDocument                            = "document"
-    let templateSpreadsheet                         = "spreadsheet"
-    let templatePresentation                        = "presentation"
-
     // Rich Workspace
     //
     let fileNameRichWorkspace                       = "Readme.md"
@@ -279,7 +228,6 @@ final class NCGlobal: Sendable {
     let metadataStatusWaitUpload: Int           = 1
     let metadataStatusUploading: Int            = 2
     let metadataStatusUploadError: Int          = 3
-    let metadataStatusServerUploaded: Int       = 4
 
     let metadataStatusWaitCreateFolder: Int     = 10
     let metadataStatusWaitDelete: Int           = 11
@@ -435,7 +383,9 @@ final class NCGlobal: Sendable {
     // LOG TAG
     let logTagTask                          = "BGT"
     let logTagLocation                      = "LOCATION"
-    let logTagAutoUpload                    = "AUTOUPLOAD"
+    let logTagBgSync                        = "BGSYNC"
     let logTagE2EE                          = "E2EE"
     let logTagPN                            = "PUSH NOTIF"
+    let logTagSync                          = "SYNC"
+    let logTagServiceProficer               = "SERVICE PROVIDER"
 }

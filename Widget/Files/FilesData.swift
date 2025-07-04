@@ -88,7 +88,6 @@ func getFilesItems(displaySize: CGSize) -> Int {
 func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: FilesDataEntry) -> Void) {
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
-    let global = NCGlobal.shared
     let filesItems = getFilesItems(displaySize: displaySize)
     let datasPlaceholder = Array(filesDatasTest[0...filesItems - 1])
     var activeTableAccount: tableAccount?
@@ -118,7 +117,6 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                                       userId: activeTableAccount.userId,
                                       password: password,
                                       userAgent: userAgent,
-                                      nextcloudVersion: NCCapabilities.shared.getCapabilities(account: activeTableAccount.account).capabilityServerVersionMajor,
                                       httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
                                       httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
                                       httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
@@ -200,7 +198,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 var useTypeIconFile = false
                 var image: UIImage?
 
-                if file.directory || (!file.livePhotoFile.isEmpty && file.classFile == NKCommon.TypeClassFile.video.rawValue) {
+                if file.directory || (!file.livePhotoFile.isEmpty && file.classFile == NKTypeClassFile.video.rawValue) {
                     continue
                 }
 

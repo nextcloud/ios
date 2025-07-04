@@ -37,6 +37,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     let utilityFileSystem = NCUtilityFileSystem()
     let imageCache = NCImageCache.shared
     var dataSource = NCCollectionViewDataSource()
+    let netwoking = NCNetworking.shared
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     var pinchGesture: UIPinchGestureRecognizer = UIPinchGestureRecognizer()
 
@@ -121,7 +122,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     var isRecommendationActived: Bool {
         self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session) &&
-        NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations
+        capabilities.recommendations
     }
 
     var infoLabelsSeparator: String {
@@ -137,12 +138,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     var defaultPredicate: NSPredicate {
-        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND NOT (status IN %@) AND NOT (livePhotoFile != '' AND classFile == %@)", session.account, self.serverUrl, self.global.metadataStatusHideInView, NKCommon.TypeClassFile.video.rawValue)
+        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND NOT (status IN %@) AND NOT (livePhotoFile != '' AND classFile == %@)", session.account, self.serverUrl, self.global.metadataStatusHideInView, NKTypeClassFile.video.rawValue)
         return predicate
     }
 
     var personalFilesOnlyPredicate: NSPredicate {
-        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND (ownerId == %@ || ownerId == '') AND mountType == '' AND NOT (status IN %@) AND NOT (livePhotoFile != '' AND classFile == %@)", session.account, self.serverUrl, session.userId, global.metadataStatusHideInView, NKCommon.TypeClassFile.video.rawValue)
+        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND (ownerId == %@ || ownerId == '') AND mountType == '' AND NOT (status IN %@) AND NOT (livePhotoFile != '' AND classFile == %@)", session.account, self.serverUrl, session.userId, global.metadataStatusHideInView, NKTypeClassFile.video.rawValue)
         return predicate
     }
 
@@ -164,6 +165,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     var isPinchGestureActive: Bool {
         return pinchGesture.state == .began || pinchGesture.state == .changed
+    }
+
+    var capabilities: NKCapabilities.Capabilities {
+        NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
     }
 
     internal let debouncer = NCDebouncer(delay: 1)
@@ -274,7 +279,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        NCNetworking.shared.addDelegate(self)
+        self.netwoking.addDelegate(self)
 
         NotificationCenter.default.addObserver(self, selector: #selector(applicationWillResignActive(_:)), name: UIApplication.willResignActiveNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(closeRichWorkspaceWebView), name: NSNotification.Name(rawValue: global.notificationCenterCloseRichWorkspaceWebView), object: nil)
@@ -283,19 +288,19 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        NCNetworking.shared.cancelUnifiedSearchFiles()
+        self.netwoking.cancelUnifiedSearchFiles()
         dismissTip()
 
         // Cancel Queue & Retrieves Properties
-        NCNetworking.shared.downloadThumbnailQueue.cancelAll()
-        NCNetworking.shared.unifiedSearchQueue.cancelAll()
+        self.netwoking.downloadThumbnailQueue.cancelAll()
+        self.netwoking.unifiedSearchQueue.cancelAll()
         dataSourceTask?.cancel()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        NCNetworking.shared.removeDelegate(self)
+        self.netwoking.removeDelegate(self)
 
         NotificationCenter.default.removeObserver(self, name: UIApplication.willResignActiveNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterCloseRichWorkspaceWebView), object: nil)
@@ -363,7 +368,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             } else {
                 if isRecommendationActived {
                     Task.detached {
-                        await NCNetworking.shared.createRecommendations(session: self.session, serverUrl: self.serverUrl, collectionView: self.collectionView)
+                        await self.netwoking.createRecommendations(session: self.session, serverUrl: self.serverUrl, collectionView: self.collectionView)
                     }
                 }
             }
@@ -434,9 +439,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    func transferReloadData(serverUrl: String?) {
+    func transferReloadData(serverUrl: String?, status: Int?) {
         self.debouncer.call {
             if self.isSearchingMode {
+                guard status != self.global.metadataStatusWaitDelete,
+                      status != self.global.metadataStatusWaitRename,
+                      status != self.global.metadataStatusWaitMove,
+                      status != self.global.metadataStatusWaitCopy,
+                      status != self.global.metadataStatusWaitFavorite else {
+                    return
+                }
                 self.networkSearch()
             } else if ( self.serverUrl == serverUrl) || serverUrl == nil {
                 self.reloadDataSource()
@@ -580,7 +592,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        NCNetworking.shared.cancelUnifiedSearchFiles()
+        self.netwoking.cancelUnifiedSearchFiles()
+
         self.isSearchingMode = false
         self.literalSearch = ""
         self.providers?.removeAll()
@@ -705,7 +718,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             isDirectoryEncrypted = NCUtilityFileSystem().isDirectoryE2EE(session: session, serverUrl: serverUrl)
             if isRecommendationActived {
                 Task.detached {
-                    await NCNetworking.shared.createRecommendations(session: self.session, serverUrl: self.serverUrl, collectionView: self.collectionView)
+                    await self.netwoking.createRecommendations(session: self.session, serverUrl: self.serverUrl, collectionView: self.collectionView)
                 }
             }
         }
@@ -739,8 +752,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.refreshControl.beginRefreshing()
         self.reloadDataSource()
 
-        if NCCapabilities.shared.getCapabilities(account: session.account).capabilityServerVersionMajor >= global.nextcloudVersion20 {
-            NCNetworking.shared.unifiedSearchFiles(literal: literalSearch, account: session.account) { task in
+        if capabilities.serverVersionMajor >= global.nextcloudVersion20 {
+            self.netwoking.unifiedSearchFiles(literal: literalSearch, account: session.account) { task in
                 self.dataSourceTask = task
                 self.reloadDataSource()
             } providers: { account, searchProviders in
@@ -749,14 +762,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.dataSource = NCCollectionViewDataSource(metadatas: [], layoutForView: self.layoutForView, providers: self.providers, searchResults: self.searchResults, account: account)
             } update: { _, _, searchResult, metadatas in
                 guard let metadatas, !metadatas.isEmpty, self.isSearchingMode, let searchResult else { return }
-                NCNetworking.shared.unifiedSearchQueue.addOperation(NCCollectionViewUnifiedSearch(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult))
+                self.netwoking.unifiedSearchQueue.addOperation(NCCollectionViewUnifiedSearch(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult))
             } completion: { _, _ in
                 self.refreshControlEndRefreshing()
                 self.reloadDataSource()
                 self.networkSearchInProgress = false
             }
         } else {
-            NCNetworking.shared.searchFiles(literal: literalSearch, account: session.account) { task in
+            self.netwoking.searchFiles(literal: literalSearch, account: session.account) { task in
                 self.dataSourceTask = task
                 self.reloadDataSource()
             } completion: { metadatasSearch, error in
@@ -793,7 +806,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         metadataForSection.unifiedSearchInProgress = true
         self.collectionView?.reloadData()
 
-        NCNetworking.shared.unifiedSearchFilesProvider(id: lastSearchResult.id, term: term, limit: 5, cursor: cursor, account: session.account) { task in
+        self.netwoking.unifiedSearchFilesProvider(id: lastSearchResult.id, term: term, limit: 5, cursor: cursor, account: session.account) { task in
             self.dataSourceTask = task
             self.reloadDataSource()
         } completion: { _, searchResult, metadatas, error in

@@ -27,6 +27,7 @@ import RealmSwift
 
 class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     private var metadataTemp: tableMetadata?
+    private var transferProgressMap: [String: Float] = [:]
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -61,6 +62,14 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         super.viewWillAppear(animated)
 
         reloadDataSource()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        Task {
+            await NCNetworking.shared.verifyZombie()
+        }
     }
 
     // MARK: TAP EVENT
@@ -107,9 +116,9 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         Task {
             let metadatas = await cameraRoll.extractCameraRoll(from: metadata)
             for metadata in metadatas {
-                if let metadata = self.database.setMetadataStatus(ocId: metadata.ocId,
-                                                                  status: NCGlobal.shared.metadataStatusUploading) {
-                    NCNetworking.shared.upload(metadata: metadata)
+                if let metadata = self.database.setMetadataStatusAndReturn(ocId: metadata.ocId,
+                                                                           status: NCGlobal.shared.metadataStatusUploading) {
+                    NCNetworking.shared.uploadHub(metadata: metadata)
                 }
             }
         }
@@ -152,6 +161,12 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.imageItem?.backgroundColor = nil
         cell.labelTitle.text = metadata.fileNameView
         cell.labelTitle.textColor = NCBrandColor.shared.textColor
+
+        // Restore previously cached progress for this file transfer, or reset to 0 if not found
+        let key = "\(metadata.serverUrl)|\(metadata.fileNameView)"
+        let progress = transferProgressMap[key] ?? 0
+        cell.setProgress(progress: progress)
+
         let serverUrlHome = utilityFileSystem.getHomeServer(session: session)
         var pathText = metadata.serverUrl.replacingOccurrences(of: serverUrlHome, with: "")
         if pathText.isEmpty { pathText = "/" }
@@ -240,19 +255,21 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     // MARK: - DataSource
 
     override func reloadDataSource() {
-        let predicate = NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal)
-        let sortDescriptors = [
-            RealmSwift.SortDescriptor(keyPath: "status", ascending: false),
-            RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
-        ]
+        Task.detached {
+            let predicate = NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal)
+            let sortDescriptors = [
+                RealmSwift.SortDescriptor(keyPath: "status", ascending: false),
+                RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
+            ]
 
-        self.database.getResultsMetadatas(predicate: predicate, sortDescriptors: sortDescriptors, freeze: true) { results in
-            guard let results else {
-                return self.dataSource.removeAll()
+            let metadatas = await self.database.getMetadatasAsync(predicate: predicate, sortDescriptors: sortDescriptors, limit: 100)
+            if let metadatas, !metadatas.isEmpty {
+                self.dataSource = await NCCollectionViewDataSource(metadatas: metadatas, layoutForView: self.layoutForView)
+            } else {
+                await self.dataSource.removeAll()
             }
-            self.dataSource = NCCollectionViewDataSource(metadatas: Array(results), layoutForView: self.layoutForView)
 
-            super.reloadDataSource()
+            await super.reloadDataSource()
         }
     }
 
@@ -273,7 +290,16 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         }
     }
 
+    override func transferReloadData(serverUrl: String?, status: Int?) {
+        debouncer.call {
+            self.reloadDataSource()
+        }
+    }
+
     override func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) {
+        let key = "\(serverUrl)|\(fileName)"
+        transferProgressMap[key] = progress
+
         DispatchQueue.main.async {
             for case let cell as NCTransferCell in self.collectionView.visibleCells {
                 if cell.serverUrl == serverUrl && cell.fileName == fileName {

@@ -35,17 +35,22 @@ final class NCUtility: NSObject, Sendable {
     func isTypeFileRichDocument(_ metadata: tableMetadata) -> Bool {
         guard metadata.fileNameView != "." else { return false }
         let fileExtension = (metadata.fileNameView as NSString).pathExtension
-        guard !fileExtension.isEmpty else { return false }
-        guard let mimeType = UTType(tag: fileExtension.uppercased(), tagClass: .filenameExtension, conformingTo: nil)?.identifier else { return false }
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
+        guard !fileExtension.isEmpty,
+              let mimeType = UTType(tag: fileExtension.uppercased(), tagClass: .filenameExtension, conformingTo: nil)?.identifier else {
+            return false
+        }
+
         /// contentype
-        if !NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityRichDocumentsMimetypes.filter({ $0.contains(metadata.contentType) || $0.contains("text/plain") }).isEmpty {
+        if !capabilities.richDocumentsMimetypes.filter({ $0.contains(metadata.contentType) || $0.contains("text/plain") }).isEmpty {
             return true
         }
+
         /// mimetype
-        if !NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityRichDocumentsMimetypes.isEmpty && mimeType.components(separatedBy: ".").count > 2 {
+        if !capabilities.richDocumentsMimetypes.isEmpty && mimeType.components(separatedBy: ".").count > 2 {
             let mimeTypeArray = mimeType.components(separatedBy: ".")
             let mimeType = mimeTypeArray[mimeTypeArray.count - 2] + "." + mimeTypeArray[mimeTypeArray.count - 1]
-            if !NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityRichDocumentsMimetypes.filter({ $0.contains(mimeType) }).isEmpty {
+            if !capabilities.richDocumentsMimetypes.filter({ $0.contains(mimeType) }).isEmpty {
                 return true
             }
         }
@@ -53,30 +58,32 @@ final class NCUtility: NSObject, Sendable {
     }
 
     func editorsDirectEditing(account: String, contentType: String) -> [String] {
-        var editor: [String] = []
-        guard let results = NCManageDatabase.shared.getDirectEditingEditors(account: account) else { return editor }
+        var names: [String] = []
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
 
-        for result: tableDirectEditingEditors in results {
-            for mimetype in result.mimetypes {
+        capabilities.directEditingEditors.forEach { editor in
+            editor.mimetypes.forEach { mimetype in
                 if mimetype == contentType {
-                    editor.append(result.editor)
+                    names.append(editor.name)
                 }
                 // HARDCODE
                 // https://github.com/nextcloud/text/issues/913
                 if mimetype == "text/markdown" && contentType == "text/x-markdown" {
-                    editor.append(result.editor)
+                    names.append(editor.name)
                 }
                 if contentType == "text/html" {
-                    editor.append(result.editor)
+                    names.append(editor.name)
                 }
             }
-            for mimetype in result.optionalMimetypes {
+
+            editor.optionalMimetypes.forEach { mimetype in
                 if mimetype == contentType {
-                    editor.append(result.editor)
+                    names.append(editor.name)
                 }
             }
         }
-        return Array(Set(editor))
+
+        return Array(Set(names))
     }
 
     func getCustomUserAgentNCText() -> String {

@@ -33,12 +33,16 @@ class NCRichWorkspaceCommon: NSObject {
             NCContentPresenter().showError(error: error)
             return
         }
-        guard let directEditingCreator = NCManageDatabase.shared.getDirectEditingCreators(predicate: NSPredicate(format: "account == %@ AND editor == 'text'", session.account))?.first else { return }
+
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
+        guard let textCreators = capabilities.directEditingCreators.filter({ $0.editor == "text" }).first else {
+            return
+        }
 
         NCActivityIndicator.shared.start(backgroundView: viewController.view)
 
         let fileNamePath = utilityFileSystem.getFileNamePath(NCGlobal.shared.fileNameRichWorkspace, serverUrl: serverUrl, session: session)
-        NextcloudKit.shared.textCreateFile(fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier, templateId: "", account: session.account) { _, url, _, error in
+        NextcloudKit.shared.textCreateFile(fileNamePath: fileNamePath, editorId: textCreators.editor, creatorId: textCreators.identifier, templateId: "", account: session.account) { _, url, _, error in
             NCActivityIndicator.shared.stop()
             if error == .success {
                 if let viewerRichWorkspaceWebView = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {

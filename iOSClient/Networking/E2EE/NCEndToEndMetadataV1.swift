@@ -1,23 +1,6 @@
-//
-//  NCEndToEndMetadataV1.swift
-//  Created by Marino Faggiana on 09/08/23.
-//  Copyright © 2023 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2023 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
 import UIKit
@@ -87,7 +70,7 @@ extension NCEndToEndMetadata {
     // MARK: Ecode JSON Metadata V1.2
     // --------------------------------------------------------------------------------------------
 
-    func encodeMetadataV12(account: String, serverUrl: String, ocIdServerUrl: String) -> (metadata: String?, signature: String?, counter: Int, error: NKError) {
+    func encodeMetadataV12(account: String, serverUrl: String, ocIdServerUrl: String) async -> (metadata: String?, signature: String?, counter: Int, error: NKError) {
 
         let encoder = JSONEncoder()
         var metadataKey: String = ""
@@ -99,7 +82,7 @@ extension NCEndToEndMetadata {
         let privateKey = NCKeychain().getEndToEndPrivateKey(account: account)
         var fileNameIdentifiers: [String] = []
 
-        let e2eEncryptions = self.database.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
+        let e2eEncryptions = await self.database.getE2eEncryptionsAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
 
         //
         // metadata
@@ -181,8 +164,8 @@ extension NCEndToEndMetadata {
             data.printJson()
             let jsonString = String(data: data, encoding: .utf8)
             // Updated metadata to 1.2
-            if self.database.getE2eMetadata(account: account, serverUrl: serverUrl) == nil {
-                self.database.setE2eMetadata(account: account, serverUrl: serverUrl, metadataKey: metadataKey, version: metadataVersion)
+            if await self.database.getE2eMetadataAsync(account: account, serverUrl: serverUrl) == nil {
+                await self.database.setE2eMetadataAsync(account: account, serverUrl: serverUrl, metadataKey: metadataKey, version: metadataVersion)
             }
             return (jsonString, nil, 0, NKError())
         } catch let error {
@@ -194,7 +177,7 @@ extension NCEndToEndMetadata {
     // MARK: Decode JSON Metadata V1.2
     // --------------------------------------------------------------------------------------------
 
-    func decodeMetadataV12(_ json: String, serverUrl: String, ocIdServerUrl: String, session: NCSession.Session) -> NKError {
+    func decodeMetadataV12(_ json: String, serverUrl: String, ocIdServerUrl: String, session: NCSession.Session) async -> NKError {
 
         guard let data = json.data(using: .utf8) else {
             return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: "_e2e_error_")
@@ -229,7 +212,7 @@ extension NCEndToEndMetadata {
             }
 
             // DATA
-            self.database.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
+            await self.database.deleteE2eEncryptionAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
 
             //
             // files
@@ -265,16 +248,17 @@ extension NCEndToEndMetadata {
                                 object.serverUrl = serverUrl
 
                                 // Write file parameter for decrypted on DB
-                                self.database.addE2eEncryption(object)
+                                await self.database.addE2eEncryptionAsync(object)
 
                                 // Update metadata on tableMetadata
                                 metadata.fileNameView = encrypted.filename
 
-                                let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory, account: session.account)
+                                let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory, account: session.account)
 
                                 metadata.contentType = results.mimeType
                                 metadata.iconName = results.iconName
                                 metadata.classFile = results.classFile
+                                metadata.typeIdentifier = results.typeIdentifier
 
                                 self.database.addMetadata(metadata)
                             }
@@ -323,16 +307,18 @@ extension NCEndToEndMetadata {
                                 object.serverUrl = serverUrl
 
                                 // Write file parameter for decrypted on DB
-                                self.database.addE2eEncryption(object)
+                                await self.database.addE2eEncryptionAsync(object)
 
                                 // Update metadata on tableMetadata
                                 metadata.fileNameView = encrypted.filename
 
-                                let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory, account: session.account)
+                                // Update file type
+                                let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory, account: session.account)
 
                                 metadata.contentType = results.mimeType
                                 metadata.iconName = results.iconName
                                 metadata.classFile = results.classFile
+                                metadata.typeIdentifier = results.typeIdentifier
 
                                 self.database.addMetadata(metadata)
                             }
@@ -362,7 +348,7 @@ extension NCEndToEndMetadata {
     // MARK: Decode JSON Metadata V1.1
     // --------------------------------------------------------------------------------------------
 
-    func decodeMetadataV1(_ json: String, serverUrl: String, ocIdServerUrl: String, session: NCSession.Session) -> NKError {
+    func decodeMetadataV1(_ json: String, serverUrl: String, ocIdServerUrl: String, session: NCSession.Session) async -> NKError {
 
         guard let data = json.data(using: .utf8) else {
             return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: "_e2e_error_")
@@ -382,7 +368,7 @@ extension NCEndToEndMetadata {
             metadataVersion = metadata.version
 
             // DATA
-            self.database.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
+            await self.database.deleteE2eEncryptionAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
 
             //
             // metadata
@@ -399,7 +385,7 @@ extension NCEndToEndMetadata {
             //
             // verify version
             //
-            if let tableE2eMetadata = self.database.getE2eMetadata(account: session.account, serverUrl: serverUrl) {
+            if let tableE2eMetadata = await self.database.getE2eMetadataAsync(account: session.account, serverUrl: serverUrl) {
                 if tableE2eMetadata.version > metadataVersion {
                     return NKError(errorCode: NCGlobal.shared.errorE2EEVersion, errorDescription: "Version \(tableE2eMetadata.version)")
                 }
@@ -440,16 +426,18 @@ extension NCEndToEndMetadata {
                                 object.serverUrl = serverUrl
 
                                 // Write file parameter for decrypted on DB
-                                self.database.addE2eEncryption(object)
+                                await self.database.addE2eEncryptionAsync(object)
 
                                 // Update metadata on tableMetadata
                                 metadata.fileNameView = encrypted.filename
 
-                                let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory, account: session.account)
+                                // Update file type
+                                let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory, account: session.account)
 
                                 metadata.contentType = results.mimeType
                                 metadata.iconName = results.iconName
                                 metadata.classFile = results.classFile
+                                metadata.typeIdentifier = results.typeIdentifier
 
                                 self.database.addMetadata(metadata)
                             }

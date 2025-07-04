@@ -21,6 +21,7 @@
 
 import UIKit
 import UserNotifications
+import NextcloudKit
 
 class NotificationService: UNNotificationServiceExtension {
     var contentHandler: ((UNNotificationContent) -> Void)?
@@ -31,6 +32,8 @@ class NotificationService: UNNotificationServiceExtension {
         self.contentHandler = contentHandler
         self.request = request
         bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
+
+        NextcloudKit.configureLogger(logLevel: .verbose)
 
         if let bestAttemptContent = bestAttemptContent {
             bestAttemptContent.title = ""
@@ -66,7 +69,7 @@ class NotificationService: UNNotificationServiceExtension {
                     }
                 }
             } catch let error as NSError {
-                print("Failed : \(error.localizedDescription)")
+                nkLog(error: "Failed : \(error.localizedDescription)")
             }
 
             contentHandler(bestAttemptContent)

@@ -32,11 +32,13 @@ extension NCManageDatabase {
 
     // MARK: - Realm Write
 
-    func addDashboardWidget(account: String, dashboardWidgets: [NCCDashboardWidget]) {
-        performRealmWrite { realm in
+    func addDashboardWidgetAsync(account: String, dashboardWidgets: [NCCDashboardWidget]) async {
+        await performRealmWriteAsync { realm in
+            // Remove existing widgets for the account
             realm.delete(realm.objects(tableDashboardWidget.self).filter("account == %@", account))
             realm.delete(realm.objects(tableDashboardWidgetButton.self).filter("account == %@", account))
 
+            // Insert new widgets
             for widget in dashboardWidgets {
                 let widgetObject = tableDashboardWidget()
                 widgetObject.index = "\(account) \(widget.id)"
@@ -51,6 +53,7 @@ extension NCManageDatabase {
 
                 realm.add(widgetObject, update: .all)
 
+                // Insert buttons (if present)
                 widget.button?.forEach { button in
                     let buttonObject = tableDashboardWidgetButton()
                     buttonObject.account = account
@@ -100,6 +103,18 @@ extension NCManageDatabase {
                     SortDescriptor(keyPath: "title", ascending: true)
                 ])
                 .map { tableDashboardWidget(value: $0) }
+        } ?? []
+    }
+
+    func getDashboardWidgetApplicationsAsync(account: String) async -> [tableDashboardWidget] {
+        await performRealmReadAsync { realm in
+            realm.objects(tableDashboardWidget.self)
+                .filter("account == %@", account)
+                .sorted(by: [
+                    SortDescriptor(keyPath: "order", ascending: true),
+                    SortDescriptor(keyPath: "title", ascending: true)
+                ])
+                .map { tableDashboardWidget(value: $0) } // detached copy
         } ?? []
     }
 }

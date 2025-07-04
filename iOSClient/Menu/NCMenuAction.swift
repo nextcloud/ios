@@ -106,7 +106,7 @@ extension NCMenuAction {
     }
 
     /// Delete files either from cache or from Nextcloud
-    static func deleteAction(selectedMetadatas: [tableMetadata], metadataFolder: tableMetadata? = nil, controller: NCMainTabBarController?, order: Int = 0, sender: Any?, completion: (() -> Void)? = nil) -> NCMenuAction {
+    static func deleteOrUnshareAction(selectedMetadatas: [tableMetadata], metadataFolder: tableMetadata? = nil, controller: NCMainTabBarController?, order: Int = 0, sender: Any?, completion: (() -> Void)? = nil) -> NCMenuAction {
         var titleDelete = NSLocalizedString("_delete_", comment: "")
         var message = NSLocalizedString("_want_delete_", comment: "")
         var icon = "trash"
@@ -204,7 +204,7 @@ extension NCMenuAction {
         )
     }
     /// Open view that lets the user move or copy the files within Nextcloud
-    static func moveOrCopyAction(selectedMetadatas: [tableMetadata], viewController: UIViewController, order: Int = 0, sender: Any?, completion: (() -> Void)? = nil) -> NCMenuAction {
+    static func moveOrCopyAction(selectedMetadatas: [tableMetadata], account: String, viewController: UIViewController, order: Int = 0, sender: Any?, completion: (() -> Void)? = nil) -> NCMenuAction {
         NCMenuAction(
             title: NSLocalizedString("_move_or_copy_", comment: ""),
             icon: NCUtility().loadImage(named: "rectangle.portrait.and.arrow.right", colors: [NCBrandColor.shared.iconImageColor]),
@@ -212,11 +212,12 @@ extension NCMenuAction {
             sender: sender,
             action: { _ in
                 var fileNameError: NKError?
+                let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
 
                 for metadata in selectedMetadatas {
                     if let sceneIdentifier = metadata.sceneIdentifier,
                        let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier),
-                       let checkError = FileNameValidator.checkFileName(metadata.fileNameView, account: controller.account) {
+                       let checkError = FileNameValidator.checkFileName(metadata.fileNameView, account: controller.account, capabilities: capabilities) {
 
                         fileNameError = checkError
                         break

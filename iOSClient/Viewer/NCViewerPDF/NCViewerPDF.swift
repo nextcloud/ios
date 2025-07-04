@@ -77,9 +77,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         } else if let metadata = self.metadata {
             filePath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
             pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
-            if NCNetworking.shared.isOnline {
-                navigationItem.rightBarButtonItem = UIBarButtonItem(image: NCImageCache.shared.getImageButtonMore(), style: .plain, target: self, action: #selector(openMenuMore(_:)))
-            }
+            navigationItem.rightBarButtonItem = UIBarButtonItem(image: NCImageCache.shared.getImageButtonMore(), style: .plain, target: self, action: #selector(openMenuMore(_:)))
         }
         defaultBackgroundColor = pdfView.backgroundColor
         view.backgroundColor = defaultBackgroundColor

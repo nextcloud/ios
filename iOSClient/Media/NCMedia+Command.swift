@@ -45,7 +45,7 @@ extension NCMedia {
     }
 
     func setSelectcancelButton() {
-        let assistantEnabled = NCCapabilities.shared.getCapabilities(account: session.account).capabilityAssistantEnabled
+        let assistantEnabled = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account).assistantEnabled
 
         assistantButton.isHidden = true
         fileSelect.removeAll()
@@ -109,10 +109,12 @@ extension NCMedia {
     }
 
     func createMenu() {
-        let layoutForView = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "")
-        var layout = layoutForView?.layout ?? global.mediaLayoutRatio
+        let layoutForView = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "", layout: global.mediaLayoutRatio)
+        var layout = layoutForView.layout
         /// Overwrite default value
-        if layout == global.layoutList { layout = global.mediaLayoutRatio }
+        if layout == global.layoutList {
+            layout = global.mediaLayoutRatio
+        }
         ///
         let layoutTitle = (layout == global.mediaLayoutRatio) ? NSLocalizedString("_media_square_", comment: "") : NSLocalizedString("_media_ratio_", comment: "")
         let layoutImage = (layout == global.mediaLayoutRatio) ? utility.loadImage(named: "square.grid.3x3") : utility.loadImage(named: "rectangle.grid.3x2")
@@ -179,11 +181,9 @@ extension NCMedia {
                 guard let stringUrl = alert.textFields?.first?.text, !stringUrl.isEmpty, let url = URL(string: stringUrl) else { return }
                 let fileName = url.lastPathComponent
                 let metadata = self.database.createMetadata(fileName: fileName,
-                                                            fileNameView: fileName,
                                                             ocId: NSUUID().uuidString,
                                                             serverUrl: "",
                                                             url: stringUrl,
-                                                            contentType: "",
                                                             session: self.session,
                                                             sceneIdentifier: self.controller?.sceneIdentifier)
                 self.database.addMetadata(metadata)

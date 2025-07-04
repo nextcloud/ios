@@ -47,7 +47,7 @@ protocol NCTransferDelegate: AnyObject {
 
     func transferChange(status: String, metadata: tableMetadata, error: NKError)
     func transferChange(status: String, metadatasError: [tableMetadata: NKError])
-    func transferReloadData(serverUrl: String?)
+    func transferReloadData(serverUrl: String?, status: Int?)
     func transferRequestData(serverUrl: String?)
     func transferCopy(metadata: tableMetadata, error: NKError)
     func transferMove(metadata: tableMetadata, error: NKError)
@@ -62,7 +62,7 @@ extension NCTransferDelegate {
                                    serverUrl: String) {}
     func transferChange(status: String, metadata: tableMetadata, error: NKError) {}
     func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {}
-    func transferReloadData(serverUrl: String?) {}
+    func transferReloadData(serverUrl: String?, status: Int?) {}
     func transferRequestData(serverUrl: String?) {}
     func transferCopy(metadata: tableMetadata, error: NKError) {}
     func transferMove(metadata: tableMetadata, error: NKError) {}
@@ -79,6 +79,8 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 
     let sessionDownload = NextcloudKit.shared.nkCommonInstance.identifierSessionDownload
     let sessionDownloadBackground = NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground
+    let sessionDownloadBackgroundExt = NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackgroundExt
+
     let sessionUpload = NextcloudKit.shared.nkCommonInstance.identifierSessionUpload
     let sessionUploadBackground = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground
     let sessionUploadBackgroundWWan = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundWWan
@@ -88,19 +90,21 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     let utility = NCUtility()
     let database = NCManageDatabase.shared
     let global = NCGlobal.shared
+    let backgroundSession = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance)
+
     var requestsUnifiedSearch: [DataRequest] = []
     var lastReachability: Bool = true
-    var networkReachability: NKCommon.TypeReachability?
+    var networkReachability: NKTypeReachability?
     weak var certificateDelegate: ClientCertificateDelegate?
     var p12Data: Data?
     var p12Password: String?
     var tapHudStopDelete = false
 
     var isOffline: Bool {
-        return networkReachability == NKCommon.TypeReachability.notReachable || networkReachability == NKCommon.TypeReachability.unknown
+        return networkReachability == NKTypeReachability.notReachable || networkReachability == NKTypeReachability.unknown
     }
     var isOnline: Bool {
-        return networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi || networkReachability == NKCommon.TypeReachability.reachableCellular
+        return networkReachability == NKTypeReachability.reachableEthernetOrWiFi || networkReachability == NKTypeReachability.reachableCellular
     }
 
     /// Delegate for multi scene
@@ -173,8 +177,8 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 
     // MARK: - Communication Delegate
 
-    func networkReachabilityObserver(_ typeReachability: NKCommon.TypeReachability) {
-        if typeReachability == NKCommon.TypeReachability.reachableCellular || typeReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
+    func networkReachabilityObserver(_ typeReachability: NKTypeReachability) {
+        if typeReachability == NKTypeReachability.reachableCellular || typeReachability == NKTypeReachability.reachableEthernetOrWiFi {
             lastReachability = true
         } else {
             if lastReachability {
@@ -235,45 +239,50 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     public func checkTrustedChallenge(_ session: URLSession,
                                       didReceive challenge: URLAuthenticationChallenge,
                                       completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        let protectionSpace: URLProtectionSpace = challenge.protectionSpace
+        let protectionSpace = challenge.protectionSpace
         let directoryCertificate = utilityFileSystem.directoryCertificates
-        let host = challenge.protectionSpace.host
-        let certificateSavedPath = directoryCertificate + "/" + host + ".der"
-        var isTrusted: Bool
+        let host = protectionSpace.host
+        let certificateSavedPath = (directoryCertificate as NSString).appendingPathComponent("\(host).der")
 
-        if let trust: SecTrust = protectionSpace.serverTrust,
-           let certificates = (SecTrustCopyCertificateChain(trust) as? [SecCertificate]),
-           let certificate = certificates.first {
+        guard let trust = protectionSpace.serverTrust,
+              let certificates = SecTrustCopyCertificateChain(trust) as? [SecCertificate],
+              let certificate = certificates.first else {
+            completionHandler(.performDefaultHandling, nil)
+            return
+        }
 
-            // extarct certificate txt
-            saveX509Certificate(certificate, host: host, directoryCertificate: directoryCertificate)
+        // Salvataggio asincrono → nessun rischio per il main thread
+        DispatchQueue.global(qos: .utility).async {
+            self.saveX509Certificate(certificate, host: host, directoryCertificate: directoryCertificate)
 
             let isServerTrusted = SecTrustEvaluateWithError(trust, nil)
             let certificateCopyData = SecCertificateCopyData(certificate)
             let data = CFDataGetBytePtr(certificateCopyData)
             let size = CFDataGetLength(certificateCopyData)
-            let certificateData = NSData(bytes: data, length: size)
+            let certificateData = Data(bytes: data!, count: size)
 
-            certificateData.write(toFile: directoryCertificate + "/" + host + ".tmp", atomically: true)
+            let tmpPath = (directoryCertificate as NSString).appendingPathComponent("\(host).tmp")
+            try? certificateData.write(to: URL(fileURLWithPath: tmpPath), options: .atomic)
+
+            var isTrusted = false
 
             if isServerTrusted {
                 isTrusted = true
-            } else if let certificateDataSaved = NSData(contentsOfFile: certificateSavedPath), certificateData.isEqual(to: certificateDataSaved as Data) {
+            } else if let savedData = try? Data(contentsOf: URL(fileURLWithPath: certificateSavedPath)),
+                      savedData == certificateData {
                 isTrusted = true
-            } else {
-                isTrusted = false
             }
-        } else {
-            isTrusted = false
-        }
 
-        if isTrusted {
-            completionHandler(URLSession.AuthChallengeDisposition.useCredential, URLCredential(trust: challenge.protectionSpace.serverTrust!))
-        } else {
-#if !EXTENSION
-            DispatchQueue.main.async { (UIApplication.shared.delegate as? AppDelegate)?.trustCertificateError(host: host) }
-#endif
-            completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
+            DispatchQueue.main.async {
+                if isTrusted {
+                    completionHandler(.useCredential, URLCredential(trust: trust))
+                } else {
+    #if !EXTENSION
+                    (UIApplication.shared.delegate as? AppDelegate)?.trustCertificateError(host: host)
+    #endif
+                    completionHandler(.performDefaultHandling, nil)
+                }
+            }
         }
     }
 
@@ -317,7 +326,9 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 
     func checkPushNotificationServerProxyCertificateUntrusted(viewController: UIViewController?,
                                                               completion: @escaping (_ error: NKError) -> Void) {
-        guard let host = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host else { return }
+        guard let host = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host else {
+            return
+        }
 
         NextcloudKit.shared.checkServer(serverUrl: NCBrandOptions.shared.pushNotificationServerProxy) { _, error in
             guard error == .success else {
@@ -352,58 +363,4 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     private func getActiveAccountCertificate(account: String) {
         (self.p12Data, self.p12Password) = NCKeychain().getClientCertificate(account: account)
     }
-
-    // MARK: - Util FileSystem Safe
-#if !EXTENSION
-    func removeFileInBackgroundSafe(atPath: String) {
-        var bgTask: UIBackgroundTaskIdentifier = .invalid
-
-        bgTask = UIApplication.shared.beginBackgroundTask(withName: "SafeRemove") {
-            UIApplication.shared.endBackgroundTask(bgTask)
-            bgTask = .invalid
-        }
-
-        DispatchQueue.global().async {
-            defer {
-                UIApplication.shared.endBackgroundTask(bgTask)
-                bgTask = .invalid
-            }
-
-            do {
-                try FileManager.default.removeItem(atPath: atPath)
-            } catch {
-                print("Errore nella rimozione file:", error)
-            }
-        }
-    }
-
-    func moveFileSafely(atPath: String, toPath: String) {
-        if atPath == toPath { return }
-
-        var bgTask: UIBackgroundTaskIdentifier = .invalid
-        bgTask = UIApplication.shared.beginBackgroundTask(withName: "MoveFile") {
-            UIApplication.shared.endBackgroundTask(bgTask)
-            bgTask = .invalid
-        }
-
-        DispatchQueue.global().async {
-            defer {
-                UIApplication.shared.endBackgroundTask(bgTask)
-                bgTask = .invalid
-            }
-
-            do {
-                if FileManager.default.fileExists(atPath: toPath) {
-                    try FileManager.default.removeItem(atPath: toPath)
-                }
-
-                try FileManager.default.copyItem(atPath: atPath, toPath: toPath)
-                try FileManager.default.removeItem(atPath: atPath)
-
-            } catch {
-                print("Errore nello spostamento file:", error)
-            }
-        }
-    }
-#endif
 }

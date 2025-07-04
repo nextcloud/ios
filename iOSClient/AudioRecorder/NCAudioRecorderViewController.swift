@@ -39,6 +39,7 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
     var startDate: Date = Date()
     var fileName: String = ""
     var controller: NCMainTabBarController!
+    let database = NCManageDatabase.shared
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
     }
@@ -100,11 +101,8 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
     func uploadMetadata() {
         let fileNamePath = NSTemporaryDirectory() + self.fileName
         let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName,
-                                                              fileNameView: fileName,
                                                               ocId: UUID().uuidString,
                                                               serverUrl: controller.currentServerUrl(),
-                                                              url: "",
-                                                              contentType: "",
                                                               session: self.session,
                                                               sceneIdentifier: self.controller?.sceneIdentifier)
 
@@ -114,7 +112,8 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
         metadata.sessionDate = Date()
         metadata.size = NCUtilityFileSystem().getFileSize(filePath: fileNamePath)
         NCUtilityFileSystem().copyFile(atPath: fileNamePath, toPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-        NCNetworkingProcess.shared.createProcessUploads(metadatas: [metadata])
+
+        self.database.addMetadata(metadata)
     }
 
     func audioMeterDidUpdate(_ db: Float) {

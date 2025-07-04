@@ -50,6 +50,9 @@ struct NCAutoUploadView: View {
         .onDisappear {
             model.onViewDisappear()
         }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
+            model.checkPermission()
+        }
         .alert(model.error, isPresented: $model.showErrorAlert) {
             Button(NSLocalizedString("_ok_", comment: ""), role: .cancel) { }
         }
@@ -206,6 +209,18 @@ struct NCAutoUploadView: View {
                     }
                 }, footer: {
                     Text(NSLocalizedString("_autoupload_create_subfolder_footer_", comment: ""))
+                })
+
+                /// Location
+                Section(content: {
+                    Toggle(NSLocalizedString("_enable_background_location_title_", comment: ""), isOn: $model.permissionGranted)
+                        .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+                        .opacity(model.autoUploadStart ? 0.15 : 1)
+                        .onChange(of: model.permissionGranted) { newValue in
+                            model.handleLocationChange(newValue: newValue)
+                        }
+                }, footer: {
+                    Text(NSLocalizedString("_enable_background_location_footer_", comment: ""))
                 })
             }
             .disabled(model.autoUploadStart)

@@ -1,27 +1,7 @@
-//
-//  NCShareExtension.swift
-//  Share
-//
-//  Created by Marino Faggiana on 20/04/2021.
-//  Copyright © 2021 Marino Faggiana. All rights reserved.
-//  Copyright © 2021 Henrik Storch. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//  Author Henrik Storch <henrik.storch@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2021 Marino Faggiana
+// SPDX-FileCopyrightText: 2021 Henrik Storch
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 import NextcloudKit
@@ -265,8 +245,11 @@ class NCShareExtension: UIViewController {
 
     @objc func actionCreateFolder(_ sender: Any?) {
         let alertController = UIAlertController.createFolder(serverUrl: serverUrl, session: session) { error in
-            guard error != .success else { return }
-            self.showAlert(title: "_error_createsubfolders_upload_", description: error.errorDescription)
+            if error == .success {
+                self.reloadDatasource(withLoadFolder: true)
+            } else {
+                self.showAlert(title: "_error_createsubfolders_upload_", description: error.errorDescription)
+            }
         }
         self.present(alertController, animated: true)
     }
@@ -285,6 +268,8 @@ extension NCShareExtension {
         var conflicts: [tableMetadata] = []
         var invalidNameIndexes: [Int] = []
 
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
+
         for (index, fileName) in filesName.enumerated() {
             let newFileName = FileAutoRenamer.rename(fileName, account: session.account)
 
@@ -292,7 +277,7 @@ extension NCShareExtension {
                 renameFile(oldName: fileName, newName: newFileName, account: session.account)
             }
 
-            if let fileNameError = FileNameValidator.checkFileName(newFileName, account: session.account) {
+            if let fileNameError = FileNameValidator.checkFileName(newFileName, account: session.account, capabilities: capabilities) {
                 if filesName.count == 1 {
                     showRenameFileDialog(named: fileName, account: account)
                     return
@@ -316,13 +301,12 @@ extension NCShareExtension {
         for fileName in filesName {
             let ocId = NSUUID().uuidString
             let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
-            guard utilityFileSystem.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath) else { continue }
+            guard utilityFileSystem.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath) else {
+                continue
+            }
             let metadataForUpload = self.database.createMetadata(fileName: fileName,
-                                                                 fileNameView: fileName,
                                                                  ocId: ocId,
                                                                  serverUrl: serverUrl,
-                                                                 url: "",
-                                                                 contentType: "",
                                                                  session: session,
                                                                  sceneIdentifier: nil)
 
@@ -359,14 +343,15 @@ extension NCShareExtension {
         guard uploadStarted else { return }
         guard uploadMetadata.count > counterUploaded else { return DispatchQueue.main.async { self.finishedUploading(dismissAfterUpload: dismissAfterUpload) } }
         let metadata = uploadMetadata[counterUploaded]
-        let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false, account: session.account)
-
+        let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false, account: session.account)
         metadata.contentType = results.mimeType
         metadata.iconName = results.iconName
         metadata.classFile = results.classFile
+        metadata.typeIdentifier = results.typeIdentifier
+
         // CHUNK
         var chunkSize = NCGlobal.shared.chunkSizeMBCellular
-        if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
+        if NCNetworking.shared.networkReachability == NKTypeReachability.reachableEthernetOrWiFi {
             chunkSize = NCGlobal.shared.chunkSizeMBEthernetOrWiFi
         }
         if metadata.size > chunkSize {
@@ -380,7 +365,7 @@ extension NCShareExtension {
         hud.initHudRing(view: self.view,
                         text: NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(self.filesName.count)")
 
-        NCNetworking.shared.upload(metadata: metadata, uploadE2EEDelegate: self, controller: self) {
+        NCNetworking.shared.uploadHub(metadata: metadata, uploadE2EEDelegate: self, controller: self) {
             self.hud.progress(0)
         } progressHandler: { _, _, fractionCompleted in
             self.hud.progress(fractionCompleted)

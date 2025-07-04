@@ -64,7 +64,7 @@ extension NCNetworking {
             self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { metadataFolder, metadatas in
                 storeFolder(metadataFolder)
                 self.database.updateMetadatasFiles(metadatas, serverUrl: serverUrl, account: account)
-                completion(account, tableMetadata(value: metadataFolder), metadatas, error)
+                completion(account, metadataFolder.detachedCopy(), metadatas, error)
             }
         }
     }
@@ -267,13 +267,13 @@ extension NCNetworking {
             return num
         }
 
-        func deleteLocalFile(metadata: tableMetadata) {
-            if let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata) {
-                self.database.deleteLocalFileOcId(metadataLive.ocId)
+        func deleteLocalFile(metadata: tableMetadata) async {
+            if let metadataLive = await self.database.getMetadataLivePhotoAsync(metadata: metadata) {
+                await self.database.deleteLocalFileOcIdAsync(metadataLive.ocId)
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId))
             }
-            self.database.deleteVideo(metadata: metadata)
-            self.database.deleteLocalFileOcId(metadata.ocId)
+            await self.database.deleteVideoAsync(metadata: metadata)
+            await self.database.deleteLocalFileOcIdAsync(metadata.ocId)
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
 #if !EXTENSION
             NCImageCache.shared.removeImageCache(ocIdPlusEtag: metadata.ocId + metadata.etag)
@@ -291,22 +291,23 @@ extension NCNetworking {
             }
 #endif
             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-            let metadatas = self.database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, serverUrl))
-            let total = Float(metadatas.count)
-            for metadata in metadatas {
-                deleteLocalFile(metadata: metadata)
-                let num = numIncrement()
-                ncHud.progress(num: num, total: total)
-                if tapHudStopDelete { break }
+            if let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, serverUrl)) {
+                let total = Float(metadatas.count)
+                for metadata in metadatas {
+                    await deleteLocalFile(metadata: metadata)
+                    let num = numIncrement()
+                    ncHud.progress(num: num, total: total)
+                    if tapHudStopDelete { break }
             }
+        }
 #if !EXTENSION
             ncHud.dismiss()
 #endif
         } else {
-            deleteLocalFile(metadata: metadata)
+            await deleteLocalFile(metadata: metadata)
 
             self.notifyAllDelegates { delegate in
-                delegate.transferReloadData(serverUrl: metadata.serverUrl)
+                delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
             }
         }
 
@@ -332,8 +333,9 @@ extension NCNetworking {
             }
         }
 
-#if !EXTENSION
         if !metadatasE2EE.isEmpty {
+#if !EXTENSION
+
             if isOffline {
                 return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_offline_not_allowed_"))
             }
@@ -352,9 +354,9 @@ extension NCNetworking {
                 for metadata in metadatasE2EE {
                     let error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
                     if error == .success {
-                        metadatasError[tableMetadata(value: metadata)] = .success
+                        metadatasError[metadata.detachedCopy()] = .success
                     } else {
-                        metadatasError[tableMetadata(value: metadata)] = error
+                        metadatasError[metadata.detachedCopy()] = error
                     }
                     let num = numIncrement()
                     ncHud.progress(num: num, total: total)
@@ -366,25 +368,40 @@ extension NCNetworking {
                 }
                 ncHud.dismiss()
             }
-        }
 #endif
+        } else {
+            var ocIds = Set<String>()
+            var serverUrls = Set<String>()
 
-        for metadata in metadatasPlain {
-            let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanDelete)
-            if (!metadata.permissions.isEmpty && permission == false) || (metadata.status != global.metadataStatusNormal) {
-                return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_delete_file_"))
-            }
-
-            if metadata.status == global.metadataStatusWaitCreateFolder {
-                let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", metadata.account, metadata.serverUrl))
-                for metadata in metadatas {
-                    database.deleteMetadataOcId(metadata.ocId)
-                    utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+            for metadata in metadatasPlain {
+                let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanDelete)
+                if (!metadata.permissions.isEmpty && permission == false) || (metadata.status != global.metadataStatusNormal) {
+                    return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_delete_file_"))
                 }
-                return
+
+                if metadata.status == global.metadataStatusWaitCreateFolder {
+                    let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", metadata.account, metadata.serverUrl))
+                    for metadata in metadatas {
+                        database.deleteMetadataOcId(metadata.ocId)
+                        utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                    }
+                    return
+                }
+
+                ocIds.insert(metadata.ocId)
+                serverUrls.insert(metadata.serverUrl)
             }
-            self.database.setMetadataStatus(ocId: metadata.ocId,
-                                            status: NCGlobal.shared.metadataStatusWaitDelete)
+
+            self.notifyAllDelegates { delegate in
+                Task {
+                    let status = self.global.metadataStatusWaitDelete
+                    await self.database.setMetadataStatusAsync(ocIds: Array(ocIds),
+                                                               status: status)
+                    serverUrls.forEach { serverUrl in
+                        delegate.transferReloadData(serverUrl: serverUrl, status: status)
+                    }
+                }
+            }
         }
     }
 
@@ -410,7 +427,13 @@ extension NCNetworking {
             }
 #endif
         } else {
-            self.database.renameMetadata(fileNameNew: fileNameNew, ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusWaitRename)
+            self.notifyAllDelegates { delegate in
+                Task {
+                    let status = self.global.metadataStatusWaitRename
+                    await self.database.renameMetadataAsync(fileNameNew: fileNameNew, ocId: metadata.ocId, status: status)
+                    delegate.transferReloadData(serverUrl: metadata.serverUrl, status: status)
+                }
+            }
         }
     }
 
@@ -424,7 +447,13 @@ extension NCNetworking {
             return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_"))
         }
 
-        self.database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: serverUrlTo, overwrite: overwrite.description, status: NCGlobal.shared.metadataStatusWaitMove)
+        self.notifyAllDelegates { delegate in
+            Task {
+                let status = self.global.metadataStatusWaitMove
+                await self.database.setMetadataCopyMoveAsync(ocId: metadata.ocId, serverUrlTo: serverUrlTo, overwrite: overwrite.description, status: status)
+                delegate.transferReloadData(serverUrl: metadata.serverUrl, status: status)
+            }
+        }
     }
 
     // MARK: - Copy
@@ -437,7 +466,13 @@ extension NCNetworking {
             return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_"))
         }
 
-        self.database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: serverUrlTo, overwrite: overwrite.description, status: NCGlobal.shared.metadataStatusWaitCopy)
+        self.notifyAllDelegates { delegate in
+            Task {
+                let status = self.global.metadataStatusWaitCopy
+                await self.database.setMetadataCopyMoveAsync(ocId: metadata.ocId, serverUrlTo: serverUrlTo, overwrite: overwrite.description, status: status)
+                delegate.transferReloadData(serverUrl: metadata.serverUrl, status: status)
+            }
+        }
     }
 
     // MARK: - Favorite
@@ -448,12 +483,12 @@ extension NCNetworking {
             return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_favorite_file_"))
         }
 
-        self.database.setMetadataFavorite(ocId: metadata.ocId, favorite: !metadata.favorite, saveOldFavorite: metadata.favorite.description, status: global.metadataStatusWaitFavorite)
-
-        notifyAllDelegates { delegate in
-            delegate.transferChange(status: self.global.networkingStatusFavorite,
-                                    metadata: metadata,
-                                    error: .success)
+        self.notifyAllDelegates { delegate in
+            Task {
+                let status = self.global.metadataStatusWaitFavorite
+                await self.database.setMetadataFavoriteAsync(ocId: metadata.ocId, favorite: !metadata.favorite, saveOldFavorite: metadata.favorite.description, status: status)
+                delegate.transferReloadData(serverUrl: metadata.serverUrl, status: status)
+            }
         }
     }
 
@@ -472,7 +507,7 @@ extension NCNetworking {
                 self.database.addMetadata(metadata)
 
                 self.notifyAllDelegates { delegate in
-                    delegate.transferReloadData(serverUrl: metadata.serverUrl)
+                    delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
                 }
             }
         }
@@ -559,7 +594,9 @@ extension NCNetworking {
         } providers: { account, searchProviders in
             providers(account, searchProviders)
         } update: { account, partialResult, provider, _ in
-            guard let partialResult = partialResult else { return }
+            guard let partialResult = partialResult else {
+                return
+            }
             var metadatas: [tableMetadata] = []
 
             switch provider.id {
@@ -600,15 +637,12 @@ extension NCNetworking {
             default:
                 partialResult.entries.forEach({ entry in
                     let metadata = self.database.createMetadata(fileName: entry.title,
-                                                                fileNameView: entry.title,
                                                                 ocId: NSUUID().uuidString,
                                                                 serverUrl: session.urlBase,
                                                                 url: entry.resourceURL,
-                                                                contentType: "",
                                                                 isUrl: true,
                                                                 name: partialResult.id,
                                                                 subline: entry.subline,
-                                                                iconName: entry.icon,
                                                                 iconUrl: entry.thumbnailURL,
                                                                 session: session,
                                                                 sceneIdentifier: nil)
@@ -672,15 +706,12 @@ extension NCNetworking {
             default:
                 searchResult.entries.forEach({ entry in
                     let newMetadata = self.database.createMetadata(fileName: entry.title,
-                                                                   fileNameView: entry.title,
                                                                    ocId: NSUUID().uuidString,
                                                                    serverUrl: session.urlBase,
                                                                    url: entry.resourceURL,
-                                                                   contentType: "",
                                                                    isUrl: true,
                                                                    name: searchResult.name.lowercased(),
                                                                    subline: entry.subline,
-                                                                   iconName: entry.icon,
                                                                    iconUrl: entry.thumbnailURL,
                                                                    session: session,
                                                                    sceneIdentifier: nil)

@@ -32,11 +32,12 @@ extension NCViewer {
         var actions = [NCMenuAction]()
         let localFile = self.database.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         let isOffline = localFile?.offline == true
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
 
         //
         // DETAIL
         //
-        if !NCCapabilities.shared.disableSharesView(account: metadata.account) {
+        if !(!capabilities.fileSharingApiEnabled && !capabilities.filesComments && capabilities.activity.isEmpty) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
@@ -131,7 +132,7 @@ extension NCViewer {
                     action: { _ in
                         if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                             NCNetworking.shared.notifyAllDelegates { delegate in
-                                let metadata = tableMetadata(value: metadata)
+                                let metadata = metadata.detachedCopy()
                                 metadata.sessionSelector = NCGlobal.shared.selectorSaveAsScan
                                 delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
                                                         metadata: metadata,
@@ -220,7 +221,7 @@ extension NCViewer {
                     action: { _ in
                         if self.utilityFileSystem.fileProviderStorageExists(metadata) {
                             NCNetworking.shared.notifyAllDelegates { delegate in
-                                let metadata = tableMetadata(value: metadata)
+                                let metadata = metadata.detachedCopy()
                                 metadata.sessionSelector = NCGlobal.shared.selectorLoadFileQuickLook
                                 delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
                                                         metadata: metadata,
@@ -243,7 +244,7 @@ extension NCViewer {
         // DELETE
         //
         if !webView, metadata.isDeletable {
-            actions.append(.deleteAction(selectedMetadatas: [metadata], metadataFolder: nil, controller: controller, sender: sender))
+            actions.append(.deleteOrUnshareAction(selectedMetadatas: [metadata], metadataFolder: nil, controller: controller, sender: sender))
         }
 
         controller.presentMenu(with: actions, sender: sender)

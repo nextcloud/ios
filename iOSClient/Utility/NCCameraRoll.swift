@@ -68,24 +68,21 @@ final class NCCameraRoll: CameraRollExtractor {
         }
 
         var metadatas: [tableMetadata] = []
-        let metadataSource = tableMetadata(value: metadata)
+        let metadataSource = metadata.detachedCopy()
         let chunkSize = NCNetworking.shared.networkReachability == .reachableEthernetOrWiFi
             ? NCGlobal.shared.chunkSizeMBEthernetOrWiFi
             : NCGlobal.shared.chunkSizeMBCellular
 
         guard !metadataSource.assetLocalIdentifier.isEmpty else {
             let filePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadataSource.ocId, fileNameView: metadataSource.fileName)
-            let results = NextcloudKit.shared.nkCommonInstance.getInternalType(
-                fileName: metadataSource.fileNameView,
-                mimeType: metadataSource.contentType,
-                directory: false,
-                account: metadataSource.account
-            )
+            let results = await NKTypeIdentifiers.shared.getInternalType(fileName: metadataSource.fileNameView, mimeType: metadataSource.contentType, directory: false, account: metadataSource.account)
 
-            metadataSource.size = utilityFileSystem.getFileSize(filePath: filePath)
             metadataSource.contentType = results.mimeType
             metadataSource.iconName = results.iconName
             metadataSource.classFile = results.classFile
+            metadataSource.typeIdentifier = results.typeIdentifier
+
+            metadataSource.size = utilityFileSystem.getFileSize(filePath: filePath)
 
             if let date = utilityFileSystem.getFileCreationDate(filePath: filePath) {
                 metadataSource.creationDate = date
@@ -100,7 +97,7 @@ final class NCCameraRoll: CameraRollExtractor {
             }
             metadataSource.isExtractFile = true
 
-            metadatas.append(self.database.addMetadata(metadataSource))
+            metadatas.append(self.database.addAndReturnMetadata(metadataSource))
             return metadatas
         }
 
@@ -117,7 +114,7 @@ final class NCCameraRoll: CameraRollExtractor {
             let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadataSource.assetLocalIdentifier], options: nil)
             if result.metadata.isLivePhoto, let asset = fetchAssets.firstObject,
                let livePhotoMetadata = await createMetadataLivePhoto(metadata: result.metadata, asset: asset) {
-                metadatas.append(self.database.addMetadata(livePhotoMetadata))
+                metadatas.append(self.database.addAndReturnMetadata(livePhotoMetadata))
             }
         } catch {
             nkLog(error: "Error during extraction: \(error.localizedDescription), of filename: \(metadataSource.fileNameView)")
@@ -158,7 +155,7 @@ final class NCCameraRoll: CameraRollExtractor {
         metadata originalMetadata: tableMetadata,
         modifyMetadataForUpload: Bool
     ) async throws -> ExtractedAsset {
-        var metadata = tableMetadata(value: originalMetadata)
+        var metadata = originalMetadata.detachedCopy()
 
         // Determine the appropriate chunk size based on the current network connection
         let chunkSize = NCNetworking.shared.networkReachability == .reachableEthernetOrWiFi
@@ -249,7 +246,7 @@ final class NCCameraRoll: CameraRollExtractor {
             metadata.session = NCNetworking.shared.sessionUpload
         }
         metadata.isExtractFile = true
-        metadata = self.database.addMetadata(metadata)
+        metadata = self.database.addAndReturnMetadata(metadata)
     }
 
     private func extractImage(asset: PHAsset, ext: String, filePath: String, compatibilityFormat: Bool) async throws {
@@ -393,21 +390,14 @@ final class NCCameraRoll: CameraRollExtractor {
                     continuation.resume(returning: nil)
                     return
                 }
-
                 let session = NCSession.shared.getSession(account: metadata.account)
-                let metadataLivePhoto = self.database.createMetadata(
-                    fileName: fileName,
-                    fileNameView: fileName,
-                    ocId: ocId,
-                    serverUrl: metadata.serverUrl,
-                    url: "",
-                    contentType: "",
-                    session: session,
-                    sceneIdentifier: metadata.sceneIdentifier
-                )
+                let metadataLivePhoto = self.database.createMetadata(fileName: fileName,
+                                                                     ocId: ocId,
+                                                                     serverUrl: metadata.serverUrl,
+                                                                     session: session,
+                                                                     sceneIdentifier: metadata.sceneIdentifier)
 
                 metadataLivePhoto.livePhotoFile = metadata.fileName
-                metadataLivePhoto.classFile = NKCommon.TypeClassFile.video.rawValue
                 metadataLivePhoto.isExtractFile = true
                 metadataLivePhoto.session = metadata.session
                 metadataLivePhoto.sessionSelector = metadata.sessionSelector

@@ -16,7 +16,7 @@ class NCMetadataPermissions: NSObject {
     static let permissionFileCanWrite = "W"
     static let permissionCanCreateFile = "C"
     static let permissionCanCreateFolder = "K"
-    static let permissionCanDelete = "D"
+    static let permissionCanDeleteOrUnshare = "D"
     static let permissionCanRename = "N"
     static let permissionCanMove = "V"
 
@@ -29,7 +29,7 @@ class NCMetadataPermissions: NSObject {
     }
 
     static func canDelete(_ metadata: tableMetadata) -> Bool {
-        return metadata.permissions.contains(permissionCanDelete)
+        return metadata.permissions.contains(permissionCanDeleteOrUnshare)
     }
 
     static func permissionsContainsString(_ metadataPermissions: String, permissions: String) -> Bool {

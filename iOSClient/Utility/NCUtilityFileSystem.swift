@@ -221,6 +221,19 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         return false
     }
 
+    func isDirectoryE2EEAsync(file: NKFile) async -> Bool {
+        let session = NCSession.Session(account: file.account, urlBase: file.urlBase, user: file.user, userId: file.userId)
+        return await isDirectoryE2EEAsync(session: session, serverUrl: file.serverUrl)
+    }
+
+    func isDirectoryE2EEAsync(session: NCSession.Session, serverUrl: String) async -> Bool {
+        if serverUrl == getHomeServer(session: session) || serverUrl == ".." { return false }
+        if let directory = await NCManageDatabase.shared.getTableDirectoryAsync(account: session.account, serverUrl: serverUrl) {
+            return directory.e2eEncrypted
+        }
+        return false
+    }
+
     func isDirectoryE2EETop(account: String, serverUrl: String) -> Bool {
         guard let serverUrl = serverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return false }
 
@@ -233,20 +246,18 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         return true
     }
 
-    func getDirectoryE2EETop(serverUrl: String, account: String) -> tableDirectory? {
+    func getDirectoryE2EETopAsync(serverUrl: String, account: String) async -> tableDirectory? {
         guard var serverUrl = serverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return nil }
         var top: tableDirectory?
 
         while let url = URL(string: serverUrl)?.deletingLastPathComponent(),
               let serverUrlencoding = serverUrl.removingPercentEncoding,
-              let directory = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: serverUrlencoding) {
-
+              let directory = await NCManageDatabase.shared.getTableDirectoryAsync(account: account, serverUrl: serverUrlencoding) {
             if directory.e2eEncrypted {
                 top = directory
             } else {
                 return top
             }
-
             serverUrl = String(url.absoluteString.dropLast())
         }
 
@@ -386,7 +397,27 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         try? FileManager.default.linkItem(atPath: atPath, toPath: toPath)
     }
 
-    // MARK: - 
+    /// Asynchronously returns the size (in bytes) of the file at the given path.
+    /// - Parameter path: Full file system path as a String.
+    /// - Returns: Size in bytes, or `0` if the file doesn't exist or can't be accessed.
+    func fileSizeAsync(atPath path: String) async -> Int64 {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .utility).async {
+                do {
+                    let attributes = try FileManager.default.attributesOfItem(atPath: path)
+                    if let size = attributes[.size] as? NSNumber {
+                        continuation.resume(returning: size.int64Value)
+                    } else {
+                        continuation.resume(returning: 0)
+                    }
+                } catch {
+                    continuation.resume(returning: 0)
+                }
+            }
+        }
+    }
+
+    // MARK: -
 
     func getHomeServer(session: NCSession.Session) -> String {
         return getHomeServer(urlBase: session.urlBase, userId: session.userId)

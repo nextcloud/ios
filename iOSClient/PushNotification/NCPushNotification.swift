@@ -33,10 +33,10 @@ class NCPushNotification {
                                 cleanAllNotifications()
                             }
                         } else {
-                            nkLog(tag: self.global.logTagPN, emonji: .error, message: "Failed to convert JSON data dictionary.")
+                            nkLog(tag: self.global.logTagPN, emoji: .error, message: "Failed to convert JSON data dictionary.")
                         }
                     } catch {
-                        nkLog(tag: self.global.logTagPN, emonji: .error, message: "Failed to parsing JSON data dictionary.")
+                        nkLog(tag: self.global.logTagPN, emoji: .error, message: "Failed to parsing JSON data dictionary.")
                     }
                 }
             }
@@ -60,22 +60,22 @@ class NCPushNotification {
                 let userAgent = String(format: "%@  (Strict VoIP)", NCBrandOptions.shared.getUserAgent())
                 let options = NKRequestOptions(customUserAgent: userAgent)
 
-                nkLog(tag: self.global.logTagPN, emonji: .info, message: "Subscribed to Push Notification Server \(account)")
+                nkLog(tag: self.global.logTagPN, emoji: .info, message: "Subscribed to Push Notification Server \(account)")
 
                 NextcloudKit.shared.subscribingPushProxy(proxyServerUrl: proxyServerPath, pushToken: pushKitToken, deviceIdentifier: deviceIdentifier, signature: signature, publicKey: publicKey, account: account, options: options) { account, _, error in
                     if error == .success {
-                        nkLog(tag: self.global.logTagPN, emonji: .info, message: "Subscribed to Push Notification Server Proxy \(account)")
+                        nkLog(tag: self.global.logTagPN, emoji: .info, message: "Subscribed to Push Notification Server Proxy \(account)")
 
                         self.keychain.setPushNotificationToken(account: account, token: pushKitToken)
                         self.keychain.setPushNotificationDeviceIdentifier(account: account, deviceIdentifier: deviceIdentifier)
                         self.keychain.setPushNotificationDeviceIdentifierSignature(account: account, deviceIdentifierSignature: signature)
                         self.keychain.setPushNotificationSubscribingPublicKey(account: account, publicKey: publicKey)
                     } else {
-                        nkLog(tag: self.global.logTagPN, emonji: .error, message: "Subscribed to Push Notification Server Proxy with error \(error.errorDescription) \(account)")
+                        nkLog(tag: self.global.logTagPN, emoji: .error, message: "Subscribed to Push Notification Server Proxy with error \(error.errorDescription) \(account)")
                     }
                 }
             } else {
-                nkLog(tag: self.global.logTagPN, emonji: .error, message: "Subscribed to Push Notification Server with error \(error.errorDescription) \(account)")
+                nkLog(tag: self.global.logTagPN, emoji: .error, message: "Subscribed to Push Notification Server with error \(error.errorDescription) \(account)")
             }
         }
     }
@@ -87,20 +87,20 @@ class NCPushNotification {
 
         NextcloudKit.shared.unsubscribingPushNotification(serverUrl: urlBase, account: account) { _, _, error in
             if error == .success {
-                nkLog(tag: self.global.logTagPN, emonji: .info, message: "Unsubscribed to Push Notification Server \(account)")
+                nkLog(tag: self.global.logTagPN, emoji: .info, message: "Unsubscribed to Push Notification Server \(account)")
 
                 let userAgent = String(format: "%@  (Strict VoIP)", NCBrandOptions.shared.getUserAgent())
                 let options = NKRequestOptions(customUserAgent: userAgent)
 
                 NextcloudKit.shared.unsubscribingPushProxy(proxyServerUrl: NCBrandOptions.shared.pushNotificationServerProxy, deviceIdentifier: deviceIdentifier, signature: signature, publicKey: publicKey, account: account, options: options) { _, _, error in
                     if error == .success {
-                        nkLog(tag: self.global.logTagPN, emonji: .info, message: "Unsubscribed to Push Notification Server Proxy \(account)")
+                        nkLog(tag: self.global.logTagPN, emoji: .info, message: "Unsubscribed to Push Notification Server Proxy \(account)")
                     } else {
-                        nkLog(tag: self.global.logTagPN, emonji: .error, message: "Unsubscribed to Push Notification Server Proxy with error \(error.errorDescription) \(account)")
+                        nkLog(tag: self.global.logTagPN, emoji: .error, message: "Unsubscribed to Push Notification Server Proxy with error \(error.errorDescription) \(account)")
                     }
                 }
             } else {
-                nkLog(tag: self.global.logTagPN, emonji: .error, message: "Unsubscribed to Push Notification Server with error \(error.errorDescription) \(account)")
+                nkLog(tag: self.global.logTagPN, emoji: .error, message: "Unsubscribed to Push Notification Server with error \(error.errorDescription) \(account)")
             }
         }
     }
@@ -119,10 +119,10 @@ class NCPushNotification {
                                 UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [request.identifier])
                             }
                         } else {
-                            nkLog(tag: self.global.logTagPN, emonji: .error, message: "Failed to convert JSON data dictionary.")
+                            nkLog(tag: self.global.logTagPN, emoji: .error, message: "Failed to convert JSON data dictionary.")
                         }
                     } catch {
-                        nkLog(tag: self.global.logTagPN, emonji: .error, message: "Failed to parsing JSON data dictionary.")
+                        nkLog(tag: self.global.logTagPN, emoji: .error, message: "Failed to parsing JSON data dictionary.")
                     }
                 }
             }
@@ -140,10 +140,10 @@ class NCPushNotification {
                                 UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [notification.request.identifier])
                             }
                         } else {
-                            nkLog(tag: self.global.logTagPN, emonji: .error, message: "Failed to convert JSON data dictionary.")
+                            nkLog(tag: self.global.logTagPN, emoji: .error, message: "Failed to convert JSON data dictionary.")
                         }
                     } catch {
-                        nkLog(tag: self.global.logTagPN, emonji: .error, message: "Failed to parsing JSON data dictionary.")
+                        nkLog(tag: self.global.logTagPN, emoji: .error, message: "Failed to parsing JSON data dictionary.")
                     }
                 }
             }

@@ -1,7 +1,8 @@
 NSCameraUsageDescription = "Camera access is required to scan documents and make photo and video.";
 NSFaceIDUsageDescription = "Face ID is required to authenticate using face recognition.";
-NSLocationAlwaysUsageDescription = "The app will show your location on a map.";
+NSLocationAlwaysUsageDescription = "The app uses your location to automatically trigger file uploads when you move between areas.";
 NSPhotoLibraryUsageDescription = "Photo library access is required to upload your photos and videos to your cloud.";
 NSPhotoLibraryAddUsageDescription = "Photo library access is required to upload your photos and videos to your cloud.";
 NSMicrophoneUsageDescription = "Microphone access is required to create voice notes.";
-NSLocationWhenInUseUsageDescription = "The app will show your location on a map.";
+NSLocationWhenInUseUsageDescription = "This app uses your location to detect movement and automatically upload files. It does not use GPS and does not store your location.";
+NSLocationAlwaysAndWhenInUseUsageDescription = "This app needs access to your location even in the background to automatically start uploading files when significant movement is detected. GPS is not used.";

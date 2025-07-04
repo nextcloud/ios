@@ -196,7 +196,7 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
                                 for case let cell as NCRecommendationsCell in self.collectionViewRecommendations.visibleCells {
                                     if cell.id == recommendedFiles.id {
                                         cell.image.contentMode = .scaleAspectFill
-                                        if metadata.classFile == NKCommon.TypeClassFile.document.rawValue {
+                                        if metadata.classFile == NKTypeClassFile.document.rawValue {
                                             cell.setImageCorner(withBorder: true)
                                         }
                                         UIView.transition(with: cell.image, duration: 0.75, options: .transitionCrossDissolve, animations: {
@@ -211,7 +211,7 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
                 }
             }
 
-            if metadata.hasPreview, metadata.classFile == NKCommon.TypeClassFile.document.rawValue, imagePreview != nil {
+            if metadata.hasPreview, metadata.classFile == NKTypeClassFile.document.rawValue, imagePreview != nil {
                 cell.setImageCorner(withBorder: true)
             } else {
                 cell.setImageCorner(withBorder: false)
@@ -243,7 +243,7 @@ extension NCSectionFirstHeader: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         let recommendedFiles = self.recommendations[indexPath.row]
         guard let metadata = NCManageDatabase.shared.getMetadataFromFileId(recommendedFiles.id),
-              metadata.classFile != NKCommon.TypeClassFile.url.rawValue,
+              metadata.classFile != NKTypeClassFile.url.rawValue,
               let viewController else {
             return nil
         }
@@ -256,7 +256,7 @@ extension NCSectionFirstHeader: UICollectionViewDelegate {
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
             return NCViewerProviderContextMenu(metadata: metadata, image: image, sceneIdentifier: self.sceneIdentifier)
         }, actionProvider: { _ in
-            let contextMenu = NCContextMenu(metadata: tableMetadata(value: metadata), viewController: viewController, sceneIdentifier: self.sceneIdentifier, image: image)
+            let contextMenu = NCContextMenu(metadata: metadata.detachedCopy(), viewController: viewController, sceneIdentifier: self.sceneIdentifier, image: image)
             return contextMenu.viewMenu()
         })
 #endif

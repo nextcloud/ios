@@ -89,7 +89,7 @@ class NCCollectionViewDataSource: NSObject {
     internal func createSections() {
         for metadata in self.metadatas {
             /// skipped livePhoto VIDEO part
-            if metadata.isLivePhoto, metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
+            if metadata.isLivePhoto, metadata.classFile == NKTypeClassFile.video.rawValue {
                 continue
             }
             let section = NSLocalizedString(self.getSectionValue(metadata: metadata), comment: "")
@@ -290,7 +290,7 @@ class NCCollectionViewDataSource: NSObject {
         if !metadatasForSection.isEmpty, indexPath.section < metadatasForSection.count {
             if let metadataForSection = getMetadataForSection(indexPath.section),
                indexPath.row < metadataForSection.metadatas.count {
-                return tableMetadata(value: metadataForSection.metadatas[indexPath.row])
+                return metadataForSection.metadatas[indexPath.row].detachedCopy()
             }
         } else if indexPath.row < self.metadatas.count {
             return metadataIndexPath[indexPath]
@@ -303,9 +303,9 @@ class NCCollectionViewDataSource: NSObject {
         var counter: Int = 0
 
         for metadata in metadatas {
-            let metadata = tableMetadata(value: metadata)
+            let metadata = metadata.detachedCopy()
             let indexPath = IndexPath(row: counter, section: 0)
-            self.metadataIndexPath[indexPath] = tableMetadata(value: metadata)
+            self.metadataIndexPath[indexPath] = metadata.detachedCopy()
 
             /// caching preview
             ///
@@ -462,7 +462,7 @@ class NCMetadataForSection: NSObject {
 
             // skipped livePhoto VIDEO part
             if metadata.isLivePhoto,
-               metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
+               metadata.classFile == NKTypeClassFile.video.rawValue {
                 continue
             }
 

@@ -56,8 +56,37 @@ extension NCManageDatabase {
         }
     }
 
+    func addDirectoryAsync(e2eEncrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String? = nil, permissions: String? = nil, richWorkspace: String? = nil, serverUrl: String, account: String) async {
+        await performRealmWriteAsync { realm in
+            if let existing = realm.objects(tableDirectory.self)
+                .filter("account == %@ AND ocId == %@", account, ocId)
+                .first {
+
+                existing.e2eEncrypted = e2eEncrypted
+                existing.favorite = favorite
+                if let etag { existing.etag = etag }
+                if let permissions { existing.permissions = permissions }
+                if let richWorkspace { existing.richWorkspace = richWorkspace }
+
+            } else {
+                let directory = tableDirectory()
+                directory.e2eEncrypted = e2eEncrypted
+                directory.favorite = favorite
+                directory.ocId = ocId
+                directory.fileId = fileId
+                if let etag { directory.etag = etag }
+                if let permissions { directory.permissions = permissions }
+                if let richWorkspace { directory.richWorkspace = richWorkspace }
+                directory.serverUrl = serverUrl
+                directory.account = account
+
+                realm.add(directory, update: .modified)
+            }
+        }
+    }
+
     func addDirectories(metadatas: [tableMetadata], sync: Bool = true) {
-        let detached = metadatas.map { tableMetadata(value: $0) }
+        let detached = metadatas.map { $0.detachedCopy() }
 
         performRealmWrite(sync: sync) { realm in
             for metadata in detached {
@@ -89,8 +118,10 @@ extension NCManageDatabase {
     }
 
     func addDirectoriesAsync(metadatas: [tableMetadata]) async {
-        await performRealmWrite { realm in
-            for metadata in metadatas {
+        let detached = metadatas.map { $0.detachedCopy() }
+
+        await performRealmWriteAsync { realm in
+            for metadata in detached {
                 let existing = realm.objects(tableDirectory.self)
                     .filter("account == %@ AND ocId == %@", metadata.account, metadata.ocId)
                     .first
@@ -150,6 +181,27 @@ extension NCManageDatabase {
         }
     }
 
+    func deleteDirectoryAndSubDirectoryAsync(serverUrl: String, account: String) async {
+        await performRealmWriteAsync { realm in
+            let directories = realm.objects(tableDirectory.self)
+                .filter("account == %@ AND serverUrl BEGINSWITH %@", account, serverUrl)
+
+            for directory in directories {
+                let metadatas = realm.objects(tableMetadata.self)
+                    .filter("account == %@ AND serverUrl == %@", account, directory.serverUrl)
+
+                let ocIds = Array(metadatas.map(\.ocId))
+                let localFiles = realm.objects(tableLocalFile.self)
+                    .filter("ocId IN %@", ocIds)
+
+                realm.delete(localFiles)
+                realm.delete(metadatas)
+            }
+
+            realm.delete(directories)
+        }
+    }
+
     func setDirectory(serverUrl: String, serverUrlTo: String? = nil, etag: String? = nil, ocId: String? = nil, fileId: String? = nil, encrypted: Bool, richWorkspace: String? = nil, account: String) {
         performRealmWrite { realm in
             if let result = realm.objects(tableDirectory.self)
@@ -177,8 +229,47 @@ extension NCManageDatabase {
         }
     }
 
+    func setDirectoryAsync(serverUrl: String, serverUrlTo: String? = nil, etag: String? = nil, ocId: String? = nil, fileId: String? = nil, encrypted: Bool, richWorkspace: String? = nil, account: String) async {
+        await performRealmWriteAsync { realm in
+            if let result = realm.objects(tableDirectory.self)
+                .filter("account == %@ AND serverUrl == %@", account, serverUrl)
+                .first {
+
+                result.e2eEncrypted = encrypted
+
+                if let etag = etag {
+                    result.etag = etag
+                }
+                if let ocId = ocId {
+                    result.ocId = ocId
+                }
+                if let fileId = fileId {
+                    result.fileId = fileId
+                }
+                if let serverUrlTo = serverUrlTo {
+                    result.serverUrl = serverUrlTo
+                }
+                if let richWorkspace = richWorkspace {
+                    result.richWorkspace = richWorkspace
+                }
+
+                realm.add(result, update: .modified)
+            }
+        }
+    }
+
     func renameDirectory(ocId: String, serverUrl: String) {
         performRealmWrite { realm in
+            if let result = realm.objects(tableDirectory.self)
+                .filter("ocId == %@", ocId)
+                .first {
+                result.serverUrl = serverUrl
+            }
+        }
+    }
+
+    func renameDirectoryAsync(ocId: String, serverUrl: String) async {
+        await performRealmWriteAsync { realm in
             if let result = realm.objects(tableDirectory.self)
                 .filter("ocId == %@", ocId)
                 .first {
@@ -211,7 +302,7 @@ extension NCManageDatabase {
     }
 
     func setDirectorySynchronizationDateAsync(serverUrl: String, account: String) async {
-        await performRealmWrite { realm in
+        await performRealmWriteAsync { realm in
             realm.objects(tableDirectory.self)
                 .filter("account == %@ AND serverUrl == %@", account, serverUrl)
                 .first?
@@ -261,11 +352,29 @@ extension NCManageDatabase {
         }
     }
 
+    func getTableDirectoryAsync(predicate: NSPredicate) async -> tableDirectory? {
+        await performRealmReadAsync { realm in
+            guard let result = realm.objects(tableDirectory.self).filter(predicate).first else {
+                return nil
+            }
+            return tableDirectory(value: result)
+        }
+    }
+
     func getTableDirectory(account: String, serverUrl: String) -> tableDirectory? {
         return performRealmRead { realm in
             realm.objects(tableDirectory.self)
                 .filter("account == %@ AND serverUrl == %@", account, serverUrl)
                 .first
+        }
+    }
+
+    func getTableDirectoryAsync(account: String, serverUrl: String) async -> tableDirectory? {
+        await performRealmReadAsync { realm in
+            realm.objects(tableDirectory.self)
+                .filter("account == %@ AND serverUrl == %@", account, serverUrl)
+                .first
+                .map { tableDirectory(value: $0) } // detached copy
         }
     }
 
@@ -328,7 +437,7 @@ extension NCManageDatabase {
     }
 
     func getTablesDirectoryAsync(predicate: NSPredicate, sorted: String, ascending: Bool) async -> [tableDirectory] {
-        await performRealmRead { realm in
+        await performRealmReadAsync { realm in
             realm.objects(tableDirectory.self)
             .filter(predicate)
             .sorted(byKeyPath: sorted, ascending: ascending)
