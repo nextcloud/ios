@@ -211,9 +211,7 @@ class NCFiles: NCCollectionViewCommon {
         await super.getServerData()
 
         defer {
-            Task {
-                await restoreDefaultTitle()
-            }
+            restoreDefaultTitle()
         }
 
         guard !isSearchingMode else {
@@ -280,7 +278,7 @@ class NCFiles: NCCollectionViewCommon {
             return (nil, NKError(), false)
         }
 
-        await showLoadingTitle()
+        showLoadingTitle()
 
         let options = NKRequestOptions(timeout: 180)
         let (account, metadataFolder, metadatas, error) = await NCNetworking.shared.readFolderAsync(serverUrl: serverUrl,

@@ -77,9 +77,7 @@ class NCRecent: NCCollectionViewCommon {
         await super.getServerData()
 
         defer {
-            Task {
-                await restoreDefaultTitle()
-            }
+            restoreDefaultTitle()
         }
 
         let requestBodyRecent =
@@ -151,7 +149,7 @@ class NCRecent: NCCollectionViewCommon {
         let requestBody = String(format: requestBodyRecent, "/files/" + session.userId, lessDateString)
         let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: session.account)
 
-        await showLoadingTitle()
+        showLoadingTitle()
 
         let resultsSearch = await NextcloudKit.shared.searchBodyRequestAsync(serverUrl: session.urlBase,
                                                                              requestBody: requestBody,

@@ -79,12 +79,10 @@ class NCFavorite: NCCollectionViewCommon {
         await super.getServerData()
 
         defer {
-            Task {
-                await restoreDefaultTitle()
-            }
+            restoreDefaultTitle()
         }
 
-        await showLoadingTitle()
+        showLoadingTitle()
 
         let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: session.account)
 

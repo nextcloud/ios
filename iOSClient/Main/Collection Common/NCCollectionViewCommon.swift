@@ -609,7 +609,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @MainActor
-    func restoreDefaultTitle() async {
+    func restoreDefaultTitle() {
         UIView.transition(with: navigationController!.navigationBar, duration: 0.25, options: .transitionCrossDissolve) {
             self.navigationItem.titleView = nil
             self.navigationItem.title = self.titleCurrentFolder

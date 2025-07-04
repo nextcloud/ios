@@ -79,12 +79,10 @@ class NCGroupfolders: NCCollectionViewCommon {
         await super.getServerData()
 
         defer {
-            Task {
-                await restoreDefaultTitle()
-            }
+            restoreDefaultTitle()
         }
 
-        await showLoadingTitle()
+        showLoadingTitle()
 
         let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
         let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: session.account)
