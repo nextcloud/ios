@@ -141,8 +141,9 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         }
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
         let folderPath = utilityFileSystem.getFileNamePath("", serverUrl: serverUrl, session: session)
         let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
 
@@ -156,7 +157,17 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
         self.navigationItem.title = titleCurrentFolder
 
-        reloadDataSource()
+        Task {
+            await reloadDataSource()
+        }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        Task {
+            await getServerData()
+        }
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -477,7 +488,7 @@ extension NCSelect: UICollectionViewDelegateFlowLayout {
 // MARK: -
 
 extension NCSelect {
-    func reloadDataSource() {
+    func reloadDataSource() async {
         var predicate = NSPredicate()
 
         if includeDirectoryE2EEncryption {
@@ -496,19 +507,17 @@ extension NCSelect {
             }
         }
 
-        NCNetworking.shared.readFolder(serverUrl: serverUrl,
-                                       account: session.account) { task in
-            self.dataSourceTask = task
-            if self.dataSource.isEmpty() {
-                self.collectionView.reloadData()
-            }
-        } completion: { account, _, _, _ in
-            self.database.getMetadatas(predicate: predicate,
-                                       layoutForView: NCDBLayoutForView(),
-                                       account: account) { metadatas, layoutForView, account in
-                self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
-                self.collectionView.reloadData()
-            }
+        let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
+                                                              layoutForView: NCDBLayoutForView(),
+                                                              account: session.account)
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, account: session.account)
+        self.collectionView.reloadData()
+    }
+
+    func getServerData() async {
+        let resultsReadFolder = await NCNetworking.shared.readFolderAsync(serverUrl: serverUrl, account: session.account)
+        if resultsReadFolder.error == .success {
+            await reloadDataSource()
         }
     }
 }
