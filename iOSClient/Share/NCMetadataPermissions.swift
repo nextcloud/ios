@@ -16,6 +16,7 @@ class NCMetadataPermissions: NSObject {
     static let permissionFileCanWrite = "W"
     static let permissionCanCreateFile = "C"
     static let permissionCanCreateFolder = "K"
+    /** Note: If a folder is shared it will be unshared instead of deleted */
     static let permissionCanDeleteOrUnshare = "D"
     static let permissionCanRename = "N"
     static let permissionCanMove = "V"

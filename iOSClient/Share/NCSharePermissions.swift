@@ -26,13 +26,13 @@ import Foundation
 
 class NCSharePermissions: NSObject {
     // Share permission
-    // permissions - (int) 1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all
+    // permissions - (int) 1 = read; 2 = update; 4 = create; 8 = delete; 16 = Reshare; 31 = all
     //
     let permissionReadShare: Int = 1
     let permissionEditShare: Int = 2
     let permissionCreateShare: Int = 4
     let permissionDeleteShare: Int = 8
-    let permissionShareShare: Int = 16
+    let permissionReshareShare: Int = 16
 
     let permissionMinFileShare: Int = 1
     let permissionMaxFileShare: Int = 19
@@ -62,7 +62,7 @@ class NCSharePermissions: NSObject {
     }
 
     func hasPermissionToShare(_ permission: Int) -> Bool {
-        return ((permission & permissionShareShare) > 0)
+        return ((permission & permissionReshareShare) > 0)
     }
 
     func isAnyPermissionToEdit(_ permission: Int) -> Bool {
@@ -99,7 +99,7 @@ class NCSharePermissions: NSObject {
             permission = permission + permissionDeleteShare
         }
         if canShare {
-            permission = permission + permissionShareShare
+            permission = permission + permissionReshareShare
         }
 
         return permission
