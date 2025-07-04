@@ -78,22 +78,28 @@ class NCFavorite: NCCollectionViewCommon {
     override func getServerData(refresh: Bool = false) async {
         await super.getServerData()
 
+        defer {
+            Task {
+                await restoreDefaultTitle()
+            }
+        }
+
+        await showLoadingTitle()
+
         let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: session.account)
 
-        NextcloudKit.shared.listingFavorites(showHiddenFiles: showHiddenFiles, account: session.account) { task in
+        let resultsListingFavorites = await NextcloudKit.shared.listingFavoritesAsync(showHiddenFiles: showHiddenFiles,
+                                                                                      account: session.account) { task in
             self.dataSourceTask = task
             if self.dataSource.isEmpty() {
                 self.collectionView.reloadData()
             }
-        } completion: { account, files, _, error in
-            if error == .success, let files {
-                self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
-                    self.database.updateMetadatasFavorite(account: account, metadatas: metadatas)
-                    Task {
-                        await self.reloadDataSource()
-                    }
-                }
-            }
+        }
+
+        if resultsListingFavorites.error == .success, let files = resultsListingFavorites.files {
+            let (_, metadatas) = await self.database.convertFilesToMetadatasAsync(files, useFirstAsMetadataFolder: false)
+            await self.database.updateMetadatasFavoriteAsync(account: session.account, metadatas: metadatas)
+            await self.reloadDataSource()
         }
     }
 }

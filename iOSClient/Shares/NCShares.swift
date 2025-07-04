@@ -82,6 +82,8 @@ class NCShares: NCCollectionViewCommon {
     override func getServerData(refresh: Bool = false) async {
         await super.getServerData()
 
+        await showLoadingTitle()
+
         let resultsReadShares = await NextcloudKit.shared.readSharesAsync(parameters: NKShareParameter(), account: session.account) { task in
             self.dataSourceTask = task
             if self.dataSource.isEmpty() {
@@ -91,6 +93,7 @@ class NCShares: NCCollectionViewCommon {
 
         guard resultsReadShares.error == .success else {
             await self.reloadDataSource()
+            await self.restoreDefaultTitle()
             return
         }
 
@@ -130,6 +133,7 @@ class NCShares: NCCollectionViewCommon {
             }
 
             Task {
+                await self.restoreDefaultTitle()
                 await self.reloadDataSource()
             }
         }

@@ -588,6 +588,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func isHiddenPlusButton(_ isHidden: Bool) { }
 
+    @MainActor
     func showLoadingTitle() async {
         let spinner = UIActivityIndicatorView(style: .medium)
         spinner.startAnimating()
@@ -604,6 +605,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         navigationItem.titleView = stack
     }
 
+    @MainActor
     func restoreDefaultTitle() async {
         navigationItem.titleView = nil
         title = self.titleCurrentFolder

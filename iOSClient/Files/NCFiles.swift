@@ -210,6 +210,12 @@ class NCFiles: NCCollectionViewCommon {
     override func getServerData(refresh: Bool = false) async {
         await super.getServerData()
 
+        defer {
+            Task {
+                await restoreDefaultTitle()
+            }
+        }
+
         guard !isSearchingMode else {
             return networkSearch()
         }
@@ -285,8 +291,6 @@ class NCFiles: NCCollectionViewCommon {
                 self.collectionView.reloadData()
             }
         }
-
-        await restoreDefaultTitle()
 
         guard error == .success else {
             return (nil, error, false)
