@@ -31,7 +31,7 @@ extension NCNetworking {
 
     func readFolder(serverUrl: String,
                     account: String,
-                    queue: DispatchQueue,
+                    options: NKRequestOptions = NKRequestOptions(),
                     taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                     completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
         let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: account)
@@ -53,7 +53,7 @@ extension NCNetworking {
                                              depth: "1",
                                              showHiddenFiles: showHiddenFiles,
                                              account: account,
-                                             options: NKRequestOptions(queue: queue)) { task in
+                                             options: options) { task in
             taskHandler(task)
         } completion: { account, files, _, error in
             guard error == .success, let files
@@ -72,12 +72,12 @@ extension NCNetworking {
     /// Async wrapper for `readFolder(...)`, returns a tuple with account, metadataFolder, metadatas, and error.
     func readFolderAsync(serverUrl: String,
                          account: String,
-                         queue: DispatchQueue = NextcloudKit.shared.nkCommonInstance.backgroundQueue,
+                         options: NKRequestOptions = NKRequestOptions(),
                          taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in }) async -> (account: String, metadataFolder: tableMetadata?, metadatas: [tableMetadata]?, error: NKError) {
         await withCheckedContinuation { continuation in
             readFolder(serverUrl: serverUrl,
                        account: account,
-                       queue: queue,
+                       options: options,
                        taskHandler: taskHandler) { account, metadataFolder, metadatas, error in
                 continuation.resume(returning: (
                     account: account,

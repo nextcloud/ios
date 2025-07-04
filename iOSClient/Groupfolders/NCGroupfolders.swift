@@ -75,11 +75,7 @@ class NCGroupfolders: NCCollectionViewCommon {
         cachingAsync(metadatas: metadatas)
     }
 
-    override func getServerData() async {
-        defer {
-            self.refreshControlEndRefreshing()
-        }
-
+    override func getServerData(refresh: Bool = false) async {
         let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
         let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: session.account)
 

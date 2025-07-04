@@ -185,7 +185,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         view.backgroundColor = .systemBackground
         collectionView.backgroundColor = .systemBackground
-        refreshControl.tintColor = NCBrandColor.shared.textColor2
+        refreshControl.tintColor = .clear
 
         if enableSearchBar {
             searchController = UISearchController(searchResultsController: nil)
@@ -219,7 +219,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
             Task {
-                await self.getServerData()
+                await self.getServerData(refresh: true)
+            }
+            self.refreshControl.endRefreshing()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                self.resetPlusButtonAlpha()
             }
         }
 
@@ -521,7 +525,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - NotificationCenter
 
     @objc func applicationWillResignActive(_ notification: NSNotification) {
-        refreshControlEndRefreshing()
+        self.resetPlusButtonAlpha()
     }
 
     @objc func changeTheming(_ notification: NSNotification) {
@@ -584,11 +588,25 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func isHiddenPlusButton(_ isHidden: Bool) { }
 
-    func refreshControlEndRefreshing() {
-        DispatchQueue.main.async {
-            self.refreshControl.endRefreshing()
-            self.resetPlusButtonAlpha()
-        }
+    func showLoadingTitle() async {
+        let spinner = UIActivityIndicatorView(style: .medium)
+        spinner.startAnimating()
+
+        let titleLabel = UILabel()
+        titleLabel.text = self.titleCurrentFolder
+        titleLabel.font = UIFont.boldSystemFont(ofSize: 17)
+
+        let stack = UIStackView(arrangedSubviews: [titleLabel, spinner])
+        stack.axis = .horizontal
+        stack.spacing = 8
+        stack.alignment = .center
+
+        navigationItem.titleView = stack
+    }
+
+    func restoreDefaultTitle() async {
+        navigationItem.titleView = nil
+        title = self.titleCurrentFolder
     }
 
     // MARK: - SEARCH
@@ -769,11 +787,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                               completion: nil)
 
             (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
-            self.refreshControlEndRefreshing()
         }
     }
 
-    func getServerData() async {}
+    func getServerData(refresh: Bool = false) async {}
 
     @objc func networkSearch() {
         guard !networkSearchInProgress else {
@@ -782,12 +799,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard !session.account.isEmpty,
               let literalSearch = literalSearch,
               !literalSearch.isEmpty else {
-            return self.refreshControlEndRefreshing()
+            return
         }
 
         self.networkSearchInProgress = true
         self.dataSource.removeAll()
-        self.refreshControl.beginRefreshing()
         Task {
             await self.reloadDataSource()
         }
@@ -806,7 +822,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 guard let metadatas, !metadatas.isEmpty, self.isSearchingMode, let searchResult else { return }
                 self.netwoking.unifiedSearchQueue.addOperation(NCCollectionViewUnifiedSearch(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult))
             } completion: { _, _ in
-                self.refreshControlEndRefreshing()
                 Task {
                     await self.reloadDataSource()
                 }
@@ -824,7 +839,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                         self.isSearchingMode
                 else {
                     self.networkSearchInProgress = false
-                    self.refreshControlEndRefreshing()
                     Task {
                         await self.reloadDataSource()
                     }
@@ -837,7 +851,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                            account: self.session.account) { metadatas, layoutForView, account  in
                     self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, providers: self.providers, searchResults: self.searchResults, account: account)
                     self.networkSearchInProgress = false
-                    self.refreshControlEndRefreshing()
                     Task {
                         await self.reloadDataSource()
                     }

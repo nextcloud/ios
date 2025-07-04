@@ -497,8 +497,7 @@ extension NCSelect {
         }
 
         NCNetworking.shared.readFolder(serverUrl: serverUrl,
-                                       account: session.account,
-                                       queue: .main) { task in
+                                       account: session.account) { task in
             self.dataSourceTask = task
             if self.dataSource.isEmpty() {
                 self.collectionView.reloadData()

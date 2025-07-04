@@ -207,11 +207,7 @@ class NCFiles: NCCollectionViewCommon {
         cachingAsync(metadatas: metadatas)
     }
 
-    override func getServerData() async {
-        defer {
-            self.refreshControlEndRefreshing()
-        }
-
+    override func getServerData(refresh: Bool = false) async {
         guard !isSearchingMode else {
             return networkSearch()
         }
@@ -228,7 +224,7 @@ class NCFiles: NCCollectionViewCommon {
             return false
         }
 
-        let resultsReadFolder = await networkReadFolderAsync(serverUrl: self.serverUrl)
+        let resultsReadFolder = await networkReadFolderAsync(serverUrl: self.serverUrl, refresh: refresh)
         guard resultsReadFolder.error == .success else {
             return
         }
@@ -247,7 +243,7 @@ class NCFiles: NCCollectionViewCommon {
         await self.reloadDataSource()
     }
 
-    private func networkReadFolderAsync(serverUrl: String) async -> (metadatas: [tableMetadata]?, error: NKError) {
+    private func networkReadFolderAsync(serverUrl: String, refresh: Bool) async -> (metadatas: [tableMetadata]?, error: NKError) {
         let isDirectoryE2EE = await NCUtilityFileSystem().isDirectoryE2EEAsync(session: self.session, serverUrl: serverUrl)
         let resultsReadFile = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrl, account: session.account) { task in
             self.dataSourceTask = task
@@ -262,16 +258,30 @@ class NCFiles: NCCollectionViewCommon {
         await self.database.updateDirectoryRichWorkspaceAsync(metadata.richWorkspace, account: resultsReadFile.account, serverUrl: serverUrl)
         let tableDirectory = await self.database.getTableDirectoryAsync(ocId: metadata.ocId)
 
-        guard tableDirectory?.etag != metadata.etag || metadata.e2eEncrypted || self.dataSource.isEmpty() else {
+        let shouldSkipUpdate: Bool = (
+            !refresh &&
+            tableDirectory?.etag == metadata.etag &&
+            !metadata.e2eEncrypted &&
+            !self.dataSource.isEmpty()
+        )
+
+        if shouldSkipUpdate {
             return (nil, NKError())
         }
 
-        let (account, metadataFolder, metadatas, error) = await NCNetworking.shared.readFolderAsync(serverUrl: serverUrl, account: session.account) { task in
+        await showLoadingTitle()
+
+        let options = NKRequestOptions(timeout: 180)
+        let (account, metadataFolder, metadatas, error) = await NCNetworking.shared.readFolderAsync(serverUrl: serverUrl,
+                                                                                                    account: session.account,
+                                                                                                    options: options) { task in
             self.dataSourceTask = task
             if self.dataSource.isEmpty() {
                 self.collectionView.reloadData()
             }
         }
+
+        await restoreDefaultTitle()
 
         guard error == .success else {
             return (nil, error)
@@ -366,7 +376,7 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         if animated {
-            UIView.animate(withDuration: 0.2, animations: update)
+            UIView.animate(withDuration: 0.3, animations: update)
         } else {
             update()
         }

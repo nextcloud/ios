@@ -73,11 +73,7 @@ class NCRecent: NCCollectionViewCommon {
         await super.reloadDataSource()
     }
 
-    override func getServerData() async {
-        defer {
-            self.refreshControlEndRefreshing()
-        }
-
+    override func getServerData(refresh: Bool = false) async {
         let requestBodyRecent =
         """
         <?xml version=\"1.0\"?>

@@ -361,7 +361,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         let hiddenFilesAction = UIAction(title: NSLocalizedString("_show_hidden_files_", comment: ""), state: hiddenFiles ? .on : .off) { _ in
             NCKeychain().setShowHiddenFiles(account: self.session.account, value: !hiddenFiles)
             Task {
-                await self.collectionViewCommon?.getServerData()
+                await self.collectionViewCommon?.getServerData(refresh: true)
             }
             self.updateRightMenu()
         }

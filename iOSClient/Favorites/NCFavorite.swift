@@ -75,7 +75,7 @@ class NCFavorite: NCCollectionViewCommon {
         cachingAsync(metadatas: metadatas)
     }
 
-    override func getServerData() async {
+    override func getServerData(refresh: Bool = false) async {
         let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: session.account)
 
         NextcloudKit.shared.listingFavorites(showHiddenFiles: showHiddenFiles, account: session.account) { task in
@@ -92,7 +92,6 @@ class NCFavorite: NCCollectionViewCommon {
                     }
                 }
             }
-            self.refreshControlEndRefreshing()
         }
     }
 }
