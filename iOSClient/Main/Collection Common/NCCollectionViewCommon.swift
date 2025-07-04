@@ -608,7 +608,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @MainActor
     func restoreDefaultTitle() async {
         navigationItem.titleView = nil
-        title = self.titleCurrentFolder
+        navigationItem.title = self.titleCurrentFolder
     }
 
     // MARK: - SEARCH
