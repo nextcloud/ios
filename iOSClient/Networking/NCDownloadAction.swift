@@ -136,13 +136,9 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         if isOffline {
             if metadata.directory {
                 self.database.setDirectory(serverUrl: serverUrl, offline: false, metadata: metadata)
-                if let results = database.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND sessionSelector == %@ AND status == %d",
-                                                                                       metadata.account,
-                                                                                       serverUrl,
-                                                                                       NCGlobal.shared.selectorSynchronizationOffline,
-                                                                                       NCGlobal.shared.metadataStatusWaitDownload)) {
-                    database.clearMetadatasSession(metadatas: Array(results))
-                }
+                let predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND sessionSelector == %@ AND status == %d", metadata.account, serverUrl, NCGlobal.shared.selectorSynchronizationOffline, NCGlobal.shared.metadataStatusWaitDownload)
+                let metadatas = database.getMetadatas(predicate: predicate)
+                database.clearMetadatasSession(metadatas: metadatas)
             } else {
                 database.setOffLocalFile(ocId: metadata.ocId)
             }

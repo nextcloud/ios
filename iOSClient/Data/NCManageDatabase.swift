@@ -57,20 +57,64 @@ final class NCManageDatabase: @unchecked Sendable {
         // Open Realm
         if isAppex {
             self.openRealmAppex(objectTypes: objectTypes)
-        } else {
-            openRealm()
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
+            /*
             if hasBecomeActiveOnce {
                 self.openRealm()
             }
+            */
         }
     }
 
     // MARK: -
 
-    private func openRealm() {
+    func startRealm() {
+        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+        let databaseFileUrl = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
+
+        Realm.Configuration.defaultConfiguration = Realm.Configuration(fileURL: databaseFileUrl,
+                                                                       schemaVersion: databaseSchemaVersion,
+                                                                       migrationBlock: { migration, oldSchemaVersion in
+            self.migrationSchema(migration, oldSchemaVersion)
+        })
+
+        do {
+            let realm = try Realm()
+            if let url = realm.configuration.fileURL {
+                nkLog(start: "Realm is located at: \(url.path)")
+            }
+        } catch let error {
+            nkLog(error: "Realm open failed: \(error)")
+            if let realmURL = databaseFileUrl {
+                let filesToDelete = [
+                    realmURL,
+                    realmURL.appendingPathExtension("lock"),
+                    realmURL.appendingPathExtension("note"),
+                    realmURL.appendingPathExtension("management")
+                ]
+
+                for file in filesToDelete {
+                    do {
+                        try FileManager.default.removeItem(at: file)
+                    } catch { }
+                }
+            }
+
+            do {
+                let realm = try Realm()
+                if let url = realm.configuration.fileURL {
+                    nkLog(start: "Realm is located at: \(url.path)")
+                }
+            } catch {
+                nkLog(error: "Realm error: \(error)")
+            }
+        }
+    }
+
+    /*
+    private func openRealmm() {
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let databaseFileUrl = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
 
@@ -94,6 +138,7 @@ final class NCManageDatabase: @unchecked Sendable {
             }
         }
     }
+    */
 
     private func openRealmAppex(objectTypes: [Object.Type]) {
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
@@ -116,7 +161,7 @@ final class NCManageDatabase: @unchecked Sendable {
         }
     }
 
-    private func migrationSchema(_ migration: Migration, _ oldSchemaVersion: UInt64) {
+    func migrationSchema(_ migration: Migration, _ oldSchemaVersion: UInt64) {
 
         // MANUAL MIGRATIONS (custom logic required)
 
