@@ -58,14 +58,6 @@ final class NCManageDatabase: @unchecked Sendable {
         if isAppex {
             self.openRealmAppex(objectTypes: objectTypes)
         }
-
-        NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
-            /*
-            if hasBecomeActiveOnce {
-                self.openRealm()
-            }
-            */
-        }
     }
 
     // MARK: -
@@ -162,9 +154,7 @@ final class NCManageDatabase: @unchecked Sendable {
     }
 
     func migrationSchema(_ migration: Migration, _ oldSchemaVersion: UInt64) {
-
         // MANUAL MIGRATIONS (custom logic required)
-
         if oldSchemaVersion < 365 {
             migration.deleteData(forType: tableMetadata.className())
             migration.enumerateObjects(ofType: tableDirectory.className()) { _, newObject in
@@ -188,9 +178,7 @@ final class NCManageDatabase: @unchecked Sendable {
                 }
             }
         }
-
         // AUTOMATIC MIGRATIONS (Realm handles these internally)
-
         if oldSchemaVersion < databaseSchemaVersion {
             // Realm automatically handles:
             // -> Added properties with default values or optionals
@@ -205,32 +193,6 @@ final class NCManageDatabase: @unchecked Sendable {
         let shouldCompact = (usedPercentage < 75.0) && (totalBytes > 100 * 1024 * 1024)
 
         return shouldCompact
-    }
-
-    private func restoreDB() {
-        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-        let databaseFileUrl = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
-
-        if let realmURL = databaseFileUrl {
-            let filesToDelete = [
-                realmURL,
-                realmURL.appendingPathExtension("lock"),
-                realmURL.appendingPathExtension("note"),
-                realmURL.appendingPathExtension("management")
-            ]
-
-            for file in filesToDelete {
-                do {
-                    try FileManager.default.removeItem(at: file)
-                } catch { }
-            }
-        }
-
-        do {
-            _ = try Realm()
-        } catch let error {
-            nkLog(error: "Account restoration: \(error)")
-        }
     }
 
     // MARK: - performRealmRead, performRealmWrite
