@@ -17,7 +17,7 @@ protocol DateCompareable {
 final class NCManageDatabase: @unchecked Sendable {
     static let shared = NCManageDatabase()
 
-    internal let realmQueue = DispatchQueue(label: "com.nextcloud.realmQueue", qos: .userInitiated) // serial queue
+    internal let realmQueue = DispatchQueue(label: "com.nextcloud.realmQueue", qos: .userInitiated)
     internal let utilityFileSystem = NCUtilityFileSystem()
 
     init() {
@@ -137,12 +137,11 @@ final class NCManageDatabase: @unchecked Sendable {
             ]
         }
 
+        let configuration = Realm.Configuration(fileURL: databaseFileUrl, schemaVersion: databaseSchemaVersion, objectTypes: objectTypes)
+
         realmQueue.async {
             do {
-                Realm.Configuration.defaultConfiguration = Realm.Configuration(fileURL: databaseFileUrl,
-                                                                               schemaVersion: databaseSchemaVersion,
-                                                                               objectTypes: objectTypes)
-
+                Realm.Configuration.defaultConfiguration = configuration
                 let realm = try Realm()
                 if let url = realm.configuration.fileURL {
                     print("Realm is located at: \(url)")
