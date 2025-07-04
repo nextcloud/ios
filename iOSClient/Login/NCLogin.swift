@@ -448,8 +448,36 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
         let alertEnterPassword = UIAlertController(title: NSLocalizedString("_client_cert_enter_password_", comment: ""), message: "", preferredStyle: .alert)
         alertEnterPassword.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
         alertEnterPassword.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
-            NCNetworking.shared.p12Data = try? Data(contentsOf: urls[0])
-            NCNetworking.shared.p12Password = alertEnterPassword.textFields?[0].text
+            guard let p12Data = try? Data(contentsOf: urls[0]), let password = alertEnterPassword.textFields?[0].text
+            else { return }
+
+            let options = [kSecImportExportPassphrase as String: password]
+            var items: CFArray?
+            let status = SecPKCS12Import(p12Data as CFData, options as CFDictionary, &items)
+            let label = "test" // TODO: Change
+            if status == errSecSuccess,
+               let item = (items as? [[String: Any]])?.first,
+               let identityAny = item[kSecImportItemIdentity as String],
+               CFGetTypeID(identityAny as CFTypeRef) == SecIdentityGetTypeID() {
+                // swiftlint:disable force_cast
+                let identity = identityAny as! SecIdentity
+                // swiftlint:enable force_cast
+
+                let addQuery: [String: Any] = [
+                    kSecValueRef as String: identity,
+                    kSecClass as String: kSecClassIdentity,
+                    kSecAttrLabel as String: label,
+                    kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock,
+                ]
+
+                // Remove existing item with the same label
+                let deleteQuery: [String: Any] = [
+                    kSecClass as String: kSecClassIdentity,
+                    kSecAttrLabel as String: label
+                ]
+                SecItemDelete(deleteQuery as CFDictionary)
+                SecItemAdd(addQuery as CFDictionary, nil)
+            }
             self.login()
         }))
         alertEnterPassword.addTextField { textField in
