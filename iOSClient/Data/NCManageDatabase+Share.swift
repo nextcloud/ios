@@ -199,7 +199,6 @@ extension NCManageDatabase {
         }
     }
 
-
     func getTableShares(account: String) -> [tableShare] {
         do {
             let realm = try Realm()

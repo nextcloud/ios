@@ -22,7 +22,6 @@ final class NCManageDatabase: @unchecked Sendable {
 
     init() {
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-        let databaseFileUrl = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
         let bundleUrl: URL = Bundle.main.bundleURL
         let bundlePathExtension: String = bundleUrl.pathExtension
         let isAppex: Bool = bundlePathExtension == "appex"
@@ -57,27 +56,26 @@ final class NCManageDatabase: @unchecked Sendable {
 
         // Open Realm
         if isAppex {
-            self.openRealmAppex(path: databaseFileUrl, objectTypes: objectTypes)
+            self.openRealmAppex(objectTypes: objectTypes)
         } else {
-            self.openRealm(path: databaseFileUrl)
+            openRealm()
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: .main) { _ in
             if hasBecomeActiveOnce {
-                if isAppex {
-                    self.openRealmAppex(path: databaseFileUrl, objectTypes: objectTypes)
-                } else {
-                    self.openRealm(path: databaseFileUrl)
-                }
+                self.openRealm()
             }
         }
     }
 
     // MARK: -
 
-    private func openRealm(path databaseFileUrlPath: URL?) {
+    private func openRealm() {
+        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+        let databaseFileUrl = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
+
         realmQueue.async {
-            Realm.Configuration.defaultConfiguration = Realm.Configuration(fileURL: databaseFileUrlPath,
+            Realm.Configuration.defaultConfiguration = Realm.Configuration(fileURL: databaseFileUrl,
                                                                            schemaVersion: databaseSchemaVersion,
                                                                            migrationBlock: { migration, oldSchemaVersion in
                 self.migrationSchema(migration, oldSchemaVersion)
@@ -92,15 +90,18 @@ final class NCManageDatabase: @unchecked Sendable {
                 }
             } catch let error {
                 nkLog(error: "Realm open failed: \(error)")
-                self.restoreDB(path: databaseFileUrlPath)
+                self.restoreDB()
             }
         }
     }
 
-    private func openRealmAppex(path databaseFileUrlPath: URL?, objectTypes: [Object.Type]) {
+    private func openRealmAppex(objectTypes: [Object.Type]) {
+        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+        let databaseFileUrl = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
+
         realmQueue.async {
             do {
-                Realm.Configuration.defaultConfiguration = Realm.Configuration(fileURL: databaseFileUrlPath,
+                Realm.Configuration.defaultConfiguration = Realm.Configuration(fileURL: databaseFileUrl,
                                                                                schemaVersion: databaseSchemaVersion,
                                                                                objectTypes: objectTypes)
 
@@ -161,8 +162,11 @@ final class NCManageDatabase: @unchecked Sendable {
         return shouldCompact
     }
 
-    private func restoreDB(path databaseFileUrlPath: URL?) {
-        if let realmURL = databaseFileUrlPath {
+    private func restoreDB() {
+        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+        let databaseFileUrl = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
+
+        if let realmURL = databaseFileUrl {
             let filesToDelete = [
                 realmURL,
                 realmURL.appendingPathExtension("lock"),
