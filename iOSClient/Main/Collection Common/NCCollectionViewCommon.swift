@@ -589,26 +589,31 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func isHiddenPlusButton(_ isHidden: Bool) { }
 
     @MainActor
-    func showLoadingTitle() async {
+    func showLoadingTitle() {
         let spinner = UIActivityIndicatorView(style: .medium)
         spinner.startAnimating()
 
-        let titleLabel = UILabel()
-        titleLabel.text = self.titleCurrentFolder
-        titleLabel.font = UIFont.boldSystemFont(ofSize: 17)
+        let container = UIView()
+        container.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(spinner)
 
-        let stack = UIStackView(arrangedSubviews: [titleLabel, spinner])
-        stack.axis = .horizontal
-        stack.spacing = 8
-        stack.alignment = .center
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            spinner.centerXAnchor.constraint(equalTo: container.centerXAnchor),
+            spinner.centerYAnchor.constraint(equalTo: container.centerYAnchor)
+        ])
 
-        navigationItem.titleView = stack
+        UIView.transition(with: navigationController!.navigationBar, duration: 0.25, options: .transitionCrossDissolve) {
+            self.navigationItem.titleView = container
+        }
     }
 
     @MainActor
     func restoreDefaultTitle() async {
-        navigationItem.titleView = nil
-        navigationItem.title = self.titleCurrentFolder
+        UIView.transition(with: navigationController!.navigationBar, duration: 0.25, options: .transitionCrossDissolve) {
+            self.navigationItem.titleView = nil
+            self.navigationItem.title = self.titleCurrentFolder
+        }
     }
 
     // MARK: - SEARCH
