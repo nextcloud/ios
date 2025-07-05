@@ -29,9 +29,11 @@ extension NCMedia {
     func loadDataSource(completion: @escaping () -> Void = {}) {
         let session = self.session
         DispatchQueue.global().async {
-            if let metadatas = self.database.getResultsMetadatas(predicate: self.imageCache.getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos), sortedByKeyPath: "datePhotosOriginal") {
+            let predicate = self.imageCache.getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos)
+            if let metadatas = NCManageDatabase.shared.getMetadatas(predicate: predicate, sortedByKeyPath: "datePhotosOriginal", ascending: false) {
                 self.dataSource = NCMediaDataSource(metadatas: metadatas)
             }
+
             self.collectionViewReloadData()
             completion()
         }
@@ -153,11 +155,10 @@ extension NCMedia {
                                 DispatchQueue.global().async {
                                     let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [ NSPredicate(format: "datePhotosOriginal >= %@ AND datePhotosOriginal =< %@", lastCellDate as NSDate, firstCellDate as NSDate), self.imageCache.getMediaPredicate(filterLivePhotoFile: false, session: session, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos)])
 
-                                    if let resultsMetadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: predicate) {
-                                        for metadata in resultsMetadatas where !self.filesExists.contains(metadata.ocId) {
-                                            if NCNetworking.shared.fileExistsQueue.operations.filter({ ($0 as? NCOperationFileExists)?.ocId == metadata.ocId }).isEmpty {
-                                                NCNetworking.shared.fileExistsQueue.addOperation(NCOperationFileExists(metadata: metadata))
-                                            }
+                                    let metadatas = NCManageDatabase.shared.getMetadatas(predicate: predicate)
+                                    for metadata in metadatas where !self.filesExists.contains(metadata.ocId) {
+                                        if NCNetworking.shared.fileExistsQueue.operations.filter({ ($0 as? NCOperationFileExists)?.ocId == metadata.ocId }).isEmpty {
+                                            NCNetworking.shared.fileExistsQueue.addOperation(NCOperationFileExists(metadata: metadata))
                                         }
                                     }
                                 }
@@ -219,7 +220,7 @@ public class NCMediaDataSource: NSObject {
 
     override init() { super.init() }
 
-    init(metadatas: Results<tableMetadata>) {
+    init(metadatas: [tableMetadata]) {
         super.init()
 
         self.metadatas.removeAll()

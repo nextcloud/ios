@@ -184,7 +184,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             nkLog(error: "Create Apps share accounts \(error.localizedDescription)")
         }
 
-        NCNetworking.shared.cancelAllQueue()
+        NCNetworking.shared.cancelAllTaskForGoInBackground()
 
         if NCKeychain().presentPasscode {
             showPrivacyProtectionWindow()

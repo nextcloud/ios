@@ -74,7 +74,9 @@ extension NCTrash {
                 icon: utility.loadImage(named: "arrow.circlepath", colors: [NCBrandColor.shared.iconImageColor]),
                 sender: sender,
                 action: { _ in
-                    self.restoreItem(with: objectId)
+                    Task {
+                        await self.restoreItem(with: objectId)
+                    }
                 }
             )
         )

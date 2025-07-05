@@ -61,7 +61,9 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        reloadDataSource()
+        Task {
+            await self.reloadDataSource()
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -86,8 +88,10 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_all_task_", comment: ""), style: .default, handler: { _ in
             NCNetworking.shared.cancelAllTask()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                self.reloadDataSource()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                Task {
+                    await self.reloadDataSource()
+                }
             }
         }))
 
@@ -254,45 +258,50 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     // MARK: - DataSource
 
-    override func reloadDataSource() {
-        Task.detached {
-            let predicate = NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal)
-            let sortDescriptors = [
-                RealmSwift.SortDescriptor(keyPath: "status", ascending: false),
-                RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
-            ]
+    override func reloadDataSource() async {
+        let predicate = NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal)
+        let sortDescriptors = [
+            RealmSwift.SortDescriptor(keyPath: "status", ascending: false),
+            RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
+        ]
 
-            let metadatas = await self.database.getMetadatasAsync(predicate: predicate, sortDescriptors: sortDescriptors, limit: 100)
-            if let metadatas, !metadatas.isEmpty {
-                self.dataSource = await NCCollectionViewDataSource(metadatas: metadatas, layoutForView: self.layoutForView)
-            } else {
-                await self.dataSource.removeAll()
-            }
-
-            await super.reloadDataSource()
+        let metadatas = await self.database.getMetadatasAsync(predicate: predicate, sortDescriptors: sortDescriptors, limit: 100)
+        if let metadatas, !metadatas.isEmpty {
+            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: self.layoutForView)
+        } else {
+            self.dataSource.removeAll()
         }
+
+        await super.reloadDataSource()
     }
 
-    override func getServerData() {
-        reloadDataSource()
+    override func getServerData(refresh: Bool = false) async {
+        await super.getServerData()
+        await reloadDataSource()
     }
 
     // MARK: - Transfers Delegate
     override func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {
         debouncer.call {
-            self.reloadDataSource()
+            Task {
+                await self.reloadDataSource()
+            }
         }
     }
 
     override func transferChange(status: String, metadata: tableMetadata, error: NKError) {
         debouncer.call {
-            self.reloadDataSource()
+            Task {
+                await self.reloadDataSource()
+            }
         }
     }
 
     override func transferReloadData(serverUrl: String?, status: Int?) {
         debouncer.call {
-            self.reloadDataSource()
+            Task {
+                await self.reloadDataSource()
+            }
         }
     }
 

@@ -27,6 +27,16 @@ import NextcloudKit
 import RealmSwift
 
 extension NCNetworking {
+    func cancelAllQueue() {
+        downloadThumbnailQueue.cancelAll()
+        downloadThumbnailActivityQueue.cancelAll()
+        downloadThumbnailTrashQueue.cancelAll()
+        downloadAvatarQueue.cancelAll()
+        unifiedSearchQueue.cancelAll()
+        saveLivePhotoQueue.cancelAll()
+        fileExistsQueue.cancelAll()
+    }
+
     func cancelAllTask() {
         cancelAllQueue()
         cancelAllDataTask()
@@ -47,6 +57,13 @@ extension NCNetworking {
     func cancelAllDownloadUploadTask() {
         cancelAllDownloadTask()
         cancelAllUploadTask()
+    }
+
+    func cancelAllTaskForGoInBackground() {
+        cancelAllQueue()
+        cancelAllDataTask()
+        cancelDownloadTasks()
+        cancelUploadTasks()
     }
 
     // MARK: -

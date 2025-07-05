@@ -108,7 +108,16 @@ class NCShareNetworking: NSObject {
         NCActivityIndicator.shared.start(backgroundView: view)
         let filenamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
 
-        NextcloudKit.shared.createShare(path: filenamePath, shareType: template.shareType, shareWith: template.shareWith, password: template.password, note: template.note, permissions: template.permissions, attributes: template.attributes, account: metadata.account) { _, share, _, error in
+        NextcloudKit.shared.createShare(path: filenamePath,
+                                        shareType: template.shareType,
+                                        shareWith: template.shareWith,
+                                        publicUpload: false,
+                                        note: template.note,
+                                        hideDownload: false,
+                                        password: template.password,
+                                        permissions: template.permissions,
+                                        attributes: template.attributes,
+                                        account: metadata.account) { _, share, _, error in
             NCActivityIndicator.shared.stop()
 
             if error == .success, let share = share {

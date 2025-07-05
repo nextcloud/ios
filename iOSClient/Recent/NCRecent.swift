@@ -43,34 +43,43 @@ class NCRecent: NCCollectionViewCommon {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        reloadDataSource()
+        Task {
+            await reloadDataSource()
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        getServerData()
+        Task {
+            await getServerData()
+        }
     }
 
     // MARK: - DataSource
 
-    override func reloadDataSource() {
-        var metadatas: [tableMetadata] = []
+    override func reloadDataSource() async {
 
-        if let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND fileName != '.'", session.account), sortedByKeyPath: "date", ascending: false) {
-            metadatas = Array(results.freeze())
+        if let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND fileName != '.'", session.account), sortedByKeyPath: "date", ascending: false) {
+
+            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
+
+            cachingAsync(metadatas: metadatas)
         }
 
         layoutForView?.sort = "date"
         layoutForView?.ascending = false
 
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
-        self.dataSource.caching(metadatas: metadatas) {
-            super.reloadDataSource()
-        }
+        await super.reloadDataSource()
     }
 
-    override func getServerData() {
+    override func getServerData(refresh: Bool = false) async {
+        await super.getServerData()
+
+        defer {
+            restoreDefaultTitle()
+        }
+
         let requestBodyRecent =
         """
         <?xml version=\"1.0\"?>
@@ -140,23 +149,25 @@ class NCRecent: NCCollectionViewCommon {
         let requestBody = String(format: requestBodyRecent, "/files/" + session.userId, lessDateString)
         let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: session.account)
 
-        NextcloudKit.shared.searchBodyRequest(serverUrl: session.urlBase,
-                                              requestBody: requestBody,
-                                              showHiddenFiles: showHiddenFiles,
-                                              account: session.account) { task in
+        showLoadingTitle()
+
+        let resultsSearch = await NextcloudKit.shared.searchBodyRequestAsync(serverUrl: session.urlBase,
+                                                                             requestBody: requestBody,
+                                                                             showHiddenFiles: showHiddenFiles,
+                                                                             account: session.account) { task in
             self.dataSourceTask = task
             if self.dataSource.isEmpty() {
                 self.collectionView.reloadData()
             }
-        } completion: { _, files, _, error in
-            if error == .success, let files {
-                self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
-                    // Add metadatas
-                    self.database.addMetadatas(metadatas)
-                    self.reloadDataSource()
-                }
-            }
-            self.refreshControlEndRefreshing()
         }
+
+        guard resultsSearch.error == .success, let files = resultsSearch.files else {
+            return
+        }
+
+        let (_, metadatas) = await self.database.convertFilesToMetadatasAsync(files, useFirstAsMetadataFolder: false)
+
+        await self.database.addMetadatasAsync(metadatas)
+        await self.reloadDataSource()
     }
 }

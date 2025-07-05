@@ -214,7 +214,9 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     }
 
     func isDirectoryE2EE(session: NCSession.Session, serverUrl: String) -> Bool {
-        if serverUrl == getHomeServer(session: session) || serverUrl == ".." { return false }
+        if serverUrl == getHomeServer(session: session) || serverUrl == ".." {
+            return false
+        }
         if let directory = NCManageDatabase.shared.getTableDirectory(account: session.account, serverUrl: serverUrl) {
             return directory.e2eEncrypted
         }
@@ -227,7 +229,9 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     }
 
     func isDirectoryE2EEAsync(session: NCSession.Session, serverUrl: String) async -> Bool {
-        if serverUrl == getHomeServer(session: session) || serverUrl == ".." { return false }
+        if serverUrl == getHomeServer(session: session) || serverUrl == ".." {
+            return false
+        }
         if let directory = await NCManageDatabase.shared.getTableDirectoryAsync(account: session.account, serverUrl: serverUrl) {
             return directory.e2eEncrypted
         }
@@ -235,7 +239,9 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     }
 
     func isDirectoryE2EETop(account: String, serverUrl: String) -> Bool {
-        guard let serverUrl = serverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return false }
+        guard let serverUrl = serverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+            return false
+        }
 
         if let url = URL(string: serverUrl)?.deletingLastPathComponent(),
            let serverUrl = String(url.absoluteString.dropLast()).removingPercentEncoding {
@@ -247,7 +253,9 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     }
 
     func getDirectoryE2EETopAsync(serverUrl: String, account: String) async -> tableDirectory? {
-        guard var serverUrl = serverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return nil }
+        guard var serverUrl = serverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+            return nil
+        }
         var top: tableDirectory?
 
         while let url = URL(string: serverUrl)?.deletingLastPathComponent(),

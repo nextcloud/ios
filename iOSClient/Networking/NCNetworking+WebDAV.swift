@@ -31,7 +31,7 @@ extension NCNetworking {
 
     func readFolder(serverUrl: String,
                     account: String,
-                    queue: DispatchQueue,
+                    options: NKRequestOptions = NKRequestOptions(),
                     taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                     completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
         let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: account)
@@ -53,7 +53,7 @@ extension NCNetworking {
                                              depth: "1",
                                              showHiddenFiles: showHiddenFiles,
                                              account: account,
-                                             options: NKRequestOptions(queue: queue)) { task in
+                                             options: options) { task in
             taskHandler(task)
         } completion: { account, files, _, error in
             guard error == .success, let files
@@ -67,6 +67,36 @@ extension NCNetworking {
                 completion(account, metadataFolder.detachedCopy(), metadatas, error)
             }
         }
+    }
+
+    /// Async wrapper for `readFolder(...)`, returns a tuple with account, metadataFolder, metadatas, and error.
+    func readFolderAsync(serverUrl: String,
+                         account: String,
+                         options: NKRequestOptions = NKRequestOptions(),
+                         taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in }) async -> (account: String, metadataFolder: tableMetadata?, metadatas: [tableMetadata]?, error: NKError) {
+
+        let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: account)
+
+        let resultsReadFolder = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: showHiddenFiles, account: account, options: options)
+
+        guard resultsReadFolder.error == .success, let files = resultsReadFolder.files else {
+            return(account, nil, nil, resultsReadFolder.error)
+        }
+        let (metadataFolder, metadatas) = await self.database.convertFilesToMetadatasAsync(files, useFirstAsMetadataFolder: true)
+
+        await self.database.addMetadataAsync(metadataFolder)
+        await self.database.addDirectoryAsync(e2eEncrypted: metadataFolder.e2eEncrypted,
+                                              favorite: metadataFolder.favorite,
+                                              ocId: metadataFolder.ocId,
+                                              fileId: metadataFolder.fileId,
+                                              etag: metadataFolder.etag,
+                                              permissions: metadataFolder.permissions,
+                                              richWorkspace: metadataFolder.richWorkspace,
+                                              serverUrl: serverUrl,
+                                              account: metadataFolder.account)
+        await self.database.updateMetadatasFilesAsync(metadatas, serverUrl: serverUrl, account: account)
+
+        return (account, metadataFolder, metadatas, .success)
     }
 
     func readFile(serverUrlFileName: String,
@@ -107,12 +137,16 @@ extension NCNetworking {
         }
     }
 
-    func readFile(serverUrlFileName: String,
-                  account: String,
-                  queue: DispatchQueue = NextcloudKit.shared.nkCommonInstance.backgroundQueue) async -> (account: String, metadata: tableMetadata?, error: NKError) {
-        return await withCheckedContinuation { continuation in
-            readFile(serverUrlFileName: serverUrlFileName, account: account, queue: queue) { _ in
-            } completion: { account, metadata, error in
+    /// Async wrapper for `readFile(...)`, returns a tuple with account, metadata and error.
+    func readFileAsync(serverUrlFileName: String,
+                       account: String,
+                       queue: DispatchQueue = NextcloudKit.shared.nkCommonInstance.backgroundQueue,
+                       taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in }) async -> (account: String, metadata: tableMetadata?, error: NKError) {
+        await withCheckedContinuation { continuation in
+            readFile(serverUrlFileName: serverUrlFileName,
+                     account: account,
+                     queue: queue,
+                     taskHandler: taskHandler) { account, metadata, error in
                 continuation.resume(returning: (account, metadata, error))
             }
         }
@@ -231,7 +265,7 @@ extension NCNetworking {
         }
 
         /* check exists folder */
-        let resultReadFile = await readFile(serverUrlFileName: fileNameFolderUrl, account: session.account)
+        let resultReadFile = await readFileAsync(serverUrlFileName: fileNameFolderUrl, account: session.account)
         if resultReadFile.error == .success,
             let metadata = resultReadFile.metadata {
             writeDirectoryMetadata(metadata)
@@ -241,7 +275,7 @@ extension NCNetworking {
         /* create folder */
         let resultCreateFolder = await NextcloudKit.shared.createFolderAsync(serverUrlFileName: fileNameFolderUrl, account: session.account, options: options)
         if resultCreateFolder.error == .success {
-            let resultReadFile = await readFile(serverUrlFileName: fileNameFolderUrl, account: session.account)
+            let resultReadFile = await readFileAsync(serverUrlFileName: fileNameFolderUrl, account: session.account)
             if resultReadFile.error == .success,
                let metadata = resultReadFile.metadata {
                 writeDirectoryMetadata(metadata)
