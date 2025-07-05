@@ -77,7 +77,7 @@ extension NCNetworking {
 
         let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: account)
 
-        let resultsReadFolder = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: showHiddenFiles,account: account, options: options)
+        let resultsReadFolder = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: showHiddenFiles, account: account, options: options)
 
         guard resultsReadFolder.error == .success, let files = resultsReadFolder.files else {
             return(account, nil, nil, resultsReadFolder.error)

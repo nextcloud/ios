@@ -25,7 +25,6 @@ final class NCManageDatabase: @unchecked Sendable {
         return queue
     }()
 
-
     init() {
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let bundleUrl: URL = Bundle.main.bundleURL

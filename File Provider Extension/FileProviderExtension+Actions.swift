@@ -143,7 +143,7 @@ extension FileProviderExtension {
                 return
 
             } else {
-                
+
                 completionHandler(nil, NSFileProviderError(.noSuchItem, userInfo: [NSLocalizedDescriptionKey: resultsMove.error.errorDescription, NSLocalizedFailureReasonErrorKey: ""]))
                 return
             }
