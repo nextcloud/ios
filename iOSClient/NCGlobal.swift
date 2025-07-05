@@ -346,11 +346,6 @@ final class NCGlobal: Sendable {
     //
     let defaultSnapshotConfiguration = "DefaultPreviewConfiguration"
 
-    // FORBIDDEN CHARACTERS
-    //
-    // TODO: Remove this
-    let forbiddenCharacters = ["/", "\\", ":", "\"", "|", "?", "*", "<", ">"]
-
     // DIAGNOSTICS CLIENTS
     //
     let diagnosticIssueSyncConflicts        = "sync_conflicts"
