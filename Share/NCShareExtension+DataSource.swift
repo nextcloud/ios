@@ -190,7 +190,7 @@ extension NCShareExtension: UITableViewDataSource {
 
         cell.setup(fileName: fileName, iconName: "", account: session.account)
         cell.delegate = self
-        
+
         return cell
     }
 }

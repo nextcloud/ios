@@ -54,11 +54,11 @@ extension NCShareExtension: NCAccountRequestDelegate {
                 return
             }
             await self.database.applyCachedCapabilitiesAsync(account: account)
-            
+
             // COLORS
             NCBrandColor.shared.settingThemingColor(account: account)
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": account])
-            
+
             // NETWORKING
             NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup, delegate: NCNetworking.shared)
             NextcloudKit.shared.appendSession(account: tblAccount.account,
@@ -71,13 +71,13 @@ extension NCShareExtension: NCAccountRequestDelegate {
                                               httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
                                               httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
                                               groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-            
+
             // get auto upload folder
             autoUploadFileName = self.database.getAccountAutoUploadFileName(account: account)
             autoUploadDirectory = self.database.getAccountAutoUploadDirectory(session: session)
-            
+
             serverUrl = utilityFileSystem.getHomeServer(session: session)
-            
+
             await reloadDatasource(withLoadFolder: true)
             setNavigationBar(navigationTitle: NCBrandOptions.shared.brand)
         }

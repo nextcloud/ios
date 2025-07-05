@@ -97,36 +97,37 @@ class NCShareExtension: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        Task {
-            _ = await extensionData.setSessionAccount("")
-
-            guard let tblAccount = extensionData.getTblAccoun(),
+        guard let tblAccount = extensionData.getTblAccoun(),
                   !NCPasscode.shared.isPasscodeReset else {
-                return showAlert(description: "_no_active_account_") {
-                    self.cancel(with: .noAccount)
-                }
+            return showAlert(description: "_no_active_account_") {
+                self.cancel(with: .noAccount)
             }
+        }
 
-            accountRequestChangeAccount(account: tblAccount.account, controller: nil)
+        accountRequestChangeAccount(account: tblAccount.account, controller: nil)
 
-            guard let inputItems = extensionContext?.inputItems as? [NSExtensionItem] else {
-                cancel(with: .noFiles)
-                return
+        guard let inputItems = extensionContext?.inputItems as? [NSExtensionItem] else {
+            cancel(with: .noFiles)
+            return
+        }
+
+        NCFilesExtensionHandler(items: inputItems) { fileNames in
+            self.filesName = fileNames
+            DispatchQueue.main.async {
+                self.setCommandView()
             }
-            NCFilesExtensionHandler(items: inputItems) { fileNames in
-                self.filesName = fileNames
-                DispatchQueue.main.async { self.setCommandView() }
-            }
-            if NCKeychain().presentPasscode {
-                NCPasscode.shared.presentPasscode(viewController: self, delegate: self) {
-                    NCPasscode.shared.enableTouchFaceID()
-                }
+        }
+
+        if NCKeychain().presentPasscode {
+            NCPasscode.shared.presentPasscode(viewController: self, delegate: self) {
+                NCPasscode.shared.enableTouchFaceID()
             }
         }
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
+
         coordinator.animate(alongsideTransition: nil) { _ in
             self.collectionView?.collectionViewLayout.invalidateLayout()
         }
@@ -134,6 +135,7 @@ class NCShareExtension: UIViewController {
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
+
         collectionView.reloadData()
         tableView.reloadData()
     }
