@@ -195,11 +195,6 @@ final class NCManageDatabase: @unchecked Sendable {
 
     @discardableResult
     func performRealmRead<T>(_ block: @escaping (Realm) throws -> T?, sync: Bool = true, completion: ((T?) -> Void)? = nil) -> T? {
-        guard !isAppSuspending else {
-            completion?(nil)
-            return nil
-        }
-
         if sync {
             return realmQueue.sync {
                 do {
@@ -226,11 +221,6 @@ final class NCManageDatabase: @unchecked Sendable {
     }
 
     func performRealmWrite(sync: Bool = true, _ block: @escaping (Realm) throws -> Void) {
-        guard !isAppSuspending
-        else {
-            return
-        }
-
         let executionBlock: @Sendable () -> Void = {
             autoreleasepool {
                 do {
@@ -263,13 +253,6 @@ final class NCManageDatabase: @unchecked Sendable {
                     }
                 }
 
-                if isAppSuspending {
-                    // App is suspending — don't execute the block
-                    continuation.resume(returning: nil)
-                    didResume = true
-                    return
-                }
-
                 autoreleasepool {
                     do {
                         let realm = try Realm()
@@ -292,12 +275,6 @@ final class NCManageDatabase: @unchecked Sendable {
                     if !didResume {
                         continuation.resume()
                     }
-                }
-
-                if isAppSuspending {
-                    continuation.resume()
-                    didResume = true
-                    return
                 }
 
                 autoreleasepool {
