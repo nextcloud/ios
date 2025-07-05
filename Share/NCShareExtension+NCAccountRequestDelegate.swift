@@ -55,10 +55,8 @@ extension NCShareExtension: NCAccountRequestDelegate {
             }
             await self.database.applyCachedCapabilitiesAsync(account: account)
 
-            // COLORS
             NCBrandColor.shared.settingThemingColor(account: account)
 
-            // NETWORKING
             NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup, delegate: NCNetworking.shared)
             NextcloudKit.shared.appendSession(account: tblAccount.account,
                                               urlBase: tblAccount.urlBase,
@@ -71,7 +69,6 @@ extension NCShareExtension: NCAccountRequestDelegate {
                                               httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
                                               groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
-            // get auto upload folder
             autoUploadFileName = self.database.getAccountAutoUploadFileName(account: account)
             autoUploadDirectory = self.database.getAccountAutoUploadDirectory(session: session)
 

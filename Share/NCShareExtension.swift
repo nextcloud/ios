@@ -84,27 +84,35 @@ class NCShareExtension: UIViewController {
         let uploadGesture = UITapGestureRecognizer(target: self, action: #selector(actionUpload(_:)))
         uploadView.addGestureRecognizer(uploadGesture)
 
-        // LOG
         let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
-
         NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCKeychain().log))
 
-        nkLog(start: " Start Share session " + versionNextcloudiOS)
+        nkLog(start: "Start Share session " + versionNextcloudiOS)
 
         NCBrandColor.shared.createUserColors()
+
+        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { _ in
+            if NCKeychain().presentPasscode {
+                NCPasscode.shared.presentPasscode(viewController: self, delegate: self) {
+                    NCPasscode.shared.enableTouchFaceID()
+                }
+            }
+        }
+
+        if let account = extensionData.getTblAccoun()?.account {
+            accountRequestChangeAccount(account: account, controller: nil)
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        guard let tblAccount = extensionData.getTblAccoun(),
+        guard extensionData.getTblAccoun() != nil,
                   !NCPasscode.shared.isPasscodeReset else {
             return showAlert(description: "_no_active_account_") {
                 self.cancel(with: .noAccount)
             }
         }
-
-        accountRequestChangeAccount(account: tblAccount.account, controller: nil)
 
         guard let inputItems = extensionContext?.inputItems as? [NSExtensionItem] else {
             cancel(with: .noFiles)
