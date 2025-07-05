@@ -39,7 +39,6 @@ class NCShareExtension: UIViewController {
     let heightCommandView: CGFloat = 170
     var autoUploadFileName = ""
     var autoUploadDirectory = ""
-    let refreshControl = UIRefreshControl()
     var progress: CGFloat = 0
     var counterUploaded: Int = 0
     var uploadErrors: [tableMetadata] = []
@@ -50,12 +49,7 @@ class NCShareExtension: UIViewController {
     let utility = NCUtility()
     let global = NCGlobal.shared
     let database = NCManageDatabase.shared
-
-    var account: String = ""
     let extensionData = NCShareExtensionData.shared
-    var session: NCSession.Session {
-        return  self.extensionData.getSession(account: self.account) ?? NCSession.Session(account: "", urlBase: "", user: "", userId: "")
-    }
 
     // MARK: - View Life Cycle
 
@@ -67,11 +61,6 @@ class NCShareExtension: UIViewController {
         collectionView.register(UINib(nibName: "NCSectionFirstHeaderEmptyData", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionFirstHeaderEmptyData")
         collectionView.register(UINib(nibName: "NCListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
         collectionView.collectionViewLayout = NCListLayout()
-
-        collectionView.refreshControl = refreshControl
-        refreshControl.tintColor = NCBrandColor.shared.iconImageColor
-        refreshControl.backgroundColor = .systemBackground
-        refreshControl.addTarget(self, action: #selector(reloadDatasource), for: .valueChanged)
 
         commandView.backgroundColor = .secondarySystemBackground
         separatorView.backgroundColor = .separator
@@ -107,24 +96,31 @@ class NCShareExtension: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        guard !session.account.isEmpty,
-              !NCPasscode.shared.isPasscodeReset else {
-            return showAlert(description: "_no_active_account_") {
-                self.cancel(with: .noAccount)
+
+        Task {
+            _ = await extensionData.setSessionAccount("")
+
+            guard let tblAccount = extensionData.getTblAccoun(),
+                  !NCPasscode.shared.isPasscodeReset else {
+                return showAlert(description: "_no_active_account_") {
+                    self.cancel(with: .noAccount)
+                }
             }
-        }
-        accountRequestChangeAccount(account: account, controller: nil)
-        guard let inputItems = extensionContext?.inputItems as? [NSExtensionItem] else {
-            cancel(with: .noFiles)
-            return
-        }
-        NCFilesExtensionHandler(items: inputItems) { fileNames in
-            self.filesName = fileNames
-            DispatchQueue.main.async { self.setCommandView() }
-        }
-        if NCKeychain().presentPasscode {
-            NCPasscode.shared.presentPasscode(viewController: self, delegate: self) {
-                NCPasscode.shared.enableTouchFaceID()
+
+            accountRequestChangeAccount(account: tblAccount.account, controller: nil)
+
+            guard let inputItems = extensionContext?.inputItems as? [NSExtensionItem] else {
+                cancel(with: .noFiles)
+                return
+            }
+            NCFilesExtensionHandler(items: inputItems) { fileNames in
+                self.filesName = fileNames
+                DispatchQueue.main.async { self.setCommandView() }
+            }
+            if NCKeychain().presentPasscode {
+                NCPasscode.shared.presentPasscode(viewController: self, delegate: self) {
+                    NCPasscode.shared.enableTouchFaceID()
+                }
             }
         }
     }
@@ -163,6 +159,7 @@ class NCShareExtension: UIViewController {
         guard let tblAccount = self.extensionData.getTblAccoun() else {
             return
         }
+        let session = self.extensionData.getSession()
 
         navigationItem.title = navigationTitle
         cancelButton.title = NSLocalizedString("_cancel_", comment: "")
@@ -178,16 +175,18 @@ class NCShareExtension: UIViewController {
             if !self.uploadStarted {
                 while self.serverUrl.last != "/" { self.serverUrl.removeLast() }
                 self.serverUrl.removeLast()
-                self.reloadDatasource(withLoadFolder: true)
+                Task {
+                    await self.reloadDatasource(withLoadFolder: true)
+                }
                 var navigationTitle = (self.serverUrl as NSString).lastPathComponent
-                if self.utilityFileSystem.getHomeServer(session: self.session) == self.serverUrl {
+                if self.utilityFileSystem.getHomeServer(session: session) == self.serverUrl {
                     navigationTitle = NCBrandOptions.shared.brand
                 }
                 self.setNavigationBar(navigationTitle: navigationTitle)
             }
         }
 
-        let image = utility.loadUserImage(for: session.user, displayName: tblAccount.displayName, urlBase: session.urlBase)
+        let image = utility.loadUserImage(for: tblAccount.user, displayName: tblAccount.displayName, urlBase: tblAccount.urlBase)
         let profileButton = UIButton(type: .custom)
         profileButton.setImage(image, for: .normal)
 
@@ -211,7 +210,7 @@ class NCShareExtension: UIViewController {
             }
         }
         var navItems = [UIBarButtonItem(customView: profileButton)]
-        if serverUrl != utilityFileSystem.getHomeServer(session: self.session) {
+        if serverUrl != utilityFileSystem.getHomeServer(session: session) {
             let space = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
             space.width = 20
             navItems.append(contentsOf: [UIBarButtonItem(customView: backButton), space])
@@ -241,9 +240,12 @@ class NCShareExtension: UIViewController {
     }
 
     @objc func actionCreateFolder(_ sender: Any?) {
+        let session = self.extensionData.getSession()
         let alertController = UIAlertController.createFolder(serverUrl: serverUrl, session: session) { error in
             if error == .success {
-                self.reloadDatasource(withLoadFolder: true)
+                Task {
+                    await self.reloadDatasource(withLoadFolder: true)
+                }
             } else {
                 self.showAlert(title: "_error_createsubfolders_upload_", description: error.errorDescription)
             }
@@ -255,8 +257,12 @@ class NCShareExtension: UIViewController {
 // MARK: - Upload
 extension NCShareExtension {
     @objc func actionUpload(_ sender: Any?) {
+        guard let tblAccount = self.extensionData.getTblAccoun() else {
+            return
+        }
         guard !uploadStarted else { return }
         guard !filesName.isEmpty else { return showAlert(description: "_files_no_files_") }
+        let session = self.extensionData.getSession()
 
         counterUploaded = 0
         uploadErrors = []
@@ -265,14 +271,14 @@ extension NCShareExtension {
         var conflicts: [tableMetadata] = []
         var invalidNameIndexes: [Int] = []
 
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
+        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: tblAccount.account)
 
         for (index, fileName) in filesName.enumerated() {
-            let newFileName = FileAutoRenamer.rename(fileName, account: session.account)
+            let newFileName = FileAutoRenamer.rename(fileName, account: tblAccount.account)
 
-            if let fileNameError = FileNameValidator.checkFileName(newFileName, account: session.account, capabilities: capabilities) {
+            if let fileNameError = FileNameValidator.checkFileName(newFileName, account: tblAccount.account, capabilities: capabilities) {
                 if filesName.count == 1 {
-                    showRenameFileDialog(named: fileName, account: account)
+                    showRenameFileDialog(named: fileName, account: tblAccount.account)
                     return
                 } else {
                     present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))") {
@@ -334,7 +340,13 @@ extension NCShareExtension {
 
     func upload(dismissAfterUpload: Bool = true) {
         guard uploadStarted else { return }
-        guard uploadMetadata.count > counterUploaded else { return DispatchQueue.main.async { self.finishedUploading(dismissAfterUpload: dismissAfterUpload) } }
+        guard uploadMetadata.count > counterUploaded else {
+            return DispatchQueue.main.async {
+                self.finishedUploading(dismissAfterUpload: dismissAfterUpload)
+            }
+        }
+        let session = self.extensionData.getSession()
+
         let metadata = uploadMetadata[counterUploaded]
         let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false, account: session.account)
         metadata.contentType = results.mimeType

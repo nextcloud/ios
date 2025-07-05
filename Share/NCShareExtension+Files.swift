@@ -9,55 +9,48 @@ import UniformTypeIdentifiers
 import NextcloudKit
 
 extension NCShareExtension {
-    @objc func reloadDatasource(withLoadFolder: Bool) {
-        let layoutForView = NCManageDatabase.shared.getLayoutForView(account: session.account, key: keyLayout, serverUrl: serverUrl)
+    func reloadDatasource(withLoadFolder: Bool) async {
+        let session = self.extensionData.getSession()
+        let layoutForView = await NCManageDatabase.shared.getLayoutForViewAsync(account: session.account, key: keyLayout, serverUrl: serverUrl)
         let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", session.account, serverUrl)
+        let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
+                                                              layoutForView: layoutForView,
+                                                              account: session.account)
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
 
-        self.database.getMetadatas(predicate: predicate,
-                                   layoutForView: layoutForView,
-                                   account: session.account) { metadatas, layoutForView, account in
-            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
-
-            if withLoadFolder {
-                self.loadFolder()
-            } else {
-                DispatchQueue.main.async {
-                    self.refreshControl.endRefreshing()
-                }
-            }
-
-            DispatchQueue.main.async {
-                self.collectionView.reloadData()
-            }
+        if withLoadFolder {
+            await self.loadFolder()
         }
+
+        self.collectionView.reloadData()
     }
 
     @objc func didCreateFolder(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
-              let metadata = self.database.getMetadataFromOcId(ocId)
-        else { return }
+        Task {
+            guard let userInfo = notification.userInfo as NSDictionary?,
+                  let ocId = userInfo["ocId"] as? String,
+                  let metadata = await self.database.getMetadataFromOcIdAsync(ocId)
+            else { return }
 
-        self.serverUrl += "/" + metadata.fileName
-        self.reloadDatasource(withLoadFolder: true)
-        self.setNavigationBar(navigationTitle: metadata.fileNameView)
+            self.serverUrl += "/" + metadata.fileName
+            await self.reloadDatasource(withLoadFolder: true)
+            self.setNavigationBar(navigationTitle: metadata.fileNameView)
+        }
     }
 
-    func loadFolder() {
-        NCNetworking.shared.readFolder(serverUrl: serverUrl,
-                                       account: session.account) { task in
+    func loadFolder() async {
+        let session = self.extensionData.getSession()
+        let resultsReadFolder = await NCNetworking.shared.readFolderAsync(serverUrl: serverUrl, account: session.account) { task in
             self.dataSourceTask = task
-            DispatchQueue.main.async {
-                self.collectionView.reloadData()
-            }
-        } completion: { _, metadataFolder, _, error in
-            DispatchQueue.main.async {
-                if error != .success {
-                    self.showAlert(description: error.errorDescription)
-                }
-                self.metadataFolder = metadataFolder
-                self.reloadDatasource(withLoadFolder: false)
-            }
+            self.collectionView.reloadData()
+        }
+
+        if resultsReadFolder.error == .success {
+            self.metadataFolder = resultsReadFolder.metadataFolder
+            await self.reloadDatasource(withLoadFolder: false)
+        } else {
+            self.showAlert(description: resultsReadFolder.error.errorDescription)
+
         }
     }
 }
