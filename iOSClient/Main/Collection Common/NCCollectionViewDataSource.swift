@@ -266,28 +266,6 @@ class NCCollectionViewDataSource: NSObject {
         return nil
     }
 
-    func getMetadata(indexPath: IndexPath,
-                     completion: @escaping  (_ metadata: tableMetadata?) -> Void) {
-        var result: tableMetadata?
-
-        if !metadatasForSection.isEmpty, indexPath.section < metadatasForSection.count {
-            if let metadataForSection = getMetadataForSection(indexPath.section),
-               indexPath.row < metadataForSection.metadatas.count {
-                result = metadataForSection.metadatas[indexPath.row]
-            }
-        } else if indexPath.row < self.metadatas.count {
-            result = self.metadatas[indexPath.row]
-        }
-
-        if let result {
-            self.database.getMetadataFromOcId(result.ocId) { metadata in
-                completion(metadata)
-            }
-        } else {
-            completion(result)
-        }
-    }
-
     func getMetadata(indexPath: IndexPath) -> tableMetadata? {
         if !metadatasForSection.isEmpty, indexPath.section < metadatasForSection.count {
             if let metadataForSection = getMetadataForSection(indexPath.section),

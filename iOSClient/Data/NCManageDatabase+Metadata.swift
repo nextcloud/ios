@@ -365,7 +365,7 @@ extension NCManageDatabase {
 
     // MARK: - Realm Write
 
-    func addMetadataIfNeeded(_ metadata: tableMetadata, sync: Bool = true) {
+    func addMetadataIfNeededAsync(_ metadata: tableMetadata, sync: Bool = true) {
         let detached = metadata.detachedCopy()
 
         performRealmWrite(sync: sync) { realm in
@@ -987,17 +987,6 @@ extension NCManageDatabase {
         }
     }
 
-    func getMetadata(predicate: NSPredicate, completion: @escaping (tableMetadata?) -> Void) {
-        performRealmRead({ realm in
-            return realm.objects(tableMetadata.self)
-                .filter(predicate)
-                .first
-                .map { $0.detachedCopy() }
-        }, sync: false) { result in
-            completion(result?.detachedCopy())
-        }
-    }
-
     func getMetadataAsync(predicate: NSPredicate) async -> tableMetadata? {
         return await performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
@@ -1015,7 +1004,9 @@ extension NCManageDatabase {
         } ?? []
     }
 
-    func getMetadatas(predicate: NSPredicate, sortedByKeyPath: String, ascending: Bool = false) -> [tableMetadata]? {
+    func getMetadatas(predicate: NSPredicate,
+                      sortedByKeyPath: String,
+                      ascending: Bool = false) -> [tableMetadata]? {
         return performRealmRead { realm in
             realm.objects(tableMetadata.self)
                 .filter(predicate)
@@ -1064,29 +1055,6 @@ extension NCManageDatabase {
                 .filter("ocId == %@", ocId)
                 .first
                 .map { $0.detachedCopy() }
-        }
-    }
-
-    func getMetadataFromOcId(_ ocId: String?,
-                             dispatchOnMainQueue: Bool = true,
-                             completion: @escaping (_ metadata: tableMetadata?) -> Void) {
-        guard let ocId else {
-            return completion(nil)
-        }
-
-        performRealmRead({ realm in
-            return realm.objects(tableMetadata.self)
-                .filter("ocId == %@", ocId)
-                .first
-                .map { $0.detachedCopy() }
-        }, sync: false) { result in
-            if dispatchOnMainQueue {
-                DispatchQueue.main.async {
-                    completion(result?.detachedCopy())
-                }
-            } else {
-                completion(result?.detachedCopy())
-            }
         }
     }
 
