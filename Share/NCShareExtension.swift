@@ -178,7 +178,7 @@ class NCShareExtension: UIViewController {
                 while self.serverUrl.last != "/" { self.serverUrl.removeLast() }
                 self.serverUrl.removeLast()
                 Task {
-                    await self.reloadDatasource(withLoadFolder: true)
+                    await self.reloadData()
                 }
                 var navigationTitle = (self.serverUrl as NSString).lastPathComponent
                 if self.utilityFileSystem.getHomeServer(session: session) == self.serverUrl {
@@ -246,7 +246,7 @@ class NCShareExtension: UIViewController {
         let alertController = UIAlertController.createFolder(serverUrl: serverUrl, session: session) { error in
             if error == .success {
                 Task {
-                    await self.reloadDatasource(withLoadFolder: true)
+                    await self.loadFolder()
                 }
             } else {
                 self.showAlert(title: "_error_createsubfolders_upload_", description: error.errorDescription)

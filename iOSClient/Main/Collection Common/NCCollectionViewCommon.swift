@@ -603,17 +603,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             spinner.centerYAnchor.constraint(equalTo: container.centerYAnchor)
         ])
 
-        UIView.transition(with: navigationController!.navigationBar, duration: 0.25, options: .transitionCrossDissolve) {
-            self.navigationItem.titleView = container
-        }
+        self.navigationItem.titleView = container
     }
 
     @MainActor
     func restoreDefaultTitle() {
-        UIView.transition(with: navigationController!.navigationBar, duration: 0.25, options: .transitionCrossDissolve) {
-            self.navigationItem.titleView = nil
-            self.navigationItem.title = self.titleCurrentFolder
-        }
+        self.navigationItem.titleView = nil
+        self.navigationItem.title = self.titleCurrentFolder
     }
 
     // MARK: - SEARCH

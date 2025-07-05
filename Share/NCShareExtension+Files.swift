@@ -9,7 +9,7 @@ import UniformTypeIdentifiers
 import NextcloudKit
 
 extension NCShareExtension {
-    func reloadDatasource(withLoadFolder: Bool) async {
+    func reloadData() async {
         let session = self.extensionData.getSession()
         let layoutForView = await NCManageDatabase.shared.getLayoutForViewAsync(account: session.account, key: keyLayout, serverUrl: serverUrl)
         let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", session.account, serverUrl)
@@ -17,11 +17,6 @@ extension NCShareExtension {
                                                               layoutForView: layoutForView,
                                                               account: session.account)
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
-
-        if withLoadFolder {
-            await self.loadFolder()
-        }
-
         self.collectionView.reloadData()
     }
 
@@ -33,7 +28,7 @@ extension NCShareExtension {
             else { return }
 
             self.serverUrl += "/" + metadata.fileName
-            await self.reloadDatasource(withLoadFolder: true)
+            await self.loadFolder()
             self.setNavigationBar(navigationTitle: metadata.fileNameView)
         }
     }
@@ -47,10 +42,9 @@ extension NCShareExtension {
 
         if resultsReadFolder.error == .success {
             self.metadataFolder = resultsReadFolder.metadataFolder
-            await self.reloadDatasource(withLoadFolder: false)
+            await self.reloadData()
         } else {
             self.showAlert(description: resultsReadFolder.error.errorDescription)
-
         }
     }
 }

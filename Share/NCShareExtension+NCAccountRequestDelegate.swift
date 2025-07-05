@@ -57,7 +57,6 @@ extension NCShareExtension: NCAccountRequestDelegate {
 
             // COLORS
             NCBrandColor.shared.settingThemingColor(account: account)
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": account])
 
             // NETWORKING
             NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup, delegate: NCNetworking.shared)
@@ -78,8 +77,10 @@ extension NCShareExtension: NCAccountRequestDelegate {
 
             serverUrl = utilityFileSystem.getHomeServer(session: session)
 
-            await reloadDatasource(withLoadFolder: true)
             setNavigationBar(navigationTitle: NCBrandOptions.shared.brand)
+
+            await reloadData()
+            await loadFolder()
         }
     }
 }

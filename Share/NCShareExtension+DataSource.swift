@@ -26,9 +26,12 @@ extension NCShareExtension: UICollectionViewDelegate {
                 self.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
                 return
             }
+
             self.serverUrl = serverUrl
-            await self.reloadDatasource(withLoadFolder: true)
             self.setNavigationBar(navigationTitle: metadata.fileNameView)
+
+            await self.reloadData()
+            await self.loadFolder()
         }
     }
 
