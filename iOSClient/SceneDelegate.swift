@@ -185,6 +185,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
 
         NCNetworking.shared.cancelAllQueue()
+        NCNetworking.shared.cancelAllDataTask()
+        NCNetworking.shared.cancelDownloadTasks()
+        NCNetworking.shared.cancelUploadTasks()
 
         if NCKeychain().presentPasscode {
             showPrivacyProtectionWindow()
