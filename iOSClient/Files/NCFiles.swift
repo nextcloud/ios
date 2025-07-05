@@ -219,7 +219,7 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         func downloadMetadata(_ metadata: tableMetadata) async -> Bool {
-            let fileSize = utilityFileSystem.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
+            let fileSize = utilityFileSystem.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
             guard fileSize > 0 else { return false }
 
             if let tblLocalFile = await database.getTableLocalFileAsync(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {

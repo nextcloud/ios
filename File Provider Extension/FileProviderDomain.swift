@@ -70,4 +70,34 @@ class FileProviderDomain: NSObject {
 
         try await NSFileProviderManager.remove(domainToRemove)
     }
+
+    /// Cleans up all NSFileProviderDomain entries that no longer exist in the tableAccount list.
+    /// Compares registered domains with the actual accounts in the database, and removes the obsolete ones.
+    func cleanOrphanedFileProviderDomains() async {
+        do {
+            // Get all registered domains
+            let registeredDomains = try await NSFileProviderManager.domains()
+
+            // Get all valid accounts
+            let validAccounts = await NCManageDatabase.shared.getAllTableAccountAsync()
+
+            // Build the list of valid domain identifiers
+            let validIdentifiers: Set<String> = Set(validAccounts.compactMap { tblAccount -> String? in
+                guard let host = NSURL(string: tblAccount.urlBase)?.host else {
+                    return nil
+                }
+                return NCUtilityFileSystem().getPathDomain(userId: tblAccount.userId, host: host)
+            })
+
+            for domain in registeredDomains {
+                let identifier = domain.identifier.rawValue
+                if !validIdentifiers.contains(identifier) {
+                    nkLog(info: "Removing orphaned domain: \(identifier)")
+                    try await NSFileProviderManager.remove(domain)
+                }
+            }
+        } catch {
+            nkLog(error: "Failed to clean orphaned domains: \(error)")
+        }
+    }
 }
