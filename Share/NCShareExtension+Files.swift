@@ -21,10 +21,14 @@ extension NCShareExtension {
             if withLoadFolder {
                 self.loadFolder()
             } else {
-                self.refreshControl.endRefreshing()
+                DispatchQueue.main.async {
+                    self.refreshControl.endRefreshing()
+                }
             }
 
-            self.collectionView.reloadData()
+            DispatchQueue.main.async {
+                self.collectionView.reloadData()
+            }
         }
     }
 
@@ -43,7 +47,9 @@ extension NCShareExtension {
         NCNetworking.shared.readFolder(serverUrl: serverUrl,
                                        account: session.account) { task in
             self.dataSourceTask = task
-            self.collectionView.reloadData()
+            DispatchQueue.main.async {
+                self.collectionView.reloadData()
+            }
         } completion: { _, metadataFolder, _, error in
             DispatchQueue.main.async {
                 if error != .success {

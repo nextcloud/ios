@@ -40,7 +40,8 @@ extension NCShareExtension: NCAccountRequestDelegate {
     func accountRequestAddAccount() { }
 
     func accountRequestChangeAccount(account: String, controller: UIViewController?) {
-        guard let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
+        guard let session = self.extensionData.getSession(account: account),
+              let tblAccount = self.extensionData.getTblAccoun() else {
             cancel(with: NCShareExtensionError.noAccount)
             return
         }
@@ -53,19 +54,16 @@ extension NCShareExtension: NCAccountRequestDelegate {
 
         // NETWORKING
         NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup, delegate: NCNetworking.shared)
-        NextcloudKit.shared.appendSession(account: tableAccount.account,
-                                          urlBase: tableAccount.urlBase,
-                                          user: tableAccount.user,
-                                          userId: tableAccount.userId,
-                                          password: NCKeychain().getPassword(account: tableAccount.account),
+        NextcloudKit.shared.appendSession(account: tblAccount.account,
+                                          urlBase: tblAccount.urlBase,
+                                          user: tblAccount.user,
+                                          userId: tblAccount.userId,
+                                          password: NCKeychain().getPassword(account: tblAccount.account),
                                           userAgent: userAgent,
                                           httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
                                           httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
                                           httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
                                           groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-
-        // SESSION
-        NCSession.shared.appendSession(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId)
 
         // get auto upload folder
         autoUploadFileName = self.database.getAccountAutoUploadFileName(account: account)

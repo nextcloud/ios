@@ -17,8 +17,14 @@ protocol DateCompareable {
 final class NCManageDatabase: @unchecked Sendable {
     static let shared = NCManageDatabase()
 
-    internal let realmQueue = DispatchQueue(label: "com.nextcloud.realmQueue", qos: .userInitiated)
     internal let utilityFileSystem = NCUtilityFileSystem()
+    internal static let realmQueueKey = DispatchSpecificKey<Void>()
+    internal let realmQueue: DispatchQueue = {
+        let queue = DispatchQueue(label: "com.nextcloud.realmQueue", qos: .userInitiated)
+        queue.setSpecific(key: realmQueueKey, value: ())
+        return queue
+    }()
+
 
     init() {
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
@@ -195,25 +201,40 @@ final class NCManageDatabase: @unchecked Sendable {
 
     @discardableResult
     func performRealmRead<T>(_ block: @escaping (Realm) throws -> T?, sync: Bool = true, completion: ((T?) -> Void)? = nil) -> T? {
+        let isOnRealmQueue = DispatchQueue.getSpecific(key: NCManageDatabase.realmQueueKey) != nil
+
         if sync {
-            return realmQueue.sync {
+            if isOnRealmQueue {
+                // Avoid deadlock if already inside the queue
                 do {
                     let realm = try Realm()
                     return try block(realm)
                 } catch {
-                    nkLog(error: "Realm read error: \(error)")
+                    nkLog(error: "Realm read error (sync, reentrant): \(error)")
                     return nil
+                }
+            } else {
+                return realmQueue.sync {
+                    do {
+                        let realm = try Realm()
+                        return try block(realm)
+                    } catch {
+                        nkLog(error: "Realm read error (sync): \(error)")
+                        return nil
+                    }
                 }
             }
         } else {
             realmQueue.async {
-                do {
-                    let realm = try Realm()
-                    let result = try block(realm)
-                    completion?(result)
-                } catch {
-                    nkLog(error: "Realm read error: \(error)")
-                    completion?(nil)
+                autoreleasepool {
+                    do {
+                        let realm = try Realm()
+                        let result = try block(realm)
+                        completion?(result)
+                    } catch {
+                        nkLog(error: "Realm read error (async): \(error)")
+                        completion?(nil)
+                    }
                 }
             }
             return nil
@@ -221,6 +242,8 @@ final class NCManageDatabase: @unchecked Sendable {
     }
 
     func performRealmWrite(sync: Bool = true, _ block: @escaping (Realm) throws -> Void) {
+        let isOnRealmQueue = DispatchQueue.getSpecific(key: NCManageDatabase.realmQueueKey) != nil
+
         let executionBlock: @Sendable () -> Void = {
             autoreleasepool {
                 do {
@@ -234,10 +257,15 @@ final class NCManageDatabase: @unchecked Sendable {
             }
         }
 
-        if isAppInBackground || !sync {
-            realmQueue.async(execute: executionBlock)
+        if sync {
+            if isOnRealmQueue {
+                // Avoid deadlock
+                executionBlock()
+            } else {
+                realmQueue.sync(execute: executionBlock)
+            }
         } else {
-            realmQueue.sync(execute: executionBlock)
+            realmQueue.async(execute: executionBlock)
         }
     }
 
@@ -246,21 +274,14 @@ final class NCManageDatabase: @unchecked Sendable {
     func performRealmReadAsync<T>(_ block: @escaping (Realm) throws -> T?) async -> T? {
         await withCheckedContinuation { continuation in
             realmQueue.async {
-                var didResume = false
-                defer {
-                    if !didResume {
-                        continuation.resume(returning: nil)
-                    }
-                }
-
                 autoreleasepool {
                     do {
                         let realm = try Realm()
                         let result = try block(realm)
                         continuation.resume(returning: result)
-                        didResume = true
                     } catch {
-                        nkLog(error: "Realm read error: \(error)")
+                        nkLog(error: "Realm read async error: \(error)")
+                        continuation.resume(returning: nil)
                     }
                 }
             }
@@ -270,13 +291,6 @@ final class NCManageDatabase: @unchecked Sendable {
     func performRealmWriteAsync(_ block: @escaping (Realm) throws -> Void) async {
         await withCheckedContinuation { continuation in
             realmQueue.async {
-                var didResume = false
-                defer {
-                    if !didResume {
-                        continuation.resume()
-                    }
-                }
-
                 autoreleasepool {
                     do {
                         let realm = try Realm()
@@ -284,10 +298,9 @@ final class NCManageDatabase: @unchecked Sendable {
                             try block(realm)
                         }
                     } catch {
-                        nkLog(error: "Realm write error: \(error)")
+                        nkLog(error: "Realm write async error: \(error)")
                     }
                     continuation.resume()
-                    didResume = true
                 }
             }
         }

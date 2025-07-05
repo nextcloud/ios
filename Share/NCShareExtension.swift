@@ -50,17 +50,11 @@ class NCShareExtension: UIViewController {
     let utility = NCUtility()
     let global = NCGlobal.shared
     let database = NCManageDatabase.shared
+
     var account: String = ""
+    let extensionData = NCShareExtensionData.shared
     var session: NCSession.Session {
-        if !account.isEmpty,
-           let tableAccount = self.database.getTableAccount(account: account) {
-            return NCSession.Session(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId)
-        } else if let activeTableAccount = self.database.getActiveTableAccount() {
-            self.account = activeTableAccount.account
-            return NCSession.Session(account: activeTableAccount.account, urlBase: activeTableAccount.urlBase, user: activeTableAccount.user, userId: activeTableAccount.userId)
-        } else {
-            return NCSession.Session(account: "", urlBase: "", user: "", userId: "")
-        }
+        return  self.extensionData.getSession(account: self.account) ?? NCSession.Session(account: "", urlBase: "", user: "", userId: "")
     }
 
     // MARK: - View Life Cycle
@@ -106,7 +100,7 @@ class NCShareExtension: UIViewController {
 
         NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCKeychain().log))
 
-        nkLog(debug: " Start Share session " + versionNextcloudiOS)
+        nkLog(start: " Start Share session " + versionNextcloudiOS)
 
         NCBrandColor.shared.createUserColors()
     }
@@ -166,6 +160,10 @@ class NCShareExtension: UIViewController {
     }
 
     func setNavigationBar(navigationTitle: String) {
+        guard let tblAccount = self.extensionData.getTblAccoun() else {
+            return
+        }
+
         navigationItem.title = navigationTitle
         cancelButton.title = NSLocalizedString("_cancel_", comment: "")
 
@@ -189,17 +187,16 @@ class NCShareExtension: UIViewController {
             }
         }
 
-        let tableAccount = self.database.getTableAccount(account: session.account)
-        let image = utility.loadUserImage(for: session.user, displayName: tableAccount?.displayName, urlBase: session.urlBase)
+        let image = utility.loadUserImage(for: session.user, displayName: tblAccount.displayName, urlBase: session.urlBase)
         let profileButton = UIButton(type: .custom)
         profileButton.setImage(image, for: .normal)
 
-        if serverUrl == utilityFileSystem.getHomeServer(session: self.session) {
+        if serverUrl == utilityFileSystem.getHomeServer(session: session) {
             var title = "  "
-            if let userAlias = tableAccount?.alias, !userAlias.isEmpty {
-                title += userAlias
+            if !tblAccount.alias.isEmpty {
+                title += tblAccount.alias
             } else {
-                title += tableAccount?.displayName ?? ""
+                title += tblAccount.displayName
             }
 
             profileButton.setTitle(title, for: .normal)
@@ -272,10 +269,6 @@ extension NCShareExtension {
 
         for (index, fileName) in filesName.enumerated() {
             let newFileName = FileAutoRenamer.rename(fileName, account: session.account)
-
-            if fileName != newFileName {
-                renameFile(oldName: fileName, newName: newFileName, account: session.account)
-            }
 
             if let fileNameError = FileNameValidator.checkFileName(newFileName, account: session.account, capabilities: capabilities) {
                 if filesName.count == 1 {
