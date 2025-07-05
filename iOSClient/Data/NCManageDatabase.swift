@@ -87,32 +87,28 @@ final class NCManageDatabase: @unchecked Sendable {
         }
     }
 
-    /*
-    private func openRealmm() {
+    func openRealmBackground() -> Bool {
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let databaseFileUrl = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
 
-        realmQueue.async {
-            Realm.Configuration.defaultConfiguration = Realm.Configuration(fileURL: databaseFileUrl,
-                                                                           schemaVersion: databaseSchemaVersion,
-                                                                           migrationBlock: { migration, oldSchemaVersion in
-                self.migrationSchema(migration, oldSchemaVersion)
-            }, shouldCompactOnLaunch: { totalBytes, usedBytes in
-                self.compactDB(totalBytes, usedBytes)
-            })
+        Realm.Configuration.defaultConfiguration = Realm.Configuration(fileURL: databaseFileUrl,
+                                                                       schemaVersion: databaseSchemaVersion,
+                                                                       migrationBlock: { migration, oldSchemaVersion in
+            self.migrationSchema(migration, oldSchemaVersion)
+        })
 
-            do {
-                let realm = try Realm()
-                if let url = realm.configuration.fileURL {
-                    nkLog(start: "Realm is located at: \(url.path)")
-                }
-            } catch let error {
-                nkLog(error: "Realm open failed: \(error)")
-                self.restoreDB()
+        do {
+            let realm = try Realm()
+            if let url = realm.configuration.fileURL {
+                nkLog(start: "Realm is located at: \(url.path)")
             }
+        } catch {
+            nkLog(error: "Realm error: \(error)")
+            return false
         }
+
+        return true
     }
-    */
 
     private func openRealmAppex() {
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)

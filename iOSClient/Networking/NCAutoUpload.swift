@@ -33,9 +33,7 @@ class NCAutoUpload: NSObject {
             return 0
         }
 
-        let num = await uploadAssets(tblAccount: tableAccount(value: tblAccount), assets: assets, fileNames: fileNames)
-
-        return num
+        return await uploadAssets(tblAccount: tblAccount, assets: assets, fileNames: fileNames)
     }
 
     func startManualAutoUploadForAlbums(controller: NCMainTabBarController?,

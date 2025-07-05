@@ -185,11 +185,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleAppRefresh(_ task: BGAppRefreshTask) {
         nkLog(tag: self.global.logTagTask, emoji: .start, message: "Start refresh task")
 
-        scheduleAppRefresh()
-        isAppSuspending = false // now you can read/write in Realm
-
         task.expirationHandler = {
             nkLog(tag: self.global.logTagTask, emoji: .warning, message: "Refresh task expiration handler")
+        }
+
+        // Open Realm
+        isAppSuspending = false // now you can read/write in Realm
+        if database.openRealmBackground() {
+            scheduleAppRefresh()
+        } else {
+            task.setTaskCompleted(success: false)
+            return
         }
 
         Task {
@@ -212,11 +218,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleProcessingTask(_ task: BGProcessingTask) {
         nkLog(tag: self.global.logTagTask, emoji: .start, message: "Start processing task")
 
-        scheduleAppProcessing()
-        isAppSuspending = false // now you can read/write in Realm
-
         task.expirationHandler = {
             nkLog(tag: self.global.logTagTask, emoji: .warning, message: "Processing task expiration handler")
+        }
+
+        // Open Realm
+        isAppSuspending = false // now you can read/write in Realm
+        if database.openRealmBackground() {
+            scheduleAppProcessing()
+        } else {
+            task.setTaskCompleted(success: false)
+            return
         }
 
         Task {
@@ -345,7 +357,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
         nkLog(debug: "Handle events For background URLSession: \(identifier)")
-        WidgetCenter.shared.reloadAllTimelines()
+
+        if database.openRealmBackground() {
+            WidgetCenter.shared.reloadAllTimelines()
+        }
+
         backgroundSessionCompletionHandler = completionHandler
     }
 
