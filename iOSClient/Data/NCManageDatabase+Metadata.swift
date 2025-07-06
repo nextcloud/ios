@@ -471,14 +471,6 @@ extension NCManageDatabase {
         }
     }
 
-    func deleteMetadatas(_ metadatas: [tableMetadata], sync: Bool = true) {
-        let detached = metadatas.map { $0.detachedCopy() }
-
-        performRealmWrite(sync: sync) { realm in
-            realm.delete(detached)
-        }
-    }
-
     // Asynchronously deletes an array of `tableMetadata` entries from the Realm database.
     /// - Parameter metadatas: The `tableMetadata` objects to be deleted.
     func deleteMetadatasAsync(_ metadatas: [tableMetadata]) async {
@@ -1017,16 +1009,27 @@ extension NCManageDatabase {
 
     func getMetadatasAsync(predicate: NSPredicate,
                            sortedByKeyPath: String,
-                           ascending: Bool = false) async -> [tableMetadata]? {
+                           ascending: Bool = false,
+                           limit: Int? = nil) async -> [tableMetadata]? {
         return await performRealmReadAsync { realm in
-            realm.objects(tableMetadata.self)
+            let results = realm.objects(tableMetadata.self)
                 .filter(predicate)
-                .sorted(byKeyPath: sortedByKeyPath, ascending: ascending)
-                .map { $0.detachedCopy() }
+                .sorted(byKeyPath: sortedByKeyPath,
+                        ascending: ascending)
+
+            if let limit {
+                let sliced = results.prefix(limit)
+                return sliced.map { $0.detachedCopy() }
+            } else {
+                return results.map { $0.detachedCopy() }
+            }
         }
     }
 
-    func getMetadatas(predicate: NSPredicate, numItems: Int, sorted: String, ascending: Bool) -> [tableMetadata] {
+    func getMetadatas(predicate: NSPredicate,
+                      numItems: Int,
+                      sorted: String,
+                      ascending: Bool) -> [tableMetadata] {
         return performRealmRead { realm in
             let results = realm.objects(tableMetadata.self)
                 .filter(predicate)
@@ -1053,17 +1056,6 @@ extension NCManageDatabase {
         return await performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
-                .first
-                .map { $0.detachedCopy() }
-        }
-    }
-
-    func getMetadataFromOcIdAndocIdTransfer(_ ocId: String?) -> tableMetadata? {
-        guard let ocId else { return nil }
-
-        return performRealmRead { realm in
-            realm.objects(tableMetadata.self)
-                .filter("ocId == %@ OR ocIdTransfer == %@", ocId, ocId)
                 .first
                 .map { $0.detachedCopy() }
         }
@@ -1215,13 +1207,16 @@ extension NCManageDatabase {
         } ?? []
     }
 
-    func getMetadatas(predicate: NSPredicate, sortedByKeyPath: String, ascending: Bool, arraySlice: Int) -> [tableMetadata] {
+    func getMetadatas(predicate: NSPredicate,
+                      sortedByKeyPath: String,
+                      ascending: Bool,
+                      limit: Int) -> [tableMetadata] {
         return performRealmRead { realm in
             let results = realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .sorted(byKeyPath: sortedByKeyPath, ascending: ascending)
                 .map { $0.detachedCopy() }
-                .prefix(arraySlice)
+                .prefix(limit)
             return Array(results)
         } ?? []
     }

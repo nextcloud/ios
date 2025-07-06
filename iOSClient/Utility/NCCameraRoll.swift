@@ -151,12 +151,7 @@ final class NCCameraRoll: CameraRollExtractor {
     ///   - originalMetadata: Metadata describing the asset
     ///   - modifyMetadataForUpload: Whether to update metadata for upload and store it in the database
     /// - Returns: An `ExtractedAsset` containing the updated metadata and path to the extracted file
-    func extractImageVideoFromAssetLocalIdentifier(
-        metadata originalMetadata: tableMetadata,
-        modifyMetadataForUpload: Bool
-    ) async throws -> ExtractedAsset {
-        var metadata = originalMetadata.detachedCopy()
-
+    func extractImageVideoFromAssetLocalIdentifier(metadata: tableMetadata, modifyMetadataForUpload: Bool) async throws -> ExtractedAsset {
         // Determine the appropriate chunk size based on the current network connection
         let chunkSize = NCNetworking.shared.networkReachability == .reachableEthernetOrWiFi
             ? NCGlobal.shared.chunkSizeMBEthernetOrWiFi
@@ -219,10 +214,11 @@ final class NCCameraRoll: CameraRollExtractor {
 
         // Optionally update metadata for upload and persist it
         if modifyMetadataForUpload {
-            updateMetadataForUpload(&metadata, size: Int(metadata.size), chunkSize: chunkSize)
+            let metadata = updateMetadataForUpload(metadata: metadata, size: Int(metadata.size), chunkSize: chunkSize)
+            return ExtractedAsset(metadata: metadata, filePath: filePath)
+        } else {
+            return ExtractedAsset(metadata: metadata, filePath: filePath)
         }
-
-        return ExtractedAsset(metadata: metadata, filePath: filePath)
     }
 
     private func metadataUpdatedFilename(for asset: PHAsset, original: String, ext: String, native: Bool) -> String {
@@ -239,14 +235,14 @@ final class NCCameraRoll: CameraRollExtractor {
         return nil
     }
 
-    private func updateMetadataForUpload(_ metadata: inout tableMetadata, size: Int, chunkSize: Int) {
+    private func updateMetadataForUpload(metadata: tableMetadata, size: Int, chunkSize: Int) -> tableMetadata {
         metadata.chunk = size > chunkSize ? chunkSize : 0
         metadata.e2eEncrypted = metadata.isDirectoryE2EE
         if metadata.chunk > 0 || metadata.e2eEncrypted {
             metadata.session = NCNetworking.shared.sessionUpload
         }
         metadata.isExtractFile = true
-        metadata = self.database.addAndReturnMetadata(metadata)
+        return self.database.addAndReturnMetadata(metadata)
     }
 
     private func extractImage(asset: PHAsset, ext: String, filePath: String, compatibilityFormat: Bool) async throws {

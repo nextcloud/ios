@@ -29,12 +29,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             self.window?.overrideUserInterfaceStyle = NCKeychain().appearanceInterfaceStyle
         }
 
-        if let activeTableAccount = self.database.getActiveTableAccount() {
-            nkLog(debug: "Account active \(activeTableAccount.account)")
+        if let activeTblAccount = self.database.getActiveTableAccount() {
+            nkLog(debug: "Account active \(activeTblAccount.account)")
+            // set capabilities
+            self.database.applyCachedCapabilitiesBlocking(account: activeTblAccount.account)
+            // set theming color
+            NCBrandColor.shared.settingThemingColor(account: activeTblAccount.account)
 
-            NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
             Task {
-                await NCNetworkingProcess.shared.setCurrentAccount(activeTableAccount.account)
+                await NCNetworkingProcess.shared.setCurrentAccount(activeTblAccount.account)
             }
             for tableAccount in self.database.getAllTableAccount() {
                 NextcloudKit.shared.appendSession(account: tableAccount.account,
@@ -57,7 +60,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
                 SceneManager.shared.register(scene: scene, withRootViewController: controller)
                 /// Set the ACCOUNT
-                controller.account = activeTableAccount.account
+                controller.account = activeTblAccount.account
                 ///
                 window?.rootViewController = controller
                 window?.makeKeyAndVisible()

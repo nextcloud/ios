@@ -241,9 +241,8 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     func deleteAutoUploadTransfer() {
         Task {
-            let autoUploadServerUrlBase = NCManageDatabase.shared.getAccountAutoUploadServerUrlBase(session: session)
-            await NCManageDatabase.shared.deleteAutoUploadTransferAsync(account: session.account,
-                                                                        autoUploadServerUrlBase: autoUploadServerUrlBase)
+            let autoUploadServerUrlBase = await NCManageDatabase.shared.getAccountAutoUploadServerUrlBaseAsync(session: session)
+            await NCManageDatabase.shared.deleteAutoUploadTransferAsync(account: session.account, autoUploadServerUrlBase: autoUploadServerUrlBase)
         }
     }
 

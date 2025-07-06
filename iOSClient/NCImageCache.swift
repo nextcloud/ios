@@ -39,30 +39,31 @@ final class NCImageCache: @unchecked Sendable {
 
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { _ in
 #if !EXTENSION
-            guard !self.isLoadingCache else {
-                return
-            }
-            self.isDidEnterBackground = false
-
-            var files: [NCFiles] = []
-            var cost: Int = 0
-
-            if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount(),
-               NCImageCache.shared.cache.count == 0 {
-                let session = NCSession.shared.getSession(account: activeTableAccount.account)
-
-                for mainTabBarController in SceneManager.shared.getControllers() {
-                    if let currentVC = mainTabBarController.selectedViewController as? UINavigationController,
-                       let file = currentVC.visibleViewController as? NCFiles {
-                        files.append(file)
-                    }
+            Task {
+                guard !self.isLoadingCache else {
+                    return
                 }
+                self.isDidEnterBackground = false
 
-                DispatchQueue.global().async {
+                var files: [NCFiles] = []
+                var cost: Int = 0
+
+                if let activeTableAccount = await NCManageDatabase.shared.getActiveTableAccountAsync(),
+                   NCImageCache.shared.cache.count == 0 {
+                    let session = NCSession.shared.getSession(account: activeTableAccount.account)
+
+                    for mainTabBarController in SceneManager.shared.getControllers() {
+                        if let currentVC = await mainTabBarController.selectedViewController as? UINavigationController,
+                           let file = await currentVC.visibleViewController as? NCFiles {
+                            files.append(file)
+                        }
+                    }
+
                     self.isLoadingCache = true
 
-                    /// MEDIA
-                    if let metadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: self.getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: false, showOnlyVideos: false), sortedByKeyPath: "datePhotosOriginal", freeze: true)?.prefix(self.countLimit) {
+                    // MEDIA
+                    let predicate = self.getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: false, showOnlyVideos: false)
+                    if let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: predicate, sortedByKeyPath: "datePhotosOriginal", limit: self.countLimit) {
                         autoreleasepool {
                             self.cache.removeAllValues()
 
@@ -79,11 +80,12 @@ final class NCImageCache: @unchecked Sendable {
                         }
                     }
 
-                    /// FILE
+                    // FILE
                     if !self.isDidEnterBackground {
-                        for file in files where !file.serverUrl.isEmpty {
+                        for file in files where await !file.serverUrl.isEmpty {
+                            let serverUrl = await file.serverUrl
                             NCNetworking.shared.notifyAllDelegates { delegate in
-                                delegate.transferReloadData(serverUrl: file.serverUrl, status: nil)
+                                delegate.transferReloadData(serverUrl: serverUrl, status: nil)
                             }
                         }
                     }
@@ -91,6 +93,7 @@ final class NCImageCache: @unchecked Sendable {
                     self.isLoadingCache = false
                 }
             }
+
 #endif
         }
     }

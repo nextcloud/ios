@@ -96,6 +96,9 @@ final class NCManageDatabase: @unchecked Sendable {
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let databaseFileUrl = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
 
+        // now you can read/write in Realm
+        isAppSuspending = false
+
         Realm.Configuration.defaultConfiguration = Realm.Configuration(fileURL: databaseFileUrl,
                                                                        schemaVersion: databaseSchemaVersion,
                                                                        migrationBlock: { migration, oldSchemaVersion in
@@ -107,12 +110,11 @@ final class NCManageDatabase: @unchecked Sendable {
             if let url = realm.configuration.fileURL {
                 nkLog(start: "Realm is located at: \(url.path)")
             }
+            return true
         } catch {
             nkLog(error: "Realm error: \(error)")
             return false
         }
-
-        return true
     }
 
     private func openRealmAppex() {
@@ -200,6 +202,11 @@ final class NCManageDatabase: @unchecked Sendable {
 
     @discardableResult
     func performRealmRead<T>(_ block: @escaping (Realm) throws -> T?, sync: Bool = true, completion: ((T?) -> Void)? = nil) -> T? {
+        // Skip execution if app is suspending
+        guard !isAppSuspending else {
+            completion?(nil)
+            return nil
+        }
         let isOnRealmQueue = DispatchQueue.getSpecific(key: NCManageDatabase.realmQueueKey) != nil
 
         if sync {
@@ -241,6 +248,11 @@ final class NCManageDatabase: @unchecked Sendable {
     }
 
     func performRealmWrite(sync: Bool = true, _ block: @escaping (Realm) throws -> Void) {
+        // Skip execution if app is suspending
+        guard !isAppSuspending
+        else {
+            return
+        }
         let isOnRealmQueue = DispatchQueue.getSpecific(key: NCManageDatabase.realmQueueKey) != nil
 
         let executionBlock: @Sendable () -> Void = {
@@ -271,7 +283,12 @@ final class NCManageDatabase: @unchecked Sendable {
     // MARK: - performRealmRead async/await, performRealmWrite async/await
 
     func performRealmReadAsync<T>(_ block: @escaping (Realm) throws -> T?) async -> T? {
-        await withCheckedContinuation { continuation in
+        // Skip execution if app is suspending
+        guard !isAppSuspending else {
+            return nil
+        }
+
+        return await withCheckedContinuation { continuation in
             realmQueue.async {
                 autoreleasepool {
                     do {
@@ -288,6 +305,11 @@ final class NCManageDatabase: @unchecked Sendable {
     }
 
     func performRealmWriteAsync(_ block: @escaping (Realm) throws -> Void) async {
+        // Skip execution if app is suspending
+        if isAppSuspending {
+            return
+        }
+
         await withCheckedContinuation { continuation in
             realmQueue.async {
                 autoreleasepool {

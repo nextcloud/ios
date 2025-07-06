@@ -518,6 +518,21 @@ extension NCManageDatabase {
         } ?? NCBrandOptions.shared.folderDefaultAutoUpload
     }
 
+    func getAccountAutoUploadFileNameAsync(account: String) async -> String {
+        let result: String? = await performRealmReadAsync { realm in
+            guard let record = realm.objects(tableAccount.self)
+                .filter("account == %@", account)
+                .first
+            else {
+                return nil
+            }
+
+            return record.autoUploadFileName.isEmpty ? nil : record.autoUploadFileName
+        }
+
+        return result ?? NCBrandOptions.shared.folderDefaultAutoUpload
+    }
+
     func getAccountAutoUploadDirectory(session: NCSession.Session) -> String {
         return getAccountAutoUploadDirectory(account: session.account, urlBase: session.urlBase, userId: session.userId)
     }
@@ -535,13 +550,39 @@ extension NCManageDatabase {
         } ?? homeServer
     }
 
+    func getAccountAutoUploadDirectoryAsync(account: String, urlBase: String, userId: String) async -> String {
+        let homeServer = utilityFileSystem.getHomeServer(urlBase: urlBase, userId: userId)
+
+        let directory: String? = await performRealmReadAsync { realm in
+            realm.objects(tableAccount.self)
+                .filter("account == %@", account)
+                .first?
+                .autoUploadDirectory
+        }
+
+        return directory.flatMap { dir in
+            (dir.isEmpty || dir.contains("/webdav")) ? homeServer : dir
+        } ?? homeServer
+    }
+
     func getAccountAutoUploadServerUrlBase(session: NCSession.Session) -> String {
         return getAccountAutoUploadServerUrlBase(account: session.account, urlBase: session.urlBase, userId: session.userId)
+    }
+
+    func getAccountAutoUploadServerUrlBaseAsync(session: NCSession.Session) async -> String {
+        return await getAccountAutoUploadServerUrlBaseAsync(account: session.account, urlBase: session.urlBase, userId: session.userId)
     }
 
     func getAccountAutoUploadServerUrlBase(account: String, urlBase: String, userId: String) -> String {
         let cameraFileName = self.getAccountAutoUploadFileName(account: account)
         let cameraDirectory = self.getAccountAutoUploadDirectory(account: account, urlBase: urlBase, userId: userId)
+        let folderPhotos = utilityFileSystem.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)
+        return folderPhotos
+    }
+
+    func getAccountAutoUploadServerUrlBaseAsync(account: String, urlBase: String, userId: String) async -> String {
+        let cameraFileName = await self.getAccountAutoUploadFileNameAsync(account: account)
+        let cameraDirectory = await self.getAccountAutoUploadDirectoryAsync(account: account, urlBase: urlBase, userId: userId)
         let folderPhotos = utilityFileSystem.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)
         return folderPhotos
     }
