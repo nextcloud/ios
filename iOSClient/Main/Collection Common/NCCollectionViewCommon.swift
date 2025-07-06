@@ -244,7 +244,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let dropInteraction = UIDropInteraction(delegate: self)
         self.navigationController?.navigationItem.leftBarButtonItems?.first?.customView?.addInteraction(dropInteraction)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming(_:)), name: NSNotification.Name(rawValue: global.notificationCenterChangeTheming), object: nil)
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterChangeTheming), object: nil, queue: .main) { [weak self] _ in
+            guard let self else { return }
+            self.collectionView.reloadData()
+        }
 
         DispatchQueue.main.async {
             self.collectionView?.collectionViewLayout.invalidateLayout()
@@ -526,12 +529,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func applicationWillResignActive(_ notification: NSNotification) {
         self.resetPlusButtonAlpha()
-    }
-
-    @objc func changeTheming(_ notification: NSNotification) {
-        Task {
-            await self.reloadDataSource()
-        }
     }
 
     @objc func closeRichWorkspaceWebView() {

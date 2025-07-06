@@ -31,6 +31,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         if let activeTblAccount = self.database.getActiveTableAccount() {
             nkLog(debug: "Account active \(activeTblAccount.account)")
+            // set capabilities
+            self.database.applyCachedCapabilitiesBlocking(account: activeTblAccount.account)
+            // set theming color
+            NCBrandColor.shared.settingThemingColor(account: activeTblAccount.account)
 
             Task {
                 await NCNetworkingProcess.shared.setCurrentAccount(activeTblAccount.account)
