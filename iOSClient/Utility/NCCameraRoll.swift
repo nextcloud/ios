@@ -151,10 +151,7 @@ final class NCCameraRoll: CameraRollExtractor {
     ///   - originalMetadata: Metadata describing the asset
     ///   - modifyMetadataForUpload: Whether to update metadata for upload and store it in the database
     /// - Returns: An `ExtractedAsset` containing the updated metadata and path to the extracted file
-    func extractImageVideoFromAssetLocalIdentifier(
-        metadata: tableMetadata,
-        modifyMetadataForUpload: Bool
-    ) async throws -> ExtractedAsset {
+    func extractImageVideoFromAssetLocalIdentifier(metadata: tableMetadata, modifyMetadataForUpload: Bool) async throws -> ExtractedAsset {
         // Determine the appropriate chunk size based on the current network connection
         let chunkSize = NCNetworking.shared.networkReachability == .reachableEthernetOrWiFi
             ? NCGlobal.shared.chunkSizeMBEthernetOrWiFi
