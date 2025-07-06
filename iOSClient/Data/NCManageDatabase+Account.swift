@@ -569,6 +569,10 @@ extension NCManageDatabase {
         return getAccountAutoUploadServerUrlBase(account: session.account, urlBase: session.urlBase, userId: session.userId)
     }
 
+    func getAccountAutoUploadServerUrlBaseAsync(session: NCSession.Session) async -> String {
+        return await getAccountAutoUploadServerUrlBaseAsync(account: session.account, urlBase: session.urlBase, userId: session.userId)
+    }
+
     func getAccountAutoUploadServerUrlBase(account: String, urlBase: String, userId: String) -> String {
         let cameraFileName = self.getAccountAutoUploadFileName(account: account)
         let cameraDirectory = self.getAccountAutoUploadDirectory(account: account, urlBase: urlBase, userId: userId)
