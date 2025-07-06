@@ -40,8 +40,8 @@ extension NCNetworking {
                     }
                 }
             }
-            await self.database.createRecommendedFilesAsync(account: session.account, recommendations: recommendationsToInsert)
 
+            await self.database.createRecommendedFilesAsync(account: session.account, recommendations: recommendationsToInsert)
             await collectionView.reloadData()
         }
     }

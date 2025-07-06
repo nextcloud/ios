@@ -57,7 +57,7 @@ class NCAutoUpload: NSObject {
 
     private func uploadAssets(controller: NCMainTabBarController? = nil, tblAccount: tableAccount, assets: [PHAsset], fileNames: [String]) async -> Int {
         let session = NCSession.shared.getSession(account: tblAccount.account)
-        let autoUploadServerUrlBase = self.database.getAccountAutoUploadServerUrlBase(account: tblAccount.account, urlBase: tblAccount.urlBase, userId: tblAccount.userId)
+        let autoUploadServerUrlBase = await self.database.getAccountAutoUploadServerUrlBaseAsync(account: tblAccount.account, urlBase: tblAccount.urlBase, userId: tblAccount.userId)
         var metadatas: [tableMetadata] = []
         let formatCompatibility = NCKeychain().formatCompatibility
         let keychainLivePhoto = NCKeychain().livePhoto
@@ -155,7 +155,7 @@ class NCAutoUpload: NSObject {
         guard hasPermission else {
             return (nil, nil)
         }
-        let autoUploadServerUrlBase = self.database.getAccountAutoUploadServerUrlBase(account: tblAccount.account, urlBase: tblAccount.urlBase, userId: tblAccount.userId)
+        let autoUploadServerUrlBase = await self.database.getAccountAutoUploadServerUrlBaseAsync(account: tblAccount.account, urlBase: tblAccount.urlBase, userId: tblAccount.userId)
         var mediaPredicates: [NSPredicate] = []
         var datePredicates: [NSPredicate] = []
         let fetchOptions = PHFetchOptions()
