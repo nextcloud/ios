@@ -29,7 +29,9 @@ actor NCNetworkingProcess {
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayerIsPlaying), object: nil, queue: nil) { [weak self] _ in
             guard let self else { return }
 
-            Task { await self.setScreenAwake(false) }
+            Task {
+                await self.setScreenAwake(false)
+            }
         }
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayerStoppedPlaying), object: nil, queue: nil) { [weak self] _ in
@@ -108,10 +110,10 @@ actor NCNetworkingProcess {
             if let metadatas, !metadatas.isEmpty {
                 let tasks = await networking.getAllDataTask()
                 let hasSyncTask = tasks.contains { $0.taskDescription == global.taskDescriptionSynchronization }
-                let resultsTransfer = metadatas.filter { global.metadataStatusInTransfer.contains($0.status) }
+                let resultsScreenAwake = metadatas.filter { global.metadataStatusForScreenAwake.contains($0.status) }
 
                 if enableControllingScreenAwake {
-                    ScreenAwakeManager.shared.mode = resultsTransfer.isEmpty && !hasSyncTask ? .off : NCKeychain().screenAwakeMode
+                    ScreenAwakeManager.shared.mode = resultsScreenAwake.isEmpty && !hasSyncTask ? .off : NCKeychain().screenAwakeMode
                 }
 
                 await runMetadataPipelineAsync()
