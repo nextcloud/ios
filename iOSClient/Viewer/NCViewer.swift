@@ -91,6 +91,14 @@ class NCViewer: NSObject {
                 }
                 return
             }
+            // CSV
+            if metadata.isCsv {
+                let editors = utility.editorsDirectEditing(account: metadata.account, contentType: metadata.contentType)
+                if editors.contains("Nextcloud Text") {
+                    qlPreview(viewController: viewController, metadata: metadata)
+                }
+            }
+
             // RichDocument: Collabora
             if metadata.isAvailableRichDocumentEditorView {
                 if metadata.url.isEmpty {
@@ -167,6 +175,10 @@ class NCViewer: NSObject {
             }
         }
 
+        qlPreview(viewController: viewController, metadata: metadata)
+    }
+
+    func qlPreview(viewController: UIViewController, metadata: tableMetadata) {
         // QLPreview
         let item = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
         if QLPreviewController.canPreview(item as QLPreviewItem) {
