@@ -466,40 +466,42 @@ extension NCNetworking {
     func uploadForbidden(metadata: tableMetadata, error: NKError) {
         let newFileName = self.utilityFileSystem.createFileName(metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account)
         let alertController = UIAlertController(title: error.errorDescription, message: NSLocalizedString("_change_upload_filename_", comment: ""), preferredStyle: .alert)
-            alertController.addAction(UIAlertAction(title: String(format: NSLocalizedString("_save_file_as_", comment: ""), newFileName), style: .default, handler: { _ in
-                let atpath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileName
-                let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + newFileName
-                self.utilityFileSystem.moveFile(atPath: atpath, toPath: toPath)
-                self.database.setMetadataSession(ocId: metadata.ocId,
-                                                 newFileName: newFileName,
-                                                 sessionTaskIdentifier: 0,
-                                                 sessionError: "",
-                                                 status: self.global.metadataStatusWaitUpload,
-                                                 errorCode: error.errorCode)
-            }))
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive, handler: { _ in
-                Task {
-                    await self.uploadCancelFile(metadata: metadata)
-                }
-            }))
 
-            // Select UIWindowScene active in serverUrl
-            var controller = UIApplication.shared.firstWindow?.rootViewController
-            let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
-            for windowScene in windowScenes {
-                if let rootViewController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
-                   rootViewController.currentServerUrl() == metadata.serverUrl {
-                    controller = rootViewController
-                    break
-                }
+        alertController.addAction(UIAlertAction(title: String(format: NSLocalizedString("_save_file_as_", comment: ""), newFileName), style: .default, handler: { _ in
+            let atpath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileName
+            let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + newFileName
+            self.utilityFileSystem.moveFile(atPath: atpath, toPath: toPath)
+            self.database.setMetadataSession(ocId: metadata.ocId,
+                                             newFileName: newFileName,
+                                             sessionTaskIdentifier: 0,
+                                             sessionError: "",
+                                             status: self.global.metadataStatusWaitUpload,
+                                             errorCode: error.errorCode)
+        }))
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive, handler: { _ in
+            Task {
+                await self.uploadCancelFile(metadata: metadata)
             }
-            controller?.present(alertController, animated: true)
+        }))
 
-            // Client Diagnostic
-            self.database.addDiagnostic(account: metadata.account,
-                                        issue: self.global.diagnosticIssueProblems,
-                                        error: self.global.diagnosticProblemsForbidden)
+        // Select UIWindowScene active in serverUrl
+        var controller = UIApplication.shared.firstWindow?.rootViewController
+        let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+        for windowScene in windowScenes {
+            if let rootViewController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
+               rootViewController.currentServerUrl() == metadata.serverUrl {
+                controller = rootViewController
+                break
+            }
+        }
+        controller?.present(alertController, animated: true)
 
+        // Client Diagnostic
+        Task {
+            await self.database.addDiagnosticAsync(account: metadata.account,
+                                                   issue: self.global.diagnosticIssueProblems,
+                                                   error: self.global.diagnosticProblemsForbidden)
+        }
     }
 
     func termsOfService(metadata: tableMetadata) {
@@ -541,10 +543,11 @@ extension NCNetworking {
                 controller?.present(alertController, animated: true)
 
                 // Client Diagnostic
-                self.database.addDiagnostic(account: metadata.account,
-                                            issue: self.global.diagnosticIssueProblems,
-                                            error: self.global.diagnosticProblemsForbidden,
-                                            sync: false)
+                Task {
+                    await self.database.addDiagnosticAsync(account: metadata.account,
+                                                           issue: self.global.diagnosticIssueProblems,
+                                                           error: self.global.diagnosticProblemsForbidden)
+                }
             }
         }
     }

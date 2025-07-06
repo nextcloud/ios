@@ -32,20 +32,6 @@ extension NCManageDatabase {
 
     // MARK: - Realm write
 
-    func addDiagnostic(account: String, issue: String, error: String? = nil, sync: Bool = true) {
-        performRealmWrite(sync: sync) { realm in
-            let primaryKey = account + issue + (error ?? "")
-
-            if let result = realm.object(ofType: TableSecurityGuardDiagnostics.self, forPrimaryKey: primaryKey) {
-                result.counter += 1
-                result.oldest = Date().timeIntervalSince1970
-            } else {
-                let table = TableSecurityGuardDiagnostics(account: account, issue: issue, error: error, date: Date())
-                realm.add(table)
-            }
-        }
-    }
-
     func addDiagnosticAsync(account: String,
                             issue: String,
                             error: String? = nil) async {
@@ -78,23 +64,13 @@ extension NCManageDatabase {
 
     // MARK: - Realm read
 
-    func existsDiagnostics(account: String) -> Bool {
-        var exists = false
-        performRealmRead { realm in
+    func existsDiagnosticsAsync(account: String) async -> Bool {
+        let exists: Bool? = await performRealmReadAsync { realm in
             let results = realm.objects(TableSecurityGuardDiagnostics.self)
                 .filter("account == %@", account)
-            exists = !results.isEmpty
+            return !results.isEmpty
         }
-        return exists
-    }
-
-    func getDiagnostics(account: String, issue: String) -> Results<TableSecurityGuardDiagnostics>? {
-        var results: Results<TableSecurityGuardDiagnostics>?
-        performRealmRead { realm in
-            results = realm.objects(TableSecurityGuardDiagnostics.self)
-                .filter("account == %@ AND issue == %@", account, issue)
-        }
-        return results
+        return exists ?? false
     }
 
     func getDiagnosticsAsync(account: String) async -> [TableSecurityGuardDiagnostics]? {
