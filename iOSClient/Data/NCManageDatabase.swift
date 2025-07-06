@@ -110,12 +110,11 @@ final class NCManageDatabase: @unchecked Sendable {
             if let url = realm.configuration.fileURL {
                 nkLog(start: "Realm is located at: \(url.path)")
             }
+            return true
         } catch {
             nkLog(error: "Realm error: \(error)")
             return false
         }
-
-        return true
     }
 
     private func openRealmAppex() {
