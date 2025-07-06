@@ -158,8 +158,8 @@ actor NCNetworkingProcess {
         /// ------------------------ WEBDAV
         let waitWebDav = metadatas.filter { self.global.metadataStatusWaitWebDav.contains($0.status) }
         if !waitWebDav.isEmpty {
-            let error = await metadataStatusWaitWebDav(metadatas: Array(waitWebDav))
-            if error != .success {
+            let (status, error) = await metadataStatusWaitWebDav(metadatas: Array(waitWebDav))
+            if  (error == .cancelled) || (status == global.metadataStatusWaitDelete && error != .success) {
                 return
             }
         }
@@ -280,13 +280,15 @@ actor NCNetworkingProcess {
         return
     }
 
-    private func metadataStatusWaitWebDav(metadatas: [tableMetadata]) async -> NKError {
+    private func metadataStatusWaitWebDav(metadatas: [tableMetadata]) async -> (status: Int?, error: NKError) {
 
         /// ------------------------ CREATE FOLDER
         ///
         let metadatasWaitCreateFolder = metadatas.filter { $0.status == global.metadataStatusWaitCreateFolder }.sorted { $0.serverUrl < $1.serverUrl }
         for metadata in metadatasWaitCreateFolder {
-            guard timer != nil else { return .success }
+            guard timer != nil else {
+                return (global.metadataStatusWaitCreateFolder, .cancelled)
+            }
 
             let resultsCreateFolder = await networking.createFolder(fileName: metadata.fileName,
                                                                   serverUrl: metadata.serverUrl,
@@ -310,7 +312,7 @@ actor NCNetworkingProcess {
             }
 
             if resultsCreateFolder.error != .success {
-                return resultsCreateFolder.error
+                return (global.metadataStatusWaitCreateFolder, resultsCreateFolder.error)
             }
         }
 
@@ -318,7 +320,9 @@ actor NCNetworkingProcess {
         ///
         let metadatasWaitCopy = metadatas.filter { $0.status == global.metadataStatusWaitCopy }.sorted { $0.serverUrl < $1.serverUrl }
         for metadata in metadatasWaitCopy {
-            guard timer != nil else { return .success }
+            guard timer != nil else {
+                return (global.metadataStatusWaitCopy, .cancelled)
+            }
 
             let serverUrlTo = metadata.serverUrlTo
             let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
@@ -348,7 +352,7 @@ actor NCNetworkingProcess {
             }
 
             if resultCopy.error != .success {
-                return resultCopy.error
+                return (global.metadataStatusWaitCopy, resultCopy.error)
             }
         }
 
@@ -356,7 +360,9 @@ actor NCNetworkingProcess {
         ///
         let metadatasWaitMove = metadatas.filter { $0.status == global.metadataStatusWaitMove }.sorted { $0.serverUrl < $1.serverUrl }
         for metadata in metadatasWaitMove {
-            guard timer != nil else { return .success }
+            guard timer != nil else {
+                return (global.metadataStatusWaitMove, .cancelled)
+            }
 
             let serverUrlTo = metadata.serverUrlTo
             let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
@@ -402,7 +408,7 @@ actor NCNetworkingProcess {
             }
 
             if resultMove.error != .success {
-                return resultMove.error
+                return (global.metadataStatusWaitMove, resultMove.error)
             }
         }
 
@@ -410,7 +416,9 @@ actor NCNetworkingProcess {
         ///
         let metadatasWaitFavorite = metadatas.filter { $0.status == global.metadataStatusWaitFavorite }.sorted { $0.serverUrl < $1.serverUrl }
         for metadata in metadatasWaitFavorite {
-            guard timer != nil else { return .success }
+            guard timer != nil else {
+                return (global.metadataStatusWaitFavorite, .cancelled)
+            }
 
             let session = NCSession.Session(account: metadata.account, urlBase: metadata.urlBase, user: metadata.user, userId: metadata.userId)
             let fileName = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
@@ -436,7 +444,7 @@ actor NCNetworkingProcess {
             }
 
             if resultsFavorite.error != .success {
-                return resultsFavorite.error
+                return (global.metadataStatusWaitFavorite, resultsFavorite.error)
             }
         }
 
@@ -444,7 +452,9 @@ actor NCNetworkingProcess {
         ///
         let metadatasWaitRename = metadatas.filter { $0.status == global.metadataStatusWaitRename }.sorted { $0.serverUrl < $1.serverUrl }
         for metadata in metadatasWaitRename {
-            guard timer != nil else { return .success }
+            guard timer != nil else {
+                return (global.metadataStatusWaitRename, .cancelled)
+            }
 
             let serverUrlFileNameSource = metadata.serveUrlFileName
             let serverUrlFileNameDestination = metadata.serverUrl + "/" + metadata.fileName
@@ -463,7 +473,7 @@ actor NCNetworkingProcess {
             }
 
             if resultRename.error != .success {
-                return resultRename.error
+                return (global.metadataStatusWaitRename, resultRename.error)
             }
         }
 
@@ -475,7 +485,9 @@ actor NCNetworkingProcess {
             var returnError = NKError()
 
             for metadata in metadatasWaitDelete {
-                guard timer != nil else { return .success }
+                guard timer != nil else {
+                    return (global.metadataStatusWaitDelete, .cancelled)
+                }
 
                 let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
                 let resultDelete = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: serverUrlFileName, account: metadata.account)
@@ -513,10 +525,10 @@ actor NCNetworkingProcess {
             }
 
             if returnError != .success {
-                return returnError
+                return (global.metadataStatusWaitDelete, returnError)
             }
         }
 
-        return .success
+        return (nil, .success)
     }
 }
