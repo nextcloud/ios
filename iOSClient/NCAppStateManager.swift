@@ -35,6 +35,8 @@ final class NCAppStateManager {
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
+            isAppInBackground = true
+
             nkLog(debug: "Application did enter in background")
         }
     }
