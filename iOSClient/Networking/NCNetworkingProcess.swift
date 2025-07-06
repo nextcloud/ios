@@ -68,6 +68,9 @@ actor NCNetworkingProcess {
     }
 
     func startTimer(interval: TimeInterval) async {
+        guard !isAppInBackground else {
+            return
+        }
         await stopTimer()
 
         lastUsedInterval = interval
