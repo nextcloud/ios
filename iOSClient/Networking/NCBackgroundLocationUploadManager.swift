@@ -111,6 +111,7 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
         }
 
         // Open Realm
+        isAppSuspending = false // now you can read/write in Realm
         if database.openRealmBackground() {
             let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
             let location = locations.last

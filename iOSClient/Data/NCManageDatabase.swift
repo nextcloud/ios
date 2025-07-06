@@ -200,7 +200,14 @@ final class NCManageDatabase: @unchecked Sendable {
 
     @discardableResult
     func performRealmRead<T>(_ block: @escaping (Realm) throws -> T?, sync: Bool = true, completion: ((T?) -> Void)? = nil) -> T? {
+<<<<<<< HEAD
         let isOnRealmQueue = DispatchQueue.getSpecific(key: NCManageDatabase.realmQueueKey) != nil
+=======
+        guard !isAppSuspending else {
+            completion?(nil)
+            return nil
+        }
+>>>>>>> parent of 2e083aae52 (remove appsuspending)
 
         if sync {
             if isOnRealmQueue {
@@ -241,7 +248,14 @@ final class NCManageDatabase: @unchecked Sendable {
     }
 
     func performRealmWrite(sync: Bool = true, _ block: @escaping (Realm) throws -> Void) {
+<<<<<<< HEAD
         let isOnRealmQueue = DispatchQueue.getSpecific(key: NCManageDatabase.realmQueueKey) != nil
+=======
+        guard !isAppSuspending
+        else {
+            return
+        }
+>>>>>>> parent of 2e083aae52 (remove appsuspending)
 
         let executionBlock: @Sendable () -> Void = {
             autoreleasepool {
@@ -273,6 +287,23 @@ final class NCManageDatabase: @unchecked Sendable {
     func performRealmReadAsync<T>(_ block: @escaping (Realm) throws -> T?) async -> T? {
         await withCheckedContinuation { continuation in
             realmQueue.async {
+<<<<<<< HEAD
+=======
+                var didResume = false
+                defer {
+                    if !didResume {
+                        continuation.resume(returning: nil)
+                    }
+                }
+
+                if isAppSuspending {
+                    // App is suspending — don't execute the block
+                    continuation.resume(returning: nil)
+                    didResume = true
+                    return
+                }
+
+>>>>>>> parent of 2e083aae52 (remove appsuspending)
                 autoreleasepool {
                     do {
                         let realm = try Realm()
@@ -290,6 +321,22 @@ final class NCManageDatabase: @unchecked Sendable {
     func performRealmWriteAsync(_ block: @escaping (Realm) throws -> Void) async {
         await withCheckedContinuation { continuation in
             realmQueue.async {
+<<<<<<< HEAD
+=======
+                var didResume = false
+                defer {
+                    if !didResume {
+                        continuation.resume()
+                    }
+                }
+
+                if isAppSuspending {
+                    continuation.resume()
+                    didResume = true
+                    return
+                }
+
+>>>>>>> parent of 2e083aae52 (remove appsuspending)
                 autoreleasepool {
                     do {
                         let realm = try Realm()
