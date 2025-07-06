@@ -141,7 +141,6 @@ actor NCNetworkingProcess {
 
     private func removeUploadedAssetsIfNeeded() async {
         guard NCKeychain().removePhotoCameraRoll,
-              !isAppInBackground,
               let localIdentifiers = await self.database.getAssetLocalIdentifiersUploadedAsync(),
               !localIdentifiers.isEmpty else {
             return
@@ -234,9 +233,6 @@ actor NCNetworkingProcess {
                     let isInDirectoryE2EE = metadata.isDirectoryE2EE
                     /// NO WiFi
                     if !isWiFi && metadata.session == networking.sessionUploadBackgroundWWan { continue }
-                    if isAppInBackground && (isInDirectoryE2EE || metadata.chunk > 0) {
-                        continue
-                    }
 
                     await self.database.setMetadataStatusAsync(ocId: metadata.ocId,
                                                                status: global.metadataStatusUploading)
