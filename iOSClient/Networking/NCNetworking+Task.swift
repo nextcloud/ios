@@ -61,7 +61,6 @@ extension NCNetworking {
 
     func cancelAllTaskForGoInBackground() {
         cancelAllQueue()
-        cancelAllDataTask()
         cancelDownloadTasks()
         cancelUploadTasks()
     }

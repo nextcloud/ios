@@ -41,16 +41,16 @@ actor NCNetworkingProcess {
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { [weak self] _ in
             guard let self else { return }
 
-            Task { await self.stopTimer() }
+            Task {
+                await self.stopTimer()
+            }
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { [weak self] _ in
             guard let self else { return }
 
             Task {
-                if !isAppInBackground {
-                    await self.startTimer(interval: self.maxInterval)
-                }
+                await self.startTimer(interval: self.maxInterval)
             }
         }
     }
