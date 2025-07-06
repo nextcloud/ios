@@ -35,7 +35,9 @@ actor NCNetworkingProcess {
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayerStoppedPlaying), object: nil, queue: nil) { [weak self] _ in
             guard let self else { return }
 
-            Task { await self.setScreenAwake(true) }
+            Task {
+                await self.setScreenAwake(true)
+            }
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { [weak self] _ in
@@ -190,7 +192,9 @@ actor NCNetworkingProcess {
         let isWiFi = self.networking.networkReachability == NKTypeReachability.reachableEthernetOrWiFi
         let sessionUploadSelectors = [self.global.selectorUploadFileNODelete, self.global.selectorUploadFile, self.global.selectorUploadAutoUpload]
         var counterUploading = metadatas.filter { $0.status == self.global.metadataStatusUploading }.count
-        for sessionSelector in sessionUploadSelectors where counterUploading < httpMaximumConnectionsPerHostInUpload {
+        for sessionSelector in sessionUploadSelectors {
+            guard counterUploading < httpMaximumConnectionsPerHostInUpload else { return }
+
             let limitUpload = max(0, httpMaximumConnectionsPerHostInUpload - counterUploading)
             let filteredUpload = metadatas
                 .filter { $0.sessionSelector == sessionSelector && $0.status == NCGlobal.shared.metadataStatusWaitUpload }
@@ -202,14 +206,19 @@ actor NCNetworkingProcess {
                 nkLog(debug: "PROCESS (UPLOAD) find \(metadatasWaitUpload.count) items")
             }
 
-            for metadata in metadatasWaitUpload where counterUploading < httpMaximumConnectionsPerHostInUpload {
+            for metadata in metadatasWaitUpload {
+                guard counterUploading < httpMaximumConnectionsPerHostInUpload else { return }
                 let metadatas = await NCCameraRoll().extractCameraRoll(from: metadata)
 
+                // no extract photo
                 if metadatas.isEmpty {
                     await self.database.deleteMetadataOcIdAsync(metadata.ocId)
                 }
 
-                for metadata in metadatas where counterUploading < httpMaximumConnectionsPerHostInUpload {
+                for metadata in metadatas {
+                    guard counterUploading < httpMaximumConnectionsPerHostInUpload,
+                          timer != nil else { return }
+
                     /// isE2EE
                     let isInDirectoryE2EE = metadata.isDirectoryE2EE
                     /// NO WiFi
@@ -277,6 +286,8 @@ actor NCNetworkingProcess {
         ///
         let metadatasWaitCreateFolder = metadatas.filter { $0.status == global.metadataStatusWaitCreateFolder }.sorted { $0.serverUrl < $1.serverUrl }
         for metadata in metadatasWaitCreateFolder {
+            guard timer != nil else { return .success }
+
             let resultsCreateFolder = await networking.createFolder(fileName: metadata.fileName,
                                                                   serverUrl: metadata.serverUrl,
                                                                   overwrite: true,
@@ -307,6 +318,8 @@ actor NCNetworkingProcess {
         ///
         let metadatasWaitCopy = metadatas.filter { $0.status == global.metadataStatusWaitCopy }.sorted { $0.serverUrl < $1.serverUrl }
         for metadata in metadatasWaitCopy {
+            guard timer != nil else { return .success }
+
             let serverUrlTo = metadata.serverUrlTo
             let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
             var serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
@@ -343,6 +356,8 @@ actor NCNetworkingProcess {
         ///
         let metadatasWaitMove = metadatas.filter { $0.status == global.metadataStatusWaitMove }.sorted { $0.serverUrl < $1.serverUrl }
         for metadata in metadatasWaitMove {
+            guard timer != nil else { return .success }
+
             let serverUrlTo = metadata.serverUrlTo
             let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
             let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
@@ -395,6 +410,8 @@ actor NCNetworkingProcess {
         ///
         let metadatasWaitFavorite = metadatas.filter { $0.status == global.metadataStatusWaitFavorite }.sorted { $0.serverUrl < $1.serverUrl }
         for metadata in metadatasWaitFavorite {
+            guard timer != nil else { return .success }
+
             let session = NCSession.Session(account: metadata.account, urlBase: metadata.urlBase, user: metadata.user, userId: metadata.userId)
             let fileName = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
             let resultsFavorite = await NextcloudKit.shared.setFavoriteAsync(fileName: fileName, favorite: metadata.favorite, account: metadata.account)
@@ -427,6 +444,8 @@ actor NCNetworkingProcess {
         ///
         let metadatasWaitRename = metadatas.filter { $0.status == global.metadataStatusWaitRename }.sorted { $0.serverUrl < $1.serverUrl }
         for metadata in metadatasWaitRename {
+            guard timer != nil else { return .success }
+
             let serverUrlFileNameSource = metadata.serveUrlFileName
             let serverUrlFileNameDestination = metadata.serverUrl + "/" + metadata.fileName
             let resultRename = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: false, account: metadata.account)
@@ -456,6 +475,8 @@ actor NCNetworkingProcess {
             var returnError = NKError()
 
             for metadata in metadatasWaitDelete {
+                guard timer != nil else { return .success }
+
                 let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
                 let resultDelete = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: serverUrlFileName, account: metadata.account)
 
