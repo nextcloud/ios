@@ -40,10 +40,7 @@ final class NCAppStateManager {
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
-<<<<<<< HEAD
-=======
             isAppSuspending = true
->>>>>>> parent of 2e083aae52 (remove appsuspending)
             isAppInBackground = true
 
             nkLog(debug: "Application did enter in background")
