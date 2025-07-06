@@ -68,9 +68,13 @@ actor NCNetworkingProcess {
     }
 
     func startTimer(interval: TimeInterval) async {
-        guard !isAppInBackground else {
+        let isActive = await MainActor.run {
+            UIApplication.shared.applicationState == .active
+        }
+        guard isActive else {
             return
         }
+
         await stopTimer()
 
         lastUsedInterval = interval
@@ -79,7 +83,9 @@ actor NCNetworkingProcess {
 
         newTimer.setEventHandler { [weak self] in
             guard let self else { return }
-            Task { await self.handleTimerTick() }
+            Task {
+                await self.handleTimerTick()
+            }
         }
 
         timer = newTimer
