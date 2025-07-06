@@ -403,7 +403,7 @@ extension NCNetworking {
                     if capabilities.termsOfService {
                         termsOfService(metadata: metadata)
                     } else {
-                        uploadForbidden(metadata: metadata, error: error)
+                        await uploadForbidden(metadata: metadata, error: error)
                     }
                     #endif
                 }
@@ -463,6 +463,7 @@ extension NCNetworking {
     }
 
 #if !EXTENSION
+    @MainActor
     func uploadForbidden(metadata: tableMetadata, error: NKError) {
         let newFileName = self.utilityFileSystem.createFileName(metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account)
         let alertController = UIAlertController(title: error.errorDescription, message: NSLocalizedString("_change_upload_filename_", comment: ""), preferredStyle: .alert)
