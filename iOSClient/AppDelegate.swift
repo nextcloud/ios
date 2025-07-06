@@ -190,7 +190,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         // Open Realm
-        isAppSuspending = false // now you can read/write in Realm
         if database.openRealmBackground() {
             scheduleAppRefresh()
         } else {
@@ -223,7 +222,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         // Open Realm
-        isAppSuspending = false // now you can read/write in Realm
         if database.openRealmBackground() {
             scheduleAppProcessing()
         } else {

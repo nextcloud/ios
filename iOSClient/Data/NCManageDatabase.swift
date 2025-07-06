@@ -96,6 +96,9 @@ final class NCManageDatabase: @unchecked Sendable {
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let databaseFileUrl = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
 
+        // now you can read/write in Realm
+        isAppSuspending = false
+
         Realm.Configuration.defaultConfiguration = Realm.Configuration(fileURL: databaseFileUrl,
                                                                        schemaVersion: databaseSchemaVersion,
                                                                        migrationBlock: { migration, oldSchemaVersion in
@@ -200,6 +203,7 @@ final class NCManageDatabase: @unchecked Sendable {
 
     @discardableResult
     func performRealmRead<T>(_ block: @escaping (Realm) throws -> T?, sync: Bool = true, completion: ((T?) -> Void)? = nil) -> T? {
+        // Skip execution if app is suspending
         guard !isAppSuspending else {
             completion?(nil)
             return nil
@@ -245,6 +249,7 @@ final class NCManageDatabase: @unchecked Sendable {
     }
 
     func performRealmWrite(sync: Bool = true, _ block: @escaping (Realm) throws -> Void) {
+        // Skip execution if app is suspending
         guard !isAppSuspending
         else {
             return
@@ -301,7 +306,7 @@ final class NCManageDatabase: @unchecked Sendable {
     }
 
     func performRealmWriteAsync(_ block: @escaping (Realm) throws -> Void) async {
-        // App is suspending — don't execute the block
+        // Skip execution if app is suspending
         if isAppSuspending {
             return
         }

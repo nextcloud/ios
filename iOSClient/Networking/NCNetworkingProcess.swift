@@ -234,7 +234,9 @@ actor NCNetworkingProcess {
                     let isInDirectoryE2EE = metadata.isDirectoryE2EE
                     /// NO WiFi
                     if !isWiFi && metadata.session == networking.sessionUploadBackgroundWWan { continue }
-                    if isAppInBackground && (isInDirectoryE2EE || metadata.chunk > 0) { continue }
+                    if isAppInBackground && (isInDirectoryE2EE || metadata.chunk > 0) {
+                        continue
+                    }
 
                     await self.database.setMetadataStatusAsync(ocId: metadata.ocId,
                                                                status: global.metadataStatusUploading)
