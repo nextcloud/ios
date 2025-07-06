@@ -83,6 +83,9 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         loginAddressDetail.textColor = textColor
         loginAddressDetail.text = String.localizedStringWithFormat(NSLocalizedString("_login_address_detail_", comment: ""), NCBrandOptions.shared.brand)
 
+        // QR code button
+        qrCode.tintColor = NCBrandColor.shared.customer.isTooLight() ? .black : .white
+
         // brand
         if NCBrandOptions.shared.disable_request_login_url {
             baseUrlTextField.isEnabled = false

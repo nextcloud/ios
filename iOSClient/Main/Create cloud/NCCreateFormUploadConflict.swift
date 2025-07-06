@@ -135,7 +135,6 @@ class NCCreateFormUploadConflict: UIViewController {
     // MARK: - ConflictDialog
 
     func conflictDialog(fileCount: Int) {
-
         var tile = ""
         var titleReplace = ""
         var titleKeep = ""

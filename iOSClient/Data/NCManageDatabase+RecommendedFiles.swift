@@ -38,25 +38,32 @@ extension NCManageDatabase {
 
     // MARK: - Realm write
 
-    func createRecommendedFiles(account: String, recommendations: [NKRecommendation], sync: Bool = true) {
-        performRealmWrite(sync: sync) { realm in
-            // Removed all objct for account
-            let results = realm.objects(tableRecommendedFiles.self).filter("account == %@", account)
-            realm.delete(results)
-
-            // Added the new recommendations
-            for recommendation in recommendations {
-                let recommendedFile = tableRecommendedFiles(account: account, id: recommendation.id, timestamp: recommendation.timestamp, name: recommendation.name, directory: recommendation.directory, extensionType: recommendation.extensionType, mimeType: recommendation.mimeType, hasPreview: recommendation.hasPreview, reason: recommendation.reason)
-                realm.add(recommendedFile)
-            }
-        }
-    }
-
-    func deleteAllRecommendedFiles(account: String, sync: Bool = true) {
-        performRealmWrite(sync: sync) { realm in
+    /// Asynchronously deletes existing recommended files for the given account and writes new ones into the Realm database.
+    /// - Parameters:
+    ///   - account: The account identifier to filter existing objects.
+    ///   - recommendations: The array of new recommended files to insert.
+    /// - Returns: Void. Executed inside a Realm write transaction on a background serial queue.
+    func createRecommendedFilesAsync(account: String, recommendations: [NKRecommendation]) async {
+        await performRealmWriteAsync { realm in
+            // Remove all existing recommended files for the given account
             let results = realm.objects(tableRecommendedFiles.self)
                 .filter("account == %@", account)
             realm.delete(results)
+
+            // Insert new recommended files
+            for recommendation in recommendations {
+                let recommendedFile = tableRecommendedFiles(account: account,
+                                                            id: recommendation.id,
+                                                            timestamp: recommendation.timestamp,
+                                                            name: recommendation.name,
+                                                            directory: recommendation.directory,
+                                                            extensionType: recommendation.extensionType,
+                                                            mimeType: recommendation.mimeType,
+                                                            hasPreview: recommendation.hasPreview,
+                                                            reason: recommendation.reason
+                )
+                realm.add(recommendedFile)
+            }
         }
     }
 

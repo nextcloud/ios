@@ -222,18 +222,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 
     func request<Value>(_ request: DataRequest, didParseResponse response: AFDataResponse<Value>) { }
 
-    // MARK: -
-
-    func cancelAllQueue() {
-        downloadThumbnailQueue.cancelAll()
-        downloadThumbnailActivityQueue.cancelAll()
-        downloadThumbnailTrashQueue.cancelAll()
-        downloadAvatarQueue.cancelAll()
-        unifiedSearchQueue.cancelAll()
-        saveLivePhotoQueue.cancelAll()
-        fileExistsQueue.cancelAll()
-    }
-
     // MARK: - Pinning check
 
     public func checkTrustedChallenge(_ session: URLSession,

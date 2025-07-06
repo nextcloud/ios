@@ -493,6 +493,19 @@ extension NCManageDatabase {
         } ?? []
     }
 
+    /// Reads all accounts ordered by active descending, alias ascending, and user ascending.
+    func getAllAccountOrderAliasAsync() async -> [tableAccount] {
+        await performRealmReadAsync { realm in
+            let sorted = [
+                SortDescriptor(keyPath: "active", ascending: false),
+                SortDescriptor(keyPath: "alias", ascending: true),
+                SortDescriptor(keyPath: "user", ascending: true)
+            ]
+            let results = realm.objects(tableAccount.self).sorted(by: sorted)
+            return results.map { tableAccount(value: $0) }
+        } ?? []
+    }
+
     func getAccountAutoUploadFileName(account: String) -> String {
         return performRealmRead { realm in
             guard let result = realm.objects(tableAccount.self)

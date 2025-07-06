@@ -109,26 +109,28 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
         guard isAppInBackground else {
             return
         }
-        let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-        isAppSuspending = false // now you can read/write in Realm
 
-        let location = locations.last
-        nkLog(tag: self.global.logTagLocation, emoji: .start, message: "Triggered by location change: \(location?.coordinate.latitude ?? 0), \(location?.coordinate.longitude ?? 0)")
+        // Open Realm
+        if database.openRealmBackground() {
+            let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+            let location = locations.last
+            nkLog(tag: self.global.logTagLocation, emoji: .start, message: "Triggered by location change: \(location?.coordinate.latitude ?? 0), \(location?.coordinate.longitude ?? 0)")
 
-        Task.detached {
-            if let tblAccount = await self.database.getActiveTableAccountAsync(),
-               await !appDelegate.isBackgroundTask {
-                // start the BackgroundTask
-                await MainActor.run {
-                    appDelegate.isBackgroundTask = true
-                }
+            Task.detached {
+                if let tblAccount = await self.database.getActiveTableAccountAsync(),
+                   await !appDelegate.isBackgroundTask {
+                    // start the BackgroundTask
+                    await MainActor.run {
+                        appDelegate.isBackgroundTask = true
+                    }
 
-                let numTransfers = await appDelegate.backgroundSync(tblAccount: tblAccount)
-                nkLog(tag: self.global.logTagLocation, emoji: .success, message: "Triggered by location completed with \(numTransfers) transfers")
+                    let numTransfers = await appDelegate.backgroundSync(tblAccount: tblAccount)
+                    nkLog(tag: self.global.logTagLocation, emoji: .success, message: "Triggered by location completed with \(numTransfers) transfers")
 
-                // end the BackgroundTask
-                await MainActor.run {
-                    appDelegate.isBackgroundTask = false
+                    // end the BackgroundTask
+                    await MainActor.run {
+                        appDelegate.isBackgroundTask = false
+                    }
                 }
             }
         }

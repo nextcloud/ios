@@ -25,38 +25,39 @@ import Queuer
 import RealmSwift
 
 extension NCTrash {
-    @objc func loadListingTrash(_ sender: Any?) {
-        NextcloudKit.shared.listingTrash(filename: filename, showHiddenFiles: false, account: session.account) { task in
+    func loadListingTrash() async {
+        defer {
+            self.refreshControl.endRefreshing()
+        }
+
+        let resultsListingTrash = await NextcloudKit.shared.listingTrashAsync(filename: filename, showHiddenFiles: false, account: session.account) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
-        } completion: { account, items, _, error in
-            self.refreshControl.endRefreshing()
-            if let items {
-                self.database.deleteTrash(filePath: self.getFilePath(), account: account)
-                self.database.addTrash(account: account, items: items)
-            }
-            self.reloadDataSource()
-            if error != .success {
-                NCContentPresenter().showError(error: error)
-            }
         }
+
+        if let items = resultsListingTrash.items {
+            await self.database.deleteTrashAsync(fileId: self.getFilePath(), account: self.session.account)
+            await self.database.addTrashAsync(items: items, account: self.session.account)
+        }
+
+        await self.reloadDataSource()
     }
 
-    func restoreItem(with fileId: String) {
-        guard let result = self.database.getTableTrash(fileId: fileId, account: session.account) else {
+    func restoreItem(with fileId: String) async {
+        guard let result = await self.database.getTableTrashAsync(fileId: fileId, account: session.account) else {
             return
         }
-        let fileNameFrom = result.filePath + result.fileName
-        let fileNameTo = session.urlBase + "/remote.php/dav/trashbin/" + session.userId + "/restore/" + result.fileName
+        let serverUrlFileNameSource = result.filePath + result.fileName
+        let serverUrlFileNameDestination = session.urlBase + "/remote.php/dav/trashbin/" + session.userId + "/restore/" + result.fileName
 
-        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true, account: session.account) { account, _, error in
-            guard error == .success else {
-                NCContentPresenter().showError(error: error)
-                return
-            }
-            self.database.deleteTrash(fileId: fileId, account: account)
-            self.reloadDataSource()
+        let resultsMoveFileOrFolder = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: true, account: self.session.account)
+
+        guard resultsMoveFileOrFolder.error == .success else {
+            return
         }
+
+        await self.database.deleteTrashAsync(fileId: fileId, account: self.session.account)
+        await self.reloadDataSource()
     }
 
     func emptyTrash() async {
@@ -67,7 +68,7 @@ extension NCTrash {
             NCContentPresenter().showError(error: response.error)
         }
         await self.database.deleteTrashAsync(fileId: nil, account: session.account)
-        self.reloadDataSource()
+        await self.reloadDataSource()
     }
 
     func deleteItems(with filesId: [String]) async {
@@ -81,7 +82,7 @@ extension NCTrash {
                 NCContentPresenter().showError(error: response.error)
             }
             await self.database.deleteTrashAsync(fileId: fileId, account: session.account)
-            self.reloadDataSource()
+            await self.reloadDataSource()
         }
     }
 }

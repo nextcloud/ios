@@ -101,23 +101,22 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        self.dataSource.getMetadata(indexPath: indexPath) { metadata in
-            guard let metadata else {
-                return
-            }
-            if self.isEditMode {
-                if let index = self.fileSelect.firstIndex(of: metadata.ocId) {
-                    self.fileSelect.remove(at: index)
-                } else {
-                    self.fileSelect.append(metadata.ocId)
-                }
-                self.collectionView.reloadItems(at: [indexPath])
-                self.tabBarSelect?.update(fileSelect: self.fileSelect, metadatas: self.getSelectedMetadatas(), userId: metadata.userId)
-                return
-            }
-
-            self.didSelectMetadata(metadata, withOcIds: true)
+        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else {
+            return
         }
+
+        if self.isEditMode {
+            if let index = self.fileSelect.firstIndex(of: metadata.ocId) {
+                self.fileSelect.remove(at: index)
+            } else {
+                self.fileSelect.append(metadata.ocId)
+            }
+            self.collectionView.reloadItems(at: [indexPath])
+            self.tabBarSelect?.update(fileSelect: self.fileSelect, metadatas: self.getSelectedMetadatas(), userId: metadata.userId)
+            return
+        }
+
+        self.didSelectMetadata(metadata, withOcIds: true)
     }
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {

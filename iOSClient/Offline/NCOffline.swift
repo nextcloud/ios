@@ -46,47 +46,44 @@ class NCOffline: NCCollectionViewCommon {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        reloadDataSource()
+        Task {
+            await self.reloadDataSource()
+        }
     }
 
     // MARK: - DataSource
 
-    override func reloadDataSource() {
+    override func reloadDataSource() async {
         var ocIds: [String] = []
+        var predicate: NSPredicate = defaultPredicate
 
         if self.serverUrl.isEmpty {
-            if let directories = self.database.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", session.account), sorted: "serverUrl", ascending: true) {
-                for directory: tableDirectory in directories {
-                    ocIds.append(directory.ocId)
-                }
+            let directories = await self.database.getTablesDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND offline == true", session.account), sorted: "serverUrl", ascending: true)
+            for directory: tableDirectory in directories {
+                ocIds.append(directory.ocId)
             }
-            let files = self.database.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", session.account), sorted: "fileName", ascending: true)
+
+            let files = await self.database.getTableLocalFilesAsync(predicate: NSPredicate(format: "account == %@ AND offline == true", session.account), sorted: "fileName", ascending: true)
             for file in files {
                 ocIds.append(file.ocId)
             }
-            let predicate = NSPredicate(format: "account == %@ AND ocId IN %@ AND NOT (status IN %@)", session.account, ocIds, global.metadataStatusHideInView)
 
-            self.database.getMetadatas(predicate: predicate,
-                                       layoutForView: layoutForView,
-                                       account: session.account) { metadatas, layoutForView, account in
-                self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
-                self.dataSource.caching(metadatas: metadatas) {
-                    super.reloadDataSource()
-                }
-            }
-        } else {
-            self.database.getMetadatas(predicate: defaultPredicate,
-                                       layoutForView: layoutForView,
-                                       account: session.account) { metadatas, layoutForView, account in
-                self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
-                self.dataSource.caching(metadatas: metadatas) {
-                    super.reloadDataSource()
-                }
-            }
+            predicate = NSPredicate(format: "account == %@ AND ocId IN %@ AND NOT (status IN %@)", session.account, ocIds, global.metadataStatusHideInView)
         }
+
+        let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
+                                                              layoutForView: layoutForView,
+                                                              account: session.account)
+
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
+        await super.reloadDataSource()
+
+        cachingAsync(metadatas: metadatas)
     }
 
-    override func getServerData() {
-        reloadDataSource()
+    override func getServerData(refresh: Bool = false) async {
+        await super.getServerData()
+
+        await self.reloadDataSource()
     }
 }

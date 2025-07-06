@@ -141,8 +141,9 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         }
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
         let folderPath = utilityFileSystem.getFileNamePath("", serverUrl: serverUrl, session: session)
         let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
 
@@ -156,7 +157,17 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
         self.navigationItem.title = titleCurrentFolder
 
-        reloadDataSource()
+        Task {
+            await reloadDataSource()
+        }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        Task {
+            await getServerData()
+        }
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -265,50 +276,45 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
 extension NCSelect: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        self.dataSource.getMetadata(indexPath: indexPath) { metadata in
-            guard let metadata else {
-                return
-            }
+        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else {
+            return
+        }
 
-            if metadata.directory {
-                self.pushMetadata(metadata)
-            } else {
-                self.delegate?.dismissSelect(serverUrl: self.serverUrl, metadata: metadata, type: self.type, items: self.items, overwrite: self.overwrite, copy: false, move: false, session: self.session)
-                self.dismiss(animated: true, completion: nil)
-            }
+        if metadata.directory {
+            self.pushMetadata(metadata)
+        } else {
+            self.delegate?.dismissSelect(serverUrl: self.serverUrl, metadata: metadata, type: self.type, items: self.items, overwrite: self.overwrite, copy: false, move: false, session: self.session)
+            self.dismiss(animated: true, completion: nil)
         }
     }
 }
 
 extension NCSelect: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        self.dataSource.getMetadata(indexPath: indexPath) { metadata in
-            guard let metadata else {
-                return
-            }
+        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else {
+            return
+        }
 
-            // Thumbnail
-            if !metadata.directory {
-                if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512) {
-                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = image
+        // Thumbnail
+        if !metadata.directory {
+            if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512) {
+                (cell as? NCCellProtocol)?.filePreviewImageView?.image = image
+            } else {
+                if metadata.iconName.isEmpty {
+                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCImageCache.shared.getImageFile()
                 } else {
-                    if metadata.iconName.isEmpty {
-                        (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCImageCache.shared.getImageFile()
-                    } else {
-                        (cell as? NCCellProtocol)?.filePreviewImageView?.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
-                    }
-                    if metadata.hasPreview,
-                       metadata.status == NCGlobal.shared.metadataStatusNormal {
-                        for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
-                        NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView, ext: NCGlobal.shared.previewExt256))
-                    }
+                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
+                }
+                if metadata.hasPreview,
+                   metadata.status == NCGlobal.shared.metadataStatusNormal {
+                    for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
+                    NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView, ext: NCGlobal.shared.previewExt256))
                 }
             }
         }
     }
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-
     }
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -477,7 +483,7 @@ extension NCSelect: UICollectionViewDelegateFlowLayout {
 // MARK: -
 
 extension NCSelect {
-    func reloadDataSource() {
+    func reloadDataSource() async {
         var predicate = NSPredicate()
 
         if includeDirectoryE2EEncryption {
@@ -496,22 +502,17 @@ extension NCSelect {
             }
         }
 
-        NCNetworking.shared.readFolder(serverUrl: serverUrl,
-                                       account: session.account,
-                                       queue: .main) { task in
-            self.dataSourceTask = task
-            if self.dataSource.isEmpty() {
-                self.collectionView.reloadData()
-            }
-        } completion: { account, _, _, _ in
-            self.database.getMetadatas(predicate: predicate,
-                                       layoutForView: NCDBLayoutForView(),
-                                       account: account) { metadatas, layoutForView, account in
-                self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
-                self.dataSource.caching(metadatas: metadatas) {
-                    self.collectionView.reloadData()
-                }
-            }
+        let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
+                                                              layoutForView: NCDBLayoutForView(),
+                                                              account: session.account)
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, account: session.account)
+        self.collectionView.reloadData()
+    }
+
+    func getServerData() async {
+        let resultsReadFolder = await NCNetworking.shared.readFolderAsync(serverUrl: serverUrl, account: session.account)
+        if resultsReadFolder.error == .success {
+            await reloadDataSource()
         }
     }
 }

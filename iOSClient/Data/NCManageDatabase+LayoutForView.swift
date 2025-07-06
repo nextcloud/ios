@@ -102,6 +102,33 @@ extension NCManageDatabase {
         return placeholder
     }
 
+    /// Returns the stored layout for a given account and key, or creates a placeholder.
+    /// If not found, triggers an async write to persist the layout.
+    func getLayoutForViewAsync(account: String, key: String, serverUrl: String, layout: String? = nil) async -> NCDBLayoutForView {
+        let keyStore = serverUrl.isEmpty ? key : serverUrl
+        let index = account + " " + keyStore
+
+        // Try to read from Realm
+        if let existing = await performRealmReadAsync({ realm in
+            realm.objects(NCDBLayoutForView.self)
+                .filter("index == %@", index)
+                .first
+                .map { NCDBLayoutForView(value: $0) }
+        }) {
+            return existing
+        }
+
+        // Return placeholder immediately
+        let placeholder = NCDBLayoutForView()
+        placeholder.index = index
+        placeholder.account = account
+        placeholder.keyStore = keyStore
+        if let layout {
+            placeholder.layout = layout
+        }
+        return placeholder
+    }
+
     func updateLayoutForView(account: String,
                              key: String,
                              serverUrl: String,

@@ -101,7 +101,6 @@ extension UIAlertController {
             textField.autocapitalizationType = .words
         }
 
-        // only allow saving if folder name exists
         NotificationCenter.default.addObserver(
             forName: UITextField.textDidChangeNotification,
             object: alertController.textFields?.first,
