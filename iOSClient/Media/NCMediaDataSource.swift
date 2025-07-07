@@ -29,7 +29,10 @@ extension NCMedia {
     func loadDataSource() async {
         Task {
             let session = self.session
-            let predicate = await self.imageCache.getMediaPredicateAsync(filterLivePhotoFile: true, session: session, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos)
+            guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", session.account)) else {
+                return
+            }
+            let predicate = self.imageCache.getMediaPredicateAsync(filterLivePhotoFile: true, session: session, mediaPath: tblAccount.mediaPath, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos)
             if let metadatas = await self.database.getMetadatasAsync(predicate: predicate, sortedByKeyPath: "datePhotosOriginal", ascending: false) {
                 self.dataSource = NCMediaDataSource(metadatas: metadatas)
             }
@@ -132,7 +135,7 @@ extension NCMedia {
             }
 
             let isViewActived = self.isViewActived
-            let mediaPredicate = await self.imageCache.getMediaPredicateAsync(filterLivePhotoFile: false, session: session, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos)
+            let mediaPredicate = self.imageCache.getMediaPredicateAsync(filterLivePhotoFile: false, session: session, mediaPath: tblAccount.mediaPath, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos)
 
             Task.detached(priority: .userInitiated) { [weak self] in
                 guard let self else { return }

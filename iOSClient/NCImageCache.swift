@@ -47,6 +47,11 @@ final class NCImageCache: @unchecked Sendable {
                 var files: [NCFiles] = []
                 var cost: Int = 0
 
+                // guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", session.account)) else {
+                //return
+                //}
+
+
                 if let activeTblAccount = await self.database.getActiveTableAccountAsync(),
                    NCImageCache.shared.cache.count == 0 {
                     let session = NCSession.shared.getSession(account: activeTblAccount.account)
@@ -61,7 +66,7 @@ final class NCImageCache: @unchecked Sendable {
                     self.isLoadingCache = true
 
                     // MEDIA
-                    let predicate = await self.getMediaPredicateAsync(filterLivePhotoFile: true, session: session, showOnlyImages: false, showOnlyVideos: false)
+                    let predicate = self.getMediaPredicateAsync(filterLivePhotoFile: true, session: session, mediaPath: activeTblAccount.mediaPath, showOnlyImages: false, showOnlyVideos: false)
                     if let metadatas = await self.database.getMetadatasAsync(predicate: predicate, sortedByKeyPath: "datePhotosOriginal", limit: self.countLimit) {
                         autoreleasepool {
                             self.cache.removeAllValues()
@@ -134,11 +139,9 @@ final class NCImageCache: @unchecked Sendable {
 
     // MARK: - MEDIA -
 
-    @MainActor
-    func getMediaPredicateAsync(filterLivePhotoFile: Bool, session: NCSession.Session, showOnlyImages: Bool, showOnlyVideos: Bool) async -> NSPredicate {
-            guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", session.account)) else { return NSPredicate() }
-            var predicate = NSPredicate()
-        let startServerUrl = self.utilityFileSystem.getHomeServer(session: session) + tblAccount.mediaPath
+    func getMediaPredicateAsync(filterLivePhotoFile: Bool, session: NCSession.Session, mediaPath: String, showOnlyImages: Bool, showOnlyVideos: Bool) -> NSPredicate {
+        var predicate = NSPredicate()
+        let startServerUrl = self.utilityFileSystem.getHomeServer(session: session) + mediaPath
 
             var showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND hasPreview == true AND (classFile == '\(NKTypeClassFile.image.rawValue)' OR classFile == '\(NKTypeClassFile.video.rawValue)') AND NOT (status IN %@)"
 
