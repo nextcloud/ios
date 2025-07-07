@@ -9,20 +9,6 @@ import NextcloudKit
 // MARK: - Drag
 
 extension NCMedia: NCTransferDelegate {
-    func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {
-        switch status {
-        /// DELETE
-        case NCGlobal.shared.networkingStatusDelete:
-            self.debouncer.call {
-                Task {
-                    await self.loadDataSource()
-                }
-            }
-        default:
-            break
-        }
-    }
-
     func transferReloadData(serverUrl: String?, status: Int?) {
         self.debouncer.call {
             Task {
@@ -51,19 +37,8 @@ extension NCMedia: NCTransferDelegate {
 
     func transferFileExists(ocId: String, exists: Bool) {
         Task {
-            await tracker.appendToFilesExists(ocId)
             if !exists {
-                await tracker.appendToOcIdDoNotExists(ocId)
-            }
-            if networking.fileExistsQueue.operationCount == 0,
-               await !tracker.isEmptyOcIdDoNotExists() {
-                let ocIdDoNotExists = await tracker.getOcIdDoNotExists()
-
-                dataSource.removeMetadata(ocIdDoNotExists)
-                database.deleteMetadataOcIds(ocIdDoNotExists)
-                await tracker.resetOcIdDoNotExists()
-
-                collectionViewReloadData()
+                await self.deleteImage(with: ocId)
             }
         }
     }

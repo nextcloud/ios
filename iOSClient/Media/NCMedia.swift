@@ -102,46 +102,6 @@ class NCMedia: UIViewController {
         (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
     }
 
-    actor FileStatusTracker {
-        private var filesExists: [String] = []
-        private var ocIdDoNotExists: [String] = []
-
-        func appendToFilesExists(_ value: String) {
-            filesExists.append(value)
-        }
-
-        func appendToOcIdDoNotExists(_ value: String) {
-            ocIdDoNotExists.append(value)
-        }
-
-        func isEmptyFilesExists() -> Bool {
-            return filesExists.isEmpty
-        }
-
-        func isEmptyOcIdDoNotExists() -> Bool {
-            return ocIdDoNotExists.isEmpty
-        }
-
-        func getFilesExists() -> [String] {
-            return filesExists
-        }
-
-        func getOcIdDoNotExists() -> [String] {
-            return ocIdDoNotExists
-        }
-
-        func resetFilesExists() {
-            filesExists.removeAll()
-        }
-
-        func resetOcIdDoNotExists() {
-            ocIdDoNotExists.removeAll()
-        }
-    }
-
-    let tracker = FileStatusTracker()
-
-
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -283,11 +243,44 @@ class NCMedia: UIViewController {
 
     func searchNewMedia() {
         timerSearchNewMedia?.invalidate()
-        timerSearchNewMedia = Timer.scheduledTimer(withTimeInterval: timeIntervalSearchNewMedia, repeats: false) { [weak self] timer in
+        timerSearchNewMedia = Timer.scheduledTimer(withTimeInterval: timeIntervalSearchNewMedia, repeats: false) { [weak self] _ in
             Task { [weak self] in
                 guard let self else { return }
                 await self.searchMediaUI()
             }
+        }
+    }
+
+    func deleteImage(with ocId: String) async {
+        guard let metadata = await self.database.getMetadataFromOcIdAsync(ocId) else {
+            self.dataSource.removeMetadata([ocId])
+            self.collectionView.reloadData()
+            return
+        }
+
+        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+        let resultsDeleteFileOrFolder = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: serverUrlFileName, account: metadata.account)
+
+        guard resultsDeleteFileOrFolder.error == .success || resultsDeleteFileOrFolder.error.errorCode == self.global.errorResourceNotFound else {
+            return
+        }
+
+        var dataSourceRemoved: Bool = false
+        let visibleIndexPaths = collectionView.indexPathsForVisibleItems.sorted()
+
+        for indexPath in visibleIndexPaths {
+            if let cell = self.collectionView.cellForItem(at: indexPath) as? NCMediaCell,
+               ocId == cell.ocId {
+                await self.database.deleteMetadataOcIdAsync(ocId)
+                self.dataSource.removeMetadata([ocId])
+                self.collectionView.deleteItems(at: [indexPath])
+                dataSourceRemoved = true
+                break
+            }
+        }
+        if !dataSourceRemoved {
+            await self.database.deleteMetadataOcIdAsync(ocId)
+            self.dataSource.removeMetadata([ocId])
         }
     }
 
@@ -296,7 +289,6 @@ class NCMedia: UIViewController {
     func networkRemoveAll() async {
         timerSearchNewMedia?.invalidate()
         timerSearchNewMedia = nil
-        await tracker.resetFilesExists()
 
         networking.fileExistsQueue.cancelAll()
         networking.downloadThumbnailQueue.cancelAll()

@@ -56,7 +56,6 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
             let resultsDownloadPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: tblMetadata.fileId, etag: etagResource, account: tblMetadata.account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue))
 
             if resultsDownloadPreview.error == .success, let data = resultsDownloadPreview.responseData?.data {
-                await self.media.tracker.appendToFilesExists(tblMetadata.ocId)
                 await NCManageDatabase.shared.setMetadataEtagResourceAsync(ocId: self.metadata.ocId, etagResource: resultsDownloadPreview.etag)
                 NCUtility().createImageFileFrom(data: data, metadata: tblMetadata)
 

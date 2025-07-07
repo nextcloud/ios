@@ -206,39 +206,20 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
     func delete() {
         let ocIds = self.fileSelect.map { $0 }
         var alertStyle = UIAlertController.Style.actionSheet
-        var indexPaths: [IndexPath] = []
-        var metadatas: [tableMetadata] = []
 
         if UIDevice.current.userInterfaceIdiom == .pad { alertStyle = .alert }
 
         if !ocIds.isEmpty {
-            let indices = dataSource.metadatas.enumerated().filter { ocIds.contains($0.element.ocId) }.map { $0.offset }
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: alertStyle)
 
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_selected_photos_", comment: ""), style: .destructive) { (_: UIAlertAction) in
                 self.isEditMode = false
                 self.setSelectcancelButton()
 
-                for ocId in ocIds {
-                    if let metadata = self.database.getMetadataFromOcId(ocId) {
-                        metadatas.append(metadata)
+                Task {
+                    for ocId in ocIds {
+                        await self.deleteImage(with: ocId)
                     }
-                }
-
-                self.networking.setStatusWaitDelete(metadatas: metadatas, sceneIdentifier: self.controller?.sceneIdentifier)
-
-                for index in indices {
-                    let indexPath = IndexPath(row: index, section: 0)
-                    if let cell = self.collectionView.cellForItem(at: indexPath) as? NCMediaCell,
-                       self.dataSource.metadatas[index].ocId == cell.ocId {
-                        indexPaths.append(indexPath)
-                    }
-                }
-
-                self.dataSource.removeMetadata(ocIds)
-                if indexPaths.count == ocIds.count {
-                    self.collectionView.deleteItems(at: indexPaths)
-                } else {
                     self.collectionViewReloadData()
                 }
             })

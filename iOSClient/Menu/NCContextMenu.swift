@@ -150,15 +150,15 @@ class NCContextMenu: NSObject {
             }
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: alertStyle)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_file_", comment: ""), style: .destructive) { _ in
-                self.networking.setStatusWaitDelete(metadatas: [self.metadata], sceneIdentifier: self.sceneIdentifier)
                 if let viewController = self.viewController as? NCCollectionViewCommon {
+                    self.networking.setStatusWaitDelete(metadatas: [self.metadata], sceneIdentifier: self.sceneIdentifier)
                     Task {
                         await viewController.reloadDataSource()
                     }
                 }
                 if let viewController = self.viewController as? NCMedia {
                     Task {
-                        await viewController.loadDataSource()
+                        await viewController.deleteImage(with: self.metadata.ocId)
                     }
                 }
             })
