@@ -184,16 +184,20 @@ extension NCMedia {
                 textField.placeholder = "http://myserver.com/movie.mkv"
             })
             alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
-                guard let stringUrl = alert.textFields?.first?.text, !stringUrl.isEmpty, let url = URL(string: stringUrl) else { return }
+                guard let stringUrl = alert.textFields?.first?.text, !stringUrl.isEmpty, let url = URL(string: stringUrl) else {
+                    return
+                }
                 let fileName = url.lastPathComponent
-                let metadata = self.database.createMetadata(fileName: fileName,
-                                                            ocId: NSUUID().uuidString,
-                                                            serverUrl: "",
-                                                            url: stringUrl,
-                                                            session: self.session,
-                                                            sceneIdentifier: self.controller?.sceneIdentifier)
-                self.database.addMetadata(metadata)
-                NCViewer().view(viewController: self, metadata: metadata)
+                Task {
+                    let metadata = await self.database.createMetadataAsync(fileName: fileName,
+                                                                           ocId: NSUUID().uuidString,
+                                                                           serverUrl: "",
+                                                                           url: stringUrl,
+                                                                           session: self.session,
+                                                                           sceneIdentifier: self.controller?.sceneIdentifier)
+                    await self.database.addMetadataAsync(metadata)
+                    NCViewer().view(viewController: self, metadata: metadata)
+                }
             }))
             self.present(alert, animated: true)
         }
