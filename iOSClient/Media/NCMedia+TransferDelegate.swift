@@ -13,30 +13,10 @@ extension NCMedia: NCTransferDelegate {
         switch status {
         /// DELETE
         case NCGlobal.shared.networkingStatusDelete:
-            if self.semaphoreNotificationCenter.wait(timeout: .now() + 5) == .timedOut {
-                self.semaphoreNotificationCenter.signal()
-            }
-            var deleteOcIds: [String] = []
-            var needLoadDataSource: Bool = false
-
-            for (key, error) in metadatasError {
-                switch error {
-                case .success:
-                    continue
-                default:
-                    if error.errorCode == self.global.errorResourceNotFound {
-                        deleteOcIds.append(key.ocId)
-                    }
-                    needLoadDataSource = true
+            self.debouncer.call {
+                Task {
+                    await self.loadDataSource()
                 }
-            }
-
-            if needLoadDataSource {
-                self.loadDataSource {
-                    self.semaphoreNotificationCenter.signal()
-                }
-            } else {
-                self.semaphoreNotificationCenter.signal()
             }
         default:
             break
@@ -45,40 +25,46 @@ extension NCMedia: NCTransferDelegate {
 
     func transferReloadData(serverUrl: String?, status: Int?) {
         self.debouncer.call {
-            self.loadDataSource()
+            Task {
+                await self.loadDataSource()
+            }
         }
     }
 
     func transferCopy(metadata: tableMetadata, error: NKError) {
         setEditMode(false)
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            self.loadDataSource()
-            self.searchMediaUI()
+        Task {
+            await self.loadDataSource()
+            await self.searchMediaUI()
         }
     }
 
     func transferMove(metadata: tableMetadata, error: NKError) {
         setEditMode(false)
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            self.loadDataSource()
-            self.searchMediaUI()
+        Task {
+            await self.loadDataSource()
+            await self.searchMediaUI()
         }
     }
 
     func transferFileExists(ocId: String, exists: Bool) {
-        filesExists.append(ocId)
-        if !exists {
-            ocIdDoNotExists.append(ocId)
-        }
-        if NCNetworking.shared.fileExistsQueue.operationCount == 0,
-           !ocIdDoNotExists.isEmpty,
-           let ocIdDoNotExists = self.ocIdDoNotExists.getArray() {
-            dataSource.removeMetadata(ocIdDoNotExists)
-            database.deleteMetadataOcIds(ocIdDoNotExists)
-            self.ocIdDoNotExists.removeAll()
-            collectionViewReloadData()
+        Task {
+            await tracker.appendToFilesExists(ocId)
+            if !exists {
+                await tracker.appendToOcIdDoNotExists(ocId)
+            }
+            if networking.fileExistsQueue.operationCount == 0,
+               await !tracker.isEmptyOcIdDoNotExists() {
+                let ocIdDoNotExists = await tracker.getOcIdDoNotExists()
+
+                dataSource.removeMetadata(ocIdDoNotExists)
+                database.deleteMetadataOcIds(ocIdDoNotExists)
+                await tracker.resetOcIdDoNotExists()
+
+                collectionViewReloadData()
+            }
         }
     }
 }

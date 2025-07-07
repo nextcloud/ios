@@ -44,23 +44,23 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
         else {
             return self.finish()
         }
-        var etagResource: String?
-        var image: UIImage?
 
-        if utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag) {
-            etagResource = tblMetadata.etagResource
-        }
+        Task {
+            var etagResource: String?
+            var image: UIImage?
 
-        NextcloudKit.shared.downloadPreview(fileId: tblMetadata.fileId,
-                                            etag: etagResource,
-                                            account: self.session.account,
-                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, _, etag, responseData, error in
-            if error == .success, let data = responseData?.data {
+            if utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag) {
+                etagResource = tblMetadata.etagResource
+            }
 
-                self.media.filesExists.append(self.metadata.ocId)
-                NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
+            let resultsDownloadPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: tblMetadata.fileId, etag: etagResource, account: tblMetadata.account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue))
+
+            if resultsDownloadPreview.error == .success, let data = resultsDownloadPreview.responseData?.data {
+                await self.media.tracker.appendToFilesExists(tblMetadata.ocId)
+                await NCManageDatabase.shared.setMetadataEtagResourceAsync(ocId: self.metadata.ocId, etagResource: resultsDownloadPreview.etag)
                 NCUtility().createImageFileFrom(data: data, metadata: tblMetadata)
-                image = NCUtility().getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: NCGlobal.shared.getSizeExtension(column: self.media.numberOfColumns))
+
+                image = await NCUtility().getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: NCGlobal.shared.getSizeExtension(column: self.media.numberOfColumns))
             }
 
             Task { @MainActor in

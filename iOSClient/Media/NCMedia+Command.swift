@@ -123,20 +123,26 @@ extension NCMedia {
             UIAction(title: NSLocalizedString("_media_viewimage_show_", comment: ""), image: utility.loadImage(named: "photo")) { _ in
                 self.showOnlyImages = true
                 self.showOnlyVideos = false
-                self.loadDataSource()
-                self.networkRemoveAll(nil)
+                Task {
+                    await self.loadDataSource()
+                    await self.networkRemoveAll()
+                }
             },
             UIAction(title: NSLocalizedString("_media_viewvideo_show_", comment: ""), image: utility.loadImage(named: "video")) { _ in
                 self.showOnlyImages = false
                 self.showOnlyVideos = true
-                self.loadDataSource()
-                self.networkRemoveAll(nil)
+                Task {
+                    await self.loadDataSource()
+                    await self.networkRemoveAll()
+                }
             },
             UIAction(title: NSLocalizedString("_media_show_all_", comment: ""), image: utility.loadImage(named: "photo.on.rectangle")) { _ in
                 self.showOnlyImages = false
                 self.showOnlyVideos = false
-                self.loadDataSource()
-                self.searchMediaUI()
+                Task {
+                    await self.loadDataSource()
+                    await self.networkRemoveAll()
+                }
             }
         ])
 
@@ -219,7 +225,7 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
                     }
                 }
 
-                NCNetworking.shared.setStatusWaitDelete(metadatas: metadatas, sceneIdentifier: self.controller?.sceneIdentifier)
+                self.networking.setStatusWaitDelete(metadatas: metadatas, sceneIdentifier: self.controller?.sceneIdentifier)
 
                 for index in indices {
                     let indexPath = IndexPath(row: index, section: 0)

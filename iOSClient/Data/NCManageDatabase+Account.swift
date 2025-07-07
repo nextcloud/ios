@@ -416,6 +416,14 @@ extension NCManageDatabase {
         }
     }
 
+    func setAccountMediaPathAsync(_ path: String, account: String) async {
+        await performRealmWriteAsync { realm in
+            if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
+                result.mediaPath = path
+            }
+        }
+    }
+
     func setAccountUserStatusAsync(userStatusClearAt: Date?,
                                    userStatusIcon: String?,
                                    userStatusMessage: String?,

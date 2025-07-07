@@ -157,7 +157,9 @@ class NCContextMenu: NSObject {
                     }
                 }
                 if let viewController = self.viewController as? NCMedia {
-                    viewController.loadDataSource()
+                    Task {
+                        await viewController.loadDataSource()
+                    }
                 }
             })
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { _ in })
