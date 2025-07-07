@@ -33,7 +33,11 @@ struct NavigationCollectionViewCommon {
 
 class NCMainTabBarController: UITabBarController {
     var sceneIdentifier: String = UUID().uuidString
-    var account = ""
+    var account: String = "" {
+        didSet {
+            NCImageCache.shared.controller = self
+        }
+    }
     var availableNotifications: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?
     let navigationCollectionViewCommon = ThreadSafeArray<NavigationCollectionViewCommon>()

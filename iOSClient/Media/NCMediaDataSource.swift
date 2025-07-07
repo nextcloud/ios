@@ -28,7 +28,6 @@ import RealmSwift
 extension NCMedia {
     func loadDataSource() async {
         Task {
-            let session = self.session
             guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", session.account)) else {
                 return
             }
