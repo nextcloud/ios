@@ -252,23 +252,23 @@ extension NCNetworking {
         }
         let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
 
-        func writeDirectoryMetadata(_ metadata: tableMetadata) {
-            self.database.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", session.account, fileName, serverUrl), sync: false)
-            self.database.addMetadata(metadata, sync: false)
-            self.database.addDirectory(e2eEncrypted: metadata.e2eEncrypted,
-                                       favorite: metadata.favorite,
-                                       ocId: metadata.ocId,
-                                       fileId: metadata.fileId,
-                                       permissions: metadata.permissions,
-                                       serverUrl: fileNameFolderUrl,
-                                       account: session.account, sync: false)
+        func writeDirectoryMetadata(_ metadata: tableMetadata) async {
+            await self.database.deleteMetadataAsync(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", session.account, fileName, serverUrl))
+            await self.database.addMetadataAsync(metadata)
+            await self.database.addDirectoryAsync(e2eEncrypted: metadata.e2eEncrypted,
+                                                  favorite: metadata.favorite,
+                                                  ocId: metadata.ocId,
+                                                  fileId: metadata.fileId,
+                                                  permissions: metadata.permissions,
+                                                  serverUrl: fileNameFolderUrl,
+                                                  account: session.account)
         }
 
         /* check exists folder */
         let resultReadFile = await readFileAsync(serverUrlFileName: fileNameFolderUrl, account: session.account)
         if resultReadFile.error == .success,
             let metadata = resultReadFile.metadata {
-            writeDirectoryMetadata(metadata)
+            await writeDirectoryMetadata(metadata)
             return (true, .success)
         }
 
@@ -278,7 +278,7 @@ extension NCNetworking {
             let resultReadFile = await readFileAsync(serverUrlFileName: fileNameFolderUrl, account: session.account)
             if resultReadFile.error == .success,
                let metadata = resultReadFile.metadata {
-                writeDirectoryMetadata(metadata)
+                await writeDirectoryMetadata(metadata)
             }
         }
 

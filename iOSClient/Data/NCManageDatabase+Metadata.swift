@@ -153,12 +153,6 @@ extension tableMetadata {
         return (classFile == NKTypeClassFile.image.rawValue && contentType != "image/svg+xml") || classFile == NKTypeClassFile.video.rawValue
     }
 
-    /*
-    var isDocumentViewableOnly: Bool {
-        sharePermissionsCollaborationServices == NCPermissions().permissionReadShare && classFile == NKTypeClassFile.document.rawValue
-    }
-    */
-
     var isAudioOrVideo: Bool {
         return classFile == NKTypeClassFile.audio.rawValue || classFile == NKTypeClassFile.video.rawValue
     }
@@ -335,13 +329,7 @@ extension tableMetadata {
 }
 
 extension NCManageDatabase {
-    func getMetadataDirectoryFrom(files: [NKFile]) -> tableMetadata? {
-        guard let file = files.first else { return nil }
-        let isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(file: file)
-        let metadata = convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
 
-        return metadata
-    }
 
     func isMetadataShareOrMounted(metadata: tableMetadata, metadataFolder: tableMetadata?) -> Bool {
         let permissions = NCPermissions()
@@ -424,14 +412,6 @@ extension NCManageDatabase {
 
         await performRealmWriteAsync { realm in
             realm.add(detached, update: .all)
-        }
-    }
-
-    func deleteMetadata(predicate: NSPredicate, sync: Bool = true) {
-        performRealmWrite(sync: sync) { realm in
-            let result = realm.objects(tableMetadata.self)
-                .filter(predicate)
-            realm.delete(result)
         }
     }
 
