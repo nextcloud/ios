@@ -53,6 +53,7 @@ class NCMedia: UIViewController {
     var isTop: Bool = true
     var isEditMode = false
     var fileSelect: [String] = []
+    var ocIdVerified: [String] = []
     var searchMediaInProgress: Bool = false
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
@@ -282,6 +283,8 @@ class NCMedia: UIViewController {
             await self.database.deleteMetadataOcIdAsync(ocId)
             self.dataSource.removeMetadata([ocId])
         }
+
+        self.collectionView.reloadData()
     }
 
     // MARK: - NotificationCenter
@@ -292,6 +295,8 @@ class NCMedia: UIViewController {
 
         networking.fileExistsQueue.cancelAll()
         networking.downloadThumbnailQueue.cancelAll()
+
+        ocIdVerified.removeAll()
 
         let tasks = await networking.getAllDataTask()
         for task in tasks.filter({ $0.taskDescription == global.taskDescriptionRetrievesProperties }) {

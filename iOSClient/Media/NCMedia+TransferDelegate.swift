@@ -40,6 +40,7 @@ extension NCMedia: NCTransferDelegate {
             if !exists {
                 await self.deleteImage(with: ocId)
             }
+            ocIdVerified.append(ocId)
         }
     }
 }

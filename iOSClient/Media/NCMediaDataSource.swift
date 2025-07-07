@@ -153,7 +153,7 @@ extension NCMedia {
                     let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [ NSPredicate(format: "datePhotosOriginal >= %@ AND datePhotosOriginal =< %@", lastCellDate as NSDate, firstCellDate as NSDate), mediaPredicate])
 
                     if let metadatas = await self.database.getMetadatasAsync(predicate: predicate) {
-                        for metadata in metadatas {
+                        for metadata in metadatas where await !ocIdVerified.contains(metadata.ocId) {
                             if networking.fileExistsQueue.operations.filter({ ($0 as? NCOperationFileExists)?.ocId == metadata.ocId }).isEmpty {
                                 networking.fileExistsQueue.addOperation(NCOperationFileExists(metadata: metadata))
                             }
