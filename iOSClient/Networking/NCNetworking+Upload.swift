@@ -114,11 +114,9 @@ extension NCNetworking {
     }
 
     /*
-    func uploadHubStream(
-        metadata: tableMetadata,
-        uploadE2EEDelegate: uploadE2EEDelegate? = nil,
-        controller: UIViewController? = nil
-    ) -> AsyncThrowingStream<UploadEvent, Error> {
+    func uploadHubStream(metadata: tableMetadata,
+                         uploadE2EEDelegate: uploadE2EEDelegate? = nil,
+                         controller: UIViewController? = nil) -> AsyncThrowingStream<UploadEvent, Error> {
         return AsyncThrowingStream(bufferingPolicy: .unbounded) { continuation in
             Task {
                 continuation.yield(.started)
