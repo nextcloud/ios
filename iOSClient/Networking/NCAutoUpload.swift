@@ -62,7 +62,8 @@ class NCAutoUpload: NSObject {
         let formatCompatibility = NCKeychain().formatCompatibility
         let keychainLivePhoto = NCKeychain().livePhoto
         let fileSystem = NCUtilityFileSystem()
-        let skipFileNames = await self.database.fetchSkipFileNames(account: tblAccount.account, autoUploadServerUrlBase: autoUploadServerUrlBase)
+        let skipFileNames = await self.database.fetchSkipFileNamesAsync(account: tblAccount.account,
+                                                                        autoUploadServerUrlBase: autoUploadServerUrlBase)
 
         nkLog(debug: "Automatic upload, new \(assets.count) assets found")
 

@@ -57,8 +57,15 @@ extension NCManageDatabase {
 
     // MARK: - Realm Read
 
-    func fetchSkipFileNames(account: String,
-                            autoUploadServerUrlBase: String) async -> Set<String> {
+    /// Asynchronously fetches a set of filenames that should be skipped for auto-upload,
+    /// based on metadata and ongoing transfers for a given account and server URL base.
+    ///
+    /// - Parameters:
+    ///   - account: The account identifier.
+    ///   - autoUploadServerUrlBase: The server base URL used for auto-upload.
+    /// - Returns: A set of file names that are either in metadata with a relevant status or currently being transferred.
+    func fetchSkipFileNamesAsync(account: String,
+                                 autoUploadServerUrlBase: String) async -> Set<String> {
         let result: Set<String>? = await performRealmReadAsync { realm in
             let metadatas = realm.objects(tableMetadata.self)
                 .filter("account == %@ AND autoUploadServerUrlBase == %@ AND status IN %@", account, autoUploadServerUrlBase, NCGlobal.shared.metadataStatusUploadingAllMode)
