@@ -27,23 +27,25 @@ import RealmSwift
 
 extension NCMedia: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let metadata = dataSource.getMetadata(indexPath: indexPath),
-              let cell = collectionView.cellForItem(at: indexPath) as? NCMediaCell else { return }
+        Task {
+            guard let metadata = dataSource.getMetadata(indexPath: indexPath),
+                  let cell = collectionView.cellForItem(at: indexPath) as? NCMediaCell else { return }
 
-        if isEditMode {
-            if let index = fileSelect.firstIndex(of: metadata.ocId) {
-                fileSelect.remove(at: index)
-                cell.selected(false)
-            } else {
-                fileSelect.append(metadata.ocId)
-                cell.selected(true)
+            if isEditMode {
+                if let index = fileSelect.firstIndex(of: metadata.ocId) {
+                    fileSelect.remove(at: index)
+                    cell.selected(false)
+                } else {
+                    fileSelect.append(metadata.ocId)
+                    cell.selected(true)
+                }
+                tabBarSelect.selectCount = fileSelect.count
+            } else if let metadata = await self.database.getMetadataFromOcIdAsync(metadata.ocId) {
+                let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024)
+                let ocIds = dataSource.metadatas.map { $0.ocId }
+
+                NCViewer().view(viewController: self, metadata: metadata, ocIds: ocIds, image: image)
             }
-            tabBarSelect.selectCount = fileSelect.count
-        } else if let metadata = database.getMetadataFromOcId(metadata.ocId) {
-            let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024)
-            let ocIds = dataSource.metadatas.map { $0.ocId }
-
-            NCViewer().view(viewController: self, metadata: metadata, ocIds: ocIds, image: image)
         }
     }
 

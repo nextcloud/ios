@@ -153,12 +153,6 @@ extension tableMetadata {
         return (classFile == NKTypeClassFile.image.rawValue && contentType != "image/svg+xml") || classFile == NKTypeClassFile.video.rawValue
     }
 
-    /*
-    var isDocumentViewableOnly: Bool {
-        sharePermissionsCollaborationServices == NCPermissions().permissionReadShare && classFile == NKTypeClassFile.document.rawValue
-    }
-    */
-
     var isAudioOrVideo: Bool {
         return classFile == NKTypeClassFile.audio.rawValue || classFile == NKTypeClassFile.video.rawValue
     }
@@ -335,14 +329,6 @@ extension tableMetadata {
 }
 
 extension NCManageDatabase {
-    func getMetadataDirectoryFrom(files: [NKFile]) -> tableMetadata? {
-        guard let file = files.first else { return nil }
-        let isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(file: file)
-        let metadata = convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
-
-        return metadata
-    }
-
     func isMetadataShareOrMounted(metadata: tableMetadata, metadataFolder: tableMetadata?) -> Bool {
         let permissions = NCPermissions()
         var isShare = false
@@ -427,14 +413,6 @@ extension NCManageDatabase {
         }
     }
 
-    func deleteMetadata(predicate: NSPredicate, sync: Bool = true) {
-        performRealmWrite(sync: sync) { realm in
-            let result = realm.objects(tableMetadata.self)
-                .filter(predicate)
-            realm.delete(result)
-        }
-    }
-
     func deleteMetadataAsync(predicate: NSPredicate) async {
         await performRealmWriteAsync { realm in
             let result = realm.objects(tableMetadata.self)
@@ -480,7 +458,11 @@ extension NCManageDatabase {
         let detached = metadatas.map { $0.detachedCopy() }
 
         await performRealmWriteAsync { realm in
-            realm.delete(detached)
+            for detached in detached {
+                if let managed = realm.object(ofType: tableMetadata.self, forPrimaryKey: detached.ocId) {
+                    realm.delete(managed)
+                }
+            }
         }
     }
 
@@ -724,6 +706,26 @@ extension NCManageDatabase {
                 .filter("ocId == %@", ocId)
                 .first
             result?.etagResource = etagResource
+        }
+    }
+
+    /// Updates the `etagResource` of a `tableMetadata` object with the given `ocId`, using an async Realm write.
+    ///
+    /// - Parameters:
+    ///   - ocId: The unique identifier of the metadata record.
+    ///   - etagResource: The new ETag value to set. If `nil`, the operation is skipped.
+    /// - Returns: A boolean indicating whether the update was performed.
+    func setMetadataEtagResourceAsync(ocId: String, etagResource: String?) async {
+        guard let etagResource else {
+            return
+        }
+
+        return await performRealmWriteAsync { realm in
+            if let result = realm.objects(tableMetadata.self)
+                .filter("ocId == %@", ocId)
+                .first {
+                result.etagResource = etagResource
+            }
         }
     }
 
@@ -1170,18 +1172,22 @@ extension NCManageDatabase {
                                                   fileNameConflict))
     }
 
-    // MARK: - Realm Read (result)
-
-    func getMetadatasFromGroupfolders(session: NCSession.Session, layoutForView: NCDBLayoutForView?) -> [tableMetadata] {
+    /// Asynchronously retrieves and sorts `tableMetadata` associated with groupfolders for a given session.
+    /// - Parameters:
+    ///   - session: The `NCSession.Session` containing account and server information.
+    ///   - layoutForView: An optional layout configuration used for sorting.
+    /// - Returns: An array of sorted and detached `tableMetadata` objects.
+    func getMetadatasFromGroupfoldersAsync(session: NCSession.Session, layoutForView: NCDBLayoutForView?) async -> [tableMetadata] {
         let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
 
-        return performRealmRead { realm in
+        return await performRealmReadAsync { realm in
             var ocIds: [String] = []
 
+            // Safely fetch and detach groupfolders
             let groupfolders = realm.objects(TableGroupfolders.self)
                 .filter("account == %@", session.account)
                 .sorted(byKeyPath: "mountPoint", ascending: true)
-                .freeze()
+                .map { TableGroupfolders(value: $0) }
 
             for groupfolder in groupfolders {
                 let mountPoint = groupfolder.mountPoint.hasPrefix("/") ? groupfolder.mountPoint : "/" + groupfolder.mountPoint
@@ -1197,15 +1203,18 @@ extension NCManageDatabase {
                 }
             }
 
-            let metadatas = Array(realm.objects(tableMetadata.self)
+            // Fetch and detach the corresponding metadatas
+            let metadatas = realm.objects(tableMetadata.self)
                 .filter("ocId IN %@", ocIds)
-                .map { $0.detachedCopy() })
+                .map { $0.detachedCopy() }
 
-            let sorted = self.sortedMetadata(layoutForView: layoutForView, account: session.account, metadatas: metadatas)
+            let sorted = self.sortedMetadata(layoutForView: layoutForView, account: session.account, metadatas: Array(metadatas))
 
             return sorted
         } ?? []
     }
+
+    // MARK: - Realm Read
 
     func getMetadatas(predicate: NSPredicate,
                       sortedByKeyPath: String,

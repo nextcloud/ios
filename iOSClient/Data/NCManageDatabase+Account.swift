@@ -293,48 +293,20 @@ extension NCManageDatabase {
         return tblAccount
     }
 
-    func setAccountAutoUploadProperty(_ property: String, state: Bool) {
-        performRealmWrite { realm in
-            if let result = realm.objects(tableAccount.self).filter("active == true").first {
-                if (tableAccount().objectSchema.properties.contains { $0.name == property }) {
-                    result[property] = state
-                }
-            }
-        }
-    }
-
-    func setAccountAutoUploadGranularity(_ property: String, state: Int) {
-        performRealmWrite { realm in
-            if let result = realm.objects(tableAccount.self).filter("active == true").first {
-                result.autoUploadSubfolderGranularity = state
-            }
-        }
-    }
-
-    func setAccountAutoUploadFileName(_ fileName: String) {
-        performRealmWrite { realm in
+    func setAccountAutoUploadFileNameAsync(_ fileName: String) async {
+        await performRealmWriteAsync { realm in
             if let result = realm.objects(tableAccount.self).filter("active == true").first {
                 result.autoUploadFileName = fileName
             }
         }
     }
 
-    func setAccountAutoUploadDirectory(_ serverUrl: String, session: NCSession.Session) {
-        performRealmWrite { realm in
+    func setAccountAutoUploadDirectoryAsync(_ serverUrl: String, session: NCSession.Session) async {
+        await performRealmWriteAsync { realm in
             if let result = realm.objects(tableAccount.self)
                 .filter("active == true")
                 .first {
                 result.autoUploadDirectory = serverUrl
-            }
-        }
-    }
-
-    func setAutoUploadOnlyNewSinceDate(account: String, date: Date) {
-        performRealmWrite { realm in
-            if let result = realm.objects(tableAccount.self)
-                .filter("acccount == %@", account)
-                .first {
-                result.autoUploadOnlyNewSinceDate = date
             }
         }
     }
@@ -408,8 +380,8 @@ extension NCManageDatabase {
         }
     }
 
-    func setAccountMediaPath(_ path: String, account: String) {
-        performRealmWrite { realm in
+    func setAccountMediaPathAsync(_ path: String, account: String) async {
+        await performRealmWriteAsync { realm in
             if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
                 result.mediaPath = path
             }

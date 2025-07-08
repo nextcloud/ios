@@ -213,16 +213,18 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// serverUrl: The server URL to set as the auto-upload directory.
     func setAutoUploadDirectory(serverUrl: String?) {
         guard let serverUrl else { return }
-        let home = NCUtilityFileSystem().getHomeServer(session: session)
-        if home != serverUrl {
-            let fileName = (serverUrl as NSString).lastPathComponent
-            self.database.setAccountAutoUploadFileName(fileName)
-            if let path = NCUtilityFileSystem().deleteLastPath(serverUrlPath: serverUrl, home: home) {
-                self.database.setAccountAutoUploadDirectory(path, session: session)
+        Task {
+            let home = NCUtilityFileSystem().getHomeServer(session: session)
+            if home != serverUrl {
+                let fileName = (serverUrl as NSString).lastPathComponent
+                await self.database.setAccountAutoUploadFileNameAsync(fileName)
+                if let path = NCUtilityFileSystem().deleteLastPath(serverUrlPath: serverUrl, home: home) {
+                    await self.database.setAccountAutoUploadDirectoryAsync(path, session: session)
+                }
             }
-        }
 
-        onViewAppear()
+            onViewAppear()
+        }
     }
 
     func createAlbumTitle(autoUploadAlbumIds: Set<String>) -> String {

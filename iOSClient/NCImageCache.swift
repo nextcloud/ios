@@ -12,7 +12,9 @@ final class NCImageCache: @unchecked Sendable {
     static let shared = NCImageCache()
 
     private let utility = NCUtility()
+    private let utilityFileSystem = NCUtilityFileSystem()
     private let global = NCGlobal.shared
+    private let database = NCManageDatabase.shared
 
     private let allowExtensions = [NCGlobal.shared.previewExt256]
     private var brandElementColor: UIColor?
@@ -23,7 +25,7 @@ final class NCImageCache: @unchecked Sendable {
     }()
 
     public var isLoadingCache: Bool = false
-    var isDidEnterBackground: Bool = false
+    public var controller: UITabBarController?
 
     init() {
         NotificationCenter.default.addObserver(forName: LRUCacheMemoryWarningNotification, object: nil, queue: nil) { _ in
@@ -32,7 +34,6 @@ final class NCImageCache: @unchecked Sendable {
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
-            self.isDidEnterBackground = true
             self.cache.removeAllValues()
             self.cache = LRUCache<String, UIImage>(countLimit: self.countLimit)
         }
@@ -40,35 +41,27 @@ final class NCImageCache: @unchecked Sendable {
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { _ in
 #if !EXTENSION
             Task {
-                guard !self.isLoadingCache else {
+                guard let controller = self.controller as? NCMainTabBarController,
+                    !self.isLoadingCache else {
                     return
                 }
-                self.isDidEnterBackground = false
 
-                var files: [NCFiles] = []
                 var cost: Int = 0
+                let session = await NCSession.shared.getSession(account: controller.account)
 
-                if let activeTableAccount = await NCManageDatabase.shared.getActiveTableAccountAsync(),
+                if let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", controller.account)),
                    NCImageCache.shared.cache.count == 0 {
-                    let session = NCSession.shared.getSession(account: activeTableAccount.account)
-
-                    for mainTabBarController in SceneManager.shared.getControllers() {
-                        if let currentVC = await mainTabBarController.selectedViewController as? UINavigationController,
-                           let file = await currentVC.visibleViewController as? NCFiles {
-                            files.append(file)
-                        }
-                    }
 
                     self.isLoadingCache = true
 
                     // MEDIA
-                    let predicate = self.getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: false, showOnlyVideos: false)
-                    if let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: predicate, sortedByKeyPath: "datePhotosOriginal", limit: self.countLimit) {
+                    let predicate = self.getMediaPredicateAsync(filterLivePhotoFile: true, session: session, mediaPath: tblAccount.mediaPath, showOnlyImages: false, showOnlyVideos: false)
+                    if let metadatas = await self.database.getMetadatasAsync(predicate: predicate, sortedByKeyPath: "datePhotosOriginal", limit: self.countLimit) {
                         autoreleasepool {
                             self.cache.removeAllValues()
 
                             for metadata in metadatas {
-                                guard !self.isDidEnterBackground else {
+                                guard !isAppInBackground else {
                                     self.cache.removeAllValues()
                                     break
                                 }
@@ -76,16 +69,6 @@ final class NCImageCache: @unchecked Sendable {
                                     self.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: self.global.previewExt256, cost: cost)
                                     cost += 1
                                 }
-                            }
-                        }
-                    }
-
-                    // FILE
-                    if !self.isDidEnterBackground {
-                        for file in files where await !file.serverUrl.isEmpty {
-                            let serverUrl = await file.serverUrl
-                            NCNetworking.shared.notifyAllDelegates { delegate in
-                                delegate.transferReloadData(serverUrl: serverUrl, status: nil)
                             }
                         }
                     }
@@ -135,10 +118,9 @@ final class NCImageCache: @unchecked Sendable {
 
     // MARK: - MEDIA -
 
-    func getMediaPredicate(filterLivePhotoFile: Bool, session: NCSession.Session, showOnlyImages: Bool, showOnlyVideos: Bool) -> NSPredicate {
-            guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else { return NSPredicate() }
-            var predicate = NSPredicate()
-            let startServerUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
+    func getMediaPredicateAsync(filterLivePhotoFile: Bool, session: NCSession.Session, mediaPath: String, showOnlyImages: Bool, showOnlyVideos: Bool) -> NSPredicate {
+        var predicate = NSPredicate()
+        let startServerUrl = self.utilityFileSystem.getHomeServer(session: session) + mediaPath
 
             var showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND hasPreview == true AND (classFile == '\(NKTypeClassFile.image.rawValue)' OR classFile == '\(NKTypeClassFile.video.rawValue)') AND NOT (status IN %@)"
 

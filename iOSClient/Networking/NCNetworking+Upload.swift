@@ -33,6 +33,13 @@ protocol UploadProgressDelegate: AnyObject {
                                  serverUrl: String)
 }
 
+enum UploadEvent {
+    case started
+    case request(UploadRequest)
+    case progress(expected: Int64, transferred: Int64, fraction: Double)
+    case completed
+}
+
 extension NCNetworking {
     func uploadHub(metadata: tableMetadata,
                    uploadE2EEDelegate: uploadE2EEDelegate? = nil,
@@ -105,6 +112,21 @@ extension NCNetworking {
             }
         }
     }
+
+    /*
+    func uploadHubStream(metadata: tableMetadata,
+                         uploadE2EEDelegate: uploadE2EEDelegate? = nil,
+                         controller: UIViewController? = nil) -> AsyncThrowingStream<UploadEvent, Error> {
+        return AsyncThrowingStream(bufferingPolicy: .unbounded) { continuation in
+            Task {
+                continuation.yield(.started)
+                continuation.yield(.progress(...))
+                continuation.yield(.completed)
+                continuation.finish()
+            }
+        }
+    }
+    */
 
     func uploadFile(metadata: tableMetadata,
                     fileNameLocalPath: String,
