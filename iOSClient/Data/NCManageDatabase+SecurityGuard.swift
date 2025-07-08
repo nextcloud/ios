@@ -77,7 +77,7 @@ extension NCManageDatabase {
         await performRealmReadAsync { realm in
             let results = realm.objects(TableSecurityGuardDiagnostics.self)
                 .filter("account == %@", account)
-            return Array(results)
+            return results.map { TableSecurityGuardDiagnostics(value: $0) }
         }
     }
 }

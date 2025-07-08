@@ -329,8 +329,6 @@ extension tableMetadata {
 }
 
 extension NCManageDatabase {
-
-
     func isMetadataShareOrMounted(metadata: tableMetadata, metadataFolder: tableMetadata?) -> Bool {
         let permissions = NCPermissions()
         var isShare = false
@@ -1174,18 +1172,22 @@ extension NCManageDatabase {
                                                   fileNameConflict))
     }
 
-    // MARK: - Realm Read (result)
-
-    func getMetadatasFromGroupfolders(session: NCSession.Session, layoutForView: NCDBLayoutForView?) -> [tableMetadata] {
+    /// Asynchronously retrieves and sorts `tableMetadata` associated with groupfolders for a given session.
+    /// - Parameters:
+    ///   - session: The `NCSession.Session` containing account and server information.
+    ///   - layoutForView: An optional layout configuration used for sorting.
+    /// - Returns: An array of sorted and detached `tableMetadata` objects.
+    func getMetadatasFromGroupfoldersAsync(session: NCSession.Session, layoutForView: NCDBLayoutForView?) async -> [tableMetadata] {
         let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
 
-        return performRealmRead { realm in
+        return await performRealmReadAsync { realm in
             var ocIds: [String] = []
 
+            // Safely fetch and detach groupfolders
             let groupfolders = realm.objects(TableGroupfolders.self)
                 .filter("account == %@", session.account)
                 .sorted(byKeyPath: "mountPoint", ascending: true)
-                .freeze()
+                .map { TableGroupfolders(value: $0) }
 
             for groupfolder in groupfolders {
                 let mountPoint = groupfolder.mountPoint.hasPrefix("/") ? groupfolder.mountPoint : "/" + groupfolder.mountPoint
@@ -1201,15 +1203,18 @@ extension NCManageDatabase {
                 }
             }
 
-            let metadatas = Array(realm.objects(tableMetadata.self)
+            // Fetch and detach the corresponding metadatas
+            let metadatas = realm.objects(tableMetadata.self)
                 .filter("ocId IN %@", ocIds)
-                .map { $0.detachedCopy() })
+                .map { $0.detachedCopy() }
 
-            let sorted = self.sortedMetadata(layoutForView: layoutForView, account: session.account, metadatas: metadatas)
+            let sorted = self.sortedMetadata(layoutForView: layoutForView, account: session.account, metadatas: Array(metadatas))
 
             return sorted
         } ?? []
     }
+
+    // MARK: - Realm Read
 
     func getMetadatas(predicate: NSPredicate,
                       sortedByKeyPath: String,
