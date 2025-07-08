@@ -460,7 +460,11 @@ extension NCManageDatabase {
         let detached = metadatas.map { $0.detachedCopy() }
 
         await performRealmWriteAsync { realm in
-            realm.delete(detached)
+            for detached in detached {
+                if let managed = realm.object(ofType: tableMetadata.self, forPrimaryKey: detached.ocId) {
+                    realm.delete(managed)
+                }
+            }
         }
     }
 
