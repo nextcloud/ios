@@ -56,7 +56,6 @@ class tableMetadata: Object {
     @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var edited: Bool = false
     @objc dynamic var etag = ""
-    @objc dynamic var etagResource = ""
     let exifPhotos = List<NCKeyValue>()
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileId = ""
@@ -690,41 +689,6 @@ extension NCManageDatabase {
                 result.serveUrlFileName = self.utilityFileSystem.stringAppendServerUrl(result.serverUrl, addFileName: result.fileName)
                 result.status = NCGlobal.shared.metadataStatusNormal
                 result.sessionDate = nil
-            }
-        }
-    }
-
-    func setMetadataEtagResource(ocId: String,
-                                 etagResource: String?,
-                                 sync: Bool = true) {
-        guard let etagResource else {
-            return
-        }
-
-        performRealmWrite(sync: sync) { realm in
-            let result = realm.objects(tableMetadata.self)
-                .filter("ocId == %@", ocId)
-                .first
-            result?.etagResource = etagResource
-        }
-    }
-
-    /// Updates the `etagResource` of a `tableMetadata` object with the given `ocId`, using an async Realm write.
-    ///
-    /// - Parameters:
-    ///   - ocId: The unique identifier of the metadata record.
-    ///   - etagResource: The new ETag value to set. If `nil`, the operation is skipped.
-    /// - Returns: A boolean indicating whether the update was performed.
-    func setMetadataEtagResourceAsync(ocId: String, etagResource: String?) async {
-        guard let etagResource else {
-            return
-        }
-
-        return await performRealmWriteAsync { realm in
-            if let result = realm.objects(tableMetadata.self)
-                .filter("ocId == %@", ocId)
-                .first {
-                result.etagResource = etagResource
             }
         }
     }

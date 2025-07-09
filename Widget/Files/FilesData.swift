@@ -217,6 +217,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 image = utility.getImage(ocId: file.ocId, etag: file.etag, ext: NCGlobal.shared.previewExt512)
                 if image == nil, file.hasPreview {
                     let result = await NextcloudKit.shared.downloadPreviewAsync(fileId: file.fileId,
+                                                                                etag: file.etag,
                                                                                 account: activeTableAccount.account,
                                                                                 options: options)
                     if result.error == .success, let data = result.responseData?.data {

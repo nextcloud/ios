@@ -808,7 +808,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation, @unchecked Sendable {
                                            fileNameLocalPath: NCUtilityFileSystem().directoryUserData + "/" + fileName,
                                            sizeImage: NCGlobal.shared.avatarSize,
                                            avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
-                                           etag: self.etag,
+                                           etagResource: self.etag,
                                            account: account,
                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, image, _, etag, _, error in
 
