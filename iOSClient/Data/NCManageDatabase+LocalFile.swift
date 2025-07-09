@@ -29,24 +29,6 @@ extension NCManageDatabase {
 
     // MARK: - Realm Write
 
-    func addLocalFile(metadata: tableMetadata, offline: Bool? = nil, sync: Bool = true) {
-        let addObject = getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) ?? tableLocalFile()
-
-        performRealmWrite(sync: sync) { realm in
-            addObject.account = metadata.account
-            addObject.etag = metadata.etag
-            addObject.exifDate = NSDate()
-            addObject.exifLatitude = "-1"
-            addObject.exifLongitude = "-1"
-            addObject.ocId = metadata.ocId
-            addObject.fileName = metadata.fileName
-            if let offline {
-                addObject.offline = offline
-            }
-            realm.add(addObject, update: .all)
-        }
-    }
-
     /// - Parameters:
     ///   - metadata: The `tableMetadata` containing file details.
     ///   - offline: Optional flag to mark the file as available offline.
@@ -144,6 +126,16 @@ extension NCManageDatabase {
 
     func setOffLocalFile(ocId: String) {
         performRealmWrite { realm in
+            if let result = realm.objects(tableLocalFile.self)
+                .filter("ocId == %@", ocId)
+                .first {
+                result.offline = false
+            }
+        }
+    }
+
+    func setOffLocalFileAsync(ocId: String) async {
+        await performRealmWriteAsync { realm in
             if let result = realm.objects(tableLocalFile.self)
                 .filter("ocId == %@", ocId)
                 .first {

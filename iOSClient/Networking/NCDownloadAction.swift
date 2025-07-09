@@ -131,32 +131,31 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
 
     // MARK: -
 
-    func setMetadataAvalableOffline(_ metadata: tableMetadata, isOffline: Bool) {
+    func setMetadataAvalableOffline(_ metadata: tableMetadata, isOffline: Bool) async {
         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
         if isOffline {
             if metadata.directory {
-                self.database.setDirectory(serverUrl: serverUrl, offline: false, metadata: metadata)
+                await self.database.setDirectoryAsync(serverUrl: serverUrl, offline: false, metadata: metadata)
                 let predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND sessionSelector == %@ AND status == %d", metadata.account, serverUrl, NCGlobal.shared.selectorSynchronizationOffline, NCGlobal.shared.metadataStatusWaitDownload)
-                let metadatas = database.getMetadatas(predicate: predicate)
-                database.clearMetadatasSession(metadatas: metadatas)
+                if let metadatas = await database.getMetadatasAsync(predicate: predicate) {
+                    await database.clearMetadatasSessionAsync(metadatas: metadatas)
+                }
             } else {
-                database.setOffLocalFile(ocId: metadata.ocId)
+                await database.setOffLocalFileAsync(ocId: metadata.ocId)
             }
         } else if metadata.directory {
-            database.setDirectory(serverUrl: serverUrl, offline: true, metadata: metadata)
-            Task {
-                await NCService().synchronize(account: metadata.account)
-            }
+            await database.setDirectoryAsync(serverUrl: serverUrl, offline: true, metadata: metadata)
+            await NCService().synchronize(account: metadata.account)
         } else {
             var metadatasSynchronizationOffline: [tableMetadata] = []
             metadatasSynchronizationOffline.append(metadata)
-            if let metadata = database.getMetadataLivePhoto(metadata: metadata) {
+            if let metadata = await database.getMetadataLivePhotoAsync(metadata: metadata) {
                 metadatasSynchronizationOffline.append(metadata)
             }
-            database.addLocalFile(metadata: metadata, offline: true, sync: false)
-            database.setMetadatasSessionInWaitDownload(metadatas: metadatasSynchronizationOffline,
-                                                       session: NCNetworking.shared.sessionDownloadBackground,
-                                                       selector: NCGlobal.shared.selectorSynchronizationOffline)
+            await database.addLocalFileAsync(metadata: metadata, offline: true)
+            await database.setMetadatasSessionInWaitDownloadAsync(metadatas: metadatasSynchronizationOffline,
+                                                                  session: NCNetworking.shared.sessionDownloadBackground,
+                                                                  selector: NCGlobal.shared.selectorSynchronizationOffline)
         }
     }
 
@@ -219,8 +218,10 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                                                          status: self.global.metadataStatusNormal,
                                                          etag: etag)
                         if account == accountDownload, error == .success {
-                            self.database.addLocalFile(metadata: metadata)
-                            NCViewer().view(viewController: viewController, metadata: metadata)
+                            Task {
+                                await self.database.addLocalFileAsync(metadata: metadata)
+                                NCViewer().view(viewController: viewController, metadata: metadata)
+                            }
                         }
                     }
                 }
