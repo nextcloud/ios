@@ -114,7 +114,9 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
             guard let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: activityPreview.account, idActivity: activityPreview.idActivity, id: String(activityPreview.fileId)) else {
                 return
             }
-            NCDownloadAction.shared.viewerFile(account: account, fileId: activitySubjectRich.id, viewController: viewController)
+            Task {
+                await NCDownloadAction.shared.viewerFile(account: account, fileId: activitySubjectRich.id, viewController: viewController)
+            }
         }
     }
 }
