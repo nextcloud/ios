@@ -44,17 +44,11 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
                   let tblMetadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(self.metadata.ocId) else {
                 return self.finish()
             }
-            var etagResource: String?
             var image: UIImage?
 
-            if utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag) {
-                etagResource = tblMetadata.etagResource
-            }
-
-            let resultsDownloadPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: tblMetadata.fileId, etag: etagResource, account: tblMetadata.account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue))
+            let resultsDownloadPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: tblMetadata.fileId, etag: tblMetadata.etag, account: tblMetadata.account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue))
 
             if resultsDownloadPreview.error == .success, let data = resultsDownloadPreview.responseData?.data {
-                await NCManageDatabase.shared.setMetadataEtagResourceAsync(ocId: self.metadata.ocId, etagResource: resultsDownloadPreview.etag)
                 NCUtility().createImageFileFrom(data: data, metadata: tblMetadata)
 
                 image = await NCUtility().getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: NCGlobal.shared.getSizeExtension(column: self.media.numberOfColumns))

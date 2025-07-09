@@ -95,7 +95,7 @@ class NCService: NSObject {
         let resultsDownload = await NextcloudKit.shared.downloadAvatarAsync(user: session.userId,
                                                                             fileNameLocalPath: self.utilityFileSystem.directoryUserData + "/" + fileName,
                                                                             sizeImage: NCGlobal.shared.avatarSize,
-                                                                            etag: tblAvatar?.etag,
+                                                                            etagResource: tblAvatar?.etag,
                                                                             account: account)
 
         if  resultsDownload.error == .success,

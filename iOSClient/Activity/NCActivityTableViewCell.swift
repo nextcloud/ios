@@ -173,7 +173,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
                         cell.fileId = fileId
                         if !FileManager.default.fileExists(atPath: fileNamePath) {
                             if NCNetworking.shared.downloadThumbnailActivityQueue.operations.filter({ ($0 as? NCOperationDownloadThumbnailActivity)?.fileId == fileId }).isEmpty {
-                                NCNetworking.shared.downloadThumbnailActivityQueue.addOperation(NCOperationDownloadThumbnailActivity(fileId: fileId, fileNamePreviewLocalPath: fileNamePath, account: account, collectionView: collectionView))
+                                NCNetworking.shared.downloadThumbnailActivityQueue.addOperation(NCOperationDownloadThumbnailActivity(fileId: fileId, etag: "", fileNamePreviewLocalPath: fileNamePath, account: account, collectionView: collectionView))
                             }
                         }
                     }
@@ -203,18 +203,21 @@ class NCOperationDownloadThumbnailActivity: ConcurrentOperation, @unchecked Send
     var fileNamePreviewLocalPath: String
     var fileId: String
     var account: String
+    var etag: String
 
-    init(fileId: String, fileNamePreviewLocalPath: String, account: String, collectionView: UICollectionView?) {
+    init(fileId: String, etag: String, fileNamePreviewLocalPath: String, account: String, collectionView: UICollectionView?) {
         self.fileNamePreviewLocalPath = fileNamePreviewLocalPath
         self.fileId = fileId
         self.account = account
         self.collectionView = collectionView
+        self.etag = etag
     }
 
     override func start() {
         guard !isCancelled else { return self.finish() }
 
         NextcloudKit.shared.downloadPreview(fileId: fileId,
+                                            etag: etag,
                                             account: account) { _, _, _, _, responseData, error in
             if error == .success, let data = responseData?.data, let collectionView = self.collectionView {
                 for case let cell as NCActivityCollectionViewCell in collectionView.visibleCells {
