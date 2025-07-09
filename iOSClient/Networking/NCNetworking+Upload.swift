@@ -77,7 +77,9 @@ extension NCNetworking {
             } counterChunk: { counter in
                 hud?.progress(num: Float(counter), total: Float(numChunks))
             } start: {
-                hud?.dismiss()
+                hud?.initHudRing(text: NSLocalizedString("_keep_active_for_upload_", comment: ""))
+            } progressHandler: { _, _, fractionCompleted in
+                hud?.progress(fractionCompleted)
             } completion: { account, _, error in
                 hud?.dismiss()
                 let directory = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId)
