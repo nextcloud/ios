@@ -503,8 +503,8 @@ extension NCSelect {
         }
 
         let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
-                                                              layoutForView: NCDBLayoutForView(),
-                                                              account: session.account)
+                                                              withLayout: NCDBLayoutForView(),
+                                                              withAccount: session.account)
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, account: session.account)
         self.collectionView.reloadData()
     }

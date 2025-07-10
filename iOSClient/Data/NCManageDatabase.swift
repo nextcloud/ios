@@ -390,6 +390,36 @@ final class NCManageDatabase: @unchecked Sendable {
         self.clearTable(tableE2eCounter.self, account: account)
     }
 
+    func cleanTablesOcIds(account: String) async {
+        let metadatas = await getMetadatasAsync(predicate: NSPredicate(format: "account == %@", account))
+        let directories = await getDirectoriesAsync(predicate: NSPredicate(format: "account == %@", account))
+        let locals = await getTableLocalFilesAsync(predicate: NSPredicate(format: "account == %@", account))
+
+        let metadatasOcIds = Set(metadatas.map { $0.ocId })
+        let directoriesOcIds = Set(directories.map { $0.ocId })
+        let localsOcIds = Set(locals.map { $0.ocId })
+
+        let localMissingOcIds = localsOcIds.subtracting(metadatasOcIds)
+        let directoriesMissingOcIds = directoriesOcIds.subtracting(metadatasOcIds)
+
+        await withTaskGroup(of: Void.self) { group in
+            for ocId in localMissingOcIds {
+                group.addTask {
+                    await self.deleteLocalFileOcIdAsync(ocId)
+                    self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
+                }
+            }
+        }
+
+        await withTaskGroup(of: Void.self) { group in
+            for ocId in directoriesMissingOcIds {
+                group.addTask {
+                    await self.deleteDirectoryOcIdAsync(ocId)
+                }
+            }
+        }
+    }
+
     func getThreadConfined(_ object: Object) -> Any {
         return ThreadSafeReference(to: object)
     }

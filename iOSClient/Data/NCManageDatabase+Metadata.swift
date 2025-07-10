@@ -1190,60 +1190,12 @@ extension NCManageDatabase {
 
     // MARK: - Realm Read
 
-    func getMetadatas(predicate: NSPredicate,
-                      sortedByKeyPath: String,
-                      ascending: Bool,
-                      limit: Int) -> [tableMetadata] {
-        return performRealmRead { realm in
-            let results = realm.objects(tableMetadata.self)
+    func getMetadatasAsync(predicate: NSPredicate) async -> [tableMetadata] {
+        await performRealmReadAsync { realm in
+            realm.objects(tableMetadata.self)
                 .filter(predicate)
-                .sorted(byKeyPath: sortedByKeyPath, ascending: ascending)
-                .map { $0.detachedCopy() }
-                .prefix(limit)
-            return Array(results)
+                .map { tableMetadata(value: $0) }
         } ?? []
-    }
-
-    func getResultMetadata(predicate: NSPredicate) -> tableMetadata? {
-        return performRealmRead { realm in
-            realm.objects(tableMetadata.self)
-                .filter(predicate)
-                .first
-        }
-    }
-
-    func getResultMetadataAsync(predicate: NSPredicate) async -> tableMetadata? {
-        return await performRealmReadAsync { realm in
-            realm.objects(tableMetadata.self)
-                .filter(predicate)
-                .first
-        }
-    }
-
-    func getResultMetadataFromFileName(_ fileName: String, serverUrl: String, sessionTaskIdentifier: Int) -> tableMetadata? {
-        return performRealmRead { realm in
-            return realm.objects(tableMetadata.self)
-                .filter("fileName == %@ AND serverUrl == %@ AND sessionTaskIdentifier == %d", fileName, serverUrl, sessionTaskIdentifier)
-                .first
-        }
-    }
-
-    func getTableMetadatasDirectoryFavoriteIdentifierRank(account: String) -> [String: NSNumber] {
-        return performRealmRead { realm in
-            var listIdentifierRank: [String: NSNumber] = [:]
-            var counter = 10 as Int64
-
-            let results = realm.objects(tableMetadata.self)
-                .filter("account == %@ AND directory == true AND favorite == true", account)
-                .sorted(byKeyPath: "fileNameView", ascending: true)
-
-            results.forEach { result in
-                counter += 1
-                listIdentifierRank[result.ocId] = NSNumber(value: Int64(counter))
-            }
-
-            return listIdentifierRank
-        } ?? [:]
     }
 
     func getTableMetadatasDirectoryFavoriteIdentifierRankAsync(account: String) async -> [String: NSNumber] {
@@ -1272,37 +1224,8 @@ extension NCManageDatabase {
         }
     }
 
-    func getAssetLocalIdentifiersWaitUpload() -> [String]? {
-        return performRealmRead { realm in
-            let results = realm.objects(tableMetadata.self).filter("sessionSelector == %@ AND status == %d AND assetLocalIdentifier != ''", NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.metadataStatusWaitUpload)
-            return results.map { $0.assetLocalIdentifier }
-        }
-    }
-
-    func getAssetLocalIdentifiersWaitUpload(completion: @escaping ([String]) -> Void) {
-        performRealmRead({ realm in
-            return realm.objects(tableMetadata.self)
-                .filter("sessionSelector == %@ AND status == %d AND assetLocalIdentifier != ''", NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.metadataStatusWaitUpload)
-        }, sync: false) { result in
-            let identifiers = Array(result?.compactMap { $0.assetLocalIdentifier } ?? [])
-            completion(identifiers)
-        }
-    }
-
-    func getMetadataFromDirectory(account: String, serverUrl: String) -> Bool {
-        return performRealmRead { realm in
-            guard let directory = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first,
-                  realm.objects(tableMetadata.self).filter("ocId == %@", directory.ocId).first != nil
-            else {
-                return false
-            }
-            return true
-        } ?? false
-    }
-
     func getMetadataFromFileId(_ fileId: String?) -> tableMetadata? {
-        guard let fileId
-        else {
+        guard let fileId else {
             return nil
         }
 
@@ -1330,57 +1253,10 @@ extension NCManageDatabase {
         }
     }
 
-    func getResultFreezeMetadataFromOcId(_ ocId: String?) -> tableMetadata? {
-        guard let ocId
-        else {
-            return nil
-        }
-
-        return performRealmRead { realm in
-            realm.objects(tableMetadata.self)
-                .filter("ocId == %@", ocId)
-                .first?
-                .freeze()
-        }
-    }
-
-    func getResultsMetadatas(predicate: NSPredicate, sortedByKeyPath: String? = nil, ascending: Bool = false, freeze: Bool = false) -> Results<tableMetadata>? {
-        return performRealmRead { realm in
-            let query = realm.objects(tableMetadata.self).filter(predicate)
-            let results: Results<tableMetadata>
-
-            if let sortedByKeyPath {
-                results = query.sorted(byKeyPath: sortedByKeyPath, ascending: ascending)
-            } else {
-                results = query
-            }
-
-            return freeze ? results.freeze() : results
-        }
-    }
-
-    func getMetadatas(predicate: NSPredicate,
-                      layoutForView: NCDBLayoutForView?,
-                      account: String,
-                      completion: @escaping (_ metadatas: [tableMetadata], _ layoutForView: NCDBLayoutForView?, _ account: String ) -> Void) {
-        performRealmRead({ realm in
-            return realm.objects(tableMetadata.self)
-                .filter(predicate)
-        }, sync: false) { result in
-            guard let result else {
-                return completion([], layoutForView, account)
-            }
-            let sorted = self.sortedMetadata(layoutForView: layoutForView, account: account, metadatas: Array(result))
-            let metadatas = sorted.map { $0.detachedCopy() }
-
-            return completion(metadatas, layoutForView, account)
-        }
-    }
-
     /// Asynchronously retrieves and sorts `tableMetadata` objects matching a given predicate and layout.
     func getMetadatasAsync(predicate: NSPredicate,
-                           layoutForView: NCDBLayoutForView?,
-                           account: String) async -> [tableMetadata] {
+                           withLayout layoutForView: NCDBLayoutForView?,
+                           withAccount account: String) async -> [tableMetadata] {
         let detachedMetadatas = await performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
                 .filter(predicate)
@@ -1393,8 +1269,8 @@ extension NCManageDatabase {
     }
 
     func getMetadatasAsync(predicate: NSPredicate,
-                           sortDescriptors: [RealmSwift.SortDescriptor] = [],
-                           limit: Int? = nil) async -> [tableMetadata]? {
+                           withSort sortDescriptors: [RealmSwift.SortDescriptor] = [],
+                           withLimit limit: Int? = nil) async -> [tableMetadata]? {
         await performRealmReadAsync { realm in
             var results = realm.objects(tableMetadata.self)
                 .filter(predicate)

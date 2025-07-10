@@ -116,7 +116,7 @@ actor NCNetworkingProcess {
             }
 
             let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal))
-            if let metadatas, !metadatas.isEmpty {
+            if !metadatas.isEmpty {
                 let tasks = await networking.getAllDataTask()
                 let hasSyncTask = tasks.contains { $0.taskDescription == global.taskDescriptionSynchronization }
                 let resultsScreenAwake = metadatas.filter { global.metadataStatusForScreenAwake.contains($0.status) }
@@ -161,7 +161,7 @@ actor NCNetworkingProcess {
 
     private func runMetadataPipelineAsync() async {
         let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal))
-        guard let metadatas, !metadatas.isEmpty else {
+        guard !metadatas.isEmpty else {
             return
         }
 

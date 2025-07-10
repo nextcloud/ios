@@ -69,8 +69,8 @@ class NCShares: NCCollectionViewCommon {
 
     override func reloadDataSource() async {
         let metadatas = await database.getMetadatasAsync(predicate: NSPredicate(format: "ocId IN %@", ocIdShares),
-                                                         layoutForView: layoutForView,
-                                                         account: session.account)
+                                                         withLayout: layoutForView,
+                                                         withAccount: session.account)
 
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
 
@@ -112,7 +112,8 @@ class NCShares: NCCollectionViewCommon {
             let sharess = await self.database.getTableSharesAsync(account: self.session.account)
 
             for share in sharess {
-                if let ocId = await self.database.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", session.account, share.serverUrl, share.fileName))?.ocId {
+                let predicate = await NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", session.account, share.serverUrl, share.fileName)
+                if let ocId = await self.database.getMetadataAsync(predicate: predicate)?.ocId {
                     _ = await MainActor.run {
                         self.ocIdShares.insert(ocId)
                     }

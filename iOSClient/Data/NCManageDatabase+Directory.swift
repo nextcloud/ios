@@ -202,6 +202,16 @@ extension NCManageDatabase {
         }
     }
 
+    func deleteDirectoryOcIdAsync(_ ocId: String?) async {
+        guard let ocId else { return }
+
+        await performRealmWriteAsync { realm in
+            let results = realm.objects(tableDirectory.self)
+                .filter("ocId == %@", ocId)
+            realm.delete(results)
+        }
+    }
+
     func setDirectory(serverUrl: String, serverUrlTo: String? = nil, etag: String? = nil, ocId: String? = nil, fileId: String? = nil, encrypted: Bool, richWorkspace: String? = nil, account: String) {
         performRealmWrite { realm in
             if let result = realm.objects(tableDirectory.self)
@@ -391,6 +401,22 @@ extension NCManageDatabase {
             }
             return tableDirectory(value: result)
         }
+    }
+
+    func getDirectoriesAsync(predicate: NSPredicate) async -> [tableDirectory] {
+        await performRealmReadAsync { realm in
+            realm.objects(tableDirectory.self)
+                .filter(predicate)
+                .map { tableDirectory(value: $0) }
+        } ?? []
+    }
+
+    func getTableLocalFilesAsync(predicate: NSPredicate) async -> [tableLocalFile] {
+        await performRealmReadAsync { realm in
+            realm.objects(tableLocalFile.self)
+                .filter(predicate)
+                .map { tableLocalFile(value: $0) }
+        } ?? []
     }
 
     func getTableDirectory(account: String, serverUrl: String) -> tableDirectory? {

@@ -182,7 +182,9 @@ class NCService: NSObject {
         }
 
         // file already in dowloading
-        let metadatasInDownload = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND status == %d", account, self.global.metadataStatusDownloadingAllMode), limit: nil)
+        let predicate = NSPredicate(format: "account == %@ AND status == %d", account, self.global.metadataStatusDownloadingAllMode)
+        let metadatasInDownload = await self.database.getMetadatasAsync(predicate: predicate,
+                                                                        withLimit: nil)
 
         // Synchronize Directory
         let directories = await self.database.getTablesDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "serverUrl", ascending: true)
