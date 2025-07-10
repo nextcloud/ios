@@ -234,8 +234,8 @@ actor NCNetworkingProcess {
                     /// NO WiFi
                     if !isWiFi && metadata.session == networking.sessionUploadBackgroundWWan { continue }
 
-                    await self.database.setMetadataStatusAsync(ocId: metadata.ocId,
-                                                               status: global.metadataStatusUploading)
+                    await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                status: global.metadataStatusUploading)
 
                     /// find controller
                     var controller: NCMainTabBarController?
@@ -346,8 +346,8 @@ actor NCNetworkingProcess {
 
             let resultCopy = await NextcloudKit.shared.copyFileOrFolderAsync(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
 
-            await self.database.setMetadataStatusAsync(ocId: metadata.ocId,
-                                                       status: global.metadataStatusNormal)
+            await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                        status: global.metadataStatusNormal)
 
             if resultCopy.error == .success {
                 let result = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrlFileNameDestination, account: metadata.account)
@@ -380,8 +380,8 @@ actor NCNetworkingProcess {
 
             let resultMove = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
 
-            await self.database.setMetadataStatusAsync(ocId: metadata.ocId,
-                                                       status: global.metadataStatusNormal)
+            await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                        status: global.metadataStatusNormal)
 
             if resultMove.error == .success {
                 let result = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrlFileNameDestination, account: metadata.account)
@@ -501,8 +501,8 @@ actor NCNetworkingProcess {
                 let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
                 let resultDelete = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: serverUrlFileName, account: metadata.account)
 
-                await self.database.setMetadataStatusAsync(ocId: metadata.ocId,
-                                                           status: global.metadataStatusNormal)
+                await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                            status: global.metadataStatusNormal)
 
                 if resultDelete.error == .success || resultDelete.error.errorCode == NCGlobal.shared.errorResourceNotFound {
                     do {

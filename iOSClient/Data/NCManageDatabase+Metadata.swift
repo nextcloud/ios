@@ -360,14 +360,19 @@ extension NCManageDatabase {
         }
     }
 
-    func addAndReturnMetadata(_ metadata: tableMetadata, sync: Bool = true) -> tableMetadata {
+    func addAndReturnMetadata(_ metadata: tableMetadata) -> tableMetadata? {
         let detached = metadata.detachedCopy()
 
-        performRealmWrite(sync: sync) { realm in
+        performRealmWrite { realm in
             realm.add(detached, update: .all)
         }
 
-        return detached.detachedCopy()
+        return performRealmRead { realm in
+            realm.objects(tableMetadata.self)
+                .filter("ocId == %@", metadata.ocId)
+                .first
+                .map { $0.detachedCopy() }
+        }
     }
 
     func addAndReturnMetadataAsync(_ metadata: tableMetadata) async -> tableMetadata? {
@@ -377,14 +382,12 @@ extension NCManageDatabase {
             realm.add(detached, update: .all)
         }
 
-        let result = await performRealmReadAsync { realm in
+        return await performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
                 .filter("ocId == %@", metadata.ocId)
                 .first?
                 .detachedCopy()
         }
-
-        return result
     }
 
     func addMetadata(_ metadata: tableMetadata, sync: Bool = true) {

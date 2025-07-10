@@ -145,18 +145,19 @@ extension NCNetworking {
         NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, account: metadata.account, options: options, requestHandler: { request in
             requestHandler(request)
         }, taskHandler: { task in
-            if let metadata = self.database.setMetadataSessionAndReturn(ocId: metadata.ocId,
-                                                                        sessionTaskIdentifier: task.taskIdentifier,
-                                                                        status: self.global.metadataStatusUploading) {
+            Task {
+                if let metadata = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                              sessionTaskIdentifier: task.taskIdentifier,
+                                                                              status: self.global.metadataStatusUploading) {
 
-                self.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusUploading,
-                                            metadata: metadata,
-                                            error: .success)
+                    self.notifyAllDelegates { delegate in
+                        delegate.transferChange(status: self.global.networkingStatusUploading,
+                                                metadata: metadata,
+                                                error: .success)
+                    }
                 }
+                start()
             }
-
-            start()
         }, progressHandler: { progress in
             self.notifyAllDelegates { delegate in
                 delegate.transferProgressDidUpdate(progress: Float(progress.fractionCompleted),
@@ -214,9 +215,11 @@ extension NCNetworking {
             }
         } requestHandler: { _ in
         } taskHandler: { task in
-            self.database.setMetadataSession(ocId: metadata.ocId,
-                                             sessionTaskIdentifier: task.taskIdentifier,
-                                             status: self.global.metadataStatusUploading)
+            Task {
+                await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                            sessionTaskIdentifier: task.taskIdentifier,
+                                                            status: self.global.metadataStatusUploading)
+            }
         } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
             self.notifyAllDelegates { delegate in
                 delegate.transferProgressDidUpdate(progress: Float(fractionCompleted),
@@ -493,15 +496,17 @@ extension NCNetworking {
         let alertController = UIAlertController(title: error.errorDescription, message: NSLocalizedString("_change_upload_filename_", comment: ""), preferredStyle: .alert)
 
         alertController.addAction(UIAlertAction(title: String(format: NSLocalizedString("_save_file_as_", comment: ""), newFileName), style: .default, handler: { _ in
-            let atpath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileName
-            let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + newFileName
-            self.utilityFileSystem.moveFile(atPath: atpath, toPath: toPath)
-            self.database.setMetadataSession(ocId: metadata.ocId,
-                                             newFileName: newFileName,
-                                             sessionTaskIdentifier: 0,
-                                             sessionError: "",
-                                             status: self.global.metadataStatusWaitUpload,
-                                             errorCode: error.errorCode)
+            Task {
+                let atpath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileName
+                let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + newFileName
+                self.utilityFileSystem.moveFile(atPath: atpath, toPath: toPath)
+                await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                            newFileName: newFileName,
+                                                            sessionTaskIdentifier: 0,
+                                                            sessionError: "",
+                                                            status: self.global.metadataStatusWaitUpload,
+                                                            errorCode: error.errorCode)
+            }
         }))
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive, handler: { _ in
             Task {
@@ -539,15 +544,17 @@ extension NCNetworking {
                 let newFileName = self.utilityFileSystem.createFileName(metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account)
                 let alertController = UIAlertController(title: error.errorDescription, message: NSLocalizedString("_change_upload_filename_", comment: ""), preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: String(format: NSLocalizedString("_save_file_as_", comment: ""), newFileName), style: .default, handler: { _ in
-                    let atpath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileName
-                    let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + newFileName
-                    self.utilityFileSystem.moveFile(atPath: atpath, toPath: toPath)
-                    self.database.setMetadataSession(ocId: metadata.ocId,
-                                                     newFileName: newFileName,
-                                                     sessionTaskIdentifier: 0,
-                                                     sessionError: "",
-                                                     status: self.global.metadataStatusWaitUpload,
-                                                     errorCode: error.errorCode)
+                    Task {
+                        let atpath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileName
+                        let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + newFileName
+                        self.utilityFileSystem.moveFile(atPath: atpath, toPath: toPath)
+                        await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                    newFileName: newFileName,
+                                                                    sessionTaskIdentifier: 0,
+                                                                    sessionError: "",
+                                                                    status: self.global.metadataStatusWaitUpload,
+                                                                    errorCode: error.errorCode)
+                    }
                 }))
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive, handler: { _ in
                     Task {

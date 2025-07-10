@@ -162,35 +162,37 @@ class NCViewerMedia: UIViewController {
                         if error == .success, let url = url {
                             ncplayer.openAVPlayer(url: url, autoplay: autoplay)
                         } else {
-                            guard let metadata = self.database.setMetadataSessionInWaitDownload(ocId: self.metadata.ocId,
-                                                                                                session: self.networking.sessionDownload,
-                                                                                                selector: "") else {
-                                return
-                            }
-                            var downloadRequest: DownloadRequest?
-                            let hud = NCHud(self.tabBarController?.view)
-                            hud.initHudRing(text: NSLocalizedString("_downloading_", comment: ""),
-                                            tapToCancelDetailText: true) {
-                                if let request = downloadRequest {
-                                    request.cancel()
+                            Task { @MainActor in
+                                guard let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(ocId: self.metadata.ocId,
+                                                                                                               session: self.networking.sessionDownload,
+                                                                                                               selector: "") else {
+                                    return
                                 }
-                            }
+                                var downloadRequest: DownloadRequest?
+                                let hud = NCHud(self.tabBarController?.view)
+                                hud.initHudRing(text: NSLocalizedString("_downloading_", comment: ""),
+                                                tapToCancelDetailText: true) {
+                                    if let request = downloadRequest {
+                                        request.cancel()
+                                    }
+                                }
 
-                            self.networking.download(metadata: metadata) {
-                            } requestHandler: { request in
-                                downloadRequest = request
-                            } progressHandler: { progress in
-                                hud.progress(progress.fractionCompleted)
-                            } completion: { _, error in
-                                DispatchQueue.main.async {
-                                    if error == .success {
-                                        hud.success()
-                                        if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
-                                            let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(self.metadata.ocId, fileNameView: self.metadata.fileNameView))
-                                            ncplayer.openAVPlayer(url: url, autoplay: autoplay)
+                                self.networking.download(metadata: metadata) {
+                                } requestHandler: { request in
+                                    downloadRequest = request
+                                } progressHandler: { progress in
+                                    hud.progress(progress.fractionCompleted)
+                                } completion: { _, error in
+                                    DispatchQueue.main.async {
+                                        if error == .success {
+                                            hud.success()
+                                            if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
+                                                let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(self.metadata.ocId, fileNameView: self.metadata.fileNameView))
+                                                ncplayer.openAVPlayer(url: url, autoplay: autoplay)
+                                            }
+                                        } else {
+                                            hud.error(text: error.errorDescription)
                                         }
-                                    } else {
-                                        hud.error(text: error.errorDescription)
                                     }
                                 }
                             }
@@ -270,15 +272,19 @@ class NCViewerMedia: UIViewController {
            self.networking.isOnline,
            let metadata = self.database.getMetadataLivePhoto(metadata: metadata),
            !utilityFileSystem.fileProviderStorageExists(metadata) {
-            if let metadata = self.database.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
-                                                                             session: self.networking.sessionDownload,
-                                                                             selector: "") {
-                self.networking.download(metadata: metadata)
+            Task {
+                if let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
+                                                                                            session: self.networking.sessionDownload,
+                                                                                            selector: "") {
+                    self.networking.download(metadata: metadata)
+                }
             }
         }
 
         if metadata.isImage, fileNameExtension == "GIF" || fileNameExtension == "SVG", !utilityFileSystem.fileProviderStorageExists(metadata) {
-            downloadImage()
+            Task {
+                await downloadImage()
+            }
         }
 
         if metadata.isVideo && !metadata.hasPreview {
@@ -347,10 +353,10 @@ class NCViewerMedia: UIViewController {
         }
     }
 
-    private func downloadImage(withSelector selector: String = "") {
-        if let metadata = self.database.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
-                                                                         session: self.networking.sessionDownload,
-                                                                         selector: selector) {
+    private func downloadImage(withSelector selector: String = "") async {
+        if let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
+                                                                                    session: self.networking.sessionDownload,
+                                                                                    selector: selector) {
 
             self.networking.download(metadata: metadata) {
             } requestHandler: { _ in
@@ -566,7 +572,9 @@ extension NCViewerMedia: UIScrollViewDelegate {
 
 extension NCViewerMedia: NCViewerMediaDetailViewDelegate {
     func downloadFullResolution() {
-        downloadImage(withSelector: global.selectorOpenDetail)
+        Task {
+            await downloadImage(withSelector: global.selectorOpenDetail)
+        }
     }
 }
 

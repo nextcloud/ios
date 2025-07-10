@@ -153,9 +153,11 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                 metadatasSynchronizationOffline.append(metadata)
             }
             await database.addLocalFileAsync(metadata: metadata, offline: true)
-            await database.setMetadatasSessionInWaitDownloadAsync(metadatas: metadatasSynchronizationOffline,
-                                                                  session: NCNetworking.shared.sessionDownloadBackground,
-                                                                  selector: NCGlobal.shared.selectorSynchronizationOffline)
+            for metadata in metadatasSynchronizationOffline {
+                await database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
+                                                                     session: NCNetworking.shared.sessionDownloadBackground,
+                                                                     selector: NCGlobal.shared.selectorSynchronizationOffline)
+            }
         }
     }
 
@@ -218,12 +220,12 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         }
 
         hud.dismiss()
-        self.database.setMetadataSession(ocId: metadata.ocId,
-                                         session: "",
-                                         sessionTaskIdentifier: 0,
-                                         sessionError: "",
-                                         status: self.global.metadataStatusNormal,
-                                         etag: download.etag)
+        await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                    session: "",
+                                                    sessionTaskIdentifier: 0,
+                                                    sessionError: "",
+                                                    status: self.global.metadataStatusNormal,
+                                                    etag: download.etag)
 
         if download.nkError == .success {
             await self.database.addLocalFileAsync(metadata: metadata)
@@ -299,19 +301,21 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, controller: controller)
         for (metadata, url) in downloadMetadata {
             processor.execute { completion in
-                guard let metadata = self.database.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
-                                                                                    session: NCNetworking.shared.sessionDownload,
-                                                                                    selector: "",
-                                                                                    sceneIdentifier: controller.sceneIdentifier) else {
-                    return completion()
-                }
+                Task {
+                    guard let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
+                                                                                                   session: NCNetworking.shared.sessionDownload,
+                                                                                                   selector: "",
+                                                                                                   sceneIdentifier: controller.sceneIdentifier) else {
+                        return completion()
+                    }
 
-                NCNetworking.shared.download(metadata: metadata) {
-                } progressHandler: { progress in
-                    processor.hud.progress(progress.fractionCompleted)
-                } completion: { _, _ in
-                    if self.utilityFileSystem.fileProviderStorageExists(metadata) { urls.append(url) }
-                    completion()
+                    NCNetworking.shared.download(metadata: metadata) {
+                    } progressHandler: { progress in
+                        processor.hud.progress(progress.fractionCompleted)
+                    } completion: { _, _ in
+                        if self.utilityFileSystem.fileProviderStorageExists(metadata) { urls.append(url) }
+                        completion()
+                    }
                 }
             }
         }

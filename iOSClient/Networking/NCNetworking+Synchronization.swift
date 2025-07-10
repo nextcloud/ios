@@ -49,9 +49,11 @@ extension NCNetworking {
 
             await self.database.addMetadatasAsync(metadatasDirectory)
             await self.database.addDirectoriesAsync(metadatas: metadatasDirectory)
-            await self.database.setMetadatasSessionInWaitDownloadAsync(metadatas: metadatasDownload,
-                                                                       session: self.sessionDownloadBackground,
-                                                                       selector: self.global.selectorSynchronizationOffline)
+            for metadata in metadatasDownload {
+                await database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
+                                                                     session: self.sessionDownloadBackground,
+                                                                     selector: NCGlobal.shared.selectorSynchronizationOffline)
+            }
             await self.database.setDirectorySynchronizationDateAsync(serverUrl: serverUrl, account: account)
         } else {
             nkLog(tag: self.global.logTagSync, emoji: .error, message: "Read infinite folder: \(serverUrl), error: \(results.error.errorCode)")
