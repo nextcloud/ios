@@ -212,14 +212,6 @@ extension NCManageDatabase {
         } ?? []
     }
 
-    func getResultsTableLocalFile(predicate: NSPredicate, sorted: String, ascending: Bool) -> Results<tableLocalFile>? {
-        return performRealmRead { realm in
-            realm.objects(tableLocalFile.self)
-                .filter(predicate)
-                .sorted(byKeyPath: sorted, ascending: ascending)
-        }
-    }
-
     func getResultTableLocalFile(ocId: String) -> tableLocalFile? {
         return performRealmRead { realm in
             realm.objects(tableLocalFile.self)

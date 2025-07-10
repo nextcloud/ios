@@ -298,21 +298,6 @@ extension NCManageDatabase {
         }
     }
 
-    func getTablesDirectory(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableDirectory]? {
-        return performRealmRead { realm in
-            let results = realm.objects(tableDirectory.self)
-                .filter(predicate)
-                .sorted(byKeyPath: sorted, ascending: ascending)
-
-            guard !results.isEmpty
-            else {
-                return nil
-            }
-
-            return results.map { tableDirectory(value: $0) }
-        }
-    }
-
     func getTablesDirectoryAsync(predicate: NSPredicate, sorted: String, ascending: Bool) async -> [tableDirectory] {
         await performRealmReadAsync { realm in
             realm.objects(tableDirectory.self)
