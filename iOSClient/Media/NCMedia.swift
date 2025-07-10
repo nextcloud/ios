@@ -54,6 +54,7 @@ class NCMedia: UIViewController {
     var isEditMode = false
     var fileSelect: [String] = []
     var ocIdVerified: [String] = []
+    var ocIdDeleted: [String] = []
     var searchMediaInProgress: Bool = false
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
@@ -266,22 +267,18 @@ class NCMedia: UIViewController {
             return
         }
 
-        var dataSourceRemoved: Bool = false
+        self.ocIdDeleted.append(ocId)
+        await self.database.deleteMetadataOcIdAsync(ocId)
+        self.dataSource.removeMetadata([ocId])
+
         let visibleIndexPaths = collectionView.indexPathsForVisibleItems.sorted()
 
         for indexPath in visibleIndexPaths {
             if let cell = self.collectionView.cellForItem(at: indexPath) as? NCMediaCell,
                ocId == cell.ocId {
-                await self.database.deleteMetadataOcIdAsync(ocId)
-                self.dataSource.removeMetadata([ocId])
                 self.collectionView.deleteItems(at: [indexPath])
-                dataSourceRemoved = true
                 break
             }
-        }
-        if !dataSourceRemoved {
-            await self.database.deleteMetadataOcIdAsync(ocId)
-            self.dataSource.removeMetadata([ocId])
         }
 
         self.collectionView.reloadData()
@@ -297,6 +294,7 @@ class NCMedia: UIViewController {
         networking.downloadThumbnailQueue.cancelAll()
 
         ocIdVerified.removeAll()
+        ocIdDeleted.removeAll()
 
         let tasks = await networking.getAllDataTask()
         for task in tasks.filter({ $0.taskDescription == global.taskDescriptionRetrievesProperties }) {

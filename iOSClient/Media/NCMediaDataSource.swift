@@ -33,7 +33,8 @@ extension NCMedia {
             }
             let predicate = self.imageCache.getMediaPredicateAsync(filterLivePhotoFile: true, session: session, mediaPath: tblAccount.mediaPath, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos)
             if let metadatas = await self.database.getMetadatasAsync(predicate: predicate, sortedByKeyPath: "datePhotosOriginal", ascending: false) {
-                self.dataSource = NCMediaDataSource(metadatas: metadatas)
+                let filteredMetadatas = metadatas.filter { !self.ocIdDeleted.contains($0.ocId) }
+                self.dataSource = NCMediaDataSource(metadatas: filteredMetadatas)
             }
             self.collectionViewReloadData()
         }
