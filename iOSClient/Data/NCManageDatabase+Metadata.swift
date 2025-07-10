@@ -1194,7 +1194,7 @@ extension NCManageDatabase {
         await performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
                 .filter(predicate)
-                .map { tableMetadata(value: $0) }
+                .map { $0.detachedCopy() }
         } ?? []
     }
 

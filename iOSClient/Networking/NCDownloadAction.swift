@@ -132,11 +132,10 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
     // MARK: -
 
     func setMetadataAvalableOffline(_ metadata: tableMetadata, isOffline: Bool) async {
-        let serverUrl = metadata.serverUrl + "/" + metadata.fileName
         if isOffline {
             if metadata.directory {
-                await self.database.setDirectoryAsync(serverUrl: serverUrl, offline: false, metadata: metadata)
-                let predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND sessionSelector == %@ AND status == %d", metadata.account, serverUrl, NCGlobal.shared.selectorSynchronizationOffline, NCGlobal.shared.metadataStatusWaitDownload)
+                await self.database.setDirectoryAsync(serverUrl: metadata.serverUrlFileName, offline: false, metadata: metadata)
+                let predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND sessionSelector == %@ AND status == %d", metadata.account, metadata.serverUrlFileName, NCGlobal.shared.selectorSynchronizationOffline, NCGlobal.shared.metadataStatusWaitDownload)
                 if let metadatas = await database.getMetadatasAsync(predicate: predicate) {
                     await database.clearMetadatasSessionAsync(metadatas: metadatas)
                 }
@@ -144,9 +143,9 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                 await database.setOffLocalFileAsync(ocId: metadata.ocId)
             }
         } else if metadata.directory {
-            await database.setDirectoryAsync(serverUrl: serverUrl, offline: true, metadata: metadata)
+            await database.setDirectoryAsync(serverUrl: metadata.serverUrlFileName, offline: true, metadata: metadata)
             await self.database.cleanTablesOcIds(account: metadata.account)
-            await NCNetworking.shared.synchronization(account: metadata.account, serverUrl: serverUrl, metadatasInDownload: nil)
+            await NCNetworking.shared.synchronization(account: metadata.account, serverUrl: metadata.serverUrlFileName, metadatasInDownload: nil)
         } else {
             var metadatasSynchronizationOffline: [tableMetadata] = []
             metadatasSynchronizationOffline.append(metadata)
@@ -199,7 +198,6 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         let metadata = await self.database.convertFileToMetadataAsync(file, isDirectoryE2EE: isDirectoryE2EE)
         await self.database.addMetadataAsync(metadata)
 
-        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
         if metadata.isAudioOrVideo {
@@ -208,7 +206,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         }
 
         hud.show()
-        let download = await NextcloudKit.shared.downloadAsync(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: account) { request in
+        let download = await NextcloudKit.shared.downloadAsync(serverUrlFileName: metadata.serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: account) { request in
             downloadRequest = request
         } taskHandler: { task in
             Task {
@@ -237,12 +235,11 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
     // MARK: -
 
     func openShare(viewController: UIViewController, metadata: tableMetadata, page: NCBrandOptions.NCInfoPagingTab) {
-        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         var page = page
         let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
 
         NCActivityIndicator.shared.start(backgroundView: viewController.view)
-        NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: metadata.account, queue: .main) { _, metadata, error in
+        NCNetworking.shared.readFile(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account, queue: .main) { _, metadata, error in
             NCActivityIndicator.shared.stop()
 
             if let metadata = metadata, error == .success {
