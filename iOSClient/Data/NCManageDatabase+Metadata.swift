@@ -716,22 +716,6 @@ extension NCManageDatabase {
         }
     }
 
-    func updateMetadatasFavorite(account: String, metadatas: [tableMetadata], sync: Bool = true) {
-        guard !metadatas.isEmpty
-        else {
-            return
-        }
-
-        performRealmWrite(sync: sync) { realm in
-            let oldFavorites = realm.objects(tableMetadata.self)
-                .filter("account == %@ AND favorite == true", account)
-            for item in oldFavorites {
-                item.favorite = false
-            }
-            realm.add(metadatas, update: .all)
-        }
-    }
-
     func updateMetadatasFavoriteAsync(account: String, metadatas: [tableMetadata]) async {
         guard !metadatas.isEmpty else { return }
 

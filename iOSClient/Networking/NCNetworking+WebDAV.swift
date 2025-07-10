@@ -29,46 +29,6 @@ import Photos
 extension NCNetworking {
     // MARK: - Read file & folder
 
-    func readFolder(serverUrl: String,
-                    account: String,
-                    options: NKRequestOptions = NKRequestOptions(),
-                    taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
-                    completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
-        let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: account)
-
-        func storeFolder(_ metadataFolder: tableMetadata) {
-            self.database.addMetadata(metadataFolder)
-            self.database.addDirectory(e2eEncrypted: metadataFolder.e2eEncrypted,
-                                       favorite: metadataFolder.favorite,
-                                       ocId: metadataFolder.ocId,
-                                       fileId: metadataFolder.fileId,
-                                       etag: metadataFolder.etag,
-                                       permissions: metadataFolder.permissions,
-                                       richWorkspace: metadataFolder.richWorkspace,
-                                       serverUrl: serverUrl,
-                                       account: metadataFolder.account)
-        }
-
-        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
-                                             depth: "1",
-                                             showHiddenFiles: showHiddenFiles,
-                                             account: account,
-                                             options: options) { task in
-            taskHandler(task)
-        } completion: { account, files, _, error in
-            guard error == .success, let files
-            else {
-                return completion(account, nil, nil, error)
-            }
-
-            self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { metadataFolder, metadatas in
-                storeFolder(metadataFolder)
-                self.database.updateMetadatasFiles(metadatas, serverUrl: serverUrl, account: account)
-                completion(account, metadataFolder.detachedCopy(), metadatas, error)
-            }
-        }
-    }
-
     /// Async wrapper for `readFolder(...)`, returns a tuple with account, metadataFolder, metadatas, and error.
     func readFolderAsync(serverUrl: String,
                          account: String,
