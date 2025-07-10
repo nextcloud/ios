@@ -465,12 +465,12 @@ actor NCNetworkingProcess {
                 return (global.metadataStatusWaitRename, .cancelled)
             }
 
-            let serverUrlFileNameSource = metadata.serveUrlFileName
+            let serverUrlFileNameSource = metadata.serverUrlFileName
             let serverUrlFileNameDestination = metadata.serverUrl + "/" + metadata.fileName
             let resultRename = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: false, account: metadata.account)
 
             if resultRename.error == .success {
-                await self.database.setMetadataServeUrlFileNameStatusNormalAsync(ocId: metadata.ocId)
+                await self.database.setMetadataServerUrlFileNameStatusNormalAsync(ocId: metadata.ocId)
             } else {
                 await self.database.restoreMetadataFileNameAsync(ocId: metadata.ocId)
             }

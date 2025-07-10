@@ -110,7 +110,7 @@ extension NCManageDatabase {
                     directory.ocId = metadata.ocId
                     directory.permissions = metadata.permissions
                     directory.richWorkspace = metadata.richWorkspace
-                    directory.serverUrl = metadata.serveUrlFileName
+                    directory.serverUrl = metadata.serverUrlFileName
                     realm.add(directory, update: .modified)
                 }
             }
@@ -142,7 +142,7 @@ extension NCManageDatabase {
                     directory.ocId = metadata.ocId
                     directory.permissions = metadata.permissions
                     directory.richWorkspace = metadata.richWorkspace
-                    directory.serverUrl = metadata.serveUrlFileName
+                    directory.serverUrl = metadata.serverUrlFileName
                     realm.add(directory, update: .modified)
                 }
             }

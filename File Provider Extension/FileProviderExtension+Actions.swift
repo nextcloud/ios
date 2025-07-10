@@ -165,7 +165,7 @@ extension FileProviderExtension {
 
             if resultsMove.error == .success {
                 await self.database.renameMetadataAsync(fileNameNew: itemName, ocId: ocId)
-                await self.database.setMetadataServeUrlFileNameStatusNormalAsync(ocId: ocId)
+                await self.database.setMetadataServerUrlFileNameStatusNormalAsync(ocId: ocId)
 
                 guard let metadata = await self.database.getMetadataFromOcIdAsync(ocId),
                       let parentItemIdentifier = await self.providerUtility.getParentItemIdentifierAsync(metadata: metadata) else {
