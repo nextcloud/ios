@@ -162,10 +162,7 @@ final class NCCameraRoll: CameraRollExtractor {
             withLocalIdentifiers: [metadata.assetLocalIdentifier],
             options: nil
         ).firstObject else {
-            throw NSError(domain: "ExtractAssetError",
-                          code: 1,
-                          userInfo: [NSLocalizedDescriptionKey: "Asset not found"]
-            )
+            throw NSError(domain: "ExtractAssetError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Asset not found"])
         }
 
         // Determine file extension and prepare filename
@@ -267,9 +264,7 @@ final class NCCameraRoll: CameraRollExtractor {
                   let colorSpace = ciImage.colorSpace,
                   let jpegData = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace)
             else {
-                throw NSError(domain: "ExtractAssetError",
-                              code: 3,
-                              userInfo: [NSLocalizedDescriptionKey: "JPEG conversion failed"])
+                throw NSError(domain: "ExtractAssetError", code: 3, userInfo: [NSLocalizedDescriptionKey: "JPEG conversion failed"])
             }
             data = jpegData
         }
@@ -289,9 +284,7 @@ final class NCCameraRoll: CameraRollExtractor {
                     if let asset = asset {
                         continuation.resume(returning: asset)
                     } else {
-                        continuation.resume(throwing: NSError(domain: "ExtractAssetError",
-                                                              code: 4,
-                                                              userInfo: [NSLocalizedDescriptionKey: "Video asset is nil"]))
+                        continuation.resume(throwing: NSError(domain: "ExtractAssetError", code: 4, userInfo: [NSLocalizedDescriptionKey: "Video asset is nil"]))
                     }
                 }
             }
@@ -313,16 +306,12 @@ final class NCCameraRoll: CameraRollExtractor {
                     if exporter.status == .completed {
                         continuation.resume()
                     } else {
-                        continuation.resume(throwing: NSError(domain: "ExtractAssetError",
-                                                              code: 5,
-                                                              userInfo: [NSLocalizedDescriptionKey: "Video export failed"]))
+                        continuation.resume(throwing: NSError(domain: "ExtractAssetError", code: 5, userInfo: [NSLocalizedDescriptionKey: "Video export failed"]))
                     }
                 }
             }
         } else {
-            throw NSError(domain: "ExtractAssetError",
-                          code: 6,
-                          userInfo: [NSLocalizedDescriptionKey: "Unsupported video format"])
+            throw NSError(domain: "ExtractAssetError", code: 6, userInfo: [NSLocalizedDescriptionKey: "Unsupported video format"])
         }
     }
 
