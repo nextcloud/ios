@@ -418,7 +418,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                 if error == .success && etag != nil && ocId != nil {
                     let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)
                     self.utilityFileSystem.moveFile(atPath: fileNameLocalPath, toPath: toPath)
-                    self.database.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName, sync: false)
+                    self.database.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
                     NCNetworking.shared.notifyAllDelegates { delegate in
                         delegate.transferRequestData(serverUrl: serverUrl)
                     }
