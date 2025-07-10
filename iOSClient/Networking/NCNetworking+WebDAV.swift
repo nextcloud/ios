@@ -287,6 +287,7 @@ extension NCNetworking {
 
     // MARK: - Delete
 
+    #if !EXTENSION
     func tapHudDelete() {
         tapHudStopDelete = true
     }
@@ -309,21 +310,20 @@ extension NCNetworking {
             await self.database.deleteVideoAsync(metadata: metadata)
             await self.database.deleteLocalFileOcIdAsync(metadata.ocId)
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-#if !EXTENSION
+
             NCImageCache.shared.removeImageCache(ocIdPlusEtag: metadata.ocId + metadata.etag)
-#endif
         }
 
         self.tapHudStopDelete = false
 
+        await database.cleanTablesOcIds(account: metadata.account)
+
         if metadata.directory {
-#if !EXTENSION
             if let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
                 await MainActor.run {
                     ncHud.initHudRing(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDelete)
                 }
             }
-#endif
             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
             if let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, serverUrl)) {
                 let total = Float(metadatas.count)
@@ -334,9 +334,7 @@ extension NCNetworking {
                     if tapHudStopDelete { break }
             }
         }
-#if !EXTENSION
             ncHud.dismiss()
-#endif
         } else {
             await deleteLocalFile(metadata: metadata)
 
@@ -347,6 +345,7 @@ extension NCNetworking {
 
         return .success
     }
+    #endif
 
     func setStatusWaitDelete(metadatas: [tableMetadata], sceneIdentifier: String?) {
         var metadatasPlain: [tableMetadata] = []

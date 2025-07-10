@@ -110,7 +110,7 @@ extension NCManageDatabase {
                     directory.ocId = metadata.ocId
                     directory.permissions = metadata.permissions
                     directory.richWorkspace = metadata.richWorkspace
-                    directory.serverUrl = metadata.serveUrlFileName
+                    directory.serverUrl = metadata.serverUrlFileName
                     realm.add(directory, update: .modified)
                 }
             }
@@ -142,7 +142,7 @@ extension NCManageDatabase {
                     directory.ocId = metadata.ocId
                     directory.permissions = metadata.permissions
                     directory.richWorkspace = metadata.richWorkspace
-                    directory.serverUrl = metadata.serveUrlFileName
+                    directory.serverUrl = metadata.serverUrlFileName
                     realm.add(directory, update: .modified)
                 }
             }
@@ -199,6 +199,16 @@ extension NCManageDatabase {
             }
 
             realm.delete(directories)
+        }
+    }
+
+    func deleteDirectoryOcIdAsync(_ ocId: String?) async {
+        guard let ocId else { return }
+
+        await performRealmWriteAsync { realm in
+            let results = realm.objects(tableDirectory.self)
+                .filter("ocId == %@", ocId)
+            realm.delete(results)
         }
     }
 
@@ -391,6 +401,22 @@ extension NCManageDatabase {
             }
             return tableDirectory(value: result)
         }
+    }
+
+    func getDirectoriesAsync(predicate: NSPredicate) async -> [tableDirectory] {
+        await performRealmReadAsync { realm in
+            realm.objects(tableDirectory.self)
+                .filter(predicate)
+                .map { tableDirectory(value: $0) }
+        } ?? []
+    }
+
+    func getTableLocalFilesAsync(predicate: NSPredicate) async -> [tableLocalFile] {
+        await performRealmReadAsync { realm in
+            realm.objects(tableLocalFile.self)
+                .filter(predicate)
+                .map { tableLocalFile(value: $0) }
+        } ?? []
     }
 
     func getTableDirectory(account: String, serverUrl: String) -> tableDirectory? {

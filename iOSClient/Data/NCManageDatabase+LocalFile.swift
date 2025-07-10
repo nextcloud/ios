@@ -166,6 +166,14 @@ extension NCManageDatabase {
 
     // MARK: - Realm Read
 
+    func getTableLocalFilesAsyncs(predicate: NSPredicate) async -> [tableLocalFile] {
+        await performRealmReadAsync { realm in
+            realm.objects(tableLocalFile.self)
+                .filter(predicate)
+                .map { tableLocalFile(value: $0) }
+        } ?? []
+    }
+
     func getTableLocalFile(account: String) -> [tableLocalFile] {
         return performRealmRead { realm in
                 let results = realm.objects(tableLocalFile.self)

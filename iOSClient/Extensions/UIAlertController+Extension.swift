@@ -67,12 +67,12 @@ extension UIAlertController {
                     await NCNetworkingE2EECreateFolder().createFolder(fileName: fileNameFolder, serverUrl: serverUrl, sceneIdentifier: sceneIdentifier, session: session)
                 }
             } else {
-#if EXTENSION
+                #if EXTENSION
                 Task {
                     let results = await NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, overwrite: false, session: session)
                     completion?(results.error)
                 }
-#else
+                #else
                 var metadata = tableMetadata()
 
                 if let result = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", session.account, serverUrl, fileNameFolder)) {
@@ -174,6 +174,7 @@ extension UIAlertController {
             })
         }
 
+        #if !EXTENSION
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
             Task {
                 var error = NKError()
@@ -183,6 +184,7 @@ extension UIAlertController {
             }
             completion(false)
         })
+        #endif
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in
             completion(true)

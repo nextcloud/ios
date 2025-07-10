@@ -271,7 +271,9 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
         ]
 
-        let metadatas = await self.database.getMetadatasAsync(predicate: predicate, sortDescriptors: sortDescriptors, limit: 100)
+        let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
+                                                              withSort: sortDescriptors,
+                                                              withLimit: 100)
         if let metadatas, !metadatas.isEmpty {
             self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: self.layoutForView)
         } else {

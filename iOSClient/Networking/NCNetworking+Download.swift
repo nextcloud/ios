@@ -170,7 +170,7 @@ extension NCNetworking {
                var serverUrl = url.deletingLastPathComponent().absoluteString.removingPercentEncoding {
                 let fileName = url.lastPathComponent
                 if serverUrl.hasSuffix("/") { serverUrl = String(serverUrl.dropLast()) }
-                if let metadata = database.getResultMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) {
+                if let metadata = database.getMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) {
                     let destinationFilePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
                     utilityFileSystem.copyFile(at: location, to: NSURL.fileURL(withPath: destinationFilePath))
                 }

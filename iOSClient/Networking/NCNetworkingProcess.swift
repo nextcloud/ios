@@ -116,7 +116,7 @@ actor NCNetworkingProcess {
             }
 
             let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal))
-            if let metadatas, !metadatas.isEmpty {
+            if !metadatas.isEmpty {
                 let tasks = await networking.getAllDataTask()
                 let hasSyncTask = tasks.contains { $0.taskDescription == global.taskDescriptionSynchronization }
                 let resultsScreenAwake = metadatas.filter { global.metadataStatusForScreenAwake.contains($0.status) }
@@ -161,7 +161,7 @@ actor NCNetworkingProcess {
 
     private func runMetadataPipelineAsync() async {
         let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal))
-        guard let metadatas, !metadatas.isEmpty else {
+        guard !metadatas.isEmpty else {
             return
         }
 
@@ -465,12 +465,12 @@ actor NCNetworkingProcess {
                 return (global.metadataStatusWaitRename, .cancelled)
             }
 
-            let serverUrlFileNameSource = metadata.serveUrlFileName
+            let serverUrlFileNameSource = metadata.serverUrlFileName
             let serverUrlFileNameDestination = metadata.serverUrl + "/" + metadata.fileName
             let resultRename = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: false, account: metadata.account)
 
             if resultRename.error == .success {
-                await self.database.setMetadataServeUrlFileNameStatusNormalAsync(ocId: metadata.ocId)
+                await self.database.setMetadataServerUrlFileNameStatusNormalAsync(ocId: metadata.ocId)
             } else {
                 await self.database.restoreMetadataFileNameAsync(ocId: metadata.ocId)
             }

@@ -361,21 +361,21 @@ final class NCManageDatabase: @unchecked Sendable {
         self.clearTable(tableDashboardWidget.self, account: account)
         self.clearTable(tableDashboardWidgetButton.self, account: account)
         self.clearTable(tableDirectory.self, account: account)
+        self.clearTable(TableDownloadLimit.self, account: account)
         self.clearTablesE2EE(account: account)
         self.clearTable(tableExternalSites.self, account: account)
         self.clearTable(tableGPS.self, account: nil)
         self.clearTable(TableGroupfolders.self, account: account)
         self.clearTable(TableGroupfoldersGroups.self, account: account)
+        self.clearTable(NCDBLayoutForView.self, account: account)
         self.clearTable(tableLocalFile.self, account: account)
         self.clearTable(tableMetadata.self, account: account)
-        self.clearTable(tableShare.self, account: account)
+        self.clearTable(tableRecommendedFiles.self, account: account)
         self.clearTable(TableSecurityGuardDiagnostics.self, account: account)
+        self.clearTable(tableShare.self, account: account)
         self.clearTable(tableTag.self, account: account)
         self.clearTable(tableTrash.self, account: account)
         self.clearTable(tableVideo.self, account: account)
-        self.clearTable(TableDownloadLimit.self, account: account)
-        self.clearTable(tableRecommendedFiles.self, account: account)
-        self.clearTable(NCDBLayoutForView.self, account: account)
         if account == nil {
             self.clearTable(NCKeyValue.self)
         }
@@ -388,6 +388,36 @@ final class NCManageDatabase: @unchecked Sendable {
         self.clearTable(tableE2eMetadata.self, account: account)
         self.clearTable(tableE2eUsers.self, account: account)
         self.clearTable(tableE2eCounter.self, account: account)
+    }
+
+    func cleanTablesOcIds(account: String) async {
+        let metadatas = await getMetadatasAsync(predicate: NSPredicate(format: "account == %@", account))
+        let directories = await getDirectoriesAsync(predicate: NSPredicate(format: "account == %@", account))
+        let locals = await getTableLocalFilesAsync(predicate: NSPredicate(format: "account == %@", account))
+
+        let metadatasOcIds = Set(metadatas.map { $0.ocId })
+        let directoriesOcIds = Set(directories.map { $0.ocId })
+        let localsOcIds = Set(locals.map { $0.ocId })
+
+        let localMissingOcIds = localsOcIds.subtracting(metadatasOcIds)
+        let directoriesMissingOcIds = directoriesOcIds.subtracting(metadatasOcIds)
+
+        await withTaskGroup(of: Void.self) { group in
+            for ocId in localMissingOcIds {
+                group.addTask {
+                    await self.deleteLocalFileOcIdAsync(ocId)
+                    self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
+                }
+            }
+        }
+
+        await withTaskGroup(of: Void.self) { group in
+            for ocId in directoriesMissingOcIds {
+                group.addTask {
+                    await self.deleteDirectoryOcIdAsync(ocId)
+                }
+            }
+        }
     }
 
     func getThreadConfined(_ object: Object) -> Any {

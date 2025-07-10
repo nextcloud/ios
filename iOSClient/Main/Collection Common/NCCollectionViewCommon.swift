@@ -841,26 +841,23 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     await self.reloadDataSource()
                 }
             } completion: { metadatasSearch, error in
-                guard let metadatasSearch,
-                        error == .success,
-                        self.isSearchingMode
-                else {
-                    self.networkSearchInProgress = false
-                    Task {
+                Task {
+                    guard let metadatasSearch,
+                            error == .success,
+                            self.isSearchingMode
+                    else {
+                        self.networkSearchInProgress = false
                         await self.reloadDataSource()
+                        return
                     }
-                    return
-                }
-                let ocId = metadatasSearch.map { $0.ocId }
+                    let ocId = metadatasSearch.map { $0.ocId }
+                    let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "ocId IN %@", ocId),
+                                                                          withLayout: self.layoutForView,
+                                                                          withAccount: self.session.account)
 
-                self.database.getMetadatas(predicate: NSPredicate(format: "ocId IN %@", ocId),
-                                           layoutForView: self.layoutForView,
-                                           account: self.session.account) { metadatas, layoutForView, account  in
-                    self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, providers: self.providers, searchResults: self.searchResults, account: account)
+                    self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: self.layoutForView, providers: self.providers, searchResults: self.searchResults, account: self.session.account)
                     self.networkSearchInProgress = false
-                    Task {
-                        await self.reloadDataSource()
-                    }
+                    await self.reloadDataSource()
                 }
             }
         }

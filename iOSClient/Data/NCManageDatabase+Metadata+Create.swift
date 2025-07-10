@@ -172,7 +172,7 @@ extension NCManageDatabase {
         metadata.richWorkspace = file.richWorkspace
         metadata.resourceType = file.resourceType
         metadata.serverUrl = file.serverUrl
-        metadata.serveUrlFileName = file.serverUrl + "/" + file.fileName
+        metadata.serverUrlFileName = file.serverUrl + "/" + file.fileName
         metadata.sharePermissionsCollaborationServices = file.sharePermissionsCollaborationServices
 
         for element in file.shareType {
@@ -256,7 +256,7 @@ extension NCManageDatabase {
         metadata.ocIdTransfer = ocId
         metadata.permissions = "RGDNVW"
         metadata.serverUrl = serverUrl
-        metadata.serveUrlFileName = serverUrl + "/" + fileName
+        metadata.serverUrlFileName = serverUrl + "/" + fileName
         metadata.subline = subline
         metadata.uploadDate = Date() as NSDate
         metadata.url = url
@@ -318,7 +318,7 @@ extension NCManageDatabase {
         metadata.ocIdTransfer = ocId
         metadata.permissions = "RGDNVW"
         metadata.serverUrl = serverUrl
-        metadata.serveUrlFileName = serverUrl + "/" + fileName
+        metadata.serverUrlFileName = serverUrl + "/" + fileName
         metadata.subline = subline
         metadata.uploadDate = Date() as NSDate
         metadata.url = url
@@ -355,7 +355,7 @@ extension NCManageDatabase {
         metadata.ocIdTransfer = ocId
         metadata.permissions = "RGDNVW"
         metadata.serverUrl = serverUrl
-        metadata.serveUrlFileName = serverUrl + "/" + fileName
+        metadata.serverUrlFileName = serverUrl + "/" + fileName
         metadata.uploadDate = Date() as NSDate
         metadata.urlBase = session.urlBase
         metadata.user = session.user

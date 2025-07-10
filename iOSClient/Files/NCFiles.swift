@@ -198,8 +198,8 @@ class NCFiles: NCCollectionViewCommon {
             self.richWorkspaceText = tblDirectory.richWorkspace
         }
         let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
-                                                              layoutForView: self.layoutForView,
-                                                              account: self.session.account)
+                                                              withLayout: self.layoutForView,
+                                                              withAccount: self.session.account)
 
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
         await super.reloadDataSource()

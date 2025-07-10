@@ -14,8 +14,8 @@ extension NCShareExtension {
         let layoutForView = await NCManageDatabase.shared.getLayoutForViewAsync(account: session.account, key: keyLayout, serverUrl: serverUrl)
         let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", session.account, serverUrl)
         let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
-                                                              layoutForView: layoutForView,
-                                                              account: session.account)
+                                                              withLayout: layoutForView,
+                                                              withAccount: session.account)
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
         self.collectionView.reloadData()
     }
