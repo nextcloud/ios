@@ -132,11 +132,7 @@ final class NCCameraRoll: CameraRollExtractor {
     ///   - metadata: The metadata to extract.
     ///   - modifyMetadataForUpload: Whether to modify the metadata before returning.
     ///   - completion: Completion handler with result or error.
-    func extractImageVideoFromAssetLocalIdentifier(
-        metadata: tableMetadata,
-        modifyMetadataForUpload: Bool,
-        completion: @escaping (Result<ExtractedAsset, Error>) -> Void
-    ) {
+    func extractImageVideoFromAssetLocalIdentifier(metadata: tableMetadata, modifyMetadataForUpload: Bool, completion: @escaping (Result<ExtractedAsset, Error>) -> Void) {
         Task {
             do {
                 let result = try await extractImageVideoFromAssetLocalIdentifier(
@@ -174,12 +170,7 @@ final class NCCameraRoll: CameraRollExtractor {
 
         // Determine file extension and prepare filename
         let ext = (asset.originalFilename as NSString).pathExtension.lowercased()
-        let fileName = metadataUpdatedFilename(
-            for: asset,
-            original: metadata.fileNameView,
-            ext: ext,
-            native: metadata.nativeFormat
-        )
+        let fileName = metadataUpdatedFilename(for: asset, original: metadata.fileNameView, ext: ext, native: metadata.nativeFormat)
         let filePath = NSTemporaryDirectory() + fileName
 
         metadata.fileName = fileName
@@ -194,22 +185,11 @@ final class NCCameraRoll: CameraRollExtractor {
         // Extract file data from asset
         switch asset.mediaType {
         case .image:
-            try await extractImage(
-                asset: asset,
-                ext: ext,
-                filePath: filePath,
-                compatibilityFormat: !metadata.nativeFormat
-            )
+            try await extractImage(asset: asset, ext: ext, filePath: filePath, compatibilityFormat: !metadata.nativeFormat)
         case .video:
-            try await extractVideo(
-                asset: asset,
-                filePath: filePath
-            )
+            try await extractVideo( asset: asset, filePath: filePath)
         default:
-            throw NSError(domain: "ExtractAssetError",
-                          code: 7,
-                          userInfo: [NSLocalizedDescriptionKey: "Unsupported media type"]
-            )
+            throw NSError(domain: "ExtractAssetError", code: 7, userInfo: [NSLocalizedDescriptionKey: "Unsupported media type"])
         }
 
         // Populate metadata with extracted file info
@@ -222,9 +202,7 @@ final class NCCameraRoll: CameraRollExtractor {
             if let metadata = await updateMetadataForUploadAsync(metadata: metadata, size: Int(metadata.size), chunkSize: chunkSize) {
                 return ExtractedAsset(metadata: metadata, filePath: filePath)
             } else {
-                throw NSError(domain: "ExtractAssetError",
-                              code: 1,
-                              userInfo: [NSLocalizedDescriptionKey: "Asset not found"])
+                throw NSError(domain: "ExtractAssetError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Asset not found"])
             }
         } else {
             return ExtractedAsset(metadata: metadata, filePath: filePath)
@@ -267,21 +245,17 @@ final class NCCameraRoll: CameraRollExtractor {
 
     private func extractImage(asset: PHAsset, ext: String, filePath: String, compatibilityFormat: Bool) async throws {
         let imageData: Data? = try await withCheckedThrowingContinuation { continuation in
-            DispatchQueue.main.async {
-                let options = PHImageRequestOptions()
-                options.isNetworkAccessAllowed = true
-                options.deliveryMode = compatibilityFormat ? .opportunistic : .highQualityFormat
-                options.isSynchronous = true
-                if ext == "dng" { options.version = .original }
+            let options = PHImageRequestOptions()
+            options.isNetworkAccessAllowed = true
+            options.deliveryMode = compatibilityFormat ? .opportunistic : .highQualityFormat
+            options.isSynchronous = true
+            if ext == "dng" { options.version = .original }
 
-                PHImageManager.default().requestImageDataAndOrientation(for: asset, options: options) { data, _, _, _ in
-                    if let data = data {
-                        continuation.resume(returning: data)
-                    } else {
-                        continuation.resume(throwing: NSError(domain: "ExtractAssetError",
-                                                              code: 2,
-                                                              userInfo: [NSLocalizedDescriptionKey: "Image data is nil"]))
-                    }
+            PHImageManager.default().requestImageDataAndOrientation(for: asset, options: options) { data, _, _, _ in
+                if let data {
+                    continuation.resume(returning: data)
+                } else {
+                    continuation.resume(throwing: NSError(domain: "ExtractAssetError", code: 2, userInfo: [NSLocalizedDescriptionKey: "Image data is nil"]))
                 }
             }
         }
