@@ -428,11 +428,12 @@ extension NCNetworking {
 
             self.notifyAllDelegates { delegate in
                 Task {
-                    let status = self.global.metadataStatusWaitDelete
-                    await self.database.setMetadataStatusAsync(ocIds: Array(ocIds),
-                                                               status: status)
+                    for ocId in ocIds {
+                        await self.database.setMetadataSessionAsync(ocId: ocId,
+                                                                    status: self.global.metadataStatusWaitDelete)
+                    }
                     serverUrls.forEach { serverUrl in
-                        delegate.transferReloadData(serverUrl: serverUrl, status: status)
+                        delegate.transferReloadData(serverUrl: serverUrl, status: self.global.metadataStatusWaitDelete)
                     }
                 }
             }

@@ -467,19 +467,23 @@ extension NCPlayerToolBar: NCSelectDelegate {
                 NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, requestHandler: { request in
                     downloadRequest = request
                 }, taskHandler: { task in
-                    self.database.setMetadataSession(ocId: metadata.ocId,
-                                                     sessionTaskIdentifier: task.taskIdentifier,
-                                                     status: self.global.metadataStatusDownloading)
+                    Task {
+                        await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                    sessionTaskIdentifier: task.taskIdentifier,
+                                                                    status: self.global.metadataStatusDownloading)
+                    }
                 }, progressHandler: { progress in
                     self.hud.progress(progress.fractionCompleted)
                 }) { _, etag, _, _, _, _, error in
                     self.hud.dismiss()
-                    self.database.setMetadataSession(ocId: metadata.ocId,
-                                                     session: "",
-                                                     sessionTaskIdentifier: 0,
-                                                     sessionError: "",
-                                                     status: self.global.metadataStatusNormal,
-                                                     etag: etag)
+                    Task {
+                        await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                    session: "",
+                                                                    sessionTaskIdentifier: 0,
+                                                                    sessionError: "",
+                                                                    status: self.global.metadataStatusNormal,
+                                                                    etag: etag)
+                    }
                     if error == .success {
                         self.hud.success()
                         self.addPlaybackSlave(type: type, metadata: metadata)

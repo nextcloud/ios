@@ -382,14 +382,12 @@ extension NCManageDatabase {
             realm.add(detached, update: .all)
         }
 
-        let result = await performRealmReadAsync { realm in
+        return await performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
                 .filter("ocId == %@", metadata.ocId)
                 .first?
                 .detachedCopy()
         }
-
-        return result
     }
 
     func addMetadata(_ metadata: tableMetadata, sync: Bool = true) {
