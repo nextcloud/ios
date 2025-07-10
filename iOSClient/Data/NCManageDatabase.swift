@@ -181,6 +181,14 @@ final class NCManageDatabase: @unchecked Sendable {
                 }
             }
         }
+        if oldSchemaVersion < 393 {
+            migration.enumerateObjects(ofType: tableMetadata.className()) { oldObject, newObject in
+                if let oldData = oldObject?["serveUrlFileName"] as? String {
+                    newObject?["serverUrlFileName"] = oldData
+                }
+            }
+        }
+
         // AUTOMATIC MIGRATIONS (Realm handles these internally)
         if oldSchemaVersion < databaseSchemaVersion {
             // Realm automatically handles:

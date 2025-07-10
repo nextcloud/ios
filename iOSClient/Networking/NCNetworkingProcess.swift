@@ -334,7 +334,6 @@ actor NCNetworkingProcess {
             }
 
             let serverUrlTo = metadata.serverUrlTo
-            let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
             var serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
             let overwrite = (metadata.storeFlag as? NSString)?.boolValue ?? false
 
@@ -344,7 +343,7 @@ actor NCNetworkingProcess {
                 serverUrlFileNameDestination = serverUrlTo + "/" + fileNameCopy
             }
 
-            let resultCopy = await NextcloudKit.shared.copyFileOrFolderAsync(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
+            let resultCopy = await NextcloudKit.shared.copyFileOrFolderAsync(serverUrlFileNameSource: metadata.serverUrlFileName, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
 
             await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
                                                         status: global.metadataStatusNormal)
@@ -374,11 +373,10 @@ actor NCNetworkingProcess {
             }
 
             let serverUrlTo = metadata.serverUrlTo
-            let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
             let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
             let overwrite = (metadata.storeFlag as? NSString)?.boolValue ?? false
 
-            let resultMove = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
+            let resultMove = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: metadata.serverUrlFileName, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
 
             await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
                                                         status: global.metadataStatusNormal)
@@ -397,7 +395,7 @@ actor NCNetworkingProcess {
                     do {
                         try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
                     } catch { }
-                    await self.database.deleteVideoAsync(metadata: metadata)
+                    await self.database.deleteVideoAsync(metadata.ocId)
                     await self.database.deleteMetadataOcIdAsync(metadata.ocId)
                     await self.database.deleteLocalFileOcIdAsync(metadata.ocId)
                     // LIVE PHOTO
@@ -405,7 +403,7 @@ actor NCNetworkingProcess {
                         do {
                             try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId))
                         } catch { }
-                        await self.database.deleteVideoAsync(metadata: metadataLive)
+                        await self.database.deleteVideoAsync(metadataLive.ocId)
                         await self.database.deleteMetadataOcIdAsync(metadataLive.ocId)
                         await self.database.deleteLocalFileOcIdAsync(metadataLive.ocId)
                     }
@@ -498,8 +496,7 @@ actor NCNetworkingProcess {
                     return (global.metadataStatusWaitDelete, .cancelled)
                 }
 
-                let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                let resultDelete = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: serverUrlFileName, account: metadata.account)
+                let resultDelete = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
 
                 await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
                                                             status: global.metadataStatusNormal)
@@ -511,7 +508,7 @@ actor NCNetworkingProcess {
 
                     NCImageCache.shared.removeImageCache(ocIdPlusEtag: metadata.ocId + metadata.etag)
 
-                    await self.database.deleteVideoAsync(metadata: metadata)
+                    await self.database.deleteVideoAsync(metadata.ocId)
                     await self.database.deleteMetadataOcIdAsync(metadata.ocId)
                     await self.database.deleteLocalFileOcIdAsync(metadata.ocId)
 
@@ -521,9 +518,9 @@ actor NCNetworkingProcess {
                                                                                 account: metadata.account)
                     }
 
-                    metadatasError[metadata.detachedCopy()] = .success
+                    metadatasError[metadata] = .success
                 } else {
-                    metadatasError[metadata.detachedCopy()] = resultDelete.error
+                    metadatasError[metadata] = resultDelete.error
                     returnError = resultDelete.error
                 }
             }

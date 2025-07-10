@@ -139,10 +139,9 @@ extension NCNetworking {
                     requestHandler: @escaping (_ request: UploadRequest) -> Void = { _ in },
                     progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
                     completion: @escaping (_ account: String, _ ocId: String?, _ etag: String?, _ date: Date?, _ size: Int64, _ headers: [AnyHashable: Any]?, _ error: NKError) -> Void) {
-        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let options = NKRequestOptions(customHeader: customHeaders, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
-        NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, account: metadata.account, options: options, requestHandler: { request in
+        NextcloudKit.shared.upload(serverUrlFileName: metadata.serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, account: metadata.account, options: options, requestHandler: { request in
             requestHandler(request)
         }, taskHandler: { task in
             Task {
@@ -254,7 +253,6 @@ extension NCNetworking {
                                         start: @escaping () -> Void = { },
                                         completion: @escaping (_ error: NKError) -> Void) {
         let metadata = tableMetadata.init(value: metadata)
-        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
         start()
@@ -264,7 +262,7 @@ extension NCNetworking {
             self.database.deleteMetadataOcId(metadata.ocId, sync: false)
             completion(NKError(errorCode: self.global.errorResourceNotFound, errorDescription: NSLocalizedString("_error_not_found_", value: "The requested resource could not be found", comment: "")))
         } else {
-            let (task, error) = backgroundSession.upload(serverUrlFileName: serverUrlFileName,
+            let (task, error) = backgroundSession.upload(serverUrlFileName: metadata.serverUrlFileName,
                                                          fileNameLocalPath: fileNameLocalPath,
                                                          dateCreationFile: metadata.creationDate as Date,
                                                          dateModificationFile: metadata.date as Date,
@@ -347,7 +345,7 @@ extension NCNetworking {
         let capabilities = await NKCapabilities.shared.getCapabilitiesAsync(for: metadata.account)
 
         if error == .success, let ocId = ocId, size == metadata.size {
-            nkLog(success: "Uploaded file: " + metadata.serverUrl + "/" + metadata.fileName + ", (\(size) bytes)")
+            nkLog(success: "Uploaded file: " + metadata.serverUrlFileName + ", (\(size) bytes)")
 
             metadata.uploadDate = (date as? NSDate) ?? NSDate()
             metadata.etag = etag ?? ""
@@ -403,7 +401,7 @@ extension NCNetworking {
             }
 
         } else {
-            nkLog(error: "Upload file: " + metadata.serverUrl + "/" + metadata.fileName + ", result: error \(error.errorCode)")
+            nkLog(error: "Upload file: " + metadata.serverUrlFileName + ", result: error \(error.errorCode)")
 
             if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
                 await uploadCancelFile(metadata: metadata)

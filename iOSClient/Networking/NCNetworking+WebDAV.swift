@@ -307,7 +307,7 @@ extension NCNetworking {
                 await self.database.deleteLocalFileOcIdAsync(metadataLive.ocId)
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId))
             }
-            await self.database.deleteVideoAsync(metadata: metadata)
+            await self.database.deleteVideoAsync(metadata.ocId)
             await self.database.deleteLocalFileOcIdAsync(metadata.ocId)
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
 
@@ -324,8 +324,7 @@ extension NCNetworking {
                     ncHud.initHudRing(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDelete)
                 }
             }
-            let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-            if let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, serverUrl)) {
+            if let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, metadata.serverUrlFileName)) {
                 let total = Float(metadatas.count)
                 for metadata in metadatas {
                     await deleteLocalFile(metadata: metadata)
@@ -529,14 +528,14 @@ extension NCNetworking {
     // MARK: - Lock Files
 
     func lockUnlockFile(_ metadata: tableMetadata, shoulLock: Bool) {
-        NextcloudKit.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, shouldLock: shoulLock, account: metadata.account) { _, _, error in
+        NextcloudKit.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrlFileName, shouldLock: shoulLock, account: metadata.account) { _, _, error in
             // 0: lock was successful; 412: lock did not change, no error, refresh
             guard error == .success || error.errorCode == self.global.errorPreconditionFailed else {
                 let error = NKError(errorCode: error.errorCode, errorDescription: "_files_lock_error_")
                 NCContentPresenter().messageNotification(metadata.fileName, error: error, delay: self.global.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
                 return
             }
-            self.readFile(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, account: metadata.account) { _, metadata, error in
+            self.readFile(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account) { _, metadata, error in
                 guard error == .success, let metadata = metadata else { return }
                 self.database.addMetadata(metadata)
 
@@ -843,7 +842,7 @@ class NCOperationFileExists: ConcurrentOperation, @unchecked Sendable {
     var ocId: String
 
     init(metadata: tableMetadata) {
-        serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+        serverUrlFileName = metadata.serverUrlFileName
         account = metadata.account
         ocId = metadata.ocId
     }
