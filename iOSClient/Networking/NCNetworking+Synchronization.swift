@@ -33,6 +33,8 @@ extension NCNetworking {
 
         nkLog(tag: self.global.logTagSync, emoji: .start, message: "Start read infinite folder: \(serverUrl)")
 
+        await self.database.cleanTablesOcIds(account: account)
+
         let results = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrl, depth: "infinity", showHiddenFiles: showHiddenFiles, account: account, options: options)
 
         if results.error == .success, let files = results.files {

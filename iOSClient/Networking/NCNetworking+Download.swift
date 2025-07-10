@@ -164,19 +164,15 @@ extension NCNetworking {
     }
 
     func downloadingFinish(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        Task {
-            if let httpResponse = (downloadTask.response as? HTTPURLResponse) {
-                if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300,
-                   let url = downloadTask.currentRequest?.url,
-                   var serverUrl = url.deletingLastPathComponent().absoluteString.removingPercentEncoding {
-                    let fileName = url.lastPathComponent
-                    if serverUrl.hasSuffix("/") { serverUrl = String(serverUrl.dropLast()) }
-                    let predicate = NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)
-                    if let metadata = await database.getMetadataAsync(predicate: predicate) {
-                        let destinationFilePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
-                        utilityFileSystem.copyFile(at: location, to: NSURL.fileURL(withPath: destinationFilePath))
-
-                    }
+        if let httpResponse = (downloadTask.response as? HTTPURLResponse) {
+            if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300,
+               let url = downloadTask.currentRequest?.url,
+               var serverUrl = url.deletingLastPathComponent().absoluteString.removingPercentEncoding {
+                let fileName = url.lastPathComponent
+                if serverUrl.hasSuffix("/") { serverUrl = String(serverUrl.dropLast()) }
+                if let metadata = database.getMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) {
+                    let destinationFilePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
+                    utilityFileSystem.copyFile(at: location, to: NSURL.fileURL(withPath: destinationFilePath))
                 }
             }
         }
