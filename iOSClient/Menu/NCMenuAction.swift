@@ -191,14 +191,24 @@ extension NCMenuAction {
                         message: NSLocalizedString("_select_offline_warning_", comment: ""),
                         preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: NSLocalizedString("_continue_", comment: ""), style: .default, handler: { _ in
-                        selectedMetadatas.forEach { NCDownloadAction.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
-                        completion?()
+                        Task {
+                            for metadata in selectedMetadatas {
+                                await NCDownloadAction.shared.setMetadataAvalableOffline(metadata, isOffline: isAnyOffline)
+
+                            }
+                            completion?()
+                        }
                     }))
                     alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
                     viewController.present(alert, animated: true)
                 } else {
-                    selectedMetadatas.forEach { NCDownloadAction.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
-                    completion?()
+                    Task {
+                        for metadata in selectedMetadatas {
+                            await NCDownloadAction.shared.setMetadataAvalableOffline(metadata, isOffline: isAnyOffline)
+
+                        }
+                        completion?()
+                    }
                 }
             }
         )

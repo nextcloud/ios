@@ -90,13 +90,21 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                 message: NSLocalizedString("_select_offline_warning_", comment: ""),
                 preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("_continue_", comment: ""), style: .default, handler: { _ in
-                metadatas.forEach { NCDownloadAction.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
+                Task {
+                    for metadata in metadatas {
+                        await NCDownloadAction.shared.setMetadataAvalableOffline(metadata, isOffline: isAnyOffline)
+                    }
+                }
                 self.setEditMode(false)
             }))
             alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel))
             self.present(alert, animated: true)
         } else {
-            metadatas.forEach { NCDownloadAction.shared.setMetadataAvalableOffline($0, isOffline: isAnyOffline) }
+            Task {
+                for metadata in metadatas {
+                    await NCDownloadAction.shared.setMetadataAvalableOffline(metadata, isOffline: isAnyOffline)
+                }
+            }
             setEditMode(false)
         }
     }

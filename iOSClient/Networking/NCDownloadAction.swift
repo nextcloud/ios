@@ -131,42 +131,42 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
 
     // MARK: -
 
-    func setMetadataAvalableOffline(_ metadata: tableMetadata, isOffline: Bool) {
+    func setMetadataAvalableOffline(_ metadata: tableMetadata, isOffline: Bool) async {
         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
         if isOffline {
             if metadata.directory {
-                self.database.setDirectory(serverUrl: serverUrl, offline: false, metadata: metadata)
+                await self.database.setDirectoryAsync(serverUrl: serverUrl, offline: false, metadata: metadata)
                 let predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND sessionSelector == %@ AND status == %d", metadata.account, serverUrl, NCGlobal.shared.selectorSynchronizationOffline, NCGlobal.shared.metadataStatusWaitDownload)
-                let metadatas = database.getMetadatas(predicate: predicate)
-                database.clearMetadatasSession(metadatas: metadatas)
+                if let metadatas = await database.getMetadatasAsync(predicate: predicate) {
+                    await database.clearMetadatasSessionAsync(metadatas: metadatas)
+                }
             } else {
-                database.setOffLocalFile(ocId: metadata.ocId)
+                await database.setOffLocalFileAsync(ocId: metadata.ocId)
             }
         } else if metadata.directory {
-            database.setDirectory(serverUrl: serverUrl, offline: true, metadata: metadata)
-            Task {
-                await NCService().synchronize(account: metadata.account)
-            }
+            await database.setDirectoryAsync(serverUrl: serverUrl, offline: true, metadata: metadata)
+            await NCService().synchronize(account: metadata.account)
         } else {
             var metadatasSynchronizationOffline: [tableMetadata] = []
             metadatasSynchronizationOffline.append(metadata)
-            if let metadata = database.getMetadataLivePhoto(metadata: metadata) {
+            if let metadata = await database.getMetadataLivePhotoAsync(metadata: metadata) {
                 metadatasSynchronizationOffline.append(metadata)
             }
-            database.addLocalFile(metadata: metadata, offline: true, sync: false)
-            database.setMetadatasSessionInWaitDownload(metadatas: metadatasSynchronizationOffline,
-                                                       session: NCNetworking.shared.sessionDownloadBackground,
-                                                       selector: NCGlobal.shared.selectorSynchronizationOffline)
+            await database.addLocalFileAsync(metadata: metadata, offline: true)
+            await database.setMetadatasSessionInWaitDownloadAsync(metadatas: metadatasSynchronizationOffline,
+                                                                  session: NCNetworking.shared.sessionDownloadBackground,
+                                                                  selector: NCGlobal.shared.selectorSynchronizationOffline)
         }
     }
 
     // MARK: -
 
-    func viewerFile(account: String, fileId: String, viewController: UIViewController) {
+    @MainActor
+    func viewerFile(account: String, fileId: String, viewController: UIViewController) async {
         var downloadRequest: DownloadRequest?
         let hud = NCHud(viewController.tabBarController?.view)
 
-        if let metadata = database.getMetadataFromFileId(fileId) {
+        if let metadata = await database.getMetadataFromFileIdAsync(fileId) {
             do {
                 let attr = try FileManager.default.attributesOfItem(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
                 let fileSize = attr[FileAttributeKey.size] as? UInt64 ?? 0
@@ -185,49 +185,49 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             }
         }
 
-        NextcloudKit.shared.getFileFromFileId(fileId: fileId, account: account) { account, file, _, error in
-            hud.dismiss()
+        let resultsFile = await NextcloudKit.shared.getFileFromFileIdAsync(fileId: fileId, account: account)
+        hud.dismiss()
+        guard resultsFile.error == .success, let file = resultsFile.file else {
+            NCContentPresenter().showError(error: resultsFile.error)
+            return
+        }
 
-            if error != .success {
-                NCContentPresenter().showError(error: error)
-            } else if let file {
-                let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
-                let metadata = self.database.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
-                self.database.addMetadata(metadata)
+        let isDirectoryE2EE = await self.utilityFileSystem.isDirectoryE2EEAsync(file: file)
+        let metadata = await self.database.convertFileToMetadataAsync(file, isDirectoryE2EE: isDirectoryE2EE)
+        await self.database.addMetadataAsync(metadata)
 
-                let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+        let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
-                if metadata.isAudioOrVideo {
-                    NCViewer().view(viewController: viewController, metadata: metadata)
-                } else {
-                    hud.show()
-                    NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: account, requestHandler: { request in
-                        downloadRequest = request
-                    }, taskHandler: { task in
-                        self.database.setMetadataSession(ocId: metadata.ocId,
-                                                         sessionTaskIdentifier: task.taskIdentifier,
-                                                         status: self.global.metadataStatusDownloading)
-                    }, progressHandler: { progress in
-                        hud.progress(progress.fractionCompleted)
-                    }) { accountDownload, etag, _, _, _, _, error in
-                        hud.dismiss()
-                        self.database.setMetadataSession(ocId: metadata.ocId,
-                                                         session: "",
-                                                         sessionTaskIdentifier: 0,
-                                                         sessionError: "",
-                                                         status: self.global.metadataStatusNormal,
-                                                         etag: etag)
-                        if account == accountDownload, error == .success {
-                            self.database.addLocalFile(metadata: metadata)
-                            NCViewer().view(viewController: viewController, metadata: metadata)
-                        }
-                    }
-                }
-            } else {
-                let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_file_not_found_")
-                NCContentPresenter().showError(error: error)
+        if metadata.isAudioOrVideo {
+            NCViewer().view(viewController: viewController, metadata: metadata)
+            return
+        }
+
+        hud.show()
+        let download = await NextcloudKit.shared.downloadAsync(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: account) { request in
+            downloadRequest = request
+        } taskHandler: { task in
+            Task {
+                await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                            sessionTaskIdentifier: task.taskIdentifier,
+                                                            status: self.global.metadataStatusDownloading)
             }
+        } progressHandler: { progress in
+            hud.progress(progress.fractionCompleted)
+        }
+
+        hud.dismiss()
+        self.database.setMetadataSession(ocId: metadata.ocId,
+                                         session: "",
+                                         sessionTaskIdentifier: 0,
+                                         sessionError: "",
+                                         status: self.global.metadataStatusNormal,
+                                         etag: download.etag)
+
+        if download.nkError == .success {
+            await self.database.addLocalFileAsync(metadata: metadata)
+            NCViewer().view(viewController: viewController, metadata: metadata)
         }
     }
 

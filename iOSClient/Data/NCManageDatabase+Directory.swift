@@ -301,6 +301,29 @@ extension NCManageDatabase {
         }
     }
 
+    func setDirectoryAsync(serverUrl: String, offline: Bool, metadata: tableMetadata) async {
+        await performRealmWriteAsync { realm in
+            if let result = realm.objects(tableDirectory.self)
+                .filter("account == %@ AND serverUrl == %@", metadata.account, serverUrl)
+                .first {
+                result.offline = offline
+            } else {
+                let directory = tableDirectory()
+                directory.account = metadata.account
+                directory.serverUrl = serverUrl
+                directory.offline = offline
+                directory.e2eEncrypted = metadata.e2eEncrypted
+                directory.favorite = metadata.favorite
+                directory.fileId = metadata.fileId
+                directory.ocId = metadata.ocId
+                directory.permissions = metadata.permissions
+                directory.richWorkspace = metadata.richWorkspace
+
+                realm.add(directory, update: .all)
+            }
+        }
+    }
+
     func setDirectorySynchronizationDateAsync(serverUrl: String, account: String) async {
         await performRealmWriteAsync { realm in
             realm.objects(tableDirectory.self)

@@ -1304,6 +1304,22 @@ extension NCManageDatabase {
         }
     }
 
+    /// Asynchronously retrieves a `tableMetadata` object matching the given `fileId`, if available.
+    /// - Parameter fileId: The file identifier used to query the Realm database.
+    /// - Returns: A detached copy of the `tableMetadata` object, or `nil` if not found.
+    func getMetadataFromFileIdAsync(_ fileId: String?) async -> tableMetadata? {
+        guard let fileId else {
+            return nil
+        }
+
+        return await performRealmReadAsync { realm in
+            let object = realm.objects(tableMetadata.self)
+                .filter("fileId == %@", fileId)
+                .first
+            return object?.detachedCopy()
+        }
+    }
+
     func getResultFreezeMetadataFromOcId(_ ocId: String?) -> tableMetadata? {
         guard let ocId
         else {
