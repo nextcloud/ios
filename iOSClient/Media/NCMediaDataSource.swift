@@ -27,17 +27,17 @@ import RealmSwift
 
 extension NCMedia {
     func loadDataSource() async {
-        Task {
-            guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", session.account)) else {
-                return
-            }
-            let predicate = self.imageCache.getMediaPredicateAsync(filterLivePhotoFile: true, session: session, mediaPath: tblAccount.mediaPath, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos)
-            if let metadatas = await self.database.getMetadatasAsync(predicate: predicate, sortedByKeyPath: "datePhotosOriginal", ascending: false) {
-                let filteredMetadatas = metadatas.filter { !self.ocIdDeleted.contains($0.ocId) }
+        guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", session.account)) else {
+            return
+        }
+        let predicate = self.imageCache.getMediaPredicateAsync(filterLivePhotoFile: true, session: session, mediaPath: tblAccount.mediaPath, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos)
+        if let metadatas = await self.database.getMetadatasAsync(predicate: predicate, sortedByKeyPath: "datePhotosOriginal", ascending: false) {
+            let filteredMetadatas = metadatas.filter { !self.ocIdDeleted.contains($0.ocId) }
+            await MainActor.run {
                 self.dataSource = NCMediaDataSource(metadatas: filteredMetadatas)
             }
-            self.collectionViewReloadData()
         }
+        self.collectionViewReloadData()
     }
 
     @MainActor
@@ -50,134 +50,154 @@ extension NCMedia {
     // MARK: - Search media
 
     func searchMediaUI(_ distant: Bool = false) async {
-        guard self.isViewActived,
-              !self.searchMediaInProgress,
-              !self.isPinchGestureActive,
-              !self.showOnlyImages,
-              !self.showOnlyVideos,
-              !isEditMode,
-              networking.downloadThumbnailQueue.operationCount == 0,
-              let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", session.account))
-        else {
+        let shouldContinue = await MainActor.run { () -> Bool in
+            guard self.isViewActived,
+                    !self.searchMediaInProgress,
+                    !self.isPinchGestureActive,
+                    !self.showOnlyImages,
+                    !self.showOnlyVideos,
+                    !self.isEditMode,
+                    self.networking.downloadThumbnailQueue.operationCount == 0 else {
+                return false
+            }
+            self.searchMediaInProgress = true
+            self.activityIndicator.startAnimating()
+            return true
+        }
+
+        guard shouldContinue,
+              let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", session.account)) else {
+            await MainActor.run {
+                self.activityIndicator.stopAnimating()
+                self.searchMediaInProgress = false
+            }
             return
         }
-        self.searchMediaInProgress = true
 
-        let limit = max(self.collectionView.visibleCells.count * 3, 300)
-        let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) })
         let capabilities = await NKCapabilities.shared.getCapabilitiesAsync(for: session.account)
 
-        var elementDate = "d:getlastmodified"
+        // 🧠 Prepara intervallo temporale da celle visibili — solo su MainActor
         var lessDate = Date.distantFuture
         var greaterDate = Date.distantPast
-        var lessDateAny: Any = Date.distantFuture
-        var greaterDateAny: Any = Date.distantPast
-        let countMetadatas = self.dataSource.metadatas.count
-        let options = NKRequestOptions(timeout: 120, taskDescription: self.global.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         var firstCellDate: Date?
         var lastCellDate: Date?
 
-        if countMetadatas == 0 {
+        await MainActor.run {
+            if self.dataSource.metadatas.isEmpty {
                 self.collectionViewReloadData()
-        }
-
-        if let visibleCells, !distant {
-            firstCellDate = (visibleCells.first as? NCMediaCell)?.datePhotosOriginal
-            if firstCellDate == self.dataSource.metadatas.first?.datePhotosOriginal {
-                lessDate = Date.distantFuture
-            } else {
-                if let date = firstCellDate {
-                    lessDate = Calendar.current.date(byAdding: .second, value: 1, to: date)!
-                } else {
-                    lessDate = Date.distantFuture
-                }
             }
 
-            lastCellDate = (visibleCells.last as? NCMediaCell)?.datePhotosOriginal
-            if lastCellDate == self.dataSource.metadatas.last?.datePhotosOriginal {
-                greaterDate = Date.distantPast
-            } else {
-                if let date = lastCellDate {
-                    greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: date)!
+            if let visibleCells = self.collectionView?.indexPathsForVisibleItems
+                .sorted(by: { $0.row < $1.row })
+                .compactMap({ self.collectionView?.cellForItem(at: $0) }) as? [NCMediaCell], !distant {
+
+                firstCellDate = visibleCells.first?.datePhotosOriginal
+                lastCellDate = visibleCells.last?.datePhotosOriginal
+
+                if firstCellDate == self.dataSource.metadatas.first?.datePhotosOriginal {
+                    lessDate = .distantFuture
                 } else {
-                    greaterDate = Date.distantPast
+                    lessDate = Calendar.current.date(byAdding: .second, value: 1, to: firstCellDate ?? .distantFuture) ?? .distantFuture
+                }
+
+                if lastCellDate == self.dataSource.metadatas.last?.datePhotosOriginal {
+                    greaterDate = .distantPast
+                } else {
+                    greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: lastCellDate ?? .distantPast) ?? .distantPast
                 }
             }
         }
 
-        nkLog(start: "Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate), limit \(limit)")
+        nkLog(start: "Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate)")
+
+        let elementDate: String
+        var lessDateAny: Any
+        var greaterDateAny: Any
 
         if capabilities.serverVersionMajor >= self.global.nextcloudVersion31 {
             elementDate = "nc:metadata-photos-original_date_time"
-            lessDateAny = Int((lessDate as AnyObject).timeIntervalSince1970)
-            greaterDateAny = Int((greaterDate as AnyObject).timeIntervalSince1970)
+            lessDateAny = Int(lessDate.timeIntervalSince1970)
+            greaterDateAny = Int(greaterDate.timeIntervalSince1970)
         } else {
+            elementDate = "d:getlastmodified"
             lessDateAny = lessDate
             greaterDateAny = greaterDate
         }
 
-        self.activityIndicator.startAnimating()
+        let limit = await MainActor.run { max(self.collectionView.visibleCells.count * 3, 300) }
 
-        let resultsSearchMedia = await NextcloudKit.shared.searchMediaAsync(path: tblAccount.mediaPath,
-                                                                            lessDate: lessDateAny,
-                                                                            greaterDate: greaterDateAny,
-                                                                            elementDate: elementDate,
-                                                                            limit: limit,
-                                                                            account: self.session.account,
-                                                                            options: options) { _ in
+        let options = NKRequestOptions(timeout: 180, taskDescription: self.global.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+
+        let result = await NextcloudKit.shared.searchMediaAsync(path: tblAccount.mediaPath,
+                                                                lessDate: lessDateAny,
+                                                                greaterDate: greaterDateAny,
+                                                                elementDate: elementDate,
+                                                                limit: limit,
+                                                                account: self.session.account,
+                                                                options: options)
+
+        guard result.error == .success, let files = result.files, !self.showOnlyImages, !self.showOnlyVideos else {
+            nkLog(error: "Media search failed: \(result.error.errorDescription)")
+            await MainActor.run {
+                self.collectionViewReloadData()
+                self.activityIndicator.stopAnimating()
+                self.searchMediaInProgress = false
+            }
+            return
         }
 
-        if resultsSearchMedia.error == .success, let files = resultsSearchMedia.files, !self.showOnlyImages, !self.showOnlyVideos {
-            // No files, remove all
-            if lessDate == Date.distantFuture, greaterDate == Date.distantPast, files.isEmpty {
+        if lessDate == .distantFuture, greaterDate == .distantPast, files.isEmpty {
+            await MainActor.run {
                 self.dataSource.metadatas.removeAll()
                 self.collectionViewReloadData()
             }
+        }
 
-            let isViewActived = self.isViewActived
-            let mediaPredicate = self.imageCache.getMediaPredicateAsync(filterLivePhotoFile: false, session: session, mediaPath: tblAccount.mediaPath, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos)
+        let mediaPredicate = self.imageCache.getMediaPredicateAsync(
+            filterLivePhotoFile: false,
+            session: session,
+            mediaPath: tblAccount.mediaPath,
+            showOnlyImages: self.showOnlyImages,
+            showOnlyVideos: self.showOnlyVideos
+        )
 
-            Task.detached(priority: .userInitiated) { [weak self] in
-                guard let self else { return }
-                let (_, metadatas) = await self.database.convertFilesToMetadatasAsync(files, useFirstAsMetadataFolder: false)
+        Task.detached(priority: .userInitiated) { [weak self] in
+            guard let self else { return }
 
-                let metadatasFiltered = await metadatas.asyncFilter { metadata in
-                    if let tableMetadata = await self.database.getMetadataFromOcIdAsync(metadata.ocId) {
-                        return tableMetadata.status == self.global.metadataStatusNormal
-                    } else {
-                        return true
-                    }
+            let (_, metadatas) = await self.database.convertFilesToMetadatasAsync(files, useFirstAsMetadataFolder: false)
+
+            let filtered = await metadatas.asyncFilter { metadata in
+                if let stored = await self.database.getMetadataFromOcIdAsync(metadata.ocId) {
+                    return stored.status == self.global.metadataStatusNormal
+                } else {
+                    return true
                 }
+            }
 
-                if let firstCellDate, let lastCellDate, isViewActived {
-
-                    let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [ NSPredicate(format: "datePhotosOriginal >= %@ AND datePhotosOriginal =< %@", lastCellDate as NSDate, firstCellDate as NSDate), mediaPredicate])
-
-                    if let metadatas = await self.database.getMetadatasAsync(predicate: predicate) {
-                        for metadata in metadatas where await !ocIdVerified.contains(metadata.ocId) {
-                            if networking.fileExistsQueue.operations.filter({ ($0 as? NCOperationFileExists)?.ocId == metadata.ocId }).isEmpty {
-                                networking.fileExistsQueue.addOperation(NCOperationFileExists(metadata: metadata))
-                            }
+            if let firstCellDate, let lastCellDate {
+                let datePredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+                    NSPredicate(format: "datePhotosOriginal >= %@ AND datePhotosOriginal <= %@", lastCellDate as NSDate, firstCellDate as NSDate),
+                    mediaPredicate
+                ])
+                if let metadatas = await self.database.getMetadatasAsync(predicate: datePredicate) {
+                    for metadata in metadatas where await !self.ocIdVerified.contains(metadata.ocId) {
+                        if self.networking.fileExistsQueue.operations.filter({ ($0 as? NCOperationFileExists)?.ocId == metadata.ocId }).isEmpty {
+                            self.networking.fileExistsQueue.addOperation(NCOperationFileExists(metadata: metadata))
                         }
                     }
                 }
-
-                await self.database.addMetadatasAsync(metadatasFiltered)
-                if await self.dataSource.addMetadatas(metadatas) {
-                    await self.collectionViewReloadData()
-                }
-
-                await MainActor.run {
-                    self.activityIndicator.stopAnimating()
-                    self.searchMediaInProgress = false
-                }
             }
-        } else {
-            nkLog(error: "Media search new media error code \(resultsSearchMedia.error.errorCode) " + resultsSearchMedia.error.errorDescription)
 
-            self.collectionViewReloadData()
-            self.activityIndicator.stopAnimating()
-            self.searchMediaInProgress = false
+            await self.database.addMetadatasAsync(filtered)
+
+            if await self.dataSource.addMetadatas(metadatas) {
+                await self.collectionViewReloadData()
+            }
+
+            await MainActor.run {
+                self.activityIndicator.stopAnimating()
+                self.searchMediaInProgress = false
+            }
         }
     }
 }
@@ -250,6 +270,14 @@ public class NCMediaDataSource: NSObject {
 
     // MARK: -
 
+    func indexPath(forOcId ocId: String) -> IndexPath? {
+        guard let index = self.metadatas.firstIndex(where: { $0.ocId == ocId }) else {
+            return nil
+        }
+
+        return IndexPath(item: index, section: 0)
+    }
+
     func getMetadata(indexPath: IndexPath) -> Metadata? {
         if indexPath.row < self.metadatas.count {
             return self.metadatas[indexPath.row]
@@ -276,37 +304,41 @@ public class NCMediaDataSource: NSObject {
     }
 
     func addMetadatas(_ metadatas: [tableMetadata]) -> Bool {
-        var metadatasToInsert: [Metadata] = []
+        var newMetadatas: [Metadata] = []
 
         for tableMetadata in metadatas {
             let metadata = getMetadataFromTableMetadata(tableMetadata)
 
-            if metadata.isLivePhoto, metadata.isVideo { continue }
+            // Skip invalid Live Photo case
+            if metadata.isLivePhoto, metadata.isVideo {
+                continue
+            }
 
             if let index = self.metadatas.firstIndex(where: { $0.ocId == tableMetadata.ocId }) {
                 self.metadatas[index] = metadata
             } else {
-                metadatasToInsert.append(metadata)
+                newMetadatas.append(metadata)
             }
         }
 
-        // • For many new elements (e.g., hundreds or thousands): It might be more efficient to add all the elements and then sort, especially if the sorting cost  O(n \log n)  is manageable and the final sort is preferable to handling many individual insertions.
-        // • For a few new elements (fewer than 100): Inserting each element into the correct position might be simpler and less costly, particularly if the array isn’t too large.
+        /*
+         • For many new elements (e.g., hundreds or thousands): It might be more efficient to add all the elements and then sort, especially if the sorting cost  O(n \log n)  is manageable and the final sort is preferable to handling many individual insertions.
+         • For a few new elements (fewer than 100): Inserting each element into the correct position might be simpler and less costly, particularly if the array isn’t too large.
+         */
 
-        if !metadatasToInsert.isEmpty {
-            if metadatasToInsert.count < 100 {
-                for metadata in metadatasToInsert {
-                    self.insertInMetadatas(metadata: metadata)
-                }
-            } else {
-                for metadata in metadatasToInsert {
-                    self.metadatas.append(metadata)
-                }
-                self.metadatas = self.metadatas.sorted { $0.datePhotosOriginal > $1.datePhotosOriginal }
-            }
-            return true
+        guard !newMetadatas.isEmpty else {
+            return false
         }
 
-        return false
+        if newMetadatas.count < 100 {
+            for metadata in newMetadatas {
+                self.insertInMetadatas(metadata: metadata)
+            }
+        } else {
+            self.metadatas.append(contentsOf: newMetadatas)
+            self.metadatas.sort { $0.datePhotosOriginal > $1.datePhotosOriginal }
+        }
+
+        return true
     }
 }

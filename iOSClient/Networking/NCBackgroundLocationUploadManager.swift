@@ -117,20 +117,10 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
             nkLog(tag: self.global.logTagLocation, emoji: .start, message: "Triggered by location change: \(location?.coordinate.latitude ?? 0), \(location?.coordinate.longitude ?? 0)")
 
             Task.detached {
-                if let tblAccount = await self.database.getActiveTableAccountAsync(),
-                   await !appDelegate.isBackgroundTask {
-                    // start the BackgroundTask
-                    await MainActor.run {
-                        appDelegate.isBackgroundTask = true
-                    }
-
+                if let tblAccount = await self.database.getActiveTableAccountAsync() {
                     let numTransfers = await appDelegate.backgroundSync(tblAccount: tblAccount)
-                    nkLog(tag: self.global.logTagLocation, emoji: .success, message: "Triggered by location completed with \(numTransfers) transfers")
 
-                    // end the BackgroundTask
-                    await MainActor.run {
-                        appDelegate.isBackgroundTask = false
-                    }
+                    nkLog(tag: self.global.logTagLocation, emoji: .success, message: "Triggered by location completed with \(numTransfers) transfers")
                 }
             }
         }
