@@ -62,8 +62,6 @@ extension NCNetworking {
                         await self.database.addMetadataAsync(metadata)
 
                         nkLog(tag: self.global.logTagSync, emoji: .start, message: "File download: \(file.serverUrl)/\(file.fileName)")
-                    } else {
-                        print("discard")
                     }
                 }
             }
