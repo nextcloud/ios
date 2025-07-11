@@ -253,37 +253,6 @@ class NCMedia: UIViewController {
         }
     }
 
-    func deleteImage(with ocId: String) async {
-        guard let metadata = await self.database.getMetadataFromOcIdAsync(ocId) else {
-            await MainActor.run {
-                self.dataSource.removeMetadata([ocId])
-                self.collectionView.reloadData()
-            }
-            return
-        }
-
-        let resultsDeleteFileOrFolder = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
-
-        guard resultsDeleteFileOrFolder.error == .success || resultsDeleteFileOrFolder.error.errorCode == self.global.errorResourceNotFound else {
-            return
-        }
-
-        self.ocIdDeleted.append(ocId)
-        await self.database.deleteMetadataOcIdAsync(ocId)
-
-        await MainActor.run {
-            if let indexPath = self.dataSource.indexPath(forOcId: ocId) {
-                self.collectionView.performBatchUpdates {
-                    self.dataSource.removeMetadata([ocId])
-                    self.collectionView.deleteItems(at: [indexPath])
-                }
-            } else {
-                self.dataSource.removeMetadata([ocId])
-                self.collectionView.reloadData()
-            }
-        }
-    }
-
     // MARK: - NotificationCenter
 
     func networkRemoveAll() async {

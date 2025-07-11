@@ -27,17 +27,17 @@ import RealmSwift
 
 extension NCMedia {
     func loadDataSource() async {
-        Task {
-            guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", session.account)) else {
-                return
-            }
-            let predicate = self.imageCache.getMediaPredicateAsync(filterLivePhotoFile: true, session: session, mediaPath: tblAccount.mediaPath, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos)
-            if let metadatas = await self.database.getMetadatasAsync(predicate: predicate, sortedByKeyPath: "datePhotosOriginal", ascending: false) {
-                let filteredMetadatas = metadatas.filter { !self.ocIdDeleted.contains($0.ocId) }
+        guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", session.account)) else {
+            return
+        }
+        let predicate = self.imageCache.getMediaPredicateAsync(filterLivePhotoFile: true, session: session, mediaPath: tblAccount.mediaPath, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos)
+        if let metadatas = await self.database.getMetadatasAsync(predicate: predicate, sortedByKeyPath: "datePhotosOriginal", ascending: false) {
+            let filteredMetadatas = metadatas.filter { !self.ocIdDeleted.contains($0.ocId) }
+            await MainActor.run {
                 self.dataSource = NCMediaDataSource(metadatas: filteredMetadatas)
             }
-            self.collectionViewReloadData()
         }
+        self.collectionViewReloadData()
     }
 
     @MainActor
