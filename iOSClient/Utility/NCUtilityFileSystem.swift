@@ -27,7 +27,6 @@ import PhotosUI
 
 final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     let fileManager = FileManager()
-    let database = NCManageDatabase.shared
 
     var directoryGroup: String {
         return fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)?.path ?? ""
@@ -669,7 +668,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         var offlineDir: [String] = []
         let manager = FileManager.default
 
-        let directories = await self.database.getTablesDirectoryAsync(predicate: NSPredicate(format: "offline == true"), sorted: "serverUrl", ascending: true)
+        let directories = await NCManageDatabase.shared.getTablesDirectoryAsync(predicate: NSPredicate(format: "offline == true"), sorted: "serverUrl", ascending: true)
         for directory in directories {
             offlineDir.append(self.getDirectoryProviderStorageOcId(directory.ocId))
         }
@@ -703,7 +702,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
                         try manager.removeItem(atPath: fileURL.path)
                     } catch { }
                     manager.createFile(atPath: fileURL.path, contents: nil, attributes: nil)
-                    await self.database.deleteLocalFileOcIdAsync(ocId)
+                    await NCManageDatabase.shared.deleteLocalFileOcIdAsync(ocId)
                 }
             }
         }

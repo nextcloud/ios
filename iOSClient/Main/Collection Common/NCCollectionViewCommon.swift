@@ -588,7 +588,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @MainActor
     func showLoadingTitle() {
         // Don't show spinner on iPad root folder
-        if UIDevice.current.userInterfaceIdiom == .pad, self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session) {
+        if UIDevice.current.userInterfaceIdiom == .pad,
+           (self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session)) || self.serverUrl.isEmpty {
             return
         }
 
