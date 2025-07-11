@@ -185,32 +185,44 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleAppRefresh(_ task: BGAppRefreshTask) {
         nkLog(tag: self.global.logTagTask, emoji: .start, message: "Start refresh task")
 
+        var didComplete = false
+
         task.expirationHandler = {
             nkLog(tag: self.global.logTagTask, emoji: .warning, message: "Refresh task expiration handler")
+            if !didComplete {
+                task.setTaskCompleted(success: false)
+                didComplete = true
+            }
         }
 
-        // Open Realm
-        if database.openRealmBackground() {
-            scheduleAppRefresh()
-        } else {
+        guard database.openRealmBackground() else {
+            nkLog(tag: self.global.logTagTask, emoji: .error, message: "Failed to open Realm in background")
             task.setTaskCompleted(success: false)
             return
         }
 
-        Task {
-            if let tblAccount = await self.database.getActiveTableAccountAsync(),
-               !isBackgroundTask {
-                // start the BackgroundTask
-                self.isBackgroundTask = true
+        // Schedule next refresh
+        scheduleAppRefresh()
 
-                let numTransfers = await backgroundSync(tblAccount: tblAccount)
-                nkLog(tag: self.global.logTagTask, emoji: .success, message: "Refresh task completed with \(numTransfers) transfers")
+        Task {
+            defer {
+                if !didComplete {
+                    task.setTaskCompleted(success: true)
+                    didComplete = true
+                }
+                self.isBackgroundTask = false
             }
 
-            // end the BackgroundTask
-            self.isBackgroundTask = false
+            guard let tblAccount = await self.database.getActiveTableAccountAsync(),
+                    !isBackgroundTask else {
+                nkLog(tag: self.global.logTagTask, emoji: .info, message: "No active account or background task already running")
+                return
+            }
 
-            task.setTaskCompleted(success: true)
+            self.isBackgroundTask = true
+
+            let numTransfers = await backgroundSync(tblAccount: tblAccount)
+            nkLog(tag: self.global.logTagTask, emoji: .success, message: "Refresh task completed with \(numTransfers) transfers")
         }
     }
 
