@@ -255,8 +255,10 @@ class NCMedia: UIViewController {
 
     func deleteImage(with ocId: String) async {
         guard let metadata = await self.database.getMetadataFromOcIdAsync(ocId) else {
-            self.dataSource.removeMetadata([ocId])
-            self.collectionView.reloadData()
+            await MainActor.run {
+                self.dataSource.removeMetadata([ocId])
+                self.collectionView.reloadData()
+            }
             return
         }
 
@@ -268,19 +270,18 @@ class NCMedia: UIViewController {
 
         self.ocIdDeleted.append(ocId)
         await self.database.deleteMetadataOcIdAsync(ocId)
-        self.dataSource.removeMetadata([ocId])
 
-        let visibleIndexPaths = collectionView.indexPathsForVisibleItems.sorted()
-
-        for indexPath in visibleIndexPaths {
-            if let cell = self.collectionView.cellForItem(at: indexPath) as? NCMediaCell,
-               ocId == cell.ocId {
-                self.collectionView.deleteItems(at: [indexPath])
-                break
+        await MainActor.run {
+            if let indexPath = self.dataSource.indexPath(forOcId: ocId) {
+                self.collectionView.performBatchUpdates {
+                    self.dataSource.removeMetadata([ocId])
+                    self.collectionView.deleteItems(at: [indexPath])
+                }
+            } else {
+                self.dataSource.removeMetadata([ocId])
+                self.collectionView.reloadData()
             }
         }
-
-        self.collectionView.reloadData()
     }
 
     // MARK: - NotificationCenter

@@ -250,6 +250,14 @@ public class NCMediaDataSource: NSObject {
 
     // MARK: -
 
+    func indexPath(forOcId ocId: String) -> IndexPath? {
+        guard let index = self.metadatas.firstIndex(where: { $0.ocId == ocId }) else {
+            return nil
+        }
+
+        return IndexPath(item: index, section: 0)
+    }
+
     func getMetadata(indexPath: IndexPath) -> Metadata? {
         if indexPath.row < self.metadatas.count {
             return self.metadatas[indexPath.row]
