@@ -32,8 +32,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     let global = NCGlobal.shared
     let database = NCManageDatabase.shared
 
-    var isBackgroundTask: Bool = false
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         if isUiTestingEnabled {
             NCAccount().deleteAllAccounts()
@@ -210,16 +208,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     task.setTaskCompleted(success: true)
                     didComplete = true
                 }
-                self.isBackgroundTask = false
             }
 
-            guard let tblAccount = await self.database.getActiveTableAccountAsync(),
-                  !isBackgroundTask else {
+            guard let tblAccount = await self.database.getActiveTableAccountAsync() else {
                 nkLog(tag: self.global.logTagTask, emoji: .info, message: "No active account or background task already running")
                 return
             }
-
-            self.isBackgroundTask = true
 
             let numTransfers = await backgroundSync(tblAccount: tblAccount)
             nkLog(tag: self.global.logTagTask, emoji: .success, message: "Refresh task completed with \(numTransfers) transfers")
@@ -254,16 +248,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                    task.setTaskCompleted(success: true)
                    didComplete = true
                }
-               self.isBackgroundTask = false
            }
 
-           guard let tblAccount = await self.database.getActiveTableAccountAsync(),
-                 !isBackgroundTask else {
+           guard let tblAccount = await self.database.getActiveTableAccountAsync() else {
                nkLog(tag: self.global.logTagTask, emoji: .info, message: "No active account or background task already running")
                return
            }
-
-           self.isBackgroundTask = true
 
            await NCService().synchronize(account: tblAccount.account)
            nkLog(tag: self.global.logTagTask, message: "Synchronize for \(tblAccount.account) completed.")
