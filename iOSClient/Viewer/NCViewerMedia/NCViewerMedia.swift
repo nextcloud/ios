@@ -149,7 +149,9 @@ class NCViewerMedia: UIViewController {
         networking.addDelegate(self)
 
         // Set Last Opening Date
-        self.database.setLastOpeningDate(metadata: metadata)
+        Task {
+            await self.database.setLastOpeningDateAsync(metadata: metadata)
+        }
 
         viewerMediaPage?.clearCommandCenter()
 

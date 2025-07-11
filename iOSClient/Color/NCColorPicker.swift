@@ -210,12 +210,13 @@ class NCColorPicker: UIViewController {
     // MARK: -
 
     func updateColor(hexColor: String?) {
-        if let metadata {
-            NCManageDatabase.shared.updateDirectoryColorFolder(hexColor, metadata: metadata, serverUrl: metadata.serverUrlFileName)
-            self.collectionViewCommon?.collectionView.reloadData()
+        Task { @MainActor in
+            if let metadata {
+                await NCManageDatabase.shared.updateDirectoryColorFolderAsync(hexColor, metadata: metadata, serverUrl: metadata.serverUrlFileName)
+                self.collectionViewCommon?.collectionView.reloadData()
+            }
             self.dismiss(animated: true)
         }
-        self.dismiss(animated: true)
     }
 }
 

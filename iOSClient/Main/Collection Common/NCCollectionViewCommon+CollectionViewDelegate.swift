@@ -60,7 +60,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 NCViewer().view(viewController: self, metadata: metadata, image: image)
 
             } else if NextcloudKit.shared.isNetworkReachable() {
-                Task{ @MainActor in
+                Task { @MainActor in
                     guard let  metadata = await database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
                                                                                                session: self.netwoking.sessionDownload,
                                                                                                selector: global.selectorLoadFileView,

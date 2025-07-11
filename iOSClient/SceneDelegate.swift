@@ -174,7 +174,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
 
-        nkLog(info: "Auto upload in background: \(tableAccount.autoUploadStart)")
+        nkLog(info: "Auto upload activated: \(tableAccount.autoUploadStart)")
         nkLog(info: "Update in background: \(UIApplication.shared.backgroundRefreshStatus == .available)")
 
         if CLLocationManager().authorizationStatus == .authorizedAlways && NCKeychain().location && tableAccount.autoUploadStart {
@@ -194,9 +194,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
 
         // Clear older files
-        let days = NCKeychain().cleanUpDay
-        let utilityFileSystem = NCUtilityFileSystem()
-        utilityFileSystem.cleanUp(directory: utilityFileSystem.directoryProviderStorage, days: TimeInterval(days))
+        Task {
+            let days = NCKeychain().cleanUpDay
+            let utilityFileSystem = NCUtilityFileSystem()
+            await utilityFileSystem.cleanUpAsync(directory: utilityFileSystem.directoryProviderStorage, days: TimeInterval(days))
+        }
     }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {

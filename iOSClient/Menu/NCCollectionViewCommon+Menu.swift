@@ -36,7 +36,7 @@ extension NCCollectionViewCommon {
               let sceneIdentifier = self.controller?.sceneIdentifier else {
             return
         }
-        let tableLocalFile = database.getResultsTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))?.first
+        let tableLocalFile = database.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         let fileExists = NCUtilityFileSystem().fileProviderStorageExists(metadata)
         var actions = [NCMenuAction]()
         var isOffline: Bool = false
