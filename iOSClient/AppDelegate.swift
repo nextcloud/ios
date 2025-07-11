@@ -214,7 +214,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
 
             guard let tblAccount = await self.database.getActiveTableAccountAsync(),
-                    !isBackgroundTask else {
+                  !isBackgroundTask else {
                 nkLog(tag: self.global.logTagTask, emoji: .info, message: "No active account or background task already running")
                 return
             }
@@ -229,36 +229,48 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleProcessingTask(_ task: BGProcessingTask) {
         nkLog(tag: self.global.logTagTask, emoji: .start, message: "Start processing task")
 
+        var didComplete = false
+
         task.expirationHandler = {
             nkLog(tag: self.global.logTagTask, emoji: .warning, message: "Processing task expiration handler")
+            if !didComplete {
+                task.setTaskCompleted(success: false)
+                didComplete = true
+            }
         }
 
-        // Open Realm
-        if database.openRealmBackground() {
-            scheduleAppProcessing()
-        } else {
+        guard database.openRealmBackground() else {
+            nkLog(tag: self.global.logTagTask, emoji: .error, message: "Failed to open Realm in background")
             task.setTaskCompleted(success: false)
             return
         }
 
-        Task {
-            if let tblAccount = await self.database.getActiveTableAccountAsync(),
-               !isBackgroundTask {
-                // start the BackgroundTask
-                self.isBackgroundTask = true
+        // Schedule next processing task
+        scheduleAppProcessing()
 
-                await NCService().synchronize(account: tblAccount.account)
-                nkLog(tag: self.global.logTagTask, message: "Synchronize for \(tblAccount.account) completed.")
+       Task {
+           defer {
+               if !didComplete {
+                   task.setTaskCompleted(success: true)
+                   didComplete = true
+               }
+               self.isBackgroundTask = false
+           }
 
-                let numTransfers = await backgroundSync(tblAccount: tblAccount)
-                nkLog(tag: self.global.logTagTask, emoji: .success, message: "Processing task completed with \(numTransfers) transfers of auto upload")
-            }
+           guard let tblAccount = await self.database.getActiveTableAccountAsync(),
+                 !isBackgroundTask else {
+               nkLog(tag: self.global.logTagTask, emoji: .info, message: "No active account or background task already running")
+               return
+           }
 
-            // end the BackgroundTask
-            self.isBackgroundTask = false
+           self.isBackgroundTask = true
 
-            task.setTaskCompleted(success: true)
-        }
+           await NCService().synchronize(account: tblAccount.account)
+           nkLog(tag: self.global.logTagTask, message: "Synchronize for \(tblAccount.account) completed.")
+
+           let numTransfers = await backgroundSync(tblAccount: tblAccount)
+           nkLog(tag: self.global.logTagTask, emoji: .success, message: "Processing task completed with \(numTransfers) transfers of auto upload")
+       }
     }
 
     func backgroundSync(tblAccount: tableAccount) async -> Int {
