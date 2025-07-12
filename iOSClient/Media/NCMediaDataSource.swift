@@ -76,7 +76,6 @@ extension NCMedia {
 
         let capabilities = await NKCapabilities.shared.getCapabilitiesAsync(for: session.account)
 
-        // 🧠 Prepara intervallo temporale da celle visibili — solo su MainActor
         var lessDate = Date.distantFuture
         var greaterDate = Date.distantPast
         var firstCellDate: Date?
