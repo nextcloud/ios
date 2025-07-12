@@ -16,7 +16,8 @@ class NCAutoUpload: NSObject {
     private let networking = NCNetworking.shared
     private var endForAssetToUpload: Bool = false
 
-    func initAutoUpload(controller: NCMainTabBarController? = nil, tblAccount: tableAccount) async -> Int {
+    func initAutoUpload(controller: NCMainTabBarController? = nil,
+                        tblAccount: tableAccount) async -> Int {
         guard self.networking.isOnline,
               tblAccount.autoUploadStart,
               tblAccount.autoUploadOnlyNew else {
@@ -37,14 +38,14 @@ class NCAutoUpload: NSObject {
     }
 
     func startManualAutoUploadForAlbums(controller: NCMainTabBarController?,
+                                        model: NCAutoUploadModel,
                                         assetCollections: [PHAssetCollection],
                                         account: String) async {
-        guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", account))
-        else {
+        guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", account)) else {
             return
         }
 
-        let result = await getCameraRollAssets(controller: controller, assetCollections: assetCollections, tblAccount: tableAccount(value: tblAccount))
+        let result = await getCameraRollAssets(controller: controller, assetCollections: assetCollections, tblAccount: tblAccount)
 
         guard let assets = result.assets,
               !assets.isEmpty,
@@ -52,10 +53,30 @@ class NCAutoUpload: NSObject {
             return
         }
 
-        _ = await uploadAssets(controller: controller, tblAccount: tblAccount, assets: assets, fileNames: fileNames)
+        if !tblAccount.autoUploadOnlyNew {
+            await MainActor.run {
+                let image = UIImage(systemName: "photo.on.rectangle.angled")?.image(color: .white, size: 20)
+                NCContentPresenter().noteTop(text: NSLocalizedString("_creating_db_photo_progress_", comment: ""), image: image, color: .lightGray, delay: .infinity, priority: .max)
+            }
+        }
+
+        let num = await uploadAssets(controller: controller, tblAccount: tblAccount, assets: assets, fileNames: fileNames)
+        nkLog(debug: "Automatic upload \(num) upload")
+
+        // Automatic move to auto upload new
+        if !tblAccount.autoUploadOnlyNew {
+            await self.database.updateAccountPropertyAsync(\.autoUploadOnlyNew, value: true, account: tblAccount.account)
+            await MainActor.run {
+                model.onViewAppear()
+                NCContentPresenter().dismiss(after: 1)
+            }
+        }
     }
 
-    private func uploadAssets(controller: NCMainTabBarController?, tblAccount: tableAccount, assets: [PHAsset], fileNames: [String]) async -> Int {
+    private func uploadAssets(controller: NCMainTabBarController?,
+                              tblAccount: tableAccount,
+                              assets: [PHAsset],
+                              fileNames: [String]) async -> Int {
         let session = NCSession.shared.getSession(account: tblAccount.account)
         let autoUploadServerUrlBase = await self.database.getAccountAutoUploadServerUrlBaseAsync(account: tblAccount.account, urlBase: tblAccount.urlBase, userId: tblAccount.userId)
         var metadatas: [tableMetadata] = []
@@ -147,7 +168,6 @@ class NCAutoUpload: NSObject {
     func getCameraRollAssets(controller: NCMainTabBarController?,
                              assetCollections: [PHAssetCollection] = [],
                              tblAccount: tableAccount) async -> (assets: [PHAsset]?, fileNames: [String]?) {
-
         let hasPermission = await withCheckedContinuation { continuation in
             NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { granted in
                 continuation.resume(returning: granted)

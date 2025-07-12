@@ -179,6 +179,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             }
             Task {
                 _ = await NCAutoUpload.shared.startManualAutoUploadForAlbums(controller: self.controller,
+                                                                             model: self,
                                                                              assetCollections: assetCollections,
                                                                              account: session.account)
             }

@@ -52,7 +52,7 @@ struct NCSettingsView: View {
                     NCAutoUploadView(model: NCAutoUploadModel(controller: model.controller), albumModel: AlbumModel(controller: model.controller))
                 }) {
                     HStack {
-                        Image(systemName: "photo.circle")
+                        Image(systemName: "photo.on.rectangle.angled")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 25, height: 25)
