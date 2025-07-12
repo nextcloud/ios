@@ -41,15 +41,11 @@ class NCAutoUpload: NSObject {
                                         model: NCAutoUploadModel,
                                         assetCollections: [PHAssetCollection],
                                         account: String) async {
-        guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", account)) else {
-            return
+        defer {
+            NCContentPresenter().dismiss(after: 1)
         }
 
-        let result = await getCameraRollAssets(controller: controller, assetCollections: assetCollections, tblAccount: tblAccount)
-
-        guard let assets = result.assets,
-              !assets.isEmpty,
-              let fileNames = result.fileNames else {
+        guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", account)) else {
             return
         }
 
@@ -60,6 +56,14 @@ class NCAutoUpload: NSObject {
             }
         }
 
+        let result = await getCameraRollAssets(controller: controller, assetCollections: assetCollections, tblAccount: tblAccount)
+
+        guard let assets = result.assets,
+              !assets.isEmpty,
+              let fileNames = result.fileNames else {
+            return
+        }
+
         let num = await uploadAssets(controller: controller, tblAccount: tblAccount, assets: assets, fileNames: fileNames)
         nkLog(debug: "Automatic upload \(num) upload")
 
@@ -68,7 +72,6 @@ class NCAutoUpload: NSObject {
             await self.database.updateAccountPropertyAsync(\.autoUploadOnlyNew, value: true, account: tblAccount.account)
             await MainActor.run {
                 model.onViewAppear()
-                NCContentPresenter().dismiss(after: 1)
             }
         }
     }
