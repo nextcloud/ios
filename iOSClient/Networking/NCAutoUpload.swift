@@ -23,9 +23,9 @@ class NCAutoUpload: NSObject {
             return 0
         }
         let albumIds = NCKeychain().getAutoUploadAlbumIds(account: tblAccount.account)
-        let selectedAlbums = PHAssetCollection.allAlbums.filter({albumIds.contains($0.localIdentifier)})
+        let assetCollections = PHAssetCollection.allAlbums.filter({albumIds.contains($0.localIdentifier)})
 
-        let result = await getCameraRollAssets(controller: nil, assetCollections: selectedAlbums, tblAccount: tableAccount(value: tblAccount))
+        let result = await getCameraRollAssets(controller: nil, assetCollections: assetCollections, tblAccount: tableAccount(value: tblAccount))
 
         guard let assets = result.assets,
               !assets.isEmpty,
@@ -33,7 +33,7 @@ class NCAutoUpload: NSObject {
             return 0
         }
 
-        return await uploadAssets(tblAccount: tblAccount, assets: assets, fileNames: fileNames)
+        return await uploadAssets(controller: nil, tblAccount: tblAccount, assets: assets, fileNames: fileNames)
     }
 
     func startManualAutoUploadForAlbums(controller: NCMainTabBarController?,
@@ -44,7 +44,7 @@ class NCAutoUpload: NSObject {
             return
         }
 
-        let result = await getCameraRollAssets(controller: controller, tblAccount: tableAccount(value: tblAccount))
+        let result = await getCameraRollAssets(controller: controller, assetCollections: assetCollections, tblAccount: tableAccount(value: tblAccount))
 
         guard let assets = result.assets,
               !assets.isEmpty,
@@ -55,7 +55,7 @@ class NCAutoUpload: NSObject {
         _ = await uploadAssets(controller: controller, tblAccount: tblAccount, assets: assets, fileNames: fileNames)
     }
 
-    private func uploadAssets(controller: NCMainTabBarController? = nil, tblAccount: tableAccount, assets: [PHAsset], fileNames: [String]) async -> Int {
+    private func uploadAssets(controller: NCMainTabBarController?, tblAccount: tableAccount, assets: [PHAsset], fileNames: [String]) async -> Int {
         let session = NCSession.shared.getSession(account: tblAccount.account)
         let autoUploadServerUrlBase = await self.database.getAccountAutoUploadServerUrlBaseAsync(account: tblAccount.account, urlBase: tblAccount.urlBase, userId: tblAccount.userId)
         var metadatas: [tableMetadata] = []
