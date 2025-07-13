@@ -70,13 +70,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Save migration state
         UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
 
-        // set capabilities
-        self.database.applyCachedCapabilitiesBlocking(account: activeTblAccount.account)
-        // apply theming
-        NCBrandColor.shared.settingThemingColor(account: activeTblAccount.account)
-
-        // Set up networking session
         Task {
+            // set capabilities
+            await self.database.applyCachedCapabilitiesAsync(account: activeTblAccount.account)
+            // apply theming
+            NCBrandColor.shared.settingThemingColor(account: activeTblAccount.account)
+            // Set up networking session
             await NCNetworkingProcess.shared.setCurrentAccount(activeTblAccount.account)
         }
 
@@ -112,6 +111,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             //
             window?.rootViewController = controller
             window?.makeKeyAndVisible()
+        }
+
+        // Clean orphaned FP Domains
+        Task {
+            await FileProviderDomain().cleanOrphanedFileProviderDomains()
         }
     }
 

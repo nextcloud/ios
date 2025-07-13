@@ -67,12 +67,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         nkLog(start: "Start session with level \(NCKeychain().log) " + versionNextcloudiOS)
 
-        /// Try to restore accounts
+        // Try to restore accounts
         if self.database.getActiveTableAccount() == nil {
             self.database.restoreTableAccountFromFile()
         }
 
-        /// Push Notification & display notification
+        // Push Notification & display notification
         UNUserNotificationCenter.current().getNotificationSettings { settings in
             self.notificationSettings = settings
         }
@@ -110,7 +110,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NCKeychain().requestPasscodeAtStart = true
         }
 
-        /// Activation singleton
+        // Activation singleton
         _ = NCAppStateManager.shared
         _ = NCNetworking.shared
         _ = NCDownloadAction.shared
