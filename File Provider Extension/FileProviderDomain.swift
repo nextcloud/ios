@@ -86,7 +86,8 @@ class FileProviderDomain: NSObject {
                 guard let host = NSURL(string: tblAccount.urlBase)?.host else {
                     return nil
                 }
-                return NCUtilityFileSystem().getPathDomain(userId: tblAccount.userId, host: host)
+                let domainIdentifier = tblAccount.userId + " (" + host + ")"
+                return domainIdentifier
             })
 
             for domain in registeredDomains {
