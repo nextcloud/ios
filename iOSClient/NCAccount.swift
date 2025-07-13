@@ -203,7 +203,7 @@ class NCAccount: NSObject {
         return NKShareAccounts().putShareAccounts(at: dirGroupApps, app: global.appScheme, dataAccounts: accounts)
     }
 
-    func checkRemoteUserAsync(account: String, controller: NCMainTabBarController?) async {
+    func checkRemoteUser(account: String, controller: NCMainTabBarController?) async {
         let token = NCKeychain().getPassword(account: account)
         guard let tableAccount = await NCManageDatabase.shared.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", account)) else {
             return
@@ -243,56 +243,6 @@ class NCAccount: NSObject {
                         controller?.present(navigationController, animated: true)
                     }
                 }
-            }
-        }
-    }
-
-    func checkRemoteUser(account: String, controller: NCMainTabBarController?, completion: @escaping () -> Void = {}) {
-        let token = NCKeychain().getPassword(account: account)
-        guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
-            return completion()
-        }
-
-        func setAccount() {
-            if let accounts = NCManageDatabase.shared.getAccounts(),
-               account.count > 0,
-               let account = accounts.first {
-                changeAccount(account, userProfile: nil, controller: controller) { }
-            } else {
-                if NCBrandOptions.shared.disable_intro {
-                    if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin {
-                        viewController.controller = controller
-                        let navigationController = UINavigationController(rootViewController: viewController)
-                        navigationController.modalPresentationStyle = .fullScreen
-                        controller?.present(navigationController, animated: true)
-                    }
-                } else {
-                    if let navigationController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? UINavigationController {
-                        if let viewController = navigationController.topViewController as? NCIntroViewController {
-                            viewController.controller = controller
-                        }
-                        navigationController.modalPresentationStyle = .fullScreen
-                        controller?.present(navigationController, animated: true)
-                    }
-                }
-            }
-
-            completion()
-        }
-
-        NCContentPresenter().showCustomMessage(title: "", message: String(format: NSLocalizedString("_account_unauthorized_", comment: ""), account), priority: .high, delay: global.dismissAfterSecondLong, type: .error)
-
-        NextcloudKit.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) { account, wipe, _, error in
-            // REMOVE ACCOUNT
-            NCAccount().deleteAccount(account, wipe: wipe)
-
-            if wipe {
-                NextcloudKit.shared.setRemoteWipeCompletition(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) { _, _, error in
-                    nkLog(debug: "Set Remote Wipe Completition error code: \(error.errorCode)")
-                    setAccount()
-                }
-            } else {
-                setAccount()
             }
         }
     }
