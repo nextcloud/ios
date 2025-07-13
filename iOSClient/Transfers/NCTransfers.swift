@@ -77,8 +77,12 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     // MARK: TAP EVENT
 
     override func tapMoreGridItem(with ocId: String, ocIdTransfer: String, image: UIImage?, sender: Any) {
-        guard let metadata = self.database.getMetadataFromOcIdAndocIdTransfer(ocIdTransfer) else { return }
-        NCNetworking.shared.cancelTask(metadata: metadata)
+        Task {
+            guard let metadata = await self.database.getMetadataFromOcIdAndocIdTransferAsync(ocIdTransfer) else {
+                return
+            }
+            NCNetworking.shared.cancelTask(metadata: metadata)
+        }
     }
 
     override func longPressMoreListItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer) {
@@ -101,13 +105,15 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func longPressListItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer) {
         if gestureRecognizer.state != .began { return }
 
-        if let metadata = self.database.getMetadataFromOcIdAndocIdTransfer(ocIdTransfer) {
-            metadataTemp = metadata
-            let touchPoint = gestureRecognizer.location(in: collectionView)
-            becomeFirstResponder()
-            let startTaskItem = UIMenuItem(title: NSLocalizedString("_force_start_", comment: ""), action: #selector(startTask(_:)))
-            UIMenuController.shared.menuItems = [startTaskItem]
-            UIMenuController.shared.showMenu(from: collectionView, rect: CGRect(x: touchPoint.x, y: touchPoint.y, width: 0, height: 0))
+        Task {
+            if let metadata = await self.database.getMetadataFromOcIdAndocIdTransferAsync(ocIdTransfer) {
+                metadataTemp = metadata
+                let touchPoint = gestureRecognizer.location(in: collectionView)
+                becomeFirstResponder()
+                let startTaskItem = UIMenuItem(title: NSLocalizedString("_force_start_", comment: ""), action: #selector(startTask(_:)))
+                UIMenuController.shared.menuItems = [startTaskItem]
+                UIMenuController.shared.showMenu(from: collectionView, rect: CGRect(x: touchPoint.x, y: touchPoint.y, width: 0, height: 0))
+            }
         }
     }
 
@@ -120,8 +126,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         Task {
             let metadatas = await cameraRoll.extractCameraRoll(from: metadata)
             for metadata in metadatas {
-                if let metadata = self.database.setMetadataStatusAndReturn(ocId: metadata.ocId,
-                                                                           status: NCGlobal.shared.metadataStatusUploading) {
+                if let metadata = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                              status: NCGlobal.shared.metadataStatusUploading) {
                     NCNetworking.shared.uploadHub(metadata: metadata)
                 }
             }
@@ -265,7 +271,9 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
         ]
 
-        let metadatas = await self.database.getMetadatasAsync(predicate: predicate, sortDescriptors: sortDescriptors, limit: 100)
+        let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
+                                                              withSort: sortDescriptors,
+                                                              withLimit: 100)
         if let metadatas, !metadatas.isEmpty {
             self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: self.layoutForView)
         } else {

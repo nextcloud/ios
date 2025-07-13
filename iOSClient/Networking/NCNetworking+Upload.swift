@@ -33,6 +33,13 @@ protocol UploadProgressDelegate: AnyObject {
                                  serverUrl: String)
 }
 
+enum UploadEvent {
+    case started
+    case request(UploadRequest)
+    case progress(expected: Int64, transferred: Int64, fraction: Double)
+    case completed
+}
+
 extension NCNetworking {
     func uploadHub(metadata: tableMetadata,
                    uploadE2EEDelegate: uploadE2EEDelegate? = nil,
@@ -70,7 +77,9 @@ extension NCNetworking {
             } counterChunk: { counter in
                 hud?.progress(num: Float(counter), total: Float(numChunks))
             } start: {
-                hud?.dismiss()
+                hud?.initHudRing(text: NSLocalizedString("_keep_active_for_upload_", comment: ""))
+            } progressHandler: { _, _, fractionCompleted in
+                hud?.progress(fractionCompleted)
             } completion: { account, _, error in
                 hud?.dismiss()
                 let directory = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase)
@@ -106,6 +115,21 @@ extension NCNetworking {
         }
     }
 
+    /*
+    func uploadHubStream(metadata: tableMetadata,
+                         uploadE2EEDelegate: uploadE2EEDelegate? = nil,
+                         controller: UIViewController? = nil) -> AsyncThrowingStream<UploadEvent, Error> {
+        return AsyncThrowingStream(bufferingPolicy: .unbounded) { continuation in
+            Task {
+                continuation.yield(.started)
+                continuation.yield(.progress(...))
+                continuation.yield(.completed)
+                continuation.finish()
+            }
+        }
+    }
+    */
+
     func uploadFile(metadata: tableMetadata,
                     fileNameLocalPath: String,
                     withUploadComplete: Bool = true,
@@ -115,24 +139,24 @@ extension NCNetworking {
                     requestHandler: @escaping (_ request: UploadRequest) -> Void = { _ in },
                     progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
                     completion: @escaping (_ account: String, _ ocId: String?, _ etag: String?, _ date: Date?, _ size: Int64, _ headers: [AnyHashable: Any]?, _ error: NKError) -> Void) {
-        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let options = NKRequestOptions(customHeader: customHeaders, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
-        NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, account: metadata.account, options: options, requestHandler: { request in
+        NextcloudKit.shared.upload(serverUrlFileName: metadata.serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, account: metadata.account, options: options, requestHandler: { request in
             requestHandler(request)
         }, taskHandler: { task in
-            if let metadata = self.database.setMetadataSessionAndReturn(ocId: metadata.ocId,
-                                                                        sessionTaskIdentifier: task.taskIdentifier,
-                                                                        status: self.global.metadataStatusUploading) {
+            Task {
+                if let metadata = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                              sessionTaskIdentifier: task.taskIdentifier,
+                                                                              status: self.global.metadataStatusUploading) {
 
-                self.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusUploading,
-                                            metadata: metadata,
-                                            error: .success)
+                    self.notifyAllDelegates { delegate in
+                        delegate.transferChange(status: self.global.networkingStatusUploading,
+                                                metadata: metadata,
+                                                error: .success)
+                    }
                 }
+                start()
             }
-
-            start()
         }, progressHandler: { progress in
             self.notifyAllDelegates { delegate in
                 delegate.transferProgressDidUpdate(progress: Float(progress.fractionCompleted),
@@ -190,9 +214,11 @@ extension NCNetworking {
             }
         } requestHandler: { _ in
         } taskHandler: { task in
-            self.database.setMetadataSession(ocId: metadata.ocId,
-                                             sessionTaskIdentifier: task.taskIdentifier,
-                                             status: self.global.metadataStatusUploading)
+            Task {
+                await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                            sessionTaskIdentifier: task.taskIdentifier,
+                                                            status: self.global.metadataStatusUploading)
+            }
         } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
             self.notifyAllDelegates { delegate in
                 delegate.transferProgressDidUpdate(progress: Float(fractionCompleted),
@@ -227,8 +253,12 @@ extension NCNetworking {
                                         start: @escaping () -> Void = { },
                                         completion: @escaping (_ error: NKError) -> Void) {
         let metadata = tableMetadata.init(value: metadata)
+<<<<<<< HEAD
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
+=======
+        let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+>>>>>>> origin/710-FPE
 
         start()
 
@@ -237,7 +267,7 @@ extension NCNetworking {
             self.database.deleteMetadataOcId(metadata.ocId, sync: false)
             completion(NKError(errorCode: self.global.errorResourceNotFound, errorDescription: NSLocalizedString("_error_not_found_", value: "The requested resource could not be found", comment: "")))
         } else {
-            let (task, error) = backgroundSession.upload(serverUrlFileName: serverUrlFileName,
+            let (task, error) = backgroundSession.upload(serverUrlFileName: metadata.serverUrlFileName,
                                                          fileNameLocalPath: fileNameLocalPath,
                                                          dateCreationFile: metadata.creationDate as Date,
                                                          dateModificationFile: metadata.date as Date,
@@ -297,13 +327,12 @@ extension NCNetworking {
                                                          size: size,
                                                          task: task,
                                                          error: error)
-            return
-            #endif
-
+            #else
             if let url = task.currentRequest?.url,
                let metadata = await self.database.getMetadataAsync(from: url, sessionTaskIdentifier: task.taskIdentifier) {
                 await uploadComplete(withMetadata: metadata, ocId: ocId, etag: etag, date: date, size: size, error: error)
             }
+            #endif
         }
     }
 
@@ -320,7 +349,7 @@ extension NCNetworking {
         let capabilities = await NKCapabilities.shared.getCapabilitiesAsync(for: metadata.account)
 
         if error == .success, let ocId = ocId, size == metadata.size {
-            nkLog(success: "Uploaded file: " + metadata.serverUrl + "/" + metadata.fileName + ", (\(size) bytes)")
+            nkLog(success: "Uploaded file: " + metadata.serverUrlFileName + ", (\(size) bytes)")
 
             metadata.uploadDate = (date as? NSDate) ?? NSDate()
             metadata.etag = etag ?? ""
@@ -376,7 +405,7 @@ extension NCNetworking {
             }
 
         } else {
-            nkLog(error: "Upload file: " + metadata.serverUrl + "/" + metadata.fileName + ", result: error \(error.errorCode)")
+            nkLog(error: "Upload file: " + metadata.serverUrlFileName + ", result: error \(error.errorCode)")
 
             if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
                 await uploadCancelFile(metadata: metadata)
@@ -403,7 +432,7 @@ extension NCNetworking {
                     if capabilities.termsOfService {
                         termsOfService(metadata: metadata)
                     } else {
-                        uploadForbidden(metadata: metadata, error: error)
+                        await uploadForbidden(metadata: metadata, error: error)
                     }
                     #endif
                 }
@@ -463,43 +492,54 @@ extension NCNetworking {
     }
 
 #if !EXTENSION
+    @MainActor
     func uploadForbidden(metadata: tableMetadata, error: NKError) {
         let newFileName = self.utilityFileSystem.createFileName(metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account)
         let alertController = UIAlertController(title: error.errorDescription, message: NSLocalizedString("_change_upload_filename_", comment: ""), preferredStyle: .alert)
+<<<<<<< HEAD
             alertController.addAction(UIAlertAction(title: String(format: NSLocalizedString("_save_file_as_", comment: ""), newFileName), style: .default, handler: { _ in
                 let atpath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase) + "/" + metadata.fileName
                 let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase) + "/" + newFileName
+=======
+
+        alertController.addAction(UIAlertAction(title: String(format: NSLocalizedString("_save_file_as_", comment: ""), newFileName), style: .default, handler: { _ in
+            Task {
+                let atpath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileName
+                let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + newFileName
+>>>>>>> origin/710-FPE
                 self.utilityFileSystem.moveFile(atPath: atpath, toPath: toPath)
-                self.database.setMetadataSession(ocId: metadata.ocId,
-                                                 newFileName: newFileName,
-                                                 sessionTaskIdentifier: 0,
-                                                 sessionError: "",
-                                                 status: self.global.metadataStatusWaitUpload,
-                                                 errorCode: error.errorCode)
-            }))
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive, handler: { _ in
-                Task {
-                    await self.uploadCancelFile(metadata: metadata)
-                }
-            }))
-
-            // Select UIWindowScene active in serverUrl
-            var controller = UIApplication.shared.firstWindow?.rootViewController
-            let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
-            for windowScene in windowScenes {
-                if let rootViewController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
-                   rootViewController.currentServerUrl() == metadata.serverUrl {
-                    controller = rootViewController
-                    break
-                }
+                await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                            newFileName: newFileName,
+                                                            sessionTaskIdentifier: 0,
+                                                            sessionError: "",
+                                                            status: self.global.metadataStatusWaitUpload,
+                                                            errorCode: error.errorCode)
             }
-            controller?.present(alertController, animated: true)
+        }))
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive, handler: { _ in
+            Task {
+                await self.uploadCancelFile(metadata: metadata)
+            }
+        }))
 
-            // Client Diagnostic
-            self.database.addDiagnostic(account: metadata.account,
-                                        issue: self.global.diagnosticIssueProblems,
-                                        error: self.global.diagnosticProblemsForbidden)
+        // Select UIWindowScene active in serverUrl
+        var controller = UIApplication.shared.firstWindow?.rootViewController
+        let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+        for windowScene in windowScenes {
+            if let rootViewController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
+               rootViewController.currentServerUrl() == metadata.serverUrl {
+                controller = rootViewController
+                break
+            }
+        }
+        controller?.present(alertController, animated: true)
 
+        // Client Diagnostic
+        Task {
+            await self.database.addDiagnosticAsync(account: metadata.account,
+                                                   issue: self.global.diagnosticIssueProblems,
+                                                   error: self.global.diagnosticProblemsForbidden)
+        }
     }
 
     func termsOfService(metadata: tableMetadata) {
@@ -512,6 +552,7 @@ extension NCNetworking {
                 let newFileName = self.utilityFileSystem.createFileName(metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account)
                 let alertController = UIAlertController(title: error.errorDescription, message: NSLocalizedString("_change_upload_filename_", comment: ""), preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: String(format: NSLocalizedString("_save_file_as_", comment: ""), newFileName), style: .default, handler: { _ in
+<<<<<<< HEAD
                     let atpath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase) + "/" + metadata.fileName
                     let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase) + "/" + newFileName
                     self.utilityFileSystem.moveFile(atPath: atpath, toPath: toPath)
@@ -521,6 +562,19 @@ extension NCNetworking {
                                                      sessionError: "",
                                                      status: self.global.metadataStatusWaitUpload,
                                                      errorCode: error.errorCode)
+=======
+                    Task {
+                        let atpath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileName
+                        let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + newFileName
+                        self.utilityFileSystem.moveFile(atPath: atpath, toPath: toPath)
+                        await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                    newFileName: newFileName,
+                                                                    sessionTaskIdentifier: 0,
+                                                                    sessionError: "",
+                                                                    status: self.global.metadataStatusWaitUpload,
+                                                                    errorCode: error.errorCode)
+                    }
+>>>>>>> origin/710-FPE
                 }))
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive, handler: { _ in
                     Task {
@@ -541,10 +595,11 @@ extension NCNetworking {
                 controller?.present(alertController, animated: true)
 
                 // Client Diagnostic
-                self.database.addDiagnostic(account: metadata.account,
-                                            issue: self.global.diagnosticIssueProblems,
-                                            error: self.global.diagnosticProblemsForbidden,
-                                            sync: false)
+                Task {
+                    await self.database.addDiagnosticAsync(account: metadata.account,
+                                                           issue: self.global.diagnosticIssueProblems,
+                                                           error: self.global.diagnosticProblemsForbidden)
+                }
             }
         }
     }

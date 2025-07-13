@@ -32,8 +32,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     let global = NCGlobal.shared
     let database = NCManageDatabase.shared
 
-    var isBackgroundTask: Bool = false
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         if isUiTestingEnabled {
             NCAccount().deleteAllAccounts()
@@ -185,68 +183,84 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleAppRefresh(_ task: BGAppRefreshTask) {
         nkLog(tag: self.global.logTagTask, emoji: .start, message: "Start refresh task")
 
+        var didComplete = false
+
         task.expirationHandler = {
             nkLog(tag: self.global.logTagTask, emoji: .warning, message: "Refresh task expiration handler")
+            if !didComplete {
+                task.setTaskCompleted(success: false)
+                didComplete = true
+            }
         }
 
-        // Open Realm
-        if database.openRealmBackground() {
-            scheduleAppRefresh()
-        } else {
+        guard database.openRealmBackground() else {
+            nkLog(tag: self.global.logTagTask, emoji: .error, message: "Failed to open Realm in background")
             task.setTaskCompleted(success: false)
             return
         }
 
-        Task {
-            if let tblAccount = await self.database.getActiveTableAccountAsync(),
-               !isBackgroundTask {
-                // start the BackgroundTask
-                self.isBackgroundTask = true
+        // Schedule next refresh
+        scheduleAppRefresh()
 
-                let numTransfers = await backgroundSync(tblAccount: tblAccount)
-                nkLog(tag: self.global.logTagTask, emoji: .success, message: "Refresh task completed with \(numTransfers) transfers")
+        Task {
+            defer {
+                if !didComplete {
+                    task.setTaskCompleted(success: true)
+                    didComplete = true
+                }
             }
 
-            // end the BackgroundTask
-            self.isBackgroundTask = false
+            guard let tblAccount = await self.database.getActiveTableAccountAsync() else {
+                nkLog(tag: self.global.logTagTask, emoji: .info, message: "No active account or background task already running")
+                return
+            }
 
-            task.setTaskCompleted(success: true)
+            let numTransfers = await backgroundSync(tblAccount: tblAccount)
+            nkLog(tag: self.global.logTagTask, emoji: .success, message: "Refresh task completed with \(numTransfers) transfers")
         }
     }
 
     func handleProcessingTask(_ task: BGProcessingTask) {
         nkLog(tag: self.global.logTagTask, emoji: .start, message: "Start processing task")
 
+        var didComplete = false
+
         task.expirationHandler = {
             nkLog(tag: self.global.logTagTask, emoji: .warning, message: "Processing task expiration handler")
+            if !didComplete {
+                task.setTaskCompleted(success: false)
+                didComplete = true
+            }
         }
 
-        // Open Realm
-        if database.openRealmBackground() {
-            scheduleAppProcessing()
-        } else {
+        guard database.openRealmBackground() else {
+            nkLog(tag: self.global.logTagTask, emoji: .error, message: "Failed to open Realm in background")
             task.setTaskCompleted(success: false)
             return
         }
 
-        Task {
-            if let tblAccount = await self.database.getActiveTableAccountAsync(),
-               !isBackgroundTask {
-                // start the BackgroundTask
-                self.isBackgroundTask = true
+        // Schedule next processing task
+        scheduleAppProcessing()
 
-                await NCService().synchronize(account: tblAccount.account)
-                nkLog(tag: self.global.logTagTask, message: "Synchronize for \(tblAccount.account) completed.")
+       Task {
+           defer {
+               if !didComplete {
+                   task.setTaskCompleted(success: true)
+                   didComplete = true
+               }
+           }
 
-                let numTransfers = await backgroundSync(tblAccount: tblAccount)
-                nkLog(tag: self.global.logTagTask, emoji: .success, message: "Processing task completed with \(numTransfers) transfers of auto upload")
-            }
+           guard let tblAccount = await self.database.getActiveTableAccountAsync() else {
+               nkLog(tag: self.global.logTagTask, emoji: .info, message: "No active account or background task already running")
+               return
+           }
 
-            // end the BackgroundTask
-            self.isBackgroundTask = false
+           await NCService().synchronize(account: tblAccount.account)
+           nkLog(tag: self.global.logTagTask, message: "Synchronize for \(tblAccount.account) completed.")
 
-            task.setTaskCompleted(success: true)
-        }
+           let numTransfers = await backgroundSync(tblAccount: tblAccount)
+           nkLog(tag: self.global.logTagTask, emoji: .success, message: "Processing task completed with \(numTransfers) transfers of auto upload")
+       }
     }
 
     func backgroundSync(tblAccount: tableAccount) async -> Int {
@@ -258,8 +272,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // DOWNLOAD
         let predicateDownload = NSPredicate(format: "status == %d", self.global.metadataStatusWaitDownload)
         let metadatasWaitDownlod = await self.database.getMetadatasAsync(predicate: predicateDownload,
-                                                                         sortDescriptors: sortDescriptors,
-                                                                         limit: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload)
+                                                                         withSort: sortDescriptors,
+                                                                         withLimit: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload)
 
         if let metadatasWaitDownlod,
            !metadatasWaitDownlod.isEmpty {
@@ -287,7 +301,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // CREATION FOLDERS
         let predicateCreateFolder = NSPredicate(format: "status == %d AND sessionSelector == %@", self.global.metadataStatusWaitCreateFolder, self.global.selectorUploadAutoUpload)
         let metadatasWaitCreateFolder = await self.database.getMetadatasAsync(predicate: predicateCreateFolder,
-                                                                              limit: NCBrandOptions.shared.httpMaximumConnectionsPerHost)
+                                                                              withLimit: NCBrandOptions.shared.httpMaximumConnectionsPerHost)
 
         if let metadatasWaitCreateFolder,
             !metadatasWaitCreateFolder.isEmpty {
@@ -327,8 +341,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // UPLOAD
         let predicateUpload = NSPredicate(format: "status == %d AND sessionSelector == %@ AND chunk == 0", self.global.metadataStatusWaitUpload, self.global.selectorUploadAutoUpload)
         let metadatasWaitUpload = await self.database.getMetadatasAsync(predicate: predicateUpload,
-                                                                        sortDescriptors: sortDescriptors,
-                                                                        limit: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload)
+                                                                        withSort: sortDescriptors,
+                                                                        withLimit: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload)
 
         if let metadatasWaitUpload,
            !metadatasWaitUpload.isEmpty {

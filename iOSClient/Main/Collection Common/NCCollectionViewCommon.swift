@@ -244,7 +244,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let dropInteraction = UIDropInteraction(delegate: self)
         self.navigationController?.navigationItem.leftBarButtonItems?.first?.customView?.addInteraction(dropInteraction)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming(_:)), name: NSNotification.Name(rawValue: global.notificationCenterChangeTheming), object: nil)
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterChangeTheming), object: nil, queue: .main) { [weak self] _ in
+            guard let self else { return }
+            self.collectionView.reloadData()
+        }
 
         DispatchQueue.main.async {
             self.collectionView?.collectionViewLayout.invalidateLayout()
@@ -528,12 +531,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.resetPlusButtonAlpha()
     }
 
-    @objc func changeTheming(_ notification: NSNotification) {
-        Task {
-            await self.reloadDataSource()
-        }
-    }
-
     @objc func closeRichWorkspaceWebView() {
         Task {
             await self.reloadDataSource()
@@ -590,6 +587,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @MainActor
     func showLoadingTitle() {
+        // Don't show spinner on iPad root folder
+        if UIDevice.current.userInterfaceIdiom == .pad,
+           (self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session)) || self.serverUrl.isEmpty {
+            return
+        }
+
         let spinner = UIActivityIndicatorView(style: .medium)
         spinner.startAnimating()
 
@@ -839,26 +842,23 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     await self.reloadDataSource()
                 }
             } completion: { metadatasSearch, error in
-                guard let metadatasSearch,
-                        error == .success,
-                        self.isSearchingMode
-                else {
-                    self.networkSearchInProgress = false
-                    Task {
+                Task {
+                    guard let metadatasSearch,
+                            error == .success,
+                            self.isSearchingMode
+                    else {
+                        self.networkSearchInProgress = false
                         await self.reloadDataSource()
+                        return
                     }
-                    return
-                }
-                let ocId = metadatasSearch.map { $0.ocId }
+                    let ocId = metadatasSearch.map { $0.ocId }
+                    let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "ocId IN %@", ocId),
+                                                                          withLayout: self.layoutForView,
+                                                                          withAccount: self.session.account)
 
-                self.database.getMetadatas(predicate: NSPredicate(format: "ocId IN %@", ocId),
-                                           layoutForView: self.layoutForView,
-                                           account: self.session.account) { metadatas, layoutForView, account  in
-                    self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, providers: self.providers, searchResults: self.searchResults, account: account)
+                    self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: self.layoutForView, providers: self.providers, searchResults: self.searchResults, account: self.session.account)
                     self.networkSearchInProgress = false
-                    Task {
-                        await self.reloadDataSource()
-                    }
+                    await self.reloadDataSource()
                 }
             }
         }

@@ -27,6 +27,7 @@ import PhotosUI
 
 final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     let fileManager = FileManager()
+
     var directoryGroup: String {
         return fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)?.path ?? ""
     }
@@ -708,6 +709,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         return formatter.string(fromByteCount: bytes)
     }
 
+<<<<<<< HEAD
     func cleanUp(session: NCSession.Session, days: TimeInterval) {
         DispatchQueue.global().async {
             if days == 0 { return}
@@ -750,8 +752,67 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
                             manager.createFile(atPath: fileURL.path, contents: nil, attributes: nil)
                             NCManageDatabase.shared.deleteLocalFileOcId(ocId)
                         }
+=======
+    func cleanUpAsync(directory: String, days: TimeInterval) async {
+        if days == 0 {
+            return
+        }
+        let minimumDate = Date().addingTimeInterval(-days * 24 * 60 * 60)
+        let url = URL(fileURLWithPath: directory)
+        var offlineDir: [String] = []
+        let manager = FileManager.default
+
+        let directories = await NCManageDatabase.shared.getTablesDirectoryAsync(predicate: NSPredicate(format: "offline == true"), sorted: "serverUrl", ascending: true)
+        for directory in directories {
+            offlineDir.append(self.getDirectoryProviderStorageOcId(directory.ocId))
+        }
+
+        let tblLocalFiles = await NCManageDatabase.shared.getTableLocalFilesAsync(predicate: NSPredicate(format: "offline == false"), sorted: "lastOpeningDate", ascending: true)
+
+        let fileURLs = await enumerateFilesAsync(at: url, includingPropertiesForKeys: [.isRegularFileKey])
+        for fileURL in fileURLs {
+            if let attributes = try? manager.attributesOfItem(atPath: fileURL.path) {
+                if attributes[.size] as? Double == 0 { continue }
+                if attributes[.type] as? FileAttributeType == FileAttributeType.typeDirectory { continue }
+                // check directory offline
+                let filter = offlineDir.filter({ fileURL.path.hasPrefix($0)})
+                if !filter.isEmpty {
+                    continue
+                }
+                // -----------------------
+                if let modificationDate = attributes[.modificationDate] as? Date,
+                   modificationDate < minimumDate {
+                    let fileName = fileURL.lastPathComponent
+                    if fileName.hasSuffix(NCGlobal.shared.previewExt256) || fileName.hasSuffix(NCGlobal.shared.previewExt512) || fileName.hasSuffix(NCGlobal.shared.previewExt1024) {
+                        try? manager.removeItem(atPath: fileURL.path)
+>>>>>>> origin/710-FPE
                     }
                 }
+                // -----------------------
+                let folderURL = fileURL.deletingLastPathComponent()
+                let ocId = folderURL.lastPathComponent
+                if let tblLocalFile = tblLocalFiles.filter({ $0.ocId == ocId }).first,
+                    (tblLocalFile.lastOpeningDate as Date) < minimumDate {
+                    do {
+                        try manager.removeItem(atPath: fileURL.path)
+                    } catch { }
+                    manager.createFile(atPath: fileURL.path, contents: nil, attributes: nil)
+                    await NCManageDatabase.shared.deleteLocalFileOcIdAsync(ocId)
+                }
+            }
+        }
+    }
+
+    private func enumerateFilesAsync(at url: URL, includingPropertiesForKeys keys: [URLResourceKey]? = nil) async -> [URL] {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .utility).async {
+                var urls: [URL] = []
+                if let enumerator = FileManager.default.enumerator(at: url, includingPropertiesForKeys: keys, options: []) {
+                    for case let fileURL as URL in enumerator {
+                        urls.append(fileURL)
+                    }
+                }
+                continuation.resume(returning: urls)
             }
         }
     }

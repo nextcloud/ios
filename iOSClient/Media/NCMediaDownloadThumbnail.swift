@@ -39,32 +39,33 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
     }
 
     override func start() {
-        guard !isCancelled,
-              let tblMetadata = NCManageDatabase.shared.getResultFreezeMetadataFromOcId(self.metadata.ocId)
-        else {
-            return self.finish()
-        }
-        var etagResource: String?
-        var image: UIImage?
+        Task {
+            guard !isCancelled,
+                  let tblMetadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(self.metadata.ocId) else {
+                return self.finish()
+            }
+            var image: UIImage?
 
+<<<<<<< HEAD
         if utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: session.userId, urlBase: session.urlBase) {
             etagResource = tblMetadata.etagResource
         }
+=======
+            let resultsDownloadPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: tblMetadata.fileId, etag: tblMetadata.etag, account: tblMetadata.account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue))
+>>>>>>> origin/710-FPE
 
-        NextcloudKit.shared.downloadPreview(fileId: tblMetadata.fileId,
-                                            etag: etagResource,
-                                            account: self.session.account,
-                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, _, etag, responseData, error in
-            if error == .success, let data = responseData?.data {
-
-                self.media.filesExists.append(self.metadata.ocId)
-                NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
+            if resultsDownloadPreview.error == .success, let data = resultsDownloadPreview.responseData?.data {
                 NCUtility().createImageFileFrom(data: data, metadata: tblMetadata)
+<<<<<<< HEAD
                 image = NCUtility().getImage(ocId: self.metadata.ocId,
                                              etag: self.metadata.etag,
                                              ext: NCGlobal.shared.getSizeExtension(column: self.media.numberOfColumns),
                                              userId: self.session.userId,
                                              urlBase: self.session.urlBase)
+=======
+
+                image = await NCUtility().getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: NCGlobal.shared.getSizeExtension(column: self.media.numberOfColumns))
+>>>>>>> origin/710-FPE
             }
 
             Task { @MainActor in

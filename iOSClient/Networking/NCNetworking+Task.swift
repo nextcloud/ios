@@ -61,7 +61,6 @@ extension NCNetworking {
 
     func cancelAllTaskForGoInBackground() {
         cancelAllQueue()
-        cancelAllDataTask()
         cancelDownloadTasks()
         cancelUploadTasks()
     }
@@ -112,7 +111,8 @@ extension NCNetworking {
         ///
         else if metadata.status == global.metadataStatusWaitDelete {
             Task {
-                await database.setMetadataStatusAsync(ocId: metadata.ocId, status: global.metadataStatusNormal)
+                await database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                       status: global.metadataStatusNormal)
 
                 NCNetworking.shared.notifyAllDelegates { delegate in
                     delegate.transferReloadData(serverUrl: serverUrl, status: nil)
@@ -246,7 +246,7 @@ extension NCNetworking {
             }
 
             if let metadata {
-                await self.database.clearMetadataSessionAsync(metadata: metadata)
+                await self.database.clearMetadatasSessionAsync(metadatas: [metadata])
             } else if let metadatas = await self.database.getMetadatasAsync(predicate: predicate) {
                 await self.database.clearMetadatasSessionAsync(metadatas: metadatas)
             }
@@ -271,7 +271,7 @@ extension NCNetworking {
                 }
 
                 if let metadata {
-                    await self.database.clearMetadataSessionAsync(metadata: metadata)
+                    await self.database.clearMetadatasSessionAsync(metadatas: [metadata])
                 } else if let metadatas = await self.database.getMetadatasAsync(predicate: predicate) {
                     await self.database.clearMetadatasSessionAsync(metadatas: metadatas)
                 }
@@ -394,8 +394,13 @@ extension NCNetworking {
                                                                                         self.global.metadataStatusUploading)) {
             for metadata in metadatas {
                 guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: metadata.account) else {
+<<<<<<< HEAD
                     self.database.deleteMetadataOcId(metadata.ocId)
                     utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
+=======
+                    await self.database.deleteMetadataOcIdAsync(metadata.ocId)
+                    utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+>>>>>>> origin/710-FPE
                     continue
                 }
                 var foundTask = false

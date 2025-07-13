@@ -96,6 +96,9 @@ final class NCManageDatabase: @unchecked Sendable {
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let databaseFileUrl = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
 
+        // now you can read/write in Realm
+        isAppSuspending = false
+
         Realm.Configuration.defaultConfiguration = Realm.Configuration(fileURL: databaseFileUrl,
                                                                        schemaVersion: databaseSchemaVersion,
                                                                        migrationBlock: { migration, oldSchemaVersion in
@@ -107,12 +110,11 @@ final class NCManageDatabase: @unchecked Sendable {
             if let url = realm.configuration.fileURL {
                 nkLog(start: "Realm is located at: \(url.path)")
             }
+            return true
         } catch {
             nkLog(error: "Realm error: \(error)")
             return false
         }
-
-        return true
     }
 
     private func openRealmAppex() {
@@ -179,6 +181,14 @@ final class NCManageDatabase: @unchecked Sendable {
                 }
             }
         }
+        if oldSchemaVersion < 393 {
+            migration.enumerateObjects(ofType: tableMetadata.className()) { oldObject, newObject in
+                if let oldData = oldObject?["serveUrlFileName"] as? String {
+                    newObject?["serverUrlFileName"] = oldData
+                }
+            }
+        }
+
         // AUTOMATIC MIGRATIONS (Realm handles these internally)
         if oldSchemaVersion < databaseSchemaVersion {
             // Realm automatically handles:
@@ -200,6 +210,11 @@ final class NCManageDatabase: @unchecked Sendable {
 
     @discardableResult
     func performRealmRead<T>(_ block: @escaping (Realm) throws -> T?, sync: Bool = true, completion: ((T?) -> Void)? = nil) -> T? {
+        // Skip execution if app is suspending
+        guard !isAppSuspending else {
+            completion?(nil)
+            return nil
+        }
         let isOnRealmQueue = DispatchQueue.getSpecific(key: NCManageDatabase.realmQueueKey) != nil
 
         if sync {
@@ -241,6 +256,11 @@ final class NCManageDatabase: @unchecked Sendable {
     }
 
     func performRealmWrite(sync: Bool = true, _ block: @escaping (Realm) throws -> Void) {
+        // Skip execution if app is suspending
+        guard !isAppSuspending
+        else {
+            return
+        }
         let isOnRealmQueue = DispatchQueue.getSpecific(key: NCManageDatabase.realmQueueKey) != nil
 
         let executionBlock: @Sendable () -> Void = {
@@ -271,7 +291,12 @@ final class NCManageDatabase: @unchecked Sendable {
     // MARK: - performRealmRead async/await, performRealmWrite async/await
 
     func performRealmReadAsync<T>(_ block: @escaping (Realm) throws -> T?) async -> T? {
-        await withCheckedContinuation { continuation in
+        // Skip execution if app is suspending
+        guard !isAppSuspending else {
+            return nil
+        }
+
+        return await withCheckedContinuation { continuation in
             realmQueue.async {
                 autoreleasepool {
                     do {
@@ -288,6 +313,11 @@ final class NCManageDatabase: @unchecked Sendable {
     }
 
     func performRealmWriteAsync(_ block: @escaping (Realm) throws -> Void) async {
+        // Skip execution if app is suspending
+        if isAppSuspending {
+            return
+        }
+
         await withCheckedContinuation { continuation in
             realmQueue.async {
                 autoreleasepool {
@@ -339,21 +369,21 @@ final class NCManageDatabase: @unchecked Sendable {
         self.clearTable(tableDashboardWidget.self, account: account)
         self.clearTable(tableDashboardWidgetButton.self, account: account)
         self.clearTable(tableDirectory.self, account: account)
+        self.clearTable(TableDownloadLimit.self, account: account)
         self.clearTablesE2EE(account: account)
         self.clearTable(tableExternalSites.self, account: account)
         self.clearTable(tableGPS.self, account: nil)
         self.clearTable(TableGroupfolders.self, account: account)
         self.clearTable(TableGroupfoldersGroups.self, account: account)
+        self.clearTable(NCDBLayoutForView.self, account: account)
         self.clearTable(tableLocalFile.self, account: account)
         self.clearTable(tableMetadata.self, account: account)
-        self.clearTable(tableShare.self, account: account)
+        self.clearTable(tableRecommendedFiles.self, account: account)
         self.clearTable(TableSecurityGuardDiagnostics.self, account: account)
+        self.clearTable(tableShare.self, account: account)
         self.clearTable(tableTag.self, account: account)
         self.clearTable(tableTrash.self, account: account)
         self.clearTable(tableVideo.self, account: account)
-        self.clearTable(TableDownloadLimit.self, account: account)
-        self.clearTable(tableRecommendedFiles.self, account: account)
-        self.clearTable(NCDBLayoutForView.self, account: account)
         if account == nil {
             self.clearTable(NCKeyValue.self)
         }
@@ -366,6 +396,36 @@ final class NCManageDatabase: @unchecked Sendable {
         self.clearTable(tableE2eMetadata.self, account: account)
         self.clearTable(tableE2eUsers.self, account: account)
         self.clearTable(tableE2eCounter.self, account: account)
+    }
+
+    func cleanTablesOcIds(account: String) async {
+        let metadatas = await getMetadatasAsync(predicate: NSPredicate(format: "account == %@", account))
+        let directories = await getDirectoriesAsync(predicate: NSPredicate(format: "account == %@", account))
+        let locals = await getTableLocalFilesAsync(predicate: NSPredicate(format: "account == %@", account))
+
+        let metadatasOcIds = Set(metadatas.map { $0.ocId })
+        let directoriesOcIds = Set(directories.map { $0.ocId })
+        let localsOcIds = Set(locals.map { $0.ocId })
+
+        let localMissingOcIds = localsOcIds.subtracting(metadatasOcIds)
+        let directoriesMissingOcIds = directoriesOcIds.subtracting(metadatasOcIds)
+
+        await withTaskGroup(of: Void.self) { group in
+            for ocId in localMissingOcIds {
+                group.addTask {
+                    await self.deleteLocalFileOcIdAsync(ocId)
+                    self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
+                }
+            }
+        }
+
+        await withTaskGroup(of: Void.self) { group in
+            for ocId in directoriesMissingOcIds {
+                group.addTask {
+                    await self.deleteDirectoryOcIdAsync(ocId)
+                }
+            }
+        }
     }
 
     func getThreadConfined(_ object: Object) -> Any {

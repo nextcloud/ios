@@ -60,7 +60,7 @@ extension NCMedia: UICollectionViewDataSource {
 
         self.numberOfColumns = getColumnCount()
 
-        if numberOfItemsInSection == 0 || NCNetworking.shared.isOffline {
+        if numberOfItemsInSection == 0 || networking.isOffline {
             selectOrCancelButton.isHidden = true
             menuButton.isHidden = false
             gradientView.alpha = 0
@@ -80,7 +80,7 @@ extension NCMedia: UICollectionViewDataSource {
         guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return }
 
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) {
-            for case let operation as NCMediaDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
+            for case let operation as NCMediaDownloadThumbnail in networking.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
                 operation.cancel()
             }
         }
@@ -89,9 +89,15 @@ extension NCMedia: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return }
 
+<<<<<<< HEAD
         if !utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: self.session.userId, urlBase: self.session.urlBase),
            NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
             NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, media: self))
+=======
+        if !utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag),
+           networking.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
+            networking.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, media: self))
+>>>>>>> origin/710-FPE
         }
     }
 

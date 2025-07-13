@@ -157,8 +157,9 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
             if let fileNameError = FileNameValidator.checkFileName(metadata.fileNameView, account: self.controller.account, capabilities: capabilities) {
                 self.controller.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
             } else {
-                let metadata = database.addAndReturnMetadata(metadata)
-                NCViewer().view(viewController: viewController, metadata: metadata)
+                if let metadata = database.addAndReturnMetadata(metadata) {
+                    NCViewer().view(viewController: viewController, metadata: metadata)
+                }
             }
 
         } else {

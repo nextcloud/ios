@@ -95,7 +95,7 @@ class NCService: NSObject {
         let resultsDownload = await NextcloudKit.shared.downloadAvatarAsync(user: session.userId,
                                                                             fileNameLocalPath: self.utilityFileSystem.directoryUserData + "/" + fileName,
                                                                             sizeImage: NCGlobal.shared.avatarSize,
-                                                                            etag: tblAvatar?.etag,
+                                                                            etagResource: tblAvatar?.etag,
                                                                             account: account)
 
         if  resultsDownload.error == .success,
@@ -176,16 +176,18 @@ class NCService: NSObject {
 
         nkLog(tag: self.global.logTagSync, emoji: .start, message: "Synchronize favorite for account: \(account)")
 
+        await self.database.cleanTablesOcIds(account: account)
+
         let resultsFavorite = await NextcloudKit.shared.listingFavoritesAsync(showHiddenFiles: showHiddenFiles, account: account)
         if resultsFavorite.error == .success, let files = resultsFavorite.files {
-            let resultsMetadatas = await self.database.convertFilesToMetadatasAsync(files, useFirstAsMetadataFolder: false)
-            if !resultsMetadatas.metadatas.isEmpty {
-                await self.database.updateMetadatasFavoriteAsync(account: account, metadatas: resultsMetadatas.metadatas)
-            }
+            let (_, metadatas) = await self.database.convertFilesToMetadatasAsync(files, useFirstAsMetadataFolder: false)
+            await self.database.updateMetadatasFavoriteAsync(account: account, metadatas: metadatas)
         }
 
         // file already in dowloading
-        let metadatasInDownload = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND status == %d", account, self.global.metadataStatusDownloadingAllMode), limit: nil)
+        let predicate = NSPredicate(format: "account == %@ AND status == %d", account, self.global.metadataStatusDownloadingAllMode)
+        let metadatasInDownload = await self.database.getMetadatasAsync(predicate: predicate,
+                                                                        withLimit: nil)
 
         // Synchronize Directory
         let directories = await self.database.getTablesDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "serverUrl", ascending: true)
@@ -257,7 +259,7 @@ class NCService: NSObject {
     func sendClientDiagnosticsRemoteOperation(account: String) async {
         let capabilities = await NKCapabilities.shared.getCapabilitiesAsync(for: account)
         guard capabilities.securityGuardDiagnostics,
-              self.database.existsDiagnostics(account: account) else {
+              await self.database.existsDiagnosticsAsync(account: account) else {
             return
         }
 

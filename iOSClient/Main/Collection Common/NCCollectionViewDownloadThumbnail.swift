@@ -41,25 +41,26 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation, @unchecked Sendabl
     }
 
     override func start() {
+<<<<<<< HEAD
         guard !isCancelled else { return self.finish() }
         var etagResource: String?
 
         if utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase) {
             etagResource = metadata.etagResource
+=======
+        guard !isCancelled else {
+            return self.finish()
+>>>>>>> origin/710-FPE
         }
-
-        NextcloudKit.shared.downloadPreview(fileId: metadata.fileId,
-                                            etag: etagResource,
-                                            account: self.metadata.account,
-                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, _, etag, responseData, error in
-
-            if error == .success, let data = responseData?.data, let collectionView = self.collectionView {
-
-                NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
+        Task {
+            let resultsPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: metadata.fileId, etag: metadata.etag, account: metadata.account)
+            if resultsPreview.error == .success,
+               let data = resultsPreview.responseData?.data,
+               let collectionView = self.collectionView {
                 NCUtility().createImageFileFrom(data: data, metadata: self.metadata)
                 let image = self.utility.getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: self.ext, userId: self.metadata.userId, urlBase: self.metadata.urlBase)
 
-                DispatchQueue.main.async {
+                Task { @MainActor in
                     for case let cell as NCCellProtocol in collectionView.visibleCells where cell.fileOcId == self.metadata.ocId {
                         if let filePreviewImageView = cell.filePreviewImageView {
                             filePreviewImageView.contentMode = .scaleAspectFill
@@ -71,8 +72,8 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation, @unchecked Sendabl
 
                             if let photoCell = (cell as? NCPhotoCell),
                                photoCell.bounds.size.width > 100 {
-                                    cell.hideButtonMore(false)
-                                    cell.hideImageStatus(false)
+                                cell.hideButtonMore(false)
+                                cell.hideImageStatus(false)
                             }
 
                             UIView.transition(with: filePreviewImageView,
@@ -85,6 +86,7 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation, @unchecked Sendabl
                     }
                 }
             }
+
             self.finish()
         }
     }

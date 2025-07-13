@@ -167,11 +167,9 @@ struct NCUploadAssetsView: View {
                                             .frame(maxWidth: .infinity, alignment: .trailing)
                                     }
                                 } icon: {
-                                    Image("folder")
-                                        .renderingMode(.template)
+                                    Image(uiImage: NCImageCache.shared.getFolder(account: model.session.account))
                                         .resizable()
                                         .scaledToFit()
-                                        .foregroundColor(Color(NCBrandColor.shared.getElement(account: metadata?.account)))
                                 }
                             }
                             .contentShape(Rectangle())

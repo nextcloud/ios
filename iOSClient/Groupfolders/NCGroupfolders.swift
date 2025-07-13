@@ -62,11 +62,12 @@ class NCGroupfolders: NCCollectionViewCommon {
         var metadatas: [tableMetadata] = []
 
         if self.serverUrl.isEmpty {
-            metadatas = database.getMetadatasFromGroupfolders(session: session, layoutForView: layoutForView)
+            metadatas = await database.getMetadatasFromGroupfoldersAsync(session: session,
+                                                                         layoutForView: layoutForView)
         } else {
             metadatas = await database.getMetadatasAsync(predicate: defaultPredicate,
-                                                         layoutForView: layoutForView,
-                                                         account: session.account)
+                                                         withLayout: layoutForView,
+                                                         withAccount: session.account)
         }
 
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)

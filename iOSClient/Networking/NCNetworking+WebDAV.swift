@@ -29,46 +29,6 @@ import Photos
 extension NCNetworking {
     // MARK: - Read file & folder
 
-    func readFolder(serverUrl: String,
-                    account: String,
-                    options: NKRequestOptions = NKRequestOptions(),
-                    taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
-                    completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
-        let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: account)
-
-        func storeFolder(_ metadataFolder: tableMetadata) {
-            self.database.addMetadata(metadataFolder)
-            self.database.addDirectory(e2eEncrypted: metadataFolder.e2eEncrypted,
-                                       favorite: metadataFolder.favorite,
-                                       ocId: metadataFolder.ocId,
-                                       fileId: metadataFolder.fileId,
-                                       etag: metadataFolder.etag,
-                                       permissions: metadataFolder.permissions,
-                                       richWorkspace: metadataFolder.richWorkspace,
-                                       serverUrl: serverUrl,
-                                       account: metadataFolder.account)
-        }
-
-        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
-                                             depth: "1",
-                                             showHiddenFiles: showHiddenFiles,
-                                             account: account,
-                                             options: options) { task in
-            taskHandler(task)
-        } completion: { account, files, _, error in
-            guard error == .success, let files
-            else {
-                return completion(account, nil, nil, error)
-            }
-
-            self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { metadataFolder, metadatas in
-                storeFolder(metadataFolder)
-                self.database.updateMetadatasFiles(metadatas, serverUrl: serverUrl, account: account)
-                completion(account, metadataFolder.detachedCopy(), metadatas, error)
-            }
-        }
-    }
-
     /// Async wrapper for `readFolder(...)`, returns a tuple with account, metadataFolder, metadatas, and error.
     func readFolderAsync(serverUrl: String,
                          account: String,
@@ -252,23 +212,23 @@ extension NCNetworking {
         }
         let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
 
-        func writeDirectoryMetadata(_ metadata: tableMetadata) {
-            self.database.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", session.account, fileName, serverUrl), sync: false)
-            self.database.addMetadata(metadata, sync: false)
-            self.database.addDirectory(e2eEncrypted: metadata.e2eEncrypted,
-                                       favorite: metadata.favorite,
-                                       ocId: metadata.ocId,
-                                       fileId: metadata.fileId,
-                                       permissions: metadata.permissions,
-                                       serverUrl: fileNameFolderUrl,
-                                       account: session.account, sync: false)
+        func writeDirectoryMetadata(_ metadata: tableMetadata) async {
+            await self.database.deleteMetadataAsync(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", session.account, fileName, serverUrl))
+            await self.database.addMetadataAsync(metadata)
+            await self.database.addDirectoryAsync(e2eEncrypted: metadata.e2eEncrypted,
+                                                  favorite: metadata.favorite,
+                                                  ocId: metadata.ocId,
+                                                  fileId: metadata.fileId,
+                                                  permissions: metadata.permissions,
+                                                  serverUrl: fileNameFolderUrl,
+                                                  account: session.account)
         }
 
         /* check exists folder */
         let resultReadFile = await readFileAsync(serverUrlFileName: fileNameFolderUrl, account: session.account)
         if resultReadFile.error == .success,
             let metadata = resultReadFile.metadata {
-            writeDirectoryMetadata(metadata)
+            await writeDirectoryMetadata(metadata)
             return (true, .success)
         }
 
@@ -278,7 +238,7 @@ extension NCNetworking {
             let resultReadFile = await readFileAsync(serverUrlFileName: fileNameFolderUrl, account: session.account)
             if resultReadFile.error == .success,
                let metadata = resultReadFile.metadata {
-                writeDirectoryMetadata(metadata)
+                await writeDirectoryMetadata(metadata)
             }
         }
 
@@ -287,6 +247,7 @@ extension NCNetworking {
 
     // MARK: - Delete
 
+    #if !EXTENSION
     func tapHudDelete() {
         tapHudStopDelete = true
     }
@@ -306,26 +267,29 @@ extension NCNetworking {
                 await self.database.deleteLocalFileOcIdAsync(metadataLive.ocId)
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
             }
-            await self.database.deleteVideoAsync(metadata: metadata)
+            await self.database.deleteVideoAsync(metadata.ocId)
             await self.database.deleteLocalFileOcIdAsync(metadata.ocId)
+<<<<<<< HEAD
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
 #if !EXTENSION
+=======
+            utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+
+>>>>>>> origin/710-FPE
             NCImageCache.shared.removeImageCache(ocIdPlusEtag: metadata.ocId + metadata.etag)
-#endif
         }
 
         self.tapHudStopDelete = false
 
+        await database.cleanTablesOcIds(account: metadata.account)
+
         if metadata.directory {
-#if !EXTENSION
             if let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
                 await MainActor.run {
                     ncHud.initHudRing(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDelete)
                 }
             }
-#endif
-            let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-            if let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, serverUrl)) {
+            if let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, metadata.serverUrlFileName)) {
                 let total = Float(metadatas.count)
                 for metadata in metadatas {
                     await deleteLocalFile(metadata: metadata)
@@ -334,9 +298,7 @@ extension NCNetworking {
                     if tapHudStopDelete { break }
             }
         }
-#if !EXTENSION
             ncHud.dismiss()
-#endif
         } else {
             await deleteLocalFile(metadata: metadata)
 
@@ -347,6 +309,7 @@ extension NCNetworking {
 
         return .success
     }
+    #endif
 
     func setStatusWaitDelete(metadatas: [tableMetadata], sceneIdentifier: String?) {
         var metadatasPlain: [tableMetadata] = []
@@ -428,11 +391,12 @@ extension NCNetworking {
 
             self.notifyAllDelegates { delegate in
                 Task {
-                    let status = self.global.metadataStatusWaitDelete
-                    await self.database.setMetadataStatusAsync(ocIds: Array(ocIds),
-                                                               status: status)
+                    for ocId in ocIds {
+                        await self.database.setMetadataSessionAsync(ocId: ocId,
+                                                                    status: self.global.metadataStatusWaitDelete)
+                    }
                     serverUrls.forEach { serverUrl in
-                        delegate.transferReloadData(serverUrl: serverUrl, status: status)
+                        delegate.transferReloadData(serverUrl: serverUrl, status: self.global.metadataStatusWaitDelete)
                     }
                 }
             }
@@ -529,14 +493,14 @@ extension NCNetworking {
     // MARK: - Lock Files
 
     func lockUnlockFile(_ metadata: tableMetadata, shoulLock: Bool) {
-        NextcloudKit.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, shouldLock: shoulLock, account: metadata.account) { _, _, error in
+        NextcloudKit.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrlFileName, shouldLock: shoulLock, account: metadata.account) { _, _, error in
             // 0: lock was successful; 412: lock did not change, no error, refresh
             guard error == .success || error.errorCode == self.global.errorPreconditionFailed else {
                 let error = NKError(errorCode: error.errorCode, errorDescription: "_files_lock_error_")
                 NCContentPresenter().messageNotification(metadata.fileName, error: error, delay: self.global.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
                 return
             }
-            self.readFile(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, account: metadata.account) { _, metadata, error in
+            self.readFile(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account) { _, metadata, error in
                 guard error == .success, let metadata = metadata else { return }
                 self.database.addMetadata(metadata)
 
@@ -808,7 +772,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation, @unchecked Sendable {
                                            fileNameLocalPath: NCUtilityFileSystem().directoryUserData + "/" + fileName,
                                            sizeImage: NCGlobal.shared.avatarSize,
                                            avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
-                                           etag: self.etag,
+                                           etagResource: self.etag,
                                            account: account,
                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, image, _, etag, _, error in
 
@@ -843,7 +807,7 @@ class NCOperationFileExists: ConcurrentOperation, @unchecked Sendable {
     var ocId: String
 
     init(metadata: tableMetadata) {
-        serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+        serverUrlFileName = metadata.serverUrlFileName
         account = metadata.account
         ocId = metadata.ocId
     }

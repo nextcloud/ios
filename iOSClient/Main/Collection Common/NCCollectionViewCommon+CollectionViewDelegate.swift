@@ -60,37 +60,39 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 NCViewer().view(viewController: self, metadata: metadata, image: image)
 
             } else if NextcloudKit.shared.isNetworkReachable() {
-                guard let  metadata = database.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
-                                                                                session: self.netwoking.sessionDownload,
-                                                                                selector: global.selectorLoadFileView,
-                                                                                sceneIdentifier: self.controller?.sceneIdentifier) else {
-                    return
-                }
-
-                if metadata.name == "files" {
-                    let hud = NCHud(self.tabBarController?.view)
-                    var downloadRequest: DownloadRequest?
-
-                    hud.initHudRing(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
-                        if let request = downloadRequest {
-                            request.cancel()
-                        }
+                Task { @MainActor in
+                    guard let  metadata = await database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
+                                                                                               session: self.netwoking.sessionDownload,
+                                                                                               selector: global.selectorLoadFileView,
+                                                                                               sceneIdentifier: self.controller?.sceneIdentifier) else {
+                        return
                     }
 
-                    self.netwoking.download(metadata: metadata) {
-                    } requestHandler: { request in
-                        downloadRequest = request
-                    } progressHandler: { progress in
-                        hud.progress(progress.fractionCompleted)
-                    } completion: { afError, error in
-                        if error == .success || afError?.isExplicitlyCancelledError ?? false {
-                            hud.dismiss()
-                        } else {
-                            hud.error(text: error.errorDescription)
+                    if metadata.name == "files" {
+                        let hud = NCHud(self.tabBarController?.view)
+                        var downloadRequest: DownloadRequest?
+
+                        hud.initHudRing(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
+                            if let request = downloadRequest {
+                                request.cancel()
+                            }
                         }
+
+                        self.netwoking.download(metadata: metadata) {
+                        } requestHandler: { request in
+                            downloadRequest = request
+                        } progressHandler: { progress in
+                            hud.progress(progress.fractionCompleted)
+                        } completion: { afError, error in
+                            if error == .success || afError?.isExplicitlyCancelledError ?? false {
+                                hud.dismiss()
+                            } else {
+                                hud.error(text: error.errorDescription)
+                            }
+                        }
+                    } else if !metadata.url.isEmpty {
+                        NCViewer().view(viewController: self, metadata: metadata, image: nil)
                     }
-                } else if !metadata.url.isEmpty {
-                    NCViewer().view(viewController: self, metadata: metadata, image: nil)
                 }
             } else {
                 let error = NKError(errorCode: global.errorOffline, errorDescription: "_go_online_")

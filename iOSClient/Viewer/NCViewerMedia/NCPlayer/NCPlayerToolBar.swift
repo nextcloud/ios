@@ -449,8 +449,12 @@ extension NCPlayerToolBar {
 extension NCPlayerToolBar: NCSelectDelegate {
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool, session: NCSession.Session) {
         if let metadata = metadata, let viewerMediaPage = viewerMediaPage {
+<<<<<<< HEAD
             let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
             let fileNameLocalPath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
+=======
+            let fileNameLocalPath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+>>>>>>> origin/710-FPE
 
             if utilityFileSystem.fileProviderStorageExists(metadata) {
                 addPlaybackSlave(type: type, metadata: metadata)
@@ -464,22 +468,26 @@ extension NCPlayerToolBar: NCSelectDelegate {
                     }
                 }
 
-                NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, requestHandler: { request in
+                NextcloudKit.shared.download(serverUrlFileName: metadata.serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, requestHandler: { request in
                     downloadRequest = request
                 }, taskHandler: { task in
-                    self.database.setMetadataSession(ocId: metadata.ocId,
-                                                     sessionTaskIdentifier: task.taskIdentifier,
-                                                     status: self.global.metadataStatusDownloading)
+                    Task {
+                        await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                    sessionTaskIdentifier: task.taskIdentifier,
+                                                                    status: self.global.metadataStatusDownloading)
+                    }
                 }, progressHandler: { progress in
                     self.hud.progress(progress.fractionCompleted)
                 }) { _, etag, _, _, _, _, error in
                     self.hud.dismiss()
-                    self.database.setMetadataSession(ocId: metadata.ocId,
-                                                     session: "",
-                                                     sessionTaskIdentifier: 0,
-                                                     sessionError: "",
-                                                     status: self.global.metadataStatusNormal,
-                                                     etag: etag)
+                    Task {
+                        await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                    session: "",
+                                                                    sessionTaskIdentifier: 0,
+                                                                    sessionError: "",
+                                                                    status: self.global.metadataStatusNormal,
+                                                                    etag: etag)
+                    }
                     if error == .success {
                         self.hud.success()
                         self.addPlaybackSlave(type: type, metadata: metadata)
