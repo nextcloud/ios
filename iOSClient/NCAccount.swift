@@ -203,10 +203,53 @@ class NCAccount: NSObject {
         return NKShareAccounts().putShareAccounts(at: dirGroupApps, app: global.appScheme, dataAccounts: accounts)
     }
 
+    func checkRemoteUserAsync(account: String, controller: NCMainTabBarController?) async {
+        let token = NCKeychain().getPassword(account: account)
+        guard let tableAccount = await NCManageDatabase.shared.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", account)) else {
+            return
+        }
+
+        NCContentPresenter().showCustomMessage(title: "", message: String(format: NSLocalizedString("_account_unauthorized_", comment: ""), account), priority: .high, delay: global.dismissAfterSecondLong, type: .error)
+
+        let resultsWipe = await NextcloudKit.shared.getRemoteWipeStatusAsync(serverUrl: tableAccount.urlBase, token: token, account: account)
+
+        // REMOVE ACCOUNT
+        NCAccount().deleteAccount(account, wipe: resultsWipe.wipe)
+        if resultsWipe.wipe {
+            let resultsSetWipe = await NextcloudKit.shared.setRemoteWipeCompletitionAsync(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account)
+            nkLog(debug: "Set Remote Wipe Completition error code: \(resultsSetWipe.error.errorCode)")
+        }
+
+        let accounts = await NCManageDatabase.shared.getAccountsAsync()
+        await MainActor.run {
+            if let accounts,
+               account.count > 0,
+               let account = accounts.first {
+                changeAccount(account, userProfile: nil, controller: controller) { }
+            } else {
+                if NCBrandOptions.shared.disable_intro {
+                    if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin {
+                        viewController.controller = controller
+                        let navigationController = UINavigationController(rootViewController: viewController)
+                        navigationController.modalPresentationStyle = .fullScreen
+                        controller?.present(navigationController, animated: true)
+                    }
+                } else {
+                    if let navigationController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? UINavigationController {
+                        if let viewController = navigationController.topViewController as? NCIntroViewController {
+                            viewController.controller = controller
+                        }
+                        navigationController.modalPresentationStyle = .fullScreen
+                        controller?.present(navigationController, animated: true)
+                    }
+                }
+            }
+        }
+    }
+
     func checkRemoteUser(account: String, controller: NCMainTabBarController?, completion: @escaping () -> Void = {}) {
         let token = NCKeychain().getPassword(account: account)
-        guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account))
-        else {
+        guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
             return completion()
         }
 

@@ -46,18 +46,20 @@ class NCTermOfServiceModel: ObservableObject {
 
     func signTermsOfService(termId: Int?) {
         guard let termId,
-              let controller
-        else {
+              let controller else {
             return
         }
 
-        NCNetworking.shared.signTermsOfService(account: controller.account, termId: termId) { error in
-            if error == .success {
-                NCNetworking.shared.notifyAllDelegates { delegate in
-                    delegate.transferRequestData(serverUrl: nil)
+        Task { @MainActor in
+            let error = await  NCNetworking.shared.signTermsOfService(account: controller.account, termId: termId)
+            if let error {
+                if error == .success {
+                    NCNetworking.shared.notifyAllDelegates { delegate in
+                        delegate.transferRequestData(serverUrl: nil)
+                    }
+                } else {
+                    NCContentPresenter().showError(error: error)
                 }
-            } else {
-                NCContentPresenter().showError(error: error)
             }
             self.dismissView = true
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCheckUserDelaultErrorDone, userInfo: ["account": controller.account, "controller": controller])

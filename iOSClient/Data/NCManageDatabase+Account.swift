@@ -621,6 +621,18 @@ extension NCManageDatabase {
         }
     }
 
+    func getAccountsAsync() async -> [String]? {
+        let results = await performRealmReadAsync { realm in
+            realm.objects(tableAccount.self)
+                .sorted(byKeyPath: "account", ascending: true)
+        }
+        guard let results else {
+            return nil
+        }
+
+        return results.map { $0.account }
+    }
+
     func getAccountGroups(account: String) -> [String] {
         return performRealmRead { realm in
             return realm.objects(tableAccount.self)
