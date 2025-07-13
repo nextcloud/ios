@@ -82,7 +82,7 @@ extension NCNetworking {
                 hud?.progress(fractionCompleted)
             } completion: { account, _, error in
                 hud?.dismiss()
-                let directory = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId)
+                let directory = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase)
 
                 switch error {
                 case .errorChunkNoEnoughMemory, .errorChunkCreateFolder, .errorChunkFilesEmpty, .errorChunkFileNull:
@@ -100,7 +100,7 @@ extension NCNetworking {
                 completion(error)
             }
         } else if metadata.session == sessionUpload {
-            let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+            let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
             uploadFile(metadata: metadata,
                        fileNameLocalPath: fileNameLocalPath,
                        controller: controller,
@@ -188,7 +188,7 @@ extension NCNetworking {
                          start: @escaping () -> Void = { },
                          progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
                          completion: @escaping (_ account: String, _ file: NKFile?, _ error: NKError) -> Void) {
-        let directory = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId)
+        let directory = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase)
         let chunkFolder = self.database.getChunkFolder(account: metadata.account, ocId: metadata.ocId)
         let filesChunk = self.database.getChunks(account: metadata.account, ocId: metadata.ocId)
         var chunkSize = self.global.chunkSizeMBCellular
@@ -253,7 +253,12 @@ extension NCNetworking {
                                         start: @escaping () -> Void = { },
                                         completion: @escaping (_ error: NKError) -> Void) {
         let metadata = tableMetadata.init(value: metadata)
+<<<<<<< HEAD
+        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+        let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
+=======
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+>>>>>>> origin/710-FPE
 
         start()
 
@@ -314,7 +319,7 @@ extension NCNetworking {
                         error: NKError) {
         Task {
             #if EXTENSION_FILE_PROVIDER_EXTENSION
-            await fileProviderData.shared.uploadComplete(fileName: fileName,
+            await FileProviderData.shared.uploadComplete(fileName: fileName,
                                                          serverUrl: serverUrl,
                                                          ocId: ocId,
                                                          etag: etag,
@@ -365,17 +370,17 @@ extension NCNetworking {
 
             if selector == self.global.selectorUploadFileNODelete {
                 if isAppInBackground {
-                    self.utilityFileSystem.moveFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer),
-                                                    toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
+                    self.utilityFileSystem.moveFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase),
+                                                    toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, userId: metadata.userId, urlBase: metadata.urlBase))
                 } else {
-                    self.utilityFileSystem.moveFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer),
-                                                    toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
+                    self.utilityFileSystem.moveFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase),
+                                                    toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, userId: metadata.userId, urlBase: metadata.urlBase))
                 }
 
                 await self.database.addLocalFileAsync(metadata: metadata)
 
             } else {
-                self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer))
+                self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase))
             }
 
             // Update the auto upload data
@@ -477,7 +482,7 @@ extension NCNetworking {
     }
 
     func uploadCancelFile(metadata: tableMetadata) async {
-        self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer))
+        self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase))
         await self.database.deleteMetadataOcIdAsync(metadata.ocIdTransfer)
         self.notifyAllDelegates { delegate in
             delegate.transferChange(status: self.global.networkingStatusUploadCancel,
@@ -491,11 +496,17 @@ extension NCNetworking {
     func uploadForbidden(metadata: tableMetadata, error: NKError) {
         let newFileName = self.utilityFileSystem.createFileName(metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account)
         let alertController = UIAlertController(title: error.errorDescription, message: NSLocalizedString("_change_upload_filename_", comment: ""), preferredStyle: .alert)
+<<<<<<< HEAD
+            alertController.addAction(UIAlertAction(title: String(format: NSLocalizedString("_save_file_as_", comment: ""), newFileName), style: .default, handler: { _ in
+                let atpath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase) + "/" + metadata.fileName
+                let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase) + "/" + newFileName
+=======
 
         alertController.addAction(UIAlertAction(title: String(format: NSLocalizedString("_save_file_as_", comment: ""), newFileName), style: .default, handler: { _ in
             Task {
                 let atpath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileName
                 let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + newFileName
+>>>>>>> origin/710-FPE
                 self.utilityFileSystem.moveFile(atPath: atpath, toPath: toPath)
                 await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
                                                             newFileName: newFileName,
@@ -541,6 +552,17 @@ extension NCNetworking {
                 let newFileName = self.utilityFileSystem.createFileName(metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account)
                 let alertController = UIAlertController(title: error.errorDescription, message: NSLocalizedString("_change_upload_filename_", comment: ""), preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: String(format: NSLocalizedString("_save_file_as_", comment: ""), newFileName), style: .default, handler: { _ in
+<<<<<<< HEAD
+                    let atpath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase) + "/" + metadata.fileName
+                    let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase) + "/" + newFileName
+                    self.utilityFileSystem.moveFile(atPath: atpath, toPath: toPath)
+                    self.database.setMetadataSession(ocId: metadata.ocId,
+                                                     newFileName: newFileName,
+                                                     sessionTaskIdentifier: 0,
+                                                     sessionError: "",
+                                                     status: self.global.metadataStatusWaitUpload,
+                                                     errorCode: error.errorCode)
+=======
                     Task {
                         let atpath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileName
                         let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + newFileName
@@ -552,6 +574,7 @@ extension NCNetworking {
                                                                     status: self.global.metadataStatusWaitUpload,
                                                                     errorCode: error.errorCode)
                     }
+>>>>>>> origin/710-FPE
                 }))
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive, handler: { _ in
                     Task {

@@ -41,8 +41,16 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation, @unchecked Sendabl
     }
 
     override func start() {
+<<<<<<< HEAD
+        guard !isCancelled else { return self.finish() }
+        var etagResource: String?
+
+        if utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase) {
+            etagResource = metadata.etagResource
+=======
         guard !isCancelled else {
             return self.finish()
+>>>>>>> origin/710-FPE
         }
         Task {
             let resultsPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: metadata.fileId, etag: metadata.etag, account: metadata.account)
@@ -50,7 +58,7 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation, @unchecked Sendabl
                let data = resultsPreview.responseData?.data,
                let collectionView = self.collectionView {
                 NCUtility().createImageFileFrom(data: data, metadata: self.metadata)
-                let image = self.utility.getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: self.ext)
+                let image = self.utility.getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: self.ext, userId: self.metadata.userId, urlBase: self.metadata.urlBase)
 
                 Task { @MainActor in
                     for case let cell as NCCellProtocol in collectionView.visibleCells where cell.fileOcId == self.metadata.ocId {

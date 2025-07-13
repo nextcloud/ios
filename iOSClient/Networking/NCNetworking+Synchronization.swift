@@ -25,7 +25,7 @@ import UIKit
 import NextcloudKit
 
 extension NCNetworking {
-    internal func synchronization(account: String, serverUrl: String, metadatasInDownload: [tableMetadata]?) async {
+    internal func synchronization(account: String, serverUrl: String, userId: String, urlBase: String, metadatasInDownload: [tableMetadata]?) async {
         let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: account)
         let options = NKRequestOptions(timeout: 300, taskDescription: NCGlobal.shared.taskDescriptionSynchronization, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
@@ -38,6 +38,16 @@ extension NCNetworking {
 
             for file in files {
                 if file.directory {
+<<<<<<< HEAD
+                    metadatasDirectory.append(self.database.convertFileToMetadata(file, isDirectoryE2EE: false))
+                } else if await isFileDifferent(ocId: file.ocId,
+                                                fileName: file.fileName,
+                                                etag: file.etag, metadatasInDownload: metadatasInDownload,
+                                                userId: userId,
+                                                urlBase: urlBase) {
+                    metadatasDownload.append(self.database.convertFileToMetadata(file, isDirectoryE2EE: false))
+                    nkLog(tag: self.global.logTagSync, emoji: .start, message: "File download: \(file.serverUrl)/\(file.fileName)")
+=======
                     let metadata = self.database.convertFileToMetadata(file, isDirectoryE2EE: false)
                     await self.database.addMetadataAsync(metadata)
                     await self.database.addDirectoryAsync(e2eEncrypted: metadata.e2eEncrypted,
@@ -63,6 +73,7 @@ extension NCNetworking {
 
                         nkLog(tag: self.global.logTagSync, emoji: .start, message: "File download: \(file.serverUrl)/\(file.fileName)")
                     }
+>>>>>>> origin/710-FPE
                 }
             }
 
@@ -74,16 +85,26 @@ extension NCNetworking {
         nkLog(tag: self.global.logTagSync, emoji: .stop, message: "Stop read infinite folder: \(serverUrl)")
     }
 
-    internal func isFileDifferent(ocId: String, fileName: String, etag: String, metadatasInDownload: [tableMetadata]?) async -> Bool {
+    internal func isFileDifferent(ocId: String,
+                                  fileName: String,
+                                  etag: String,
+                                  metadatasInDownload: [tableMetadata]?,
+                                  userId: String,
+                                  urlBase: String) async -> Bool {
         let match = metadatasInDownload?.contains { $0.ocId == ocId } ?? false
         if match {
             return false
         }
 
+<<<<<<< HEAD
+        let localFile = await self.database.getTableLocalFileAsync(predicate: NSPredicate(format: "ocId == %@", ocId))
+        let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName, userId: userId, urlBase: urlBase)
+=======
         guard let localFile = await self.database.getTableLocalFileAsync(predicate: NSPredicate(format: "ocId == %@", ocId)) else {
             return true
         }
         let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
+>>>>>>> origin/710-FPE
         let size = await self.utilityFileSystem.fileSizeAsync(atPath: fileNamePath)
         let isDifferent = (localFile.etag != etag) || size == 0
 

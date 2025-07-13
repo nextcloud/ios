@@ -60,7 +60,7 @@ class NCViewerProviderContextMenu: UIViewController {
             imageView.image = image
             imageView.frame = resize(CGSize(width: sizeIcon, height: sizeIcon))
             // PREVIEW
-            if let image = NCUtility().getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512) {
+            if let image = NCUtility().getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512, userId: metadata.userId, urlBase: metadata.urlBase) {
                 imageView.image = image
                 imageView.frame = resize(image.size)
             }
@@ -74,7 +74,7 @@ class NCViewerProviderContextMenu: UIViewController {
             }
             // VIEW VIDEO
             if metadata.isVideo {
-                if !NCUtility().existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512) {
+                if !NCUtility().existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512, userId: metadata.userId, urlBase: metadata.urlBase) {
                     let newSize = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
                     imageView.image = nil
                     imageView.frame = newSize
@@ -158,12 +158,12 @@ class NCViewerProviderContextMenu: UIViewController {
 
     private func viewImage(metadata: tableMetadata) {
         var image: UIImage?
-        let filePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+        let filePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
 
         if metadata.contentType == "image/gif" {
             image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: filePath))
         } else if metadata.contentType == "image/svg+xml" {
-            let imagePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+            let imagePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
             if let svgImage = SVGKImage(contentsOfFile: imagePath) {
                 svgImage.size = NCGlobal.shared.size1024
                 image = svgImage.uiImage

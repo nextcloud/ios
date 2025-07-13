@@ -142,7 +142,7 @@ extension NCNetworking {
                 if let metadatas = await database.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status != 0", metadata.account, metadata.serverUrl)) {
                     for metadata in metadatas {
                         await database.deleteMetadataOcIdAsync(metadata.ocId)
-                        utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                        utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
                         serverUrls.insert(metadata.serverUrl)
                     }
 
@@ -160,7 +160,7 @@ extension NCNetworking {
         else if metadata.session.isEmpty {
             Task {
                 await self.database.deleteMetadataOcIdAsync(metadata.ocId)
-                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
 
                 NCNetworking.shared.notifyAllDelegates { delegate in
                     delegate.transferReloadData(serverUrl: serverUrl, status: nil)
@@ -192,7 +192,7 @@ extension NCNetworking {
             } else {
                 cancelUploadBackgroundTask(metadata: metadata)
             }
-            utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+            utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
             self.notifyAllDelegates { delegate in
                 delegate.transferChange(status: self.global.networkingStatusUploadCancel,
                                         metadata: metadata.detachedCopy(),
@@ -394,8 +394,13 @@ extension NCNetworking {
                                                                                         self.global.metadataStatusUploading)) {
             for metadata in metadatas {
                 guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: metadata.account) else {
+<<<<<<< HEAD
+                    self.database.deleteMetadataOcId(metadata.ocId)
+                    utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
+=======
                     await self.database.deleteMetadataOcIdAsync(metadata.ocId)
                     utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+>>>>>>> origin/710-FPE
                     continue
                 }
                 var foundTask = false
@@ -430,7 +435,7 @@ extension NCNetworking {
             for metadata in metadatas {
                 guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: metadata.account) else {
                     await self.database.deleteMetadataOcIdAsync(metadata.ocId)
-                    utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                    utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,userId: metadata.userId, urlBase: metadata.urlBase))
                     continue
                 }
                 var session: URLSession?
@@ -446,7 +451,7 @@ extension NCNetworking {
                 var foundTask = false
                 guard let tasks = await session?.allTasks else {
                     await self.database.deleteMetadataOcIdAsync(metadata.ocId)
-                    utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                    utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,userId: metadata.userId, urlBase: metadata.urlBase))
                     continue
                 }
 
@@ -477,7 +482,7 @@ extension NCNetworking {
             for metadata in metadatas {
                 guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: metadata.account) else {
                     await self.database.deleteMetadataOcIdAsync(metadata.ocId)
-                    utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                    utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,userId: metadata.userId, urlBase: metadata.urlBase))
                     continue
                 }
                 var foundTask = false
@@ -507,7 +512,7 @@ extension NCNetworking {
             for metadata in metadatas {
                 guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: metadata.account) else {
                     await self.database.deleteMetadataOcIdAsync(metadata.ocId)
-                    utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                    utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
                     continue
                 }
                 var foundTask = false

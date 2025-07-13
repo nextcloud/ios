@@ -64,7 +64,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
             // ENCRYPT FILE
             //
-            if NCEndToEndEncryption.shared().encryptFile(metadata.fileNameView, fileNameIdentifier: metadata.fileName, directory: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId), key: &key, initializationVector: &initializationVector, authenticationTag: &authenticationTag) == false {
+            if NCEndToEndEncryption.shared().encryptFile(metadata.fileNameView, fileNameIdentifier: metadata.fileName, directory: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase), key: &key, initializationVector: &initializationVector, authenticationTag: &authenticationTag) == false {
                 finalError = NKError(errorCode: NCGlobal.shared.errorE2EEEncryptFile, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
                 return finalError
             }
@@ -166,7 +166,7 @@ class NCNetworkingE2EEUpload: NSObject {
             let metadata = metadata.detachedCopy()
 
             await self.database.deleteMetadataOcIdAsync(metadata.ocId)
-            utilityFileSystem.moveFileInBackground(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId), toPath: utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
+            utilityFileSystem.moveFileInBackground(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase), toPath: utilityFileSystem.getDirectoryProviderStorageOcId(ocId, userId: metadata.userId, urlBase: metadata.urlBase))
 
             metadata.date = (resultsSendFile.date as? NSDate) ?? NSDate()
             metadata.etag = resultsSendFile.etag ?? ""
@@ -224,7 +224,10 @@ class NCNetworkingE2EEUpload: NSObject {
 
         } else {
 
-            let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
+            let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
+                                                                                      fileNameView: metadata.fileName,
+                                                                                      userId: metadata.userId,
+                                                                                      urlBase: metadata.urlBase)
             return await withCheckedContinuation({ continuation in
                 NCNetworking.shared.uploadFile(metadata: metadata, fileNameLocalPath: fileNameLocalPath, withUploadComplete: false, customHeaders: ["e2e-token": e2eToken], controller: controller) {
                     Task { @MainActor in

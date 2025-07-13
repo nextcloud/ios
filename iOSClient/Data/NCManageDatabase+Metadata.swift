@@ -244,7 +244,7 @@ extension tableMetadata {
     }
 
     var hasPreviewBorder: Bool {
-        !isImage && !isAudioOrVideo && hasPreview && NCUtilityFileSystem().fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.previewExt1024)
+        !isImage && !isAudioOrVideo && hasPreview && NCUtilityFileSystem().fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.previewExt1024, userId: userId, urlBase: urlBase)
     }
 
     var isAvailableEditorView: Bool {
@@ -500,8 +500,8 @@ extension NCManageDatabase {
 
                     resultDirectory.serverUrl = serverUrlTo
                 } else {
-                    let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId) + "/" + fileNameView
-                    let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId) + "/" + fileNameNew
+                    let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId, userId: result.userId, urlBase: result.urlBase) + "/" + fileNameView
+                    let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId, userId: result.userId, urlBase: result.urlBase) + "/" + fileNameNew
 
                     self.utilityFileSystem.moveFile(atPath: atPath, toPath: toPath)
                 }
@@ -514,8 +514,8 @@ extension NCManageDatabase {
                     resultMOV.fileName = fileName + "." + ext
                     resultMOV.fileNameView = fileName + "." + ext
 
-                    let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(resultMOV.ocId) + "/" + fileNameView
-                    let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(resultMOV.ocId) + "/" + fileName + "." + ext
+                    let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(resultMOV.ocId, userId: resultMOV.userId, urlBase: resultMOV.urlBase) + "/" + fileNameView
+                    let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(resultMOV.ocId, userId: resultMOV.userId, urlBase: resultMOV.urlBase) + "/" + fileName + "." + ext
 
                     self.utilityFileSystem.moveFile(atPath: atPath, toPath: toPath)
                 }
@@ -551,8 +551,8 @@ extension NCManageDatabase {
                     dir.serverUrl = newDirUrl
                 }
             } else {
-                let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + oldFileNameView
-                let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + fileNameNew
+                let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase) + "/" + oldFileNameView
+                let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase) + "/" + fileNameNew
                 self.utilityFileSystem.moveFile(atPath: atPath, toPath: toPath)
             }
 
@@ -569,8 +569,12 @@ extension NCManageDatabase {
                 livePhotoMetadata.fileName = newMOVName
                 livePhotoMetadata.fileNameView = newMOVName
 
-                let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(livePhotoMetadata.ocId) + "/" + oldMOVNameView
-                let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(livePhotoMetadata.ocId) + "/" + newMOVName
+                let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(livePhotoMetadata.ocId,
+                                                                                    userId: livePhotoMetadata.userId,
+                                                                                    urlBase: livePhotoMetadata.urlBase) + "/" + oldMOVNameView
+                let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(livePhotoMetadata.ocId,
+                                                                                    userId: livePhotoMetadata.userId,
+                                                                                    urlBase: livePhotoMetadata.urlBase) + "/" + newMOVName
 
                 self.utilityFileSystem.moveFile(atPath: atPath, toPath: toPath)
             }
@@ -601,8 +605,8 @@ extension NCManageDatabase {
 
                     resultDirectory.serverUrl = serverUrlTo
                 } else {
-                    let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId) + "/" + fileNameView
-                    let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId) + "/" + fileName
+                    let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId, userId: result.userId, urlBase: result.urlBase) + "/" + fileNameView
+                    let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId, userId: result.userId, urlBase: result.urlBase) + "/" + fileName
 
                     self.utilityFileSystem.moveFile(atPath: atPath, toPath: toPath)
                 }
@@ -615,8 +619,8 @@ extension NCManageDatabase {
                     resultMOV.fileName = fileName + "." + ext
                     resultMOV.fileNameView = fileName + "." + ext
 
-                    let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(resultMOV.ocId) + "/" + fileNameView
-                    let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(resultMOV.ocId) + "/" + fileName + "." + ext
+                    let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(resultMOV.ocId, userId: resultMOV.userId, urlBase: resultMOV.urlBase) + "/" + fileNameView
+                    let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(resultMOV.ocId, userId: resultMOV.userId, urlBase: resultMOV.urlBase) + "/" + fileName + "." + ext
 
                     self.utilityFileSystem.moveFile(atPath: atPath, toPath: toPath)
                 }
@@ -655,8 +659,8 @@ extension NCManageDatabase {
                 let serverUrlTo = self.utilityFileSystem.stringAppendServerUrl(result.serverUrl, addFileName: fileName)
                 resultDirectory.serverUrl = serverUrlTo
             } else {
-                let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId) + "/" + fileNameView
-                let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId) + "/" + fileName
+                let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId, userId: result.userId, urlBase: result.urlBase) + "/" + fileNameView
+                let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId, userId: result.userId, urlBase: result.urlBase) + "/" + fileName
                 self.utilityFileSystem.moveFile(atPath: atPath, toPath: toPath)
             }
 
@@ -672,8 +676,8 @@ extension NCManageDatabase {
                 resultMOV.fileName = fullFileName
                 resultMOV.fileNameView = fullFileName
 
-                let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(resultMOV.ocId) + "/" + fileNameViewMOV
-                let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(resultMOV.ocId) + "/" + fullFileName
+                let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(resultMOV.ocId, userId: resultMOV.userId, urlBase: resultMOV.urlBase) + "/" + fileNameViewMOV
+                let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(resultMOV.ocId, userId: resultMOV.userId, urlBase: resultMOV.urlBase) + "/" + fullFileName
                 self.utilityFileSystem.moveFile(atPath: atPath, toPath: toPath)
             }
         }
@@ -929,6 +933,12 @@ extension NCManageDatabase {
     }
 
     // MARK: - Realm Read
+
+    func getAllTableMetadataAsync() async -> [tableMetadata] {
+        return await performRealmReadAsync { realm in
+            realm.objects(tableMetadata.self).map { tableMetadata(value: $0) }
+        } ?? []
+    }
 
     func getMetadata(predicate: NSPredicate) -> tableMetadata? {
         return performRealmRead { realm in

@@ -46,12 +46,26 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
             }
             var image: UIImage?
 
+<<<<<<< HEAD
+        if utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: session.userId, urlBase: session.urlBase) {
+            etagResource = tblMetadata.etagResource
+        }
+=======
             let resultsDownloadPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: tblMetadata.fileId, etag: tblMetadata.etag, account: tblMetadata.account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue))
+>>>>>>> origin/710-FPE
 
             if resultsDownloadPreview.error == .success, let data = resultsDownloadPreview.responseData?.data {
                 NCUtility().createImageFileFrom(data: data, metadata: tblMetadata)
+<<<<<<< HEAD
+                image = NCUtility().getImage(ocId: self.metadata.ocId,
+                                             etag: self.metadata.etag,
+                                             ext: NCGlobal.shared.getSizeExtension(column: self.media.numberOfColumns),
+                                             userId: self.session.userId,
+                                             urlBase: self.session.urlBase)
+=======
 
                 image = await NCUtility().getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: NCGlobal.shared.getSizeExtension(column: self.media.numberOfColumns))
+>>>>>>> origin/710-FPE
             }
 
             Task { @MainActor in

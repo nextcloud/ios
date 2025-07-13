@@ -223,7 +223,11 @@ class NCViewerMediaPage: UIViewController {
     }
 
     @objc private func openMenuMore(_ sender: Any?) {
-        let imageIcon = NCUtility().getImage(ocId: currentViewController.metadata.ocId, etag: currentViewController.metadata.etag, ext: NCGlobal.shared.previewExt512)
+        let imageIcon = NCUtility().getImage(ocId: currentViewController.metadata.ocId,
+                                             etag: currentViewController.metadata.etag,
+                                             ext: NCGlobal.shared.previewExt512,
+                                             userId: currentViewController.metadata.userId,
+                                             urlBase: currentViewController.metadata.urlBase)
 
         NCViewer().toggleMenu(controller: self.tabBarController as? NCMainTabBarController, metadata: currentViewController.metadata, webView: false, imageIcon: imageIcon, sender: sender)
     }
@@ -537,7 +541,10 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
             if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: currentViewController.metadata),
                utilityFileSystem.fileProviderStorageExists(metadataLive) {
                 AudioServicesPlaySystemSound(1519) // peek feedback
-                currentViewController.playLivePhoto(filePath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId, fileNameView: metadataLive.fileName))
+                currentViewController.playLivePhoto(filePath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId,
+                                                                                                                fileNameView: metadataLive.fileName,
+                                                                                                                userId: metadataLive.userId,
+                                                                                                                urlBase: metadataLive.urlBase))
             }
         } else if gestureRecognizer.state == .ended {
             currentViewController.stopLivePhoto()
@@ -610,7 +617,10 @@ extension NCViewerMediaPage: NCTransferDelegate {
                 self.progressView.progress = 0
 
                 if metadata.isAudioOrVideo, let ncplayer = self.currentViewController.ncplayer {
-                    let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                    let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
+                                                                                                          fileNameView: metadata.fileNameView,
+                                                                                                          userId: metadata.userId,
+                                                                                                          urlBase: metadata.urlBase))
                     if ncplayer.isPlaying() {
                         ncplayer.playerPause()
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {

@@ -265,12 +265,17 @@ extension NCNetworking {
         func deleteLocalFile(metadata: tableMetadata) async {
             if let metadataLive = await self.database.getMetadataLivePhotoAsync(metadata: metadata) {
                 await self.database.deleteLocalFileOcIdAsync(metadataLive.ocId)
-                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId))
+                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
             }
             await self.database.deleteVideoAsync(metadata.ocId)
             await self.database.deleteLocalFileOcIdAsync(metadata.ocId)
+<<<<<<< HEAD
+            utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
+#if !EXTENSION
+=======
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
 
+>>>>>>> origin/710-FPE
             NCImageCache.shared.removeImageCache(ocIdPlusEtag: metadata.ocId + metadata.etag)
         }
 
@@ -375,7 +380,7 @@ extension NCNetworking {
                     let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", metadata.account, metadata.serverUrl))
                     for metadata in metadatas {
                         database.deleteMetadataOcId(metadata.ocId)
-                        utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                        utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
                     }
                     return
                 }
@@ -517,7 +522,7 @@ extension NCNetworking {
                 completition(URL(string: metadata.url), true, .success)
             }
         } else if utilityFileSystem.fileProviderStorageExists(metadata) {
-            completition(URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)), false, .success)
+            completition(URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)), false, .success)
         } else {
             NextcloudKit.shared.getDirectDownload(fileId: metadata.fileId, account: metadata.account) { _, url, _, error in
                 if error == .success && url != nil {

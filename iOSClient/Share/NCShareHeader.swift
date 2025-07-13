@@ -37,7 +37,7 @@ class NCShareHeader: UIView {
 
     func setupUI(with metadata: tableMetadata) {
         let utilityFileSystem = NCUtilityFileSystem()
-        if let image = NCUtility().getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024) {
+        if let image = NCUtility().getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase) {
             fullWidthImageView.image = image
             fullWidthImageView.contentMode = .scaleAspectFill
             imageView.image = fullWidthImageView.image

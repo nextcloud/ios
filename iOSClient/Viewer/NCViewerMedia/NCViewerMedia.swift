@@ -179,6 +179,23 @@ class NCViewerMedia: UIViewController {
                                     }
                                 }
 
+<<<<<<< HEAD
+                            self.networking.download(metadata: metadata) {
+                            } requestHandler: { request in
+                                downloadRequest = request
+                            } progressHandler: { progress in
+                                hud.progress(progress.fractionCompleted)
+                            } completion: { _, error in
+                                DispatchQueue.main.async {
+                                    if error == .success {
+                                        hud.success()
+                                        if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
+                                            let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(self.metadata.ocId,
+                                                                                                                                  fileNameView: self.metadata.fileNameView,
+                                                                                                                                  userId: self.metadata.userId,
+                                                                                                                                  urlBase: self.metadata.urlBase))
+                                            ncplayer.openAVPlayer(url: url, autoplay: autoplay)
+=======
                                 self.networking.download(metadata: metadata) {
                                 } requestHandler: { request in
                                     downloadRequest = request
@@ -194,6 +211,7 @@ class NCViewerMedia: UIViewController {
                                             }
                                         } else {
                                             hud.error(text: error.errorDescription)
+>>>>>>> origin/710-FPE
                                         }
                                     }
                                 }
@@ -267,7 +285,7 @@ class NCViewerMedia: UIViewController {
     func loadImage() {
         guard let metadata = self.database.getMetadataFromOcId(metadata.ocId) else { return }
         self.metadata = metadata
-        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
         let fileNameExtension = (metadata.fileNameView as NSString).pathExtension.uppercased()
 
         if metadata.isLivePhoto,
@@ -291,7 +309,7 @@ class NCViewerMedia: UIViewController {
 
         if metadata.isVideo && !metadata.hasPreview {
             utility.createImageFileFrom(metadata: metadata)
-            let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024)
+            let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
             self.image = image
             self.imageVideoContainer.image = self.image
             return
@@ -302,7 +320,7 @@ class NCViewerMedia: UIViewController {
             return
         } else if metadata.isImage {
             if fileNameExtension == "GIF" {
-                if !NCUtility().existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024) {
+                if !NCUtility().existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase) {
                     utility.createImageFileFrom(metadata: metadata)
                 }
                 if let image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: fileNamePath)) {
@@ -317,7 +335,11 @@ class NCViewerMedia: UIViewController {
                 if let svgImage = SVGKImage(contentsOfFile: fileNamePath) {
                     svgImage.size = global.size1024
                     if let image = svgImage.uiImage {
-                        if !NCUtility().existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024), let data = image.jpegData(compressionQuality: 1.0) {
+                        if !NCUtility().existsImage(ocId: metadata.ocId,
+                                                    etag: metadata.etag,
+                                                    ext: global.previewExt1024,
+                                                    userId: metadata.userId,
+                                                    urlBase: metadata.urlBase), let data = image.jpegData(compressionQuality: 1.0) {
                             utility.createImageFileFrom(data: data, metadata: metadata)
                         }
                         self.image = image
@@ -335,7 +357,11 @@ class NCViewerMedia: UIViewController {
             }
         }
 
-        if let image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageImageOcId(metadata.ocId, etag: metadata.etag, ext: global.previewExt1024)) {
+        if let image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageImageOcId(metadata.ocId,
+                                                                                                      etag: metadata.etag,
+                                                                                                      ext: global.previewExt1024,
+                                                                                                      userId: metadata.userId,
+                                                                                                      urlBase: metadata.urlBase)) {
             self.image = image
             self.imageVideoContainer.image = self.image
         } else {

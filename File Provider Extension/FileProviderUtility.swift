@@ -10,6 +10,33 @@ class fileProviderUtility: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
     let database = NCManageDatabase.shared
 
+    /// Returns the expected documentStorageURL for a specific domain or constructs a fallback path manually.
+    /// This is used to ensure consistency even in single-domain fallback mode.
+    func getDocumentStorageURL(for domain: NSFileProviderDomain?, userId: String, urlBase: String) -> URL? {
+        guard let urlBase = NSURL(string: urlBase),
+              let host = urlBase.host else {
+            return nil
+        }
+        // Build the expected relative path used for the domain
+        let relativePath = NCUtilityFileSystem().getPathDomain(userId: userId, host: host)
+
+        // If a valid domain and manager exist, try to get its official documentStorageURL
+        if let domain,
+           let manager = NSFileProviderManager(for: domain) {
+            let managerURL = manager.documentStorageURL
+
+            // If the last path component matches, return the manager's path directly
+            if managerURL.lastPathComponent == relativePath {
+                return managerURL
+            }
+
+            // If it doesn't match (e.g. single-domain fallback), return manually constructed path
+            return NSFileProviderManager.default.documentStorageURL.appendingPathComponent(relativePath)
+        }
+
+        return NSFileProviderManager.default.documentStorageURL.appendingPathComponent(relativePath)
+    }
+
     func getAccountFromItemIdentifier(_ itemIdentifier: NSFileProviderItemIdentifier) -> String? {
         let ocId = itemIdentifier.rawValue
         return self.database.getMetadataFromOcId(ocId)?.account
@@ -30,7 +57,7 @@ class fileProviderUtility: NSObject {
     }
 
     func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier? {
-        let homeServerUrl = utilityFileSystem.getHomeServer(session: fileProviderData.shared.session)
+        let homeServerUrl = utilityFileSystem.getHomeServer(urlBase: metadata.urlBase, userId: metadata.userId)
         if let directory = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
             if directory.serverUrl == homeServerUrl {
                 return NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue)
@@ -46,7 +73,7 @@ class fileProviderUtility: NSObject {
     }
 
     func getParentItemIdentifierAsync(metadata: tableMetadata) async -> NSFileProviderItemIdentifier? {
-        let homeServerUrl = utilityFileSystem.getHomeServer(session: fileProviderData.shared.session)
+        let homeServerUrl = utilityFileSystem.getHomeServer(urlBase: metadata.urlBase, userId: metadata.userId)
         if let directory = await self.database.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
             if directory.serverUrl == homeServerUrl {
                 return NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue)
@@ -137,8 +164,8 @@ class fileProviderUtility: NSObject {
     }
 
     func fileProviderStorageExists(_ metadata: tableMetadata) -> Bool {
-        let pathA = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
-        let pathB = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+        let pathA = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
+        let pathB = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
 
         let sizeA = fileSize(at: pathA)
         let sizeB = fileSize(at: pathB)

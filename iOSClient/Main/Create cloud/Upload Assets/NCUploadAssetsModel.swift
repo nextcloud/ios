@@ -244,7 +244,10 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
                     metadataForUpload.fileNameView = fileNameNoExtension + ".jpg"
                     metadataForUpload.nativeFormat = false
                 }
-                let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadataForUpload.ocId, fileNameView: metadataForUpload.fileNameView)
+                let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadataForUpload.ocId,
+                                                                                     fileNameView: metadataForUpload.fileNameView,
+                                                                                     userId: metadataForUpload.userId,
+                                                                                     urlBase: metadataForUpload.urlBase)
                 do {
                     try data.write(to: URL(fileURLWithPath: fileNamePath))
                     metadataForUpload.isExtractFile = true

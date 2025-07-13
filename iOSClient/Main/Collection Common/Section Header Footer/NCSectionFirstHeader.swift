@@ -177,7 +177,7 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? NCRecommendationsCell else { fatalError() }
 
         if let metadata = NCManageDatabase.shared.getMetadataFromFileId(recommendedFiles.id) {
-            let imagePreview = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt512)
+            let imagePreview = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt512, userId: metadata.userId, urlBase: metadata.urlBase)
 
             if metadata.directory {
                 cell.image.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
@@ -189,6 +189,17 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
                 cell.image.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
                 cell.image.contentMode = .scaleAspectFit
                 if recommendedFiles.hasPreview {
+<<<<<<< HEAD
+                    NextcloudKit.shared.downloadPreview(fileId: metadata.fileId, account: metadata.account) { _, _, _, _, responseData, error in
+                        if error == .success, let data = responseData?.data {
+                            self.utility.createImageFileFrom(data: data, ocId: metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
+                            if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt512, userId: metadata.userId, urlBase: metadata.urlBase) {
+                                for case let cell as NCRecommendationsCell in self.collectionViewRecommendations.visibleCells {
+                                    if cell.id == recommendedFiles.id {
+                                        cell.image.contentMode = .scaleAspectFill
+                                        if metadata.classFile == NKTypeClassFile.document.rawValue {
+                                            cell.setImageCorner(withBorder: true)
+=======
                     Task {
                         let resultsPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: metadata.fileId, etag: metadata.etag, account: metadata.account)
                         if resultsPreview.error == .success, let data = resultsPreview.responseData?.data {
@@ -205,6 +216,7 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
                                                 cell.image.image = image
                                             }, completion: nil)
                                             break
+>>>>>>> origin/710-FPE
                                         }
                                     }
                                 }
@@ -251,7 +263,7 @@ extension NCSectionFirstHeader: UICollectionViewDelegate {
             return nil
         }
         let identifier = indexPath as NSCopying
-        let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal().previewExt1024)
+        let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal().previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
 
 #if EXTENSION
         return nil

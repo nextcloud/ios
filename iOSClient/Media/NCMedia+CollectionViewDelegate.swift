@@ -46,6 +46,15 @@ extension NCMedia: UICollectionViewDelegate {
 
                 NCViewer().view(viewController: self, metadata: metadata, ocIds: ocIds, image: image)
             }
+<<<<<<< HEAD
+            tabBarSelect.selectCount = fileSelect.count
+        } else if let metadata = database.getMetadataFromOcId(metadata.ocId) {
+            let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
+            let ocIds = dataSource.metadatas.map { $0.ocId }
+
+            NCViewer().view(viewController: self, metadata: metadata, ocIds: ocIds, image: image)
+=======
+>>>>>>> origin/710-FPE
         }
     }
 
@@ -56,7 +65,7 @@ extension NCMedia: UICollectionViewDelegate {
             return nil
         }
         let identifier = indexPath as NSCopying
-        let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024)
+        let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
 
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
             return NCViewerProviderContextMenu(metadata: metadata, image: image, sceneIdentifier: self.sceneIdentifier)

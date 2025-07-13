@@ -28,7 +28,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if !NCKeychain().appearanceAutomatic {
             self.window?.overrideUserInterfaceStyle = NCKeychain().appearanceInterfaceStyle
         }
+        let alreadyMigratedMultiDomains = UserDefaults.standard.bool(forKey: global.udMigrationMultiDomains)
+        let activeTblAccount = self.database.getActiveTableAccount()
 
+<<<<<<< HEAD
+        if let activeTblAccount, !alreadyMigratedMultiDomains {
+
+            window?.rootViewController = UIHostingController(rootView: MigrationMultiDomains(onCompleted: {
+                self.launchMainInterface(scene: scene, activeTblAccount: activeTblAccount)
+            }))
+            window?.makeKeyAndVisible()
+
+        } else if let activeTblAccount {
+
+            self.launchMainInterface(scene: scene, activeTblAccount: activeTblAccount)
+
+=======
         if let activeTblAccount = self.database.getActiveTableAccount() {
             nkLog(debug: "Account active \(activeTblAccount.account)")
             // set capabilities
@@ -65,8 +80,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 window?.rootViewController = controller
                 window?.makeKeyAndVisible()
             }
+>>>>>>> origin/710-FPE
         } else {
             NCKeychain().removeAll()
+            UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
+
             if let bundleID = Bundle.main.bundleIdentifier {
                 UserDefaults.standard.removePersistentDomain(forName: bundleID)
             }
@@ -82,6 +100,55 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     window?.makeKeyAndVisible()
                 }
             }
+        }
+    }
+
+    private func launchMainInterface(scene: UIScene, activeTblAccount: tableAccount) {
+        nkLog(debug: "Account active \(activeTblAccount.account)")
+
+        // Save migration state
+        UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
+
+        // Apply theming
+        NCBrandColor.shared.settingThemingColor(account: activeTblAccount.account)
+
+        // Set up networking session
+        Task {
+            await NCNetworkingProcess.shared.setCurrentAccount(activeTblAccount.account)
+        }
+
+        // Set up networking session for all configured accounts
+        for tblAccount in self.database.getAllTableAccount() {
+            // Append account to NextcloudKit shared session
+            NextcloudKit.shared.appendSession(account: tblAccount.account,
+                                              urlBase: tblAccount.urlBase,
+                                              user: tblAccount.user,
+                                              userId: tblAccount.userId,
+                                              password: NCKeychain().getPassword(account: tblAccount.account),
+                                              userAgent: userAgent,
+                                              httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
+                                              httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
+                                              httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
+                                              groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+
+            // Perform async setup: restore capabilities and ensure file provider domain
+            Task {
+                await self.database.applyCachedCapabilitiesAsync(account: tblAccount.account)
+                try? await FileProviderDomain().ensureDomainRegistered(userId: tblAccount.userId, urlBase: tblAccount.urlBase)
+            }
+
+            // Append session to internal session manager
+            NCSession.shared.appendSession(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user, userId: tblAccount.userId)
+        }
+
+        // Load Main.storyboard
+        if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+            SceneManager.shared.register(scene: scene, withRootViewController: controller)
+            // Set the ACCOUNT
+            controller.account = activeTblAccount.account
+            //
+            window?.rootViewController = controller
+            window?.makeKeyAndVisible()
         }
     }
 
@@ -140,15 +207,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneWillResignActive(_ scene: UIScene) {
         nkLog(debug: "Scene will resign active")
 
-        NSFileProviderManager.removeAllDomains { _ in
-            /*
-            if !NCKeychain().disableFilesApp,
-             self.database.getAllTableAccount().count > 1 {
-                FileProviderDomain().registerDomains()
-            }
-            */
-        }
-
         WidgetCenter.shared.reloadAllTimelines()
 
         let session = SceneManager.shared.getSession(scene: scene)
@@ -194,11 +252,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
 
         // Clear older files
+<<<<<<< HEAD
+        let days = NCKeychain().cleanUpDay
+        let utilityFileSystem = NCUtilityFileSystem()
+        utilityFileSystem.cleanUp(session: session, days: TimeInterval(days))
+=======
         Task {
             let days = NCKeychain().cleanUpDay
             let utilityFileSystem = NCUtilityFileSystem()
             await utilityFileSystem.cleanUpAsync(directory: utilityFileSystem.directoryProviderStorage, days: TimeInterval(days))
         }
+>>>>>>> origin/710-FPE
     }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {

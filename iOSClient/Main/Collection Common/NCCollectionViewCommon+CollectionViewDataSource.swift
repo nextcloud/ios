@@ -57,7 +57,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else {
             return
         }
-        let existsImagePreview = self.utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag)
+        let existsImagePreview = self.utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
         let ext = self.global.getSizeExtension(column: self.numberOfColumns)
 
         if metadata.hasPreview,
@@ -86,11 +86,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         } else {
 
             if isPinchGestureActive || ext == global.previewExt512 || ext == global.previewExt1024 {
-                cell.filePreviewImageView?.image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
+                cell.filePreviewImageView?.image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: metadata.userId, urlBase: metadata.urlBase)
             }
 
             DispatchQueue.global(qos: .userInteractive).async {
-                let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
+                let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: metadata.userId, urlBase: metadata.urlBase)
                 if let image {
                     self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: indexPath.row)
                     DispatchQueue.main.async {
@@ -140,7 +140,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         var isMounted = false
         var a11yValues: [String] = []
         let metadata = self.dataSource.getMetadata(indexPath: indexPath) ?? tableMetadata()
-        let existsImagePreview = utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag)
+        let existsImagePreview = utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
         let ext = global.getSizeExtension(column: self.numberOfColumns)
 
         defer {
@@ -152,7 +152,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         // E2EE create preview
         if self.isDirectoryEncrypted,
            metadata.isImageOrVideo,
-           !utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag) {
+           !utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase) {
             utility.createImageFileFrom(metadata: metadata)
         }
 
@@ -271,7 +271,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             if metadata.name == global.appName {
                 if let image = NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
                     cell.filePreviewImageView?.image = image
-                } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
+                } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext, userId: metadata.userId, urlBase: metadata.urlBase) {
                     cell.filePreviewImageView?.image = image
                 }
 
@@ -672,7 +672,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
                 // caching preview
                 //
-                if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) {
+                if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256, userId: metadata.userId, urlBase: metadata.urlBase) {
                     NCImageCache.shared.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: self.global.previewExt256, cost: cost)
                 }
             }

@@ -309,7 +309,7 @@ extension NCShareExtension {
 
         for fileName in filesName {
             let ocId = NSUUID().uuidString
-            let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
+            let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName, userId: session.userId, urlBase: session.urlBase)
             guard utilityFileSystem.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath) else {
                 continue
             }
@@ -387,7 +387,7 @@ extension NCShareExtension {
         } completion: {error in
             if error != .success {
                 self.database.deleteMetadataOcId(metadata.ocId)
-                self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
                 self.uploadErrors.append(metadata)
             }
             self.counterUploaded += 1
