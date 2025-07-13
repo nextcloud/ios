@@ -70,7 +70,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Save migration state
         UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
 
-        // Apply theming
+        // set capabilities
+        self.database.applyCachedCapabilitiesBlocking(account: activeTblAccount.account)
+        // apply theming
         NCBrandColor.shared.settingThemingColor(account: activeTblAccount.account)
 
         // Set up networking session
