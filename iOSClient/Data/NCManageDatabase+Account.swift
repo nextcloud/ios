@@ -231,6 +231,26 @@ extension NCManageDatabase {
         }
     }
 
+    func addAccountAsync(_ account: String, urlBase: String, user: String, userId: String, password: String) async {
+        await performRealmWriteAsync { realm in
+            if let existing = realm.object(ofType: tableAccount.self, forPrimaryKey: account) {
+                realm.delete(existing)
+            }
+
+            // Save password in Keychain
+            NCKeychain().setPassword(account: account, password: password)
+
+            let newAccount = tableAccount()
+
+            newAccount.account = account
+            newAccount.urlBase = urlBase
+            newAccount.user = user
+            newAccount.userId = userId
+
+            realm.add(newAccount, update: .all)
+        }
+    }
+
     func updateAccountProperty<T>(_ keyPath: ReferenceWritableKeyPath<tableAccount, T>, value: T, account: String) {
         guard let activeAccount = getTableAccount(account: account) else { return }
         activeAccount[keyPath: keyPath] = value

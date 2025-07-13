@@ -11,6 +11,58 @@ class NCAccount: NSObject {
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let global = NCGlobal.shared
 
+    @MainActor
+    func createAccountAsync(viewController: UIViewController,
+                            urlBase: String,
+                            user: String,
+                            password: String,
+                            controller: NCMainTabBarController?) async {
+
+        nkLog(debug: "Creating account...")
+
+        var urlBase = urlBase
+        if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
+        let account: String = "\(user) \(urlBase)"
+
+        // Remove Account Server in Error
+        NCNetworking.shared.removeServerErrorAccount(account)
+
+        NextcloudKit.shared.appendSession(account: account,
+                                          urlBase: urlBase,
+                                          user: user,
+                                          userId: user,
+                                          password: password,
+                                          userAgent: userAgent,
+                                          httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
+                                          httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
+                                          httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
+                                          groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+
+        let resultsGetUserProfile = await NextcloudKit.shared.getUserProfileAsync(account: account)
+
+        guard resultsGetUserProfile.error == .success, let userProfile = resultsGetUserProfile.userProfile else {
+            NextcloudKit.shared.nkCommonInstance.nksessions.remove(account: account)
+            let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: resultsGetUserProfile.error.errorDescription, preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+            viewController.present(alertController, animated: true)
+
+            return
+        }
+
+        // Login log debug
+        nkLog(debug: "Got user profile, creating new account \(account) with user \(user) and userId \(userProfile.userId)")
+
+        NextcloudKit.shared.updateSession(account: account, userId: userProfile.userId)
+        NCSession.shared.appendSession(account: account, urlBase: urlBase, user: user, userId: userProfile.userId)
+        await self.database.addAccountAsync(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
+
+        // FPE Domains
+        try? await FileProviderDomain().ensureDomainRegistered(userId: userProfile.userId, urlBase: urlBase)
+
+
+
+    }
+
     func createAccount(viewController: UIViewController,
                        urlBase: String,
                        user: String,
@@ -129,6 +181,7 @@ class NCAccount: NSObject {
         completion()
     }
 
+    /*
     func changeAccountAsync(_ account: String,
                             userProfile: NKUserProfile?,
                             controller: NCMainTabBarController?) async {
@@ -138,6 +191,7 @@ class NCAccount: NSObject {
             }
         }
     }
+    */
 
     func deleteAccount(_ account: String, wipe: Bool = true, completion: () -> Void = {}) {
         UIApplication.shared.allSceneSessionDestructionExceptFirst()
