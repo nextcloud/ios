@@ -41,20 +41,11 @@ extension NCMedia: UICollectionViewDelegate {
                 }
                 tabBarSelect.selectCount = fileSelect.count
             } else if let metadata = await self.database.getMetadataFromOcIdAsync(metadata.ocId) {
-                let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024)
+                let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
                 let ocIds = dataSource.metadatas.map { $0.ocId }
 
                 NCViewer().view(viewController: self, metadata: metadata, ocIds: ocIds, image: image)
             }
-<<<<<<< HEAD
-            tabBarSelect.selectCount = fileSelect.count
-        } else if let metadata = database.getMetadataFromOcId(metadata.ocId) {
-            let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
-            let ocIds = dataSource.metadatas.map { $0.ocId }
-
-            NCViewer().view(viewController: self, metadata: metadata, ocIds: ocIds, image: image)
-=======
->>>>>>> origin/710-FPE
         }
     }
 

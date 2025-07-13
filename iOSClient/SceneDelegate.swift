@@ -31,7 +31,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let alreadyMigratedMultiDomains = UserDefaults.standard.bool(forKey: global.udMigrationMultiDomains)
         let activeTblAccount = self.database.getActiveTableAccount()
 
-<<<<<<< HEAD
         if let activeTblAccount, !alreadyMigratedMultiDomains {
 
             window?.rootViewController = UIHostingController(rootView: MigrationMultiDomains(onCompleted: {
@@ -43,44 +42,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
             self.launchMainInterface(scene: scene, activeTblAccount: activeTblAccount)
 
-=======
-        if let activeTblAccount = self.database.getActiveTableAccount() {
-            nkLog(debug: "Account active \(activeTblAccount.account)")
-            // set capabilities
-            self.database.applyCachedCapabilitiesBlocking(account: activeTblAccount.account)
-            // set theming color
-            NCBrandColor.shared.settingThemingColor(account: activeTblAccount.account)
-
-            Task {
-                await NCNetworkingProcess.shared.setCurrentAccount(activeTblAccount.account)
-            }
-            for tableAccount in self.database.getAllTableAccount() {
-                NextcloudKit.shared.appendSession(account: tableAccount.account,
-                                                  urlBase: tableAccount.urlBase,
-                                                  user: tableAccount.user,
-                                                  userId: tableAccount.userId,
-                                                  password: NCKeychain().getPassword(account: tableAccount.account),
-                                                  userAgent: userAgent,
-                                                  httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
-                                                  httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
-                                                  httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
-                                                  groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-                Task {
-                    await self.database.applyCachedCapabilitiesAsync(account: tableAccount.account)
-                }
-                NCSession.shared.appendSession(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId)
-            }
-
-            /// Main.storyboard
-            if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
-                SceneManager.shared.register(scene: scene, withRootViewController: controller)
-                /// Set the ACCOUNT
-                controller.account = activeTblAccount.account
-                ///
-                window?.rootViewController = controller
-                window?.makeKeyAndVisible()
-            }
->>>>>>> origin/710-FPE
         } else {
             NCKeychain().removeAll()
             UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
@@ -232,7 +193,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
 
-        nkLog(info: "Auto upload activated: \(tableAccount.autoUploadStart)")
+        nkLog(info: "Auto upload in background: \(tableAccount.autoUploadStart)")
         nkLog(info: "Update in background: \(UIApplication.shared.backgroundRefreshStatus == .available)")
 
         if CLLocationManager().authorizationStatus == .authorizedAlways && NCKeychain().location && tableAccount.autoUploadStart {
@@ -245,24 +206,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             nkLog(error: "Create Apps share accounts \(error.localizedDescription)")
         }
 
-        NCNetworking.shared.cancelAllTaskForGoInBackground()
+        NCNetworking.shared.cancelAllQueue()
 
         if NCKeychain().presentPasscode {
             showPrivacyProtectionWindow()
         }
 
         // Clear older files
-<<<<<<< HEAD
-        let days = NCKeychain().cleanUpDay
-        let utilityFileSystem = NCUtilityFileSystem()
-        utilityFileSystem.cleanUp(session: session, days: TimeInterval(days))
-=======
         Task {
             let days = NCKeychain().cleanUpDay
             let utilityFileSystem = NCUtilityFileSystem()
-            await utilityFileSystem.cleanUpAsync(directory: utilityFileSystem.directoryProviderStorage, days: TimeInterval(days))
+           // await utilityFileSystem.cleanUpAsync(directory: utilityFileSystem.directoryProviderStorage, days: TimeInterval(days))
         }
->>>>>>> origin/710-FPE
     }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {

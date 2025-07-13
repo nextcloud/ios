@@ -179,23 +179,6 @@ class NCViewerMedia: UIViewController {
                                     }
                                 }
 
-<<<<<<< HEAD
-                            self.networking.download(metadata: metadata) {
-                            } requestHandler: { request in
-                                downloadRequest = request
-                            } progressHandler: { progress in
-                                hud.progress(progress.fractionCompleted)
-                            } completion: { _, error in
-                                DispatchQueue.main.async {
-                                    if error == .success {
-                                        hud.success()
-                                        if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
-                                            let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(self.metadata.ocId,
-                                                                                                                                  fileNameView: self.metadata.fileNameView,
-                                                                                                                                  userId: self.metadata.userId,
-                                                                                                                                  urlBase: self.metadata.urlBase))
-                                            ncplayer.openAVPlayer(url: url, autoplay: autoplay)
-=======
                                 self.networking.download(metadata: metadata) {
                                 } requestHandler: { request in
                                     downloadRequest = request
@@ -206,12 +189,11 @@ class NCViewerMedia: UIViewController {
                                         if error == .success {
                                             hud.success()
                                             if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
-                                                let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(self.metadata.ocId, fileNameView: self.metadata.fileNameView))
+                                                let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(self.metadata.ocId, fileNameView: self.metadata.fileNameView, userId: self.metadata.userId, urlBase: self.metadata.urlBase))
                                                 ncplayer.openAVPlayer(url: url, autoplay: autoplay)
                                             }
                                         } else {
                                             hud.error(text: error.errorDescription)
->>>>>>> origin/710-FPE
                                         }
                                     }
                                 }

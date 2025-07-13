@@ -38,16 +38,6 @@ extension NCNetworking {
 
             for file in files {
                 if file.directory {
-<<<<<<< HEAD
-                    metadatasDirectory.append(self.database.convertFileToMetadata(file, isDirectoryE2EE: false))
-                } else if await isFileDifferent(ocId: file.ocId,
-                                                fileName: file.fileName,
-                                                etag: file.etag, metadatasInDownload: metadatasInDownload,
-                                                userId: userId,
-                                                urlBase: urlBase) {
-                    metadatasDownload.append(self.database.convertFileToMetadata(file, isDirectoryE2EE: false))
-                    nkLog(tag: self.global.logTagSync, emoji: .start, message: "File download: \(file.serverUrl)/\(file.fileName)")
-=======
                     let metadata = self.database.convertFileToMetadata(file, isDirectoryE2EE: false)
                     await self.database.addMetadataAsync(metadata)
                     await self.database.addDirectoryAsync(e2eEncrypted: metadata.e2eEncrypted,
@@ -60,7 +50,7 @@ extension NCNetworking {
                                                           serverUrl: metadata.serverUrlFileName,
                                                           account: metadata.account)
                 } else {
-                    if await isFileDifferent(ocId: file.ocId, fileName: file.fileName, etag: file.etag, metadatasInDownload: metadatasInDownload) {
+                    if await isFileDifferent(ocId: file.ocId, fileName: file.fileName, etag: file.etag, metadatasInDownload: metadatasInDownload, userId: userId, urlBase: urlBase) {
                         let metadata = self.database.convertFileToMetadata(file, isDirectoryE2EE: false)
                         metadata.session = self.sessionDownloadBackground
                         metadata.sessionSelector = NCGlobal.shared.selectorSynchronizationOffline
@@ -73,7 +63,6 @@ extension NCNetworking {
 
                         nkLog(tag: self.global.logTagSync, emoji: .start, message: "File download: \(file.serverUrl)/\(file.fileName)")
                     }
->>>>>>> origin/710-FPE
                 }
             }
 
@@ -96,15 +85,10 @@ extension NCNetworking {
             return false
         }
 
-<<<<<<< HEAD
-        let localFile = await self.database.getTableLocalFileAsync(predicate: NSPredicate(format: "ocId == %@", ocId))
-        let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName, userId: userId, urlBase: urlBase)
-=======
         guard let localFile = await self.database.getTableLocalFileAsync(predicate: NSPredicate(format: "ocId == %@", ocId)) else {
             return true
         }
-        let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
->>>>>>> origin/710-FPE
+        let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName, userId: userId, urlBase: urlBase)
         let size = await self.utilityFileSystem.fileSizeAsync(atPath: fileNamePath)
         let isDifferent = (localFile.etag != etag) || size == 0
 

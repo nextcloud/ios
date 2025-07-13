@@ -398,7 +398,7 @@ final class NCManageDatabase: @unchecked Sendable {
         self.clearTable(tableE2eCounter.self, account: account)
     }
 
-    func cleanTablesOcIds(account: String) async {
+    func cleanTablesOcIds(account: String, userId: String, urlBase: String) async {
         let metadatas = await getMetadatasAsync(predicate: NSPredicate(format: "account == %@", account))
         let directories = await getDirectoriesAsync(predicate: NSPredicate(format: "account == %@", account))
         let locals = await getTableLocalFilesAsync(predicate: NSPredicate(format: "account == %@", account))
@@ -414,7 +414,7 @@ final class NCManageDatabase: @unchecked Sendable {
             for ocId in localMissingOcIds {
                 group.addTask {
                     await self.deleteLocalFileOcIdAsync(ocId)
-                    self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
+                    self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, userId: userId, urlBase: urlBase))
                 }
             }
         }

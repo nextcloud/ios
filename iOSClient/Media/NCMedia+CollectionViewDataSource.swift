@@ -88,16 +88,9 @@ extension NCMedia: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return }
-
-<<<<<<< HEAD
         if !utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: self.session.userId, urlBase: self.session.urlBase),
            NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
             NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, media: self))
-=======
-        if !utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag),
-           networking.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
-            networking.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, media: self))
->>>>>>> origin/710-FPE
         }
     }
 

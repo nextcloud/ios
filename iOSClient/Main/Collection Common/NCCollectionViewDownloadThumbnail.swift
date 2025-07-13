@@ -41,17 +41,10 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation, @unchecked Sendabl
     }
 
     override func start() {
-<<<<<<< HEAD
-        guard !isCancelled else { return self.finish() }
-        var etagResource: String?
-
-        if utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase) {
-            etagResource = metadata.etagResource
-=======
         guard !isCancelled else {
             return self.finish()
->>>>>>> origin/710-FPE
         }
+
         Task {
             let resultsPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: metadata.fileId, etag: metadata.etag, account: metadata.account)
             if resultsPreview.error == .success,

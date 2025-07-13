@@ -39,54 +39,40 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
     }
 
     override func start() {
-        Task {
-            guard !isCancelled,
-                  let tblMetadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(self.metadata.ocId) else {
-                return self.finish()
-            }
-            var image: UIImage?
+       Task {
+           guard !isCancelled,
+                 let tblMetadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(self.metadata.ocId) else {
+               return self.finish()
+           }
+           var image: UIImage?
 
-<<<<<<< HEAD
-        if utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: session.userId, urlBase: session.urlBase) {
-            etagResource = tblMetadata.etagResource
-        }
-=======
-            let resultsDownloadPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: tblMetadata.fileId, etag: tblMetadata.etag, account: tblMetadata.account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue))
->>>>>>> origin/710-FPE
+           let resultsDownloadPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: tblMetadata.fileId, etag: tblMetadata.etag, account: tblMetadata.account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue))
 
-            if resultsDownloadPreview.error == .success, let data = resultsDownloadPreview.responseData?.data {
-                NCUtility().createImageFileFrom(data: data, metadata: tblMetadata)
-<<<<<<< HEAD
-                image = NCUtility().getImage(ocId: self.metadata.ocId,
-                                             etag: self.metadata.etag,
-                                             ext: NCGlobal.shared.getSizeExtension(column: self.media.numberOfColumns),
-                                             userId: self.session.userId,
-                                             urlBase: self.session.urlBase)
-=======
+           if resultsDownloadPreview.error == .success, let data = resultsDownloadPreview.responseData?.data {
+               NCUtility().createImageFileFrom(data: data, metadata: tblMetadata)
 
-                image = await NCUtility().getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: NCGlobal.shared.getSizeExtension(column: self.media.numberOfColumns))
->>>>>>> origin/710-FPE
-            }
+               image = await NCUtility().getImage(ocId: tblMetadata.ocId, etag: tblMetadata.etag, ext: NCGlobal.shared.getSizeExtension(column: self.media.numberOfColumns), userId: tblMetadata.userId, urlBase: tblMetadata.urlBase)
+           }
 
-            Task { @MainActor in
-                for case let cell as NCMediaCell in self.media.collectionView.visibleCells {
-                    if cell.ocId == self.metadata.ocId {
-                        if image == nil {
-                            cell.imageItem.contentMode = .scaleAspectFit
-                            image = NCUtility().loadImage(named: tblMetadata.iconName, useTypeIconFile: true, account: self.session.account)
-                        } else {
-                            cell.imageItem.contentMode = .scaleAspectFill
-                        }
+           Task { @MainActor in
+               for case let cell as NCMediaCell in self.media.collectionView.visibleCells {
+                   if cell.ocId == tblMetadata.ocId {
+                       if image == nil {
+                           cell.imageItem.contentMode = .scaleAspectFit
+                           image = NCUtility().loadImage(named: tblMetadata.iconName, useTypeIconFile: true, account: tblMetadata.account)
+                       } else {
+                           cell.imageItem.contentMode = .scaleAspectFill
+                       }
 
-                        UIView.transition(with: cell.imageItem, duration: 0.75, options: .transitionCrossDissolve, animations: { cell.imageItem.image = image
-                        }, completion: nil)
+                       UIView.transition(with: cell.imageItem, duration: 0.75, options: .transitionCrossDissolve, animations: { cell.imageItem.image = image
+                       }, completion: nil)
 
-                        break
-                    }
-                }
-            }
+                       break
+                   }
+               }
+           }
 
-            self.finish()
-        }
-    }
+           self.finish()
+       }
+   }
 }
