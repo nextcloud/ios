@@ -709,18 +709,22 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         return formatter.string(fromByteCount: bytes)
     }
 
-    func cleanUpAsync(directory: String, days: TimeInterval) async {
+    func cleanUpAsync() async {
+        let days = TimeInterval(NCKeychain().cleanUpDay)
         if days == 0 {
             return
         }
+        let database = NCManageDatabase.shared
         let minimumDate = Date().addingTimeInterval(-days * 24 * 60 * 60)
-        let url = URL(fileURLWithPath: directory)
+        let url = URL(fileURLWithPath: getDirectoryProviderStorage())
         var offlineDir: [String] = []
         let manager = FileManager.default
 
-        let directories = await NCManageDatabase.shared.getTablesDirectoryAsync(predicate: NSPredicate(format: "offline == true"), sorted: "serverUrl", ascending: true)
-        for directory in directories {
-            offlineDir.append(self.getDirectoryProviderStorageOcId(directory.ocId, userId: "", urlBase: ""))
+        let tblDirectories = await database.getTablesDirectoryAsync(predicate: NSPredicate(format: "offline == true"), sorted: "serverUrl", ascending: true)
+        for tblDirectory in tblDirectories {
+            if let tblMetadata = await database.getMetadataFromOcIdAsync(tblDirectory.ocId) {
+                offlineDir.append(self.getDirectoryProviderStorageOcId(tblMetadata.ocId, userId: tblMetadata.userId, urlBase: tblMetadata.urlBase))
+            }
         }
 
         let tblLocalFiles = await NCManageDatabase.shared.getTableLocalFilesAsync(predicate: NSPredicate(format: "offline == false"), sorted: "lastOpeningDate", ascending: true)

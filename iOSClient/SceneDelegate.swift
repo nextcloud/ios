@@ -189,14 +189,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             await database.backupTableAccountToFileAsync()
         }
         let session = SceneManager.shared.getSession(scene: scene)
-        guard let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
+        guard let tblAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
             return
         }
 
-        nkLog(info: "Auto upload in background: \(tableAccount.autoUploadStart)")
+        nkLog(info: "Auto upload in background: \(tblAccount.autoUploadStart)")
         nkLog(info: "Update in background: \(UIApplication.shared.backgroundRefreshStatus == .available)")
 
-        if CLLocationManager().authorizationStatus == .authorizedAlways && NCKeychain().location && tableAccount.autoUploadStart {
+        if CLLocationManager().authorizationStatus == .authorizedAlways && NCKeychain().location && tblAccount.autoUploadStart {
             NCBackgroundLocationUploadManager.shared.start()
         } else {
             NCBackgroundLocationUploadManager.shared.stop()
@@ -214,9 +214,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         // Clear older files
         Task {
-            let days = NCKeychain().cleanUpDay
-            let utilityFileSystem = NCUtilityFileSystem()
-           // await utilityFileSystem.cleanUpAsync(directory: utilityFileSystem.directoryProviderStorage, days: TimeInterval(days))
+            await self.database.cleanTablesOcIds(account: tblAccount.account, userId: tblAccount.userId, urlBase: tblAccount.urlBase)
+            await NCUtilityFileSystem().cleanUpAsync()
         }
     }
 

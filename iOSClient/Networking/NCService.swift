@@ -176,7 +176,7 @@ class NCService: NSObject {
 
         nkLog(tag: self.global.logTagSync, emoji: .start, message: "Synchronize favorite for account: \(account)")
 
-        await self.database.cleanTablesOcIds(account: account, userId: "", urlBase: "")
+        await self.database.cleanTablesOcIds(account: tblAccount.account, userId: tblAccount.userId, urlBase: tblAccount.urlBase)
 
         let resultsFavorite = await NextcloudKit.shared.listingFavoritesAsync(showHiddenFiles: showHiddenFiles, account: account)
         if resultsFavorite.error == .success, let files = resultsFavorite.files {
