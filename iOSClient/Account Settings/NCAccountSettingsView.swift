@@ -205,7 +205,7 @@ struct NCAccountSettingsView: View {
                         })
                         .sheet(isPresented: $showServerCertificate) {
                             if let url = URL(string: model.tblAccount?.urlBase), let host = url.host {
-                                certificateDetailsView(host: host, title: NSLocalizedString("_certificate_view_", comment: ""))
+                                certificateDetailsView(privateKeyString: "", host: host, title: NSLocalizedString("_certificate_view_", comment: ""))
                             }
                         }
                         ///
@@ -229,8 +229,20 @@ struct NCAccountSettingsView: View {
                             .font(.subheadline)
                         })
                         .sheet(isPresented: $showPushCertificate) {
-                            if let url = URL(string: NCBrandOptions.shared.pushNotificationServerProxy), let host = url.host {
-                                certificateDetailsView(host: host, title: NSLocalizedString("_certificate_pn_view_", comment: ""))
+                            Group {
+                                if let url = URL(string: NCBrandOptions.shared.pushNotificationServerProxy),
+                                    let host = url.host {
+                                    let privateKeyString: String = {
+                                        if let account = model.tblAccount?.account,
+                                           let privateKey = NCKeychain().getPushNotificationPrivateKey(account: account) {
+                                                let prefixData = Data(privateKey.prefix(8))
+                                                return prefixData.base64EncodedString()
+                                            } else {
+                                                return ""
+                                            }
+                                        }()
+                                    certificateDetailsView(privateKeyString: privateKeyString, host: host, title: NSLocalizedString("_certificate_pn_view_", comment: ""))
+                                }
                             }
                         }
                     }
