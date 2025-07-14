@@ -59,7 +59,9 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
         self.controller = controller
         self.delegate = delegate
         if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
-            database.previewCreateDB()
+            Task {
+                await self.database.previewCreateDB()
+            }
         }
         onViewAppear()
         observeTableAccount()
@@ -125,7 +127,9 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// Func to set alias
     func setAlias(_ value: String) {
         guard let tblAccount else { return }
-        database.setAccountAlias(tblAccount.account, alias: alias)
+        Task {
+            await database.setAccountAliasAsync(tblAccount.account, alias: alias)
+        }
     }
 
     /// Function to update the user data
@@ -181,8 +185,9 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
 
     /// Function to delete the current account
     func deleteAccount() {
-        if let tblAccount {
-            NCAccount().deleteAccount(tblAccount.account) {
+        Task {
+            if let tblAccount {
+                await NCAccount().deleteAccount(tblAccount.account)
                 let account = database.getAllTableAccount().first?.account
                 setAccount(account: account)
                 dismissView = true

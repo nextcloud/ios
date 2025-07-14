@@ -422,7 +422,9 @@ class NCFiles: NCCollectionViewCommon {
 
             UIApplication.shared.firstWindow?.rootViewController = navigationController
         } else if let account = tableAccount?.account, account != currentAccount {
-            NCAccount().changeAccount(account, userProfile: nil, controller: controller) { }
+            Task {
+                await NCAccount().changeAccount(account, userProfile: nil, controller: controller)
+            }
         } else if self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session) {
             self.titleCurrentFolder = getNavigationTitle()
             navigationItem.title = self.titleCurrentFolder

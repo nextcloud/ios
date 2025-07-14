@@ -932,6 +932,14 @@ extension NCManageDatabase {
         }
     }
 
+    func clearMetadatasUploadAsync(account: String) async {
+        await performRealmWriteAsync { realm in
+            let results = realm.objects(tableMetadata.self)
+                .filter("account == %@ AND (status == %d OR status == %d)", account, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusUploadError)
+            realm.delete(results)
+        }
+    }
+
     // MARK: - Realm Read
 
     func getAllTableMetadataAsync() async -> [tableMetadata] {

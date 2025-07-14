@@ -350,6 +350,19 @@ final class NCManageDatabase: @unchecked Sendable {
         }
     }
 
+    func clearTableAsync(_ table: Object.Type, account: String? = nil) async {
+        await performRealmWriteAsync { realm in
+            var results: Results<Object>
+            if let account = account {
+                results = realm.objects(table).filter("account == %@", account)
+            } else {
+                results = realm.objects(table)
+            }
+
+            realm.delete(results)
+        }
+    }
+
     func clearDatabase(account: String? = nil, removeAccount: Bool = false, removeAutoUpload: Bool = false) {
         if removeAccount {
             self.clearTable(tableAccount.self, account: account)
@@ -527,22 +540,22 @@ final class NCManageDatabase: @unchecked Sendable {
     // MARK: -
     // MARK: SWIFTUI PREVIEW
 
-    func previewCreateDB() {
+    func previewCreateDB() async {
         /// Account
         let account = "marinofaggiana https://cloudtest.nextcloud.com"
         let account2 = "mariorossi https://cloudtest.nextcloud.com"
-        addAccount(account, urlBase: "https://cloudtest.nextcloud.com", user: "marinofaggiana", userId: "marinofaggiana", password: "password")
-        addAccount(account2, urlBase: "https://cloudtest.nextcloud.com", user: "mariorossi", userId: "mariorossi", password: "password")
+        await addAccountAsync(account, urlBase: "https://cloudtest.nextcloud.com", user: "marinofaggiana", userId: "marinofaggiana", password: "password")
+        await addAccountAsync(account2, urlBase: "https://cloudtest.nextcloud.com", user: "mariorossi", userId: "mariorossi", password: "password")
         let userProfile = NKUserProfile()
         userProfile.displayName = "Marino Faggiana"
         userProfile.address = "Hirschstrasse 26, 70192 Stuttgart, Germany"
         userProfile.phone = "+49 (711) 252 428 - 90"
         userProfile.email = "cloudtest@nextcloud.com"
-        setAccountUserProfile(account: account, userProfile: userProfile)
+        await setAccountUserProfileAsync(account: account, userProfile: userProfile)
         let userProfile2 = NKUserProfile()
         userProfile2.displayName = "Mario Rossi"
         userProfile2.email = "cloudtest@nextcloud.com"
-        setAccountUserProfile(account: account2, userProfile: userProfile2)
+        await setAccountUserProfileAsync(account: account2, userProfile: userProfile2)
     }
 }
 

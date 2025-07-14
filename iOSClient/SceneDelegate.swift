@@ -191,35 +191,35 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
-        Task {
+        Task { @MainActor in
+            let session = SceneManager.shared.getSession(scene: scene)
+
             await database.backupTableAccountToFileAsync()
-        }
-        let session = SceneManager.shared.getSession(scene: scene)
-        guard let tblAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
-            return
-        }
 
-        nkLog(info: "Auto upload in background: \(tblAccount.autoUploadStart)")
-        nkLog(info: "Update in background: \(UIApplication.shared.backgroundRefreshStatus == .available)")
+            guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", session.account)) else {
+                return
+            }
 
-        if CLLocationManager().authorizationStatus == .authorizedAlways && NCKeychain().location && tblAccount.autoUploadStart {
-            NCBackgroundLocationUploadManager.shared.start()
-        } else {
-            NCBackgroundLocationUploadManager.shared.stop()
-        }
+            nkLog(info: "Auto upload in background: \(tblAccount.autoUploadStart)")
+            nkLog(info: "Update in background: \(UIApplication.shared.backgroundRefreshStatus == .available)")
 
-        if let error = NCAccount().updateAppsShareAccounts() {
-            nkLog(error: "Create Apps share accounts \(error.localizedDescription)")
-        }
+            if CLLocationManager().authorizationStatus == .authorizedAlways && NCKeychain().location && tblAccount.autoUploadStart {
+                NCBackgroundLocationUploadManager.shared.start()
+            } else {
+                NCBackgroundLocationUploadManager.shared.stop()
+            }
 
-        NCNetworking.shared.cancelAllQueue()
+            if let error = await NCAccount().updateAppsShareAccounts() {
+                nkLog(error: "Create Apps share accounts \(error.localizedDescription)")
+            }
 
-        if NCKeychain().presentPasscode {
-            showPrivacyProtectionWindow()
-        }
+            NCNetworking.shared.cancelAllQueue()
 
-        // Clear older files
-        Task {
+            if NCKeychain().presentPasscode {
+                showPrivacyProtectionWindow()
+            }
+
+            // Clear older files
             await self.database.cleanTablesOcIds(account: tblAccount.account, userId: tblAccount.userId, urlBase: tblAccount.urlBase)
             await NCUtilityFileSystem().cleanUpAsync()
         }
@@ -237,7 +237,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             for tblAccount in tblAccounts {
                 let urlBase = URL(string: tblAccount.urlBase)
                 if url.contains(urlBase?.host ?? "") && userId == tblAccount.userId {
-                    await NCAccount().changeAccountAsync(tblAccount.account, userProfile: nil, controller: controller)
+                    await NCAccount().changeAccount(tblAccount.account, userProfile: nil, controller: controller)
                     // wait switch account
                     try? await Task.sleep(nanoseconds: 1_000_000_000)
                     return tblAccount
@@ -430,7 +430,9 @@ extension SceneDelegate: NCAccountRequestDelegate {
     func accountRequestAddAccount() { }
 
     func accountRequestChangeAccount(account: String, controller: UIViewController?) {
-        NCAccount().changeAccount(account, userProfile: nil, controller: controller as? NCMainTabBarController) { }
+        Task {
+            await NCAccount().changeAccount(account, userProfile: nil, controller: controller as? NCMainTabBarController)
+        }
     }
 }
 

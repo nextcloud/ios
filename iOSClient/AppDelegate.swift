@@ -34,7 +34,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         if isUiTestingEnabled {
-            NCAccount().deleteAllAccounts()
+            Task {
+                await NCAccount().deleteAllAccounts()
+            }
         }
         let utilityFileSystem = NCUtilityFileSystem()
         let utility = NCUtility()
@@ -450,7 +452,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             openNotification(controller: controller)
         } else if let tableAccount = NCManageDatabase.shared.getAllTableAccount().first(where: { $0.account == account }),
                   let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController {
-            NCAccount().changeAccount(tableAccount.account, userProfile: nil, controller: controller) {
+            Task { @MainActor in
+                await NCAccount().changeAccount(tableAccount.account, userProfile: nil, controller: controller)
                 openNotification(controller: controller)
             }
         } else {
