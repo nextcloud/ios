@@ -185,7 +185,7 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
 
     /// Function to delete the current account
     func deleteAccount() {
-        Task {
+        Task { @MainActor in
             if let tblAccount {
                 await NCAccount().deleteAccount(tblAccount.account)
                 let account = database.getAllTableAccount().first?.account

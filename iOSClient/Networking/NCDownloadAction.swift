@@ -344,7 +344,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
     // MARK: - Save as scan
 
     func saveAsScan(metadata: tableMetadata, controller: NCMainTabBarController?) {
-        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView,userId: metadata.userId, urlBase: metadata.urlBase)
+        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
         let fileNameDestination = utilityFileSystem.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, notUseMask: true)
         let fileNamePathDestination = utilityFileSystem.directoryScan + "/" + fileNameDestination
 
