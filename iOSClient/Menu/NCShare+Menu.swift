@@ -97,13 +97,13 @@ extension NCShare {
 
     func toggleQuickPermissionsMenu(isDirectory: Bool, share: tableShare, sender: Any?) {
         var actions = [NCMenuAction]()
-        let permissions = NCPermissions()
+        let permissions = NCSharePermissions()
 
         actions.append(contentsOf:
             [NCMenuAction(
                 title: NSLocalizedString("_share_read_only_", comment: ""),
                 icon: utility.loadImage(named: "eye", colors: [NCBrandColor.shared.iconImageColor]),
-                selected: share.permissions == (permissions.permissionReadShare + permissions.permissionShareShare) || share.permissions == permissions.permissionReadShare,
+                selected: share.permissions == (permissions.permissionReadShare + permissions.permissionReshareShare) || share.permissions == permissions.permissionReadShare,
                 on: false,
                 sender: sender,
                 action: { _ in
@@ -162,7 +162,7 @@ extension NCShare {
     }
 
     fileprivate func hasUploadPermission(tableShare: tableShare) -> Bool {
-        let permissions = NCPermissions()
+        let permissions = NCSharePermissions()
         let uploadPermissions = [
             permissions.permissionMaxFileShare,
             permissions.permissionMaxFolderShare,

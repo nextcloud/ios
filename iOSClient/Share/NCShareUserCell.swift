@@ -62,7 +62,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
             name: NSLocalizedString("_show_profile_", comment: ""),
             target: self,
             selector: #selector(tapAvatarImage(_:)))]
-        let permissions = NCPermissions()
+        let permissions = NCSharePermissions()
         labelTitle.text = (tableShare.shareWithDisplayname.isEmpty ? tableShare.shareWith : tableShare.shareWithDisplayname)
 
         let type = getType(tableShare)
