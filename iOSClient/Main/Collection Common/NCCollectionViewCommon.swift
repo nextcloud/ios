@@ -218,11 +218,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
-            Task {
+            Task { @MainActor in
+                // Perform async server refresh
                 await self.getServerData(refresh: true)
-            }
-            self.refreshControl.endRefreshing()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+
+                // Stop the refresh control after data is loaded
+                self.refreshControl.endRefreshing()
+
+                // Wait 1.5 seconds before resetting the button alpha
+                try? await Task.sleep(nanoseconds: 1_500_000_000)
                 self.resetPlusButtonAlpha()
             }
         }
