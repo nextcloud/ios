@@ -125,11 +125,13 @@ class NCAccount: NSObject {
 
         // Remove al local files
         if wipe {
-            let results = await database.getTableLocalFilesAsync(predicate: NSPredicate(format: "account == %@", account), sorted: "ocId", ascending: false)
-            let utilityFileSystem = NCUtilityFileSystem()
+            // Remove user domain directory
             if let tblAccount {
-                for result in results {
-                    utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId, userId: tblAccount.userId, urlBase: tblAccount.urlBase))
+                let path = NCUtilityFileSystem().getDocumentStorage(userId: tblAccount.userId, urlBase: tblAccount.urlBase)
+                do {
+                    try FileManager.default.removeItem(atPath: path)
+                } catch {
+                    print(error)
                 }
             }
             // Remove account in all database
