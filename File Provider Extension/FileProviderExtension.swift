@@ -345,12 +345,12 @@ class FileProviderExtension: NSFileProviderExtension {
                     let nkBackground = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance)
 
                     let (task, error) = await nkBackground.uploadAsync(serverUrlFileName: serverUrlFileName,
-                                                                      fileNameLocalPath: fileNameLocalPath,
-                                                                      dateCreationFile: nil,
-                                                                      dateModificationFile: nil,
-                                                                      overwrite: true,
-                                                                      account: metadata.account,
-                                                                      sessionIdentifier: metadata.session)
+                                                                       fileNameLocalPath: fileNameLocalPath,
+                                                                       dateCreationFile: nil,
+                                                                       dateModificationFile: nil,
+                                                                       overwrite: true,
+                                                                       account: metadata.account,
+                                                                       sessionIdentifier: metadata.session)
 
                     if let task, error == .success {
                         await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
