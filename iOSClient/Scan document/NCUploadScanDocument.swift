@@ -174,36 +174,26 @@ class NCUploadScanDocument: ObservableObject {
             break
         }
 
-        var newHeight = Float(image.size.height)
-        var newWidth = Float(image.size.width)
-        var imgRatio: Float = newWidth / newHeight
-        let baseRatio: Float = baseWidth / baseHeight
+        // Resize image proportionally to fit within A4
+        let originalSize = image.size
+        let widthRatio = CGFloat(baseWidth) / originalSize.width
+        let heightRatio = CGFloat(baseHeight) / originalSize.height
+        let scaleRatio = min(widthRatio, heightRatio, 1.0)
+        let targetSize = CGSize(width: originalSize.width * scaleRatio, height: originalSize.height * scaleRatio)
 
-        if newHeight > baseHeight || newWidth > baseWidth {
-            if imgRatio < baseRatio {
-                imgRatio = baseHeight / newHeight
-                newWidth = imgRatio * newWidth
-                newHeight = baseHeight
-            } else if imgRatio > baseRatio {
-                imgRatio = baseWidth / newWidth
-                newHeight = imgRatio * newHeight
-                newWidth = baseWidth
-            } else {
-                newHeight = baseHeight
-                newWidth = baseWidth
-            }
+        // Render the resized image
+        let renderer = UIGraphicsImageRenderer(size: targetSize)
+        let resizedImage = renderer.image { _ in
+            image.draw(in: CGRect(origin: .zero, size: targetSize))
         }
 
-        let rect = CGRect(x: 0.0, y: 0.0, width: CGFloat(newWidth), height: CGFloat(newHeight))
-        UIGraphicsBeginImageContextWithOptions(rect.size, false, 0)
-        image.draw(in: rect)
-        let img = UIGraphicsGetImageFromCurrentImageContext()
-        let imageData = img?.jpegData(compressionQuality: CGFloat(compressionQuality))
-        UIGraphicsEndImageContext()
-        if let imageData = imageData, let image = UIImage(data: imageData) {
+        // Compress to JPEG and re-decode to UIImage
+        guard let data = resizedImage.jpegData(compressionQuality: compressionQuality),
+                let finalImage = UIImage(data: data) else {
             return image
         }
-        return image
+
+        return finalImage
     }
 
     private func bestFittingFont(for text: String, in bounds: CGRect, fontDescriptor: UIFontDescriptor, fontColor: UIColor) -> [NSAttributedString.Key: Any] {
