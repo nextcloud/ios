@@ -198,7 +198,7 @@ extension NCManageDatabase {
                 for codableObject in codableObjects {
                     if !NCKeychain().getPassword(account: codableObject.account).isEmpty {
                         let tableAccount = tableAccount(codableObject: codableObject)
-                        realm.add(tableAccount)
+                        realm.add(tableAccount, update: .all)
                     }
                 }
             }
@@ -578,15 +578,11 @@ extension NCManageDatabase {
     }
 
     func getAccountsAsync() async -> [String]? {
-        let results = await performRealmReadAsync { realm in
+        await performRealmReadAsync { realm in
             realm.objects(tableAccount.self)
                 .sorted(byKeyPath: "account", ascending: true)
+                .map { $0.account }
         }
-        guard let results else {
-            return nil
-        }
-
-        return results.map { $0.account }
     }
 
     func getAccountGroups(account: String) -> [String] {
