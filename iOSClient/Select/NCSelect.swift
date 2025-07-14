@@ -29,8 +29,7 @@ protocol NCSelectDelegate: AnyObject {
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool, session: NCSession.Session)
 }
 
-class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresentationControllerDelegate, NCListCellDelegate, NCSectionFirstHeaderDelegate {
-
+class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresentationControllerDelegate, NCListCellDelegate, NCSectionFirstHeaderDelegate, NCTransferDelegate {
     @IBOutlet private var collectionView: UICollectionView!
     @IBOutlet private var buttonCancel: UIBarButtonItem!
     @IBOutlet private var bottomContraint: NSLayoutConstraint?
@@ -39,6 +38,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     let database = NCManageDatabase.shared
+    let global = NCGlobal.shared
+    let networking = NCNetworking.shared
 
     enum selectType: Int {
         case select
@@ -70,6 +71,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
     private var backgroundImageView = UIImageView()
+
+    var sceneIdentifier: String = ""
 
     // MARK: - View Life Cycle
 
@@ -165,9 +168,17 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
+        self.networking.addDelegate(self)
+
         Task {
             await getServerData()
         }
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        self.networking.removeDelegate(self)
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -187,17 +198,22 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
     // MARK: - NotificationCenter
 
-    @objc func createFolder(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
-              let serverUrl = userInfo["serverUrl"] as? String,
-              let withPush = userInfo["withPush"] as? Bool,
-              serverUrl == self.serverUrl,
-              let metadata = self.database.getMetadataFromOcId(ocId)
-        else { return }
+    func transferChange(status: String, metadata: tableMetadata, error: NKError) {
+        guard session.account == metadata.account else { return }
 
-        if withPush {
-            pushMetadata(metadata)
+        if error != .success {
+            NCContentPresenter().showError(error: error)
+        }
+
+        DispatchQueue.main.async {
+            switch status {
+            case self.global.networkingStatusCreateFolder:
+                if metadata.serverUrl == self.serverUrl {
+                    self.pushMetadata(metadata)
+                }
+            default:
+                break
+            }
         }
     }
 
@@ -420,7 +436,6 @@ extension NCSelect: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-
         if kind == UICollectionView.elementKindSectionHeader {
             if self.dataSource.isEmpty() {
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData else { return NCSectionFirstHeaderEmptyData() }
