@@ -295,8 +295,10 @@ extension NCAutoUploadModel: EasyTipViewDelegate {
 
         if tip == nil {
             tip = EasyTipView(text: NSLocalizedString("_tip_autoupload_button_", comment: ""), preferences: preferences, delegate: self, tip: NCGlobal.shared.tipAutoUploadButton)
-            if let view = controller?.tabBar {
-                tip?.show(forView: view)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                if let view = self.controller?.tabBar {
+                    self.tip?.show(forView: view)
+                }
             }
         }
     }
