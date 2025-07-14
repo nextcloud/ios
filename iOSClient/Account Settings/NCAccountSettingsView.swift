@@ -49,8 +49,8 @@ struct NCAccountSettingsView: View {
                         ForEach(0..<model.tblAccounts.count, id: \.self) { index in
                             let status = model.getUserStatus()
                             let avatar = NCUtility().loadUserImage(for: model.tblAccounts[index].user, displayName: model.tblAccounts[index].displayName, urlBase: model.tblAccounts[index].urlBase)
-                            //
-                            // User
+                            ///
+                            /// User
                             VStack {
                                 Image(uiImage: avatar)
                                     .resizable()
@@ -76,8 +76,8 @@ struct NCAccountSettingsView: View {
                                     .font(.caption)
                                 Spacer()
                                     .frame(height: 20)
-                                //
-                                // Personal data
+                                ///
+                                /// Personal data
                                 if let tblAccount = model.tblAccount {
                                     if !tblAccount.email.isEmpty {
                                         HStack {
@@ -134,8 +134,8 @@ struct NCAccountSettingsView: View {
                         animation.toggle()
                         model.setAccount(account: model.tblAccounts[index].account)
                     }
-                    //
-                    // Change alias
+                    ///
+                    /// Change alias
                     VStack {
                         HStack {
                             Text(NSLocalizedString("_alias_", comment: "") + ":")
@@ -154,8 +154,8 @@ struct NCAccountSettingsView: View {
                             .lineLimit(2)
                             .foregroundStyle(Color(UIColor.lightGray))
                     }
-                    //
-                    // User Status
+                    ///
+                    /// User Status
                     if capabilities.userStatusEnabled {
                         Button(action: {
                             showUserStatus = true
@@ -182,8 +182,8 @@ struct NCAccountSettingsView: View {
                         }
                         .onChange(of: showUserStatus) { _ in }
                     }
-                    //
-                    // Certificate server
+                    ///
+                    /// Certificate server
                     if model.isAdminGroup() {
                         Button(action: {
                             showServerCertificate.toggle()
@@ -205,11 +205,11 @@ struct NCAccountSettingsView: View {
                         })
                         .sheet(isPresented: $showServerCertificate) {
                             if let url = URL(string: model.tblAccount?.urlBase), let host = url.host {
-                                certificateDetailsView(host: host, title: NSLocalizedString("_certificate_view_", comment: ""))
+                                certificateDetailsView(privateKeyString: "", host: host, title: NSLocalizedString("_certificate_view_", comment: ""))
                             }
                         }
-                        //
-                        // Certificate push
+                        ///
+                        /// Certificate push
                         Button(action: {
                             showPushCertificate.toggle()
                         }, label: {
@@ -229,14 +229,26 @@ struct NCAccountSettingsView: View {
                             .font(.subheadline)
                         })
                         .sheet(isPresented: $showPushCertificate) {
-                            if let url = URL(string: NCBrandOptions.shared.pushNotificationServerProxy), let host = url.host {
-                                certificateDetailsView(host: host, title: NSLocalizedString("_certificate_pn_view_", comment: ""))
+                            Group {
+                                if let url = URL(string: NCBrandOptions.shared.pushNotificationServerProxy),
+                                    let host = url.host {
+                                    let privateKeyString: String = {
+                                        if let account = model.tblAccount?.account,
+                                           let privateKey = NCKeychain().getPushNotificationPrivateKey(account: account) {
+                                                let prefixData = Data(privateKey.prefix(8))
+                                                return prefixData.base64EncodedString()
+                                            } else {
+                                                return ""
+                                            }
+                                        }()
+                                    certificateDetailsView(privateKeyString: privateKeyString, host: host, title: NSLocalizedString("_certificate_pn_view_", comment: ""))
+                                }
                             }
                         }
                     }
                 })
-                //
-                // Delete account
+                ///
+                /// Delete account
                 Section(content: {
                     Button(action: {
                         showDeleteAccountAlert.toggle()
