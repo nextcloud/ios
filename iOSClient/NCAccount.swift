@@ -93,7 +93,9 @@ class NCAccount: NSObject {
             // Subscribing Push Notification
             appDelegate.subscribingPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user)
             // Start the service
-            NCService().startRequestServicesServer(account: account, controller: controller)
+            Task(priority: .utility) {
+                await NCService().startRequestServicesServer(account: account, controller: controller)
+            }
             // Start the auto upload
             let num = await NCAutoUpload.shared.initAutoUpload(tblAccount: tblAccount)
             nkLog(start: "Auto upload with \(num) photo")

@@ -80,8 +80,8 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
         selectedLogLevel = keychain.log
         selectedInterval = CacheDeletionInterval(rawValue: keychain.cleanUpDay) ?? .never
 
-        DispatchQueue.global().async {
-            self.calculateSize()
+        Task {
+            await self.calculateSize()
         }
     }
 
@@ -126,11 +126,13 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
 
     /// Clears cache
     func clearCache() {
-        NCActivityIndicator.shared.startActivity(backgroundView: self.controller?.view, style: .large, blurEffect: true)
-        // Cancel all networking tasks
-        NCNetworking.shared.cancelAllTask()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            URLCache.shared.removeAllCachedResponses()
+        Task { @MainActor in
+            NCActivityIndicator.shared.startActivity(backgroundView: self.controller?.view, style: .large, blurEffect: true)
+
+            // Cancel all networking tasks
+            NCNetworking.shared.cancelAllTask()
+
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
 
             NCNetworking.shared.removeServerErrorAccount(self.session.account)
             NCManageDatabase.shared.clearDatabase()
@@ -142,23 +144,24 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
             ufs.removeTemporaryDirectory()
             ufs.createDirectoryStandard()
 
-            NCActivityIndicator.shared.stop()
-            self.calculateSize()
+            await NCService().startRequestServicesServer(account: self.session.account, controller: self.controller)
 
-            NCService().startRequestServicesServer(account: self.session.account, controller: self.controller)
+            await self.calculateSize()
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterClearCache)
+
+            NCActivityIndicator.shared.stop()
         }
     }
 
     /// Asynchronously calculates the size of cache directory and updates the footer title.
-    func calculateSize() {
+    @MainActor
+    func calculateSize() async {
         let ufs = NCUtilityFileSystem()
         let directory = ufs.getDirectoryProviderStorage()
         let totalSize = ufs.getDirectorySize(directory: directory)
-        DispatchQueue.main.async {
-            self.footerTitle = "\(NSLocalizedString("_clear_cache_footer_", comment: "")). (\(NSLocalizedString("_used_space_", comment: "")) \(ufs.transformedSize(totalSize)))"
-        }
+
+        self.footerTitle = "\(NSLocalizedString("_clear_cache_footer_", comment: "")). (\(NSLocalizedString("_used_space_", comment: "")) \(ufs.transformedSize(totalSize)))"
     }
 
     /// Removes all accounts & exits the Nextcloud application if specified.

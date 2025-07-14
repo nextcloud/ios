@@ -34,23 +34,36 @@ class NCService: NSObject {
 
     // MARK: -
 
-    public func startRequestServicesServer(account: String, controller: NCMainTabBarController?) {
-        guard !account.isEmpty
-        else {
+    public func startRequestServicesServer(account: String, controller: NCMainTabBarController?) async {
+        // Ensure the account string is not empty
+        guard !account.isEmpty else {
             return
         }
 
-        Task(priority: .utility) {
-            await self.database.clearAllAvatarLoadedAsync()
-            let result = await requestServerStatus(account: account, controller: controller)
-            if result {
-                await requestServerCapabilities(account: account, controller: controller)
-                await getAvatar(account: account)
-                await NCNetworkingE2EE().unlockAll(account: account)
-                await sendClientDiagnosticsRemoteOperation(account: account)
-                await synchronize(account: account)
-                await requestDashboardWidget(account: account)
-            }
+        // Clear cached avatar loading state from the local database
+        await self.database.clearAllAvatarLoadedAsync()
+
+        // Request the server status and continue only if it's valid
+        let result = await requestServerStatus(account: account, controller: controller)
+
+        if result {
+            // Request server capabilities and cache them
+            await requestServerCapabilities(account: account, controller: controller)
+
+            // Download and cache the user's avatar
+            await getAvatar(account: account)
+
+            // Attempt to unlock all E2EE keys for the account
+            await NCNetworkingE2EE().unlockAll(account: account)
+
+            // Send client-side diagnostic information to the server
+            await sendClientDiagnosticsRemoteOperation(account: account)
+
+            // Start a background synchronization task
+            await synchronize(account: account)
+
+            // Fetch and display dashboard widgets if available
+            await requestDashboardWidget(account: account)
         }
     }
 

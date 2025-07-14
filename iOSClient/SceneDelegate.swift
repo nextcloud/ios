@@ -141,23 +141,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            Task {
-                if let tableAccount = await self.database.getTableAccountAsync(account: session.account) {
-                    let num = await NCAutoUpload.shared.initAutoUpload(tblAccount: tableAccount)
-                    nkLog(start: "Auto upload with \(num) photo")
-                }
+        Task {
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
+            if let tableAccount = await self.database.getTableAccountAsync(account: session.account) {
+                let num = await NCAutoUpload.shared.initAutoUpload(tblAccount: tableAccount)
+                nkLog(start: "Auto upload with \(num) photo")
             }
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            NCService().startRequestServicesServer(account: session.account, controller: controller)
+        Task(priority: .utility) {
+            try? await Task.sleep(nanoseconds: 1_500_000_000)
+            await NCService().startRequestServicesServer(account: session.account, controller: controller)
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            Task {
-                await NCNetworking.shared.verifyZombie()
-            }
+        Task {
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            await NCNetworking.shared.verifyZombie()
         }
 
         NotificationCenter.default.postOnMainThread(name: global.notificationCenterRichdocumentGrabFocus)
