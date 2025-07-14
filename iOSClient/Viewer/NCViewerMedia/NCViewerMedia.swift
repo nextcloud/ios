@@ -604,9 +604,9 @@ extension NCViewerMedia: EasyTipViewDelegate {
             preferences.animating.showDuration = 0.5
             preferences.animating.dismissDuration = 0
 
-            if tipView == nil {
+            if tipView == nil, let view = detailView {
                 tipView = EasyTipView(text: NSLocalizedString("_tip_open_mediadetail_", comment: ""), preferences: preferences, delegate: self)
-                tipView?.show(forView: detailView)
+                tipView?.show(forView: view)
             }
         }
     }

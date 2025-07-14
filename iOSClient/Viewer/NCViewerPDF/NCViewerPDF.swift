@@ -497,9 +497,9 @@ extension NCViewerPDF: EasyTipViewDelegate {
                 preferences.animating.showDuration = 1.5
                 preferences.animating.dismissDuration = 1.5
 
-                if self.tipView == nil {
+                if self.tipView == nil, let viewContainer = self.pdfContainer {
                     self.tipView = EasyTipView(text: NSLocalizedString("_tip_pdf_thumbnails_", comment: ""), preferences: preferences, delegate: self)
-                    self.tipView?.show(forView: self.pdfThumbnailScrollView, withinSuperview: self.pdfContainer)
+                    self.tipView?.show(forView: self.pdfThumbnailScrollView, withinSuperview: viewContainer)
                 }
             }
         }
