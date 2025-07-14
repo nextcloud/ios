@@ -147,7 +147,7 @@ extension NCMedia {
 
         if lessDate == .distantFuture, greaterDate == .distantPast, files.isEmpty {
             await MainActor.run {
-                self.dataSource.metadatas.removeAll()
+                self.dataSource.clearMetadatas()
                 self.collectionViewReloadData()
             }
         }
@@ -203,6 +203,7 @@ extension NCMedia {
 
 // MARK: -
 
+@MainActor
 public class NCMediaDataSource: NSObject {
     public class Metadata: NSObject {
         let datePhotosOriginal: Date
@@ -232,18 +233,14 @@ public class NCMediaDataSource: NSObject {
 
     private let utilityFileSystem = NCUtilityFileSystem()
     private let global = NCGlobal.shared
-    var metadatas: [Metadata] = []
+    private(set) var metadatas: [Metadata] = []
 
     override init() { super.init() }
 
     init(metadatas: [tableMetadata]) {
         super.init()
 
-        self.metadatas.removeAll()
-        metadatas.forEach { metadata in
-            let metadata = getMetadataFromTableMetadata(metadata)
-            self.metadatas.append(metadata)
-        }
+        self.metadatas = metadatas.map { getMetadataFromTableMetadata($0) }
     }
 
     private func insertInMetadatas(metadata: Metadata) {
@@ -268,6 +265,10 @@ public class NCMediaDataSource: NSObject {
     }
 
     // MARK: -
+
+    func clearMetadatas() {
+        metadatas.removeAll()
+    }
 
     func indexPath(forOcId ocId: String) -> IndexPath? {
         guard let index = self.metadatas.firstIndex(where: { $0.ocId == ocId }) else {

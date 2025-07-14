@@ -179,7 +179,7 @@ class NCMedia: UIViewController {
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: global.notificationCenterClearCache), object: nil, queue: nil) { _ in
             Task {
-                await self.dataSource.metadatas.removeAll()
+                await self.dataSource.clearMetadatas()
                 self.imageCache.removeAll()
                 await self.searchMediaUI(true)
             }
