@@ -243,42 +243,44 @@ class NCUploadScanDocument: ObservableObject {
     }
 
     private func drawImage(image: UIImage, quality: Double, isTextRecognition: Bool, fontColor: UIColor) {
-        let image = changeCompressionImage(image, quality: quality)
-        let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
+        autoreleasepool {
+            let image = changeCompressionImage(image, quality: quality)
+            let bounds = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
 
-        if isTextRecognition {
+            if isTextRecognition {
 
-            UIGraphicsBeginPDFPageWithInfo(bounds, nil)
-            image.draw(in: bounds)
+                UIGraphicsBeginPDFPageWithInfo(bounds, nil)
+                image.draw(in: bounds)
 
-            let requestHandler = VNImageRequestHandler(cgImage: image.cgImage!, options: [:])
+                let requestHandler = VNImageRequestHandler(cgImage: image.cgImage!, options: [:])
 
-            let request = VNRecognizeTextRequest { request, _ in
-                guard let observations = request.results as? [VNRecognizedTextObservation] else { return }
-                for observation in observations {
-                    guard let textLine = observation.topCandidates(1).first else { continue }
+                let request = VNRecognizeTextRequest { request, _ in
+                    guard let observations = request.results as? [VNRecognizedTextObservation] else { return }
+                    for observation in observations {
+                        guard let textLine = observation.topCandidates(1).first else { continue }
 
-                    var t: CGAffineTransform = CGAffineTransform.identity
-                    t = t.scaledBy(x: image.size.width, y: -image.size.height)
-                    t = t.translatedBy(x: 0, y: -1)
-                    let rect = observation.boundingBox.applying(t)
-                    let text = textLine.string
+                        var t: CGAffineTransform = CGAffineTransform.identity
+                        t = t.scaledBy(x: image.size.width, y: -image.size.height)
+                        t = t.translatedBy(x: 0, y: -1)
+                        let rect = observation.boundingBox.applying(t)
+                        let text = textLine.string
 
-                    let font = UIFont.systemFont(ofSize: rect.size.height, weight: .regular)
-                    let attributes = self.bestFittingFont(for: text, in: rect, fontDescriptor: font.fontDescriptor, fontColor: fontColor)
+                        let font = UIFont.systemFont(ofSize: rect.size.height, weight: .regular)
+                        let attributes = self.bestFittingFont(for: text, in: rect, fontDescriptor: font.fontDescriptor, fontColor: fontColor)
 
-                    text.draw(with: rect, options: .usesLineFragmentOrigin, attributes: attributes, context: nil)
+                        text.draw(with: rect, options: .usesLineFragmentOrigin, attributes: attributes, context: nil)
+                    }
                 }
+
+                request.recognitionLevel = .accurate
+                request.usesLanguageCorrection = true
+                try? requestHandler.perform([request])
+
+            } else {
+
+                UIGraphicsBeginPDFPageWithInfo(bounds, nil)
+                image.draw(in: bounds)
             }
-
-            request.recognitionLevel = .accurate
-            request.usesLanguageCorrection = true
-            try? requestHandler.perform([request])
-
-        } else {
-
-            UIGraphicsBeginPDFPageWithInfo(bounds, nil)
-            image.draw(in: bounds)
         }
     }
 }
