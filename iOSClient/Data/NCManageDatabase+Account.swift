@@ -198,7 +198,7 @@ extension NCManageDatabase {
                 for codableObject in codableObjects {
                     if !NCKeychain().getPassword(account: codableObject.account).isEmpty {
                         let tableAccount = tableAccount(codableObject: codableObject)
-                        realm.add(tableAccount)
+                        realm.add(tableAccount, update: .all)
                     }
                 }
             }
