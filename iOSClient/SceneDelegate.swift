@@ -190,14 +190,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
+        // Must be outside the Task otherwise isAppSuspending suspends it
+        let session = SceneManager.shared.getSession(scene: scene)
+        guard let tblAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
+            return
+        }
         Task { @MainActor in
-            let session = SceneManager.shared.getSession(scene: scene)
-
             await database.backupTableAccountToFileAsync()
-
-            guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", session.account)) else {
-                return
-            }
 
             nkLog(info: "Auto upload in background: \(tblAccount.autoUploadStart)")
             nkLog(info: "Update in background: \(UIApplication.shared.backgroundRefreshStatus == .available)")
