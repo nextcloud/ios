@@ -183,14 +183,14 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.labelPath.text = pathText
         cell.setButtonMore(image: imageCache.getImageButtonStop())
 
-        /// Image item
+        // Image item
         if !metadata.iconName.isEmpty {
             cell.imageItem?.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
         } else {
             cell.imageItem?.image = imageCache.getImageFile()
         }
 
-        /// Status and Info
+        // Status and Info
         let user = (metadata.user == session.user ? "" : " - " + metadata.account)
         switch metadata.status {
         case NCGlobal.shared.metadataStatusWaitCreateFolder:
@@ -252,7 +252,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         }
         cell.accessibilityLabel = metadata.fileNameView + ", " + (cell.labelInfo.text ?? "")
 
-        /// Remove last separator
+        // Remove last separator
         if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 {
             cell.separator.isHidden = true
         } else {

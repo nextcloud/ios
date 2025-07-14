@@ -358,7 +358,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {
         switch status {
-        /// DELETE
+        // DELETE
         case self.global.networkingStatusDelete:
             let errorForThisServer = metadatasError.first { entry in
                 let (key, value) = entry
@@ -401,7 +401,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         DispatchQueue.main.async {
             switch status {
-            /// UPLOADED, UPLOADED LIVEPHOTO
+            // UPLOADED, UPLOADED LIVEPHOTO
             case self.global.networkingStatusUploaded, self.global.networkingStatusUploadedLivePhoto:
                 self.debouncer.call {
                     if self.isSearchingMode {
@@ -412,7 +412,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                         }
                     }
                 }
-            /// DOWNLOAD
+            // DOWNLOAD
             case self.global.networkingStatusDownloading:
                 Task {
                     if metadata.serverUrl == self.serverUrl {
@@ -431,12 +431,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                         await self.reloadDataSource()
                     }
                 }
-            /// CREATE FOLDER
+            // CREATE FOLDER
             case self.global.networkingStatusCreateFolder:
                 if metadata.serverUrl == self.serverUrl, metadata.sessionSelector != self.global.selectorUploadAutoUpload {
                     self.pushMetadata(metadata)
                 }
-            /// RENAME
+            // RENAME
             case self.global.networkingStatusRename:
                 self.debouncer.call {
                     if self.isSearchingMode {
@@ -447,7 +447,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                         }
                     }
                 }
-            /// FAVORITE
+            // FAVORITE
             case self.global.networkingStatusFavorite:
                 self.debouncer.call {
                     if self.isSearchingMode {

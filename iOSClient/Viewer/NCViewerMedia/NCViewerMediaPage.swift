@@ -34,12 +34,11 @@ var viewerMediaScreenMode: ScreenMode = .normal
 class NCViewerMediaPage: UIViewController {
     @IBOutlet weak var progressView: UIProgressView!
 
-    /// Parameters
+    // Parameters
     var ocIds: [String] = []
     var currentIndex: Int = 0
     var delegateViewController: UIViewController?
 
-    ///
     var modifiedOcId: [String] = []
     var nextIndex: Int?
     var panGestureRecognizer: UIPanGestureRecognizer!
@@ -609,7 +608,7 @@ extension NCViewerMediaPage: NCTransferDelegate {
     func transferChange(status: String, metadata: tableMetadata, error: NKError) {
         DispatchQueue.main.async {
             switch status {
-                /// DOWNLOAD
+                // DOWNLOAD
             case self.global.networkingStatusDownloaded:
                 guard metadata.ocId == self.currentViewController.metadata.ocId else {
                     return
@@ -633,7 +632,7 @@ extension NCViewerMediaPage: NCTransferDelegate {
                 } else if metadata.isImage {
                     self.currentViewController.loadImage()
                 }
-                /// UPLOAD
+                // UPLOAD
             case self.global.networkingStatusUploaded:
                 guard error == .success else { return }
                 if self.currentViewController.metadata.ocId == metadata.ocId {
@@ -650,7 +649,7 @@ extension NCViewerMediaPage: NCTransferDelegate {
     func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {
         DispatchQueue.main.async {
             switch status {
-                /// DELETE
+                // DELETE
             case NCGlobal.shared.networkingStatusDelete:
                 let hasAtLeastOneSuccess = metadatasError.contains { key, value in
                     self.ocIds.contains(key.ocId) && value == .success

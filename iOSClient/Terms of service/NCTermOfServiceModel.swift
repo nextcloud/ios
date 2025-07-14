@@ -7,16 +7,16 @@ import NextcloudKit
 
 /// A model that allows the user to configure the account
 class NCTermOfServiceModel: ObservableObject {
-    /// Root View Controller
+    // Root View Controller
     var controller: NCMainTabBarController?
-    /// Set true for dismiss the view
+    // Set true for dismiss the view
     @Published var dismissView = false
     // Data
     @Published var languages: [String: String] = [:]
     @Published var terms: [String: String] = [:]
     @Published var termsId: [String: Int] = [:]
 
-    /// Initialization code
+    // Initialization code
     init(controller: NCMainTabBarController?, tos: NKTermsOfService?) {
         self.controller = controller
 

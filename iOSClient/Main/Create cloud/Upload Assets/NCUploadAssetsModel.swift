@@ -32,13 +32,13 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
     @Published var useAutoUploadSubFolder = false
     @Published var showHUD = false
     @Published var uploadInProgress = false
-    /// Root View Controller
+    // Root View Controller
     @Published var controller: NCMainTabBarController?
-    /// Session
+    // Session
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
     }
-    /// Capabilities
+    // Capabilities
     var capabilities: NKCapabilities.Capabilities {
         NKCapabilities.shared.getCapabilitiesBlocking(for: controller?.account)
     }

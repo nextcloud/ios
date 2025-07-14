@@ -200,7 +200,7 @@ final class NCManageDatabase: @unchecked Sendable {
 
     private func compactDB(_ totalBytes: Int, _ usedBytes: Int) -> Bool {
         let usedPercentage = (Double(usedBytes) / Double(totalBytes)) * 100
-        /// Compact the database if more than 25% of the space is free
+        // Compact the database if more than 25% of the space is free
         let shouldCompact = (usedPercentage < 75.0) && (totalBytes > 100 * 1024 * 1024)
 
         return shouldCompact
@@ -541,7 +541,7 @@ final class NCManageDatabase: @unchecked Sendable {
     // MARK: SWIFTUI PREVIEW
 
     func previewCreateDB() async {
-        /// Account
+        // Account
         let account = "marinofaggiana https://cloudtest.nextcloud.com"
         let account2 = "mariorossi https://cloudtest.nextcloud.com"
         await addAccountAsync(account, urlBase: "https://cloudtest.nextcloud.com", user: "marinofaggiana", userId: "marinofaggiana", password: "password")

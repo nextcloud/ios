@@ -629,7 +629,7 @@ extension NCViewerMedia: EasyTipViewDelegate {
 extension NCViewerMedia: NCTransferDelegate {
     func transferChange(status: String, metadata: tableMetadata, error: NKError) {
         switch status {
-        /// DOWNLOAD
+        // DOWNLOAD
         case self.global.networkingStatusDownloaded:
             DispatchQueue.main.async {
                 self.closeDetail()

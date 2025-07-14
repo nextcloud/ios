@@ -33,25 +33,25 @@ protocol NCAccountSettingsModelDelegate: AnyObject {
 
 /// A model that allows the user to configure the account
 class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
-    /// AppDelegate
+    // AppDelegate
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    /// Root View Controller
+    // Root View Controller
     var controller: NCMainTabBarController?
-    /// All account
+    // All account
     var tblAccounts: [tableAccount] = []
-    /// Delegate
+    // Delegate
     weak var delegate: NCAccountSettingsModelDelegate?
-    /// Token observe tableAccount
+    // Token observe tableAccount
     var notificationToken: NotificationToken?
-    /// Account now
+    // Account now
     @Published var tblAccount: tableAccount?
-    /// Index
+    // Index
     @Published var indexActiveAccount: Int = 0
-    /// Current alias
+    // Current alias
     @Published var alias: String = ""
-    /// Set true for dismiss the view
+    // Set true for dismiss the view
     @Published var dismissView = false
-    /// DB
+    // DB
     let database = NCManageDatabase.shared
 
     /// Initialization code to set up the ViewModel with the active account

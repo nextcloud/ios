@@ -364,7 +364,7 @@ extension NCViewerRichDocument: NCTransferDelegate {
     func transferChange(status: String, metadata: tableMetadata, error: NKError) {
         DispatchQueue.main.async {
             switch status {
-            /// FAVORITE
+            // FAVORITE
             case NCGlobal.shared.networkingStatusFavorite:
                 if self.metadata.ocId == metadata.ocId {
                     self.metadata = metadata

@@ -76,8 +76,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         cell.hideButtonMore(true)
         cell.hideImageStatus(true)
 
-        /// Image
-        ///
+        // Image
+        //
         if let image = NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
 
             cell.filePreviewImageView?.image = image
@@ -110,15 +110,16 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
         }
 
-        /// Status
-        ///
+        // Status
+        //
         if metadata.isLivePhoto {
             cell.fileStatusImage?.image = utility.loadImage(named: "livephoto", colors: isLayoutPhoto ? [.white] : [NCBrandColor.shared.iconImageColor2])
         } else if metadata.isVideo {
             cell.fileStatusImage?.image = utility.loadImage(named: "play.circle", colors: NCBrandColor.shared.iconImageMultiColors)
         }
 
-        /// Edit mode
+        // Edit mode
+        //
         if fileSelect.contains(metadata.ocId) {
             cell.selected(true, isEditMode: isEditMode)
         } else {
@@ -180,7 +181,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell = listCell
         }
 
-        /// CONTENT MODE
+        // CONTENT MODE
         cell.fileAvatarImageView?.contentMode = .center
         cell.filePreviewImageView?.layer.borderWidth = 0
 
@@ -283,7 +284,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     }
                 }
             } else {
-                /// APP NAME - UNIFIED SEARCH
+                // APP NAME - UNIFIED SEARCH
                 switch metadata.iconName {
                 case let str where str.contains("contacts"):
                     cell.filePreviewImageView?.image = utility.loadImage(named: "person.crop.rectangle.stack", colors: [NCBrandColor.shared.iconImageColor])

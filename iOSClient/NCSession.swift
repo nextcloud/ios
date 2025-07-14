@@ -23,8 +23,8 @@ final class NCSession: @unchecked Sendable {
     }
     private var sessions: ThreadSafeArray<Session> = ThreadSafeArray()
 
-    /// SESSION
-    ///
+    // SESSION
+    //
     public func appendSession(account: String, urlBase: String, user: String, userId: String) {
         if sessions.filter({ $0.account == account }).first != nil {
             return updateSession(account, userId: userId)
@@ -61,8 +61,8 @@ final class NCSession: @unchecked Sendable {
     }
 #endif
 
-    /// UTILITY
-    ///
+    // UTILITY
+    //
     public func getFileName(urlBase: String, user: String) -> String {
         let url = (URL(string: urlBase)?.host) ?? "localhost"
         let fileName = user + "@" + url + ".png"

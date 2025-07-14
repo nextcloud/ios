@@ -56,7 +56,7 @@ class NCCollectionViewDataSource: NSObject {
             self.directoryOnTop = NCKeychain().getDirectoryOnTop(account: account)
             self.favoriteOnTop = NCKeychain().getFavoriteOnTop(account: account)
         }
-        /// unified search
+        // unified search
         self.providers = providers
         self.searchResults = searchResults
 
@@ -87,7 +87,7 @@ class NCCollectionViewDataSource: NSObject {
 
     internal func createSections() {
         for metadata in self.metadatas {
-            /// skipped livePhoto VIDEO part
+            // skipped livePhoto VIDEO part
             if metadata.isLivePhoto, metadata.classFile == NKTypeClassFile.video.rawValue {
                 continue
             }
@@ -96,7 +96,7 @@ class NCCollectionViewDataSource: NSObject {
                 self.sectionsValue.append(section)
             }
         }
-        /// Unified search
+        // Unified search
         if let providers = self.providers, !providers.isEmpty {
             let sectionsDictionary = ThreadSafeDictionary<String, Int>()
             for section in self.sectionsValue {
@@ -114,7 +114,7 @@ class NCCollectionViewDataSource: NSObject {
                 }
             }
         } else {
-            /// normal
+            // normal
             let favorite = NSLocalizedString("favorite", comment: "").lowercased().firstUppercased
             let directory = NSLocalizedString("directory", comment: "").lowercased().firstUppercased
 

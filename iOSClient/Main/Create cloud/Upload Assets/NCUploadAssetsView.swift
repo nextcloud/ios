@@ -135,9 +135,8 @@ struct NCUploadAssetsView: View {
                     }
 
                     Section {
-                        ///
-                        /// Auto upload requires creating folders and subfolders which are difficult to manage offline
-                        /// 
+                        // Auto upload requires creating folders and subfolders which are difficult to manage offline
+                        // 
                         if NCNetworking.shared.isOnline {
                             Toggle(isOn: $model.useAutoUploadFolder, label: {
                                 Text(NSLocalizedString("_use_folder_auto_upload_", comment: ""))
