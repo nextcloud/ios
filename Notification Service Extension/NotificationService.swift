@@ -45,6 +45,11 @@ class NotificationService: UNNotificationServiceExtension {
                             bestAttemptContent.body = "Error retrieving private key for \(tableAccount.account)"
                             continue
                         }
+
+                        let prefixData = Data(privateKey.prefix(8))
+                        let prefixBase64 = prefixData.base64EncodedString()
+                        nkLog(debug: "🔑 Loaded private key for \(tableAccount.account): prefix(Base64)=\(prefixBase64)")
+
                         guard let decryptedMessage = NCPushNotificationEncryption.shared().decryptPushNotification(message, withDevicePrivateKey: privateKey) else {
                             bestAttemptContent.body = "Error decryption for \(tableAccount.account)"
                             continue
