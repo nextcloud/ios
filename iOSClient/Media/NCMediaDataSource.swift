@@ -66,11 +66,31 @@ extension NCMedia {
             if self.dataSource.metadatas.isEmpty {
                 self.collectionViewReloadData()
             }
+            let sortedIndexPaths = collectionView.indexPathsForVisibleItems.sorted {
+                guard let attr1 = collectionView.layoutAttributesForItem(at: $0),
+                      let attr2 = collectionView.layoutAttributesForItem(at: $1) else {
+                    return false
+                }
+                return attr1.frame.minY < attr2.frame.minY
+            }
 
-            if let visibleCells = self.collectionView?.indexPathsForVisibleItems
-                .sorted(by: { $0.row < $1.row })
-                .compactMap({ self.collectionView?.cellForItem(at: $0) }) as? [NCMediaCell], !distant {
+            let visibleCells: [NCMediaCell] = sortedIndexPaths.compactMap { indexPath in
+                guard let cell = collectionView.cellForItem(at: indexPath) as? NCMediaCell else {
+                    return nil
+                }
 
+                // Convert cell frame to collectionView coordinate space
+                let cellFrameInCollection = collectionView.convert(cell.frame, from: cell.superview)
+
+                // Check if it intersects with the visible bounds
+                if cellFrameInCollection.intersects(collectionView.bounds) {
+                    return cell
+                } else {
+                    return nil
+                }
+            }
+
+            if !visibleCells.isEmpty, !distant {
                 firstCellDate = visibleCells.first?.datePhotosOriginal
                 lastCellDate = visibleCells.last?.datePhotosOriginal
 
@@ -104,7 +124,9 @@ extension NCMedia {
             greaterDateAny = greaterDate
         }
 
-        let limit = await MainActor.run { max(self.collectionView.visibleCells.count * 3, 300) }
+        let limit = await MainActor.run {
+            max(self.collectionView.visibleCells.count * 3, 300)
+        }
 
         let options = NKRequestOptions(timeout: 180, taskDescription: self.global.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 

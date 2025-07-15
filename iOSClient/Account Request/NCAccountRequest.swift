@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2021 Marino Faggiana
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-
 import UIKit
 import NextcloudKit
 
