@@ -58,7 +58,7 @@ extension NCCollectionViewCommon: UICollectionViewDragDelegate {
 
 // MARK: - Drop
 
-extension NCCollectionViewCommon: UICollectionViewDropDelegate, UIEditMenuInteractionDelegate {
+extension NCCollectionViewCommon: UICollectionViewDropDelegate {
     func collectionView(_ collectionView: UICollectionView, canHandle session: UIDropSession) -> Bool {
         return true
     }
@@ -133,22 +133,12 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate, UIEditMenuIntera
     // MARK: -
 
     private func openMenu(collectionView: UICollectionView, location: CGPoint) {
-        let config = UIEditMenuConfiguration(identifier: nil, sourcePoint: location)
-        let interaction = collectionView.interactions.first { $0 is UIEditMenuInteraction } as? UIEditMenuInteraction
+        var listMenuItems: [UIMenuItem] = []
 
-        interaction?.presentEditMenu(with: config)
-    }
-
-    func editMenuInteraction(_ interaction: UIEditMenuInteraction, menuFor configuration: UIEditMenuConfiguration, suggestedActions: [UIMenuElement]) -> UIMenu? {
-        let copy = UIAction(title: NSLocalizedString("_copy_", comment: ""), image: UIImage(systemName: "doc.on.doc")) { [weak self] _ in
-            self?.copyMenuFile(nil)
-        }
-
-        let move = UIAction(title: NSLocalizedString("_move_", comment: ""), image: UIImage(systemName: "folder")) { [weak self] _ in
-            self?.moveMenuFile(nil)
-        }
-
-        return UIMenu(title: "", children: [copy, move])
+        listMenuItems.append(UIMenuItem(title: NSLocalizedString("_copy_", comment: ""), action: #selector(copyMenuFile(_:))))
+        listMenuItems.append(UIMenuItem(title: NSLocalizedString("_move_", comment: ""), action: #selector(moveMenuFile(_:))))
+        UIMenuController.shared.menuItems = listMenuItems
+        UIMenuController.shared.showMenu(from: collectionView, rect: CGRect(x: location.x, y: location.y, width: 0, height: 0))
     }
 
     @objc func copyMenuFile(_ sender: Any?) {

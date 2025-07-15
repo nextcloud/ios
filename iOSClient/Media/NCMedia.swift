@@ -146,9 +146,6 @@ class NCMedia: UIViewController {
             }
         }
 
-        let interaction = UIEditMenuInteraction(delegate: self)
-        collectionView.addInteraction(interaction)
-
         pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
         collectionView.addGestureRecognizer(pinchGesture)
 
