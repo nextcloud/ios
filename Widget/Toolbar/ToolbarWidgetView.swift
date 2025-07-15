@@ -49,7 +49,7 @@ struct ToolbarWidgetView: View {
             ZStack(alignment: .topLeading) {
                 HStack(spacing: 0) {
                     Link(destination: entry.isPlaceholder ? linkNoAction : linkActionUploadAsset, label: {
-                        Image("addImage")
+                        Image(systemName: "photo.badge.plus")
                             .resizable()
                             .renderingMode(.template)
                             .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getText(account: entry.account)))
