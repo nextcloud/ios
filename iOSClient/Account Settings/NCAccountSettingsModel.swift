@@ -9,7 +9,7 @@ import NextcloudKit
 
 /// Protocol for know when the Account Settings has dimissed
 protocol NCAccountSettingsModelDelegate: AnyObject {
-    func accountSettingsDidDismiss(tableAccount: tableAccount?, controller: NCMainTabBarController?)
+    func accountSettingsDidDismiss(tblAccount: tableAccount?, controller: NCMainTabBarController?)
 }
 
 /// A model that allows the user to configure the account

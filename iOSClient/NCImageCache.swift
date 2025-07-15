@@ -80,7 +80,6 @@ final class NCImageCache: @unchecked Sendable {
                     self.isLoadingCache = false
                 }
             }
-
 #endif
         }
     }

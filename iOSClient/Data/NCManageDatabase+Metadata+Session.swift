@@ -198,7 +198,11 @@ extension NCManageDatabase {
                 .count
         } ?? 0
         DispatchQueue.main.async {
-            UIApplication.shared.applicationIconBadgeNumber = num
+            UNUserNotificationCenter.current().setBadgeCount(num) { error in
+                if let error {
+                    print("Failed to set badge count: \(error)")
+                }
+            }
         }
         #endif
     }

@@ -178,18 +178,18 @@ class NCAccount: NSObject {
 
     func checkRemoteUser(account: String, controller: NCMainTabBarController?) async {
         let token = NCKeychain().getPassword(account: account)
-        guard let tableAccount = await NCManageDatabase.shared.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", account)) else {
+        guard let tblAccount = await NCManageDatabase.shared.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", account)) else {
             return
         }
 
         NCContentPresenter().showCustomMessage(title: "", message: String(format: NSLocalizedString("_account_unauthorized_", comment: ""), account), priority: .high, delay: global.dismissAfterSecondLong, type: .error)
 
-        let resultsWipe = await NextcloudKit.shared.getRemoteWipeStatusAsync(serverUrl: tableAccount.urlBase, token: token, account: account)
+        let resultsWipe = await NextcloudKit.shared.getRemoteWipeStatusAsync(serverUrl: tblAccount.urlBase, token: token, account: account)
 
         // REMOVE ACCOUNT
         await NCAccount().deleteAccount(account, wipe: resultsWipe.wipe)
         if resultsWipe.wipe {
-            let resultsSetWipe = await NextcloudKit.shared.setRemoteWipeCompletitionAsync(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account)
+            let resultsSetWipe = await NextcloudKit.shared.setRemoteWipeCompletitionAsync(serverUrl: tblAccount.urlBase, token: token, account: tblAccount.account)
             nkLog(debug: "Set Remote Wipe Completition error code: \(resultsSetWipe.error.errorCode)")
         }
 

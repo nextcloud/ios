@@ -276,7 +276,7 @@ struct NCAccountSettingsView: View {
         }
         .onDisappear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                model.delegate?.accountSettingsDidDismiss(tableAccount: model.tblAccount, controller: model.controller)
+                model.delegate?.accountSettingsDidDismiss(tblAccount: model.tblAccount, controller: model.controller)
             }
         }
     }

@@ -408,7 +408,7 @@ class NCFiles: NCCollectionViewCommon {
 
     // MARK: - NCAccountSettingsModelDelegate
 
-    override func accountSettingsDidDismiss(tableAccount: tableAccount?, controller: NCMainTabBarController?) {
+    override func accountSettingsDidDismiss(tblAccount: tableAccount?, controller: NCMainTabBarController?) {
         let currentAccount = session.account
 
         if database.getAllTableAccount().isEmpty {
@@ -421,7 +421,7 @@ class NCFiles: NCCollectionViewCommon {
             }
 
             UIApplication.shared.firstWindow?.rootViewController = navigationController
-        } else if let account = tableAccount?.account, account != currentAccount {
+        } else if let account = tblAccount?.account, account != currentAccount {
             Task {
                 await NCAccount().changeAccount(account, userProfile: nil, controller: controller)
             }
