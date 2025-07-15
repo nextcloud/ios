@@ -288,6 +288,30 @@ extension NCManageDatabase {
         return []
     }
 
+    /// Asynchronously retrieves a list of detached `tableShare` objects matching the given account, server URL, and file name.
+    ///
+    /// - Parameters:
+    ///   - account: The user account identifier.
+    ///   - serverUrl: The base URL of the server.
+    ///   - fileName: The file name used to filter shares.
+    /// - Returns: An array of detached `tableShare` objects, or an empty array if an error occurs.
+    func getTableSharesAsync(account: String, serverUrl: String, fileName: String) async -> [tableShare] {
+        await performRealmReadAsync { realm in
+            // Define sorting by shareType descending, then idShare descending
+            let sortProperties = [
+                SortDescriptor(keyPath: "shareType", ascending: false),
+                SortDescriptor(keyPath: "idShare", ascending: false)
+            ]
+
+            // Query matching tableShare objects and return detached copies
+            let results = realm.objects(tableShare.self)
+                .filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName)
+                .sorted(by: sortProperties)
+
+            return results.map { tableShare(value: $0) }
+        } ?? []
+    }
+
     func deleteTableShare(account: String, idShare: Int) {
         do {
             let realm = try Realm()

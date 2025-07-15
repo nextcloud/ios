@@ -9,30 +9,7 @@ import NextcloudKit
 import Photos
 
 extension NCManageDatabase {
-    func convertFileToMetadata(_ file: NKFile, isDirectoryE2EE: Bool) -> tableMetadata {
-        let metadata = self.createMetadata(file)
-
-        #if !EXTENSION_FILE_PROVIDER_EXTENSION
-        // E2EE find the fileName for fileNameView
-        if isDirectoryE2EE || file.e2eEncrypted {
-            if let tableE2eEncryption = getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", file.account, file.serverUrl, file.fileName)) {
-                metadata.fileNameView = tableE2eEncryption.fileName
-            }
-        }
-        #endif
-
-        if !metadata.directory {
-            let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory, account: file.account)
-
-            metadata.contentType = results.mimeType
-            metadata.iconName = results.iconName
-            metadata.classFile = results.classFile
-            metadata.typeIdentifier = results.typeIdentifier
-        }
-        return metadata
-    }
-
-    func convertFileToMetadataAsync(_ file: NKFile, isDirectoryE2EE: Bool) async -> tableMetadata {
+    func convertFileToMetadataAsync(_ file: NKFile, isDirectoryE2EE: Bool, mediaSearch: Bool = false) async -> tableMetadata {
         let metadata = self.createMetadata(file)
 
         #if !EXTENSION_FILE_PROVIDER_EXTENSION
@@ -51,40 +28,13 @@ extension NCManageDatabase {
             metadata.iconName = results.iconName
             metadata.classFile = results.classFile
             metadata.typeIdentifier = results.typeIdentifier
+            metadata.mediaSearch = mediaSearch
         }
 
         return metadata.detachedCopy()
     }
 
-    func convertFilesToMetadatas(_ files: [NKFile], useFirstAsMetadataFolder: Bool, completion: @escaping (_ metadataFolder: tableMetadata, _ metadatas: [tableMetadata]) -> Void) {
-        var counter: Int = 0
-        var isDirectoryE2EE: Bool = false
-        let listServerUrl = ThreadSafeDictionary<String, Bool>()
-        var metadataFolder = tableMetadata()
-        var metadatas: [tableMetadata] = []
-
-        for file in files {
-            if let key = listServerUrl[file.serverUrl] {
-                isDirectoryE2EE = key
-            } else {
-                isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(file: file)
-                listServerUrl[file.serverUrl] = isDirectoryE2EE
-            }
-
-            let metadata = convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
-
-            if counter == 0 && useFirstAsMetadataFolder {
-                metadataFolder = metadata
-            } else {
-                metadatas.append(metadata)
-            }
-
-            counter += 1
-        }
-        completion(metadataFolder.detachedCopy(), metadatas)
-    }
-
-    func convertFilesToMetadatasAsync(_ files: [NKFile], useFirstAsMetadataFolder: Bool) async -> (metadataFolder: tableMetadata, metadatas: [tableMetadata]) {
+    func convertFilesToMetadatasAsync(_ files: [NKFile], useFirstAsMetadataFolder: Bool, mediaSearch: Bool = false) async -> (metadataFolder: tableMetadata, metadatas: [tableMetadata]) {
         var counter: Int = 0
         var isDirectoryE2EE: Bool = false
         var listServerUrl: [String: Bool] = [:]
@@ -99,7 +49,7 @@ extension NCManageDatabase {
                 listServerUrl[file.serverUrl] = isDirectoryE2EE
             }
 
-            let metadata = await convertFileToMetadataAsync(file, isDirectoryE2EE: isDirectoryE2EE)
+            let metadata = await convertFileToMetadataAsync(file, isDirectoryE2EE: isDirectoryE2EE, mediaSearch: mediaSearch)
 
             if counter == 0 && useFirstAsMetadataFolder {
                 metadataFolder = metadata

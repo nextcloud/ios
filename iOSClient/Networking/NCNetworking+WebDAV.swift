@@ -73,27 +73,29 @@ extension NCNetworking {
             guard error == .success, files?.count == 1, let file = files?.first else {
                 return completion(account, nil, error)
             }
-            let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
-            let metadata = self.database.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
+            Task {
+                let isDirectoryE2EE = await self.utilityFileSystem.isDirectoryE2EEAsync(file: file)
+                let metadata = await self.database.convertFileToMetadataAsync(file, isDirectoryE2EE: isDirectoryE2EE)
 
-            // Remove all known download limits from shares related to the given file.
-            // This avoids obsolete download limit objects to stay around.
-            // Afterwards create new download limits, should any such be returned for the known shares.
+                // Remove all known download limits from shares related to the given file.
+                // This avoids obsolete download limit objects to stay around.
+                // Afterwards create new download limits, should any such be returned for the known shares.
 
-            let shares = self.database.getTableShares(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+                let shares = await self.database.getTableSharesAsync(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
 
-            for share in shares {
-                self.database.deleteDownloadLimit(byAccount: metadata.account, shareToken: share.token, sync: false)
+                for share in shares {
+                    await self.database.deleteDownloadLimitAsync(byAccount: metadata.account, shareToken: share.token)
 
-                if let receivedDownloadLimit = file.downloadLimits.first(where: { $0.token == share.token }) {
-                    self.database.createDownloadLimit(account: metadata.account,
-                                                      count: receivedDownloadLimit.count,
-                                                      limit: receivedDownloadLimit.limit,
-                                                      token: receivedDownloadLimit.token)
+                    if let receivedDownloadLimit = file.downloadLimits.first(where: { $0.token == share.token }) {
+                        await self.database.createDownloadLimitAsync(account: metadata.account,
+                                                                     count: receivedDownloadLimit.count,
+                                                                     limit: receivedDownloadLimit.limit,
+                                                                     token: receivedDownloadLimit.token)
+                    }
                 }
-            }
 
-            completion(account, metadata, error)
+                completion(account, metadata, error)
+            }
         }
     }
 
@@ -550,9 +552,12 @@ extension NCNetworking {
                                           options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
             taskHandler(task)
         } completion: { _, files, _, error in
-            guard error == .success, let files else { return completion(nil, error) }
+            guard error == .success, let files else {
+                return completion(nil, error)
+            }
 
-            self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
+            Task {
+                let (_, metadatas) = await self.database.convertFilesToMetadatasAsync(files, useFirstAsMetadataFolder: false)
                 self.database.addMetadatas(metadatas)
                 completion(metadatas, error)
             }

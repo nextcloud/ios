@@ -38,7 +38,7 @@ extension NCNetworking {
 
             for file in files {
                 if file.directory {
-                    let metadata = self.database.convertFileToMetadata(file, isDirectoryE2EE: false)
+                    let metadata = await self.database.convertFileToMetadataAsync(file, isDirectoryE2EE: false)
                     await self.database.addMetadataAsync(metadata)
                     await self.database.addDirectoryAsync(e2eEncrypted: metadata.e2eEncrypted,
                                                           favorite: metadata.favorite,
@@ -51,7 +51,7 @@ extension NCNetworking {
                                                           account: metadata.account)
                 } else {
                     if await isFileDifferent(ocId: file.ocId, fileName: file.fileName, etag: file.etag, metadatasInDownload: metadatasInDownload, userId: userId, urlBase: urlBase) {
-                        let metadata = self.database.convertFileToMetadata(file, isDirectoryE2EE: false)
+                        let metadata = await self.database.convertFileToMetadataAsync(file, isDirectoryE2EE: false)
                         metadata.session = self.sessionDownloadBackground
                         metadata.sessionSelector = NCGlobal.shared.selectorSynchronizationOffline
                         metadata.sessionTaskIdentifier = 0
