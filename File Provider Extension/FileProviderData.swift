@@ -174,7 +174,7 @@ class fileProviderData: NSObject {
         }
 
         if error == .success, let ocId {
-            await  signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
+            await signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
 
             if !metadata.ocIdTransfer.isEmpty, ocId != metadata.ocIdTransfer {
                 await self.database.deleteMetadataOcIdAsync(metadata.ocIdTransfer)

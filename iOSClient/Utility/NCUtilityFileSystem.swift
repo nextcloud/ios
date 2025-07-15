@@ -187,7 +187,16 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     }
 
     func removeDocumentsDirectory() {
-        try? fileManager.removeItem(atPath: directoryDocuments)
+        do {
+            let contents = try fileManager.contentsOfDirectory(atPath: directoryDocuments)
+
+            for file in contents {
+                let fullPath = (directoryDocuments as NSString).appendingPathComponent(file)
+                try fileManager.removeItem(atPath: fullPath)
+            }
+        } catch {
+            print(error)
+        }
     }
 
     func removeTemporaryDirectory() {
