@@ -29,13 +29,8 @@ struct ToolbarWidgetView: View {
 
     @ViewBuilder
     var body: some View {
-        if #available(iOS 17.0, *) {
-            mainContent
-                .containerBackground(Color.black, for: .widget)
-        } else {
-            mainContent
-                .background(Color.black)
-        }
+        mainContent
+            .containerBackground(Color.black, for: .widget)
     }
 
     private var mainContent: some View {

@@ -41,11 +41,7 @@ class NCLoginProvider: UIViewController {
 
         let webView = WKWebView(frame: CGRect.zero, configuration: configuration)
         webView.customUserAgent = userAgent
-
-        if #available(iOS 16.4, *) {
-            webView.isInspectable = true
-        }
-
+        webView.isInspectable = true
         webView.navigationDelegate = self
         view.addSubview(webView)
 

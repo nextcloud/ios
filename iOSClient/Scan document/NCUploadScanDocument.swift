@@ -359,10 +359,8 @@ struct UploadScanDocumentView: View {
                             isPresentedSelect = true
                         }
                         .complexModifier { view in
-                            if #available(iOS 16, *) {
-                                view.alignmentGuide(.listRowSeparatorLeading) { _ in
-                                    return 0
-                                }
+                            view.alignmentGuide(.listRowSeparatorLeading) { _ in
+                                return 0
                             }
                         }
                         HStack {

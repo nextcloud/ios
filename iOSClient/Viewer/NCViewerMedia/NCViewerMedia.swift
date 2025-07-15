@@ -56,7 +56,7 @@ class NCViewerMedia: UIViewController {
     var ncplayer: NCPlayer?
     var image: UIImage? {
         didSet {
-            if #available(iOS 17.0, *), metadata.isImage {
+            if metadata.isImage {
                 analyzeCurrentImage()
             }
         }

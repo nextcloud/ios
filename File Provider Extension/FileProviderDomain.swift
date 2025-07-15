@@ -94,13 +94,7 @@ class FileProviderDomain: NSObject {
                 let identifier = domain.identifier.rawValue
                 if !validIdentifiers.contains(identifier) {
                     nkLog(info: "Removing orphaned domain: \(identifier)")
-                    if #available(iOS 16.0, *) {
-                        // On iOS 16 and later, we can explicitly specify the domain removal mode
-                        try await NSFileProviderManager.remove(domain, mode: .removeAll)
-                    } else {
-                        // On iOS 15 and earlier, fallback to legacy removal without specifying the mode
-                        try await NSFileProviderManager.remove(domain)
-                    }
+                    try await NSFileProviderManager.remove(domain, mode: .removeAll)
                 }
             }
         } catch {
