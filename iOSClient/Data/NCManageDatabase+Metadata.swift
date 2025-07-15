@@ -760,11 +760,18 @@ extension NCManageDatabase {
         }
     }
 
-    /// Updates metadata files in Realm asynchronously.
+    /// Asynchronously updates a list of `tableMetadata` entries in Realm for a given account and server URL.
+    ///
+    /// This function performs the following steps:
+    /// 1. Skips all entries with `status != metadataStatusNormal`.
+    /// 2. Deletes existing metadata entries with `status == metadataStatusNormal` that are not in the skip list.
+    /// 3. Copies matching `mediaSearch` from previously deleted metadata to the incoming list.
+    /// 4. Inserts or updates new metadata entries into Realm, except those in the skip list.
+    ///
     /// - Parameters:
-    ///   - metadatas: Array of `tableMetadata` objects to insert or update.
-    ///   - serverUrl: Server URL identifier.
-    ///   - account: Account identifier.
+    ///   - metadatas: An array of incoming detached `tableMetadata` objects to insert or update.
+    ///   - serverUrl: The server URL associated with the metadata entries.
+    ///   - account: The account identifier used to scope the metadata update.
     func updateMetadatasFilesAsync(_ metadatas: [tableMetadata], serverUrl: String, account: String) async {
         await performRealmWriteAsync { realm in
             let ocIdsToSkip = Set(
@@ -776,11 +783,17 @@ extension NCManageDatabase {
             let resultsToDelete = realm.objects(tableMetadata.self)
                 .filter("account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
                 .filter { !ocIdsToSkip.contains($0.ocId) }
+            let metadatasCopy = Array(resultsToDelete).map { tableMetadata(value: $0) }
 
             realm.delete(resultsToDelete)
 
             for metadata in metadatas {
-                guard !ocIdsToSkip.contains(metadata.ocId) else { continue }
+                guard !ocIdsToSkip.contains(metadata.ocId) else {
+                    continue
+                }
+                if let match = metadatasCopy.first(where: { $0.ocId == metadata.ocId }) {
+                    metadata.mediaSearch = match.mediaSearch
+                }
                 realm.add(metadata.detachedCopy(), update: .all)
             }
         }
