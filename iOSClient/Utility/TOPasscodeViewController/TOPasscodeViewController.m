@@ -164,7 +164,7 @@
 - (void)setUpAccessoryButtons
 {
     UIFont *buttonFont = [UIFont systemFontOfSize:16.0f];
-    BOOL isPad = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad;
+    BOOL isPad = [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad;
 
     if (!self.leftAccessoryButton && self.allowBiometricValidation && !self.biometricButton) {
         self.biometricButton = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -305,7 +305,7 @@
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
     // We don't need to do anything special on iPad or if we're using character input
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad || self.passcodeType == TOPasscodeTypeCustomAlphanumeric) { return; }
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad || self.passcodeType == TOPasscodeTypeCustomAlphanumeric) { return; }
 
     // Work out if we need to transition to horizontal
     BOOL horizontalLayout = size.height < size.width;
@@ -336,7 +336,7 @@
 - (void)updateAccessoryButtonFontsForSize:(CGSize)size
 {
     CGFloat width = size.width;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         width = MIN(size.width, size.height);
     }
 
@@ -430,7 +430,7 @@
 - (void)layoutAccessoryButtonsForSize:(CGSize)size
 {
     // The buttons are always embedded in the keypad view on iPad
-    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPhone) { return; }
+    if ([UIDevice currentDevice].userInterfaceIdiom != UIUserInterfaceIdiomPhone) { return; }
 
     if (self.passcodeView.horizontalLayout && self.passcodeType != TOPasscodeTypeCustomAlphanumeric) {
         [self horizontalLayoutAccessoryButtonsForSize:size];
@@ -577,7 +577,7 @@
     };
 
     // Set initial layout to horizontal if we're rotated on an iPhone
-    if (self.passcodeType != TOPasscodeTypeCustomAlphanumeric && UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
+    if (self.passcodeType != TOPasscodeTypeCustomAlphanumeric && [UIDevice currentDevice].userInterfaceIdiom != UIUserInterfaceIdiomPad) {
         CGSize boundsSize = self.view.bounds.size;
         _passcodeView.horizontalLayout = boundsSize.width > boundsSize.height;
     }

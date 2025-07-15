@@ -227,7 +227,7 @@
 - (void)sizeToFitSize:(CGSize)size
 {
     CGFloat width = size.width;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         width = MIN(size.width, size.height);
     }
 
