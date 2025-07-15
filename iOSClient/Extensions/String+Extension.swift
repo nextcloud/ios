@@ -31,6 +31,16 @@ extension String {
         return self.components(separatedBy: CharacterSet.alphanumerics.inverted).joined().lowercased()
     }
 
+    ///
+    /// Escapes `<`, `>`, and `&` for use in SwiftRichString markup as it appears in the activity view.
+    ///
+    var escapedForMarkup: String {
+        self
+            .replacingOccurrences(of: "&", with: "&amp;")
+            .replacingOccurrences(of: "<", with: "&lt;")
+            .replacingOccurrences(of: ">", with: "&gt;")
+    }
+
     var isNumber: Bool {
         return self.allSatisfy { character in
             character.isNumber
