@@ -102,21 +102,21 @@ struct NCSettingsView: View {
                         })
                         /// Enable Touch ID
                         Toggle(NSLocalizedString("_enable_touch_face_id_", comment: ""), isOn: $model.enableTouchID)
-                            .onChange(of: model.enableTouchID) { _ in
+                            .onChange(of: model.enableTouchID) {
                                 model.updateTouchIDSetting()
                             }
 
                         if !NCBrandOptions.shared.enforce_passcode_lock {
                             /// Do not ask for passcode on startup
                             Toggle(NSLocalizedString("_lock_protection_no_screen_", comment: ""), isOn: $model.lockScreen)
-                                .onChange(of: model.lockScreen) { _ in
+                                .onChange(of: model.lockScreen) {
                                     model.updateLockScreenSetting()
                                 }
                         }
 
                         /// Reset app wrong attempts
                         Toggle(NSLocalizedString("_reset_wrong_passcode_option_", comment: ""), isOn: $model.resetWrongAttempts)
-                            .onChange(of: model.resetWrongAttempts) { _ in
+                            .onChange(of: model.resetWrongAttempts) {
                                 model.updateResetWrongAttemptsSetting()
                             }
                     }
@@ -130,7 +130,7 @@ struct NCSettingsView: View {
                 Section {
                     /// Splash screen when app inactive
                     Toggle(NSLocalizedString("_privacy_screen_", comment: ""), isOn: $model.privacyScreen)
-                        .onChange(of: model.privacyScreen) { _ in
+                        .onChange(of: model.privacyScreen) {
                             model.updatePrivacyScreenSetting()
                         }
                 }
@@ -183,9 +183,9 @@ struct NCSettingsView: View {
             Section(content: {
                 Toggle(NSLocalizedString("_settings_account_request_", comment: ""), isOn: $model.accountRequest)
                     .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                    .onChange(of: model.accountRequest, perform: { _ in
+                    .onChange(of: model.accountRequest) {
                         model.updateAccountRequest()
-                    })
+                    }
             }, header: {
                 Text(NSLocalizedString("_users_", comment: ""))
             }, footer: {

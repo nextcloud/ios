@@ -49,7 +49,7 @@ struct NCSettingsAdvancedView: View {
             Section(content: {
                 Toggle(NSLocalizedString("_format_compatibility_", comment: ""), isOn: $model.mostCompatible)
                     .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                    .onChange(of: model.mostCompatible) { _ in
+                    .onChange(of: model.mostCompatible) {
                         model.updateMostCompatible()
                     }
             }, footer: {
@@ -59,7 +59,7 @@ struct NCSettingsAdvancedView: View {
             Section(content: {
                 Toggle(NSLocalizedString("_upload_mov_livephoto_", comment: ""), isOn: $model.livePhoto)
                     .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                    .onChange(of: model.livePhoto) { _ in
+                    .onChange(of: model.livePhoto) {
                         model.updateLivePhoto()
                     }
             }, footer: {
@@ -70,7 +70,7 @@ struct NCSettingsAdvancedView: View {
             Section(content: {
                 Toggle(NSLocalizedString("_remove_photo_CameraRoll_", comment: ""), isOn: $model.removeFromCameraRoll)
                     .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                    .onChange(of: model.removeFromCameraRoll) { _ in
+                    .onChange(of: model.removeFromCameraRoll) {
                         model.updateRemoveFromCameraRoll()
                 }
             }, footer: {
@@ -81,7 +81,7 @@ struct NCSettingsAdvancedView: View {
                 Section(content: {
                     Toggle(NSLocalizedString("_disable_files_app_", comment: ""), isOn: $model.appIntegration)
                         .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                        .onChange(of: model.appIntegration) { _ in
+                        .onChange(of: model.appIntegration) {
                             model.updateAppIntegration()
                     }
                 }, footer: {
@@ -93,7 +93,7 @@ struct NCSettingsAdvancedView: View {
                 Section(content: {
                     Toggle(NSLocalizedString("_crashservice_title_", comment: ""), isOn: $model.crashReporter)
                         .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                        .onChange(of: model.crashReporter) { _ in
+                        .onChange(of: model.crashReporter) {
                             model.updateCrashReporter()
                             showCrashReporter.toggle()
                     }
@@ -133,7 +133,7 @@ struct NCSettingsAdvancedView: View {
                             Text(level.displayText).tag(level)
                         }
                     }
-                    .onChange(of: model.selectedLogLevel) { _ in
+                    .onChange(of: model.selectedLogLevel) {
                         model.updateSelectedLogLevel()
                     }
                 }, header: {
@@ -171,7 +171,7 @@ struct NCSettingsAdvancedView: View {
                     }
                 }
                 .pickerStyle(.automatic)
-                .onChange(of: model.selectedInterval) { _ in
+                .onChange(of: model.selectedInterval) {
                     model.updateSelectedInterval()
                 }
                 Button(action: {

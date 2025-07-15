@@ -226,18 +226,14 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
                 // Update App Icon badge / File Icon badge
 #if DEBUG
-                if UIApplication.shared.applicationIconBadgeNumber != tranfersCount {
-                    UIApplication.shared.applicationIconBadgeNumber = tranfersCount
-                }
+                UNUserNotificationCenter.current().setBadgeCount(tranfersCount)
                 fileItem?.badgeValue = tranfersCount == 0 ? nil : "\(tranfersCount)"
 #else
                 if tranfersCount > 999 {
-                    UIApplication.shared.applicationIconBadgeNumber = 999
+                    UNUserNotificationCenter.current().setBadgeCount(999)
                     fileItem?.badgeValue = "999+"
                 } else {
-                    if UIApplication.shared.applicationIconBadgeNumber != tranfersCount {
-                        UIApplication.shared.applicationIconBadgeNumber = tranfersCount
-                    }
+                    UNUserNotificationCenter.current().setBadgeCount(tranfersCount)
                     fileItem?.badgeValue = tranfersCount == 0 ? nil : "\(tranfersCount)"
                 }
 #endif

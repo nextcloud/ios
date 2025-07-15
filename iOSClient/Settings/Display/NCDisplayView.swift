@@ -60,7 +60,7 @@ struct NCDisplayView: View {
 
                     Toggle(NSLocalizedString("_use_system_style_", comment: ""), isOn: $model.appearanceAutomatic)
                         .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                        .onChange(of: model.appearanceAutomatic) { _ in
+                        .onChange(of: model.appearanceAutomatic) {
                             model.updateAppearanceAutomatic()
                         }
                 }

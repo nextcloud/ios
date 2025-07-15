@@ -111,7 +111,7 @@ struct NCAccountSettingsView: View {
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                     .frame(height: model.getTableViewHeight())
                     .animation(.easeIn(duration: 0.3), value: animation)
-                    .onChange(of: model.indexActiveAccount) { index in
+                    .onChange(of: model.indexActiveAccount) { index, _ in
                         animation.toggle()
                         model.setAccount(account: model.tblAccounts[index].account)
                     }
@@ -125,7 +125,7 @@ struct NCAccountSettingsView: View {
                             TextField(NSLocalizedString("_alias_placeholder_", comment: ""), text: $model.alias)
                                 .font(.callout)
                                 .multilineTextAlignment(.trailing)
-                                .onChange(of: model.alias) { newValue in
+                                .onChange(of: model.alias) { newValue, _ in
                                     model.setAlias(newValue)
                                 }
                         }
@@ -161,7 +161,7 @@ struct NCAccountSettingsView: View {
                                 UserStatusView(showUserStatus: $showUserStatus, account: account)
                             }
                         }
-                        .onChange(of: showUserStatus) { _ in }
+                        .onChange(of: showUserStatus) { }
                     }
                     ///
                     /// Certificate server

@@ -137,7 +137,7 @@ struct NCAutoUploadView: View {
                     Toggle(NSLocalizedString("_back_up_new_photos_only_", comment: ""), isOn: $model.autoUploadOnlyNew)
                         .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                         .opacity(model.autoUploadStart ? 0.15 : 1)
-                        .onChange(of: model.autoUploadOnlyNew) { newValue in
+                        .onChange(of: model.autoUploadOnlyNew) { newValue, _ in
                             model.handleAutoUploadOnlyNew(newValue: newValue)
                         }
                         .accessibilityIdentifier("NewPhotosToggle")
@@ -152,7 +152,7 @@ struct NCAutoUploadView: View {
                     Toggle(NSLocalizedString("_autoupload_photos_", comment: ""), isOn: $model.autoUploadImage)
                         .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                         .opacity(model.autoUploadStart ? 0.15 : 1)
-                        .onChange(of: model.autoUploadImage) { newValue in
+                        .onChange(of: model.autoUploadImage) { newValue, _ in
                             if !newValue { model.autoUploadVideo = true }
                             model.handleAutoUploadImageChange(newValue: newValue)
                         }
@@ -161,7 +161,7 @@ struct NCAutoUploadView: View {
                         Toggle(NSLocalizedString("_wifi_only_", comment: ""), isOn: $model.autoUploadWWAnPhoto)
                             .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                             .opacity(model.autoUploadStart ? 0.15 : 1)
-                            .onChange(of: model.autoUploadWWAnPhoto) { newValue in
+                            .onChange(of: model.autoUploadWWAnPhoto) { newValue, _ in
                                 model.handleAutoUploadWWAnPhotoChange(newValue: newValue)
                             }
                     }
@@ -172,7 +172,7 @@ struct NCAutoUploadView: View {
                     Toggle(NSLocalizedString("_autoupload_videos_", comment: ""), isOn: $model.autoUploadVideo)
                         .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                         .opacity(model.autoUploadStart ? 0.15 : 1)
-                        .onChange(of: model.autoUploadVideo) { newValue in
+                        .onChange(of: model.autoUploadVideo) { newValue, _ in
                             if !newValue { model.autoUploadImage = true }
                             model.handleAutoUploadVideoChange(newValue: newValue)
                         }
@@ -181,7 +181,7 @@ struct NCAutoUploadView: View {
                         Toggle(NSLocalizedString("_wifi_only_", comment: ""), isOn: $model.autoUploadWWAnVideo)
                             .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                             .opacity(model.autoUploadStart ? 0.15 : 1)
-                            .onChange(of: model.autoUploadWWAnVideo) { newValue in
+                            .onChange(of: model.autoUploadWWAnVideo) { newValue, _ in
                                 model.handleAutoUploadWWAnVideoChange(newValue: newValue)
                             }
                     }
@@ -192,7 +192,7 @@ struct NCAutoUploadView: View {
                     Toggle(NSLocalizedString("_autoupload_create_subfolder_", comment: ""), isOn: $model.autoUploadCreateSubfolder)
                         .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                         .opacity(model.autoUploadStart ? 0.15 : 1)
-                        .onChange(of: model.autoUploadCreateSubfolder) { newValue in
+                        .onChange(of: model.autoUploadCreateSubfolder) { newValue, _ in
                             model.handleAutoUploadCreateSubfolderChange(newValue: newValue)
                         }
 
@@ -203,7 +203,7 @@ struct NCAutoUploadView: View {
                             Text(NSLocalizedString("_yearly_", comment: "")).tag(Granularity.yearly)
                         }
                         .opacity(model.autoUploadStart ? 0.15 : 1)
-                        .onChange(of: model.autoUploadSubfolderGranularity) { newValue in
+                        .onChange(of: model.autoUploadSubfolderGranularity) { newValue, _ in
                             model.handleAutoUploadSubfolderGranularityChange(newValue: newValue)
                         }
                     }
@@ -216,7 +216,7 @@ struct NCAutoUploadView: View {
                     Toggle(NSLocalizedString("_enable_background_location_title_", comment: ""), isOn: $model.permissionGranted)
                         .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                         .opacity(model.autoUploadStart ? 0.15 : 1)
-                        .onChange(of: model.permissionGranted) { newValue in
+                        .onChange(of: model.permissionGranted) { newValue, _ in
                             model.handleLocationChange(newValue: newValue)
                         }
                 }, footer: {
@@ -233,7 +233,7 @@ struct NCAutoUploadView: View {
                         .padding(.vertical, 10)
                 }
                 .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                .onChange(of: model.autoUploadStart) { newValue in
+                .onChange(of: model.autoUploadStart) { newValue, _ in
                     albumModel.populateSelectedAlbums()
                     model.handleAutoUploadChange(newValue: newValue, assetCollections: albumModel.selectedAlbums)
                 }

@@ -367,7 +367,7 @@ struct UploadScanDocumentView: View {
                             Text(NSLocalizedString("_filename_", comment: ""))
                             TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $fileName)
                                 .multilineTextAlignment(.trailing)
-                                .onChange(of: fileName) { _ in
+                                .onChange(of: fileName) {
                                     if let fileNameError = FileNameValidator.checkFileName(fileName, account: self.model.controller?.account, capabilities: capabilities) {
                                         footer = fileNameError.errorDescription
                                     } else {
@@ -397,7 +397,7 @@ struct UploadScanDocumentView: View {
                         HStack {
                             Toggle(NSLocalizedString("_text_recognition_", comment: ""), isOn: $isTextRecognition)
                                 .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getElement(account: model.session.account))))
-                                .onChange(of: isTextRecognition) { newValue in
+                                .onChange(of: isTextRecognition) { newValue, _ in
                                     NCKeychain().textRecognitionStatus = newValue
                                 }
                         }
@@ -410,7 +410,7 @@ struct UploadScanDocumentView: View {
                         VStack(spacing: 20) {
                             Toggle(NSLocalizedString("_delete_all_scanned_images_", comment: ""), isOn: $removeAllFiles)
                                 .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getElement(account: model.session.account))))
-                                .onChange(of: removeAllFiles) { newValue in
+                                .onChange(of: removeAllFiles) { newValue, _ in
                                     NCKeychain().deleteAllScanImages = newValue
                                 }
                             Button(NSLocalizedString("_save_", comment: "")) {

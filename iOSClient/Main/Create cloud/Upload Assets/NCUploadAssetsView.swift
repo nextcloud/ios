@@ -122,7 +122,7 @@ struct NCUploadAssetsView: View {
                                                 Text(renameError)
                                             }
                                     }
-                                    .onChange(of: renameFileName) { newValue in
+                                    .onChange(of: renameFileName) { newValue, _ in
                                         if let error = FileNameValidator.checkFileName(newValue, account: model.controller?.account, capabilities: model.capabilities) {
                                             renameError = error.errorDescription
                                         } else {
