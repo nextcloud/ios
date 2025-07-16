@@ -54,7 +54,7 @@ class NCShare: UIViewController, NCSharePagingContent {
     var shareLinksCount = 0
 
     var canReshare: Bool {
-        return ((metadata.sharePermissionsCollaborationServices & NCPermissions().permissionShareShare) != 0)
+        return ((metadata.sharePermissionsCollaborationServices & NCSharePermissions().permissionReshareShare) != 0)
     }
 
     var session: NCSession.Session {

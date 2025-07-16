@@ -135,7 +135,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         var cell: NCCellProtocol & UICollectionViewCell
-        let permissions = NCPermissions()
+        let metadataPermissions = NCMetadataPermissions()
         var isShare = false
         var isMounted = false
         var a11yValues: [String] = []
@@ -195,8 +195,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         if metadataFolder != nil {
-            isShare = metadata.permissions.contains(permissions.permissionShared) && !metadataFolder!.permissions.contains(permissions.permissionShared)
-            isMounted = metadata.permissions.contains(permissions.permissionMounted) && !metadataFolder!.permissions.contains(permissions.permissionMounted)
+            isShare = metadata.permissions.contains(NCMetadataPermissions.permissionShared) && !metadataFolder!.permissions.contains(NCMetadataPermissions.permissionShared)
+            isMounted = metadata.permissions.contains(NCMetadataPermissions.permissionMounted) && !metadataFolder!.permissions.contains(NCMetadataPermissions.permissionMounted)
         }
 
         cell.fileAccount = metadata.account

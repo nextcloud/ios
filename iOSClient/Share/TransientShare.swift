@@ -31,7 +31,7 @@ class TransientShare: Shareable {
         let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
 
         if metadata.e2eEncrypted, capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV12 {
-            self.permissions = NCPermissions().permissionCreateShare
+            self.permissions = NCSharePermissions().permissionCreateShare
         } else {
             self.permissions = capabilities.fileSharingDefaultPermission & metadata.sharePermissionsCollaborationServices
         }
