@@ -156,7 +156,8 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 }
 
                 if let fileNameError = FileNameValidator.checkFileName(metadata.fileNameView, account: self.controller.account, capabilities: capabilities) {
-                    self.controller.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+                    let message = "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"
+                    await UIAlertController.warningAsync( message: message, presenter: self.controller)
                 } else {
                     if let metadata = await database.addAndReturnMetadataAsync(metadata) {
                         NCViewer().view(viewController: viewController, metadata: metadata)
@@ -213,7 +214,8 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
                             return
                         } else {
-                            self.controller.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+                            let message = "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"
+                            await UIAlertController.warningAsync( message: message, presenter: self.controller)
                             invalidNameIndexes.append(index)
                         }
                     }

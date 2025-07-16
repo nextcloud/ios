@@ -236,12 +236,13 @@ extension NCMenuAction {
                     }
 
                     if let fileNameError {
-                        viewController.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true, completion: nil)
+                        let message = "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"
+                        await UIAlertController.warningAsync( message: message, presenter: viewController)
                     } else {
                         let controller = viewController.tabBarController as? NCMainTabBarController
                         NCDownloadAction.shared.openSelectView(items: selectedMetadatas, controller: controller)
-                        completion?()
                     }
+                    completion?()
                 }
             }
         )

@@ -155,28 +155,30 @@ class NCFiles: NCCollectionViewCommon {
     // MARK: - Action
 
     @IBAction func plusButtonAction(_ sender: UIButton) {
-        resetPlusButtonAlpha()
-        guard let controller,
-              let capabilities = NCNetworking.shared.capabilities[controller.account] else {
+        guard let controller else {
             return
         }
-        let fileFolderPath = NCUtilityFileSystem().getFileNamePath("", serverUrl: serverUrl, session: NCSession.shared.getSession(controller: controller))
-        let fileFolderName = (serverUrl as NSString).lastPathComponent
+        resetPlusButtonAlpha()
+        Task { @MainActor in
+            let capabilities = await NKCapabilities.shared.getCapabilities(for: controller.account)
+            let fileFolderPath = NCUtilityFileSystem().getFileNamePath("", serverUrl: serverUrl, session: NCSession.shared.getSession(controller: controller))
+            let fileFolderName = (serverUrl as NSString).lastPathComponent
 
-        if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", controller.account, serverUrl)) {
-            if !directory.permissions.contains("CK") {
-                let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_add_file_")
-                NCContentPresenter().showWarning(error: error)
+            if let directory = await NCManageDatabase.shared.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", controller.account, serverUrl)) {
+                if !directory.permissions.contains("CK") {
+                    let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_add_file_")
+                    NCContentPresenter().showWarning(error: error)
+                    return
+                }
+            }
+
+            if !FileNameValidator.checkFolderPath(fileFolderPath, account: controller.account, capabilities: capabilities) {
+                let message = "\(String(format: NSLocalizedString("_file_name_validator_error_reserved_name_", comment: ""), fileFolderName)) \(NSLocalizedString("_please_rename_file_", comment: ""))"
+                await UIAlertController.warningAsync( message: message, presenter: controller)
                 return
             }
+            self.appDelegate.toggleMenu(controller: controller, sender: sender)
         }
-
-        if !FileNameValidator.checkFolderPath(fileFolderPath, account: controller.account, capabilities: capabilities) {
-            controller.present(UIAlertController.warning(message: "\(String(format: NSLocalizedString("_file_name_validator_error_reserved_name_", comment: ""), fileFolderName)) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
-            return
-        }
-
-        self.appDelegate.toggleMenu(controller: controller, sender: sender)
     }
 
     // MARK: - DataSource
