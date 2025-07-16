@@ -134,14 +134,14 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
     }
 
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        let session = NCSession.shared.getSession(controller: self.controller)
-        let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
+        Task { @MainActor in
+            let session = NCSession.shared.getSession(controller: self.controller)
+            let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
 
-        if isViewerMedia,
-           let urlIn = urls.first,
-           let url = self.copySecurityScopedResource(url: urlIn, urlOut: FileManager.default.temporaryDirectory.appendingPathComponent(urlIn.lastPathComponent)),
-           let viewController = self.viewController {
-            Task { @MainActor in
+            if isViewerMedia,
+               let urlIn = urls.first,
+               let url = self.copySecurityScopedResource(url: urlIn, urlOut: FileManager.default.temporaryDirectory.appendingPathComponent(urlIn.lastPathComponent)),
+               let viewController = self.viewController {
                 let ocId = NSUUID().uuidString
                 let fileName = url.lastPathComponent
                 let metadata = await database.createMetadataAsync(fileName: fileName,
@@ -158,86 +158,82 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 if let fileNameError = FileNameValidator.checkFileName(metadata.fileNameView, account: self.controller.account, capabilities: capabilities) {
                     self.controller.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
                 } else {
-                    if let metadata = database.addAndReturnMetadata(metadata) {
+                    if let metadata = await database.addAndReturnMetadataAsync(metadata) {
                         NCViewer().view(viewController: viewController, metadata: metadata)
                     }
                 }
-            }
+            } else {
+                let serverUrl = self.controller.currentServerUrl()
+                var metadatas = [tableMetadata]()
+                var metadatasInConflict = [tableMetadata]()
+                var invalidNameIndexes: [Int] = []
 
-        } else {
+                for urlIn in urls {
+                    let ocId = NSUUID().uuidString
+                    let fileName = urlIn.lastPathComponent
+                    let newFileName = FileAutoRenamer.rename(fileName, account: session.account, capabilities: capabilities)
+                    let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: newFileName)
+                    let urlOut = URL(fileURLWithPath: toPath)
+                    guard self.copySecurityScopedResource(url: urlIn, urlOut: urlOut) != nil else {
+                        continue
+                    }
+                    let metadataForUpload = await database.createMetadataAsync(fileName: newFileName,
+                                                                               ocId: ocId,
+                                                                               serverUrl: serverUrl,
+                                                                               url: "",
+                                                                               session: session,
+                                                                               sceneIdentifier: self.controller.sceneIdentifier)
 
-            let serverUrl = self.controller.currentServerUrl()
-            var metadatas = [tableMetadata]()
-            var metadatasInConflict = [tableMetadata]()
-
-            for urlIn in urls {
-                let ocId = NSUUID().uuidString
-                let fileName = urlIn.lastPathComponent
-                let newFileName = FileAutoRenamer.rename(fileName, capabilities: capabilities)
-
-                let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: newFileName, userId: session.userId, urlBase: session.urlBase)
-                let urlOut = URL(fileURLWithPath: toPath)
-
-                guard self.copySecurityScopedResource(url: urlIn, urlOut: urlOut) != nil else { continue }
-
-                database.createMetadata(fileName: newFileName,
-                                        ocId: ocId,
-                                        serverUrl: serverUrl,
-                                        session: session,
-                                        sceneIdentifier: self.controller.sceneIdentifier) { metadataForUpload in
                     metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
                     metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
-                    metadataForUpload.size = self.utilityFileSystem.getFileSize(filePath: toPath)
+                    metadataForUpload.size = utilityFileSystem.getFileSize(filePath: toPath)
                     metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
                     metadataForUpload.sessionDate = Date()
 
-                    if self.database.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName, nativeFormat: metadataForUpload.nativeFormat) != nil {
+                    if database.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName, nativeFormat: metadataForUpload.nativeFormat) != nil {
                         metadatasInConflict.append(metadataForUpload)
                     } else {
                         metadatas.append(metadataForUpload)
                     }
                 }
-            }
 
-            var invalidNameIndexes: [Int] = []
+                for (index, metadata) in metadatas.enumerated() {
+                    if let fileNameError = FileNameValidator.checkFileName(metadata.fileName, account: session.account, capabilities: capabilities) {
+                        if metadatas.count == 1 {
 
-            for (index, metadata) in metadatas.enumerated() {
-                if let fileNameError = FileNameValidator.checkFileName(metadata.fileName, account: session.account, capabilities: capabilities) {
-                    if metadatas.count == 1 {
-                        let alert = UIAlertController.renameFile(fileName: metadata.fileName, capabilities: capabilities, account: session.account) { newFileName in
+                            let newFileName = await UIAlertController.renameFileAsync(fileName: metadata.fileName,
+                                                                                      capabilities: capabilities,
+                                                                                      account: metadata.account,
+                                                                                      presenter: self.controller)
+
                             metadatas[index].fileName = newFileName
                             metadatas[index].fileNameView = newFileName
 
-                            Task {
-                                await self.database.addMetadatasAsync(metadatas)
-                            }
-                        }
+                            await self.database.addMetadatasAsync(metadatas)
 
-                        self.controller.present(alert, animated: true)
-                        return
-                    } else {
-                        self.controller.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
-                        invalidNameIndexes.append(index)
+                            return
+                        } else {
+                            self.controller.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+                            invalidNameIndexes.append(index)
+                        }
                     }
                 }
-            }
 
-            for index in invalidNameIndexes.reversed() {
-                metadatas.remove(at: index)
-            }
+                for index in invalidNameIndexes.reversed() {
+                    metadatas.remove(at: index)
+                }
 
-            Task {
                 await self.database.addMetadatasAsync(metadatas)
-            }
 
-            if !metadatasInConflict.isEmpty {
-                if let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
-                    conflict.account = self.controller.account
-                    conflict.delegate = appDelegate
-                    conflict.serverUrl = serverUrl
-                    conflict.metadatasUploadInConflict = metadatasInConflict
+                if !metadatasInConflict.isEmpty {
+                    if let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
+                        conflict.account = self.controller.account
+                        conflict.delegate = appDelegate
+                        conflict.serverUrl = serverUrl
+                        conflict.metadatasUploadInConflict = metadatasInConflict
 
-                    self.controller.present(conflict, animated: true, completion: nil)
+                        self.controller.present(conflict, animated: true, completion: nil)
+                    }
                 }
             }
         }
