@@ -360,38 +360,30 @@ final class NCCameraRoll: CameraRollExtractor {
 
         // Write video resource to file and create metadata
         return await withCheckedContinuation { (continuation: CheckedContinuation<tableMetadata?, Never>) in
-            PHAssetResourceManager.default().writeData(
-                for: resource,
-                toFile: URL(fileURLWithPath: fileNamePath),
-                options: nil
-            ) { error in
+            PHAssetResourceManager.default().writeData(for: resource, toFile: URL(fileURLWithPath: fileNamePath), options: nil ) { error in
                 guard error == nil else {
                     continuation.resume(returning: nil)
                     return
                 }
                 let session = NCSession.shared.getSession(account: metadata.account)
-                let metadataLivePhoto = self.database.createMetadata(fileName: fileName,
-                                                                     ocId: ocId,
-                                                                     serverUrl: metadata.serverUrl,
-                                                                     session: session,
-                                                                     sceneIdentifier: metadata.sceneIdentifier)
+                self.database.createMetadata(fileName: fileName, ocId: ocId, serverUrl: metadata.serverUrl, session: session, sceneIdentifier: metadata.sceneIdentifier) { metadataLivePhoto in
+                    metadataLivePhoto.livePhotoFile = metadata.fileName
+                    metadataLivePhoto.isExtractFile = true
+                    metadataLivePhoto.session = metadata.session
+                    metadataLivePhoto.sessionSelector = metadata.sessionSelector
+                    metadataLivePhoto.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
+                    metadataLivePhoto.status = metadata.status
+                    metadataLivePhoto.chunk = metadataLivePhoto.size > chunkSize ? chunkSize : 0
+                    metadataLivePhoto.e2eEncrypted = metadata.isDirectoryE2EE
+                    if metadataLivePhoto.chunk > 0 || metadataLivePhoto.e2eEncrypted {
+                        metadataLivePhoto.session = NCNetworking.shared.sessionUpload
+                    }
+                    metadataLivePhoto.creationDate = metadata.creationDate
+                    metadataLivePhoto.date = metadata.date
+                    metadataLivePhoto.uploadDate = metadata.uploadDate
 
-                metadataLivePhoto.livePhotoFile = metadata.fileName
-                metadataLivePhoto.isExtractFile = true
-                metadataLivePhoto.session = metadata.session
-                metadataLivePhoto.sessionSelector = metadata.sessionSelector
-                metadataLivePhoto.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
-                metadataLivePhoto.status = metadata.status
-                metadataLivePhoto.chunk = metadataLivePhoto.size > chunkSize ? chunkSize : 0
-                metadataLivePhoto.e2eEncrypted = metadata.isDirectoryE2EE
-                if metadataLivePhoto.chunk > 0 || metadataLivePhoto.e2eEncrypted {
-                    metadataLivePhoto.session = NCNetworking.shared.sessionUpload
+                    continuation.resume(returning: metadataLivePhoto)
                 }
-                metadataLivePhoto.creationDate = metadata.creationDate
-                metadataLivePhoto.date = metadata.date
-                metadataLivePhoto.uploadDate = metadata.uploadDate
-
-                continuation.resume(returning: metadataLivePhoto)
             }
         }
     }

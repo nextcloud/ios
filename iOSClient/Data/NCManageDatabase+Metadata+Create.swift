@@ -9,7 +9,7 @@ import NextcloudKit
 import Photos
 
 extension NCManageDatabase {
-    func convertFileToMetadata(_ file: NKFile, isDirectoryE2EE: Bool) -> tableMetadata {
+    func convertFileToMetadata(_ file: NKFile, isDirectoryE2EE: Bool, completion: @escaping (tableMetadata) -> Void) {
         let metadata = self.createMetadata(file)
 
         #if !EXTENSION_FILE_PROVIDER_EXTENSION
@@ -21,15 +21,17 @@ extension NCManageDatabase {
         }
         #endif
 
-        if !metadata.directory {
-            let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory, account: file.account)
+        Task {
+            if !metadata.directory {
+                let results = await NKTypeIdentifiers.shared.getInternalType(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory, account: file.account)
 
-            metadata.contentType = results.mimeType
-            metadata.iconName = results.iconName
-            metadata.classFile = results.classFile
-            metadata.typeIdentifier = results.typeIdentifier
+                metadata.contentType = results.mimeType
+                metadata.iconName = results.iconName
+                metadata.classFile = results.classFile
+                metadata.typeIdentifier = results.typeIdentifier
+            }
+            completion(metadata)
         }
-        return metadata
     }
 
     func convertFileToMetadataAsync(_ file: NKFile, isDirectoryE2EE: Bool) async -> tableMetadata {
@@ -71,15 +73,15 @@ extension NCManageDatabase {
                 listServerUrl[file.serverUrl] = isDirectoryE2EE
             }
 
-            let metadata = convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
+            convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE) { metadata in
+                if counter == 0 && useFirstAsMetadataFolder {
+                    metadataFolder = metadata
+                } else {
+                    metadatas.append(metadata)
+                }
 
-            if counter == 0 && useFirstAsMetadataFolder {
-                metadataFolder = metadata
-            } else {
-                metadatas.append(metadata)
+                counter += 1
             }
-
-            counter += 1
         }
         completion(metadataFolder.detachedCopy(), metadatas)
     }
@@ -222,54 +224,58 @@ extension NCManageDatabase {
                         subline: String? = nil,
                         iconUrl: String? = nil,
                         session: NCSession.Session,
-                        sceneIdentifier: String?) -> tableMetadata {
-        let metadata = tableMetadata()
+                        sceneIdentifier: String?,
+                        completion: @escaping (tableMetadata) -> Void) {
+        Task {
+            let metadata = tableMetadata()
 
-        if isUrl {
-            metadata.classFile = NKTypeClassFile.url.rawValue
-            metadata.contentType = "text/uri-list"
-            metadata.iconName = NKTypeClassFile.url.rawValue
-            metadata.typeIdentifier = "public.url"
-        } else {
-            let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: fileName, mimeType: "", directory: false, account: session.account)
-            metadata.classFile = results.classFile
-            metadata.contentType = results.mimeType
-            metadata.iconName = results.iconName
-            metadata.typeIdentifier = results.typeIdentifier
+            if isUrl {
+                metadata.classFile = NKTypeClassFile.url.rawValue
+                metadata.contentType = "text/uri-list"
+                metadata.iconName = NKTypeClassFile.url.rawValue
+                metadata.typeIdentifier = "public.url"
+            } else {
+                let results = await NKTypeIdentifiers.shared.getInternalType(fileName: fileName, mimeType: "", directory: false, account: session.account)
+                metadata.classFile = results.classFile
+                metadata.contentType = results.mimeType
+                metadata.iconName = results.iconName
+                metadata.typeIdentifier = results.typeIdentifier
+            }
+            if let iconUrl {
+                metadata.iconUrl = iconUrl
+            }
+
+            let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            metadata.account = session.account
+            metadata.creationDate = Date() as NSDate
+            metadata.date = Date() as NSDate
+            metadata.directory = false
+            metadata.hasPreview = true
+            metadata.etag = ocId
+            metadata.fileName = fileName
+            metadata.fileNameView = fileName
+            metadata.name = name
+            metadata.ocId = ocId
+            metadata.ocIdTransfer = ocId
+            metadata.permissions = "RGDNVW"
+            metadata.serverUrl = serverUrl
+            metadata.serverUrlFileName = serverUrl + "/" + fileName
+            metadata.subline = subline
+            metadata.uploadDate = Date() as NSDate
+            metadata.url = url
+            metadata.urlBase = session.urlBase
+            metadata.user = session.user
+            metadata.userId = session.userId
+            metadata.sceneIdentifier = sceneIdentifier
+            metadata.nativeFormat = !NCKeychain().formatCompatibility
+
+            if !metadata.urlBase.isEmpty, metadata.serverUrl.hasPrefix(metadata.urlBase) {
+                metadata.path = String(metadata.serverUrl.dropFirst(metadata.urlBase.count)) + "/"
+            }
+
+            completion(metadata)
         }
-        if let iconUrl {
-            metadata.iconUrl = iconUrl
-        }
-
-        let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        metadata.account = session.account
-        metadata.creationDate = Date() as NSDate
-        metadata.date = Date() as NSDate
-        metadata.directory = false
-        metadata.hasPreview = true
-        metadata.etag = ocId
-        metadata.fileName = fileName
-        metadata.fileNameView = fileName
-        metadata.name = name
-        metadata.ocId = ocId
-        metadata.ocIdTransfer = ocId
-        metadata.permissions = "RGDNVW"
-        metadata.serverUrl = serverUrl
-        metadata.serverUrlFileName = serverUrl + "/" + fileName
-        metadata.subline = subline
-        metadata.uploadDate = Date() as NSDate
-        metadata.url = url
-        metadata.urlBase = session.urlBase
-        metadata.user = session.user
-        metadata.userId = session.userId
-        metadata.sceneIdentifier = sceneIdentifier
-        metadata.nativeFormat = !NCKeychain().formatCompatibility
-
-        if !metadata.urlBase.isEmpty, metadata.serverUrl.hasPrefix(metadata.urlBase) {
-            metadata.path = String(metadata.serverUrl.dropFirst(metadata.urlBase.count)) + "/"
-        }
-        return metadata
     }
 
     func createMetadataAsync(fileName: String,

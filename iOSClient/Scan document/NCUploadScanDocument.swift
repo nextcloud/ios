@@ -58,23 +58,19 @@ class NCUploadScanDocument: ObservableObject {
         self.quality = quality
         self.removeAllFiles = removeAllFiles
 
-        metadata = self.database.createMetadata(fileName: fileName,
-                                                ocId: UUID().uuidString,
-                                                serverUrl: serverUrl,
-                                                session: session,
-                                                sceneIdentifier: controller?.sceneIdentifier)
+        self.database.createMetadata(fileName: fileName, ocId: UUID().uuidString, serverUrl: serverUrl, session: session, sceneIdentifier: controller?.sceneIdentifier) { metadata in
+            metadata.session = NCNetworking.shared.sessionUploadBackground
+            metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
+            metadata.status = NCGlobal.shared.metadataStatusWaitUpload
+            metadata.sessionDate = Date()
 
-        metadata.session = NCNetworking.shared.sessionUploadBackground
-        metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
-        metadata.status = NCGlobal.shared.metadataStatusWaitUpload
-        metadata.sessionDate = Date()
-
-        if self.database.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName, nativeFormat: metadata.nativeFormat) != nil {
-            completion(true, false)
-        } else {
-            createPDF(metadata: metadata) { error in
-                if !error {
-                    completion(false, false)
+            if self.database.getMetadataConflict(account: self.session.account, serverUrl: self.serverUrl, fileNameView: fileName, nativeFormat: metadata.nativeFormat) != nil {
+                completion(true, false)
+            } else {
+                self.createPDF(metadata: metadata) { error in
+                    if !error {
+                        completion(false, false)
+                    }
                 }
             }
         }
