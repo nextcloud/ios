@@ -94,7 +94,13 @@ extension NCNetworking {
                     }
                 }
 
-                completion(account, metadata, error)
+                if queue == .main {
+                    await MainActor.run {
+                        completion(account, metadata, error)
+                    }
+                } else {
+                    completion(account, metadata, error)
+                }
             }
         }
     }
