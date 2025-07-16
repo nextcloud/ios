@@ -942,10 +942,6 @@ extension NCManageDatabase {
         }
     }
 
-    func getMetadataAsync(account: String, serverUrl: String, fileName: String) async -> tableMetadata? {
-        return await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName ==[c] %@", account, serverUrl, fileName)) // "==[c]" makes fileName case-insensitive
-    }
-
     func getMetadataAsync(predicate: NSPredicate) async -> tableMetadata? {
         return await performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
@@ -1131,7 +1127,7 @@ extension NCManageDatabase {
         if fileNameExtension == "heic", !nativeFormat {
             fileNameConflict = fileNameNoExtension + ".jpg"
         }
-        return getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@",
+        return getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView ==[c] %@",
                                                   account,
                                                   serverUrl,
                                                   fileNameConflict))

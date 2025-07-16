@@ -281,15 +281,18 @@ extension UIAlertController {
                            capabilities: NKCapabilities.Capabilities,
                            completion: @escaping (_ newFileName: String) -> Void = { _ in }) -> UIAlertController {
         renameFile(fileName: metadata.fileNameView, isDirectory: metadata.isDirectory, capabilities: capabilities, account: metadata.account) { fileNameNew in
-            // verify if already exists
-            if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
-                NCContentPresenter().showError(error: NKError(errorCode: 0, errorDescription: "_rename_already_exists_"))
-                return
+
+            Task {
+                // verify if already exists
+                if await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName ==[c] %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil { // "==[c]" makes fileName case-insensitive  {
+                    NCContentPresenter().showError(error: NKError(errorCode: 0, errorDescription: "_rename_already_exists_"))
+                    return
+                }
+
+                NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew)
+
+                completion(fileNameNew)
             }
-
-            NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew)
-
-            completion(fileNameNew)
         }
     }
 
