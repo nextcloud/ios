@@ -107,6 +107,7 @@ class NCShareNetworking: NSObject {
 
         NCActivityIndicator.shared.start(backgroundView: view)
         let filenamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
+        let capabilities = NCNetworking.shared.capabilities[self.metadata.account] ?? NKCapabilities.Capabilities()
 
         NextcloudKit.shared.createShare(path: filenamePath,
                                         shareType: template.shareType,
@@ -129,7 +130,6 @@ class NCShareNetworking: NSObject {
                     self.updateShare(template, downloadLimit: downloadLimit)
                     // Download limit update should happen implicitly on share update.
                 } else {
-                    let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: self.metadata.account)
                     if case let .limited(limit, _) = downloadLimit,
                         capabilities.fileSharingDownloadLimit {
                         self.setShareDownloadLimit(limit, token: share.token)
@@ -172,7 +172,7 @@ class NCShareNetworking: NSObject {
 
             if error == .success, let share = share {
                 let home = self.utilityFileSystem.getHomeServer(session: self.session)
-                let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: self.metadata.account)
+                let capabilities = NCNetworking.shared.capabilities[self.metadata.account] ?? NKCapabilities.Capabilities()
 
                 self.database.addShare(account: self.metadata.account, home: home, shares: [share])
                 self.delegate?.readShareCompleted()
@@ -215,7 +215,7 @@ class NCShareNetworking: NSObject {
     /// Remove the download limit on the share, if existent.
     ///
     func removeShareDownloadLimit(token: String) {
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
+        let capabilities = NCNetworking.shared.capabilities[self.metadata.account] ?? NKCapabilities.Capabilities()
 
         if !capabilities.fileSharingDownloadLimit {
             return
@@ -240,7 +240,7 @@ class NCShareNetworking: NSObject {
     /// - Parameter limit: The new download limit to set.
     ///
     func setShareDownloadLimit(_ limit: Int, token: String) {
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
+        let capabilities = NCNetworking.shared.capabilities[self.metadata.account] ?? NKCapabilities.Capabilities()
 
         if !capabilities.fileSharingDownloadLimit {
             return

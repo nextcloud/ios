@@ -10,7 +10,7 @@ import NextcloudKit
 extension NCNetworking {
     @MainActor
     func termsOfService(account: String) async {
-        let capabilities = await NKCapabilities.shared.getCapabilitiesAsync(for: account)
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
         guard capabilities.termsOfService,
               let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier),
               let controller = SceneManager.shared.getControllers().first(where: { $0.account == account }),
@@ -37,7 +37,7 @@ extension NCNetworking {
     }
 
     func signTermsOfService(account: String, termId: Int) async -> NKError? {
-        let capabilities = await NKCapabilities.shared.getCapabilitiesAsync(for: account)
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
         guard capabilities.termsOfService,
               let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier)
         else {

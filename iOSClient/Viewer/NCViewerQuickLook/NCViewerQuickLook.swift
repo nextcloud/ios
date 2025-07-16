@@ -233,28 +233,30 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
             metadata.fileNameView = fileName
         }
 
-        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
-        guard utilityFileSystem.copyFile(atPath: url.path, toPath: fileNamePath) else { return }
+        Task { @MainActor in
+            let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
+            guard utilityFileSystem.copyFile(atPath: url.path, toPath: fileNamePath) else { return }
 
-        let metadataForUpload = NCManageDatabase.shared.createMetadata(fileName: metadata.fileName,
-                                                                       ocId: ocId,
-                                                                       serverUrl: metadata.serverUrl,
-                                                                       url: url.path,
-                                                                       session: session,
-                                                                       sceneIdentifier: nil)
+            let metadataForUpload = await NCManageDatabase.shared.createMetadataAsync(fileName: metadata.fileName,
+                                                                                      ocId: ocId,
+                                                                                      serverUrl: metadata.serverUrl,
+                                                                                      url: url.path,
+                                                                                      session: session,
+                                                                                      sceneIdentifier: nil)
 
-        metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
-        if override {
-            metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFileNODelete
-        } else {
-            metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
+            metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
+            if override {
+                metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFileNODelete
+            } else {
+                metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
+            }
+            metadataForUpload.size = size
+            metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
+            metadataForUpload.sessionDate = Date()
+
+            self.database.addMetadata(metadataForUpload)
+            self.dismiss(animated: true)
         }
-        metadataForUpload.size = size
-        metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
-        metadataForUpload.sessionDate = Date()
-
-        self.database.addMetadata(metadataForUpload)
-        self.dismiss(animated: true)
     }
 
     func previewController(_ controller: QLPreviewController, didSaveEditedCopyOf previewItem: QLPreviewItem, at modifiedContentsURL: URL) {

@@ -156,10 +156,12 @@ class NCFiles: NCCollectionViewCommon {
 
     @IBAction func plusButtonAction(_ sender: UIButton) {
         resetPlusButtonAlpha()
-        guard let controller else { return }
+        guard let controller,
+              let capabilities = NCNetworking.shared.capabilities[controller.account] else {
+            return
+        }
         let fileFolderPath = NCUtilityFileSystem().getFileNamePath("", serverUrl: serverUrl, session: NCSession.shared.getSession(controller: controller))
         let fileFolderName = (serverUrl as NSString).lastPathComponent
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: controller.account)
 
         if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", controller.account, serverUrl)) {
             if !directory.permissions.contains("CK") {
@@ -315,7 +317,7 @@ class NCFiles: NCCollectionViewCommon {
            let signature = results.signature,
            let version = results.version {
             let error = await NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: signature, serverUrl: serverUrl, session: self.session)
-            let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: self.session.account)
+            let capabilities = await NKCapabilities.shared.getCapabilities(for: self.session.account)
             if error == .success {
                 if version == "v1", capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
                     nkLog(tag: self.global.logTagE2EE, message: "Conversion v1 to v2")

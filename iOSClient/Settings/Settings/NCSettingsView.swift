@@ -41,7 +41,7 @@ struct NCSettingsView: View {
     @ObservedObject var model: NCSettingsModel
 
     var capabilities: NKCapabilities.Capabilities {
-        NKCapabilities.shared.getCapabilitiesBlocking(for: model.controller?.account)
+        NCNetworking.shared.capabilities[model.controller?.account ?? ""] ?? NKCapabilities.Capabilities()
     }
 
     var body: some View {

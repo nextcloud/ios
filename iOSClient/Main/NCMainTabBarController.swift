@@ -145,6 +145,8 @@ class NCMainTabBarController: UITabBarController {
     private func timerCheck() {
         self.timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: false, block: { _ in
             Task {
+                let capabilities = await NKCapabilities.shared.getCapabilities(for: self.account)
+
                 // Check error
                 await NCNetworking.shared.checkServerError(account: self.account, controller: self)
 
@@ -155,7 +157,6 @@ class NCMainTabBarController: UITabBarController {
                     }
                     // Update Activity tab bar
                     if let item = self.tabBar.items?[3] {
-                        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: self.account)
                         item.isEnabled = capabilities.activityEnabled
                     }
 

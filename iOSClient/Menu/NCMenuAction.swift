@@ -221,25 +221,27 @@ extension NCMenuAction {
             order: order,
             sender: sender,
             action: { _ in
-                var fileNameError: NKError?
-                let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
+                Task { @MainActor in
+                    var fileNameError: NKError?
+                    let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
 
-                for metadata in selectedMetadatas {
-                    if let sceneIdentifier = metadata.sceneIdentifier,
-                       let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier),
-                       let checkError = FileNameValidator.checkFileName(metadata.fileNameView, account: controller.account, capabilities: capabilities) {
+                    for metadata in selectedMetadatas {
+                        if let sceneIdentifier = metadata.sceneIdentifier,
+                           let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier),
+                           let checkError = FileNameValidator.checkFileName(metadata.fileNameView, account: controller.account, capabilities: capabilities) {
 
-                        fileNameError = checkError
-                        break
+                            fileNameError = checkError
+                            break
+                        }
                     }
-                }
 
-                if let fileNameError {
-                    viewController.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true, completion: nil)
-                } else {
-                    let controller = viewController.tabBarController as? NCMainTabBarController
-                    NCDownloadAction.shared.openSelectView(items: selectedMetadatas, controller: controller)
-                    completion?()
+                    if let fileNameError {
+                        viewController.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true, completion: nil)
+                    } else {
+                        let controller = viewController.tabBarController as? NCMainTabBarController
+                        NCDownloadAction.shared.openSelectView(items: selectedMetadatas, controller: controller)
+                        completion?()
+                    }
                 }
             }
         )

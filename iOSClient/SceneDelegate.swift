@@ -71,10 +71,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
 
         Task {
-            // set capabilities
-            await self.database.applyCachedCapabilitiesAsync(account: activeTblAccount.account)
-            // apply theming
-            NCBrandColor.shared.settingThemingColor(account: activeTblAccount.account)
+            if let capabilities = await self.database.setCapabilities(account: activeTblAccount.account) {
+                // set theming color
+                NCBrandColor.shared.settingThemingColor(account: activeTblAccount.account, capabilities: capabilities)
+                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeTheming, userInfo: ["account": activeTblAccount.account])
+            }
+
             // Set up networking session
             await NCNetworkingProcess.shared.setCurrentAccount(activeTblAccount.account)
         }
@@ -95,7 +97,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
             // Perform async setup: restore capabilities and ensure file provider domain
             Task {
-                await self.database.applyCachedCapabilitiesAsync(account: tblAccount.account)
+                await self.database.setCapabilities(account: tblAccount.account)
                 try? await FileProviderDomain().ensureDomainRegistered(userId: tblAccount.userId, urlBase: tblAccount.urlBase)
             }
 
@@ -278,7 +280,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                         NCDocumentCamera.shared.openScannerDocument(viewController: controller)
                     case self.global.actionTextDocument:
                         let session = SceneManager.shared.getSession(scene: scene)
-                        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
+                        let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
                         guard let creator = capabilities.directEditingCreators.first(where: { $0.editor == "text" }) else {
                             return
                         }

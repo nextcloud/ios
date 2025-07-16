@@ -205,7 +205,8 @@ extension NCNetworking {
                       selector: String? = nil,
                       options: NKRequestOptions = NKRequestOptions()) async -> (serverExists: Bool, error: NKError) {
 
-        var fileNameFolder = FileAutoRenamer.rename(fileName, isFolderPath: true, account: session.account)
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
+        var fileNameFolder = FileAutoRenamer.rename(fileName, isFolderPath: true, capabilities: capabilities)
         if !overwrite {
             fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: session.account)
         }
@@ -552,9 +553,7 @@ extension NCNetworking {
                                           options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
             taskHandler(task)
         } completion: { _, files, _, error in
-            guard error == .success, let files else {
-                return completion(nil, error)
-            }
+            guard error == .success, let files else { return completion(nil, error) }
 
             Task {
                 let (_, metadatas) = await self.database.convertFilesToMetadatasAsync(files, useFirstAsMetadataFolder: false)
@@ -611,17 +610,17 @@ extension NCNetworking {
                         print(#function, "[ERROR]: File search entry has no path: \(entry)")
                     }
                 })
+                update(account, provider.id, partialResult, metadatas)
             case "fulltextsearch":
                 // NOTE: FTS could also return attributes like files
                 // https://github.com/nextcloud/files_fulltextsearch/issues/143
                 partialResult.entries.forEach({ entry in
                     let url = URLComponents(string: entry.resourceURL)
                     guard let dir = url?.queryItems?["dir"]?.value, let filename = url?.queryItems?["scrollto"]?.value else { return }
-                    if let metadata = self.database.getMetadata(predicate: NSPredicate(
-                              format: "account == %@ && path == %@ && fileName == %@",
-                              session.account,
-                              "/remote.php/dav/files/" + session.user + dir,
-                              filename)) {
+                    if let metadata = self.database.getMetadata(predicate: NSPredicate(format: "account == %@ && path == %@ && fileName == %@",
+                                                                                       session.account,
+                                                                                       "/remote.php/dav/files/" + session.user + dir,
+                                                                                       filename)) {
                         metadatas.append(metadata)
                     } else {
                         let semaphore = DispatchSemaphore(value: 0)
@@ -632,22 +631,25 @@ extension NCNetworking {
                         semaphore.wait()
                     }
                 })
+                update(account, provider.id, partialResult, metadatas)
             default:
-                partialResult.entries.forEach({ entry in
-                    let metadata = self.database.createMetadata(fileName: entry.title,
-                                                                ocId: NSUUID().uuidString,
-                                                                serverUrl: session.urlBase,
-                                                                url: entry.resourceURL,
-                                                                isUrl: true,
-                                                                name: partialResult.id,
-                                                                subline: entry.subline,
-                                                                iconUrl: entry.thumbnailURL,
-                                                                session: session,
-                                                                sceneIdentifier: nil)
-                    metadatas.append(metadata)
-                })
+                Task {
+                    for entry in partialResult.entries {
+                        let metadata = await self.database.createMetadataAsync(fileName: entry.title,
+                                                                               ocId: NSUUID().uuidString,
+                                                                               serverUrl: session.urlBase,
+                                                                               url: entry.resourceURL,
+                                                                               isUrl: true,
+                                                                               name: partialResult.id,
+                                                                               subline: entry.subline,
+                                                                               iconUrl: entry.thumbnailURL,
+                                                                               session: session,
+                                                                               sceneIdentifier: nil)
+                        metadatas.append(metadata)
+                    }
+                    update(account, provider.id, partialResult, metadatas)
+                }
             }
-            update(account, provider.id, partialResult, metadatas)
         } completion: { _, _, _ in
             self.requestsUnifiedSearch.removeAll()
             dispatchGroup.leave()
@@ -682,6 +684,7 @@ extension NCNetworking {
                         semaphore.wait()
                     } else { print(#function, "[ERROR]: File search entry has no path: \(entry)") }
                 })
+                completion(account, searchResult, metadatas, error)
             case "fulltextsearch":
                 // NOTE: FTS could also return attributes like files
                 // https://github.com/nextcloud/files_fulltextsearch/issues/143
@@ -689,8 +692,8 @@ extension NCNetworking {
                     let url = URLComponents(string: entry.resourceURL)
                     guard let dir = url?.queryItems?["dir"]?.value, let filename = url?.queryItems?["scrollto"]?.value else { return }
                     if let metadata = self.database.getMetadata(predicate: NSPredicate(format: "account == %@ && path == %@ && fileName == %@",
-                                                                                                 session.account,
-                                                                                                 "/remote.php/dav/files/" + session.user + dir, filename)) {
+                                                                                       session.account,
+                                                                                       "/remote.php/dav/files/" + session.user + dir, filename)) {
                         metadatas.append(metadata)
                     } else {
                         let semaphore = DispatchSemaphore(value: 0)
@@ -701,23 +704,25 @@ extension NCNetworking {
                         semaphore.wait()
                     }
                 })
+                completion(account, searchResult, metadatas, error)
             default:
-                searchResult.entries.forEach({ entry in
-                    let newMetadata = self.database.createMetadata(fileName: entry.title,
-                                                                   ocId: NSUUID().uuidString,
-                                                                   serverUrl: session.urlBase,
-                                                                   url: entry.resourceURL,
-                                                                   isUrl: true,
-                                                                   name: searchResult.name.lowercased(),
-                                                                   subline: entry.subline,
-                                                                   iconUrl: entry.thumbnailURL,
-                                                                   session: session,
-                                                                   sceneIdentifier: nil)
-                    metadatas.append(newMetadata)
-                })
+                Task {
+                    for entry in searchResult.entries {
+                        let metadata = await self.database.createMetadataAsync(fileName: entry.title,
+                                                                               ocId: NSUUID().uuidString,
+                                                                               serverUrl: session.urlBase,
+                                                                               url: entry.resourceURL,
+                                                                               isUrl: true,
+                                                                               name: searchResult.name.lowercased(),
+                                                                               subline: entry.subline,
+                                                                               iconUrl: entry.thumbnailURL,
+                                                                               session: session,
+                                                                               sceneIdentifier: nil)
+                        metadatas.append(metadata)
+                    }
+                    completion(account, searchResult, metadatas, error)
+                }
             }
-
-            completion(account, searchResult, metadatas, error)
         }
         if let request = request {
             requestsUnifiedSearch.append(request)

@@ -360,12 +360,11 @@ final class FileProviderExtension: NSFileProviderExtension {
 
                     fileURL.stopAccessingSecurityScopedResource()
 
-                    let metadata = self.database.createMetadata(fileName: fileName,
-                                                                ocId: ocIdTransfer,
-                                                                serverUrl: tableDirectory.serverUrl,
-                                                                session: session,
-                                                                sceneIdentifier: nil
-                    )
+                    let metadata = await self.database.createMetadataAsync(fileName: fileName,
+                                                                           ocId: ocIdTransfer,
+                                                                           serverUrl: tableDirectory.serverUrl,
+                                                                           session: session,
+                                                                           sceneIdentifier: nil)
 
                     metadata.session = NCNetworking.shared.sessionUploadBackgroundExt
                     metadata.size = size

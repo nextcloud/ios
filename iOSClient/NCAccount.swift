@@ -96,13 +96,17 @@ class NCAccount: NSObject {
             Task(priority: .utility) {
                 await NCService().startRequestServicesServer(account: account, controller: controller)
             }
+            // Capabilities
+            if let capabilities = await self.database.setCapabilities(account: account) {
+                // set theming color
+                NCBrandColor.shared.settingThemingColor(account: account, capabilities: capabilities)
+            }
             // Start the auto upload
             let num = await NCAutoUpload.shared.initAutoUpload(tblAccount: tblAccount)
             nkLog(start: "Auto upload with \(num) photo")
             // Networking Process
             await NCNetworkingProcess.shared.setCurrentAccount(account)
             // Color
-            NCBrandColor.shared.settingThemingColor(account: account)
             NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeTheming, userInfo: ["account": account])
             // Notification
             if let controller {

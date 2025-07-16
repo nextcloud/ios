@@ -190,7 +190,7 @@ extension NCNetworking {
                 return
             }
 
-            NextcloudKit.shared.nkCommonInstance.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
+            await NextcloudKit.shared.nkCommonInstance.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
 
             #if EXTENSION_FILE_PROVIDER_EXTENSION
             await FileProviderData.shared.downloadComplete(metadata: metadata, task: task, etag: etag, error: error)
@@ -204,6 +204,8 @@ extension NCNetworking {
                     NCEndToEndEncryption.shared().decryptFile(metadata.fileName,
                                                               fileNameView: metadata.fileNameView,
                                                               ocId: metadata.ocId,
+                                                              userId: metadata.userId,
+                                                              urlBase: metadata.urlBase,
                                                               key: result.key,
                                                               initializationVector: result.initializationVector,
                                                               authenticationTag: result.authenticationTag)

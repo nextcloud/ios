@@ -20,7 +20,7 @@ extension NCShareExtension: UICollectionViewDelegate {
             if metadata.e2eEncrypted && !NCKeychain().isEndToEndEnabled(account: tblAccount.account) {
                 self.showAlert(title: "_info_", description: "_e2e_goto_settings_for_enable_")
             }
-            let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: tblAccount.account)
+            let capabilities = await NKCapabilities.shared.getCapabilities(for: tblAccount.account)
 
             if let fileNameError = FileNameValidator.checkFileName(metadata.fileNameView, account: tblAccount.account, capabilities: capabilities) {
                 self.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)

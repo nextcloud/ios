@@ -44,7 +44,7 @@ class NCCapabilitiesModel: ObservableObject, ViewOnAppearHandling {
     func onViewAppear() {
         var textEditor = false
         var onlyofficeEditors = false
-        let cap = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
+        let cap = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
         capabililies.removeAll()
 
         var image = utility.loadImage(named: "person.fill.badge.plus")

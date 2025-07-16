@@ -63,9 +63,7 @@ class NCShare: UIViewController, NCSharePagingContent {
 
     var shares: (firstShareLink: tableShare?, share: [tableShare]?) = (nil, nil)
 
-    var capabilities: NKCapabilities.Capabilities {
-        NKCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
-    }
+    var capabilities = NKCapabilities.Capabilities()
 
     private var dropDown = DropDown()
     var networking: NCShareNetworking?
@@ -94,26 +92,29 @@ class NCShare: UIViewController, NCSharePagingContent {
 
         NotificationCenter.default.addObserver(self, selector: #selector(reloadData), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataNCShare), object: nil)
 
-        if metadata.e2eEncrypted {
-            let direcrory = self.database.getTableDirectory(account: metadata.account, serverUrl: metadata.serverUrl)
-            if capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV12 ||
-                (capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 && direcrory?.e2eEncrypted ?? false) {
-                searchFieldTopConstraint.constant = -50
-                searchField.alpha = 0
-                btnContact.alpha = 0
+        Task {
+            self.capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
+            if metadata.e2eEncrypted {
+                let direcrory = self.database.getTableDirectory(account: metadata.account, serverUrl: metadata.serverUrl)
+                if capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV12 ||
+                    (capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 && direcrory?.e2eEncrypted ?? false) {
+                    searchFieldTopConstraint.constant = -50
+                    searchField.alpha = 0
+                    btnContact.alpha = 0
+                }
+            } else {
+                checkSharedWithYou()
             }
-        } else {
-            checkSharedWithYou()
+
+            reloadData()
+
+            networking = NCShareNetworking(metadata: metadata, view: self.view, delegate: self, session: session)
+            let isVisible = (self.navigationController?.topViewController as? NCSharePaging)?.page == .sharing
+            networking?.readShare(showLoadingIndicator: isVisible)
+
+            searchField.searchTextField.font = .systemFont(ofSize: 14)
+            searchField.delegate = self
         }
-
-        reloadData()
-
-        networking = NCShareNetworking(metadata: metadata, view: self.view, delegate: self, session: session)
-        let isVisible = (self.navigationController?.topViewController as? NCSharePaging)?.page == .sharing
-        networking?.readShare(showLoadingIndicator: isVisible)
-
-        searchField.searchTextField.font = .systemFont(ofSize: 14)
-        searchField.delegate = self
     }
 
     func makeNewLinkShare() {

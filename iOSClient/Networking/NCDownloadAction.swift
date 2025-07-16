@@ -236,7 +236,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
 
     func openShare(viewController: UIViewController, metadata: tableMetadata, page: NCBrandOptions.NCInfoPagingTab) {
         var page = page
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
+        let capabilities = NCNetworking.shared.capabilities[metadata.account] ?? NKCapabilities.Capabilities()
 
         NCActivityIndicator.shared.start(backgroundView: viewController.view)
         NCNetworking.shared.readFile(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account, queue: .main) { _, metadata, error in
@@ -403,10 +403,10 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
 
     // MARK: - Copy & Paste
 
-    func pastePasteboard(serverUrl: String, account: String, controller: NCMainTabBarController?) {
+    func pastePasteboard(serverUrl: String, account: String, controller: NCMainTabBarController?) async {
         var fractionCompleted: Float = 0
         let processor = ParallelWorker(n: 5, titleKey: "_status_uploading_", totalTasks: nil, controller: controller)
-        guard let tblAccount = database.getTableAccount(account: account) else {
+        guard let tblAccount = await self.database.getTableAccountAsync(account: account) else {
             return
         }
 
@@ -435,7 +435,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
 
         for (index, items) in UIPasteboard.general.items.enumerated() {
             for item in items {
-                let results = NKFilePropertyResolver().resolve(inUTI: item.key, account: account)
+                let results = await NKFilePropertyResolver().resolve(inUTI: item.key ,account: account)
                 guard let data = UIPasteboard.general.data(forPasteboardType: item.key, inItemSet: IndexSet([index]))?.first else {
                     continue
                 }
@@ -534,8 +534,8 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         let topViewController = navigationController?.topViewController as? NCSelect
         var listViewController = [NCSelect]()
         var copyItems: [tableMetadata] = []
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: controller?.account ?? "")
-
+        let capabilities = NCNetworking.shared.capabilities[controller?.account ?? ""] ?? NKCapabilities.Capabilities()
+        
         for item in items {
             if let fileNameError = FileNameValidator.checkFileName(item.fileNameView, account: controller?.account, capabilities: capabilities) {
                 controller?.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
