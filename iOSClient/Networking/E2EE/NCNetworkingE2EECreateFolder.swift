@@ -16,7 +16,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
     func createFolder(fileName: String, serverUrl: String, sceneIdentifier: String?, session: NCSession.Session) async -> NKError {
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
-        var fileNameFolder = FileAutoRenamer.rename(fileName, isFolderPath: true,account: session.account, capabilities: capabilities)
+        var fileNameFolder = FileAutoRenamer.rename(fileName, isFolderPath: true, capabilities: capabilities)
 
         let fileNameIdentifier = networkingE2EE.generateRandomIdentifier()
         let serverUrlFileName = serverUrl + "/" + fileNameIdentifier
