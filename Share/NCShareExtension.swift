@@ -296,9 +296,8 @@ extension NCShareExtension {
                         showRenameFileDialog(named: fileName, account: tblAccount.account)
                         return
                     } else {
-                        present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))") {
-                            self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
-                        }, animated: true)
+                        let message = "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"
+                        await UIAlertController.warningAsync(message: message, presenter: self)
 
                         invalidNameIndexes.append(index)
                         dismissAfterUpload = false

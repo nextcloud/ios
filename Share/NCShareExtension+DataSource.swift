@@ -23,7 +23,8 @@ extension NCShareExtension: UICollectionViewDelegate {
             let capabilities = await NKCapabilities.shared.getCapabilities(for: tblAccount.account)
 
             if let fileNameError = FileNameValidator.checkFileName(metadata.fileNameView, account: tblAccount.account, capabilities: capabilities) {
-                self.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+                let message = "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"
+                await UIAlertController.warningAsync(message: message, presenter: self)
                 return
             }
 

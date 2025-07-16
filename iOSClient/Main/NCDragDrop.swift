@@ -83,7 +83,10 @@ class NCDragDrop: NSObject {
                         if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
                             serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
                         }
-                        self.uploadFile(url: url, serverUrl: serverUrl, controller: controller)
+                        let serverUrl = serverUrl
+                        Task {
+                            await self.uploadFile(url: url, serverUrl: serverUrl, controller: controller)
+                        }
                     }
                 }
             }
@@ -121,39 +124,39 @@ class NCDragDrop: NSObject {
         }
     }
 
-    func uploadFile(url: URL, serverUrl: String, controller: NCMainTabBarController?) {
+    func uploadFile(url: URL, serverUrl: String, controller: NCMainTabBarController?) async {
         do {
             let data = try Data(contentsOf: url)
-            Task {
-                let ocId = NSUUID().uuidString
-                let session = NCSession.shared.getSession(controller: controller)
-                let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
-                let newFileName = FileAutoRenamer.rename(url.lastPathComponent, capabilities: capabilities)
-                let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: newFileName, userId: session.userId, urlBase: session.urlBase)
+            let ocId = NSUUID().uuidString
+            let session = NCSession.shared.getSession(controller: controller)
+            let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
+            let newFileName = FileAutoRenamer.rename(url.lastPathComponent, capabilities: capabilities)
+            let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: newFileName, userId: session.userId, urlBase: session.urlBase)
 
-                if let fileNameError = FileNameValidator.checkFileName(newFileName, account: session.account, capabilities: capabilities) {
-                    await controller?.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
-                    return
-                }
-
-                let fileName = await NCNetworking.shared.createFileName(fileNameBase: newFileName, account: session.account, serverUrl: serverUrl)
-
-                try data.write(to: URL(fileURLWithPath: fileNamePath))
-
-                let metadataForUpload = await database.createMetadataAsync(fileName: fileName,
-                                                                           ocId: ocId,
-                                                                           serverUrl: serverUrl,
-                                                                           session: session,
-                                                                           sceneIdentifier: controller?.sceneIdentifier)
-
-                metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
-                metadataForUpload.sessionSelector = global.selectorUploadFile
-                metadataForUpload.size = utilityFileSystem.getFileSize(filePath: fileNamePath)
-                metadataForUpload.status = global.metadataStatusWaitUpload
-                metadataForUpload.sessionDate = Date()
-
-                database.addMetadata(metadataForUpload)
+            if let fileNameError = FileNameValidator.checkFileName(newFileName, account: session.account, capabilities: capabilities),
+                let controller {
+                let message = "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"
+                await UIAlertController.warningAsync( message: message, presenter: controller)
+                return
             }
+
+            let fileName = await NCNetworking.shared.createFileName(fileNameBase: newFileName, account: session.account, serverUrl: serverUrl)
+
+            try data.write(to: URL(fileURLWithPath: fileNamePath))
+
+            let metadataForUpload = await database.createMetadataAsync(fileName: fileName,
+                                                                       ocId: ocId,
+                                                                       serverUrl: serverUrl,
+                                                                       session: session,
+                                                                       sceneIdentifier: controller?.sceneIdentifier)
+
+            metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
+            metadataForUpload.sessionSelector = global.selectorUploadFile
+            metadataForUpload.size = utilityFileSystem.getFileSize(filePath: fileNamePath)
+            metadataForUpload.status = global.metadataStatusWaitUpload
+            metadataForUpload.sessionDate = Date()
+
+            database.addMetadata(metadataForUpload)
         } catch {
             NCContentPresenter().showError(error: NKError(error: error))
             return
