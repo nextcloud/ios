@@ -102,25 +102,26 @@ class NCAccount: NSObject {
             appDelegate.subscribingPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user)
             // Start the service
             NCService().startRequestServicesServer(account: account, controller: controller)
-            // Start the auto upload
-            Task {
+
+            Task { @MainActor in
+                // Networking Process
+                await NCNetworkingProcess.shared.setCurrentAccount(account)
+                // Set capabilities
+                if let capabilities = await self.database.setCapabilities(account: account) {
+                    // set theming color
+                    NCBrandColor.shared.settingThemingColor(account: account, capabilities: capabilities)
+                }
+                // Start the auto upload
                 let num = await NCAutoUpload.shared.initAutoUpload(tblAccount: tblAccount)
                 nkLog(start: "Auto upload with \(num) photo")
 
-                // Networking Process
-                await NCNetworkingProcess.shared.setCurrentAccount(account)
-            }
-
-            // Color
-            Task {
-                await NCBrandColor.shared.settingThemingColor(account: account)
-            }
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeTheming, userInfo: ["account": account])
-            // Notification
-            if let controller {
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeUser, userInfo: ["account": account, "controller": controller])
-            } else {
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeUser, userInfo: ["account": account])
+                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeTheming, userInfo: ["account": account])
+                // Notification
+                if let controller {
+                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeUser, userInfo: ["account": account, "controller": controller])
+                } else {
+                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeUser, userInfo: ["account": account])
+                }
             }
         }
 

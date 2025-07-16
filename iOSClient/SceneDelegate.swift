@@ -32,13 +32,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if let activeTblAccount = self.database.getActiveTableAccount() {
             nkLog(debug: "Account active \(activeTblAccount.account)")
 
-            Task {
+            Task { @MainActor in
                 // set capabilities
-                if let capabilities = await self.database.applyCachedCapabilitiesAsync(account: activeTblAccount.account) {
-                    NCNetworking.shared.capabilities[activeTblAccount.account] = capabilities
+                if let capabilities = await self.database.setCapabilities(account: activeTblAccount.account) {
+                    // set theming color
+                    NCBrandColor.shared.settingThemingColor(account: activeTblAccount.account, capabilities: capabilities)
                 }
-                // set theming color
-                await NCBrandColor.shared.settingThemingColor(account: activeTblAccount.account)
 
                 await NCNetworkingProcess.shared.setCurrentAccount(activeTblAccount.account)
             }
@@ -54,9 +53,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                                                   httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
                                                   groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
                 Task {
-                    if let capabilities = await self.database.applyCachedCapabilitiesAsync(account: tableAccount.account) {
-                        NCNetworking.shared.capabilities[tableAccount.account] = capabilities
-                    }
+                    await self.database.setCapabilities(account: tableAccount.account)
                 }
                 NCSession.shared.appendSession(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId)
             }

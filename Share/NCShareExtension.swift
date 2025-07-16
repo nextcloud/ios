@@ -131,6 +131,8 @@ class NCShareExtension: UIViewController {
                 NCPasscode.shared.enableTouchFaceID()
             }
         }
+
+        self.collectionView.reloadData()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {

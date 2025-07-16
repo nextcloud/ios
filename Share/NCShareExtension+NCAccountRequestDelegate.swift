@@ -53,11 +53,6 @@ extension NCShareExtension: NCAccountRequestDelegate {
                 cancel(with: NCShareExtensionError.noAccount)
                 return
             }
-            if let capabilities = await self.database.applyCachedCapabilitiesAsync(account: account) {
-                NCNetworking.shared.capabilities[account] = capabilities
-            }
-
-            await NCBrandColor.shared.settingThemingColor(account: account)
 
             NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup, delegate: NCNetworking.shared)
             NextcloudKit.shared.appendSession(account: tblAccount.account,

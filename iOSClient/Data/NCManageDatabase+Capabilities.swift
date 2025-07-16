@@ -22,7 +22,7 @@ extension NCManageDatabase {
     ///   - data: The raw JSON data returned from the capabilities endpoint.
     ///   - account: The account identifier.
     /// - Throws: Rethrows any error encountered during the Realm write operation.
-    func addCapabilitiesAsync(data: Data, account: String) async {
+    func setDataCapabilities(data: Data, account: String) async {
         await performRealmWriteAsync { realm in
             let object = realm.object(ofType: tableCapabilities.self, forPrimaryKey: account)
             let addObject: tableCapabilities
@@ -46,7 +46,7 @@ extension NCManageDatabase {
     ///   - data: The raw JSON data returned from the text editors endpoint.
     ///   - account: The account identifier.
     /// - Throws: Rethrows any error encountered during the Realm write operation.
-    func addCapabilitiesEditorsAsync(data: Data, account: String) async {
+    func setDataCapabilitiesEditors(data: Data, account: String) async {
         await performRealmWriteAsync { realm in
             let object = realm.object(ofType: tableCapabilities.self, forPrimaryKey: account)
             let addObject: tableCapabilities
@@ -78,7 +78,8 @@ extension NCManageDatabase {
     /// Errors during decoding or async storage are caught and logged.
     ///
     /// - Parameter account: The identifier of the account whose cached capabilities should be applied.
-    func applyCachedCapabilitiesAsync(account: String) async -> NKCapabilities.Capabilities? {
+    @discardableResult
+    func setCapabilities(account: String) async -> NKCapabilities.Capabilities? {
         let results = await performRealmReadAsync { realm in
             realm.object(ofType: tableCapabilities.self, forPrimaryKey: account)
                 .map { tableCapabilities(value: $0) }
@@ -100,42 +101,16 @@ extension NCManageDatabase {
                 capabilities?.directEditingCreators = creators
 
                 if let capabilities {
-                    await NKCapabilities.shared.appendCapabilities(for: account, capabilities: capabilities)
+                    await NKCapabilities.shared.setCapabilities(for: account, capabilities: capabilities)
                 }
             }
         } catch {
             nkLog(error: "Error reading capabilities JSON in Realm \(error)")
         }
 
+        // use Networking
+        NCNetworking.shared.capabilities[account] = capabilities
+
         return capabilities
-    }
-
-    /// Synchronously retrieves and parses capabilities JSON from Realm for the given account.
-    /// - Important: This blocks the current thread. Do not call from an async context.
-    @discardableResult
-    public func applyCachedCapabilitiesBlocking(account: String) -> NKCapabilities.Capabilities? {
-        var result: NKCapabilities.Capabilities?
-        let group = DispatchGroup()
-
-        group.enter()
-        Task {
-            let data = await performRealmReadAsync { realm in
-                realm.object(ofType: tableCapabilities.self, forPrimaryKey: account)?.capabilities
-            }
-
-            if let data {
-                do {
-                    let capabilities = try await NextcloudKit.shared.setCapabilitiesAsync(account: account, data: data)
-                    result = capabilities
-                } catch {
-                    nkLog(debug: "Error decoding capabilities from JSON: \(error)")
-                }
-            }
-
-            group.leave()
-        }
-        group.wait()
-
-        return result
     }
 }
