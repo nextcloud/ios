@@ -205,7 +205,7 @@ extension NCNetworking {
                       options: NKRequestOptions = NKRequestOptions()) async -> (serverExists: Bool, error: NKError) {
 
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
-        var fileNameFolder = FileAutoRenamer.rename(fileName, isFolderPath: true, account: session.account, capabilities: capabilities)
+        var fileNameFolder = FileAutoRenamer.rename(fileName, isFolderPath: true, capabilities: capabilities)
         if !overwrite {
             fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: session.account)
         }

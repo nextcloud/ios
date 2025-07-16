@@ -289,7 +289,7 @@ extension NCShareExtension {
             var invalidNameIndexes: [Int] = []
 
             for (index, fileName) in filesName.enumerated() {
-                let newFileName = FileAutoRenamer.rename(fileName, account: tblAccount.account, capabilities: capabilities)
+                let newFileName = FileAutoRenamer.rename(fileName, capabilities: capabilities)
 
                 if let fileNameError = FileNameValidator.checkFileName(newFileName, account: tblAccount.account, capabilities: capabilities) {
                     if filesName.count == 1 {
