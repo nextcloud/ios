@@ -78,7 +78,7 @@ extension NCManageDatabase {
     /// Errors during decoding or async storage are caught and logged.
     ///
     /// - Parameter account: The identifier of the account whose cached capabilities should be applied.
-    func applyCachedCapabilitiesAsync(account: String) async {
+    func applyCachedCapabilitiesAsync(account: String) async -> NKCapabilities.Capabilities? {
         let results = await performRealmReadAsync { realm in
             realm.object(ofType: tableCapabilities.self, forPrimaryKey: account)
                 .map { tableCapabilities(value: $0) }
@@ -93,20 +93,21 @@ extension NCManageDatabase {
                 let (editors, creators) = try NKEditorDetailsConverter.from(data: data)
 
                 if capabilities == nil {
-                    capabilities = await NKCapabilities.shared.getCapabilitiesAsync(for: account)
+                    capabilities = await NKCapabilities.shared.getCapabilities(for: account)
                 }
 
                 capabilities?.directEditingEditors = editors
                 capabilities?.directEditingCreators = creators
 
-                if let updatedCapabilities = capabilities {
-                    await NKCapabilities.shared.appendCapabilitiesAsync(for: account, capabilities: updatedCapabilities)
+                if let capabilities {
+                    await NKCapabilities.shared.appendCapabilities(for: account, capabilities: capabilities)
                 }
             }
         } catch {
             nkLog(error: "Error reading capabilities JSON in Realm \(error)")
         }
 
+        return capabilities
     }
 
     /// Synchronously retrieves and parses capabilities JSON from Realm for the given account.

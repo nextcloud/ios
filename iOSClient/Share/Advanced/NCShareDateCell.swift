@@ -60,7 +60,7 @@ class NCShareDateCell: UITableViewCell {
     }
 
     private func isExpireDateEnforced(account: String) -> Bool {
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
+        let capabilities = NCNetworking.shared.capabilities[account] ?? NKCapabilities.Capabilities()
 
         switch self.shareType {
         case shareCommon.SHARE_TYPE_LINK,
@@ -81,7 +81,7 @@ class NCShareDateCell: UITableViewCell {
     }
 
     private func defaultExpirationDays(account: String) -> Int {
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
+        let capabilities = NCNetworking.shared.capabilities[account] ?? NKCapabilities.Capabilities()
 
         switch self.shareType {
         case shareCommon.SHARE_TYPE_LINK,

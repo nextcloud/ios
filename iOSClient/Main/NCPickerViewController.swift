@@ -135,7 +135,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         let session = NCSession.shared.getSession(controller: self.controller)
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
+        let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
 
         if isViewerMedia,
            let urlIn = urls.first,
@@ -170,7 +170,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
             for urlIn in urls {
                 let ocId = NSUUID().uuidString
                 let fileName = urlIn.lastPathComponent
-                let newFileName = FileAutoRenamer.rename(fileName, account: session.account)
+                let newFileName = FileAutoRenamer.rename(fileName, account: session.account, capabilities: capabilities)
 
                 let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: newFileName)
                 let urlOut = URL(fileURLWithPath: toPath)
@@ -201,7 +201,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
             for (index, metadata) in metadatas.enumerated() {
                 if let fileNameError = FileNameValidator.checkFileName(metadata.fileName, account: session.account, capabilities: capabilities) {
                     if metadatas.count == 1 {
-                        let alert = UIAlertController.renameFile(fileName: metadata.fileName, account: session.account) { newFileName in
+                        let alert = UIAlertController.renameFile(fileName: metadata.fileName, capabilities: capabilities, account: session.account) { newFileName in
                             metadatas[index].fileName = newFileName
                             metadatas[index].fileNameView = newFileName
 

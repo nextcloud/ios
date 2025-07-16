@@ -241,7 +241,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
             }
 
             if isNewShare {
-                let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
+                let capabilities = NCNetworking.shared.capabilities[metadata.account] ?? NKCapabilities.Capabilities()
 
                 if share.shareType != NCShareCommon().SHARE_TYPE_LINK, metadata.e2eEncrypted,
                    capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {

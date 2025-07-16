@@ -10,16 +10,16 @@ class NCNetworkingE2EEMarkFolder: NSObject {
     let database = NCManageDatabase.shared
 
     func markFolderE2ee(account: String, serverUrlFileName: String, userId: String) async -> NKError {
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
         let resultsReadFileOrFolder = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrlFileName, depth: "0", account: account)
         guard resultsReadFileOrFolder.error == .success,
               var file = resultsReadFileOrFolder.files?.first else {
             return resultsReadFileOrFolder.error
         }
-        let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolderAsync(fileId: file.fileId, delete: false, account: account, options: NCNetworkingE2EE().getOptions(account: account))
+        let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolderAsync(fileId: file.fileId, delete: false, account: account, options: NCNetworkingE2EE().getOptions(account: account, capabilities: capabilities))
         guard resultsMarkE2EEFolder.error == .success else {
             return resultsMarkE2EEFolder.error
         }
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
 
         file.e2eEncrypted = true
 

@@ -36,6 +36,7 @@ extension UIAlertController {
                              session: NCSession.Session,
                              markE2ee: Bool = false,
                              sceneIdentifier: String? = nil,
+                             capabilities: NKCapabilities.Capabilities,
                              completion: ((_ error: NKError) -> Void)? = nil) -> UIAlertController {
         let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message: nil, preferredStyle: .alert)
         let isDirectoryEncrypted = NCUtilityFileSystem().isDirectoryE2EE(session: session, serverUrl: serverUrl)
@@ -105,7 +106,7 @@ extension UIAlertController {
             forName: UITextField.textDidChangeNotification,
             object: alertController.textFields?.first,
             queue: .main) { _ in
-                let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
+                //let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
                 guard let text = alertController.textFields?.first?.text else {
                     return
                 }
@@ -192,8 +193,11 @@ extension UIAlertController {
         return alertController
     }
 
-    static func renameFile(fileName: String, isDirectory: Bool = false, account: String, completion: @escaping (_ newFileName: String) -> Void) -> UIAlertController {
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
+    static func renameFile(fileName: String,
+                           isDirectory: Bool = false,
+                           capabilities: NKCapabilities.Capabilities,
+                           account: String,
+                           completion: @escaping (_ newFileName: String) -> Void) -> UIAlertController {
         let alertController = UIAlertController(title: NSLocalizedString(isDirectory ? "_rename_folder_" : "_rename_file_", comment: ""), message: nil, preferredStyle: .alert)
 
         let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in
@@ -273,8 +277,10 @@ extension UIAlertController {
         return alertController
     }
 
-    static func renameFile(metadata: tableMetadata, completion: @escaping (_ newFileName: String) -> Void = { _ in }) -> UIAlertController {
-        renameFile(fileName: metadata.fileNameView, isDirectory: metadata.isDirectory, account: metadata.account) { fileNameNew in
+    static func renameFile(metadata: tableMetadata,
+                           capabilities: NKCapabilities.Capabilities,
+                           completion: @escaping (_ newFileName: String) -> Void = { _ in }) -> UIAlertController {
+        renameFile(fileName: metadata.fileNameView, isDirectory: metadata.isDirectory, capabilities: capabilities, account: metadata.account) { fileNameNew in
             // verify if already exists
             if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
                 NCContentPresenter().showError(error: NKError(errorCode: 0, errorDescription: "_rename_already_exists_"))

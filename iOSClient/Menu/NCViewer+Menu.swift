@@ -28,11 +28,13 @@ import NextcloudKit
 extension NCViewer {
     func toggleMenu(controller: NCMainTabBarController?, metadata: tableMetadata, webView: Bool, imageIcon: UIImage?, indexPath: IndexPath = IndexPath(), sender: Any?) {
         guard let metadata = self.database.getMetadataFromOcId(metadata.ocId),
-              let controller else { return }
+              let controller,
+        let capabilities = NCNetworking.shared.capabilities[metadata.account] else {
+            return
+        }
         var actions = [NCMenuAction]()
         let localFile = self.database.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         let isOffline = localFile?.offline == true
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
 
         //
         // DETAIL

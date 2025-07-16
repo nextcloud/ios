@@ -131,7 +131,7 @@ class NCService: NSObject {
         }
 
         // Theming
-        if NCBrandColor.shared.settingThemingColor(account: account) {
+        if await NCBrandColor.shared.settingThemingColor(account: account) {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": account])
         }
 
@@ -245,7 +245,7 @@ class NCService: NSObject {
     // MARK: -
 
     func sendClientDiagnosticsRemoteOperation(account: String) async {
-        let capabilities = await NKCapabilities.shared.getCapabilitiesAsync(for: account)
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
         guard capabilities.securityGuardDiagnostics,
               await self.database.existsDiagnosticsAsync(account: account) else {
             return

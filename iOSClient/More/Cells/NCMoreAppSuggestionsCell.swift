@@ -51,7 +51,9 @@ class NCMoreAppSuggestionsCell: BaseNCMoreCell {
     }
 
     override func setupCell(account: String, controller: NCMainTabBarController?) {
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
+        guard let capabilities = NCNetworking.shared.capabilities[account] else {
+            return
+        }
 
         assistantView.isHidden = !capabilities.assistantEnabled
         self.controller = controller

@@ -251,7 +251,10 @@ class NCShareExtension: UIViewController {
 
     @objc func actionCreateFolder(_ sender: Any?) {
         let session = self.extensionData.getSession()
-        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, session: session) { error in
+        guard let capabilities = NCNetworking.shared.capabilities[session.account] else {
+            return
+        }
+        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, session: session, capabilities: capabilities) { error in
             if error == .success {
                 Task {
                     await self.loadFolder()
@@ -267,7 +270,8 @@ class NCShareExtension: UIViewController {
 // MARK: - Upload
 extension NCShareExtension {
     @objc func actionUpload(_ sender: Any?) {
-        guard let tblAccount = self.extensionData.getTblAccoun() else {
+        guard let tblAccount = self.extensionData.getTblAccoun(),
+              let capabilities = NCNetworking.shared.capabilities[tblAccount.account] else {
             return
         }
         guard !uploadStarted else { return }
@@ -281,10 +285,8 @@ extension NCShareExtension {
         var conflicts: [tableMetadata] = []
         var invalidNameIndexes: [Int] = []
 
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: tblAccount.account)
-
         for (index, fileName) in filesName.enumerated() {
-            let newFileName = FileAutoRenamer.rename(fileName, account: tblAccount.account)
+            let newFileName = FileAutoRenamer.rename(fileName, account: tblAccount.account, capabilities: capabilities)
 
             if let fileNameError = FileNameValidator.checkFileName(newFileName, account: tblAccount.account, capabilities: capabilities) {
                 if filesName.count == 1 {
