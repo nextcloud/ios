@@ -121,8 +121,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     var isRecommendationActived: Bool {
-        self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session) &&
-        capabilities.recommendations
+        let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
+        return self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session) && capabilities.recommendations
     }
 
     var infoLabelsSeparator: String {
@@ -167,8 +167,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return pinchGesture.state == .began || pinchGesture.state == .changed
     }
 
-    var capabilities: NKCapabilities.Capabilities {
-        NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
+    func isRecommendationActived() async -> Bool {
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
+        return self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session) && capabilities.recommendations
     }
 
     internal let debouncer = NCDebouncer(delay: 1)
@@ -387,8 +388,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     await self.reloadDataSource()
                 }
             } else {
-                if isRecommendationActived {
-                    Task.detached {
+                Task.detached {
+                    if await self.isRecommendationActived() {
                         await self.networking.createRecommendations(session: self.session, serverUrl: self.serverUrl, collectionView: self.collectionView)
                     }
                 }
@@ -790,8 +791,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             isDirectoryEncrypted = false
         } else {
             isDirectoryEncrypted = NCUtilityFileSystem().isDirectoryE2EE(session: session, serverUrl: serverUrl)
-            if isRecommendationActived {
-                Task.detached {
+            Task.detached {
+                if await self.isRecommendationActived() {
                     await self.networking.createRecommendations(session: self.session, serverUrl: self.serverUrl, collectionView: self.collectionView)
                 }
             }
@@ -821,6 +822,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               !literalSearch.isEmpty else {
             return
         }
+        let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
 
         self.networkSearchInProgress = true
         self.dataSource.removeAll()

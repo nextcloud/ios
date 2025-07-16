@@ -28,6 +28,7 @@ import Alamofire
 
 extension NCCollectionViewCommon: UICollectionViewDelegate {
     func didSelectMetadata(_ metadata: tableMetadata, withOcIds: Bool) {
+        let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
         if metadata.e2eEncrypted {
             if capabilities.e2EEEnabled {
                 if !NCKeychain().isEndToEndEnabled(account: metadata.account) {
