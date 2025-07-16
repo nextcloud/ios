@@ -150,6 +150,9 @@ class NCAccount: NSObject {
         NextcloudKit.shared.nkCommonInstance.nksessions.remove(account: account)
         // Remove session
         NCSession.shared.removeSession(account: account)
+        // Remove capabilities
+        await NKCapabilities.shared.removeCapabilities(for: account)
+        NCNetworking.shared.capabilities.removeValue(forKey: account)
         // Remove keychain security
         NCKeychain().setPassword(account: account, password: nil)
         NCKeychain().clearAllKeysEndToEnd(account: account)
