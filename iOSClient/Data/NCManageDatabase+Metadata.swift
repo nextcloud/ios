@@ -805,7 +805,7 @@ extension NCManageDatabase {
     func setMetadataFileNameView(serverUrl: String, fileName: String, newFileNameView: String, account: String, sync: Bool = true) {
         performRealmWrite(sync: sync) { realm in
             let result = realm.objects(tableMetadata.self)
-                .filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName)
+                .filter("account == %@ AND serverUrl == %@ AND fileName ==[c] %@", account, serverUrl, fileName)
                 .first
             result?.fileNameView = newFileNameView
         }
@@ -814,7 +814,7 @@ extension NCManageDatabase {
     func setMetadataFileNameViewAsync(serverUrl: String, fileName: String, newFileNameView: String, account: String) async {
         await performRealmWriteAsync { realm in
             let result = realm.objects(tableMetadata.self)
-                .filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName)
+                .filter("account == %@ AND serverUrl == %@ AND fileName ==[c] %@", account, serverUrl, fileName)
                 .first
             result?.fileNameView = newFileNameView
         }
@@ -942,6 +942,10 @@ extension NCManageDatabase {
         }
     }
 
+    func getMetadataAsync(account: String, serverUrl: String, fileName: String) async -> tableMetadata? {
+        return await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName ==[c] %@", account, serverUrl, fileName)) // "==[c]" makes fileName case-insensitive
+    }
+
     func getMetadataAsync(predicate: NSPredicate) async -> tableMetadata? {
         return await performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
@@ -1054,7 +1058,7 @@ extension NCManageDatabase {
 
         return performRealmRead { realm in
             realm.objects(tableMetadata.self)
-                .filter("account == %@ AND serverUrl == %@ AND fileName == %@", session.account, serverUrl, fileName)
+                .filter("account == %@ AND serverUrl == %@ AND fileName ==[c] %@", session.account, serverUrl, fileName)
                 .first
                 .map { $0.detachedCopy() }
         }
@@ -1079,7 +1083,7 @@ extension NCManageDatabase {
 
         return await performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
-                .filter("account == %@ AND serverUrl == %@ AND fileName == %@", session.account, serverUrl, fileName)
+                .filter("account == %@ AND serverUrl == %@ AND fileName ==[c] %@", session.account, serverUrl, fileName)
                 .first
                 .map { $0.detachedCopy() }
         }
