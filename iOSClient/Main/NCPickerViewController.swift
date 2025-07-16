@@ -135,34 +135,37 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         let session = NCSession.shared.getSession(controller: self.controller)
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
+        let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
 
         if isViewerMedia,
            let urlIn = urls.first,
            let url = self.copySecurityScopedResource(url: urlIn, urlOut: FileManager.default.temporaryDirectory.appendingPathComponent(urlIn.lastPathComponent)),
            let viewController = self.viewController {
-            let ocId = NSUUID().uuidString
-            let fileName = url.lastPathComponent
-            let metadata = database.createMetadata(fileName: fileName,
-                                                   ocId: ocId,
-                                                   serverUrl: "",
-                                                   url: url.path,
-                                                   session: session,
-                                                   sceneIdentifier: self.controller.sceneIdentifier)
+            Task { @MainActor in
+                let ocId = NSUUID().uuidString
+                let fileName = url.lastPathComponent
+                let metadata = await database.createMetadataAsync(fileName: fileName,
+                                                                  ocId: ocId,
+                                                                  serverUrl: "",
+                                                                  url: url.path,
+                                                                  session: session,
+                                                                  sceneIdentifier: self.controller.sceneIdentifier)
 
-            if metadata.classFile == NKTypeClassFile.unknow.rawValue {
-                metadata.classFile = NKTypeClassFile.video.rawValue
-            }
+                if metadata.classFile == NKTypeClassFile.unknow.rawValue {
+                    metadata.classFile = NKTypeClassFile.video.rawValue
+                }
 
-            if let fileNameError = FileNameValidator.checkFileName(metadata.fileNameView, account: self.controller.account, capabilities: capabilities) {
-                self.controller.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
-            } else {
-                if let metadata = database.addAndReturnMetadata(metadata) {
-                    NCViewer().view(viewController: viewController, metadata: metadata)
+                if let fileNameError = FileNameValidator.checkFileName(metadata.fileNameView, account: self.controller.account, capabilities: capabilities) {
+                    self.controller.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+                } else {
+                    if let metadata = database.addAndReturnMetadata(metadata) {
+                        NCViewer().view(viewController: viewController, metadata: metadata)
+                    }
                 }
             }
 
         } else {
+
             let serverUrl = self.controller.currentServerUrl()
             var metadatas = [tableMetadata]()
             var metadatasInConflict = [tableMetadata]()
@@ -170,29 +173,29 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
             for urlIn in urls {
                 let ocId = NSUUID().uuidString
                 let fileName = urlIn.lastPathComponent
-                let newFileName = FileAutoRenamer.rename(fileName, account: session.account)
+                let newFileName = FileAutoRenamer.rename(fileName, account: session.account, capabilities: capabilities)
 
                 let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: newFileName)
                 let urlOut = URL(fileURLWithPath: toPath)
 
                 guard self.copySecurityScopedResource(url: urlIn, urlOut: urlOut) != nil else { continue }
 
-                let metadataForUpload = database.createMetadata(fileName: newFileName,
-                                                                ocId: ocId,
-                                                                serverUrl: serverUrl,
-                                                                session: session,
-                                                                sceneIdentifier: self.controller.sceneIdentifier)
+                database.createMetadata(fileName: newFileName,
+                                        ocId: ocId,
+                                        serverUrl: serverUrl,
+                                        session: session,
+                                        sceneIdentifier: self.controller.sceneIdentifier) { metadataForUpload in
+                    metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
+                    metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
+                    metadataForUpload.size = self.utilityFileSystem.getFileSize(filePath: toPath)
+                    metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
+                    metadataForUpload.sessionDate = Date()
 
-                metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
-                metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
-                metadataForUpload.size = utilityFileSystem.getFileSize(filePath: toPath)
-                metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
-                metadataForUpload.sessionDate = Date()
-
-                if database.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName, nativeFormat: metadataForUpload.nativeFormat) != nil {
-                    metadatasInConflict.append(metadataForUpload)
-                } else {
-                    metadatas.append(metadataForUpload)
+                    if self.database.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName, nativeFormat: metadataForUpload.nativeFormat) != nil {
+                        metadatasInConflict.append(metadataForUpload)
+                    } else {
+                        metadatas.append(metadataForUpload)
+                    }
                 }
             }
 
@@ -201,7 +204,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
             for (index, metadata) in metadatas.enumerated() {
                 if let fileNameError = FileNameValidator.checkFileName(metadata.fileName, account: session.account, capabilities: capabilities) {
                     if metadatas.count == 1 {
-                        let alert = UIAlertController.renameFile(fileName: metadata.fileName, account: session.account) { newFileName in
+                        let alert = UIAlertController.renameFile(fileName: metadata.fileName, capabilities: capabilities, account: session.account) { newFileName in
                             metadatas[index].fileName = newFileName
                             metadatas[index].fileNameView = newFileName
 

@@ -74,7 +74,7 @@ extension NCMedia {
             return
         }
 
-        let capabilities = await NKCapabilities.shared.getCapabilitiesAsync(for: session.account)
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
 
         var lessDate = Date.distantFuture
         var greaterDate = Date.distantPast

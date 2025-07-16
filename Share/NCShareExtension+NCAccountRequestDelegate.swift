@@ -53,9 +53,6 @@ extension NCShareExtension: NCAccountRequestDelegate {
                 cancel(with: NCShareExtensionError.noAccount)
                 return
             }
-            await self.database.applyCachedCapabilitiesAsync(account: account)
-
-            NCBrandColor.shared.settingThemingColor(account: account)
 
             NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup, delegate: NCNetworking.shared)
             NextcloudKit.shared.appendSession(account: tblAccount.account,
@@ -98,7 +95,10 @@ extension NCShareExtension: NCCreateFormUploadConflictDelegate {
 
 extension NCShareExtension: NCShareCellDelegate {
     func showRenameFileDialog(named fileName: String, account: String) {
-        let alert = UIAlertController.renameFile(fileName: fileName, account: account) { [self] newFileName in
+        guard let capabilities = NCNetworking.shared.capabilities[account] else {
+            return
+        }
+        let alert = UIAlertController.renameFile(fileName: fileName, capabilities: capabilities, account: account) { [self] newFileName in
             renameFile(oldName: fileName, newName: newFileName, account: account)
         }
 

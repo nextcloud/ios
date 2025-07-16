@@ -334,7 +334,10 @@ extension NCCollectionViewCommon {
                     order: 120,
                     sender: sender,
                     action: { _ in
-                        self.present(UIAlertController.renameFile(metadata: metadata), animated: true)
+                        Task {
+                            let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
+                            self.present(UIAlertController.renameFile(metadata: metadata, capabilities: capabilities), animated: true)
+                        }
                     }
                 )
             )

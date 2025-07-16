@@ -7,13 +7,13 @@
 //
 
 import NextcloudKit
+import UIKit
 
 extension FileAutoRenamer {
-    static func rename(_ filename: String, isFolderPath: Bool = false, account: String?) -> String {
+    static func rename(_ filename: String, isFolderPath: Bool = false, account: String?, capabilities: NKCapabilities.Capabilities) -> String {
         guard let account else {
             return filename
         }
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
         let autoRenamer = FileAutoRenamer(forbiddenFileNameCharacters: capabilities.forbiddenFileNameCharacters, forbiddenFileNameExtensions: capabilities.forbiddenFileNameExtensions)
         return autoRenamer.rename(filename: filename, isFolderPath: isFolderPath)
     }

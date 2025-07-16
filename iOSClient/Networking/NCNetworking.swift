@@ -107,7 +107,10 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         return networkReachability == NKTypeReachability.reachableEthernetOrWiFi || networkReachability == NKTypeReachability.reachableCellular
     }
 
-    /// Delegate for multi scene
+    // Capabilities
+    var capabilities = ThreadSafeDictionary<String, NKCapabilities.Capabilities>()
+
+    // Delegate for multi scene
     private var transferDelegates = NSHashTable<AnyObject>.weakObjects()
 
     func addDelegate(_ delegate: NCTransferDelegate) {

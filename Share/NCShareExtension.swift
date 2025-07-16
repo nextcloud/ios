@@ -131,6 +131,8 @@ class NCShareExtension: UIViewController {
                 NCPasscode.shared.enableTouchFaceID()
             }
         }
+
+        self.collectionView.reloadData()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -251,7 +253,10 @@ class NCShareExtension: UIViewController {
 
     @objc func actionCreateFolder(_ sender: Any?) {
         let session = self.extensionData.getSession()
-        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, session: session) { error in
+        guard let capabilities = NCNetworking.shared.capabilities[session.account] else {
+            return
+        }
+        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, session: session, capabilities: capabilities) { error in
             if error == .success {
                 Task {
                     await self.loadFolder()
@@ -267,131 +272,135 @@ class NCShareExtension: UIViewController {
 // MARK: - Upload
 extension NCShareExtension {
     @objc func actionUpload(_ sender: Any?) {
-        guard let tblAccount = self.extensionData.getTblAccoun() else {
-            return
-        }
-        guard !uploadStarted else { return }
-        guard !filesName.isEmpty else { return showAlert(description: "_files_no_files_") }
-        let session = self.extensionData.getSession()
+        Task { @MainActor in
+            guard let tblAccount = self.extensionData.getTblAccoun(),
+                  let capabilities = NCNetworking.shared.capabilities[tblAccount.account] else {
+                return
+            }
+            guard !uploadStarted else { return }
+            guard !filesName.isEmpty else { return showAlert(description: "_files_no_files_") }
+            let session = self.extensionData.getSession()
 
-        counterUploaded = 0
-        uploadErrors = []
-        var dismissAfterUpload = true
+            counterUploaded = 0
+            uploadErrors = []
+            var dismissAfterUpload = true
 
-        var conflicts: [tableMetadata] = []
-        var invalidNameIndexes: [Int] = []
+            var conflicts: [tableMetadata] = []
+            var invalidNameIndexes: [Int] = []
 
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: tblAccount.account)
+            for (index, fileName) in filesName.enumerated() {
+                let newFileName = FileAutoRenamer.rename(fileName, account: tblAccount.account, capabilities: capabilities)
 
-        for (index, fileName) in filesName.enumerated() {
-            let newFileName = FileAutoRenamer.rename(fileName, account: tblAccount.account)
+                if let fileNameError = FileNameValidator.checkFileName(newFileName, account: tblAccount.account, capabilities: capabilities) {
+                    if filesName.count == 1 {
+                        showRenameFileDialog(named: fileName, account: tblAccount.account)
+                        return
+                    } else {
+                        present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))") {
+                            self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+                        }, animated: true)
 
-            if let fileNameError = FileNameValidator.checkFileName(newFileName, account: tblAccount.account, capabilities: capabilities) {
-                if filesName.count == 1 {
-                    showRenameFileDialog(named: fileName, account: tblAccount.account)
-                    return
-                } else {
-                    present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))") {
-                        self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
-                    }, animated: true)
+                        invalidNameIndexes.append(index)
+                        dismissAfterUpload = false
+                        continue
+                    }
 
-                    invalidNameIndexes.append(index)
-                    dismissAfterUpload = false
+                }
+            }
+
+            for index in invalidNameIndexes.reversed() {
+                filesName.remove(at: index)
+            }
+
+            for fileName in filesName {
+                let ocId = NSUUID().uuidString
+                let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
+                guard utilityFileSystem.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath) else {
                     continue
                 }
+                let metadataForUpload = await self.database.createMetadataAsync(fileName: fileName,
+                                                                           ocId: ocId,
+                                                                           serverUrl: serverUrl,
+                                                                     session: session,
+                                                                     sceneIdentifier: nil)
 
+                metadataForUpload.session = NCNetworking.shared.sessionUpload
+                metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFileShareExtension
+                metadataForUpload.size = utilityFileSystem.getFileSize(filePath: toPath)
+                metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
+                metadataForUpload.sessionDate = Date()
+                if self.database.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName, nativeFormat: metadataForUpload.nativeFormat) != nil {
+                    conflicts.append(metadataForUpload)
+                } else {
+                    uploadMetadata.append(metadataForUpload)
+                }
             }
-        }
 
-        for index in invalidNameIndexes.reversed() {
-            filesName.remove(at: index)
-        }
+            tableView.reloadData()
 
-        for fileName in filesName {
-            let ocId = NSUUID().uuidString
-            let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
-            guard utilityFileSystem.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath) else {
-                continue
-            }
-            let metadataForUpload = self.database.createMetadata(fileName: fileName,
-                                                                 ocId: ocId,
-                                                                 serverUrl: serverUrl,
-                                                                 session: session,
-                                                                 sceneIdentifier: nil)
+            if !conflicts.isEmpty {
+                guard let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict
+                else { return }
 
-            metadataForUpload.session = NCNetworking.shared.sessionUpload
-            metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFileShareExtension
-            metadataForUpload.size = utilityFileSystem.getFileSize(filePath: toPath)
-            metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
-            metadataForUpload.sessionDate = Date()
-            if self.database.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName, nativeFormat: metadataForUpload.nativeFormat) != nil {
-                conflicts.append(metadataForUpload)
+                conflict.account = session.account
+                conflict.serverUrl = self.serverUrl
+                conflict.metadatasUploadInConflict = conflicts
+                conflict.delegate = self
+                self.present(conflict, animated: true, completion: nil)
             } else {
-                uploadMetadata.append(metadataForUpload)
+                uploadStarted = true
+                upload(dismissAfterUpload: dismissAfterUpload)
             }
-        }
-
-        tableView.reloadData()
-
-        if !conflicts.isEmpty {
-            guard let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict
-            else { return }
-
-            conflict.account = session.account
-            conflict.serverUrl = self.serverUrl
-            conflict.metadatasUploadInConflict = conflicts
-            conflict.delegate = self
-            self.present(conflict, animated: true, completion: nil)
-        } else {
-            uploadStarted = true
-            upload(dismissAfterUpload: dismissAfterUpload)
         }
     }
 
     func upload(dismissAfterUpload: Bool = true) {
-        guard uploadStarted else { return }
-        guard uploadMetadata.count > counterUploaded else {
-            return DispatchQueue.main.async {
-                self.finishedUploading(dismissAfterUpload: dismissAfterUpload)
+        Task { @MainActor in
+            guard uploadStarted else { return }
+            guard uploadMetadata.count > counterUploaded else {
+                return DispatchQueue.main.async {
+                    self.finishedUploading(dismissAfterUpload: dismissAfterUpload)
+                }
             }
-        }
-        let session = self.extensionData.getSession()
+            let session = self.extensionData.getSession()
 
-        let metadata = uploadMetadata[counterUploaded]
-        let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false, account: session.account)
-        metadata.contentType = results.mimeType
-        metadata.iconName = results.iconName
-        metadata.classFile = results.classFile
-        metadata.typeIdentifier = results.typeIdentifier
+            let metadata = uploadMetadata[counterUploaded]
+            let results = await NKTypeIdentifiers.shared.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false, account: session.account)
+            metadata.contentType = results.mimeType
+            metadata.iconName = results.iconName
+            metadata.classFile = results.classFile
+            metadata.typeIdentifier = results.typeIdentifier
+            metadata.serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
 
-        // CHUNK
-        var chunkSize = NCGlobal.shared.chunkSizeMBCellular
-        if NCNetworking.shared.networkReachability == NKTypeReachability.reachableEthernetOrWiFi {
-            chunkSize = NCGlobal.shared.chunkSizeMBEthernetOrWiFi
-        }
-        if metadata.size > chunkSize {
-            metadata.chunk = chunkSize
-        } else {
-            metadata.chunk = 0
-        }
-        // E2EE
-        metadata.e2eEncrypted = metadata.isDirectoryE2EE
-
-        hud.initHudRing(view: self.view,
-                        text: NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(self.filesName.count)")
-
-        NCNetworking.shared.uploadHub(metadata: metadata, uploadE2EEDelegate: self, controller: self) {
-            self.hud.progress(0)
-        } progressHandler: { _, _, fractionCompleted in
-            self.hud.progress(fractionCompleted)
-        } completion: {error in
-            if error != .success {
-                self.database.deleteMetadataOcId(metadata.ocId)
-                self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-                self.uploadErrors.append(metadata)
+            // CHUNK
+            var chunkSize = NCGlobal.shared.chunkSizeMBCellular
+            if NCNetworking.shared.networkReachability == NKTypeReachability.reachableEthernetOrWiFi {
+                chunkSize = NCGlobal.shared.chunkSizeMBEthernetOrWiFi
             }
-            self.counterUploaded += 1
-            self.upload()
+            if metadata.size > chunkSize {
+                metadata.chunk = chunkSize
+            } else {
+                metadata.chunk = 0
+            }
+            // E2EE
+            metadata.e2eEncrypted = metadata.isDirectoryE2EE
+
+            hud.initHudRing(view: self.view,
+                            text: NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(self.filesName.count)")
+
+            NCNetworking.shared.uploadHub(metadata: metadata, uploadE2EEDelegate: self, controller: self) {
+                self.hud.progress(0)
+            } progressHandler: { _, _, fractionCompleted in
+                self.hud.progress(fractionCompleted)
+            } completion: {error in
+                if error != .success {
+                    self.database.deleteMetadataOcId(metadata.ocId)
+                    self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                    self.uploadErrors.append(metadata)
+                }
+                self.counterUploaded += 1
+                self.upload()
+            }
         }
     }
 

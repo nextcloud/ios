@@ -36,7 +36,7 @@ struct NCAccountSettingsView: View {
     @State private var animation: Bool = false
 
     var capabilities: NKCapabilities.Capabilities {
-        NKCapabilities.shared.getCapabilitiesBlocking(for: model.controller?.account)
+        NCNetworking.shared.capabilities[model.controller?.account ?? ""] ?? NKCapabilities.Capabilities()
     }
 
     @Environment(\.presentationMode) var presentationMode
