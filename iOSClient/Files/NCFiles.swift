@@ -57,10 +57,7 @@ class NCFiles: NCCollectionViewCommon {
 
         plusButton.setTitle("", for: .normal)
         plusButton.setImage(image, for: .normal)
-        plusButton.backgroundColor = NCBrandColor.shared.customer
-        if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
-            self.plusButton.backgroundColor = NCBrandColor.shared.getElement(account: activeTableAccount.account)
-        }
+        plusButton.backgroundColor = NCBrandColor.shared.getElement(account: session.account)
         plusButton.accessibilityLabel = NSLocalizedString("_accessibility_add_upload_", comment: "")
         plusButton.layer.cornerRadius = plusButton.frame.size.width / 2.0
         plusButton.layer.masksToBounds = false

@@ -37,6 +37,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 if let capabilities = await self.database.setCapabilities(account: activeTblAccount.account) {
                     // set theming color
                     NCBrandColor.shared.settingThemingColor(account: activeTblAccount.account, capabilities: capabilities)
+                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeTheming, userInfo: ["account": activeTblAccount.account])
                 }
 
                 await NCNetworkingProcess.shared.setCurrentAccount(activeTblAccount.account)
