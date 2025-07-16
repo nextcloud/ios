@@ -116,28 +116,29 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }), for: .touchUpInside)
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterUpdateNotification), object: nil, queue: nil) { _ in
-            let capabilities = NCNetworking.shared.capabilities[self.session.account] ?? NKCapabilities.Capabilities()
-            if capabilities.notification.count > 0 {
-                NextcloudKit.shared.getNotifications(account: self.session.account) { _ in
-                } completion: { _, notifications, _, error in
-                    if error == .success,
-                       let notifications,
-                       notifications.count > 0 {
-                        if !self.isNotificationsButtonVisible() {
-                            self.controller?.availableNotifications = true
-                            self.updateRightBarButtonItems()
-                        }
-                    } else {
-                        if self.isNotificationsButtonVisible() {
-                            self.controller?.availableNotifications = false
-                            self.updateRightBarButtonItems()
-                        }
+            Task { @MainActor in
+                let capabilities = await NKCapabilities.shared.getCapabilities(for: self.session.account)
+                guard capabilities.notification.count > 0 else {
+                    if self.isNotificationsButtonVisible() {
+                        self.controller?.availableNotifications = false
+                        self.updateRightBarButtonItems()
                     }
+                    return
                 }
-            } else {
-                if self.isNotificationsButtonVisible() {
-                    self.controller?.availableNotifications = false
-                    self.updateRightBarButtonItems()
+
+                let resultsNotification = await NextcloudKit.shared.getNotificationsAsync(account: self.session.account)
+                if resultsNotification.error == .success,
+                    let notifications = resultsNotification.notifications,
+                    notifications.count > 0 {
+                    if !self.isNotificationsButtonVisible() {
+                        self.controller?.availableNotifications = true
+                        self.updateRightBarButtonItems()
+                    }
+                } else {
+                    if self.isNotificationsButtonVisible() {
+                        self.controller?.availableNotifications = false
+                        self.updateRightBarButtonItems()
+                    }
                 }
             }
         }
