@@ -198,7 +198,7 @@ extension NCManageDatabase {
                 for codableObject in codableObjects {
                     if !NCKeychain().getPassword(account: codableObject.account).isEmpty {
                         let tableAccount = tableAccount(codableObject: codableObject)
-                        realm.add(tableAccount)
+                        realm.add(tableAccount, update: .all)
                     }
                 }
             }
@@ -293,48 +293,20 @@ extension NCManageDatabase {
         return tblAccount
     }
 
-    func setAccountAutoUploadProperty(_ property: String, state: Bool) {
-        performRealmWrite { realm in
-            if let result = realm.objects(tableAccount.self).filter("active == true").first {
-                if (tableAccount().objectSchema.properties.contains { $0.name == property }) {
-                    result[property] = state
-                }
-            }
-        }
-    }
-
-    func setAccountAutoUploadGranularity(_ property: String, state: Int) {
-        performRealmWrite { realm in
-            if let result = realm.objects(tableAccount.self).filter("active == true").first {
-                result.autoUploadSubfolderGranularity = state
-            }
-        }
-    }
-
-    func setAccountAutoUploadFileName(_ fileName: String) {
-        performRealmWrite { realm in
+    func setAccountAutoUploadFileNameAsync(_ fileName: String) async {
+        await performRealmWriteAsync { realm in
             if let result = realm.objects(tableAccount.self).filter("active == true").first {
                 result.autoUploadFileName = fileName
             }
         }
     }
 
-    func setAccountAutoUploadDirectory(_ serverUrl: String, session: NCSession.Session) {
-        performRealmWrite { realm in
+    func setAccountAutoUploadDirectoryAsync(_ serverUrl: String, session: NCSession.Session) async {
+        await performRealmWriteAsync { realm in
             if let result = realm.objects(tableAccount.self)
                 .filter("active == true")
                 .first {
                 result.autoUploadDirectory = serverUrl
-            }
-        }
-    }
-
-    func setAutoUploadOnlyNewSinceDate(account: String, date: Date) {
-        performRealmWrite { realm in
-            if let result = realm.objects(tableAccount.self)
-                .filter("acccount == %@", account)
-                .first {
-                result.autoUploadOnlyNewSinceDate = date
             }
         }
     }
@@ -408,8 +380,8 @@ extension NCManageDatabase {
         }
     }
 
-    func setAccountMediaPath(_ path: String, account: String) {
-        performRealmWrite { realm in
+    func setAccountMediaPathAsync(_ path: String, account: String) async {
+        await performRealmWriteAsync { realm in
             if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
                 result.mediaPath = path
             }
@@ -493,6 +465,19 @@ extension NCManageDatabase {
         } ?? []
     }
 
+    /// Reads all accounts ordered by active descending, alias ascending, and user ascending.
+    func getAllAccountOrderAliasAsync() async -> [tableAccount] {
+        await performRealmReadAsync { realm in
+            let sorted = [
+                SortDescriptor(keyPath: "active", ascending: false),
+                SortDescriptor(keyPath: "alias", ascending: true),
+                SortDescriptor(keyPath: "user", ascending: true)
+            ]
+            let results = realm.objects(tableAccount.self).sorted(by: sorted)
+            return results.map { tableAccount(value: $0) }
+        } ?? []
+    }
+
     func getAccountAutoUploadFileName(account: String) -> String {
         return performRealmRead { realm in
             guard let result = realm.objects(tableAccount.self)
@@ -503,6 +488,21 @@ extension NCManageDatabase {
             }
             return result.autoUploadFileName.isEmpty ? NCBrandOptions.shared.folderDefaultAutoUpload : result.autoUploadFileName
         } ?? NCBrandOptions.shared.folderDefaultAutoUpload
+    }
+
+    func getAccountAutoUploadFileNameAsync(account: String) async -> String {
+        let result: String? = await performRealmReadAsync { realm in
+            guard let record = realm.objects(tableAccount.self)
+                .filter("account == %@", account)
+                .first
+            else {
+                return nil
+            }
+
+            return record.autoUploadFileName.isEmpty ? nil : record.autoUploadFileName
+        }
+
+        return result ?? NCBrandOptions.shared.folderDefaultAutoUpload
     }
 
     func getAccountAutoUploadDirectory(session: NCSession.Session) -> String {
@@ -522,13 +522,39 @@ extension NCManageDatabase {
         } ?? homeServer
     }
 
+    func getAccountAutoUploadDirectoryAsync(account: String, urlBase: String, userId: String) async -> String {
+        let homeServer = utilityFileSystem.getHomeServer(urlBase: urlBase, userId: userId)
+
+        let directory: String? = await performRealmReadAsync { realm in
+            realm.objects(tableAccount.self)
+                .filter("account == %@", account)
+                .first?
+                .autoUploadDirectory
+        }
+
+        return directory.flatMap { dir in
+            (dir.isEmpty || dir.contains("/webdav")) ? homeServer : dir
+        } ?? homeServer
+    }
+
     func getAccountAutoUploadServerUrlBase(session: NCSession.Session) -> String {
         return getAccountAutoUploadServerUrlBase(account: session.account, urlBase: session.urlBase, userId: session.userId)
+    }
+
+    func getAccountAutoUploadServerUrlBaseAsync(session: NCSession.Session) async -> String {
+        return await getAccountAutoUploadServerUrlBaseAsync(account: session.account, urlBase: session.urlBase, userId: session.userId)
     }
 
     func getAccountAutoUploadServerUrlBase(account: String, urlBase: String, userId: String) -> String {
         let cameraFileName = self.getAccountAutoUploadFileName(account: account)
         let cameraDirectory = self.getAccountAutoUploadDirectory(account: account, urlBase: urlBase, userId: userId)
+        let folderPhotos = utilityFileSystem.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)
+        return folderPhotos
+    }
+
+    func getAccountAutoUploadServerUrlBaseAsync(account: String, urlBase: String, userId: String) async -> String {
+        let cameraFileName = await self.getAccountAutoUploadFileNameAsync(account: account)
+        let cameraDirectory = await self.getAccountAutoUploadDirectoryAsync(account: account, urlBase: urlBase, userId: userId)
         let folderPhotos = utilityFileSystem.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)
         return folderPhotos
     }

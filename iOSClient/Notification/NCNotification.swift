@@ -95,7 +95,9 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
                let file = json["file"] as? [String: Any],
                file["type"] as? String == "file" {
                 if let id = file["id"] {
-                    NCDownloadAction.shared.viewerFile(account: session.account, fileId: ("\(id)"), viewController: self)
+                    Task {
+                        await NCDownloadAction.shared.viewerFile(account: session.account, fileId: ("\(id)"), viewController: self)
+                    }
                 }
             }
         } catch {

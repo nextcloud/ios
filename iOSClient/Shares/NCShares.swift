@@ -46,13 +46,17 @@ class NCShares: NCCollectionViewCommon {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        reloadDataSource()
+        Task {
+            await reloadDataSource()
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        getServerData()
+        Task {
+            await getServerData()
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -63,66 +67,75 @@ class NCShares: NCCollectionViewCommon {
 
     // MARK: - DataSource
 
-    override func reloadDataSource() {
-        database.getMetadatas(predicate: NSPredicate(format: "ocId IN %@", ocIdShares),
-                              layoutForView: layoutForView,
-                              account: session.account) { metadatas, layoutForView, account in
-            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: account)
-            self.dataSource.caching(metadatas: metadatas) {
-                super.reloadDataSource()
-            }
-        }
+    override func reloadDataSource() async {
+        let metadatas = await database.getMetadatasAsync(predicate: NSPredicate(format: "ocId IN %@", ocIdShares),
+                                                         withLayout: layoutForView,
+                                                         withAccount: session.account)
+
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
+
+        await super.reloadDataSource()
+
+        cachingAsync(metadatas: metadatas)
     }
 
-    override func getServerData() {
-        NextcloudKit.shared.readShares(parameters: NKShareParameter(), account: session.account) { task in
+    override func getServerData(refresh: Bool = false) async {
+        await super.getServerData()
+
+        showLoadingTitle()
+
+        let resultsReadShares = await NextcloudKit.shared.readSharesAsync(parameters: NKShareParameter(), account: session.account) { task in
             self.dataSourceTask = task
             if self.dataSource.isEmpty() {
                 self.collectionView.reloadData()
             }
-        } completion: { account, shares, _, error in
-            if error == .success {
-                self.database.deleteTableShare(account: account)
-                if let shares = shares, !shares.isEmpty {
-                    let home = self.utilityFileSystem.getHomeServer(session: self.session)
-                    self.database.addShare(account: account, home: home, shares: shares)
-                }
-                self.backgroundTask = Task.detached(priority: .utility) { [weak self] in
-                    guard let self = self
-                    else {
-                        return
-                    }
-                    let sharess = await self.database.getTableShares(account: self.session.account)
+        }
 
-                    for share in sharess {
-                        if let ocId = await self.database.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", session.account, share.serverUrl, share.fileName))?.ocId {
-                            _ = await MainActor.run {
-                                self.ocIdShares.insert(ocId)
-                            }
-                        } else {
-                            let serverUrlFileName = share.serverUrl + "/" + share.fileName
-                            let result = await NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: session.account)
-                            if result.error == .success, let metadata = result.metadata {
-                                let ocId = metadata.ocId
-                                self.database.addMetadata(metadata)
-                                _ = await MainActor.run {
-                                    self.ocIdShares.insert(ocId)
-                                }
-                            }
-                        }
-                        if Task.isCancelled {
-                            return
-                        }
-                    }
+        guard resultsReadShares.error == .success else {
+            await self.reloadDataSource()
+            self.restoreDefaultTitle()
+            return
+        }
 
-                    await MainActor.run {
-                        self.reloadDataSource()
-                        self.refreshControlEndRefreshing()
+        await self.database.deleteTableShareAsync(account: session.account)
+
+        if let shares = resultsReadShares.shares, !shares.isEmpty {
+            let home = self.utilityFileSystem.getHomeServer(session: self.session)
+            await self.database.addShareAsync(account: session.account, home: home, shares: shares)
+        }
+
+        self.backgroundTask = Task.detached(priority: .utility) { [weak self] in
+            guard let self = self
+            else {
+                return
+            }
+            let sharess = await self.database.getTableSharesAsync(account: self.session.account)
+
+            for share in sharess {
+                let predicate = await NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", session.account, share.serverUrl, share.fileName)
+                if let ocId = await self.database.getMetadataAsync(predicate: predicate)?.ocId {
+                    _ = await MainActor.run {
+                        self.ocIdShares.insert(ocId)
+                    }
+                } else {
+                    let serverUrlFileName = share.serverUrl + "/" + share.fileName
+                    let resultReadShare = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrlFileName, account: session.account)
+                    if resultReadShare.error == .success, let metadata = resultReadShare.metadata {
+                        let ocId = metadata.ocId
+                        self.database.addMetadata(metadata)
+                        _ = await MainActor.run {
+                            self.ocIdShares.insert(ocId)
+                        }
                     }
                 }
-            } else {
-                self.reloadDataSource()
-                self.refreshControlEndRefreshing()
+                if Task.isCancelled {
+                    return
+                }
+            }
+
+            Task {
+                await self.restoreDefaultTitle()
+                await self.reloadDataSource()
             }
         }
     }

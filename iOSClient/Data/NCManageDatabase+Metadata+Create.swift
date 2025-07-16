@@ -172,7 +172,7 @@ extension NCManageDatabase {
         metadata.richWorkspace = file.richWorkspace
         metadata.resourceType = file.resourceType
         metadata.serverUrl = file.serverUrl
-        metadata.serveUrlFileName = file.serverUrl + "/" + file.fileName
+        metadata.serverUrlFileName = file.serverUrl + "/" + file.fileName
         metadata.sharePermissionsCollaborationServices = file.sharePermissionsCollaborationServices
 
         for element in file.shareType {
@@ -256,7 +256,69 @@ extension NCManageDatabase {
         metadata.ocIdTransfer = ocId
         metadata.permissions = "RGDNVW"
         metadata.serverUrl = serverUrl
-        metadata.serveUrlFileName = serverUrl + "/" + fileName
+        metadata.serverUrlFileName = serverUrl + "/" + fileName
+        metadata.subline = subline
+        metadata.uploadDate = Date() as NSDate
+        metadata.url = url
+        metadata.urlBase = session.urlBase
+        metadata.user = session.user
+        metadata.userId = session.userId
+        metadata.sceneIdentifier = sceneIdentifier
+        metadata.nativeFormat = !NCKeychain().formatCompatibility
+
+        if !metadata.urlBase.isEmpty, metadata.serverUrl.hasPrefix(metadata.urlBase) {
+            metadata.path = String(metadata.serverUrl.dropFirst(metadata.urlBase.count)) + "/"
+        }
+        return metadata
+    }
+
+    func createMetadataAsync(fileName: String,
+                             ocId: String,
+                             serverUrl: String,
+                             url: String = "",
+                             isUrl: Bool = false,
+                             name: String = NCGlobal.shared.appName,
+                             subline: String? = nil,
+                             iconUrl: String? = nil,
+                             session: NCSession.Session,
+                             sceneIdentifier: String?) async -> tableMetadata {
+        let metadata = tableMetadata()
+
+        if isUrl {
+            metadata.classFile = NKTypeClassFile.url.rawValue
+            metadata.contentType = "text/uri-list"
+            metadata.iconName = NKTypeClassFile.url.rawValue
+            metadata.typeIdentifier = "public.url"
+        } else {
+            let results = await NKTypeIdentifiers.shared.getInternalType(fileName: fileName,
+                                                                         mimeType: "",
+                                                                         directory: false,
+                                                                         account: session.account)
+            metadata.classFile = results.classFile
+            metadata.contentType = results.mimeType
+            metadata.iconName = results.iconName
+            metadata.typeIdentifier = results.typeIdentifier
+        }
+        if let iconUrl {
+            metadata.iconUrl = iconUrl
+        }
+
+        let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        metadata.account = session.account
+        metadata.creationDate = Date() as NSDate
+        metadata.date = Date() as NSDate
+        metadata.directory = false
+        metadata.hasPreview = true
+        metadata.etag = ocId
+        metadata.fileName = fileName
+        metadata.fileNameView = fileName
+        metadata.name = name
+        metadata.ocId = ocId
+        metadata.ocIdTransfer = ocId
+        metadata.permissions = "RGDNVW"
+        metadata.serverUrl = serverUrl
+        metadata.serverUrlFileName = serverUrl + "/" + fileName
         metadata.subline = subline
         metadata.uploadDate = Date() as NSDate
         metadata.url = url
@@ -293,7 +355,7 @@ extension NCManageDatabase {
         metadata.ocIdTransfer = ocId
         metadata.permissions = "RGDNVW"
         metadata.serverUrl = serverUrl
-        metadata.serveUrlFileName = serverUrl + "/" + fileName
+        metadata.serverUrlFileName = serverUrl + "/" + fileName
         metadata.uploadDate = Date() as NSDate
         metadata.urlBase = session.urlBase
         metadata.user = session.user

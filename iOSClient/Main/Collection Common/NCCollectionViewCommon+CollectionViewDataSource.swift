@@ -43,31 +43,29 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) {
-            self.dataSource.getMetadata(indexPath: indexPath) { metadata in
-                guard let metadata else {
-                    return
-                }
-                for case let operation as NCCollectionViewDownloadThumbnail in self.netwoking.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
-                    operation.cancel()
-                }
+            guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else {
+                return
+            }
+
+            for case let operation as NCCollectionViewDownloadThumbnail in self.networking.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
+                operation.cancel()
             }
         }
     }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        self.dataSource.getMetadata(indexPath: indexPath) { metadata in
-            guard let metadata else {
-                return
-            }
-            let existsImagePreview = self.utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag)
-            let ext = self.global.getSizeExtension(column: self.numberOfColumns)
-
-            if metadata.hasPreview,
-               !existsImagePreview,
-               self.netwoking.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
-                self.netwoking.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView, ext: ext))
-            }
+        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else {
+            return
         }
+        let existsImagePreview = self.utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag)
+        let ext = self.global.getSizeExtension(column: self.numberOfColumns)
+
+        if metadata.hasPreview,
+           !existsImagePreview,
+           self.networking.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
+            self.networking.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView, ext: ext))
+        }
+
     }
 
     private func photoCell(cell: NCPhotoCell, indexPath: IndexPath, metadata: tableMetadata, ext: String) -> NCPhotoCell {
@@ -232,7 +230,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         if metadata.directory {
-            let tblDirectory = database.getResultTableDirectory(ocId: metadata.ocId)
+            let tblDirectory = database.getTableDirectory(ocId: metadata.ocId)
 
             if metadata.e2eEncrypted {
                 cell.filePreviewImageView?.image = imageCache.getFolderEncrypted(account: metadata.account)
@@ -263,7 +261,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.filePreviewImageView?.image = cell.filePreviewImageView?.image?.colorizeFolder(metadata: metadata, tblDirectory: tblDirectory)
 
         } else {
-            let tableLocalFile = database.getResultTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            let tableLocalFile = database.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
 
             if metadata.hasPreviewBorder {
                 cell.filePreviewImageView?.layer.borderWidth = 0.2
@@ -317,8 +315,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                             }
 
                             if !(tblAvatar?.loaded ?? false),
-                               self.netwoking.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
-                                self.netwoking.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: ownerId, fileName: fileName, account: metadata.account, view: collectionView, isPreviewImageView: true))
+                               self.networking.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
+                                self.networking.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: ownerId, fileName: fileName, account: metadata.account, view: collectionView, isPreviewImageView: true))
                             }
                         }
                     }
@@ -406,8 +404,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
 
                 if !(tblAvatar?.loaded ?? false),
-                   self.netwoking.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
-                    self.netwoking.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: metadata.ownerId, fileName: fileName, account: metadata.account, view: collectionView))
+                   self.networking.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
+                    self.networking.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: metadata.ownerId, fileName: fileName, account: metadata.account, view: collectionView))
                 }
             }
         }
@@ -653,5 +651,39 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
         }
         return ownerId
+    }
+
+    /// Caches preview images asynchronously for the provided metadata entries.
+    /// - Parameters:
+    ///   - metadatas: The list of metadata entries to cache.
+    ///   - priority: The task priority to use (default is `.utility`).
+    func cachingAsync(metadatas: [tableMetadata], priority: TaskPriority = .utility) {
+        Task.detached(priority: priority) {
+            for (cost, metadata) in metadatas.enumerated() {
+                // Skip if not an image or video
+                guard metadata.isImageOrVideo else { continue }
+                // Check if image is already cached
+                let alreadyCached = NCImageCache.shared.getImageCache(ocId: metadata.ocId,
+                                                                      etag: metadata.etag,
+                                                                      ext: self.global.previewExt256) != nil
+                guard !alreadyCached else {
+                    continue
+                }
+
+                // caching preview
+                //
+                if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) {
+                    NCImageCache.shared.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: self.global.previewExt256, cost: cost)
+                }
+            }
+        }
+    }
+
+    func removeImageCache(metadatas: [tableMetadata]) {
+        DispatchQueue.global().async {
+            for metadata in metadatas {
+                NCImageCache.shared.removeImageCache(ocIdPlusEtag: metadata.ocId + metadata.etag)
+            }
+        }
     }
 }

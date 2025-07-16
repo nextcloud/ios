@@ -16,16 +16,17 @@ class NCAutoUpload: NSObject {
     private let networking = NCNetworking.shared
     private var endForAssetToUpload: Bool = false
 
-    func initAutoUpload(controller: NCMainTabBarController? = nil, tblAccount: tableAccount) async -> Int {
+    func initAutoUpload(controller: NCMainTabBarController? = nil,
+                        tblAccount: tableAccount) async -> Int {
         guard self.networking.isOnline,
               tblAccount.autoUploadStart,
               tblAccount.autoUploadOnlyNew else {
             return 0
         }
         let albumIds = NCKeychain().getAutoUploadAlbumIds(account: tblAccount.account)
-        let selectedAlbums = PHAssetCollection.allAlbums.filter({albumIds.contains($0.localIdentifier)})
+        let assetCollections = PHAssetCollection.allAlbums.filter({albumIds.contains($0.localIdentifier)})
 
-        let result = await getCameraRollAssets(controller: nil, assetCollections: selectedAlbums, tblAccount: tableAccount(value: tblAccount))
+        let result = await getCameraRollAssets(controller: nil, assetCollections: assetCollections, tblAccount: tableAccount(value: tblAccount))
 
         guard let assets = result.assets,
               !assets.isEmpty,
@@ -33,20 +34,29 @@ class NCAutoUpload: NSObject {
             return 0
         }
 
-        let num = await uploadAssets(tblAccount: tableAccount(value: tblAccount), assets: assets, fileNames: fileNames)
-
-        return num
+        return await uploadAssets(controller: nil, tblAccount: tblAccount, assets: assets, fileNames: fileNames)
     }
 
     func startManualAutoUploadForAlbums(controller: NCMainTabBarController?,
+                                        model: NCAutoUploadModel,
                                         assetCollections: [PHAssetCollection],
                                         account: String) async {
-        guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", account))
-        else {
+        defer {
+            NCContentPresenter().dismiss(after: 1)
+        }
+
+        guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", account)) else {
             return
         }
 
-        let result = await getCameraRollAssets(controller: controller, tblAccount: tableAccount(value: tblAccount))
+        if !tblAccount.autoUploadOnlyNew {
+            await MainActor.run {
+                let image = UIImage(systemName: "photo.on.rectangle.angled")?.image(color: .white, size: 20)
+                NCContentPresenter().noteTop(text: NSLocalizedString("_creating_db_photo_progress_", comment: ""), image: image, color: .lightGray, delay: .infinity, priority: .max)
+            }
+        }
+
+        let result = await getCameraRollAssets(controller: controller, assetCollections: assetCollections, tblAccount: tblAccount)
 
         guard let assets = result.assets,
               !assets.isEmpty,
@@ -54,17 +64,30 @@ class NCAutoUpload: NSObject {
             return
         }
 
-        _ = await uploadAssets(controller: controller, tblAccount: tblAccount, assets: assets, fileNames: fileNames)
+        let num = await uploadAssets(controller: controller, tblAccount: tblAccount, assets: assets, fileNames: fileNames)
+        nkLog(debug: "Automatic upload \(num) upload")
+
+        // Automatic move to auto upload new
+        if !tblAccount.autoUploadOnlyNew {
+            await self.database.updateAccountPropertyAsync(\.autoUploadOnlyNew, value: true, account: tblAccount.account)
+            await MainActor.run {
+                model.onViewAppear()
+            }
+        }
     }
 
-    private func uploadAssets(controller: NCMainTabBarController? = nil, tblAccount: tableAccount, assets: [PHAsset], fileNames: [String]) async -> Int {
+    private func uploadAssets(controller: NCMainTabBarController?,
+                              tblAccount: tableAccount,
+                              assets: [PHAsset],
+                              fileNames: [String]) async -> Int {
         let session = NCSession.shared.getSession(account: tblAccount.account)
-        let autoUploadServerUrlBase = self.database.getAccountAutoUploadServerUrlBase(account: tblAccount.account, urlBase: tblAccount.urlBase, userId: tblAccount.userId)
+        let autoUploadServerUrlBase = await self.database.getAccountAutoUploadServerUrlBaseAsync(account: tblAccount.account, urlBase: tblAccount.urlBase, userId: tblAccount.userId)
         var metadatas: [tableMetadata] = []
         let formatCompatibility = NCKeychain().formatCompatibility
         let keychainLivePhoto = NCKeychain().livePhoto
         let fileSystem = NCUtilityFileSystem()
-        let skipFileNames = await self.database.fetchSkipFileNames(account: tblAccount.account, autoUploadServerUrlBase: autoUploadServerUrlBase)
+        let skipFileNames = await self.database.fetchSkipFileNamesAsync(account: tblAccount.account,
+                                                                        autoUploadServerUrlBase: autoUploadServerUrlBase)
 
         nkLog(debug: "Automatic upload, new \(assets.count) assets found")
 
@@ -148,7 +171,6 @@ class NCAutoUpload: NSObject {
     func getCameraRollAssets(controller: NCMainTabBarController?,
                              assetCollections: [PHAssetCollection] = [],
                              tblAccount: tableAccount) async -> (assets: [PHAsset]?, fileNames: [String]?) {
-
         let hasPermission = await withCheckedContinuation { continuation in
             NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { granted in
                 continuation.resume(returning: granted)
@@ -157,7 +179,7 @@ class NCAutoUpload: NSObject {
         guard hasPermission else {
             return (nil, nil)
         }
-        let autoUploadServerUrlBase = self.database.getAccountAutoUploadServerUrlBase(account: tblAccount.account, urlBase: tblAccount.urlBase, userId: tblAccount.userId)
+        let autoUploadServerUrlBase = await self.database.getAccountAutoUploadServerUrlBaseAsync(account: tblAccount.account, urlBase: tblAccount.urlBase, userId: tblAccount.userId)
         var mediaPredicates: [NSPredicate] = []
         var datePredicates: [NSPredicate] = []
         let fetchOptions = PHFetchOptions()

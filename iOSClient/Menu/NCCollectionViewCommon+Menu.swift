@@ -36,10 +36,9 @@ extension NCCollectionViewCommon {
               let sceneIdentifier = self.controller?.sceneIdentifier else {
             return
         }
-        let tableLocalFile = database.getResultsTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))?.first
+        let tableLocalFile = database.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         let fileExists = NCUtilityFileSystem().fileProviderStorageExists(metadata)
         var actions = [NCMenuAction]()
-        let serverUrl = metadata.serverUrl + "/" + metadata.fileName
         var isOffline: Bool = false
         let applicationHandle = NCApplicationHandle()
         var iconHeader: UIImage!
@@ -157,7 +156,11 @@ extension NCCollectionViewCommon {
         // SET FOLDER E2EE
         //
         if NCNetworking.shared.isOnline,
-           metadata.canSetDirectoryAsE2EE {
+           metadata.directory,
+           metadata.size == 0,
+           !metadata.e2eEncrypted,
+           NCKeychain().isEndToEndEnabled(account: metadata.account),
+           metadata.serverUrl == NCUtilityFileSystem().getHomeServer(urlBase: metadata.urlBase, userId: metadata.userId) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_set_folder_encrypted_", comment: ""),
@@ -166,8 +169,7 @@ extension NCCollectionViewCommon {
                     sender: sender,
                     action: { _ in
                         Task {
-                            let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                            let error = await NCNetworkingE2EEMarkFolder().markFolderE2ee(account: metadata.account, serverUrlFileName: serverUrlFileName, userId: metadata.userId)
+                            let error = await NCNetworkingE2EEMarkFolder().markFolderE2ee(account: metadata.account, serverUrlFileName: metadata.serverUrlFileName, userId: metadata.userId)
                             if error != .success {
                                 NCContentPresenter().showError(error: error)
                             }
@@ -192,10 +194,10 @@ extension NCCollectionViewCommon {
                         Task {
                             let results = await NextcloudKit.shared.markE2EEFolderAsync(fileId: metadata.fileId, delete: true, account: metadata.account)
                             if results.error == .success {
-                                await self.database.deleteE2eEncryptionAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl))
-                                await self.database.setDirectoryAsync(serverUrl: serverUrl, encrypted: false, account: metadata.account)
+                                await self.database.deleteE2eEncryptionAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrlFileName))
+                                await self.database.setDirectoryAsync(serverUrl: metadata.serverUrlFileName, encrypted: false, account: metadata.account)
                                 await self.database.setMetadataEncryptedAsync(ocId: metadata.ocId, encrypted: false)
-                                self.reloadDataSource()
+                                await self.reloadDataSource()
                             } else {
                                 NCContentPresenter().messageNotification(NSLocalizedString("_e2e_error_", comment: ""), error: results.error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
                             }
@@ -231,7 +233,9 @@ extension NCCollectionViewCommon {
         if NCNetworking.shared.isOnline,
            metadata.canSetAsAvailableOffline {
             actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: self, order: 60, sender: sender, completion: {
-                self.reloadDataSource()
+                Task {
+                    await self.reloadDataSource()
+                }
             }))
         }
 
@@ -282,11 +286,13 @@ extension NCCollectionViewCommon {
                                                         error: .success)
                             }
                         } else {
-                            if let metadata = self.database.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
-                                                                                             session: NCNetworking.shared.sessionDownload,
-                                                                                             selector: NCGlobal.shared.selectorSaveAsScan,
-                                                                                             sceneIdentifier: sceneIdentifier) {
-                                NCNetworking.shared.download(metadata: metadata)
+                            Task {
+                                if let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
+                                                                                                    session: NCNetworking.shared.sessionDownload,
+                                                                                                            selector: NCGlobal.shared.selectorSaveAsScan,
+                                                                                                            sceneIdentifier: sceneIdentifier) {
+                                    NCNetworking.shared.download(metadata: metadata)
+                                }
                             }
                         }
                     }
@@ -339,11 +345,13 @@ extension NCCollectionViewCommon {
                                                         error: .success)
                             }
                         } else {
-                            if let metadata = self.database.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
-                                                                                             session: NCNetworking.shared.sessionDownload,
-                                                                                             selector: NCGlobal.shared.selectorLoadFileQuickLook,
-                                                                                             sceneIdentifier: sceneIdentifier) {
-                                NCNetworking.shared.download(metadata: metadata)
+                            Task {
+                                if let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
+                                                                                                            session: NCNetworking.shared.sessionDownload,
+                                                                                                            selector: NCGlobal.shared.selectorLoadFileQuickLook,
+                                                                                                            sceneIdentifier: sceneIdentifier) {
+                                    NCNetworking.shared.download(metadata: metadata)
+                                }
                             }
                         }
                     }

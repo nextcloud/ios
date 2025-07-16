@@ -27,6 +27,7 @@ import PhotosUI
 
 final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     let fileManager = FileManager()
+
     var directoryGroup: String {
         return fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)?.path ?? ""
     }
@@ -186,7 +187,16 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     }
 
     func removeDocumentsDirectory() {
-        try? fileManager.removeItem(atPath: directoryDocuments)
+        do {
+            let contents = try fileManager.contentsOfDirectory(atPath: directoryDocuments)
+
+            for file in contents {
+                let fullPath = (directoryDocuments as NSString).appendingPathComponent(file)
+                try fileManager.removeItem(atPath: fullPath)
+            }
+        } catch {
+            print(error)
+        }
     }
 
     func removeTemporaryDirectory() {
@@ -214,7 +224,9 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     }
 
     func isDirectoryE2EE(session: NCSession.Session, serverUrl: String) -> Bool {
-        if serverUrl == getHomeServer(session: session) || serverUrl == ".." { return false }
+        if serverUrl == getHomeServer(session: session) || serverUrl == ".." {
+            return false
+        }
         if let directory = NCManageDatabase.shared.getTableDirectory(account: session.account, serverUrl: serverUrl) {
             return directory.e2eEncrypted
         }
@@ -227,7 +239,9 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     }
 
     func isDirectoryE2EEAsync(session: NCSession.Session, serverUrl: String) async -> Bool {
-        if serverUrl == getHomeServer(session: session) || serverUrl == ".." { return false }
+        if serverUrl == getHomeServer(session: session) || serverUrl == ".." {
+            return false
+        }
         if let directory = await NCManageDatabase.shared.getTableDirectoryAsync(account: session.account, serverUrl: serverUrl) {
             return directory.e2eEncrypted
         }
@@ -235,7 +249,9 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     }
 
     func isDirectoryE2EETop(account: String, serverUrl: String) -> Bool {
-        guard let serverUrl = serverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return false }
+        guard let serverUrl = serverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+            return false
+        }
 
         if let url = URL(string: serverUrl)?.deletingLastPathComponent(),
            let serverUrl = String(url.absoluteString.dropLast()).removingPercentEncoding {
@@ -247,7 +263,9 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     }
 
     func getDirectoryE2EETopAsync(serverUrl: String, account: String) async -> tableDirectory? {
-        guard var serverUrl = serverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else { return nil }
+        guard var serverUrl = serverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+            return nil
+        }
         var top: tableDirectory?
 
         while let url = URL(string: serverUrl)?.deletingLastPathComponent(),
@@ -650,49 +668,65 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         return formatter.string(fromByteCount: bytes)
     }
 
-    func cleanUp(directory: String, days: TimeInterval) {
-        DispatchQueue.global().async {
-            if days == 0 { return}
-            let minimumDate = Date().addingTimeInterval(-days * 24 * 60 * 60)
-            let url = URL(fileURLWithPath: directory)
-            var offlineDir: [String] = []
+    func cleanUpAsync(directory: String, days: TimeInterval) async {
+        if days == 0 {
+            return
+        }
+        let minimumDate = Date().addingTimeInterval(-days * 24 * 60 * 60)
+        let url = URL(fileURLWithPath: directory)
+        var offlineDir: [String] = []
+        let manager = FileManager.default
 
-            if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "offline == true"), sorted: "serverUrl", ascending: true) {
-                for directory: tableDirectory in directories {
-                    offlineDir.append(self.getDirectoryProviderStorageOcId(directory.ocId))
+        let directories = await NCManageDatabase.shared.getTablesDirectoryAsync(predicate: NSPredicate(format: "offline == true"), sorted: "serverUrl", ascending: true)
+        for directory in directories {
+            offlineDir.append(self.getDirectoryProviderStorageOcId(directory.ocId))
+        }
+
+        let tblLocalFiles = await NCManageDatabase.shared.getTableLocalFilesAsync(predicate: NSPredicate(format: "offline == false"), sorted: "lastOpeningDate", ascending: true)
+
+        let fileURLs = await enumerateFilesAsync(at: url, includingPropertiesForKeys: [.isRegularFileKey])
+        for fileURL in fileURLs {
+            if let attributes = try? manager.attributesOfItem(atPath: fileURL.path) {
+                if attributes[.size] as? Double == 0 { continue }
+                if attributes[.type] as? FileAttributeType == FileAttributeType.typeDirectory { continue }
+                // check directory offline
+                let filter = offlineDir.filter({ fileURL.path.hasPrefix($0)})
+                if !filter.isEmpty {
+                    continue
                 }
-            }
-            let resultsLocalFile = NCManageDatabase.shared.getResultsTableLocalFile(predicate: NSPredicate(format: "offline == false"), sorted: "lastOpeningDate", ascending: true)
-
-            let manager = FileManager.default
-            if let enumerator = manager.enumerator(at: url, includingPropertiesForKeys: [.isRegularFileKey], options: []) {
-                for case let fileURL as URL in enumerator {
-                    if let attributes = try? manager.attributesOfItem(atPath: fileURL.path) {
-                        if attributes[.size] as? Double == 0 { continue }
-                        if attributes[.type] as? FileAttributeType == FileAttributeType.typeDirectory { continue }
-                        // check directory offline
-                        let filter = offlineDir.filter({ fileURL.path.hasPrefix($0)})
-                        if !filter.isEmpty { continue }
-                        // -----------------------
-                        if let modificationDate = attributes[.modificationDate] as? Date,
-                           modificationDate < minimumDate {
-                            let fileName = fileURL.lastPathComponent
-                            if fileName.hasSuffix(NCGlobal.shared.previewExt256) || fileName.hasSuffix(NCGlobal.shared.previewExt512) || fileName.hasSuffix(NCGlobal.shared.previewExt1024) {
-                                try? manager.removeItem(atPath: fileURL.path)
-                            }
-                        }
-                        // -----------------------
-                        let folderURL = fileURL.deletingLastPathComponent()
-                        let ocId = folderURL.lastPathComponent
-                        if let result = resultsLocalFile?.filter({ $0.ocId == ocId }).first, (result.lastOpeningDate as Date) < minimumDate {
-                            do {
-                                try manager.removeItem(atPath: fileURL.path)
-                            } catch { }
-                            manager.createFile(atPath: fileURL.path, contents: nil, attributes: nil)
-                            NCManageDatabase.shared.deleteLocalFileOcId(ocId)
-                        }
+                // -----------------------
+                if let modificationDate = attributes[.modificationDate] as? Date,
+                   modificationDate < minimumDate {
+                    let fileName = fileURL.lastPathComponent
+                    if fileName.hasSuffix(NCGlobal.shared.previewExt256) || fileName.hasSuffix(NCGlobal.shared.previewExt512) || fileName.hasSuffix(NCGlobal.shared.previewExt1024) {
+                        try? manager.removeItem(atPath: fileURL.path)
                     }
                 }
+                // -----------------------
+                let folderURL = fileURL.deletingLastPathComponent()
+                let ocId = folderURL.lastPathComponent
+                if let tblLocalFile = tblLocalFiles.filter({ $0.ocId == ocId }).first,
+                    (tblLocalFile.lastOpeningDate as Date) < minimumDate {
+                    do {
+                        try manager.removeItem(atPath: fileURL.path)
+                    } catch { }
+                    manager.createFile(atPath: fileURL.path, contents: nil, attributes: nil)
+                    await NCManageDatabase.shared.deleteLocalFileOcIdAsync(ocId)
+                }
+            }
+        }
+    }
+
+    private func enumerateFilesAsync(at url: URL, includingPropertiesForKeys keys: [URLResourceKey]? = nil) async -> [URL] {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .utility).async {
+                var urls: [URL] = []
+                if let enumerator = FileManager.default.enumerator(at: url, includingPropertiesForKeys: keys, options: []) {
+                    for case let fileURL as URL in enumerator {
+                        urls.append(fileURL)
+                    }
+                }
+                continuation.resume(returning: urls)
             }
         }
     }

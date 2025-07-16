@@ -71,10 +71,12 @@ extension NCTrash {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_restore_", comment: ""),
-                icon: utility.loadImage(named: "arrow.circlepath", colors: [NCBrandColor.shared.iconImageColor]),
+                icon: utility.loadImage(named: "arrow.counterclockwise", colors: [NCBrandColor.shared.iconImageColor]),
                 sender: sender,
                 action: { _ in
-                    self.restoreItem(with: objectId)
+                    Task {
+                        await self.restoreItem(with: objectId)
+                    }
                 }
             )
         )

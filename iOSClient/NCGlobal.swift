@@ -238,7 +238,7 @@ final class NCGlobal: Sendable {
 
     let metadataStatusUploadingAllMode          = [1,2,3]
     let metadataStatusDownloadingAllMode        = [-1, -2, -3]
-    let metadataStatusInTransfer                = [-1, -2, 1, 2]
+    let metadataStatusForScreenAwake            = [-1, -2, 1, 2]
     let metadataStatusHideInView                = [1, 2, 3, 11]
     let metadataStatusWaitWebDav                = [10, 11, 12, 13, 14, 15]
 
@@ -345,11 +345,6 @@ final class NCGlobal: Sendable {
     // SNAPSHOT PREVIEW
     //
     let defaultSnapshotConfiguration = "DefaultPreviewConfiguration"
-
-    // FORBIDDEN CHARACTERS
-    //
-    // TODO: Remove this
-    let forbiddenCharacters = ["/", "\\", ":", "\"", "|", "?", "*", "<", ">"]
 
     // DIAGNOSTICS CLIENTS
     //

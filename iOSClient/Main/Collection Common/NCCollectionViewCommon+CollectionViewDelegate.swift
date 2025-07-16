@@ -60,37 +60,39 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 NCViewer().view(viewController: self, metadata: metadata, image: image)
 
             } else if NextcloudKit.shared.isNetworkReachable() {
-                guard let  metadata = database.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
-                                                                                session: self.netwoking.sessionDownload,
-                                                                                selector: global.selectorLoadFileView,
-                                                                                sceneIdentifier: self.controller?.sceneIdentifier) else {
-                    return
-                }
-
-                if metadata.name == "files" {
-                    let hud = NCHud(self.tabBarController?.view)
-                    var downloadRequest: DownloadRequest?
-
-                    hud.initHudRing(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
-                        if let request = downloadRequest {
-                            request.cancel()
-                        }
+                Task { @MainActor in
+                    guard let  metadata = await database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
+                                                                                               session: self.networking.sessionDownload,
+                                                                                               selector: global.selectorLoadFileView,
+                                                                                               sceneIdentifier: self.controller?.sceneIdentifier) else {
+                        return
                     }
 
-                    self.netwoking.download(metadata: metadata) {
-                    } requestHandler: { request in
-                        downloadRequest = request
-                    } progressHandler: { progress in
-                        hud.progress(progress.fractionCompleted)
-                    } completion: { afError, error in
-                        if error == .success || afError?.isExplicitlyCancelledError ?? false {
-                            hud.dismiss()
-                        } else {
-                            hud.error(text: error.errorDescription)
+                    if metadata.name == "files" {
+                        let hud = NCHud(self.tabBarController?.view)
+                        var downloadRequest: DownloadRequest?
+
+                        hud.initHudRing(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
+                            if let request = downloadRequest {
+                                request.cancel()
+                            }
                         }
+
+                        self.networking.download(metadata: metadata) {
+                        } requestHandler: { request in
+                            downloadRequest = request
+                        } progressHandler: { progress in
+                            hud.progress(progress.fractionCompleted)
+                        } completion: { afError, error in
+                            if error == .success || afError?.isExplicitlyCancelledError ?? false {
+                                hud.dismiss()
+                            } else {
+                                hud.error(text: error.errorDescription)
+                            }
+                        }
+                    } else if !metadata.url.isEmpty {
+                        NCViewer().view(viewController: self, metadata: metadata, image: nil)
                     }
-                } else if !metadata.url.isEmpty {
-                    NCViewer().view(viewController: self, metadata: metadata, image: nil)
                 }
             } else {
                 let error = NKError(errorCode: global.errorOffline, errorDescription: "_go_online_")
@@ -101,23 +103,22 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        self.dataSource.getMetadata(indexPath: indexPath) { metadata in
-            guard let metadata else {
-                return
-            }
-            if self.isEditMode {
-                if let index = self.fileSelect.firstIndex(of: metadata.ocId) {
-                    self.fileSelect.remove(at: index)
-                } else {
-                    self.fileSelect.append(metadata.ocId)
-                }
-                self.collectionView.reloadItems(at: [indexPath])
-                self.tabBarSelect?.update(fileSelect: self.fileSelect, metadatas: self.getSelectedMetadatas(), userId: metadata.userId)
-                return
-            }
-
-            self.didSelectMetadata(metadata, withOcIds: true)
+        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else {
+            return
         }
+
+        if self.isEditMode {
+            if let index = self.fileSelect.firstIndex(of: metadata.ocId) {
+                self.fileSelect.remove(at: index)
+            } else {
+                self.fileSelect.append(metadata.ocId)
+            }
+            self.collectionView.reloadItems(at: [indexPath])
+            self.tabBarSelect?.update(fileSelect: self.fileSelect, metadatas: self.getSelectedMetadatas(), userId: metadata.userId)
+            return
+        }
+
+        self.didSelectMetadata(metadata, withOcIds: true)
     }
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {

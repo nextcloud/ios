@@ -63,29 +63,31 @@ class NCContextMenu: NSObject {
                                             error: .success)
                 }
             } else {
-                guard let metadata = self.database.setMetadataSessionInWaitDownload(ocId: self.metadata.ocId,
-                                                                                    session: self.networking.sessionDownload,
-                                                                                    selector: self.global.selectorOpenIn,
-                                                                                    sceneIdentifier: self.sceneIdentifier) else {
-                    return
-                }
-
-                hud.initHudRing(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
-                    if let request = downloadRequest {
-                        request.cancel()
+                Task { @MainActor in
+                    guard let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(ocId: self.metadata.ocId,
+                                                                                                   session: self.networking.sessionDownload,
+                                                                                                   selector: self.global.selectorOpenIn,
+                                                                                                   sceneIdentifier: self.sceneIdentifier) else {
+                        return
                     }
-                }
 
-                self.networking.download(metadata: metadata) {
-                } requestHandler: { request in
-                    downloadRequest = request
-                } progressHandler: { progress in
-                    hud.progress(progress.fractionCompleted)
-                } completion: { afError, error in
-                    if error == .success || afError?.isExplicitlyCancelledError ?? false {
-                        hud.dismiss()
-                    } else {
-                        hud.error(text: error.errorDescription)
+                    hud.initHudRing(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
+                        if let request = downloadRequest {
+                            request.cancel()
+                        }
+                    }
+
+                    self.networking.download(metadata: metadata) {
+                    } requestHandler: { request in
+                        downloadRequest = request
+                    } progressHandler: { progress in
+                        hud.progress(progress.fractionCompleted)
+                    } completion: { afError, error in
+                        if error == .success || afError?.isExplicitlyCancelledError ?? false {
+                            hud.dismiss()
+                        } else {
+                            hud.error(text: error.errorDescription)
+                        }
                     }
                 }
             }
@@ -113,29 +115,31 @@ class NCContextMenu: NSObject {
                                             error: .success)
                 }
             } else {
-                guard let metadata = self.database.setMetadataSessionInWaitDownload(ocId: self.metadata.ocId,
-                                                                                    session: self.networking.sessionDownload,
-                                                                                    selector: self.global.selectorLoadFileQuickLook,
-                                                                                    sceneIdentifier: self.sceneIdentifier) else {
-                    return
-                }
-
-                hud.initHudRing(text: NSLocalizedString("_downloading_", comment: "")) {
-                    if let request = downloadRequest {
-                        request.cancel()
+                Task { @MainActor in
+                    guard let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(ocId: self.metadata.ocId,
+                                                                                                   session: self.networking.sessionDownload,
+                                                                                                   selector: self.global.selectorLoadFileQuickLook,
+                                                                                                   sceneIdentifier: self.sceneIdentifier) else {
+                        return
                     }
-                }
 
-                self.networking.download(metadata: metadata) {
-                } requestHandler: { request in
-                    downloadRequest = request
-                } progressHandler: { progress in
-                    hud.progress(progress.fractionCompleted)
-                } completion: { afError, error in
-                    if error == .success || afError?.isExplicitlyCancelledError ?? false {
-                        hud.dismiss()
-                    } else {
-                        hud.error(text: error.errorDescription)
+                    hud.initHudRing(text: NSLocalizedString("_downloading_", comment: "")) {
+                        if let request = downloadRequest {
+                            request.cancel()
+                        }
+                    }
+
+                    self.networking.download(metadata: metadata) {
+                    } requestHandler: { request in
+                        downloadRequest = request
+                    } progressHandler: { progress in
+                        hud.progress(progress.fractionCompleted)
+                    } completion: { afError, error in
+                        if error == .success || afError?.isExplicitlyCancelledError ?? false {
+                            hud.dismiss()
+                        } else {
+                            hud.error(text: error.errorDescription)
+                        }
                     }
                 }
             }
@@ -150,12 +154,16 @@ class NCContextMenu: NSObject {
             }
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: alertStyle)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_file_", comment: ""), style: .destructive) { _ in
-                self.networking.setStatusWaitDelete(metadatas: [self.metadata], sceneIdentifier: self.sceneIdentifier)
                 if let viewController = self.viewController as? NCCollectionViewCommon {
-                    viewController.reloadDataSource()
+                    self.networking.setStatusWaitDelete(metadatas: [self.metadata], sceneIdentifier: self.sceneIdentifier)
+                    Task {
+                        await viewController.reloadDataSource()
+                    }
                 }
                 if let viewController = self.viewController as? NCMedia {
-                    viewController.loadDataSource()
+                    Task {
+                        await viewController.deleteImage(with: self.metadata.ocId)
+                    }
                 }
             })
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { _ in })

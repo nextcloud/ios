@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19162" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="N7y-68-uFW">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="N7y-68-uFW">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19144"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -20,11 +19,17 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="THN-EA-J3j">
+                                <rect key="frame" x="5" y="140" width="404" height="16"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" directionalLockEnabled="YES" delaysContentTouches="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IrK-3z-fms">
-                                <rect key="frame" x="0.0" y="88" width="414" height="774"/>
+                                <rect key="frame" x="0.0" y="156" width="414" height="672"/>
                                 <subviews>
                                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WsH-pm-r11">
-                                        <rect key="frame" x="0.0" y="0.0" width="10" height="33"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="0.0" height="33"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <color key="textColor" systemColor="labelColor"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -46,9 +51,12 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="IrK-3z-fms" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="07j-i7-RvO"/>
-                            <constraint firstItem="IrK-3z-fms" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="2nE-Io-hbo"/>
+                            <constraint firstItem="IrK-3z-fms" firstAttribute="top" secondItem="THN-EA-J3j" secondAttribute="bottom" id="6bV-uo-krk"/>
+                            <constraint firstItem="THN-EA-J3j" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="9z0-ji-bv6"/>
                             <constraint firstAttribute="trailing" secondItem="IrK-3z-fms" secondAttribute="trailing" id="Mio-kT-YXx"/>
+                            <constraint firstAttribute="trailing" secondItem="THN-EA-J3j" secondAttribute="trailing" constant="5" id="Rf3-Tf-veK"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="IrK-3z-fms" secondAttribute="bottom" id="nw6-U4-RU6"/>
+                            <constraint firstItem="THN-EA-J3j" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="5" id="q5p-va-Iru"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="Fwc-r9-U6E">
@@ -60,6 +68,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="buttonCancel" destination="hMa-Vi-h4E" id="TKS-UQ-fdG"/>
+                        <outlet property="privateKey" destination="THN-EA-J3j" id="GDy-ao-MNw"/>
                         <outlet property="scrollView" destination="IrK-3z-fms" id="Bxc-Ka-jnB"/>
                         <outlet property="textView" destination="WsH-pm-r11" id="eyo-tQ-6Ad"/>
                     </connections>
@@ -74,7 +83,7 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="N7y-68-uFW" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="eDJ-Nw-ckC">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <rect key="frame" x="0.0" y="96" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>

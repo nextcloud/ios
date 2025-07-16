@@ -158,6 +158,7 @@
 "_keep_both_for_all_action_title_" = "Keep both for all";
 "_more_action_title_" = "More Details";
 "_wait_file_preparation_" = "Please wait, preparing file upload…";
+"_keep_active_for_upload_" = "Keep the application active until the sending is completed…";
 "_wait_file_encryption_"  = "Please wait, encrypting file…";
 "_passcode_counter_fail_" = "Too many failed attempts, please wait before reattempting.";
 "_seconds_"               = "seconds";
@@ -632,7 +633,7 @@
 "_upload_background_msg_"   = "Files upload in progress …";
 "_create_folder_error_"     = "An error has occurred while creating the folder:\n%@.\n\nPlease resolve the issue as soon as possible.\n\nAll uploads are suspended until the problem is resolved.\n";
 "_creating_dir_progress_"   = "Creating directories in progress … keep the application active.";
-"_creating_db_photo_progress"   = "Creating photo archive in progress … keep the application active.";
+"_creating_db_photo_progress_" = "Creating photo archive in progress … keep the application active.";
 "_account_unauthorized_"    = "Warning, %@, you are not authorized, your account has been deleted, if you have changed your password, re-authenticate.";
 "_folder_offline_desc_"     = "Even without an internet connection, you can organize your folders, create files. Once you're back online, your pending actions will automatically sync.";
 "_offline_not_allowed_"     = "This operation is not allowed in offline mode";

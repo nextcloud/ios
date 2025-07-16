@@ -10,34 +10,41 @@ import NextcloudKit
 
 extension NCShareExtension: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        self.dataSource.getMetadata(indexPath: indexPath) { metadata in
-            guard let metadata else { return self.showAlert(description: "_invalid_url_") }
+        Task {
+            guard let tblAccount = self.extensionData.getTblAccoun(),
+                  let metadata = self.dataSource.getMetadata(indexPath: indexPath) else {
+                return self.showAlert(description: "_invalid_url_")
+            }
             let serverUrl = self.utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
-            if metadata.e2eEncrypted && !NCKeychain().isEndToEndEnabled(account: self.session.account) {
+
+            if metadata.e2eEncrypted && !NCKeychain().isEndToEndEnabled(account: tblAccount.account) {
                 self.showAlert(title: "_info_", description: "_e2e_goto_settings_for_enable_")
             }
-            let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: self.session.account)
+            let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: tblAccount.account)
 
-            if let fileNameError = FileNameValidator.checkFileName(metadata.fileNameView, account: self.session.account, capabilities: capabilities) {
+            if let fileNameError = FileNameValidator.checkFileName(metadata.fileNameView, account: tblAccount.account, capabilities: capabilities) {
                 self.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
                 return
             }
 
             self.serverUrl = serverUrl
-            self.reloadDatasource(withLoadFolder: true)
             self.setNavigationBar(navigationTitle: metadata.fileNameView)
+
+            await self.reloadData()
+            await self.loadFolder()
         }
     }
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == UICollectionView.elementKindSectionHeader {
+            let session = self.extensionData.getSession()
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData else { return NCSectionFirstHeaderEmptyData() }
             if self.dataSourceTask?.state == .running {
                 header.emptyImage.image = utility.loadImage(named: "wifi", colors: [NCBrandColor.shared.getElement(account: session.account)])
                 header.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
                 header.emptyDescription.text = ""
             } else {
-                header.emptyImage.image = NCImageCache.shared.getFolder(account: self.session.account)
+                header.emptyImage.image = NCImageCache.shared.getFolder(account: session.account)
                 header.emptyTitle.text = NSLocalizedString("_files_no_folders_", comment: "")
                 header.emptyDescription.text = ""
             }
@@ -116,6 +123,8 @@ extension NCShareExtension: UICollectionViewDataSource {
         var isShare = false
         var isMounted = false
         let metadataPermissions = NCMetadataPermissions()
+        let session = self.extensionData.getSession()
+
         if let metadataFolder = metadataFolder {
             isShare = metadata.permissions.contains(NCMetadataPermissions.permissionShared) && !metadataFolder.permissions.contains(NCMetadataPermissions.permissionShared)
             isMounted = metadata.permissions.contains(NCMetadataPermissions.permissionMounted) && !metadataFolder.permissions.contains(NCMetadataPermissions.permissionMounted)
@@ -159,8 +168,12 @@ extension NCShareExtension: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard !uploadStarted else { return }
+        guard !uploadStarted else {
+            return
+        }
         let fileName = filesName[indexPath.row]
+        let session = self.extensionData.getSession()
+
         showRenameFileDialog(named: fileName, account: session.account)
     }
 }
@@ -171,10 +184,16 @@ extension NCShareExtension: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCShareCell else { return UITableViewCell() }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCShareCell else {
+            return UITableViewCell()
+        }
+
         let fileName = filesName[indexPath.row]
+        let session = self.extensionData.getSession()
+
         cell.setup(fileName: fileName, iconName: "", account: session.account)
         cell.delegate = self
+
         return cell
     }
 }

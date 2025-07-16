@@ -27,6 +27,16 @@ import NextcloudKit
 import RealmSwift
 
 extension NCNetworking {
+    func cancelAllQueue() {
+        downloadThumbnailQueue.cancelAll()
+        downloadThumbnailActivityQueue.cancelAll()
+        downloadThumbnailTrashQueue.cancelAll()
+        downloadAvatarQueue.cancelAll()
+        unifiedSearchQueue.cancelAll()
+        saveLivePhotoQueue.cancelAll()
+        fileExistsQueue.cancelAll()
+    }
+
     func cancelAllTask() {
         cancelAllQueue()
         cancelAllDataTask()
@@ -47,6 +57,12 @@ extension NCNetworking {
     func cancelAllDownloadUploadTask() {
         cancelAllDownloadTask()
         cancelAllUploadTask()
+    }
+
+    func cancelAllTaskForGoInBackground() {
+        cancelAllQueue()
+        cancelDownloadTasks()
+        cancelUploadTasks()
     }
 
     // MARK: -
@@ -95,7 +111,8 @@ extension NCNetworking {
         ///
         else if metadata.status == global.metadataStatusWaitDelete {
             Task {
-                await database.setMetadataStatusAsync(ocId: metadata.ocId, status: global.metadataStatusNormal)
+                await database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                       status: global.metadataStatusNormal)
 
                 NCNetworking.shared.notifyAllDelegates { delegate in
                     delegate.transferReloadData(serverUrl: serverUrl, status: nil)
@@ -229,7 +246,7 @@ extension NCNetworking {
             }
 
             if let metadata {
-                await self.database.clearMetadataSessionAsync(metadata: metadata)
+                await self.database.clearMetadatasSessionAsync(metadatas: [metadata])
             } else if let metadatas = await self.database.getMetadatasAsync(predicate: predicate) {
                 await self.database.clearMetadatasSessionAsync(metadatas: metadatas)
             }
@@ -254,7 +271,7 @@ extension NCNetworking {
                 }
 
                 if let metadata {
-                    await self.database.clearMetadataSessionAsync(metadata: metadata)
+                    await self.database.clearMetadatasSessionAsync(metadatas: [metadata])
                 } else if let metadatas = await self.database.getMetadatasAsync(predicate: predicate) {
                     await self.database.clearMetadatasSessionAsync(metadatas: metadatas)
                 }
@@ -377,7 +394,7 @@ extension NCNetworking {
                                                                                         self.global.metadataStatusUploading)) {
             for metadata in metadatas {
                 guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: metadata.account) else {
-                    self.database.deleteMetadataOcId(metadata.ocId)
+                    await self.database.deleteMetadataOcIdAsync(metadata.ocId)
                     utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
                     continue
                 }

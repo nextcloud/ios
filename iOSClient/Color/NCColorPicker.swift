@@ -60,8 +60,7 @@ class NCColorPicker: UIViewController {
         view.backgroundColor = .secondarySystemBackground
 
         if let metadata = metadata {
-            let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-            if let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl)), let hex = tableDirectory.colorFolder, let color = UIColor(hex: hex) {
+            if let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrlFileName)), let hex = tableDirectory.colorFolder, let color = UIColor(hex: hex) {
                 selectedColor = color
             }
         }
@@ -211,13 +210,13 @@ class NCColorPicker: UIViewController {
     // MARK: -
 
     func updateColor(hexColor: String?) {
-        if let metadata = metadata {
-            let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-            NCManageDatabase.shared.updateDirectoryColorFolder(hexColor, metadata: metadata, serverUrl: serverUrl)
-            self.collectionViewCommon?.collectionView.reloadData()
+        Task { @MainActor in
+            if let metadata {
+                await NCManageDatabase.shared.updateDirectoryColorFolderAsync(hexColor, metadata: metadata, serverUrl: metadata.serverUrlFileName)
+                self.collectionViewCommon?.collectionView.reloadData()
+            }
             self.dismiss(animated: true)
         }
-        self.dismiss(animated: true)
     }
 }
 

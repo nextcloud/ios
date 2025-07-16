@@ -161,7 +161,7 @@ class NCShare: UIViewController, NCSharePagingContent {
                 fileNameLocalPath: utilityFileSystem.directoryUserData + "/" + fileName,
                 sizeImage: NCGlobal.shared.avatarSize,
                 avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
-                etag: etag,
+                etagResource: etag,
                 account: metadata.account) { _, imageAvatar, _, etag, _, error in
                     if error == .success, let etag = etag, let imageAvatar = imageAvatar {
                         self.database.addAvatar(fileName: fileName, etag: etag)

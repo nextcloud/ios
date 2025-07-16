@@ -31,7 +31,7 @@ extension NCNetworking {
                 if results.error == .success, let file = results.files?.first {
                     let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
                     let metadata = await self.database.convertFileToMetadataAsync(file, isDirectoryE2EE: isDirectoryE2EE)
-                    self.database.addMetadataIfNeeded(metadata, sync: false)
+                    self.database.addMetadataIfNeededAsync(metadata, sync: false)
 
                     if metadata.isLivePhoto, metadata.isVideo {
                         continue
@@ -40,8 +40,8 @@ extension NCNetworking {
                     }
                 }
             }
-            self.database.createRecommendedFiles(account: session.account, recommendations: recommendationsToInsert, sync: false)
 
+            await self.database.createRecommendedFilesAsync(account: session.account, recommendations: recommendationsToInsert)
             await collectionView.reloadData()
         }
     }

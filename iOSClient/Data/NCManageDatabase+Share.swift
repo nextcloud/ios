@@ -139,13 +139,66 @@ extension NCManageDatabase {
         }
     }
 
-    ///
-    /// Fetch all available shares of an item identified by the given metadata.
-    ///
-    /// - Returns: A tuple consisting of the first public share link and any _additional_ shares that might be there.
-    ///            It is possible that there is no public share link but still shares of other types.
-    ///            In the latter case, all shares are returned as the second tuple value.
-    ///
+    /// Asynchronously adds a list of `NKShare` objects to the database for a specific account.
+    /// - Parameters:
+    ///   - account: The account identifier associated with the shares.
+    ///   - home: The home directory path used to compute the `serverUrl`.
+    ///   - shares: An array of `NKShare` objects to be stored in the database.
+    func addShareAsync(account: String, home: String, shares: [NKShare]) async {
+        await performRealmWriteAsync { realm in
+            for share in shares {
+                let serverUrlPath = home + share.path
+                guard let serverUrl = self.utilityFileSystem.deleteLastPath(serverUrlPath: serverUrlPath, home: home) else {
+                    continue
+                }
+                let object = tableShare()
+                object.account = account
+                if let fileName = share.path.components(separatedBy: "/").last {
+                    object.fileName = fileName
+                }
+                object.serverUrl = serverUrl
+                object.canEdit = share.canEdit
+                object.canDelete = share.canDelete
+                object.date = share.date as? NSDate
+                object.displaynameFileOwner = share.displaynameFileOwner
+                object.displaynameOwner = share.displaynameOwner
+                object.expirationDate = share.expirationDate
+                object.fileParent = share.fileParent
+                object.fileSource = share.fileSource
+                object.fileTarget = share.fileTarget
+                object.hideDownload = share.hideDownload
+                object.idShare = share.idShare
+                object.itemSource = share.itemSource
+                object.itemType = share.itemType
+                object.label = share.label
+                object.mailSend = share.mailSend
+                object.mimeType = share.mimeType
+                object.note = share.note
+                object.parent = share.parent
+                object.password = share.password
+                object.path = share.path
+                object.permissions = share.permissions
+                object.primaryKey = account + " " + String(share.idShare)
+                object.sendPasswordByTalk = share.sendPasswordByTalk
+                object.shareType = share.shareType
+                object.shareWith = share.shareWith
+                object.shareWithDisplayname = share.shareWithDisplayname
+                object.storage = share.storage
+                object.storageId = share.storageId
+                object.token = share.token
+                object.uidOwner = share.uidOwner
+                object.uidFileOwner = share.uidFileOwner
+                object.url = share.url
+                object.userClearAt = share.userClearAt as? NSDate
+                object.userIcon = share.userIcon
+                object.userMessage = share.userMessage
+                object.userStatus = share.userStatus
+                object.attributes = share.attributes
+                realm.add(object, update: .all)
+            }
+        }
+    }
+
     func getTableShares(account: String) -> [tableShare] {
         do {
             let realm = try Realm()
@@ -156,6 +209,26 @@ extension NCManageDatabase {
             nkLog(error: "Could not access database: \(error)")
         }
         return []
+    }
+
+    /// Asynchronously retrieves and returns all `tableShare` objects for the specified account,
+    /// sorted by `shareType` (descending) and `idShare` (descending).
+    /// - Parameter account: The account identifier to filter the shares.
+    /// - Returns: An array of detached `tableShare` objects.
+    func getTableSharesAsync(account: String) async -> [tableShare] {
+        let results: [tableShare]? = await performRealmReadAsync { realm in
+            let sortProperties = [
+                SortDescriptor(keyPath: "shareType", ascending: false),
+                SortDescriptor(keyPath: "idShare", ascending: false)
+            ]
+            let objects = realm.objects(tableShare.self)
+                .filter("account == %@", account)
+                .sorted(by: sortProperties)
+
+            return objects.map { tableShare(value: $0) }
+        }
+
+        return results ?? []
     }
 
     func getTableShares(metadata: tableMetadata) -> (firstShareLink: tableShare?, share: [tableShare]?) {
@@ -248,6 +321,15 @@ extension NCManageDatabase {
             }
         } catch let error as NSError {
             nkLog(error: "Could not write to database: \(error)")
+        }
+    }
+
+    /// Asynchronously deletes all `tableShare` entries for a specific account.
+    /// - Parameter account: The account identifier used to filter the `tableShare` objects.
+    func deleteTableShareAsync(account: String) async {
+        await performRealmWriteAsync { realm in
+            let result = realm.objects(tableShare.self).filter("account == %@", account)
+            realm.delete(result)
         }
     }
 
