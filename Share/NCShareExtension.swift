@@ -368,6 +368,7 @@ extension NCShareExtension {
             metadata.iconName = results.iconName
             metadata.classFile = results.classFile
             metadata.typeIdentifier = results.typeIdentifier
+            metadata.serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
 
             // CHUNK
             var chunkSize = NCGlobal.shared.chunkSizeMBCellular

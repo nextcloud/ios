@@ -69,7 +69,6 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
             }
 
             self.previewStore.append(PreviewStore(id: localIdentifier, asset: asset, assetType: asset.type, uti: uti, nativeFormat: !NCKeychain().formatCompatibility, fileName: ""))
-
         }
 
         self.hiddenSave = false

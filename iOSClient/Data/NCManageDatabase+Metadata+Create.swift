@@ -21,7 +21,7 @@ extension NCManageDatabase {
         }
         #endif
 
-        Task {
+        Task { @MainActor in
             if !metadata.directory {
                 let results = await NKTypeIdentifiers.shared.getInternalType(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory, account: file.account)
 
@@ -226,7 +226,7 @@ extension NCManageDatabase {
                         session: NCSession.Session,
                         sceneIdentifier: String?,
                         completion: @escaping (tableMetadata) -> Void) {
-        Task {
+        Task { @MainActor in
             let metadata = tableMetadata()
 
             if isUrl {
