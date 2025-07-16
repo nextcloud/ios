@@ -334,9 +334,16 @@ extension NCCollectionViewCommon {
                     order: 120,
                     sender: sender,
                     action: { _ in
-                        Task {
+                        Task { @MainActor in
                             let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
-                            self.present(UIAlertController.renameFile(metadata: metadata, capabilities: capabilities), animated: true)
+                            let fileNameNew = await UIAlertController.renameFileAsync(fileName: metadata.fileNameView, isDirectory: metadata.directory, capabilities: capabilities, account: metadata.account, presenter: self)
+
+                            if await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
+                                NCContentPresenter().showError(error: NKError(errorCode: 0, errorDescription: "_rename_already_exists_"))
+                                return
+                            }
+
+                            NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew)
                         }
                     }
                 )

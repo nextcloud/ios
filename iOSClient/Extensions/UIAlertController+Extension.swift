@@ -295,29 +295,25 @@ extension UIAlertController {
         }
     }
 
-    static func renameFile(metadata: tableMetadata,
-                           capabilities: NKCapabilities.Capabilities,
-                           completion: @escaping (_ newFileName: String) -> Void = { _ in }) -> UIAlertController {
-        renameFile(fileName: metadata.fileNameView, isDirectory: metadata.isDirectory, capabilities: capabilities, account: metadata.account) { fileNameNew in
-            // verify if already exists
-            if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
-                NCContentPresenter().showError(error: NKError(errorCode: 0, errorDescription: "_rename_already_exists_"))
-                return
-            }
-
-            NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew)
-
-            completion(fileNameNew)
-        }
-    }
-
     static func warning(title: String? = nil, message: String? = nil, completion: @escaping () -> Void = {}) -> UIAlertController {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-
         let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { _ in completion() }
 
         alertController.addAction(okAction)
-
         return alertController
+    }
+
+    /// Presents a warning
+    @MainActor
+    static func warningAsync(title: String? = nil,
+                             message: String? = nil,
+                             presenter: UIViewController) async {
+        await withCheckedContinuation { continuation in
+            let alert = warning(title: title, message: message) {
+                continuation.resume()
+            }
+
+            presenter.present(alert, animated: true)
+        }
     }
 }
