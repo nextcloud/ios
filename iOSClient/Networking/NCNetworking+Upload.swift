@@ -115,21 +115,6 @@ extension NCNetworking {
         }
     }
 
-    /*
-    func uploadHubStream(metadata: tableMetadata,
-                         uploadE2EEDelegate: uploadE2EEDelegate? = nil,
-                         controller: UIViewController? = nil) -> AsyncThrowingStream<UploadEvent, Error> {
-        return AsyncThrowingStream(bufferingPolicy: .unbounded) { continuation in
-            Task {
-                continuation.yield(.started)
-                continuation.yield(.progress(...))
-                continuation.yield(.completed)
-                continuation.finish()
-            }
-        }
-    }
-    */
-
     func uploadFile(metadata: tableMetadata,
                     fileNameLocalPath: String,
                     withUploadComplete: Bool = true,
@@ -289,18 +274,6 @@ extension NCNetworking {
 
                 completion(error)
             }
-        }
-    }
-
-    // wrapper async
-    func uploadFileInBackgroundAsync(metadata: tableMetadata, controller: UIViewController? = nil) async -> NKError {
-        await withCheckedContinuation { continuation in
-            uploadFileInBackground(metadata: metadata,
-                                   controller: controller,
-                                   start: { },
-                                   completion: { error in
-                continuation.resume(returning: error)
-            })
         }
     }
 

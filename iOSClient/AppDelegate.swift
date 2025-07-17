@@ -352,7 +352,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             let metadatas = await NCCameraRoll().extractCameraRoll(from: metadatasWaitUpload)
 
             for metadata in metadatas {
-                let error = await NCNetworking.shared.uploadFileInBackgroundAsync(metadata: metadata.detachedCopy())
+                let (_, error) = await NCNetworking.shared.uploadFileInBackgroundAsync(metadata: metadata.detachedCopy())
 
                 if error == .success {
                     nkLog(tag: self.global.logTagBgSync, message: "Create new upload \(metadata.fileName) in \(metadata.serverUrl)")
