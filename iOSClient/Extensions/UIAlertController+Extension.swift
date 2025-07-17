@@ -68,12 +68,12 @@ extension UIAlertController {
                     await NCNetworkingE2EECreateFolder().createFolder(fileName: fileNameFolder, serverUrl: serverUrl, sceneIdentifier: sceneIdentifier, session: session)
                 }
             } else {
-                #if EXTENSION
+#if EXTENSION
                 Task {
                     let results = await NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, overwrite: false, session: session)
                     completion?(results.error)
                 }
-                #else
+#else
                 var metadata = tableMetadata()
 
                 if let result = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", session.account, serverUrl, fileNameFolder)) {
@@ -175,7 +175,7 @@ extension UIAlertController {
             })
         }
 
-        #if !EXTENSION
+#if !EXTENSION
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
             Task {
                 var error = NKError()
@@ -185,7 +185,7 @@ extension UIAlertController {
             }
             completion(false)
         })
-        #endif
+#endif
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in
             completion(true)
@@ -319,20 +319,10 @@ extension UIAlertController {
                                 capabilities: NKCapabilities.Capabilities,
                                 presenter: UIViewController) async -> String {
         let fileNameNew = await renameFileAsync(fileName: metadata.fileNameView, serverUrl: metadata.serverUrl, nativeFormat: metadata.nativeFormat, isDirectory: metadata.isDirectory, capabilities: capabilities, account: metadata.account, presenter: presenter)
-        //            if NCManageDatabase.shared.getMetadataConflict(account: metadata.account, serverUrl: metadata.serverUrl, fileNameView: fileNameNew, nativeFormat: metadata.nativeFormat) != nil {
-        //                NCContentPresenter().showError(error: NKError(errorCode: 0, errorDescription: "_rename_already_exists_"))
-        //                return
-        //            }
-        //
-                    NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew)
-        //
 
         return fileNameNew
-//            completion(fileNameNew)
-    
     }
-
-
+    
     static func warning(title: String? = nil, message: String? = nil, completion: @escaping () -> Void = {}) -> UIAlertController {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
 
