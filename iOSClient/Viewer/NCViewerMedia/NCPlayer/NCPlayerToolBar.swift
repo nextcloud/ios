@@ -455,9 +455,7 @@ extension NCPlayerToolBar: NCSelectDelegate {
                 addPlaybackSlave(type: type, metadata: metadata)
             } else {
                 var downloadRequest: DownloadRequest?
-                hud.initHudRing(view: viewerMediaPage.view,
-                                text: NSLocalizedString("_downloading_", comment: ""),
-                                tapToCancelDetailText: true) {
+                hud.ringProgress(view: viewerMediaPage.view, text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
                     if let request = downloadRequest {
                         request.cancel()
                     }

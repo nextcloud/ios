@@ -26,7 +26,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
         // HUD ENCRYPTION
         //
-        hud.initHud(text: NSLocalizedString("_wait_file_encryption_", comment: ""))
+        hud.indeterminateProgress(text: NSLocalizedString("_wait_file_encryption_", comment: ""))
 
         defer {
             if finalError != .success {
@@ -143,7 +143,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
         // HUD CHUNK
         //
-        hud.initHudRing(text: NSLocalizedString("_wait_file_preparation_", comment: ""),
+        hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""),
                         tapToCancelDetailText: true) {
             NotificationCenter.default.postOnMainThread(name: NextcloudKit.shared.nkCommonInstance.notificationCenterChunkedFileStop.rawValue)
         }

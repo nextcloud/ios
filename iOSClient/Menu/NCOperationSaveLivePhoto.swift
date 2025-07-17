@@ -35,7 +35,7 @@ class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
         self.metadata = tableMetadata.init(value: metadata)
         self.metadataMOV = tableMetadata.init(value: metadataMOV)
         self.hud = NCHud(hudView)
-        hud?.initHudRing(text: NSLocalizedString("_download_image_", comment: ""), detailText: self.metadata.fileName)
+        hud?.ringProgress(text: NSLocalizedString("_download_image_", comment: ""), detailText: self.metadata.fileName)
     }
 
     override func start() {

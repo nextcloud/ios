@@ -290,7 +290,7 @@ extension NCNetworking {
         if metadata.directory {
             if let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
                 await MainActor.run {
-                    ncHud.initHudRing(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDelete)
+                    ncHud.ringProgress(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDelete)
                 }
             }
             if let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, metadata.serverUrlFileName)) {
@@ -347,7 +347,7 @@ extension NCNetworking {
             Task {
                 if let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
                     await MainActor.run {
-                        ncHud.initHudRing(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDelete)
+                        ncHud.ringProgress(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDelete)
                     }
                 }
 

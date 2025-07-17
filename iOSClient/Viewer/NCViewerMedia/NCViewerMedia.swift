@@ -172,8 +172,7 @@ class NCViewerMedia: UIViewController {
                                 }
                                 var downloadRequest: DownloadRequest?
                                 let hud = NCHud(self.tabBarController?.view)
-                                hud.initHudRing(text: NSLocalizedString("_downloading_", comment: ""),
-                                                tapToCancelDetailText: true) {
+                                hud.ringProgress(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
                                     if let request = downloadRequest {
                                         request.cancel()
                                     }

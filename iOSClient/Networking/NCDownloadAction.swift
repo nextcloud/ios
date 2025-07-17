@@ -181,7 +181,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             }
         }
 
-        hud.initHudRing(tapToCancelDetailText: true) {
+        hud.ringProgress(tapToCancelDetailText: true) {
             if let request = downloadRequest {
                 request.cancel()
             }

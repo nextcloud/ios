@@ -384,7 +384,7 @@ extension NCShareExtension {
             // E2EE
             metadata.e2eEncrypted = metadata.isDirectoryE2EE
 
-            hud.initHudRing(view: self.view,
+            hud.ringProgress(view: self.view,
                             text: NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(self.filesName.count)")
 
             /*

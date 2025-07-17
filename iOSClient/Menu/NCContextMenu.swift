@@ -71,7 +71,7 @@ class NCContextMenu: NSObject {
                         return
                     }
 
-                    hud.initHudRing(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
+                    hud.ringProgress(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
                         if let request = downloadRequest {
                             request.cancel()
                         }
@@ -123,7 +123,7 @@ class NCContextMenu: NSObject {
                         return
                     }
 
-                    hud.initHudRing(text: NSLocalizedString("_downloading_", comment: "")) {
+                    hud.ringProgress(text: NSLocalizedString("_downloading_", comment: "")) {
                         if let request = downloadRequest {
                             request.cancel()
                         }
