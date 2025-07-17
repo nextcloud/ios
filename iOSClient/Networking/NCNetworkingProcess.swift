@@ -255,11 +255,35 @@ actor NCNetworkingProcess {
                     }
 
                     if isInDirectoryE2EE {
-                        httpMaximumConnectionsPerHostInUpload = 1
                         await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: controller)
-                    } else if metadata.chunk > 0 {
+
                         httpMaximumConnectionsPerHostInUpload = 1
-                        await networking.uploadChunkFileAsync(metadata: metadata)
+                    } else if metadata.chunk > 0 {
+                        let controller = controller
+
+                        Task { @MainActor in
+                            var numChunks = 0
+                            var counterUpload: Int = 0
+                            let hud = NCHud(controller?.view)
+                            hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""))
+
+                            await NCNetworking.shared.uploadChunkFileAsync(metadata: metadata) { num in
+                                numChunks = num
+                            } counterChunk: { counter in
+                                hud.progress(num: Float(counter), total: Float(numChunks))
+                            } startFilesChunk: { _ in
+                                hud.setText(text: NSLocalizedString("_keep_active_for_upload_", comment: ""))
+                            } requestHandler: { _ in
+                                hud.progress(num: Float(counterUpload), total: Float(numChunks))
+                                counterUpload += 1
+                            } assemble: {
+                                hud.setText(text: NSLocalizedString("_wait_", comment: ""))
+                            }
+
+                            hud.dismiss()
+                        }
+
+                        httpMaximumConnectionsPerHostInUpload = 1
                     } else {
                         await networking.uploadFileInBackgroundAsync(metadata: metadata)
                     }
