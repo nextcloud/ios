@@ -24,12 +24,17 @@ class NCNetworkingE2EEUpload: NSObject {
         let hud = NCHud(controller?.view)
         let ocId = metadata.ocIdTransfer
 
+        // HUD ENCRYPTION
+        //
+        hud.initHud(text: NSLocalizedString("_wait_file_encryption_", comment: ""))
+
         defer {
             if finalError != .success {
                 Task {
                     await self.database.deleteMetadataOcIdAsync(ocId)
                 }
             }
+            hud.dismiss()
         }
 
         if let result = await self.database.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileNameView == %@ AND ocId != %@", metadata.serverUrl, metadata.fileNameView, metadata.ocId)) {
@@ -125,10 +130,6 @@ class NCNetworkingE2EEUpload: NSObject {
             return finalError
         }
 
-        // HUD ENCRYPTION
-        //
-        hud.initHud(text: NSLocalizedString("_wait_file_encryption_", comment: ""))
-
         // SEND NEW METADATA
         //
         let sendE2eeError = await sendE2ee(e2eToken: e2eToken, fileId: fileId)
@@ -144,14 +145,12 @@ class NCNetworkingE2EEUpload: NSObject {
         //
         hud.initHudRing(text: NSLocalizedString("_wait_file_preparation_", comment: ""),
                         tapToCancelDetailText: true) {
-            NotificationCenter.default.postOnMainThread(name: "NextcloudKit.chunkedFile.stop")
+            NotificationCenter.default.postOnMainThread(name: NextcloudKit.shared.nkCommonInstance.notificationCenterChunkedFileStop.rawValue)
         }
 
         // UPLOAD
         //
-        let resultsSendFile = await sendFile(metadata: metadata, e2eToken: e2eToken, hud: hud)
-
-        hud.dismiss()
+        let resultsSendFile = await sendFile(metadata: metadata, e2eToken: e2eToken, hud: hud, controller: controller)
 
         // UNLOCK
         //
@@ -193,17 +192,21 @@ class NCNetworkingE2EEUpload: NSObject {
 
     // BRIDGE for chunk
     //
-    private func sendFile(metadata: tableMetadata, e2eToken: String, hud: NCHud) async -> (ocId: String?, etag: String?, date: Date?, error: NKError) {
+    private func sendFile(metadata: tableMetadata, e2eToken: String, hud: NCHud, controller: UIViewController?) async -> (ocId: String?, etag: String?, date: Date?, error: NKError) {
 
         if metadata.chunk > 0 {
+            var counterUpload: Int = 0
             let results = await NCNetworking.shared.uploadChunkFileAsync(metadata: metadata, withUploadComplete: false) { num in
                 self.numChunks = num
             } counterChunk: { counter in
                 hud.progress(num: Float(counter), total: Float(self.numChunks))
-            } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
-                print(fractionCompleted)
+            } startFilesChunk: { _ in
+                hud.setText(text: NSLocalizedString("_keep_active_for_upload_", comment: ""))
+            } requestHandler: { _ in
+                hud.progress(num: Float(counterUpload), total: Float(self.numChunks))
+                counterUpload += 1
             } assemble: {
-                hud.initHud(text: NSLocalizedString("_wait_", comment: ""))
+                hud.setText(text: NSLocalizedString("_wait_", comment: ""))
             }
 
             return (results.file?.ocId, results.file?.etag, results.file?.date, results.error)
@@ -218,12 +221,10 @@ class NCNetworkingE2EEUpload: NSObject {
             let results = await NCNetworking.shared.uploadFileAsync(metadata: metadata,
                                                                     fileNameLocalPath: fileNameLocalPath,
                                                                     withUploadComplete: false,
-                                                                    customHeaders: ["e2e-token": e2eToken]) { request in
-            } taskHandler: { task in
-            } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
-                Task { @MainActor in
-                    hud.progress(fractionCompleted)
-                }
+                                                                    customHeaders: ["e2e-token": e2eToken]) { _ in
+                hud.setText(text: NSLocalizedString("_keep_active_for_upload_", comment: ""))
+            } progressHandler: { _, _, fractionCompleted in
+                hud.progress(fractionCompleted)
             }
 
             return (results.ocId, results.etag, results.date, results.error)

@@ -23,8 +23,6 @@ class NCHud: NSObject {
                 self.view = view
             }
 
-            self.hud.indicatorView = JGProgressHUDIndicatorView()
-
             self.hud.textLabel.text = text
             self.hud.textLabel.textColor = NCBrandColor.shared.iconImageColor
 
