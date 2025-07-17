@@ -106,7 +106,6 @@ extension UIAlertController {
             forName: UITextField.textDidChangeNotification,
             object: alertController.textFields?.first,
             queue: .main) { _ in
-                //let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
                 guard let text = alertController.textFields?.first?.text else {
                     return
                 }
@@ -275,6 +274,25 @@ extension UIAlertController {
         alertController.addAction(cancelAction)
         alertController.addAction(okAction)
         return alertController
+    }
+
+    /// Presents a rename prompt and returns the new name asynchronously.
+    @MainActor
+    static func renameFileAsync(fileName: String,
+                                isDirectory: Bool = false,
+                                capabilities: NKCapabilities.Capabilities,
+                                account: String,
+                                presenter: UIViewController) async -> String {
+        await withCheckedContinuation { continuation in
+            let alert = renameFile(fileName: fileName,
+                                   isDirectory: isDirectory,
+                                   capabilities: capabilities,
+                                   account: account) { newFileName in
+                continuation.resume(returning: newFileName)
+            }
+
+            presenter.present(alert, animated: true)
+        }
     }
 
     static func renameFile(metadata: tableMetadata,
