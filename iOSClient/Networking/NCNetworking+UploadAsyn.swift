@@ -259,18 +259,18 @@ extension NCNetworking {
                 await self.database.addDiagnosticAsync(account: metadata.account, issue: self.global.diagnosticIssueVirusDetected)
             } else if error.errorCode == self.global.errorForbidden {
                 if isAppInBackground {
-                    _ = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                                    sessionTaskIdentifier: 0,
-                                                                    sessionError: error.errorDescription,
-                                                                    status: self.global.metadataStatusUploadError,
-                                                                    errorCode: error.errorCode)
+                    await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                sessionTaskIdentifier: 0,
+                                                                sessionError: error.errorDescription,
+                                                                status: self.global.metadataStatusUploadError,
+                                                                errorCode: error.errorCode)
                 } else {
                     #if EXTENSION
-                    _ = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                                    sessionTaskIdentifier: 0,
-                                                                    sessionError: error.errorDescription,
-                                                                    status: self.global.metadataStatusUploadError,
-                                                                    errorCode: error.errorCode)
+                    await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                sessionTaskIdentifier: 0,
+                                                                sessionError: error.errorDescription,
+                                                                status: self.global.metadataStatusUploadError,
+                                                                errorCode: error.errorCode)
                     #else
                     if capabilities.termsOfService {
                         await termsOfService(metadata: metadata)
