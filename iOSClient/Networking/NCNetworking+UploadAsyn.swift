@@ -343,17 +343,7 @@ extension NCNetworking {
             }
         }))
 
-        // Select UIWindowScene active in serverUrl
-        var controller = UIApplication.shared.firstWindow?.rootViewController
-        let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
-        for windowScene in windowScenes {
-            if let rootViewController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
-               rootViewController.currentServerUrl() == metadata.serverUrl {
-                controller = rootViewController
-                break
-            }
-        }
-        controller?.present(alertController, animated: true)
+        self.getViewController(metadata: metadata)?.present(alertController, animated: true)
 
         // Client Diagnostic
         await self.database.addDiagnosticAsync(account: metadata.account,
@@ -395,7 +385,15 @@ extension NCNetworking {
             }
         }))
 
-        // Select UIWindowScene active in serverUrl
+        self.getViewController(metadata: metadata)?.present(alertController, animated: true)
+
+        // Client Diagnostic
+        await self.database.addDiagnosticAsync(account: metadata.account,
+                                               issue: self.global.diagnosticIssueProblems,
+                                               error: self.global.diagnosticProblemsForbidden)
+    }
+
+    private func getViewController(metadata: tableMetadata) -> UIViewController? {
         var controller = UIApplication.shared.firstWindow?.rootViewController
         let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
         for windowScene in windowScenes {
@@ -405,12 +403,7 @@ extension NCNetworking {
                 break
             }
         }
-        controller?.present(alertController, animated: true)
-
-        // Client Diagnostic
-        await self.database.addDiagnosticAsync(account: metadata.account,
-                                               issue: self.global.diagnosticIssueProblems,
-                                               error: self.global.diagnosticProblemsForbidden)
+        return controller
     }
 #endif
 }
