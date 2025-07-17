@@ -75,7 +75,7 @@ extension NCManageDatabase {
     /// Asynchronously deletes a chunk from Realm and its associated file from disk.
     func deleteChunkAsync(account: String, ocId: String, fileChunk: (fileName: String, size: Int64), directory: String) async {
         await performRealmWriteAsync { realm in
-            let predicate = NSPredicate(format: "account == %@ AND ocId == %@ AND fileName == %@", account, ocId, fileChunk.fileName)
+            let predicate = NSPredicate(format: "account == %@ AND ocId == %@ AND fileName == %d", account, ocId, Int(fileChunk.fileName) ?? 0)
             let results = realm.objects(tableChunk.self).filter(predicate)
             realm.delete(results)
 

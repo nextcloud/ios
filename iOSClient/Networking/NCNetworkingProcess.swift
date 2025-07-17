@@ -256,7 +256,7 @@ actor NCNetworkingProcess {
 
                     if isInDirectoryE2EE {
                         httpMaximumConnectionsPerHostInUpload = 1
-                        await NCNetworkingE2EEUpload().upload(metadata: metadata)
+                        await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: controller)
                     } else if metadata.chunk > 0 {
                         httpMaximumConnectionsPerHostInUpload = 1
                         await networking.uploadChunkFileAsync(metadata: metadata)

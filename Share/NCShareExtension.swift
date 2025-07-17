@@ -421,6 +421,7 @@ extension NCShareExtension {
     }
 }
 
+/*
 extension NCShareExtension: uploadE2EEDelegate {
     func start() {
         self.hud.progress(0)
@@ -430,6 +431,7 @@ extension NCShareExtension: uploadE2EEDelegate {
         self.hud.progress(fractionCompleted)
     }
 }
+*/
 
 extension NCShareExtension: NCPasscodeDelegate {
     func passcodeReset(_ passcodeViewController: TOPasscodeViewController) {

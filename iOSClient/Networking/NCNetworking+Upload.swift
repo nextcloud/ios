@@ -100,7 +100,7 @@ extension NCNetworking {
             }
         }
     }
-    */
+
 
     func uploadFile(metadata: tableMetadata,
                     fileNameLocalPath: String,
@@ -219,4 +219,5 @@ extension NCNetworking {
             completion(account, file, error)
         }
     }
+     */
 }

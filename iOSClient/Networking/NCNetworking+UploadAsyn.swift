@@ -6,13 +6,21 @@ extension NCNetworking {
 
     // MARK: - Upload file in foreground
 
+    @discardableResult
     func uploadFileAsync(metadata: tableMetadata,
                          fileNameLocalPath: String,
                          withUploadComplete: Bool = true,
                          customHeaders: [String: String]? = nil,
                          requestHandler: @escaping (_ request: UploadRequest) -> Void = { _ in },
                          taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
-                         progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in }) async {
+                         progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in })
+    async -> (account: String,
+              ocId: String?,
+              etag: String?,
+              date: Date?,
+              size: Int64,
+              headers: [AnyHashable: Any]?,
+              error: NKError) {
         let options = NKRequestOptions(customHeader: customHeaders, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
         let results = await NextcloudKit.shared.uploadAsync(serverUrlFileName: metadata.serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, account: metadata.account, options: options) { request in
@@ -45,10 +53,13 @@ extension NCNetworking {
         if withUploadComplete {
             await self.uploadCompleteAsync(withMetadata: metadata, ocId: results.ocId, etag: results.etag, date: results.date, size: results.size, error: results.error)
         }
+
+        return results
     }
 
     // MARK: - Upload chunk file in foreground
 
+    @discardableResult
     func uploadChunkFileAsync(metadata: tableMetadata,
                               withUploadComplete: Bool = true,
                               customHeaders: [String: String]? = nil,
@@ -58,7 +69,11 @@ extension NCNetworking {
                               requestHandler: @escaping (_ request: UploadRequest) -> Void = { _ in },
                               taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                               progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
-                              assemble: @escaping () -> Void = { }) async {
+                              assemble: @escaping () -> Void = { })
+    async -> (account: String,
+              remainingChunks: [(fileName: String, size: Int64)]?,
+              file: NKFile?,
+              error: NKError) {
         let directory = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase)
         let chunkFolder = self.database.getChunkFolder(account: metadata.account, ocId: metadata.ocId)
         let filesChunk = self.database.getChunks(account: metadata.account, ocId: metadata.ocId)
@@ -129,6 +144,8 @@ extension NCNetworking {
         if withUploadComplete {
             await self.uploadCompleteAsync(withMetadata: metadata, ocId: results.file?.ocId, etag: results.file?.etag, date: results.file?.date, size: results.file?.size ?? 0, error: results.error)
         }
+
+        return results
     }
 
     // MARK: - Upload file in background
@@ -136,7 +153,8 @@ extension NCNetworking {
     @discardableResult
     func uploadFileInBackgroundAsync(metadata: tableMetadata,
                                      taskHandler: @escaping (_ task: URLSessionUploadTask?) -> Void = { _ in },
-                                     start: @escaping () -> Void = { }) async -> NKError {
+                                     start: @escaping () -> Void = { })
+    async -> NKError {
         let metadata = tableMetadata.init(value: metadata)
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
 
@@ -185,7 +203,6 @@ extension NCNetworking {
                              date: Date?,
                              size: Int64,
                              error: NKError) async {
-
         await NextcloudKit.shared.nkCommonInstance.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
 
         let selector = metadata.sessionSelector
