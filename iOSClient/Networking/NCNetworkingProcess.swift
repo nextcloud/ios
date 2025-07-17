@@ -254,9 +254,14 @@ actor NCNetworkingProcess {
                         }
                     }
 
-                    networking.uploadHub(metadata: metadata, controller: controller)
-                    if isInDirectoryE2EE || metadata.chunk > 0 {
+                    if isInDirectoryE2EE {
                         httpMaximumConnectionsPerHostInUpload = 1
+                        await NCNetworkingE2EEUpload().upload(metadata: metadata)
+                    } else if metadata.chunk > 0 {
+                        httpMaximumConnectionsPerHostInUpload = 1
+                        await networking.uploadChunkFileAsync(metadata: metadata)
+                    } else {
+                        await networking.uploadFileInBackgroundAsync(metadata: metadata)
                     }
                     counterUploading += 1
                 }

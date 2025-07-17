@@ -133,6 +133,7 @@ extension NCNetworking {
 
     // MARK: - Upload file in background
 
+    @discardableResult
     func uploadFileInBackgroundAsync(metadata: tableMetadata,
                                      start: @escaping () -> Void = { }) async -> (taks: URLSessionUploadTask?, error: NKError) {
         let metadata = tableMetadata.init(value: metadata)
@@ -269,7 +270,7 @@ extension NCNetworking {
                                                                     errorCode: error.errorCode)
                     #else
                     if capabilities.termsOfService {
-                        termsOfService(metadata: metadata)
+                        await termsOfService(metadata: metadata)
                     } else {
                         await uploadForbidden(metadata: metadata, error: error)
                     }
@@ -303,4 +304,110 @@ extension NCNetworking {
         }
         await self.database.updateBadge()
     }
+
+    func uploadCancelFile(metadata: tableMetadata) async {
+        self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase))
+        await self.database.deleteMetadataOcIdAsync(metadata.ocIdTransfer)
+        self.notifyAllDelegates { delegate in
+            delegate.transferChange(status: self.global.networkingStatusUploadCancel,
+                                    metadata: metadata.detachedCopy(),
+                                    error: .success)
+        }
+    }
+
+#if !EXTENSION
+    @MainActor
+    func uploadForbidden(metadata: tableMetadata, error: NKError) async {
+        let newFileName = self.utilityFileSystem.createFileName(metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account)
+        let alertController = UIAlertController(title: error.errorDescription, message: NSLocalizedString("_change_upload_filename_", comment: ""), preferredStyle: .alert)
+
+        alertController.addAction(UIAlertAction(title: String(format: NSLocalizedString("_save_file_as_", comment: ""), newFileName), style: .default, handler: { _ in
+            Task {
+                let atpath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase) + "/" + metadata.fileName
+                let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase) + "/" + newFileName
+                self.utilityFileSystem.moveFile(atPath: atpath, toPath: toPath)
+                await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                            newFileName: newFileName,
+                                                            sessionTaskIdentifier: 0,
+                                                            sessionError: "",
+                                                            status: self.global.metadataStatusWaitUpload,
+                                                            errorCode: error.errorCode)
+            }
+        }))
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive, handler: { _ in
+            Task {
+                await self.uploadCancelFile(metadata: metadata)
+            }
+        }))
+
+        // Select UIWindowScene active in serverUrl
+        var controller = UIApplication.shared.firstWindow?.rootViewController
+        let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+        for windowScene in windowScenes {
+            if let rootViewController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
+               rootViewController.currentServerUrl() == metadata.serverUrl {
+                controller = rootViewController
+                break
+            }
+        }
+        controller?.present(alertController, animated: true)
+
+        // Client Diagnostic
+        await self.database.addDiagnosticAsync(account: metadata.account,
+                                               issue: self.global.diagnosticIssueProblems,
+                                               error: self.global.diagnosticProblemsForbidden)
+    }
+
+    @MainActor
+    func termsOfService(metadata: tableMetadata) async {
+        let options = NKRequestOptions(checkInterceptor: false, queue: .main)
+        let results = await NextcloudKit.shared.getTermsOfServiceAsync(account: metadata.account, options: options)
+
+        if results.error == .success, let tos = results.tos, !tos.hasUserSigned() {
+            await self.uploadCancelFile(metadata: metadata)
+            return
+        }
+
+        let newFileName = self.utilityFileSystem.createFileName(metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account)
+
+        let alertController = UIAlertController(title: results.error.errorDescription, message: NSLocalizedString("_change_upload_filename_", comment: ""), preferredStyle: .alert)
+
+        alertController.addAction(UIAlertAction(title: String(format: NSLocalizedString("_save_file_as_", comment: ""), newFileName), style: .default, handler: { _ in
+            Task {
+                let atpath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase) + "/" + metadata.fileName
+                let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase) + "/" + newFileName
+                self.utilityFileSystem.moveFile(atPath: atpath, toPath: toPath)
+                await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                            newFileName: newFileName,
+                                                            sessionTaskIdentifier: 0,
+                                                            sessionError: "",
+                                                            status: self.global.metadataStatusWaitUpload,
+                                                            errorCode: results.error.errorCode)
+            }
+        }))
+
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive, handler: { _ in
+            Task {
+                await self.uploadCancelFile(metadata: metadata)
+            }
+        }))
+
+        // Select UIWindowScene active in serverUrl
+        var controller = UIApplication.shared.firstWindow?.rootViewController
+        let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+        for windowScene in windowScenes {
+            if let rootViewController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController,
+               rootViewController.currentServerUrl() == metadata.serverUrl {
+                controller = rootViewController
+                break
+            }
+        }
+        controller?.present(alertController, animated: true)
+
+        // Client Diagnostic
+        await self.database.addDiagnosticAsync(account: metadata.account,
+                                               issue: self.global.diagnosticIssueProblems,
+                                               error: self.global.diagnosticProblemsForbidden)
+    }
+#endif
 }

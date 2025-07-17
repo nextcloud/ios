@@ -26,7 +26,8 @@ class NCNetworkingE2EEUpload: NSObject {
     let database = NCManageDatabase.shared
     var numChunks: Int = 0
 
-    func upload(metadata: tableMetadata, uploadE2EEDelegate: uploadE2EEDelegate?, controller: UIViewController?) async -> NKError {
+    @discardableResult
+    func upload(metadata: tableMetadata, uploadE2EEDelegate: uploadE2EEDelegate? = nil, controller: UIViewController? = nil) async -> NKError {
         var finalError: NKError = .success
         let session = NCSession.shared.getSession(account: metadata.account)
         let hud = await NCHud(controller?.view)
