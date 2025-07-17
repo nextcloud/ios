@@ -15,7 +15,7 @@ extension NCNetworking {
                          progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in }) async {
         let options = NKRequestOptions(customHeader: customHeaders, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
-        let result = await NextcloudKit.shared.uploadAsync(serverUrlFileName: metadata.serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, account: metadata.account, options: options) { request in
+        let results = await NextcloudKit.shared.uploadAsync(serverUrlFileName: metadata.serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, account: metadata.account, options: options) { request in
             requestHandler(request)
         } taskHandler: { task in
             Task {
@@ -43,7 +43,7 @@ extension NCNetworking {
         }
 
         if withUploadComplete {
-            await self.uploadCompleteAsync(withMetadata: metadata, ocId: result.ocId, etag: result.etag, date: result.date, size: result.size, error: result.error)
+            await self.uploadCompleteAsync(withMetadata: metadata, ocId: results.ocId, etag: results.etag, date: results.date, size: results.size, error: results.error)
         }
     }
 
@@ -135,7 +135,8 @@ extension NCNetworking {
 
     @discardableResult
     func uploadFileInBackgroundAsync(metadata: tableMetadata,
-                                     start: @escaping () -> Void = { }) async -> (taks: URLSessionUploadTask?, error: NKError) {
+                                     taskHandler: @escaping (_ task: URLSessionUploadTask?) -> Void = { _ in },
+                                     start: @escaping () -> Void = { }) async -> NKError {
         let metadata = tableMetadata.init(value: metadata)
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
 
@@ -144,7 +145,7 @@ extension NCNetworking {
         // Check file dim > 0
         if utilityFileSystem.getFileSize(filePath: fileNameLocalPath) == 0 && metadata.size != 0 {
             await self.database.deleteMetadataOcIdAsync(metadata.ocId)
-            return (nil, NKError(errorCode: self.global.errorResourceNotFound, errorDescription: NSLocalizedString("_error_not_found_", value: "The requested resource could not be found", comment: "")))
+            return NKError(errorCode: self.global.errorResourceNotFound, errorDescription: NSLocalizedString("_error_not_found_", value: "The requested resource could not be found", comment: ""))
         } else {
             let (task, error) = await backgroundSession.uploadAsync(serverUrlFileName: metadata.serverUrlFileName,
                                                                     fileNameLocalPath: fileNameLocalPath,
@@ -152,6 +153,8 @@ extension NCNetworking {
                                                                     dateModificationFile: metadata.date as Date,
                                                                     account: metadata.account,
                                                                     sessionIdentifier: metadata.session)
+
+            taskHandler(task)
 
             if let task, error == .success {
                 nkLog(debug: " Upload file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
@@ -170,7 +173,7 @@ extension NCNetworking {
                 await self.database.deleteMetadataOcIdAsync(metadata.ocId)
             }
 
-            return(task, error)
+            return(error)
         }
     }
 
