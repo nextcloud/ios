@@ -254,7 +254,7 @@ actor NCNetworkingProcess {
                         }
                     }
 
-                    if isInDirectoryE2EE {
+                    if metadata.isDirectoryE2EE {
                         await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: controller)
 
                         httpMaximumConnectionsPerHostInUpload = 1

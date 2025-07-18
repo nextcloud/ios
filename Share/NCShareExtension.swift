@@ -348,13 +348,13 @@ extension NCShareExtension {
                 self.present(conflict, animated: true, completion: nil)
             } else {
                 uploadStarted = true
-                upload(dismissAfterUpload: dismissAfterUpload)
+                await upload(dismissAfterUpload: dismissAfterUpload)
             }
         }
     }
 
-    func upload(dismissAfterUpload: Bool = true) {
-        Task { @MainActor in
+    @MainActor
+    func upload(dismissAfterUpload: Bool = true) async  {
             guard uploadStarted else { return }
             guard uploadMetadata.count > counterUploaded else {
                 return DispatchQueue.main.async {
@@ -387,6 +387,15 @@ extension NCShareExtension {
             hud.ringProgress(view: self.view,
                             text: NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(self.filesName.count)")
 
+
+            if metadata.isDirectoryE2EE {
+                await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: self)
+            } else if metadata.chunk > 0 {
+
+            } else {
+                
+            }
+
             /*
             NCNetworking.shared.uploadHub(metadata: metadata, uploadE2EEDelegate: self, controller: self) {
                 self.hud.progress(0)
@@ -402,7 +411,6 @@ extension NCShareExtension {
                 self.upload()
             }
             */
-        }
     }
 
     func finishedUploading(dismissAfterUpload: Bool = true) {
@@ -420,18 +428,6 @@ extension NCShareExtension {
         }
     }
 }
-
-/*
-extension NCShareExtension: uploadE2EEDelegate {
-    func start() {
-        self.hud.progress(0)
-    }
-
-    func uploadE2EEProgress(_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) {
-        self.hud.progress(fractionCompleted)
-    }
-}
-*/
 
 extension NCShareExtension: NCPasscodeDelegate {
     func passcodeReset(_ passcodeViewController: TOPasscodeViewController) {

@@ -124,7 +124,7 @@ extension NCNetworking {
                                                    serverUrl: metadata.serverUrl)
             }
             progressHandler(totalBytesExpected, totalBytes, fractionCompleted)
-        } assemble: {
+        } assembling: {
             assemble()
         } uploaded: { fileChunk in
             Task {
