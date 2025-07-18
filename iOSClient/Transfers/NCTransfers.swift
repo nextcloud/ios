@@ -128,7 +128,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             for metadata in metadatas {
                 if let metadata = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
                                                                               status: NCGlobal.shared.metadataStatusUploading) {
-                    await NCNetworking.shared.uploadFileInBackgroundAsync(metadata: metadata)
+                    await NCNetworking.shared.uploadFileInBackground(metadata: metadata)
                 }
             }
         }

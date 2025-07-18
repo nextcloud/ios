@@ -397,7 +397,7 @@ extension NCShareExtension {
             var counterUpload: Int = 0
             hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""))
 
-            let results = await NCNetworking.shared.uploadChunkFileAsync(metadata: metadata) { num in
+            let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
                 numChunks = num
             } counterChunk: { counter in
                 self.hud.progress(num: Float(counter), total: Float(numChunks))
@@ -411,7 +411,7 @@ extension NCShareExtension {
             }
             error = results.error
         } else {
-            let results = await NCNetworking.shared.uploadFileAsync(metadata: metadata) { _ in
+            let results = await NCNetworking.shared.uploadFile(metadata: metadata) { _ in
             } progressHandler: { _, _, fractionCompleted in
                 self.hud.progress(fractionCompleted)
             }

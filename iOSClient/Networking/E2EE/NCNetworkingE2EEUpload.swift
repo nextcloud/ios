@@ -196,7 +196,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
         if metadata.chunk > 0 {
             var counterUpload: Int = 0
-            let results = await NCNetworking.shared.uploadChunkFileAsync(metadata: metadata, withUploadComplete: false) { num in
+            let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata, withUploadComplete: false) { num in
                 self.numChunks = num
             } counterChunk: { counter in
                 hud.progress(num: Float(counter), total: Float(self.numChunks))
@@ -213,9 +213,9 @@ class NCNetworkingE2EEUpload: NSObject {
 
         } else {
 
-            let results = await NCNetworking.shared.uploadFileAsync(metadata: metadata,
-                                                                    withUploadComplete: false,
-                                                                    customHeaders: ["e2e-token": e2eToken]) { _ in
+            let results = await NCNetworking.shared.uploadFile(metadata: metadata,
+                                                               withUploadComplete: false,
+                                                               customHeaders: ["e2e-token": e2eToken]) { _ in
                 hud.setText(text: NSLocalizedString("_keep_active_for_upload_", comment: ""))
             } progressHandler: { _, _, fractionCompleted in
                 hud.progress(fractionCompleted)

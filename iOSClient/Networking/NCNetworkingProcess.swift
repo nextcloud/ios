@@ -229,8 +229,6 @@ actor NCNetworkingProcess {
                     guard counterUploading < httpMaximumConnectionsPerHostInUpload,
                           timer != nil else { return }
 
-                    /// isE2EE
-                    let isInDirectoryE2EE = metadata.isDirectoryE2EE
                     /// NO WiFi
                     if !isWiFi && metadata.session == networking.sessionUploadBackgroundWWan { continue }
 
@@ -267,7 +265,7 @@ actor NCNetworkingProcess {
                             let hud = NCHud(controller?.view)
                             hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""))
 
-                            await NCNetworking.shared.uploadChunkFileAsync(metadata: metadata) { num in
+                            await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
                                 numChunks = num
                             } counterChunk: { counter in
                                 hud.progress(num: Float(counter), total: Float(numChunks))
@@ -285,7 +283,7 @@ actor NCNetworkingProcess {
 
                         httpMaximumConnectionsPerHostInUpload = 1
                     } else {
-                        await networking.uploadFileInBackgroundAsync(metadata: metadata)
+                        await networking.uploadFileInBackground(metadata: metadata)
                     }
                     counterUploading += 1
                 }
