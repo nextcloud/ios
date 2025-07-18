@@ -356,64 +356,61 @@ extension NCShareExtension {
         }
     }
 
-    @MainActor
     func upload(dismissAfterUpload: Bool = true) async {
-            guard uploadStarted else { return }
-            guard uploadMetadata.count > counterUploaded else {
-                return DispatchQueue.main.async {
-                    self.finishedUploading(dismissAfterUpload: dismissAfterUpload)
-                }
+        guard uploadStarted,
+              uploadMetadata.count > counterUploaded else {
+            return DispatchQueue.main.async {
+                self.finishedUploading(dismissAfterUpload: dismissAfterUpload)
             }
-            let session = self.extensionData.getSession()
+        }
+        let session = self.extensionData.getSession()
 
-            let metadata = uploadMetadata[counterUploaded]
-            let results = await NKTypeIdentifiers.shared.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false, account: session.account)
-            metadata.contentType = results.mimeType
-            metadata.iconName = results.iconName
-            metadata.classFile = results.classFile
-            metadata.typeIdentifier = results.typeIdentifier
-            metadata.serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+        let metadata = uploadMetadata[counterUploaded]
+        let results = await NKTypeIdentifiers.shared.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false, account: session.account)
+        metadata.contentType = results.mimeType
+        metadata.iconName = results.iconName
+        metadata.classFile = results.classFile
+        metadata.typeIdentifier = results.typeIdentifier
+        metadata.serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
 
-            // CHUNK
-            var chunkSize = NCGlobal.shared.chunkSizeMBCellular
-            if NCNetworking.shared.networkReachability == NKTypeReachability.reachableEthernetOrWiFi {
-                chunkSize = NCGlobal.shared.chunkSizeMBEthernetOrWiFi
+        // CHUNK
+        var chunkSize = NCGlobal.shared.chunkSizeMBCellular
+        if NCNetworking.shared.networkReachability == NKTypeReachability.reachableEthernetOrWiFi {
+            chunkSize = NCGlobal.shared.chunkSizeMBEthernetOrWiFi
+        }
+        if metadata.size > chunkSize {
+            metadata.chunk = chunkSize
+        } else {
+            metadata.chunk = 0
+        }
+        // E2EE
+        metadata.e2eEncrypted = metadata.isDirectoryE2EE
+
+        hud.ringProgress(view: self.view,
+                        text: NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(self.filesName.count)")
+
+        if metadata.isDirectoryE2EE {
+            await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: self)
+        } else if metadata.chunk > 0 {
+            var numChunks = 0
+            var counterUpload: Int = 0
+            hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""))
+
+            await NCNetworking.shared.uploadChunkFileAsync(metadata: metadata) { num in
+                numChunks = num
+            } counterChunk: { counter in
+                self.hud.progress(num: Float(counter), total: Float(numChunks))
+            } startFilesChunk: { _ in
+                self.hud.setText(text: NSLocalizedString("_keep_active_for_upload_", comment: ""))
+            } requestHandler: { _ in
+                self.hud.progress(num: Float(counterUpload), total: Float(numChunks))
+                counterUpload += 1
+            } assembling: {
+                self.hud.setText(text: NSLocalizedString("_wait_", comment: ""))
             }
-            if metadata.size > chunkSize {
-                metadata.chunk = chunkSize
-            } else {
-                metadata.chunk = 0
-            }
-            // E2EE
-            metadata.e2eEncrypted = metadata.isDirectoryE2EE
-
-            hud.ringProgress(view: self.view,
-                            text: NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(self.filesName.count)")
-
-
-            if metadata.isDirectoryE2EE {
-                await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: self)
-            } else if metadata.chunk > 0 {
-                var numChunks = 0
-                var counterUpload: Int = 0
-                hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""))
-
-                await NCNetworking.shared.uploadChunkFileAsync(metadata: metadata) { num in
-                    numChunks = num
-                } counterChunk: { counter in
-                    self.hud.progress(num: Float(counter), total: Float(numChunks))
-                } startFilesChunk: { _ in
-                    self.hud.setText(text: NSLocalizedString("_keep_active_for_upload_", comment: ""))
-                } requestHandler: { _ in
-                    self.hud.progress(num: Float(counterUpload), total: Float(numChunks))
-                    counterUpload += 1
-                } assembling: {
-                    self.hud.setText(text: NSLocalizedString("_wait_", comment: ""))
-                }
-
-            } else {
-                await NCNetworking.shared.uploadFileAsync(metadata: metadata)
-            }
+        } else {
+            await NCNetworking.shared.uploadFileAsync(metadata: metadata)
+        }
     }
 
     func finishedUploading(dismissAfterUpload: Bool = true) {
