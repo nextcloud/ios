@@ -153,7 +153,6 @@ class NCCreateFormUploadConflict: UIViewController {
 
         // KEEP BOTH
         conflictAlert.addAction(UIAlertAction(title: titleKeep, style: .default, handler: { action in
-
             for metadata in self.metadatasUploadInConflict {
                 self.metadatasConflictNewFiles.append(metadata.ocId)
                 self.metadatasConflictAlreadyExistingFiles.append(metadata.ocId)
@@ -212,7 +211,6 @@ class NCCreateFormUploadConflict: UIViewController {
     }
 
     func verifySwith() {
-
         if alwaysNewFileNameNumber && switchNewFiles.isOn {
             metadatasConflictNewFiles.removeAll()
             metadatasConflictAlreadyExistingFiles.removeAll()
@@ -240,12 +238,9 @@ class NCCreateFormUploadConflict: UIViewController {
     }
 
     @IBAction func buttonContinueTouch(_ sender: Any) {
-
         for metadata in metadatasUploadInConflict {
-
             // keep both
             if metadatasConflictNewFiles.contains(metadata.ocId) && metadatasConflictAlreadyExistingFiles.contains(metadata.ocId) {
-
                 var fileName = metadata.fileNameView
                 let fileNameExtension = (fileName as NSString).pathExtension.lowercased()
                 let fileNameNoExtension = (fileName as NSString).deletingPathExtension
@@ -258,9 +253,9 @@ class NCCreateFormUploadConflict: UIViewController {
                                                                                 urlBase: metadata.urlBase)
                 let newFileName = utilityFileSystem.createFileName(fileName, serverUrl: metadata.serverUrl, account: metadata.account)
 
-                metadata.ocId = UUID().uuidString
                 metadata.fileName = newFileName
                 metadata.fileNameView = newFileName
+                metadata.serverUrlFileName = metadata.serverUrl + "/" + newFileName
 
                 // This is not an asset - [file]
                 if metadata.assetLocalIdentifier.isEmpty || metadata.isExtractFile {
@@ -292,7 +287,6 @@ class NCCreateFormUploadConflict: UIViewController {
 // MARK: - UITableViewDelegate
 
 extension NCCreateFormUploadConflict: UITableViewDelegate {
-
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if metadatasUploadInConflict.count == 1 {
             return 250
@@ -305,7 +299,6 @@ extension NCCreateFormUploadConflict: UITableViewDelegate {
 // MARK: - UITableViewDataSource
 
 extension NCCreateFormUploadConflict: UITableViewDataSource {
-
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }

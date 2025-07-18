@@ -102,6 +102,7 @@ class NCDragDrop: NSObject {
                     let alert = UIAlertController.renameFile(fileName: metadata.fileNameView, isDirectory: metadata.directory, capabilities: capabilities, account: metadata.account) { newFileName in
                         metadatas[index].fileName = newFileName
                         metadatas[index].fileNameView = newFileName
+                        metadatas[index].serverUrlFileName = metadatas[index].serverUrl + "/" + newFileName
                     }
 
                     controller?.present(alert, animated: true)

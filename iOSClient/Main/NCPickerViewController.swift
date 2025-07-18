@@ -212,6 +212,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
                             metadatas[index].fileName = newFileName
                             metadatas[index].fileNameView = newFileName
+                            metadatas[index].serverUrlFileName = metadatas[index].serverUrl + "/" + newFileName
 
                             await self.database.addMetadatasAsync(metadatas)
 
