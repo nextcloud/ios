@@ -1127,7 +1127,7 @@ extension NCManageDatabase {
         if fileNameExtension == "heic", !nativeFormat {
             fileNameConflict = fileNameNoExtension + ".jpg"
         }
-        return getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@",
+        return getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView ==[c] %@",
                                                   account,
                                                   serverUrl,
                                                   fileNameConflict))

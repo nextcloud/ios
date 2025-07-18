@@ -589,7 +589,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         var exitLoop = false
 
         while exitLoop == false {
-            if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "fileNameView == %@ AND serverUrl == %@ AND account == %@", resultFileName, serverUrl, account)) != nil {
+            if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "fileNameView ==[c] %@ AND serverUrl == %@ AND account == %@", resultFileName, serverUrl, account)) != nil {
                 var name = NSString(string: resultFileName).deletingPathExtension
                 let ext = NSString(string: resultFileName).pathExtension
                 let characters = Array(name)

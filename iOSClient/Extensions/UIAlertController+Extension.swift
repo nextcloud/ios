@@ -68,12 +68,12 @@ extension UIAlertController {
                     await NCNetworkingE2EECreateFolder().createFolder(fileName: fileNameFolder, serverUrl: serverUrl, sceneIdentifier: sceneIdentifier, session: session)
                 }
             } else {
-                #if EXTENSION
+#if EXTENSION
                 Task {
                     let results = await NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, overwrite: false, session: session)
                     completion?(results.error)
                 }
-                #else
+#else
                 var metadata = tableMetadata()
 
                 if let result = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", session.account, serverUrl, fileNameFolder)) {
@@ -109,10 +109,11 @@ extension UIAlertController {
                 guard let text = alertController.textFields?.first?.text else {
                     return
                 }
-                let folderName = text.trimmingCharacters(in: .whitespaces)
-                let isFileHidden = FileNameValidator.isFileHidden(text)
+
+                let folderName = text.trimmingCharacters(in: .whitespacesAndNewlines)
+                let isFileHidden = FileNameValidator.isFileHidden(folderName)
                 let textCheck = FileNameValidator.checkFileName(folderName, account: session.account, capabilities: capabilities)
-                let alreadyExists = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", session.account, serverUrl, folderName)) != nil
+                let alreadyExists = NCManageDatabase.shared.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: folderName, nativeFormat: true) != nil
 
                 okAction.isEnabled = !text.isEmpty && textCheck?.error == nil && alreadyExists == false
 
@@ -174,7 +175,7 @@ extension UIAlertController {
             })
         }
 
-        #if !EXTENSION
+#if !EXTENSION
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_local_file_", comment: ""), style: .default) { (_: UIAlertAction) in
             Task {
                 var error = NKError()
@@ -184,7 +185,7 @@ extension UIAlertController {
             }
             completion(false)
         })
-        #endif
+#endif
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in
             completion(true)
@@ -193,6 +194,8 @@ extension UIAlertController {
     }
 
     static func renameFile(fileName: String,
+                           serverUrl: String,
+                           nativeFormat: Bool,
                            isDirectory: Bool = false,
                            capabilities: NKCapabilities.Capabilities,
                            account: String,
@@ -247,10 +250,12 @@ extension UIAlertController {
                 guard let text = alertController.textFields?.first?.text else { return }
                 let newExtension = text.fileExtension
 
-                let textCheck = FileNameValidator.checkFileName(text, account: account, capabilities: capabilities)
-                let isFileHidden = FileNameValidator.isFileHidden(text)
+                let finalName = text.trimmingCharacters(in: .whitespacesAndNewlines)
+                let isFileHidden = FileNameValidator.isFileHidden(finalName)
+                let textCheck = FileNameValidator.checkFileName(finalName, account: account, capabilities: capabilities)
+                let alreadyExists = NCManageDatabase.shared.getMetadataConflict(account: account, serverUrl: serverUrl, fileNameView: finalName, nativeFormat: nativeFormat) != nil
 
-                okAction.isEnabled = !text.isEmpty && textCheck?.error == nil
+                okAction.isEnabled = !text.isEmpty && textCheck?.error == nil && alreadyExists == false
 
                 message = ""
                 messageColor = UIColor.label
@@ -262,6 +267,8 @@ extension UIAlertController {
                     message = NSLocalizedString("hidden_file_name_warning", comment: "")
                 } else if newExtension != oldExtension {
                     message = NSLocalizedString("_file_name_new_extension_", comment: "")
+                } else if alreadyExists {
+                    message = NSLocalizedString("_item_with_same_name_already_exists_", comment: "")
                 }
 
                 let attributedString = NSAttributedString(string: message, attributes: [
@@ -279,12 +286,16 @@ extension UIAlertController {
     /// Presents a rename prompt and returns the new name asynchronously.
     @MainActor
     static func renameFileAsync(fileName: String,
+                                serverUrl: String,
+                                nativeFormat: Bool,
                                 isDirectory: Bool = false,
                                 capabilities: NKCapabilities.Capabilities,
                                 account: String,
                                 presenter: UIViewController) async -> String {
         await withCheckedContinuation { continuation in
             let alert = renameFile(fileName: fileName,
+                                   serverUrl: serverUrl,
+                                   nativeFormat: nativeFormat,
                                    isDirectory: isDirectory,
                                    capabilities: capabilities,
                                    account: account) { newFileName in
@@ -298,19 +309,20 @@ extension UIAlertController {
     static func renameFile(metadata: tableMetadata,
                            capabilities: NKCapabilities.Capabilities,
                            completion: @escaping (_ newFileName: String) -> Void = { _ in }) -> UIAlertController {
-        renameFile(fileName: metadata.fileNameView, isDirectory: metadata.isDirectory, capabilities: capabilities, account: metadata.account) { fileNameNew in
-            // verify if already exists
-            if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
-                NCContentPresenter().showError(error: NKError(errorCode: 0, errorDescription: "_rename_already_exists_"))
-                return
-            }
-
+        renameFile(fileName: metadata.fileNameView, serverUrl: metadata.serverUrl, nativeFormat: metadata.nativeFormat, isDirectory: metadata.isDirectory, capabilities: capabilities, account: metadata.account) { fileNameNew in
             NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew)
-
             completion(fileNameNew)
         }
     }
 
+    static func renameFileAsync(metadata: tableMetadata,
+                                capabilities: NKCapabilities.Capabilities,
+                                presenter: UIViewController) async -> String {
+        let fileNameNew = await renameFileAsync(fileName: metadata.fileNameView, serverUrl: metadata.serverUrl, nativeFormat: metadata.nativeFormat, isDirectory: metadata.isDirectory, capabilities: capabilities, account: metadata.account, presenter: presenter)
+
+        return fileNameNew
+    }
+    
     static func warning(title: String? = nil, message: String? = nil, completion: @escaping () -> Void = {}) -> UIAlertController {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
 

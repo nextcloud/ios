@@ -98,7 +98,7 @@ extension NCShareExtension: NCShareCellDelegate {
         guard let capabilities = NCNetworking.shared.capabilities[account] else {
             return
         }
-        let alert = UIAlertController.renameFile(fileName: fileName, capabilities: capabilities, account: account) { [self] newFileName in
+        let alert = UIAlertController.renameFile(fileName: fileName, serverUrl: "", nativeFormat: true, capabilities: capabilities, account: account) { [self] newFileName in
             renameFile(oldName: fileName, newName: newFileName, account: account)
         }
 
