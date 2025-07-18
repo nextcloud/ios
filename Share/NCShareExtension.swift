@@ -336,17 +336,36 @@ extension NCShareExtension {
                 conflict.delegate = self
                 self.present(conflict, animated: true, completion: nil)
             } else {
-                for metadata in self.uploadMetadata {
-                    await self.upload(metadata: metadata)
-                }
-                self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+                await uploadAndExit()
             }
         }
     }
 
     @MainActor
-    func upload(metadata: tableMetadata) async {
+    func uploadAndExit() async {
+        var error: NKError?
+        for metadata in self.uploadMetadata {
+            error = await self.upload(metadata: metadata)
+            if error != .success {
+                break
+            }
+        }
+
+        if error == .success {
+            self.hud.success()
+        } else {
+            self.hud.error(text: error?.errorDescription)
+        }
+
+        try? await Task.sleep(nanoseconds: 1_500_000_000)
+
+        self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+    }
+
+    @MainActor
+    func upload(metadata: tableMetadata) async -> NKError? {
         let session = self.extensionData.getSession()
+        var error: NKError = .success
 
         let results = await NKTypeIdentifiers.shared.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false, account: session.account)
         metadata.contentType = results.mimeType
@@ -372,13 +391,13 @@ extension NCShareExtension {
         hud.ringProgress(view: self.view, text: NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUploaded) " + NSLocalizedString("_of_", comment: "") + " \(self.filesName.count)")
 
         if metadata.isDirectoryE2EE {
-            await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: self)
+            error = await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: self)
         } else if metadata.chunk > 0 {
             var numChunks = 0
             var counterUpload: Int = 0
             hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""))
 
-            await NCNetworking.shared.uploadChunkFileAsync(metadata: metadata) { num in
+            let results = await NCNetworking.shared.uploadChunkFileAsync(metadata: metadata) { num in
                 numChunks = num
             } counterChunk: { counter in
                 self.hud.progress(num: Float(counter), total: Float(numChunks))
@@ -390,12 +409,16 @@ extension NCShareExtension {
             } assembling: {
                 self.hud.setText(text: NSLocalizedString("_wait_", comment: ""))
             }
+            error = results.error
         } else {
-            await NCNetworking.shared.uploadFileAsync(metadata: metadata) { _ in
+            let results = await NCNetworking.shared.uploadFileAsync(metadata: metadata) { _ in
             } progressHandler: { _, _, fractionCompleted in
                 self.hud.progress(fractionCompleted)
             }
+            error = results.error
         }
+
+        return error
     }
 }
 
