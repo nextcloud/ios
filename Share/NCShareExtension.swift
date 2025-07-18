@@ -357,7 +357,7 @@ extension NCShareExtension {
     }
 
     @MainActor
-    func upload(dismissAfterUpload: Bool = true) async  {
+    func upload(dismissAfterUpload: Bool = true) async {
             guard uploadStarted else { return }
             guard uploadMetadata.count > counterUploaded else {
                 return DispatchQueue.main.async {
@@ -396,23 +396,21 @@ extension NCShareExtension {
             } else if metadata.chunk > 0 {
                 var numChunks = 0
                 var counterUpload: Int = 0
-                let hud = NCHud(self.view)
                 hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""))
 
                 await NCNetworking.shared.uploadChunkFileAsync(metadata: metadata) { num in
                     numChunks = num
                 } counterChunk: { counter in
-                    hud.progress(num: Float(counter), total: Float(numChunks))
+                    self.hud.progress(num: Float(counter), total: Float(numChunks))
                 } startFilesChunk: { _ in
-                    hud.setText(text: NSLocalizedString("_keep_active_for_upload_", comment: ""))
+                    self.hud.setText(text: NSLocalizedString("_keep_active_for_upload_", comment: ""))
                 } requestHandler: { _ in
-                    hud.progress(num: Float(counterUpload), total: Float(numChunks))
+                    self.hud.progress(num: Float(counterUpload), total: Float(numChunks))
                     counterUpload += 1
                 } assembling: {
-                    hud.setText(text: NSLocalizedString("_wait_", comment: ""))
+                    self.hud.setText(text: NSLocalizedString("_wait_", comment: ""))
                 }
 
-                hud.dismiss()
             } else {
                 await NCNetworking.shared.uploadFileAsync(metadata: metadata)
             }
