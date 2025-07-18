@@ -95,7 +95,10 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
             metadata.status = NCGlobal.shared.metadataStatusWaitUpload
             metadata.sessionDate = Date()
             metadata.size = NCUtilityFileSystem().getFileSize(filePath: fileNamePath)
-            NCUtilityFileSystem().copyFile(atPath: fileNamePath, toPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase))
+            NCUtilityFileSystem().copyFile(atPath: fileNamePath, toPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId,
+                                                                                                                               fileName: metadata.fileNameView,
+                                                                                                                               userId: metadata.userId,
+                                                                                                                               urlBase: metadata.urlBase))
 
             await self.database.addMetadataAsync(metadata)
         }

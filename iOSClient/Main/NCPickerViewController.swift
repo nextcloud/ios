@@ -173,7 +173,10 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                     let ocId = NSUUID().uuidString
                     let fileName = urlIn.lastPathComponent
                     let newFileName = FileAutoRenamer.rename(fileName, capabilities: capabilities)
-                    let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: newFileName, userId: session.userId, urlBase: session.urlBase)
+                    let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId,
+                                                                                   fileName: newFileName,
+                                                                                   userId: session.userId,
+                                                                                   urlBase: session.urlBase)
                     let urlOut = URL(fileURLWithPath: toPath)
                     guard self.copySecurityScopedResource(url: urlIn, urlOut: urlOut) != nil else {
                         continue

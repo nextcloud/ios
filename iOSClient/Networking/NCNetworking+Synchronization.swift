@@ -88,7 +88,7 @@ extension NCNetworking {
         guard let localFile = await self.database.getTableLocalFileAsync(predicate: NSPredicate(format: "ocId == %@", ocId)) else {
             return true
         }
-        let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName, userId: userId, urlBase: urlBase)
+        let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileName: fileName, userId: userId, urlBase: urlBase)
         let size = await self.utilityFileSystem.fileSizeAsync(atPath: fileNamePath)
         let isDifferent = (localFile.etag != etag) || size == 0
 

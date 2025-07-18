@@ -205,7 +205,7 @@ class NCNetworkingE2EEUpload: NSObject {
             } requestHandler: { _ in
                 hud.progress(num: Float(counterUpload), total: Float(self.numChunks))
                 counterUpload += 1
-            } assemble: {
+            } assembling: {
                 hud.setText(text: NSLocalizedString("_wait_", comment: ""))
             }
 
@@ -213,13 +213,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
         } else {
 
-            let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
-                                                                                      fileNameView: metadata.fileName,
-                                                                                      userId: metadata.userId,
-                                                                                      urlBase: metadata.urlBase)
-
             let results = await NCNetworking.shared.uploadFileAsync(metadata: metadata,
-                                                                    fileNameLocalPath: fileNameLocalPath,
                                                                     withUploadComplete: false,
                                                                     customHeaders: ["e2e-token": e2eToken]) { _ in
                 hud.setText(text: NSLocalizedString("_keep_active_for_upload_", comment: ""))

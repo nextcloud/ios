@@ -188,7 +188,7 @@ class NCViewerMedia: UIViewController {
                                         if error == .success {
                                             hud.success()
                                             if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
-                                                let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(self.metadata.ocId, fileNameView: self.metadata.fileNameView, userId: self.metadata.userId, urlBase: self.metadata.urlBase))
+                                                let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(self.metadata.ocId, fileName: self.metadata.fileNameView, userId: self.metadata.userId, urlBase: self.metadata.urlBase))
                                                 ncplayer.openAVPlayer(url: url, autoplay: autoplay)
                                             }
                                         } else {
@@ -266,7 +266,10 @@ class NCViewerMedia: UIViewController {
     func loadImage() {
         guard let metadata = self.database.getMetadataFromOcId(metadata.ocId) else { return }
         self.metadata = metadata
-        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
+        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
+                                                                             fileName: metadata.fileNameView,
+                                                                             userId: metadata.userId,
+                                                                             urlBase: metadata.urlBase)
         let fileNameExtension = (metadata.fileNameView as NSString).pathExtension.uppercased()
 
         if metadata.isLivePhoto,

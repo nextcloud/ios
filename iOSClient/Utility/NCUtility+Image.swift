@@ -126,7 +126,7 @@ extension NCUtility {
         if metadata.classFile != NKTypeClassFile.image.rawValue, metadata.classFile != NKTypeClassFile.video.rawValue { return }
         var image: UIImage?
         let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
-                                                                             fileNameView: metadata.fileNameView,
+                                                                             fileName: metadata.fileNameView,
                                                                              userId: metadata.userId,
                                                                              urlBase: metadata.urlBase)
 

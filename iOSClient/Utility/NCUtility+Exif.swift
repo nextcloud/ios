@@ -78,7 +78,7 @@ extension NCUtility {
         }
 
         let url = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
-                                                                                         fileNameView: metadata.fileNameView,
+                                                                                         fileName: metadata.fileNameView,
                                                                                          userId: metadata.userId,
                                                                                          urlBase: metadata.urlBase))
 

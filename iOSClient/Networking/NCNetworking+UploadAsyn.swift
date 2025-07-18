@@ -8,7 +8,6 @@ extension NCNetworking {
 
     @discardableResult
     func uploadFileAsync(metadata: tableMetadata,
-                         fileNameLocalPath: String,
                          withUploadComplete: Bool = true,
                          customHeaders: [String: String]? = nil,
                          requestHandler: @escaping (_ request: UploadRequest) -> Void = { _ in },
@@ -22,6 +21,10 @@ extension NCNetworking {
               headers: [AnyHashable: Any]?,
               error: NKError) {
         let options = NKRequestOptions(customHeader: customHeaders, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+        let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
+                                                                                  fileName: metadata.fileName,
+                                                                                  userId: metadata.userId,
+                                                                                  urlBase: metadata.urlBase)
 
         let results = await NextcloudKit.shared.uploadAsync(serverUrlFileName: metadata.serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, account: metadata.account, options: options) { request in
             requestHandler(request)
@@ -69,7 +72,7 @@ extension NCNetworking {
                               requestHandler: @escaping (_ request: UploadRequest) -> Void = { _ in },
                               taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                               progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
-                              assemble: @escaping () -> Void = { })
+                              assembling: @escaping () -> Void = { })
     async -> (account: String,
               remainingChunks: [(fileName: String, size: Int64)]?,
               file: NKFile?,
@@ -125,7 +128,7 @@ extension NCNetworking {
             }
             progressHandler(totalBytesExpected, totalBytes, fractionCompleted)
         } assembling: {
-            assemble()
+            assembling()
         } uploaded: { fileChunk in
             Task {
                 await self.database.deleteChunkAsync(account: metadata.account,
@@ -156,7 +159,7 @@ extension NCNetworking {
                                      start: @escaping () -> Void = { })
     async -> NKError {
         let metadata = tableMetadata.init(value: metadata)
-        let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
+        let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
 
         start()
 

@@ -253,7 +253,7 @@ class NCCreateFormUploadConflict: UIViewController {
                     fileName = fileNameNoExtension + ".jpg"
                 }
                 let oldPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
-                                                                                fileNameView: metadata.fileNameView,
+                                                                                fileName: metadata.fileNameView,
                                                                                 userId: metadata.userId,
                                                                                 urlBase: metadata.urlBase)
                 let newFileName = utilityFileSystem.createFileName(fileName, serverUrl: metadata.serverUrl, account: metadata.account)
@@ -265,7 +265,7 @@ class NCCreateFormUploadConflict: UIViewController {
                 // This is not an asset - [file]
                 if metadata.assetLocalIdentifier.isEmpty || metadata.isExtractFile {
                     let newPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
-                                                                                    fileNameView: newFileName,
+                                                                                    fileName: newFileName,
                                                                                     userId: metadata.userId,
                                                                                     urlBase: metadata.urlBase)
                     utilityFileSystem.moveFile(atPath: oldPath, toPath: newPath)
@@ -344,12 +344,12 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                                                                                                                                      userId: metadataAlreadyExists.userId,
                                                                                                                                      urlBase: metadataAlreadyExists.urlBase))
             } else if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataAlreadyExists.ocId,
-                                                                                                         fileNameView: metadataAlreadyExists.fileNameView,
+                                                                                                         fileName: metadataAlreadyExists.fileNameView,
                                                                                                          userId: metadataAlreadyExists.userId,
                                                                                                          urlBase: metadataAlreadyExists.urlBase)) && metadataAlreadyExists.contentType == "application/pdf" {
 
                 let url = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataAlreadyExists.ocId,
-                                                                                                 fileNameView: metadataAlreadyExists.fileNameView,
+                                                                                                 fileName: metadataAlreadyExists.fileNameView,
                                                                                                  userId: metadataAlreadyExists.userId,
                                                                                                  urlBase: metadataAlreadyExists.urlBase))
                 if let image = utility.pdfThumbnail(url: url) {
@@ -381,7 +381,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
                 cell.imageNewFile.image = UIImage(named: metadataNewFile.iconName)
             }
             let filePathNewFile = utilityFileSystem.getDirectoryProviderStorageOcId(metadataNewFile.ocId,
-                                                                                    fileNameView: metadataNewFile.fileNameView,
+                                                                                    fileName: metadataNewFile.fileNameView,
                                                                                     userId: metadataNewFile.userId,
                                                                                     urlBase: metadataNewFile.urlBase)
             if !metadataNewFile.assetLocalIdentifier.isEmpty {

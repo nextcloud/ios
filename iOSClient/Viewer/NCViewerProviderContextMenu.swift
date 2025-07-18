@@ -158,12 +158,18 @@ class NCViewerProviderContextMenu: UIViewController {
 
     private func viewImage(metadata: tableMetadata) {
         var image: UIImage?
-        let filePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
+        let filePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
+                                                                         fileName: metadata.fileNameView,
+                                                                         userId: metadata.userId,
+                                                                         urlBase: metadata.urlBase)
 
         if metadata.contentType == "image/gif" {
             image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: filePath))
         } else if metadata.contentType == "image/svg+xml" {
-            let imagePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
+            let imagePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
+                                                                              fileName: metadata.fileNameView,
+                                                                              userId: metadata.userId,
+                                                                              urlBase: metadata.urlBase)
             if let svgImage = SVGKImage(contentsOfFile: imagePath) {
                 svgImage.size = NCGlobal.shared.size1024
                 image = svgImage.uiImage

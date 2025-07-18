@@ -89,7 +89,9 @@ extension NCShareExtension: NCCreateFormUploadConflictDelegate {
 
         self.uploadMetadata.append(contentsOf: metadatas)
         uploadStarted = true
-        self.upload()
+        Task {
+            await self.upload()
+        }
     }
 }
 

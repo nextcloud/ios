@@ -541,7 +541,7 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
                utilityFileSystem.fileProviderStorageExists(metadataLive) {
                 AudioServicesPlaySystemSound(1519) // peek feedback
                 currentViewController.playLivePhoto(filePath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId,
-                                                                                                                fileNameView: metadataLive.fileName,
+                                                                                                                fileName: metadataLive.fileName,
                                                                                                                 userId: metadataLive.userId,
                                                                                                                 urlBase: metadataLive.urlBase))
             }
@@ -617,7 +617,7 @@ extension NCViewerMediaPage: NCTransferDelegate {
 
                 if metadata.isAudioOrVideo, let ncplayer = self.currentViewController.ncplayer {
                     let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
-                                                                                                          fileNameView: metadata.fileNameView,
+                                                                                                          fileName: metadata.fileNameView,
                                                                                                           userId: metadata.userId,
                                                                                                           urlBase: metadata.urlBase))
                     if ncplayer.isPlaying() {

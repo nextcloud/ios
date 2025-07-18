@@ -76,11 +76,11 @@ class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
 
     func saveLivePhotoToDisk(metadata: tableMetadata, metadataMov: tableMetadata) {
         let fileNameImage = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
-                                                                                                   fileNameView: metadata.fileNameView,
+                                                                                                   fileName: metadata.fileNameView,
                                                                                                    userId: metadata.userId,
                                                                                                    urlBase: metadata.urlBase))
         let fileNameMov = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataMov.ocId,
-                                                                                                 fileNameView: metadataMov.fileNameView,
+                                                                                                 fileName: metadataMov.fileNameView,
                                                                                                  userId: metadataMov.userId,
                                                                                                  urlBase: metadataMov.urlBase))
 

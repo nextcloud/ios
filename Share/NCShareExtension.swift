@@ -313,7 +313,10 @@ extension NCShareExtension {
 
             for fileName in filesName {
                 let ocId = NSUUID().uuidString
-                let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName, userId: session.userId, urlBase: session.urlBase)
+                let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId,
+                                                                               fileName: fileName,
+                                                                               userId: session.userId,
+                                                                               urlBase: session.urlBase)
                 guard utilityFileSystem.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath) else {
                     continue
                 }
@@ -391,26 +394,28 @@ extension NCShareExtension {
             if metadata.isDirectoryE2EE {
                 await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: self)
             } else if metadata.chunk > 0 {
+                var numChunks = 0
+                var counterUpload: Int = 0
+                let hud = NCHud(self.view)
+                hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""))
 
-            } else {
-                
-            }
-
-            /*
-            NCNetworking.shared.uploadHub(metadata: metadata, uploadE2EEDelegate: self, controller: self) {
-                self.hud.progress(0)
-            } progressHandler: { _, _, fractionCompleted in
-                self.hud.progress(fractionCompleted)
-            } completion: {error in
-                if error != .success {
-                    self.database.deleteMetadataOcId(metadata.ocId)
-                    self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
-                    self.uploadErrors.append(metadata)
+                await NCNetworking.shared.uploadChunkFileAsync(metadata: metadata) { num in
+                    numChunks = num
+                } counterChunk: { counter in
+                    hud.progress(num: Float(counter), total: Float(numChunks))
+                } startFilesChunk: { _ in
+                    hud.setText(text: NSLocalizedString("_keep_active_for_upload_", comment: ""))
+                } requestHandler: { _ in
+                    hud.progress(num: Float(counterUpload), total: Float(numChunks))
+                    counterUpload += 1
+                } assembling: {
+                    hud.setText(text: NSLocalizedString("_wait_", comment: ""))
                 }
-                self.counterUploaded += 1
-                self.upload()
+
+                hud.dismiss()
+            } else {
+                await NCNetworking.shared.uploadFileAsync(metadata: metadata)
             }
-            */
     }
 
     func finishedUploading(dismissAfterUpload: Bool = true) {

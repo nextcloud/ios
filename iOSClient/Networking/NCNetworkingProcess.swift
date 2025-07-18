@@ -276,7 +276,7 @@ actor NCNetworkingProcess {
                             } requestHandler: { _ in
                                 hud.progress(num: Float(counterUpload), total: Float(numChunks))
                                 counterUpload += 1
-                            } assemble: {
+                            } assembling: {
                                 hud.setText(text: NSLocalizedString("_wait_", comment: ""))
                             }
 

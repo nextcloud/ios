@@ -174,7 +174,7 @@ final class FileProviderExtension: NSFileProviderExtension {
                     }
 
                     let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                    let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
+                    let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
                     let account = metadata.account
                     let ocId = metadata.ocId
 
@@ -353,7 +353,7 @@ final class FileProviderExtension: NSFileProviderExtension {
                                                    error: &errorCoordinator) { url in
                             self.providerUtility.copyFile(url.path,
                                                           toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTransfer,
-                                                                                                                         fileNameView: fileName,
+                                                                                                                         fileName: fileName,
                                                                                                                          userId: session.userId,
                                                                                                                          urlBase: session.urlBase))
                     }
@@ -373,7 +373,7 @@ final class FileProviderExtension: NSFileProviderExtension {
                     await self.database.addMetadataAsync(metadata)
                     let serverUrlFileName = tableDirectory.serverUrl + "/" + fileName
                     let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTransfer,
-                                                                                                   fileNameView: fileName,
+                                                                                                   fileName: fileName,
                                                                                                    userId: session.userId,
                                                                                                    urlBase: session.urlBase)
                     let nkBackground = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance)
