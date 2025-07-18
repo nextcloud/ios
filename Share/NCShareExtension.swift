@@ -41,7 +41,6 @@ class NCShareExtension: UIViewController {
     var autoUploadDirectory = ""
     var progress: CGFloat = 0
     var counterUploaded: Int = 0
-    var uploadErrors: [tableMetadata] = []
     var uploadMetadata: [tableMetadata] = []
     let hud = NCHud()
     let utilityFileSystem = NCUtilityFileSystem()
@@ -274,9 +273,6 @@ extension NCShareExtension {
             guard !filesName.isEmpty else { return showAlert(description: "_files_no_files_") }
             let session = self.extensionData.getSession()
 
-            counterUploaded = 0
-            uploadErrors = []
-
             var conflicts: [tableMetadata] = []
             var invalidNameIndexes: [Int] = []
 
@@ -339,15 +335,19 @@ extension NCShareExtension {
                 conflict.metadatasUploadInConflict = conflicts
                 conflict.delegate = self
                 self.present(conflict, animated: true, completion: nil)
-            } 
+            } else {
+                for metadata in self.uploadMetadata {
+                    await self.upload(metadata: metadata)
+                }
+                self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+            }
         }
     }
 
     @MainActor
-    func upload() async {
+    func upload(metadata: tableMetadata) async {
         let session = self.extensionData.getSession()
 
-        let metadata = uploadMetadata[counterUploaded]
         let results = await NKTypeIdentifiers.shared.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false, account: session.account)
         metadata.contentType = results.mimeType
         metadata.iconName = results.iconName
@@ -368,8 +368,8 @@ extension NCShareExtension {
         // E2EE
         metadata.e2eEncrypted = metadata.isDirectoryE2EE
 
-        hud.ringProgress(view: self.view,
-                        text: NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(self.filesName.count)")
+        self.counterUploaded += 1
+        hud.ringProgress(view: self.view, text: NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUploaded) " + NSLocalizedString("_of_", comment: "") + " \(self.filesName.count)")
 
         if metadata.isDirectoryE2EE {
             await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: self)
@@ -391,25 +391,12 @@ extension NCShareExtension {
                 self.hud.setText(text: NSLocalizedString("_wait_", comment: ""))
             }
         } else {
-            await NCNetworking.shared.uploadFileAsync(metadata: metadata)
-        }
-    }
-
-    /*
-    func finishedUploading(dismissAfterUpload: Bool = true) {
-        if !uploadErrors.isEmpty {
-            let fileList = "- " + uploadErrors.map({ $0.fileName }).joined(separator: "\n  - ")
-            showAlert(title: "_error_files_upload_", description: fileList) {
-                self.extensionContext?.cancelRequest(withError: NCShareExtensionError.fileUpload)
-            }
-        } else {
-            hud.success()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+            await NCNetworking.shared.uploadFileAsync(metadata: metadata) { _ in
+            } progressHandler: { _, _, fractionCompleted in
+                self.hud.progress(fractionCompleted)
             }
         }
     }
-    */
 }
 
 extension NCShareExtension: NCPasscodeDelegate {
