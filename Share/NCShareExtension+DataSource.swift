@@ -169,9 +169,6 @@ extension NCShareExtension: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard !uploadStarted else {
-            return
-        }
         let fileName = filesName[indexPath.row]
         let session = self.extensionData.getSession()
 

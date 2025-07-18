@@ -397,7 +397,6 @@ extension NCShareExtension {
 
     /*
     func finishedUploading(dismissAfterUpload: Bool = true) {
-        uploadStarted = false
         if !uploadErrors.isEmpty {
             let fileList = "- " + uploadErrors.map({ $0.fileName }).joined(separator: "\n  - ")
             showAlert(title: "_error_files_upload_", description: fileList) {
