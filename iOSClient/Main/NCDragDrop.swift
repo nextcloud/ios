@@ -96,9 +96,10 @@ class NCDragDrop: NSObject {
         for (index, metadata) in metadatas.enumerated() {
             if let fileNameError = FileNameValidator.checkFileName(metadata.fileName, account: session.account, capabilities: capabilities) {
                 if metadatas.count == 1 {
-                    let alert = UIAlertController.renameFile(metadata: metadata, capabilities: capabilities) { newFileName in
+                    let alert = UIAlertController.renameFile(fileName: metadata.fileNameView, isDirectory: metadata.directory, capabilities: capabilities, account: metadata.account) { newFileName in
                         metadatas[index].fileName = newFileName
                         metadatas[index].fileNameView = newFileName
+                        metadatas[index].serverUrlFileName = metadatas[index].serverUrl + "/" + newFileName
                     }
 
                     controller?.present(alert, animated: true)
