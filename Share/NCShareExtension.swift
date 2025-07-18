@@ -43,7 +43,6 @@ class NCShareExtension: UIViewController {
     var counterUploaded: Int = 0
     var uploadErrors: [tableMetadata] = []
     var uploadMetadata: [tableMetadata] = []
-    var uploadStarted = false
     let hud = NCHud()
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
@@ -154,7 +153,6 @@ class NCShareExtension: UIViewController {
 
     func cancel(with error: NCShareExtensionError) {
         // make sure no uploads are continued
-        uploadStarted = false
         extensionContext?.cancelRequest(withError: error)
     }
 
@@ -184,18 +182,16 @@ class NCShareExtension: UIViewController {
         backButton.setTitle(" " + NSLocalizedString("_back_", comment: ""), for: .normal)
         backButton.setTitleColor(.systemBlue, for: .normal)
         backButton.action(for: .touchUpInside) { _ in
-            if !self.uploadStarted {
-                while self.serverUrl.last != "/" { self.serverUrl.removeLast() }
-                self.serverUrl.removeLast()
-                Task {
-                    await self.reloadData()
-                }
-                var navigationTitle = (self.serverUrl as NSString).lastPathComponent
-                if self.utilityFileSystem.getHomeServer(session: session) == self.serverUrl {
-                    navigationTitle = NCBrandOptions.shared.brand
-                }
-                self.setNavigationBar(navigationTitle: navigationTitle)
+            while self.serverUrl.last != "/" { self.serverUrl.removeLast() }
+            self.serverUrl.removeLast()
+            Task {
+                await self.reloadData()
             }
+            var navigationTitle = (self.serverUrl as NSString).lastPathComponent
+            if self.utilityFileSystem.getHomeServer(session: session) == self.serverUrl {
+                navigationTitle = NCBrandOptions.shared.brand
+            }
+            self.setNavigationBar(navigationTitle: navigationTitle)
         }
 
         let image = utility.loadUserImage(for: tblAccount.user, displayName: tblAccount.displayName, urlBase: tblAccount.urlBase)
@@ -217,9 +213,7 @@ class NCShareExtension: UIViewController {
         profileButton.semanticContentAttribute = .forceLeftToRight
         profileButton.sizeToFit()
         profileButton.action(for: .touchUpInside) { _ in
-            if !self.uploadStarted {
-                self.showAccountPicker()
-            }
+            self.showAccountPicker()
         }
         var navItems = [UIBarButtonItem(customView: profileButton)]
         if serverUrl != utilityFileSystem.getHomeServer(session: session) {
@@ -277,13 +271,11 @@ extension NCShareExtension {
                   let capabilities = NCNetworking.shared.capabilities[tblAccount.account] else {
                 return
             }
-            guard !uploadStarted else { return }
             guard !filesName.isEmpty else { return showAlert(description: "_files_no_files_") }
             let session = self.extensionData.getSession()
 
             counterUploaded = 0
             uploadErrors = []
-            var dismissAfterUpload = true
 
             var conflicts: [tableMetadata] = []
             var invalidNameIndexes: [Int] = []
@@ -300,10 +292,8 @@ extension NCShareExtension {
                         await UIAlertController.warningAsync(message: message, presenter: self)
 
                         invalidNameIndexes.append(index)
-                        dismissAfterUpload = false
                         continue
                     }
-
                 }
             }
 
@@ -321,10 +311,10 @@ extension NCShareExtension {
                     continue
                 }
                 let metadataForUpload = await self.database.createMetadataAsync(fileName: fileName,
-                                                                           ocId: ocId,
-                                                                           serverUrl: serverUrl,
-                                                                     session: session,
-                                                                     sceneIdentifier: nil)
+                                                                                ocId: ocId,
+                                                                                serverUrl: serverUrl,
+                                                                                session: session,
+                                                                                sceneIdentifier: nil)
 
                 metadataForUpload.session = NCNetworking.shared.sessionUpload
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFileShareExtension
@@ -349,20 +339,12 @@ extension NCShareExtension {
                 conflict.metadatasUploadInConflict = conflicts
                 conflict.delegate = self
                 self.present(conflict, animated: true, completion: nil)
-            } else {
-                uploadStarted = true
-                await upload(dismissAfterUpload: dismissAfterUpload)
-            }
+            } 
         }
     }
 
-    func upload(dismissAfterUpload: Bool = true) async {
-        guard uploadStarted,
-              uploadMetadata.count > counterUploaded else {
-            return DispatchQueue.main.async {
-                self.finishedUploading(dismissAfterUpload: dismissAfterUpload)
-            }
-        }
+    @MainActor
+    func upload() async {
         let session = self.extensionData.getSession()
 
         let metadata = uploadMetadata[counterUploaded]
@@ -413,6 +395,7 @@ extension NCShareExtension {
         }
     }
 
+    /*
     func finishedUploading(dismissAfterUpload: Bool = true) {
         uploadStarted = false
         if !uploadErrors.isEmpty {
@@ -427,6 +410,7 @@ extension NCShareExtension {
             }
         }
     }
+    */
 }
 
 extension NCShareExtension: NCPasscodeDelegate {
