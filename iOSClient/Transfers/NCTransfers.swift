@@ -28,6 +28,7 @@ import RealmSwift
 class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     private var metadataTemp: tableMetadata?
     private var transferProgressMap: [String: Float] = [:]
+    private var notificationToken: NotificationToken?
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -56,6 +57,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         }
 
         self.navigationItem.leftBarButtonItems = [close]
+
+        observeMetadata()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -69,6 +72,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
+        notificationToken?.invalidate()
         Task {
             await NCNetworking.shared.verifyZombie()
         }
@@ -320,6 +324,44 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
                     cell.labelInfo?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - " + self.utilityFileSystem.transformedSize(totalBytes)
                 }
             }
+        }
+    }
+
+    func observeMetadata() {
+        do {
+            let realm = try Realm()
+            let results = realm.objects(tableMetadata.self)
+            notificationToken = results.observe { [weak self] change in
+                guard let self else {
+                    return
+                }
+                switch change {
+                case .initial:
+                    break
+                case .update(let collection, let deletions, let insertions, let modifications):
+                    for index in modifications {
+                        let modifiedObject = collection[index]
+
+                        for case let cell as NCTransferCell in self.collectionView.visibleCells {
+                            guard cell.serverUrl == modifiedObject.serverUrl,
+                                  cell.fileName == modifiedObject.fileName else {
+                                continue
+                            }
+                            let newProgress = Float(modifiedObject.progress)
+                            if abs(cell.progressView.progress - newProgress) > 0.001 {
+                                cell.setProgress(progress: newProgress)
+                            }
+                        }
+
+                        print(modifiedObject.progress)
+                        print("Modified: \(modifiedObject.status)")
+                    }
+                case .error:
+                    break
+                }
+            }
+        } catch let error as NSError {
+            NSLog("Could not access database: ", error)
         }
     }
 }

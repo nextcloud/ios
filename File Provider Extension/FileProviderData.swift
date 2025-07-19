@@ -169,6 +169,9 @@ class FileProviderData: NSObject {
                         error: NKError) async {
         guard let url = task.currentRequest?.url,
               let metadata = await self.database.getMetadataAsync(from: url, sessionTaskIdentifier: task.taskIdentifier) else {
+            let predicate = NSPredicate(format: "fileName == %@ AND serverUrl == %@", fileName, serverUrl)
+            await self.database.deleteMetadataAsync(predicate: predicate)
+
             return
         }
 
@@ -201,6 +204,7 @@ class FileProviderData: NSObject {
             metadata.sessionSelector = ""
             metadata.sessionDate = nil
             metadata.sessionTaskIdentifier = 0
+            metadata.progress = 0
             metadata.status = NCGlobal.shared.metadataStatusNormal
 
             await self.database.addMetadataAsync(metadata)
