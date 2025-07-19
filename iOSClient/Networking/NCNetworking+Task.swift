@@ -419,14 +419,11 @@ extension NCNetworking {
             }
         }
 
-        // UPLOADING-BACKGROUND
+        // UPLOADING-BACKGROUND, NO sessionUploadBackgroundExt
         //
-        if let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "(session == %@ OR session == %@ OR session == %@) AND status == %d",
+        if let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "(session == %@ OR session == %@) AND status == %d",
                                                                                         sessionUploadBackground,
-                                                                                        sessionUploadBackgroundWWan,
-                                                                                        sessionUploadBackgroundExt,
-                                                                                        self.global.metadataStatusUploading)) {
-
+                                                                                        sessionUploadBackgroundWWan)) {
             for metadata in metadatas {
                 guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: metadata.account) else {
                     await self.database.deleteMetadataOcIdAsync(metadata.ocId)

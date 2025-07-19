@@ -33,7 +33,8 @@ extension NCManageDatabase {
                                  selector: String? = nil,
                                  status: Int? = nil,
                                  etag: String? = nil,
-                                 errorCode: Int? = nil) async -> tableMetadata? {
+                                 errorCode: Int? = nil,
+                                 progress: Double? = nil) async -> tableMetadata? {
         await performRealmWriteAsync { realm in
             guard let metadata = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
@@ -85,7 +86,9 @@ extension NCManageDatabase {
                 metadata.errorCode = errorCode
             }
 
-            realm.add(metadata, update: .all)
+            if let progress {
+                metadata.progress = progress
+            }
         }
 
         return await performRealmReadAsync { realm in
@@ -93,6 +96,24 @@ extension NCManageDatabase {
                 .filter("ocId == %@", ocId)
                 .first?
                 .detachedCopy()
+        }
+    }
+
+    func setMetadataProgress(fileName: String,
+                             serverUrl: String,
+                             taskIdentifier: Int,
+                             progress: Double) async {
+        await performRealmWriteAsync { realm in
+            guard let metadata = realm.objects(tableMetadata.self)
+                .filter("fileName == %@ AND serverUrl == %@ and sessionTaskIdentifier == %d", fileName, serverUrl, taskIdentifier)
+                .first else {
+                return
+            }
+
+            if abs(metadata.progress - progress) > 0.001 {
+                metadata.progress = progress
+                print(progress)
+            }
         }
     }
 
@@ -122,8 +143,7 @@ extension NCManageDatabase {
             metadata.sessionSelector = selector
             metadata.status = NCGlobal.shared.metadataStatusWaitDownload
             metadata.sessionDate = Date()
-
-            realm.add(metadata, update: .all)
+            metadata.progress = 0
         }
 
         return await performRealmReadAsync { realm in
@@ -153,6 +173,7 @@ extension NCManageDatabase {
             metadata.sessionSelector = ""
             metadata.sessionDate = nil
             metadata.status = NCGlobal.shared.metadataStatusNormal
+            metadata.progress = 0
             return metadata
         }
 

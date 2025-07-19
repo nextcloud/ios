@@ -273,6 +273,10 @@ extension NCNetworking {
                           serverUrl: String,
                           session: URLSession,
                           task: URLSessionTask) {
+
+        Task {
+            await self.database.setMetadataProgress(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier, progress: Double(progress))
+        }
         notifyAllDelegates { delegate in
             delegate.transferProgressDidUpdate(progress: progress,
                                                totalBytes: totalBytes,

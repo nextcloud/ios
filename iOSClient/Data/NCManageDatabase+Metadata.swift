@@ -124,6 +124,7 @@ class tableMetadata: Object {
     @objc dynamic var nativeFormat: Bool = false
     @objc dynamic var autoUploadServerUrlBase: String?
     @objc dynamic var typeIdentifier: String = ""
+    @objc dynamic var progress: Double = 0
 
     override static func primaryKey() -> String {
         return "ocId"

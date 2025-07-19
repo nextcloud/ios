@@ -426,7 +426,7 @@ extension NCNetworking {
     }
 #endif
 
-    // MARK: - Upload complete NextcloudKitDelegate
+    // MARK: - Upload NextcloudKitDelegate
 
     func uploadComplete(fileName: String,
                         serverUrl: String,
@@ -455,6 +455,25 @@ extension NCNetworking {
                 await self.database.deleteMetadataAsync(predicate: predicate)
             }
             #endif
+        }
+    }
+
+    func uploadProgress(_ progress: Float,
+                        totalBytes: Int64,
+                        totalBytesExpected: Int64,
+                        fileName: String,
+                        serverUrl: String,
+                        session: URLSession,
+                        task: URLSessionTask) {
+        Task {
+            await self.database.setMetadataProgress(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier, progress: Double(progress))
+        }
+        notifyAllDelegates { delegate in
+            delegate.transferProgressDidUpdate(progress: progress,
+                                               totalBytes: totalBytes,
+                                               totalBytesExpected: totalBytesExpected,
+                                               fileName: fileName,
+                                               serverUrl: serverUrl)
         }
     }
 }
