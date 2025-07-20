@@ -367,8 +367,7 @@ class NCViewerMedia: UIViewController {
                                                                                     selector: selector) {
             await self.networking.downloadFile(metadata: metadata) { _ in
                 self.allowOpeningDetails = false
-            } taskHandler: { _ in
-            }
+            } taskHandler: { _ in }
             self.allowOpeningDetails = true
 
         }
