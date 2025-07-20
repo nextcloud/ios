@@ -117,6 +117,22 @@ extension NCManageDatabase {
         }
     }
 
+    func setMetadataProgress(ocId: String,
+                             progress: Double) async {
+        await performRealmWriteAsync { realm in
+            guard let metadata = realm.objects(tableMetadata.self)
+                .filter("ocId == %@", ocId)
+                .first else {
+                return
+            }
+
+            if abs(metadata.progress - progress) > 0.001 {
+                metadata.progress = progress
+                print(progress)
+            }
+        }
+    }
+
     /// Asynchronously sets a metadata record into "wait download" state.
     /// - Parameters:
     ///   - ocId: The object ID of the metadata.

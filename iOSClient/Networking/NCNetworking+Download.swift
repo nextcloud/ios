@@ -82,6 +82,9 @@ extension NCNetworking {
 
             start()
         }, progressHandler: { progress in
+            Task {
+                await self.database.setMetadataProgress(ocId: metadata.ocId, progress: progress.fractionCompleted)
+            }
             self.notifyAllDelegates { delegate in
                 delegate.transferProgressDidUpdate(progress: Float(progress.fractionCompleted),
                                                    totalBytes: progress.totalUnitCount,
