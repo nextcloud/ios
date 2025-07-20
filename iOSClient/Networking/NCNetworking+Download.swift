@@ -149,22 +149,7 @@ extension NCNetworking {
         return(error)
     }
 
-    // MARK: - Download NextcloudKitDelegate
-
-    func downloadingFinish(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        if let httpResponse = (downloadTask.response as? HTTPURLResponse) {
-            if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300,
-               let url = downloadTask.currentRequest?.url,
-               var serverUrl = url.deletingLastPathComponent().absoluteString.removingPercentEncoding {
-                let fileName = url.lastPathComponent
-                if serverUrl.hasSuffix("/") { serverUrl = String(serverUrl.dropLast()) }
-                if let metadata = database.getMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) {
-                    let destinationFilePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
-                    utilityFileSystem.copyFile(at: location, to: NSURL.fileURL(withPath: destinationFilePath))
-                }
-            }
-        }
-    }
+    // MARK: -
 
     func downloadComplete(fileName: String,
                           serverUrl: String,
@@ -252,6 +237,23 @@ extension NCNetworking {
                     }
                 }
                 await self.database.updateBadge()
+            }
+        }
+    }
+
+    // MARK: - Download NextcloudKitDelegate
+
+    func downloadingFinish(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        if let httpResponse = (downloadTask.response as? HTTPURLResponse) {
+            if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300,
+               let url = downloadTask.currentRequest?.url,
+               var serverUrl = url.deletingLastPathComponent().absoluteString.removingPercentEncoding {
+                let fileName = url.lastPathComponent
+                if serverUrl.hasSuffix("/") { serverUrl = String(serverUrl.dropLast()) }
+                if let metadata = database.getMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) {
+                    let destinationFilePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
+                    utilityFileSystem.copyFile(at: location, to: NSURL.fileURL(withPath: destinationFilePath))
+                }
             }
         }
     }
