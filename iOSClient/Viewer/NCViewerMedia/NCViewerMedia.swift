@@ -178,23 +178,19 @@ class NCViewerMedia: UIViewController {
                                     }
                                 }
 
-                                self.networking.download(metadata: metadata) {
-                                } requestHandler: { request in
+                                let results = await self.networking.downloadFile(metadata: metadata) { request in
                                     downloadRequest = request
                                 } progressHandler: { progress in
                                     hud.progress(progress.fractionCompleted)
-                                } completion: { _, error in
-                                    DispatchQueue.main.async {
-                                        if error == .success {
-                                            hud.success()
-                                            if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
-                                                let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(self.metadata.ocId, fileName: self.metadata.fileNameView, userId: self.metadata.userId, urlBase: self.metadata.urlBase))
-                                                ncplayer.openAVPlayer(url: url, autoplay: autoplay)
-                                            }
-                                        } else {
-                                            hud.error(text: error.errorDescription)
-                                        }
+                                }
+                                if results.nkError == .success {
+                                    hud.success()
+                                    if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
+                                        let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(self.metadata.ocId, fileName: self.metadata.fileNameView, userId: self.metadata.userId, urlBase: self.metadata.urlBase))
+                                        ncplayer.openAVPlayer(url: url, autoplay: autoplay)
                                     }
+                                } else {
+                                    hud.error(text: error.errorDescription)
                                 }
                             }
                         }
@@ -280,7 +276,7 @@ class NCViewerMedia: UIViewController {
                 if let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
                                                                                             session: self.networking.sessionDownload,
                                                                                             selector: "") {
-                    self.networking.download(metadata: metadata)
+                    await self.networking.downloadFile(metadata: metadata)
                 }
             }
         }
@@ -369,13 +365,12 @@ class NCViewerMedia: UIViewController {
         if let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
                                                                                     session: self.networking.sessionDownload,
                                                                                     selector: selector) {
-
-            self.networking.download(metadata: metadata) {
-            } requestHandler: { _ in
+            await self.networking.downloadFile(metadata: metadata) { _ in
                 self.allowOpeningDetails = false
-            } completion: { _, _ in
-                self.allowOpeningDetails = true
+            } taskHandler: { _ in
             }
+            self.allowOpeningDetails = true
+
         }
     }
 

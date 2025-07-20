@@ -187,7 +187,7 @@ actor NCNetworkingProcess {
 
         for metadata in metadatasWaitDownload where counterDownloading < httpMaximumConnectionsPerHostInDownload {
             counterDownloading += 1
-            networking.download(metadata: metadata)
+            await networking.downloadFileInBackground(metadata: metadata)
         }
 
         /// ------------------------ UPLOAD

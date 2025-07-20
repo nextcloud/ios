@@ -315,7 +315,7 @@ extension NCCollectionViewCommon {
                                                                                                     session: NCNetworking.shared.sessionDownload,
                                                                                                             selector: NCGlobal.shared.selectorSaveAsScan,
                                                                                                             sceneIdentifier: sceneIdentifier) {
-                                    NCNetworking.shared.download(metadata: metadata)
+                                    await NCNetworking.shared.downloadFile(metadata: metadata)
                                 }
                             }
                         }
@@ -384,7 +384,7 @@ extension NCCollectionViewCommon {
                                                                                                             session: NCNetworking.shared.sessionDownload,
                                                                                                             selector: NCGlobal.shared.selectorLoadFileQuickLook,
                                                                                                             sceneIdentifier: sceneIdentifier) {
-                                    NCNetworking.shared.download(metadata: metadata)
+                                    await NCNetworking.shared.downloadFile(metadata: metadata)
                                 }
                             }
                         }

@@ -250,7 +250,7 @@ class NCFiles: NCCollectionViewCommon {
                                                                                                 session: NCNetworking.shared.sessionDownload,
                                                                                                 selector: NCGlobal.shared.selectorDownloadFile,
                                                                                                 sceneIdentifier: self.controller?.sceneIdentifier) {
-                        NCNetworking.shared.download(metadata: metadata)
+                        await NCNetworking.shared.downloadFile(metadata: metadata)
                     }
                 }
             }

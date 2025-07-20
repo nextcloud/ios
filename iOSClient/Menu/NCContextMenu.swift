@@ -77,17 +77,15 @@ class NCContextMenu: NSObject {
                         }
                     }
 
-                    self.networking.download(metadata: metadata) {
-                    } requestHandler: { request in
+                    let results = await self.networking.downloadFile(metadata: metadata) { request in
                         downloadRequest = request
                     } progressHandler: { progress in
                         hud.progress(progress.fractionCompleted)
-                    } completion: { afError, error in
-                        if error == .success || afError?.isExplicitlyCancelledError ?? false {
-                            hud.dismiss()
-                        } else {
-                            hud.error(text: error.errorDescription)
-                        }
+                    }
+                    if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {
+                        hud.dismiss()
+                    } else {
+                        hud.error(text: results.nkError.errorDescription)
                     }
                 }
             }
@@ -129,17 +127,15 @@ class NCContextMenu: NSObject {
                         }
                     }
 
-                    self.networking.download(metadata: metadata) {
-                    } requestHandler: { request in
+                    let results = await self.networking.downloadFile(metadata: metadata) { request in
                         downloadRequest = request
                     } progressHandler: { progress in
                         hud.progress(progress.fractionCompleted)
-                    } completion: { afError, error in
-                        if error == .success || afError?.isExplicitlyCancelledError ?? false {
-                            hud.dismiss()
-                        } else {
-                            hud.error(text: error.errorDescription)
-                        }
+                    }
+                    if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {
+                        hud.dismiss()
+                    } else {
+                        hud.error(text: results.nkError.errorDescription)
                     }
                 }
             }

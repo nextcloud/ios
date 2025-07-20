@@ -146,7 +146,7 @@ extension NCViewer {
                                                                                                             session: NCNetworking.shared.sessionDownload,
                                                                                                             selector: NCGlobal.shared.selectorSaveAsScan,
                                                                                                             sceneIdentifier: controller.sceneIdentifier) {
-                                    NCNetworking.shared.download(metadata: metadata)
+                                    await NCNetworking.shared.downloadFile(metadata: metadata)
                                 }
                             }
                         }
@@ -180,7 +180,7 @@ extension NCViewer {
                                                                                                         session: NCNetworking.shared.sessionDownload,
                                                                                                         selector: "",
                                                                                                         sceneIdentifier: controller.sceneIdentifier) {
-                                NCNetworking.shared.download(metadata: metadata)
+                                await NCNetworking.shared.downloadFile(metadata: metadata)
                             }
                         }
                     }
@@ -239,7 +239,7 @@ extension NCViewer {
                                                                                                             session: NCNetworking.shared.sessionDownload,
                                                                                                             selector: NCGlobal.shared.selectorLoadFileQuickLook,
                                                                                                             sceneIdentifier: controller.sceneIdentifier) {
-                                    NCNetworking.shared.download(metadata: metadata)
+                                    await NCNetworking.shared.downloadFile(metadata: metadata)
                                 }
                             }
                         }

@@ -280,7 +280,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if let metadatasWaitDownlod,
            !metadatasWaitDownlod.isEmpty {
             for metadata in metadatasWaitDownlod {
-                let error = await NCNetworking.shared.downloadFileInBackgroundAsync(metadata: metadata)
+                let error = await NCNetworking.shared.downloadFileInBackground(metadata: metadata)
 
                 if error == .success {
                     nkLog(tag: self.global.logTagBgSync, message: "Create new download \(metadata.fileName) in \(metadata.serverUrl)")

@@ -98,7 +98,7 @@ class NCViewerProviderContextMenu: UIViewController {
                             if let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
                                                                                                                   session: self.networking.sessionDownload,
                                                                                                                   selector: "") {
-                                self.networking.download(metadata: metadata)
+                                await self.networking.downloadFile(metadata: metadata)
                             }
                         }
                     }
@@ -112,7 +112,7 @@ class NCViewerProviderContextMenu: UIViewController {
                     if let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
                                                                                                           session: self.networking.sessionDownload,
                                                                                                           selector: "") {
-                        self.networking.download(metadata: metadata)
+                        await self.networking.downloadFile(metadata: metadata)
                     }
                 }
             }
@@ -124,7 +124,7 @@ class NCViewerProviderContextMenu: UIViewController {
                     if let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(ocId: metadataLivePhoto.ocId,
                                                                                                           session: self.networking.sessionDownload,
                                                                                                           selector: "") {
-                        self.networking.download(metadata: metadata)
+                        await self.networking.downloadFile(metadata: metadata)
                     }
                 }
             }

@@ -50,27 +50,24 @@ class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
                 return self.finish()
             }
 
-            NCNetworking.shared.download(metadata: metadata) {
-            } requestHandler: { _ in
-            } progressHandler: { progress in
-                self.hud?.progress(progress.fractionCompleted)
-            } completion: { _, error in
-                guard error == .success else {
-                    self.hud?.error(text: NSLocalizedString("_livephoto_save_error_", comment: ""))
-                    return self.finish()
-                }
-                NCNetworking.shared.download(metadata: metadataLive) {
-                    self.hud?.setText(text: NSLocalizedString("_download_video_", comment: ""), detailText: self.metadataMOV.fileName)
-                } progressHandler: { progress in
-                    self.hud?.progress(progress.fractionCompleted)
-                } completion: { _, error in
-                    guard error == .success else {
-                        self.hud?.error(text: NSLocalizedString("_livephoto_save_error_", comment: ""))
-                        return self.finish()
-                    }
-                    self.saveLivePhotoToDisk(metadata: self.metadata, metadataMov: self.metadataMOV)
-                }
+            let resultsMetadata = await NCNetworking.shared.downloadFile(metadata: metadata) { _ in
+            } progressHandler: { progess in
+                self.hud?.progress(progess.fractionCompleted)
             }
+            guard resultsMetadata.nkError == .success else {
+                self.hud?.error(text: NSLocalizedString("_livephoto_save_error_", comment: ""))
+                return self.finish()
+            }
+
+            let resultsMetadataLive = await NCNetworking.shared.downloadFile(metadata: metadataLive) { _ in
+            } progressHandler: { progess in
+                self.hud?.progress(progess.fractionCompleted)
+            }
+            guard resultsMetadataLive.nkError == .success else {
+                self.hud?.error(text: NSLocalizedString("_livephoto_save_error_", comment: ""))
+                return self.finish()
+            }
+            self.saveLivePhotoToDisk(metadata: self.metadata, metadataMov: self.metadataMOV)
         }
     }
 

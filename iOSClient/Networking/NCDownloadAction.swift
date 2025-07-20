@@ -319,13 +319,15 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                         return completion()
                     }
 
-                    NCNetworking.shared.download(metadata: metadata) {
+                    await NCNetworking.shared.downloadFile(metadata: metadata) { _ in
                     } progressHandler: { progress in
                         processor.hud.progress(progress.fractionCompleted)
-                    } completion: { _, _ in
-                        if self.utilityFileSystem.fileProviderStorageExists(metadata) { urls.append(url) }
-                        completion()
                     }
+
+                    if self.utilityFileSystem.fileProviderStorageExists(metadata) {
+                        urls.append(url)
+                    }
+                    completion()
                 }
             }
         }
