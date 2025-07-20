@@ -203,7 +203,7 @@ extension NCNetworking {
         }
     }
 
-    // MARK: - 
+    // MARK: -
 
     func uploadComplete(withMetadata metadata: tableMetadata,
                         ocId: String?,
