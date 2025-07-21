@@ -33,7 +33,11 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             } else {
                 if let metadata = await providerUtility.getTableMetadataFromItemIdentifierAsync(enumeratedItemIdentifier),
                    let directorySource = await self.database.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
-                    serverUrl = directorySource.serverUrl + "/" + metadata.fileName
+                    if directorySource.serverUrl == NCUtilityFileSystem().getHomeServer(session: session) {
+                        serverUrl = directorySource.serverUrl
+                    } else {
+                        serverUrl = directorySource.serverUrl + "/" + metadata.fileName
+                    }
                 }
             }
         }
@@ -167,7 +171,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     }
 
     func fetchItemsForPage(serverUrl: String, pageNumber: Int, account: String) async -> (metadatas: [tableMetadata]?, isPaginated: Bool) {
-        var useFirstAsMetadataFolder: Bool = false
+        var serverUrlMetadataFolder: String?
         var isPaginated: Bool = false
         var paginateCount = recordsPerPage
         if pageNumber == 0 {
@@ -202,13 +206,13 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         if resultsRead.error == .success, let files = resultsRead.files {
             if pageNumber == 0 {
                 await self.database.deleteMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d AND fileName != %@", account, serverUrl, NCGlobal.shared.metadataStatusNormal, NextcloudKit.shared.nkCommonInstance.rootFileName))
-                useFirstAsMetadataFolder = true
+                serverUrlMetadataFolder = serverUrl
             }
 
-            let (metadataFolder, metadatas) = await self.database.convertFilesToMetadatasAsync(files, useFirstAsMetadataFolder: useFirstAsMetadataFolder)
+            let (metadataFolder, metadatas) = await self.database.convertFilesToMetadatasAsync(files, serverUrlMetadataFolder: serverUrlMetadataFolder)
 
             // FOLDER
-            if useFirstAsMetadataFolder {
+            if serverUrlMetadataFolder != nil {
                 await self.database.addMetadataAsync(metadataFolder)
                 await self.database.addDirectoryAsync(e2eEncrypted: metadataFolder.e2eEncrypted,
                                                       favorite: metadataFolder.favorite,

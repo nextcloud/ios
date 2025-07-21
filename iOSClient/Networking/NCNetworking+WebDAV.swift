@@ -42,7 +42,7 @@ extension NCNetworking {
         guard resultsReadFolder.error == .success, let files = resultsReadFolder.files else {
             return(account, nil, nil, resultsReadFolder.error)
         }
-        let (metadataFolder, metadatas) = await self.database.convertFilesToMetadatasAsync(files, useFirstAsMetadataFolder: true)
+        let (metadataFolder, metadatas) = await self.database.convertFilesToMetadatasAsync(files, serverUrlMetadataFolder: serverUrl)
 
         await self.database.addMetadataAsync(metadataFolder)
         await self.database.addDirectoryAsync(e2eEncrypted: metadataFolder.e2eEncrypted,
@@ -562,7 +562,7 @@ extension NCNetworking {
             guard error == .success, let files else { return completion(nil, error) }
 
             Task {
-                let (_, metadatas) = await self.database.convertFilesToMetadatasAsync(files, useFirstAsMetadataFolder: false)
+                let (_, metadatas) = await self.database.convertFilesToMetadatasAsync(files)
                 self.database.addMetadatas(metadatas)
                 completion(metadatas, error)
             }

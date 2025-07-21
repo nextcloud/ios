@@ -34,7 +34,7 @@ extension NCManageDatabase {
         return metadata.detachedCopy()
     }
 
-    func convertFilesToMetadatasAsync(_ files: [NKFile], useFirstAsMetadataFolder: Bool, mediaSearch: Bool = false) async -> (metadataFolder: tableMetadata, metadatas: [tableMetadata]) {
+    func convertFilesToMetadatasAsync(_ files: [NKFile], serverUrlMetadataFolder: String? = nil, mediaSearch: Bool = false) async -> (metadataFolder: tableMetadata, metadatas: [tableMetadata]) {
         var counter: Int = 0
         var isDirectoryE2EE: Bool = false
         var listServerUrl: [String: Bool] = [:]
@@ -51,7 +51,7 @@ extension NCManageDatabase {
 
             let metadata = await convertFileToMetadataAsync(file, isDirectoryE2EE: isDirectoryE2EE, mediaSearch: mediaSearch)
 
-            if counter == 0 && useFirstAsMetadataFolder {
+            if serverUrlMetadataFolder == metadata.serverUrlFileName || metadata.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
                 metadataFolder = metadata
             } else {
                 metadatas.append(metadata)
