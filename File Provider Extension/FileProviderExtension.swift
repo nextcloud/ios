@@ -13,8 +13,8 @@ import Alamofire
    -----------------------------------------------------------------------------------------------------------------------------------------------
  
  
-    itemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue            --> .
-    parentItemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue      --> .
+    itemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue            --> root
+    parentItemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue      --> root
  
                                     ↓
  
@@ -346,6 +346,7 @@ class FileProviderExtension: NSFileProviderExtension {
                                                                        dateModificationFile: nil,
                                                                        overwrite: true,
                                                                        account: metadata.account,
+                                                                       automaticResume: false,
                                                                        sessionIdentifier: metadata.session)
 
                     if let task, error == .success {

@@ -732,32 +732,6 @@ extension NCManageDatabase {
         }
     }
 
-    func updateMetadatasFiles(_ metadatas: [tableMetadata], serverUrl: String, account: String) {
-        let detached = metadatas.map { $0.detachedCopy() }
-
-        performRealmWrite(sync: false) { realm in
-            let ocIdsToSkip = Set(
-                realm.objects(tableMetadata.self)
-                    .filter("status != %d", NCGlobal.shared.metadataStatusNormal)
-                    .map(\.ocId)
-                )
-
-            let resultsToDelete = realm.objects(tableMetadata.self)
-                .filter("account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
-                .filter { !ocIdsToSkip.contains($0.ocId) }
-
-            realm.delete(resultsToDelete)
-
-            for metadata in detached {
-                guard !ocIdsToSkip.contains(metadata.ocId)
-                else {
-                    continue
-                }
-                realm.add(metadata, update: .all)
-            }
-        }
-    }
-
     /// Updates metadata files in Realm asynchronously.
     /// - Parameters:
     ///   - metadatas: Array of `tableMetadata` objects to insert or update.
@@ -772,7 +746,7 @@ extension NCManageDatabase {
             )
 
             let resultsToDelete = realm.objects(tableMetadata.self)
-                .filter("account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
+                .filter("account == %@ AND serverUrl == %@ AND status == %d AND fileName != %@", account, serverUrl, NCGlobal.shared.metadataStatusNormal, NextcloudKit.shared.nkCommonInstance.rootFileName)
                 .filter { !ocIdsToSkip.contains($0.ocId) }
 
             realm.delete(resultsToDelete)
@@ -1037,39 +1011,15 @@ extension NCManageDatabase {
         }
     }
 
-    func getMetadataFolder(session: NCSession.Session, serverUrl: String) -> tableMetadata? {
-        var serverUrl = serverUrl
-        var fileName = ""
-        let serverUrlHome = utilityFileSystem.getHomeServer(session: session)
-
-        if serverUrlHome == serverUrl {
-            fileName = "."
-            serverUrl = ".."
-        } else {
-            fileName = (serverUrl as NSString).lastPathComponent
-            if let path = utilityFileSystem.deleteLastPath(serverUrlPath: serverUrl) {
-                serverUrl = path
-            }
-        }
-
-        return performRealmRead { realm in
-            realm.objects(tableMetadata.self)
-                .filter("account == %@ AND serverUrl == %@ AND fileName == %@", session.account, serverUrl, fileName)
-                .first
-                .map { $0.detachedCopy() }
-        }
-    }
-
     /// Asynchronously retrieves the metadata for a folder, based on its session and serverUrl.
-    /// Handles the home directory case (".") and detaches the Realm object before returning.
+    /// Handles the home directory case rootFileName) and detaches the Realm object before returning.
     func getMetadataFolderAsync(session: NCSession.Session, serverUrl: String) async -> tableMetadata? {
         var serverUrl = serverUrl
         var fileName = ""
         let serverUrlHome = utilityFileSystem.getHomeServer(session: session)
 
         if serverUrlHome == serverUrl {
-            fileName = "."
-            serverUrl = ".."
+            fileName = NextcloudKit.shared.nkCommonInstance.rootFileName
         } else {
             fileName = (serverUrl as NSString).lastPathComponent
             if let path = utilityFileSystem.deleteLastPath(serverUrlPath: serverUrl) {
@@ -1178,7 +1128,7 @@ extension NCManageDatabase {
     func getRootContainerMetadata(accout: String) -> tableMetadata? {
         return performRealmRead { realm in
             realm.objects(tableMetadata.self)
-                .filter("fileName == '.' AND account == %@", accout)
+                .filter("fileName == %@ AND account == %@", NextcloudKit.shared.nkCommonInstance.rootFileName, accout)
                 .first
                 .map { $0.detachedCopy() }
         }
@@ -1187,14 +1137,11 @@ extension NCManageDatabase {
     func getRootContainerMetadataAsync(accout: String) async -> tableMetadata? {
         return await performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
-                .filter("fileName == '.' AND account == %@", accout)
+                .filter("fileName == %@ AND account == %@", NextcloudKit.shared.nkCommonInstance.rootFileName, accout)
                 .first
                 .map { $0.detachedCopy() }
         }
     }
-
-
-    // MARK: - Realm Read
 
     func getMetadatasAsync(predicate: NSPredicate) async -> [tableMetadata] {
         await performRealmReadAsync { realm in

@@ -224,7 +224,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     }
 
     func isDirectoryE2EE(session: NCSession.Session, serverUrl: String) -> Bool {
-        if serverUrl == getHomeServer(session: session) || serverUrl == ".." {
+        if serverUrl == getHomeServer(session: session) {
             return false
         }
         if let directory = NCManageDatabase.shared.getTableDirectory(account: session.account, serverUrl: serverUrl) {
@@ -239,7 +239,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     }
 
     func isDirectoryE2EEAsync(session: NCSession.Session, serverUrl: String) async -> Bool {
-        if serverUrl == getHomeServer(session: session) || serverUrl == ".." {
+        if serverUrl == getHomeServer(session: session) {
             return false
         }
         if let directory = await NCManageDatabase.shared.getTableDirectoryAsync(account: session.account, serverUrl: serverUrl) {
