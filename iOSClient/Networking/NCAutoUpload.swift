@@ -107,11 +107,11 @@ class NCAutoUpload: NSObject {
             let onWWAN = (mediaType == .image && tblAccount.autoUploadWWAnPhoto) || (mediaType == .video && tblAccount.autoUploadWWAnVideo)
             let uploadSession = onWWAN ? self.networking.sessionUploadBackgroundWWan : self.networking.sessionUploadBackground
 
-            let metadata = await self.database.createMetadata(fileName: fileName,
-                                                              ocId: UUID().uuidString,
-                                                              serverUrl: serverUrl,
-                                                              session: session,
-                                                              sceneIdentifier: controller?.sceneIdentifier
+            let metadata = await self.database.createMetadataAsync(fileName: fileName,
+                                                                   ocId: UUID().uuidString,
+                                                                   serverUrl: serverUrl,
+                                                                   session: session,
+                                                                   sceneIdentifier: controller?.sceneIdentifier
             )
 
             if isLivePhoto {

@@ -112,17 +112,21 @@ class NCService: NSObject {
         let resultsCapabilities = await NextcloudKit.shared.getCapabilitiesAsync(account: account)
         guard resultsCapabilities.error == .success,
               let data = resultsCapabilities.responseData?.data,
-              let capabilities = resultsCapabilities.capabilities else {
+              let capabiresultsCapabilitieslities = resultsCapabilities.capabilities else {
             return
         }
 
-        await self.database.addCapabilitiesAsync(data: data, account: account)
+        await self.database.setDataCapabilities(data: data, account: account)
 
         // Text direct editor (Nextcloud Text, Office, Collabora)
         let resultsTextEditor = await NextcloudKit.shared.textObtainEditorDetailsAsync(account: account)
         if resultsTextEditor.error == .success,
            let data = resultsTextEditor.responseData?.data {
-            await self.database.addCapabilitiesEditorsAsync(data: data, account: account)
+            await self.database.setDataCapabilitiesEditors(data: data, account: account)
+        }
+
+        guard let capabilities = await self.database.setCapabilities(account: account) else {
+            return
         }
 
         // Recommendations
@@ -131,7 +135,7 @@ class NCService: NSObject {
         }
 
         // Theming
-        if NCBrandColor.shared.settingThemingColor(account: account) {
+        if NCBrandColor.shared.settingThemingColor(account: account, capabilities: capabilities) {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": account])
         }
 
@@ -245,7 +249,7 @@ class NCService: NSObject {
     // MARK: -
 
     func sendClientDiagnosticsRemoteOperation(account: String) async {
-        let capabilities = await NKCapabilities.shared.getCapabilitiesAsync(for: account)
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
         guard capabilities.securityGuardDiagnostics,
               await self.database.existsDiagnosticsAsync(account: account) else {
             return

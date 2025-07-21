@@ -36,7 +36,7 @@ extension AppDelegate {
         let isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, account: session.account)
         let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
         let utility = NCUtility()
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
+        let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
 
         actions.append(
             NCMenuAction(
@@ -123,7 +123,7 @@ extension AppDelegate {
                          icon: imageCreateFolder,
                          sender: sender,
                          action: { _ in
-                             let alertController = UIAlertController.createFolder(serverUrl: serverUrl, session: session, sceneIdentifier: controller.sceneIdentifier)
+                             let alertController = UIAlertController.createFolder(serverUrl: serverUrl, session: session, sceneIdentifier: controller.sceneIdentifier, capabilities: capabilities)
                              controller.present(alertController, animated: true, completion: nil)
                          }
                         )
@@ -136,7 +136,7 @@ extension AppDelegate {
                              icon: NCImageCache.shared.getFolderEncrypted(account: session.account),
                              sender: sender,
                              action: { _ in
-                                 let alertController = UIAlertController.createFolder(serverUrl: serverUrl, session: session, markE2ee: true, sceneIdentifier: controller.sceneIdentifier)
+                                 let alertController = UIAlertController.createFolder(serverUrl: serverUrl, session: session, markE2ee: true, sceneIdentifier: controller.sceneIdentifier, capabilities: capabilities)
                                  controller.present(alertController, animated: true, completion: nil)
                              })
             )

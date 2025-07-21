@@ -130,8 +130,10 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
 
     /// Function to update the user data
     func getUserStatus() -> (statusImage: UIImage?, statusMessage: String, descriptionMessage: String) {
-        guard let tblAccount else { return (UIImage(), "", "") }
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: tblAccount.account)
+        guard let tblAccount,
+              let capabilities = NCNetworking.shared.capabilities[tblAccount.account] else {
+            return (UIImage(), "", "")
+        }
         if capabilities.userStatusEnabled,
            let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", tblAccount.account)) {
             return NCUtility().getUserStatus(userIcon: tableAccount.userStatusIcon, userStatus: tableAccount.userStatusStatus, userMessage: tableAccount.userStatusMessage)
@@ -152,8 +154,10 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
 
     /// Function to know the height of "account" data
     func getTableViewHeight() -> CGFloat {
-        guard let tblAccount else { return 0 }
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: tblAccount.account)
+        guard let tblAccount,
+              let capabilities = NCNetworking.shared.capabilities[tblAccount.account] else {
+            return 0
+        }
         var height: CGFloat = capabilities.userStatusEnabled ? 190 : 220
         if capabilities.userStatusEnabled,
            let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", tblAccount.account)) {

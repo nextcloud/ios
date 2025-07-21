@@ -115,21 +115,6 @@ extension NCNetworking {
         }
     }
 
-    /*
-    func uploadHubStream(metadata: tableMetadata,
-                         uploadE2EEDelegate: uploadE2EEDelegate? = nil,
-                         controller: UIViewController? = nil) -> AsyncThrowingStream<UploadEvent, Error> {
-        return AsyncThrowingStream(bufferingPolicy: .unbounded) { continuation in
-            Task {
-                continuation.yield(.started)
-                continuation.yield(.progress(...))
-                continuation.yield(.completed)
-                continuation.finish()
-            }
-        }
-    }
-    */
-
     func uploadFile(metadata: tableMetadata,
                     fileNameLocalPath: String,
                     withUploadComplete: Bool = true,
@@ -338,10 +323,10 @@ extension NCNetworking {
                         size: Int64,
                         error: NKError) async {
 
-        NextcloudKit.shared.nkCommonInstance.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
+        await NextcloudKit.shared.nkCommonInstance.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
 
         let selector = metadata.sessionSelector
-        let capabilities = await NKCapabilities.shared.getCapabilitiesAsync(for: metadata.account)
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
 
         if error == .success, let ocId = ocId, size == metadata.size {
             nkLog(success: "Uploaded file: " + metadata.serverUrlFileName + ", (\(size) bytes)")

@@ -31,12 +31,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         if let activeTblAccount = self.database.getActiveTableAccount() {
             nkLog(debug: "Account active \(activeTblAccount.account)")
-            // set capabilities
-            self.database.applyCachedCapabilitiesBlocking(account: activeTblAccount.account)
-            // set theming color
-            NCBrandColor.shared.settingThemingColor(account: activeTblAccount.account)
 
-            Task {
+            Task { @MainActor in
+                // set capabilities
+                if let capabilities = await self.database.setCapabilities(account: activeTblAccount.account) {
+                    // set theming color
+                    NCBrandColor.shared.settingThemingColor(account: activeTblAccount.account, capabilities: capabilities)
+                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeTheming, userInfo: ["account": activeTblAccount.account])
+                }
+
                 await NCNetworkingProcess.shared.setCurrentAccount(activeTblAccount.account)
             }
             for tableAccount in self.database.getAllTableAccount() {
@@ -51,7 +54,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                                                   httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
                                                   groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
                 Task {
-                    await self.database.applyCachedCapabilitiesAsync(account: tableAccount.account)
+                    await self.database.setCapabilities(account: tableAccount.account)
                 }
                 NCSession.shared.appendSession(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId)
             }
@@ -256,7 +259,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                         NCDocumentCamera.shared.openScannerDocument(viewController: controller)
                     case self.global.actionTextDocument:
                         let session = SceneManager.shared.getSession(scene: scene)
-                        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
+                        let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
                         guard let creator = capabilities.directEditingCreators.first(where: { $0.editor == "text" }) else {
                             return
                         }

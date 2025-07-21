@@ -34,8 +34,8 @@ class NCRichWorkspaceCommon: NSObject {
             return
         }
 
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
-        guard let textCreators = capabilities.directEditingCreators.filter({ $0.editor == "text" }).first else {
+        guard let capabilities = NCNetworking.shared.capabilities[session.account],
+              let textCreators = capabilities.directEditingCreators.filter({ $0.editor == "text" }).first else {
             return
         }
 
