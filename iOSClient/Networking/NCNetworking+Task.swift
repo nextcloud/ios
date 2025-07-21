@@ -320,6 +320,7 @@ extension NCNetworking {
 
         NextcloudKit.shared.nkCommonInstance.nksessions.forEach { nkSession in
             Task {
+                var nkSession = nkSession
                 let tasksBackground = await nkSession.sessionUploadBackground.tasks
                 for task in tasksBackground.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
                     if metadata == nil || (metadata?.account == nkSession.account &&
@@ -425,7 +426,7 @@ extension NCNetworking {
                                                                                         sessionUploadBackground,
                                                                                         sessionUploadBackgroundWWan)) {
             for metadata in metadatas {
-                guard let nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: metadata.account) else {
+                guard var nkSession = NextcloudKit.shared.nkCommonInstance.nksessions.session(forAccount: metadata.account) else {
                     await self.database.deleteMetadataOcIdAsync(metadata.ocId)
                     utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
                     continue

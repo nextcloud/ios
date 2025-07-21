@@ -86,30 +86,20 @@ final class FileProviderExtension: NSFileProviderExtension {
     // MARK: - Item
 
     override func item(for identifier: NSFileProviderItemIdentifier) throws -> NSFileProviderItem {
-        fileProviderData.setupAccount(domain: self.domain, providerExtension: self)
-
-        guard let session = fileProviderData.session else {
-               throw NSFileProviderError(.notAuthenticated)
-           }
-
         if identifier == .rootContainer {
-            let metadata = tableMetadata()
+            guard let account = fileProviderData.session?.account,
+                  let metadata = database.getRootContainerMetadata(accout: account) else {
+                throw NSFileProviderError(.noSuchItem)
+            }
 
-            metadata.account = session.account
-            metadata.directory = true
-            metadata.ocId = NSFileProviderItemIdentifier.rootContainer.rawValue
-            metadata.fileName = "root"
-            metadata.fileNameView = "root"
-            metadata.serverUrl = utilityFileSystem.getHomeServer(session: session)
-            metadata.classFile = NKTypeClassFile.directory.rawValue
-
-            return FileProviderItem(metadata: metadata, parentItemIdentifier: .rootContainer)
+            return FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue))
         } else {
             guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(identifier),
                   let parentItemIdentifier = providerUtility.getParentItemIdentifier(metadata: metadata) else {
                 throw NSFileProviderError(.noSuchItem)
             }
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+
             return item
         }
     }
@@ -384,6 +374,7 @@ final class FileProviderExtension: NSFileProviderExtension {
                                                                       dateModificationFile: nil,
                                                                       overwrite: true,
                                                                       account: metadata.account,
+                                                                       automaticResume: false,
                                                                       sessionIdentifier: metadata.session)
 
                     if let task, error == .success {
