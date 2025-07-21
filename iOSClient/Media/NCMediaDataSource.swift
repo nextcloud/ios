@@ -163,7 +163,7 @@ extension NCMedia {
         Task.detached(priority: .userInitiated) { [weak self] in
             guard let self else { return }
 
-            let (_, metadatas) = await self.database.convertFilesToMetadatasAsync(files, useFirstAsMetadataFolder: false)
+            let (_, metadatas) = await self.database.convertFilesToMetadatasAsync(files)
 
             let filtered = await metadatas.asyncFilter { metadata in
                 if let stored = await self.database.getMetadataFromOcIdAsync(metadata.ocId) {

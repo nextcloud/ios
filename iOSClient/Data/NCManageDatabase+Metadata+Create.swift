@@ -58,7 +58,7 @@ extension NCManageDatabase {
         return metadata.detachedCopy()
     }
 
-    func convertFilesToMetadatas(_ files: [NKFile], useFirstAsMetadataFolder: Bool, completion: @escaping (_ metadataFolder: tableMetadata, _ metadatas: [tableMetadata]) -> Void) {
+    func convertFilesToMetadatas(_ files: [NKFile], serverUrlMetadataFolder: String? = nil, completion: @escaping (_ metadataFolder: tableMetadata, _ metadatas: [tableMetadata]) -> Void) {
         var counter: Int = 0
         var isDirectoryE2EE: Bool = false
         let listServerUrl = ThreadSafeDictionary<String, Bool>()
@@ -74,7 +74,7 @@ extension NCManageDatabase {
             }
 
             convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE) { metadata in
-                if counter == 0 && useFirstAsMetadataFolder {
+                if serverUrlMetadataFolder == metadata.serverUrlFileName || metadata.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
                     metadataFolder = metadata
                 } else {
                     metadatas.append(metadata)
@@ -86,7 +86,7 @@ extension NCManageDatabase {
         completion(metadataFolder.detachedCopy(), metadatas)
     }
 
-    func convertFilesToMetadatasAsync(_ files: [NKFile], useFirstAsMetadataFolder: Bool) async -> (metadataFolder: tableMetadata, metadatas: [tableMetadata]) {
+    func convertFilesToMetadatasAsync(_ files: [NKFile], serverUrlMetadataFolder: String? = nil) async -> (metadataFolder: tableMetadata, metadatas: [tableMetadata]) {
         var counter: Int = 0
         var isDirectoryE2EE: Bool = false
         var listServerUrl: [String: Bool] = [:]
@@ -103,7 +103,7 @@ extension NCManageDatabase {
 
             let metadata = await convertFileToMetadataAsync(file, isDirectoryE2EE: isDirectoryE2EE)
 
-            if counter == 0 && useFirstAsMetadataFolder {
+            if serverUrlMetadataFolder == metadata.serverUrlFileName || metadata.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
                 metadataFolder = metadata
             } else {
                 metadatas.append(metadata)
