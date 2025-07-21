@@ -1175,6 +1175,25 @@ extension NCManageDatabase {
         } ?? []
     }
 
+    func getRootContainerMetadata(accout: String) -> tableMetadata? {
+        return performRealmRead { realm in
+            realm.objects(tableMetadata.self)
+                .filter("fileName == '.' AND account == %@", accout)
+                .first
+                .map { $0.detachedCopy() }
+        }
+    }
+
+    func getRootContainerMetadataAsync(accout: String) async -> tableMetadata? {
+        return await performRealmReadAsync { realm in
+            realm.objects(tableMetadata.self)
+                .filter("fileName == '.' AND account == %@", accout)
+                .first
+                .map { $0.detachedCopy() }
+        }
+    }
+
+
     // MARK: - Realm Read
 
     func getMetadatasAsync(predicate: NSPredicate) async -> [tableMetadata] {

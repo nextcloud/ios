@@ -13,8 +13,8 @@ import Alamofire
    -----------------------------------------------------------------------------------------------------------------------------------------------
  
  
-    itemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue            --> root
-    parentItemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue      --> root
+    itemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue            --> .
+    parentItemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue      --> .
  
                                     ↓
  
@@ -93,14 +93,10 @@ class FileProviderExtension: NSFileProviderExtension {
 
     override func item(for identifier: NSFileProviderItemIdentifier) throws -> NSFileProviderItem {
         if identifier == .rootContainer {
-            let metadata = tableMetadata()
-            metadata.account = fileProviderData.shared.session.account
-            metadata.directory = true
-            metadata.ocId = NSFileProviderItemIdentifier.rootContainer.rawValue
-            metadata.fileName = "root"
-            metadata.fileNameView = "root"
-            metadata.serverUrl = utilityFileSystem.getHomeServer(session: fileProviderData.shared.session)
-            metadata.classFile = NKTypeClassFile.directory.rawValue
+            guard let metadata = database.getRootContainerMetadata(accout: fileProviderData.shared.session.account) else {
+                throw NSFileProviderError(.noSuchItem)
+            }
+
             return FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue))
         } else {
             guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(identifier),
@@ -108,6 +104,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 throw NSFileProviderError(.noSuchItem)
             }
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+
             return item
         }
     }
@@ -127,7 +124,6 @@ class FileProviderExtension: NSFileProviderExtension {
         // exploit the fact that the path structure has been defined as
         // <base storage directory>/<item identifier>/<item file name> above
         assert(pathComponents.count > 2)
-
         let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
 
         return itemIdentifier
