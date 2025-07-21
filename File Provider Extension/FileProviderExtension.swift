@@ -14,7 +14,7 @@ import Alamofire
  
  
     itemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue            --> root
-    parentItemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue      --> root
+    parentItemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue      --> .workingSet
  
                                     ↓
  
