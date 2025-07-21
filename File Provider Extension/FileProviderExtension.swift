@@ -96,7 +96,7 @@ class FileProviderExtension: NSFileProviderExtension {
             guard let metadata = database.getRootContainerMetadata(accout: fileProviderData.shared.session.account) else {
                 throw NSFileProviderError(.noSuchItem)
             }
-            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue))
+            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: .workingSet)
 
             return item
         } else {
