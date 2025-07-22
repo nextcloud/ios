@@ -108,7 +108,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
 
         imageItem.contentMode = .scaleAspectFill
 
-        if tableShare.shareType == NCShareCommon().SHARE_TYPE_CIRCLE {
+        if tableShare.shareType == NCShareCommon.shareTypeTeam {
             imageItem.image = utility.loadImage(named: "person.3.circle.fill", colors: [NCBrandColor.shared.iconImageColor])
         } else if results.image == nil {
             imageItem.image = utility.loadUserImage(for: tableShare.shareWith, displayName: tableShare.shareWithDisplayname, urlBase: metadata.urlBase)
@@ -124,9 +124,9 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
 
     private func getType(_ tableShare: tableShareV2) -> String {
         switch tableShare.shareType {
-        case NCShareCommon().SHARE_TYPE_FEDERATED:
+        case NCShareCommon.shareTypeFederated:
             return NSLocalizedString("_remote_", comment: "")
-        case NCShareCommon().SHARE_TYPE_ROOM:
+        case NCShareCommon.shareTypeRoom:
             return NSLocalizedString("_conversation_", comment: "")
         default:
             return ""

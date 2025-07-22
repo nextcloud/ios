@@ -10,7 +10,6 @@ import NextcloudKit
 /// The persisted counterpart is ``tableShare``.
 ///
 class TransientShare: Shareable {
-
     var shareType: Int
     var permissions: Int
 
@@ -24,6 +23,7 @@ class TransientShare: Shareable {
     var expirationDate: NSDate?
     var shareWithDisplayname: String = ""
     var downloadAndSync = false
+    var itemType: String = ""
 
     var attributes: String?
 
@@ -38,6 +38,8 @@ class TransientShare: Shareable {
 
         self.shareType = shareType
 
+        self.itemType = metadata.isDirectory ? NCShareCommon.itemTypeFolder : NCShareCommon.itemTypeFile
+
         if let password = password {
             self.password = password
         }
@@ -49,6 +51,6 @@ class TransientShare: Shareable {
     }
 
     static func shareLink(metadata: tableMetadata, password: String?) -> TransientShare {
-        TransientShare(shareType: NCShareCommon().SHARE_TYPE_LINK, metadata: metadata, password: password)
+        TransientShare(shareType: NCShareCommon.shareTypeLink, metadata: metadata, password: password)
     }
 }
