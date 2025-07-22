@@ -83,18 +83,16 @@ class FileProviderExtension: NSFileProviderExtension {
             guard let metadata = database.getRootContainerMetadata(accout: fileProviderData.shared.session.account) else {
                 throw NSFileProviderError(.noSuchItem)
             }
-            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: .workingSet)
-
-            return item
-        } else {
-            guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(identifier),
-                  let parentItemIdentifier = providerUtility.getParentItemIdentifier(account: metadata.account, serverUrl: metadata.serverUrl) else {
-                throw NSFileProviderError(.noSuchItem)
-            }
-            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-
-            return item
+            return FileProviderItem(metadata: metadata, parentItemIdentifier: .workingSet)
         }
+
+        guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(identifier),
+              let parentItemIdentifier = providerUtility.getParentItemIdentifier(account: metadata.account, serverUrl: metadata.serverUrl) else {
+            throw NSFileProviderError(.noSuchItem)
+        }
+        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+
+        return item
     }
 
     override func urlForItem(withPersistentIdentifier identifier: NSFileProviderItemIdentifier) -> URL? {
@@ -103,9 +101,8 @@ class FileProviderExtension: NSFileProviderExtension {
         }
         var url = fileProviderData.shared.fileProviderManager.documentStorageURL.appendingPathComponent(identifier.rawValue, isDirectory: true)
 
-        // (fix copy/paste directory -> isDirectory = false)
-        // url = url.appendingPathComponent(item.filename, isDirectory: item.typeIdentifier == UTType.folder.identifier)
-        url = url.appendingPathComponent(item.filename, isDirectory: false)
+        let isDir = (item as? FileProviderItem)?.metadata.directory ?? false
+        url = url.appendingPathComponent(item.filename, isDirectory: isDir)
 
         return url
     }
