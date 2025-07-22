@@ -30,7 +30,7 @@ extension NCShare {
         let capabilities = NCNetworking.shared.capabilities[self.metadata.account] ?? NKCapabilities.Capabilities()
         var actions = [NCMenuAction]()
 
-        if share.shareType == NCShareCommon().SHARE_TYPE_LINK, canReshare {
+        if share.shareType == NCShareCommon.shareTypeLink, canReshare {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_share_add_sharelink_", comment: ""),
@@ -75,7 +75,7 @@ extension NCShare {
                 sender: sender,
                 action: { _ in
                     Task {
-                        if share.shareType != NCShareCommon().SHARE_TYPE_LINK, let metadata = self.metadata, metadata.e2eEncrypted && capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
+                        if share.shareType != NCShareCommon.shareTypeLink, let metadata = self.metadata, metadata.e2eEncrypted && capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
                             if await NCNetworkingE2EE().isInUpload(account: metadata.account, serverUrl: metadata.serverUrlFileName) {
                                 let error = NKError(errorCode: NCGlobal.shared.errorE2EEUploadInProgress, errorDescription: NSLocalizedString("_e2e_in_upload_", comment: ""))
                                 return NCContentPresenter().showInfo(error: error)
@@ -143,7 +143,7 @@ extension NCShare {
             )]
         )
 
-        if isDirectory && (share.shareType == NCShareCommon().SHARE_TYPE_LINK /* public link */ || share.shareType == NCShareCommon().SHARE_TYPE_EMAIL) {
+        if isDirectory && (share.shareType == NCShareCommon.shareTypeLink /* public link */ || share.shareType == NCShareCommon.shareTypeEmail) {
             actions.insert(NCMenuAction(
                        title: NSLocalizedString("_share_file_drop_", comment: ""),
                        icon: utility.loadImage(named: "arrow.up.document", colors: [NCBrandColor.shared.iconImageColor]),
