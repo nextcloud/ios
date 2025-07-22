@@ -94,10 +94,14 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         }
     }
     var isDownloaded: Bool {
-        if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
+        if metadata.directory {
             return true
         } else {
-            return false
+            if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
+                return true
+            } else {
+                return false
+            }
         }
     }
     var downloadingError: Error? {

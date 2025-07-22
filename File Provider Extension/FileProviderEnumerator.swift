@@ -27,51 +27,38 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
         if enumeratedItemIdentifier == .rootContainer {
             serverUrl = homeServer
-        } else {
-            if let metadata = providerUtility.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier),
-                let directorySource = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
-
-                // If the directory is the root, reuse the home server
-                if directorySource.serverUrl == homeServer {
-                    serverUrl = homeServer
-                } else {
-                    // Otherwise, build path by appending the item's name
-                    serverUrl = directorySource.serverUrl + "/" + metadata.fileName
-                }
+        } else if let metadata = providerUtility.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier) {
+            if metadata.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
+                serverUrl = homeServer
+            } else {
+                serverUrl = metadata.serverUrlFileName
             }
         }
     }
 
     func invalidate() { }
 
+    /// Enumerates regular file or folder contents or the Working Set
     func enumerateItems(for observer: NSFileProviderEnumerationObserver, startingAt page: NSFileProviderPage) {
         Task {
             var items: [NSFileProviderItemProtocol] = []
 
-            // WorkingSet
             if enumeratedItemIdentifier == .workingSet {
                 var itemIdentifierMetadata: [NSFileProviderItemIdentifier: tableMetadata] = [:]
 
-                // Tags
-                if let tags = await self.database.getTagsAsync(predicate: NSPredicate(format: "account == %@", fileProviderData.shared.session.account)) {
+                if let tags = await database.getTagsAsync(predicate: NSPredicate(format: "account == %@", fileProviderData.shared.session.account)) {
                     for tag in tags {
-                        guard let metadata = await self.database.getMetadataFromOcIdAsync(tag.ocId) else {
-                            continue
-                        }
+                        guard let metadata = await database.getMetadataFromOcIdAsync(tag.ocId) else { continue }
                         itemIdentifierMetadata[providerUtility.getItemIdentifier(metadata: metadata)] = metadata
                     }
                 }
 
-                // Favorite
-                fileProviderData.shared.listFavoriteIdentifierRank = await self.database.getTableMetadatasDirectoryFavoriteIdentifierRankAsync(account: fileProviderData.shared.session.account)
+                fileProviderData.shared.listFavoriteIdentifierRank = await database.getTableMetadatasDirectoryFavoriteIdentifierRankAsync(account: fileProviderData.shared.session.account)
                 for (identifier, _) in fileProviderData.shared.listFavoriteIdentifierRank {
-                    guard let metadata = await self.database.getMetadataFromOcIdAsync(identifier) else {
-                        continue
-                    }
+                    guard let metadata = await database.getMetadataFromOcIdAsync(identifier) else { continue }
                     itemIdentifierMetadata[providerUtility.getItemIdentifier(metadata: metadata)] = metadata
                 }
 
-                // Create items
                 for (_, metadata) in itemIdentifierMetadata {
                     if let parentItemIdentifier = await providerUtility.getParentItemIdentifierAsync(account: metadata.account, serverUrl: metadata.serverUrl) {
                         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
@@ -82,26 +69,21 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 observer.finishEnumerating(upTo: nil)
 
             } else {
-
-                // ServerUrl
                 guard let serverUrl = serverUrl else {
                     observer.finishEnumerating(upTo: nil)
                     return
                 }
+
                 var pageNumber = 0
-                if let stringPage = String(data: page.rawValue, encoding: .utf8),
-                   let intPage = Int(stringPage) {
+                if let stringPage = String(data: page.rawValue, encoding: .utf8), let intPage = Int(stringPage) {
                     pageNumber = intPage
                 }
 
                 let (metadatas, isPaginated) = await fetchItemsForPage(serverUrl: serverUrl, pageNumber: pageNumber)
 
                 if let metadatas {
-                    for metadata in metadatas {
-                        if metadata.e2eEncrypted || (!metadata.session.isEmpty && metadata.session != NCNetworking.shared.sessionUploadBackgroundExt) {
-                            continue
-                        }
-                        if let parentItemIdentifier = await self.providerUtility.getParentItemIdentifierAsync(account: metadata.account, serverUrl: metadata.serverUrl) {
+                    for metadata in metadatas where !metadata.e2eEncrypted && (metadata.session.isEmpty || metadata.session == NCNetworking.shared.sessionUploadBackgroundExt) {
+                        if let parentItemIdentifier = await providerUtility.getParentItemIdentifierAsync(account: metadata.account, serverUrl: metadata.serverUrl) {
                             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
                             items.append(item)
                         }
@@ -110,12 +92,9 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
                 observer.didEnumerate(items)
 
-                if let metadatas,
-                    isPaginated,
-                    metadatas.count == self.recordsPerPage {
-                    pageNumber += 1
-                    let providerPage = NSFileProviderPage("\(pageNumber)".data(using: .utf8)!)
-                    observer.finishEnumerating(upTo: providerPage)
+                if let metadatas, isPaginated, metadatas.count == self.recordsPerPage {
+                    let nextPage = NSFileProviderPage("\(pageNumber + 1)".data(using: .utf8)!)
+                    observer.finishEnumerating(upTo: nextPage)
                 } else {
                     observer.finishEnumerating(upTo: nil)
                 }
@@ -124,47 +103,29 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     }
 
     func enumerateChanges(for observer: NSFileProviderChangeObserver, from anchor: NSFileProviderSyncAnchor) {
-        var itemsDelete: [NSFileProviderItemIdentifier] = []
-        var itemsUpdate: [FileProviderItem] = []
+        Task {
+            let signalRegistry = FileProviderSignalRegistry.shared
+            let isWorkingSet = enumeratedItemIdentifier == .workingSet
 
-        /*
-        // Report the deleted items
-        if self.enumeratedItemIdentifier == .workingSet {
-            for (itemIdentifier, _) in fileProviderData.shared.fileProviderSignalDeleteWorkingSetItemIdentifier {
-                itemsDelete.append(itemIdentifier)
+            // Consume and collect changes
+            let itemsToDelete = await signalRegistry.consumeDeletions(isWorkingSet: isWorkingSet)
+            let itemsToUpdate = await signalRegistry.consumeUpdates(isWorkingSet: isWorkingSet)
+
+            if !itemsToDelete.isEmpty {
+                observer.didDeleteItems(withIdentifiers: itemsToDelete)
             }
-            fileProviderData.shared.fileProviderSignalDeleteWorkingSetItemIdentifier.removeAll()
-        } else {
-            for (itemIdentifier, _) in fileProviderData.shared.fileProviderSignalDeleteContainerItemIdentifier {
-                itemsDelete.append(itemIdentifier)
+
+            if !itemsToUpdate.isEmpty {
+                observer.didUpdate(itemsToUpdate)
             }
-            fileProviderData.shared.fileProviderSignalDeleteContainerItemIdentifier.removeAll()
+
+            let newAnchorData = ISO8601DateFormatter().string(from: Date()).data(using: .utf8)!
+            observer.finishEnumeratingChanges(upTo: NSFileProviderSyncAnchor(newAnchorData), moreComing: false)
         }
-
-        // Report the updated items
-        if self.enumeratedItemIdentifier == .workingSet {
-            for (_, item) in fileProviderData.shared.fileProviderSignalUpdateWorkingSetItem {
-                itemsUpdate.append(item)
-            }
-            fileProviderData.shared.fileProviderSignalUpdateWorkingSetItem.removeAll()
-        } else {
-            for (_, item) in fileProviderData.shared.fileProviderSignalUpdateContainerItem {
-                itemsUpdate.append(item)
-            }
-            fileProviderData.shared.fileProviderSignalUpdateContainerItem.removeAll()
-        }
-        */
-
-        observer.didDeleteItems(withIdentifiers: itemsDelete)
-        observer.didUpdate(itemsUpdate)
-
-        let data = "\(self.anchor)".data(using: .utf8)
-        observer.finishEnumeratingChanges(upTo: NSFileProviderSyncAnchor(data!), moreComing: false)
     }
 
     func currentSyncAnchor(completionHandler: @escaping (NSFileProviderSyncAnchor?) -> Void) {
         let data = "\(self.anchor)".data(using: .utf8)
-
         completionHandler(NSFileProviderSyncAnchor(data!))
     }
 

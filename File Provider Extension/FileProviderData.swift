@@ -5,10 +5,72 @@
 import UIKit
 import NextcloudKit
 
+/// Manages signals for file provider updates and deletions in a thread-safe way using an actor.
+actor FileProviderSignalRegistry {
+
+    /// Shared singleton instance
+    static let shared = FileProviderSignalRegistry()
+
+    /// Internal storage for deleted item identifiers per container
+    private var deleteWorkingSet: Set<NSFileProviderItemIdentifier> = []
+    private var deleteContainer: Set<NSFileProviderItemIdentifier> = []
+
+    /// Internal storage for updated items per container
+    private var updateWorkingSet: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
+    private var updateContainer: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
+
+    // MARK: - Add Update/Delete Signals
+
+    /// Register a deleted item identifier
+    func registerDeletion(_ identifier: NSFileProviderItemIdentifier, isWorkingSet: Bool) {
+        if isWorkingSet {
+            deleteWorkingSet.insert(identifier)
+        } else {
+            deleteContainer.insert(identifier)
+        }
+    }
+
+    /// Register an updated item
+    func registerUpdate(_ item: FileProviderItem, isWorkingSet: Bool) {
+        if isWorkingSet {
+            updateWorkingSet[item.itemIdentifier] = item
+        } else {
+            updateContainer[item.itemIdentifier] = item
+        }
+    }
+
+    // MARK: - Consume Changes
+
+    /// Consume and clear all deleted identifiers for the current container
+    func consumeDeletions(isWorkingSet: Bool) -> [NSFileProviderItemIdentifier] {
+        if isWorkingSet {
+            let deleted = Array(deleteWorkingSet)
+            deleteWorkingSet.removeAll()
+            return deleted
+        } else {
+            let deleted = Array(deleteContainer)
+            deleteContainer.removeAll()
+            return deleted
+        }
+    }
+
+    /// Consume and clear all updated items for the current container
+    func consumeUpdates(isWorkingSet: Bool) -> [FileProviderItem] {
+        if isWorkingSet {
+            let updates = Array(updateWorkingSet.values)
+            updateWorkingSet.removeAll()
+            return updates
+        } else {
+            let updates = Array(updateContainer.values)
+            updateContainer.removeAll()
+            return updates
+        }
+    }
+}
+
 class fileProviderData: NSObject {
     static let shared = fileProviderData()
 
-    var domain: NSFileProviderDomain?
     var fileProviderManager: NSFileProviderManager = NSFileProviderManager.default
     let utilityFileSystem = NCUtilityFileSystem()
     let global = NCGlobal.shared
@@ -46,31 +108,11 @@ class fileProviderData: NSObject {
 
     func setupAccount(domain: NSFileProviderDomain?, providerExtension: NSFileProviderExtension) -> tableAccount? {
         let version = NSString(format: NCBrandOptions.shared.textCopyrightNextcloudiOS as NSString, NCUtility().getVersionApp()) as String
-        var tblAccount = self.database.getActiveTableAccount()
-        let tblAccounts = self.database.getAllTableAccount()
-
-        if let domain,
-           let fileProviderManager = NSFileProviderManager(for: domain) {
-            self.fileProviderManager = fileProviderManager
-        }
-        self.domain = domain
+        let tblAccount = self.database.getActiveTableAccount()
 
         NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCKeychain().log))
 
         nkLog(debug: "Start File Provider session " + version + " (File Provider Extension)")
-
-        if let domain {
-            for tableAccount in tblAccounts {
-                guard let urlBase = NSURL(string: tableAccount.urlBase) else { continue }
-                guard let host = urlBase.host else { continue }
-                let accountDomain = tableAccount.userId + " (" + host + ")"
-                if accountDomain == domain.identifier.rawValue {
-                    let account = "\(tableAccount.user) \(tableAccount.urlBase)"
-                    tblAccount = self.database.getTableAccount(account: account)
-                    break
-                }
-            }
-        }
 
         guard let tblAccount else {
             return nil
