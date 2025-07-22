@@ -4,6 +4,7 @@
 
 import UIKit
 import NextcloudKit
+import UniformTypeIdentifiers
 
 /// Manages signals for file provider updates and deletions in a thread-safe way using an actor.
 actor FileProviderSignalRegistry {
@@ -217,7 +218,7 @@ class fileProviderData: NSObject {
         if let ocId, !metadata.ocIdTransfer.isEmpty {
             let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer)
             let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId)
-            self.utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
+            self.utilityFileSystem.moveFile(atPath: atPath, toPath: toPath)
         }
 
         if error == .success, let ocId {
@@ -257,4 +258,19 @@ class fileProviderData: NSObject {
             await signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
         }
     }
+}
+
+class WorkingSetItem: NSObject, NSFileProviderItem {
+    var itemIdentifier: NSFileProviderItemIdentifier { .workingSet }
+    var parentItemIdentifier: NSFileProviderItemIdentifier { .rootContainer }
+    var filename: String { "Recent Items" }
+    var typeIdentifier: String { return UTType.folder.identifier }
+
+    var capabilities: NSFileProviderItemCapabilities {
+        return [.allowsContentEnumerating]
+    }
+
+    var contentModificationDate: Date? { Date() }
+    var creationDate: Date? { Date() }
+    var versionIdentifier: Data? { "1".data(using: .utf8) }
 }

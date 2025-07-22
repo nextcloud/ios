@@ -86,6 +86,10 @@ class FileProviderExtension: NSFileProviderExtension {
             return FileProviderItem(metadata: metadata, parentItemIdentifier: .workingSet)
         }
 
+        if identifier == .workingSet {
+            return WorkingSetItem()
+        }
+
         guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(identifier),
               let parentItemIdentifier = providerUtility.getParentItemIdentifier(account: metadata.account, serverUrl: metadata.serverUrl) else {
             throw NSFileProviderError(.noSuchItem)

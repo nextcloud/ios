@@ -69,11 +69,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     /// Monitoring File Transfers
     var isUploading: Bool {
-        if metadata.status == NCGlobal.shared.metadataStatusWaitUpload || metadata.status == NCGlobal.shared.metadataStatusUploading {
-            return true
-        } else {
-            return false
-        }
+        return metadata.status == NCGlobal.shared.metadataStatusUploading || metadata.status == NCGlobal.shared.metadataStatusWaitUpload
     }
     var isUploaded: Bool {
         if metadata.status == NCGlobal.shared.metadataStatusWaitUpload || metadata.status == NCGlobal.shared.metadataStatusUploading || metadata.status == NCGlobal.shared.metadataStatusUploadError {
@@ -90,11 +86,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         }
     }
     var isDownloading: Bool {
-        if metadata.status == NCGlobal.shared.metadataStatusWaitDownload || metadata.status == NCGlobal.shared.metadataStatusDownloading {
-            return true
-        } else {
-            return false
-        }
+        return metadata.status == NCGlobal.shared.metadataStatusWaitDownload || metadata.status == NCGlobal.shared.metadataStatusDownloading
     }
     var isDownloaded: Bool {
         if metadata.directory {
