@@ -201,13 +201,11 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                     if let fileNameError = FileNameValidator.checkFileName(metadata.fileName, account: session.account, capabilities: capabilities) {
                         if metadatas.count == 1 {
 
-                            let newFileName = await UIAlertController.renameFileAsync(fileName: metadata.fileName,
-                                                                                      capabilities: capabilities,
-                                                                                      account: metadata.account,
-                                                                                      presenter: self.controller)
+                            let newFileName = await UIAlertController.renameFileAsync(metadata: metadata, capabilities: capabilities, presenter: self.controller)
 
                             metadatas[index].fileName = newFileName
                             metadatas[index].fileNameView = newFileName
+                            metadatas[index].serverUrlFileName = metadatas[index].serverUrl + "/" + newFileName
 
                             await self.database.addMetadatasAsync(metadatas)
 

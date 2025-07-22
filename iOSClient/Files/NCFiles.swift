@@ -153,8 +153,7 @@ class NCFiles: NCCollectionViewCommon {
 
     @IBAction func plusButtonAction(_ sender: UIButton) {
         resetPlusButtonAlpha()
-        guard let controller,
-              let capabilities = NCNetworking.shared.capabilities[controller.account] else {
+        guard let controller else {
             return
         }
         let fileFolderPath = NCUtilityFileSystem().getFileNamePath("", serverUrl: serverUrl, session: NCSession.shared.getSession(controller: controller))
