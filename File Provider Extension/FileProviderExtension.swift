@@ -83,11 +83,7 @@ class FileProviderExtension: NSFileProviderExtension {
             guard let metadata = database.getRootContainerMetadata(accout: fileProviderData.shared.session.account) else {
                 throw NSFileProviderError(.noSuchItem)
             }
-            return FileProviderItem(metadata: metadata, parentItemIdentifier: .workingSet)
-        }
-
-        if identifier == .workingSet {
-            return WorkingSetItem()
+            return FileProviderItem(metadata: metadata, parentItemIdentifier: .rootContainer)
         }
 
         guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(identifier),
