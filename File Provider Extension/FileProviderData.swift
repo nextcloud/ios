@@ -15,10 +15,6 @@ class fileProviderData: NSObject {
     let database = NCManageDatabase.shared
 
     var listFavoriteIdentifierRank: [String: NSNumber] = [:]
-    var fileProviderSignalDeleteContainerItemIdentifier: [NSFileProviderItemIdentifier: NSFileProviderItemIdentifier] = [:]
-    var fileProviderSignalUpdateContainerItem: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
-    var fileProviderSignalDeleteWorkingSetItemIdentifier: [NSFileProviderItemIdentifier: NSFileProviderItemIdentifier] = [:]
-    var fileProviderSignalUpdateWorkingSetItem: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
     private var account: String = ""
 
     var downloadPendingCompletionHandlers: [Int: (Error?) -> Void] = [:]
@@ -102,27 +98,34 @@ class fileProviderData: NSObject {
 
     @discardableResult
     func signalEnumerator(ocId: String, type: TypeSignal) async -> FileProviderItem? {
-        guard let metadata = await self.database.getMetadataFromOcIdAsync(ocId),
-              let parentItemIdentifier = await fileProviderUtility().getParentItemIdentifierAsync(metadata: metadata) else {
+        guard let metadata = await database.getMetadataFromOcIdAsync(ocId),
+              let parentItemIdentifier = await fileProviderUtility().getParentItemIdentifierAsync(account: metadata.account, serverUrl: metadata.serverUrl) else {
             return nil
         }
+
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
 
-        if type == .delete {
-            fileProviderSignalDeleteContainerItemIdentifier[item.itemIdentifier] = item.itemIdentifier
-            fileProviderSignalDeleteWorkingSetItemIdentifier[item.itemIdentifier] = item.itemIdentifier
+        // Get reference to FileProviderManager
+        let manager = fileProviderManager
+
+        do {
+            switch type {
+            case .delete:
+                // Signal parent to remove the item
+                try await manager.signalEnumerator(for: parentItemIdentifier)
+            case .update:
+                // Signal the item itself for updates
+                try await manager.signalEnumerator(for: item.itemIdentifier)
+            case .workingSet:
+                break
+            }
+
+            // Always signal the workingSet to keep "Recents" updated
+            try await manager.signalEnumerator(for: .workingSet)
+
+        } catch {
+            print("Failed to signal enumerator for '\(type)' — \(error)")
         }
-        if type == .update {
-            fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-            fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-        }
-        if type == .workingSet {
-            fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-        }
-        if type == .delete || type == .update {
-            try? await fileProviderManager.signalEnumerator(for: parentItemIdentifier)
-        }
-        try? await fileProviderManager.signalEnumerator(for: .workingSet)
 
         return item
     }
@@ -149,7 +152,9 @@ class fileProviderData: NSObject {
         downloadPendingCompletionHandlers[taskIdentifier]?(nil)
         downloadPendingCompletionHandlers.removeValue(forKey: taskIdentifier)
 
-        await signalEnumerator(ocId: ocId, type: .update)
+        let identifier = fileProviderUtility().getItemIdentifier(ocId: metadata.ocId)
+        try? await NSFileProviderManager.default.signalEnumerator(for: identifier)
+        try? await NSFileProviderManager.default.signalEnumerator(for: .workingSet)
     }
 
     // MARK: - UPLOAD

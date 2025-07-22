@@ -1012,7 +1012,7 @@ extension NCManageDatabase {
     }
 
     /// Asynchronously retrieves the metadata for a folder, based on its session and serverUrl.
-    /// Handles the home directory case rootFileName) and detaches the Realm object before returning.
+    /// Handles the home directory case rootFileName and detaches the Realm object before returning.
     func getMetadataFolderAsync(session: NCSession.Session, serverUrl: String) async -> tableMetadata? {
         var serverUrl = serverUrl
         var fileName = ""

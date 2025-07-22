@@ -148,7 +148,11 @@ extension NCManageDatabase {
         metadata.favorite = file.favorite
         metadata.fileId = file.fileId
         metadata.fileName = file.fileName
-        metadata.fileNameView = file.fileName
+        if file.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
+            metadata.fileNameView = file.account
+        } else {
+            metadata.fileNameView = file.fileName
+        }
         metadata.hasPreview = file.hasPreview
         metadata.hidden = file.hidden
         metadata.iconName = file.iconName
@@ -254,6 +258,11 @@ extension NCManageDatabase {
             metadata.hasPreview = true
             metadata.etag = ocId
             metadata.fileName = fileName
+            if fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
+                metadata.fileNameView = session.account
+            } else {
+                metadata.fileNameView = fileName
+            }
             metadata.fileNameView = fileName
             metadata.name = name
             metadata.ocId = ocId

@@ -22,17 +22,21 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         self.enumeratedItemIdentifier = enumeratedItemIdentifier
         super.init()
 
-        Task {
-            if enumeratedItemIdentifier == .rootContainer {
-                serverUrl = NCUtilityFileSystem().getHomeServer(session: fileProviderData.shared.session)
-            } else {
-                if let metadata = await providerUtility.getTableMetadataFromItemIdentifierAsync(enumeratedItemIdentifier),
-                   let directorySource = await self.database.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
-                    if directorySource.serverUrl == NCUtilityFileSystem().getHomeServer(session: fileProviderData.shared.session) {
-                        serverUrl = directorySource.serverUrl
-                    } else {
-                        serverUrl = directorySource.serverUrl + "/" + metadata.fileName
-                    }
+        let session = fileProviderData.shared.session
+        let homeServer = NCUtilityFileSystem().getHomeServer(session: session)
+
+        if enumeratedItemIdentifier == .rootContainer {
+            serverUrl = homeServer
+        } else {
+            if let metadata = providerUtility.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier),
+                let directorySource = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
+
+                // If the directory is the root, reuse the home server
+                if directorySource.serverUrl == homeServer {
+                    serverUrl = homeServer
+                } else {
+                    // Otherwise, build path by appending the item's name
+                    serverUrl = directorySource.serverUrl + "/" + metadata.fileName
                 }
             }
         }
@@ -69,7 +73,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
                 // Create items
                 for (_, metadata) in itemIdentifierMetadata {
-                    if let parentItemIdentifier = await providerUtility.getParentItemIdentifierAsync(metadata: metadata) {
+                    if let parentItemIdentifier = await providerUtility.getParentItemIdentifierAsync(account: metadata.account, serverUrl: metadata.serverUrl) {
                         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
                         items.append(item)
                     }
@@ -97,7 +101,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                         if metadata.e2eEncrypted || (!metadata.session.isEmpty && metadata.session != NCNetworking.shared.sessionUploadBackgroundExt) {
                             continue
                         }
-                        if let parentItemIdentifier = await self.providerUtility.getParentItemIdentifierAsync(metadata: metadata) {
+                        if let parentItemIdentifier = await self.providerUtility.getParentItemIdentifierAsync(account: metadata.account, serverUrl: metadata.serverUrl) {
                             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
                             items.append(item)
                         }
@@ -123,6 +127,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         var itemsDelete: [NSFileProviderItemIdentifier] = []
         var itemsUpdate: [FileProviderItem] = []
 
+        /*
         // Report the deleted items
         if self.enumeratedItemIdentifier == .workingSet {
             for (itemIdentifier, _) in fileProviderData.shared.fileProviderSignalDeleteWorkingSetItemIdentifier {
@@ -148,6 +153,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
             fileProviderData.shared.fileProviderSignalUpdateContainerItem.removeAll()
         }
+        */
 
         observer.didDeleteItems(withIdentifiers: itemsDelete)
         observer.didUpdate(itemsUpdate)
