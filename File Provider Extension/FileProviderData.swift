@@ -228,17 +228,17 @@ class fileProviderData: NSObject {
         }
 
         if error == .success, let ocId {
-            await signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
-
             if !metadata.ocIdTransfer.isEmpty, ocId != metadata.ocIdTransfer {
                 await self.database.deleteMetadataOcIdAsync(metadata.ocIdTransfer)
             }
+            await signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
 
             metadata.fileName = fileName
             metadata.serverUrl = serverUrl
             metadata.uploadDate = (date as? NSDate) ?? NSDate()
             metadata.etag = etag ?? ""
             metadata.ocId = ocId
+            metadata.ocIdTransfer = ocId
             metadata.size = size
             if let fileId = NCUtility().ocIdToFileId(ocId: ocId) {
                 metadata.fileId = fileId
