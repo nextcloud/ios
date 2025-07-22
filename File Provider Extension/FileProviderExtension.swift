@@ -83,6 +83,7 @@ class FileProviderExtension: NSFileProviderExtension {
             guard let metadata = database.getRootContainerMetadata(accout: fileProviderData.shared.session.account) else {
                 throw NSFileProviderError(.noSuchItem)
             }
+            _ = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId)
             return FileProviderItem(metadata: metadata, parentItemIdentifier: .rootContainer)
         }
 
@@ -99,10 +100,24 @@ class FileProviderExtension: NSFileProviderExtension {
         guard let item = try? item(for: identifier) else {
             return nil
         }
-        var url = fileProviderData.shared.fileProviderManager.documentStorageURL.appendingPathComponent(identifier.rawValue, isDirectory: true)
 
-        let isDir = (item as? FileProviderItem)?.metadata.directory ?? false
-        url = url.appendingPathComponent(item.filename, isDirectory: isDir)
+        let baseURL = fileProviderData.shared.fileProviderManager.documentStorageURL
+
+        var url: URL
+
+        if identifier == .rootContainer {
+            // Usa il vero ocId della root dal database
+            guard let metadata = database.getRootContainerMetadata(accout: fileProviderData.shared.session.account) else {
+                return nil
+            }
+            url = baseURL.appendingPathComponent(metadata.ocId, isDirectory: true)
+            url = url.appendingPathComponent(item.filename, isDirectory: true)
+        } else {
+            // Identificatore normale
+            url = baseURL.appendingPathComponent(identifier.rawValue, isDirectory: true)
+            let isDir = (item as? FileProviderItem)?.metadata.directory ?? false
+            url = url.appendingPathComponent(item.filename, isDirectory: isDir)
+        }
 
         return url
     }

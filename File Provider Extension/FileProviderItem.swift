@@ -18,7 +18,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         return fileProviderUtility().getItemIdentifier(metadata: metadata)
     }
     var filename: String {
-        return metadata.fileNameView
+        return metadata.fileName
     }
     var typeIdentifier: String {
         return metadata.typeIdentifier
