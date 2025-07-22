@@ -237,10 +237,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             } else if isShare {
                 cell.filePreviewImageView?.image = imageCache.getFolderSharedWithMe(account: metadata.account)
             } else if !metadata.shareType.isEmpty {
-                metadata.shareType.contains(3) ?
+                metadata.shareType.contains(NCShareCommon.shareTypeLink) ?
                 (cell.filePreviewImageView?.image = imageCache.getFolderPublic(account: metadata.account)) :
                 (cell.filePreviewImageView?.image = imageCache.getFolderSharedWithMe(account: metadata.account))
-            } else if !metadata.shareType.isEmpty && metadata.shareType.contains(3) {
+            } else if !metadata.shareType.isEmpty && metadata.shareType.contains(NCShareCommon.shareTypeLink) {
                 cell.filePreviewImageView?.image = imageCache.getFolderPublic(account: metadata.account)
             } else if metadata.mountType == "group" {
                 cell.filePreviewImageView?.image = imageCache.getFolderGroup(account: metadata.account)
@@ -341,7 +341,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         if isShare {
             cell.fileSharedImage?.image = imageCache.getImageShared()
         } else if !metadata.shareType.isEmpty {
-            metadata.shareType.contains(3) ?
+            metadata.shareType.contains(NCShareCommon.shareTypeLink) ?
             (cell.fileSharedImage?.image = imageCache.getImageShareByLink()) :
             (cell.fileSharedImage?.image = imageCache.getImageShared())
         } else {
