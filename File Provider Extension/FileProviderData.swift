@@ -100,6 +100,7 @@ class fileProviderData: NSObject {
     }
 
     enum TypeSignal: String {
+        case add
         case delete
         case update
         case workingSet
@@ -153,6 +154,11 @@ class fileProviderData: NSObject {
 
         do {
             switch type {
+            case .add:
+                // Signal parent to remove the item
+                try await manager.signalEnumerator(for: parentItemIdentifier)
+                // Signal the item itself for updates
+                try await manager.signalEnumerator(for: item.itemIdentifier)
             case .delete:
                 // Signal parent to remove the item
                 try await manager.signalEnumerator(for: parentItemIdentifier)
@@ -249,7 +255,7 @@ class fileProviderData: NSObject {
             await self.database.addMetadataAsync(metadata)
             await self.database.addLocalFileAsync(metadata: metadata)
 
-            await fileProviderData.shared.signalEnumerator(ocId: ocId, type: .update)
+            await fileProviderData.shared.signalEnumerator(ocId: ocId, type: .add)
 
         } else {
 
