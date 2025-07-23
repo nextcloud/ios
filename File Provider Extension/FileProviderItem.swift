@@ -83,17 +83,17 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         }
     }
     var isDownloading: Bool {
-        return metadata.status == NCGlobal.shared.metadataStatusWaitDownload || metadata.status == NCGlobal.shared.metadataStatusDownloading
-    }
-    var isDownloaded: Bool {
-        if metadata.directory {
+        if metadata.status == NCGlobal.shared.metadataStatusWaitDownload || metadata.status == NCGlobal.shared.metadataStatusDownloading {
             return true
         } else {
-            if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
-                return true
-            } else {
-                return false
-            }
+            return false
+        }
+    }
+    var isDownloaded: Bool {
+        if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
+            return true
+        } else {
+            return false
         }
     }
     var downloadingError: Error? {
