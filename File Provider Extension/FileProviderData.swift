@@ -290,7 +290,7 @@ class fileProviderData: NSObject {
                 metadata.status = NCGlobal.shared.metadataStatusNormal
 
                 NCManageDatabase.shared.addMetadata(metadata)
-                NCManageDatabase.shared.addLocalFile(metadata: metadata)
+                NCManageDatabase.shared.addLocalFile(account: metadata.account, etag: metadata.etag, ocId: metadata.ocId, fileName: metadata.fileName)
 
                 /// SIGNAL
                 fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
