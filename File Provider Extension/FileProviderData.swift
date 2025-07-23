@@ -81,8 +81,9 @@ class fileProviderData: NSObject {
     var fileProviderSignalUpdateContainerItem: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
     var fileProviderSignalDeleteWorkingSetItemIdentifier: [NSFileProviderItemIdentifier: NSFileProviderItemIdentifier] = [:]
     var fileProviderSignalUpdateWorkingSetItem: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
-    
+
     var listFavoriteIdentifierRank: [String: NSNumber] = [:]
+
     private var account: String = ""
 
     var downloadPendingCompletionHandlers: [Int: (Error?) -> Void] = [:]
@@ -154,45 +155,6 @@ class fileProviderData: NSObject {
     // MARK: -
 
     @discardableResult
-    func signalEnumerator(ocId: String, type: TypeSignal) async -> FileProviderItem? {
-        guard let metadata = await database.getMetadataFromOcIdAsync(ocId),
-              let parentItemIdentifier = await fileProviderUtility().getParentItemIdentifierAsync(account: metadata.account, serverUrl: metadata.serverUrl) else {
-            return nil
-        }
-
-        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-
-        // Get reference to FileProviderManager
-        let manager = fileProviderManager
-
-        do {
-            switch type {
-            case .add:
-                // Signal parent to remove the item
-                try await manager.signalEnumerator(for: parentItemIdentifier)
-                // Signal the item itself for updates
-                try await manager.signalEnumerator(for: item.itemIdentifier)
-            case .delete:
-                // Signal parent to remove the item
-                try await manager.signalEnumerator(for: parentItemIdentifier)
-            case .update:
-                // Signal the item itself for updates
-                try await manager.signalEnumerator(for: item.itemIdentifier)
-            case .workingSet:
-                break
-            }
-
-            // Always signal the workingSet to keep "Recents" updated
-            try await manager.signalEnumerator(for: .workingSet)
-
-        } catch {
-            print("Failed to signal enumerator for '\(type)' — \(error)")
-        }
-
-        return item
-    }
-
-    @discardableResult
     func signalEnumerator(ocId: String, type: TypeSignal) -> FileProviderItem? {
         guard let metadata = self.database.getMetadataFromOcId(ocId),
               let parentItemIdentifier = fileProviderUtility().getParentItemIdentifier(metadata: metadata) else {
@@ -254,51 +216,53 @@ class fileProviderData: NSObject {
                         date: Date?,
                         size: Int64,
                         task: URLSessionTask,
-                        error: NKError) {
+                        error: NKError) async {
         guard let url = task.currentRequest?.url,
-              let metadata = NCManageDatabase.shared.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) else { return }
+              let metadata = await self.database.getMetadataAsync(from: url, sessionTaskIdentifier: task.taskIdentifier) else {
+            return
+        }
 
         if let ocId, !metadata.ocIdTransfer.isEmpty {
             let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer)
             let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId)
-            self.utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
+            self.utilityFileSystem.moveFile(atPath: atPath, toPath: toPath)
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            if error == .success, let ocId {
-                /// SIGNAL
-                fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
-                if !metadata.ocIdTransfer.isEmpty, ocId != metadata.ocIdTransfer {
-                    NCManageDatabase.shared.deleteMetadataOcId(metadata.ocIdTransfer)
-                }
-                metadata.fileName = fileName
-                metadata.serverUrl = serverUrl
-                metadata.uploadDate = (date as? NSDate) ?? NSDate()
-                metadata.etag = etag ?? ""
-                metadata.ocId = ocId
-                metadata.size = size
-                if let fileId = NCUtility().ocIdToFileId(ocId: ocId) {
-                    metadata.fileId = fileId
-                }
-
-                metadata.sceneIdentifier = nil
-                metadata.session = ""
-                metadata.sessionError = ""
-                metadata.sessionSelector = ""
-                metadata.sessionDate = nil
-                metadata.sessionTaskIdentifier = 0
-                metadata.status = NCGlobal.shared.metadataStatusNormal
-
-                NCManageDatabase.shared.addMetadata(metadata)
-                NCManageDatabase.shared.addLocalFile(account: metadata.account, etag: metadata.etag, ocId: metadata.ocId, fileName: metadata.fileName)
-
-                /// SIGNAL
-                fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
-            } else {
-                NCManageDatabase.shared.deleteMetadataOcId(metadata.ocIdTransfer)
-                /// SIGNAL
-                fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
+        if error == .success, let ocId {
+            fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
+            if !metadata.ocIdTransfer.isEmpty, ocId != metadata.ocIdTransfer {
+                await self.database.deleteMetadataOcIdAsync(metadata.ocIdTransfer)
             }
+
+            metadata.fileName = fileName
+            metadata.serverUrl = serverUrl
+            metadata.uploadDate = (date as? NSDate) ?? NSDate()
+            metadata.etag = etag ?? ""
+            metadata.ocId = ocId
+            metadata.ocIdTransfer = ocId
+            metadata.size = size
+            if let fileId = NCUtility().ocIdToFileId(ocId: ocId) {
+                metadata.fileId = fileId
+            }
+
+            metadata.sceneIdentifier = nil
+            metadata.session = ""
+            metadata.sessionError = ""
+            metadata.sessionSelector = ""
+            metadata.sessionDate = nil
+            metadata.sessionTaskIdentifier = 0
+            metadata.status = NCGlobal.shared.metadataStatusNormal
+
+            await self.database.addMetadataAsync(metadata)
+            await self.database.addLocalFileAsync(metadata: metadata)
+
+            fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
+
+        } else {
+
+            await self.database.deleteMetadataOcIdAsync(metadata.ocIdTransfer)
+
+            fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
         }
     }
 }

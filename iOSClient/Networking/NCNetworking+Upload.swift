@@ -297,24 +297,23 @@ extension NCNetworking {
                         size: Int64,
                         task: URLSessionTask,
                         error: NKError) {
-
-        #if EXTENSION_FILE_PROVIDER_EXTENSION
-        fileProviderData.shared.uploadComplete(fileName: fileName,
-                                               serverUrl: serverUrl,
-                                               ocId: ocId,
-                                               etag: etag,
-                                               date: date,
-                                               size: size,
-                                               task: task,
-                                               error: error)
-        #else
         Task {
+            #if EXTENSION_FILE_PROVIDER_EXTENSION
+            await fileProviderData.shared.uploadComplete(fileName: fileName,
+                                                         serverUrl: serverUrl,
+                                                         ocId: ocId,
+                                                         etag: etag,
+                                                         date: date,
+                                                         size: size,
+                                                         task: task,
+                                                         error: error)
+            #else
             if let url = task.currentRequest?.url,
                let metadata = await self.database.getMetadataAsync(from: url, sessionTaskIdentifier: task.taskIdentifier) {
                 await uploadComplete(withMetadata: metadata, ocId: ocId, etag: etag, date: date, size: size, error: error)
             }
+            #endif
         }
-        #endif
     }
 
     func uploadComplete(withMetadata metadata: tableMetadata,
