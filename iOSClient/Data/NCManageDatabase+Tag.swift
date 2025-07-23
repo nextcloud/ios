@@ -42,6 +42,14 @@ extension NCManageDatabase {
         }
     }
 
+    func getTags(predicate: NSPredicate) -> [tableTag]? {
+        performRealmRead { realm in
+            let results = realm.objects(tableTag.self)
+                .filter(predicate)
+            return results.compactMap { tableTag(value: $0) }
+        }
+    }
+
     /// Asynchronously fetch a single tableTag object matching a predicate.
     func getTagAsync(predicate: NSPredicate) async -> tableTag? {
         await performRealmReadAsync { realm in
