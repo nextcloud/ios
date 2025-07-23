@@ -1,6 +1,6 @@
-//
-//  Use this file to import your target's public headers that you would like to expose to Swift.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2025 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #import "NCEndToEndEncryption.h"
 #import "NYMnemonic.h"
