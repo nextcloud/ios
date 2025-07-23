@@ -12,13 +12,10 @@ class FileProviderItem: NSObject, NSFileProviderItem {
 
     /// Providing Required Properties
     var itemIdentifier: NSFileProviderItemIdentifier {
-        if metadata.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
-            return .rootContainer
-        }
         return fileProviderUtility().getItemIdentifier(metadata: metadata)
     }
     var filename: String {
-        return metadata.fileName
+        return metadata.fileNameView
     }
     var typeIdentifier: String {
         return metadata.typeIdentifier
