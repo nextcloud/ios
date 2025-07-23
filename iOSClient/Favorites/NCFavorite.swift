@@ -95,7 +95,7 @@ class NCFavorite: NCCollectionViewCommon {
         }
 
         if resultsListingFavorites.error == .success, let files = resultsListingFavorites.files {
-            let (_, metadatas) = await self.database.convertFilesToMetadatasAsync(files, useFirstAsMetadataFolder: false)
+            let (_, metadatas) = await self.database.convertFilesToMetadatasAsync(files)
             await self.database.updateMetadatasFavoriteAsync(account: session.account, metadatas: metadatas)
             await self.reloadDataSource()
         }

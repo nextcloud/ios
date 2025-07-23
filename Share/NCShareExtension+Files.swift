@@ -12,7 +12,7 @@ extension NCShareExtension {
     func reloadData() async {
         let session = self.extensionData.getSession()
         let layoutForView = await NCManageDatabase.shared.getLayoutForViewAsync(account: session.account, key: keyLayout, serverUrl: serverUrl)
-        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", session.account, serverUrl)
+        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName != %@ AND directory == true", session.account, serverUrl, NextcloudKit.shared.nkCommonInstance.rootFileName)
         let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
                                                               withLayout: layoutForView,
                                                               withAccount: session.account)
