@@ -40,7 +40,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         if enumeratedItemIdentifier == .workingSet {
             var itemIdentifierMetadata: [NSFileProviderItemIdentifier: tableMetadata] = [:]
             /// Tags
-            let tags = self.database.getTags(predicate: NSPredicate(format: "account == %@", fileProviderData.shared.session.account))
+            let tags = self.database.getTags(predicate: NSPredicate(format: "account == %@", fileProviderData.shared.session.account)) ?? []
             for tag in tags {
                 guard let metadata = self.database.getMetadataFromOcId(tag.ocId)  else { continue }
                 itemIdentifierMetadata[providerUtility.getItemIdentifier(metadata: metadata)] = metadata
