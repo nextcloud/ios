@@ -433,6 +433,15 @@ extension NCManageDatabase {
         }
     }
 
+    func deleteMetadata(predicate: NSPredicate) {
+        performRealmWrite { realm in
+            let result = realm.objects(tableMetadata.self)
+                .filter(predicate)
+            realm.delete(result)
+        }
+    }
+
+
     func deleteMetadataOcId(_ ocId: String?, sync: Bool = true) {
         guard let ocId else { return }
 
@@ -1011,6 +1020,19 @@ extension NCManageDatabase {
         }
     }
 
+    func getMetadataFromOcIdAndocIdTransfer(_ ocId: String?) -> tableMetadata? {
+        guard let ocId else {
+            return nil
+        }
+
+        return performRealmRead { realm in
+            realm.objects(tableMetadata.self)
+                .filter("ocId == %@ OR ocIdTransfer == %@", ocId, ocId)
+                .first
+                .map { $0.detachedCopy() }
+        }
+    }
+
     /// Asynchronously retrieves the metadata for a folder, based on its session and serverUrl.
     /// Handles the home directory case rootFileName and detaches the Realm object before returning.
     func getMetadataFolderAsync(session: NCSession.Session, serverUrl: String) async -> tableMetadata? {
@@ -1153,6 +1175,25 @@ extension NCManageDatabase {
 
     func getTableMetadatasDirectoryFavoriteIdentifierRankAsync(account: String) async -> [String: NSNumber] {
         let result = await performRealmReadAsync { realm in
+            var listIdentifierRank: [String: NSNumber] = [:]
+            var counter = Int64(10)
+
+            let results = realm.objects(tableMetadata.self)
+                .filter("account == %@ AND directory == true AND favorite == true", account)
+                .sorted(byKeyPath: "fileNameView", ascending: true)
+
+            results.forEach { item in
+                counter += 1
+                listIdentifierRank[item.ocId] = NSNumber(value: counter)
+            }
+
+            return listIdentifierRank
+        }
+        return result ?? [:]
+    }
+
+    func getTableMetadatasDirectoryFavoriteIdentifierRank(account: String) -> [String: NSNumber] {
+        let result = performRealmRead { realm in
             var listIdentifierRank: [String: NSNumber] = [:]
             var counter = Int64(10)
 
