@@ -171,7 +171,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
             if error == .success, let files {
                 if pageNumber == 0 {
-                    self.database.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.session.account, serverUrl))
+                    self.database.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d AND fileName != %@", fileProviderData.shared.session.account, serverUrl, NCGlobal.shared.metadataStatusNormal, NextcloudKit.shared.nkCommonInstance.rootFileName))
                     serverUrlMetadataFolder = serverUrl
                 }
                 self.database.convertFilesToMetadatas(files, serverUrlMetadataFolder: serverUrlMetadataFolder) { metadataFolder, metadatas in
