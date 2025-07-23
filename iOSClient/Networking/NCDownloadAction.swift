@@ -458,7 +458,8 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
 
         for (index, items) in UIPasteboard.general.items.enumerated() {
             for item in items {
-                let results = await NKFilePropertyResolver().resolve(inUTI: item.key, account: account)
+                let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
+                let results = NKFilePropertyResolver().resolve(inUTI: item.key, capabilities: capabilities)
                 guard let data = UIPasteboard.general.data(forPasteboardType: item.key, inItemSet: IndexSet([index]))?.first else {
                     continue
                 }

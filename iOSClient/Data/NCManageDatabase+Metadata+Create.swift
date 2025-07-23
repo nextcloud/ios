@@ -46,7 +46,6 @@ extension NCManageDatabase {
         }
         #endif
 
-
         if !metadata.directory {
             let results = NKTypeIdentifiersHelper.shared.getInternalType(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory, capabilities: capabilities ?? NKCapabilities.Capabilities())
 

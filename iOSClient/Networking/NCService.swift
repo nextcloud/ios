@@ -124,8 +124,7 @@ class NCService: NSObject {
     private func requestServerCapabilities(account: String, controller: NCMainTabBarController?) async {
         let resultsCapabilities = await NextcloudKit.shared.getCapabilitiesAsync(account: account)
         guard resultsCapabilities.error == .success,
-              let data = resultsCapabilities.responseData?.data,
-              let capabiresultsCapabilitieslities = resultsCapabilities.capabilities else {
+              let data = resultsCapabilities.responseData?.data else {
             return
         }
 
