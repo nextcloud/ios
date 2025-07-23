@@ -80,77 +80,52 @@ class FileProviderExtension: NSFileProviderExtension {
 
     override func item(for identifier: NSFileProviderItemIdentifier) throws -> NSFileProviderItem {
         if identifier == .rootContainer {
-            guard let metadata = database.getRootContainerMetadata(accout: fileProviderData.shared.session.account) else {
+            let metadata = tableMetadata()
+            metadata.account = fileProviderData.shared.session.account
+            metadata.directory = true
+            metadata.ocId = NSFileProviderItemIdentifier.rootContainer.rawValue
+            metadata.fileName = "root"
+            metadata.fileNameView = "root"
+            metadata.serverUrl = utilityFileSystem.getHomeServer(session: fileProviderData.shared.session)
+            metadata.classFile = NKTypeClassFile.directory.rawValue
+            return FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue))
+        } else {
+            guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(identifier),
+                  let parentItemIdentifier = providerUtility.getParentItemIdentifier(metadata: metadata) else {
                 throw NSFileProviderError(.noSuchItem)
             }
-            _ = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId)
-            return FileProviderItem(metadata: metadata, parentItemIdentifier: .rootContainer)
+            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+            return item
         }
-
-        guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(identifier),
-              let parentItemIdentifier = providerUtility.getParentItemIdentifier(account: metadata.account, serverUrl: metadata.serverUrl) else {
-            throw NSFileProviderError(.noSuchItem)
-        }
-        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-
-        return item
     }
 
     override func urlForItem(withPersistentIdentifier identifier: NSFileProviderItemIdentifier) -> URL? {
-        guard let item = try? item(for: identifier) else {
-            return nil
-        }
-
-        let baseURL = fileProviderData.shared.fileProviderManager.documentStorageURL
-
-        var url: URL
-
-        if identifier == .rootContainer {
-            // Usa il vero ocId della root dal database
-            guard let metadata = database.getRootContainerMetadata(accout: fileProviderData.shared.session.account) else {
-                return nil
-            }
-            url = baseURL.appendingPathComponent(metadata.ocId, isDirectory: true)
-            url = url.appendingPathComponent(item.filename, isDirectory: true)
-        } else {
-            // Identificatore normale
-            url = baseURL.appendingPathComponent(identifier.rawValue, isDirectory: true)
-            let isDir = (item as? FileProviderItem)?.metadata.directory ?? false
-            url = url.appendingPathComponent(item.filename, isDirectory: isDir)
-        }
-
+        guard let item = try? item(for: identifier) else { return nil }
+        var url = fileProviderData.shared.fileProviderManager.documentStorageURL.appendingPathComponent(identifier.rawValue, isDirectory: true)
+        // (fix copy/paste directory -> isDirectory = false)
+        url = url.appendingPathComponent(item.filename, isDirectory: false)
         return url
     }
 
     override func persistentIdentifierForItem(at url: URL) -> NSFileProviderItemIdentifier? {
         let pathComponents = url.pathComponents
-
-        // Expect path format: <documentStorage>/<item identifier>/<file name>
-        // e.g., /private/var/mobile/Containers/.../Documents/ABC123/photo.jpg
-        guard pathComponents.count > 2 else {
-            assertionFailure("Unexpected URL format. Cannot extract item identifier.")
-            return nil
-        }
-        // Extract the identifier from the second-to-last component
+        // exploit the fact that the path structure has been defined as
+        // <base storage directory>/<item identifier>/<item file name> above
+        assert(pathComponents.count > 2)
         let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
-
         return itemIdentifier
     }
 
     override func providePlaceholder(at url: URL, completionHandler: @escaping (Error?) -> Void) {
-        // Resolve the persistent identifier from the file URL
         guard let identifier = persistentIdentifierForItem(at: url) else {
             return completionHandler(NSFileProviderError(.noSuchItem))
         }
-
         do {
             let fileProviderItem = try item(for: identifier)
             let placeholderURL = NSFileProviderManager.placeholderURL(for: url)
             try NSFileProviderManager.writePlaceholder(at: placeholderURL, withMetadata: fileProviderItem)
-
             completionHandler(nil)
         } catch {
-            // Pass any thrown error to the completion handler
             completionHandler(error)
         }
     }
