@@ -6,69 +6,6 @@ import UIKit
 import NextcloudKit
 import UniformTypeIdentifiers
 
-/// Manages signals for file provider updates and deletions in a thread-safe way using an actor.
-actor FileProviderSignalRegistry {
-
-    /// Shared singleton instance
-    static let shared = FileProviderSignalRegistry()
-
-    /// Internal storage for deleted item identifiers per container
-    private var deleteWorkingSet: Set<NSFileProviderItemIdentifier> = []
-    private var deleteContainer: Set<NSFileProviderItemIdentifier> = []
-
-    /// Internal storage for updated items per container
-    private var updateWorkingSet: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
-    private var updateContainer: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
-
-    // MARK: - Add Update/Delete Signals
-
-    /// Register a deleted item identifier
-    func registerDeletion(_ identifier: NSFileProviderItemIdentifier, isWorkingSet: Bool) {
-        if isWorkingSet {
-            deleteWorkingSet.insert(identifier)
-        } else {
-            deleteContainer.insert(identifier)
-        }
-    }
-
-    /// Register an updated item
-    func registerUpdate(_ item: FileProviderItem, isWorkingSet: Bool) {
-        if isWorkingSet {
-            updateWorkingSet[item.itemIdentifier] = item
-        } else {
-            updateContainer[item.itemIdentifier] = item
-        }
-    }
-
-    // MARK: - Consume Changes
-
-    /// Consume and clear all deleted identifiers for the current container
-    func consumeDeletions(isWorkingSet: Bool) -> [NSFileProviderItemIdentifier] {
-        if isWorkingSet {
-            let deleted = Array(deleteWorkingSet)
-            deleteWorkingSet.removeAll()
-            return deleted
-        } else {
-            let deleted = Array(deleteContainer)
-            deleteContainer.removeAll()
-            return deleted
-        }
-    }
-
-    /// Consume and clear all updated items for the current container
-    func consumeUpdates(isWorkingSet: Bool) -> [FileProviderItem] {
-        if isWorkingSet {
-            let updates = Array(updateWorkingSet.values)
-            updateWorkingSet.removeAll()
-            return updates
-        } else {
-            let updates = Array(updateContainer.values)
-            updateContainer.removeAll()
-            return updates
-        }
-    }
-}
-
 class fileProviderData: NSObject {
     static let shared = fileProviderData()
 
@@ -118,7 +55,6 @@ class fileProviderData: NSObject {
         var task: URLSessionUploadTask?
     }
     var uploadMetadata: [UploadMetadata] = []
-
 
     // MARK: - 
 
