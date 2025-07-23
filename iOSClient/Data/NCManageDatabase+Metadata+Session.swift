@@ -96,6 +96,77 @@ extension NCManageDatabase {
         }
     }
 
+    func setMetadataSession(ocId: String,
+                            newFileName: String? = nil,
+                            session: String? = nil,
+                            sessionTaskIdentifier: Int? = nil,
+                            sessionError: String? = nil,
+                            selector: String? = nil,
+                            status: Int? = nil,
+                            etag: String? = nil,
+                            errorCode: Int? = nil) -> tableMetadata? {
+        performRealmWrite { realm in
+            guard let metadata = realm.objects(tableMetadata.self)
+                .filter("ocId == %@", ocId)
+                .first else {
+                    return
+            }
+
+            if let name = newFileName {
+                metadata.fileName = name
+                metadata.fileNameView = name
+            }
+
+            if let session {
+                metadata.session = session
+            }
+
+            if let sessionTaskIdentifier {
+                metadata.sessionTaskIdentifier = sessionTaskIdentifier
+            }
+
+            if let sessionError {
+                metadata.sessionError = sessionError
+                if sessionError.isEmpty {
+                    metadata.errorCode = 0
+                }
+            }
+
+            if let selector {
+                metadata.sessionSelector = selector
+            }
+
+            if let status {
+                metadata.status = status
+                switch status {
+                case NCGlobal.shared.metadataStatusWaitDownload,
+                     NCGlobal.shared.metadataStatusWaitUpload:
+                    metadata.sessionDate = Date()
+                case NCGlobal.shared.metadataStatusNormal:
+                    metadata.sessionDate = nil
+                default: break
+                }
+            }
+
+            if let etag {
+                metadata.etag = etag
+            }
+
+            if let errorCode {
+                metadata.errorCode = errorCode
+            }
+
+            realm.add(metadata, update: .all)
+        }
+
+        return performRealmRead { realm in
+            realm.objects(tableMetadata.self)
+                .filter("ocId == %@", ocId)
+                .first?
+                .detachedCopy()
+        }
+    }
+
     /// Asynchronously sets a metadata record into "wait download" state.
     /// - Parameters:
     ///   - ocId: The object ID of the metadata.
@@ -183,6 +254,30 @@ extension NCManageDatabase {
                                     sessionTaskIdentifier)
 
         return await performRealmReadAsync { realm in
+            realm.objects(tableMetadata.self)
+                .filter(predicate)
+                .first
+                .map { $0.detachedCopy() }
+        }
+    }
+
+    func getMetadata(from url: URL?, sessionTaskIdentifier: Int) -> tableMetadata? {
+        guard let url,
+              var serverUrl = url.deletingLastPathComponent().absoluteString.removingPercentEncoding
+        else {
+            return nil
+        }
+        let fileName = url.lastPathComponent
+
+        if serverUrl.hasSuffix("/") {
+            serverUrl = String(serverUrl.dropLast())
+        }
+        let predicate = NSPredicate(format: "serverUrl == %@ AND fileName == %@ AND sessionTaskIdentifier == %d",
+                                    serverUrl,
+                                    fileName,
+                                    sessionTaskIdentifier)
+
+        return performRealmRead { realm in
             realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .first
