@@ -23,22 +23,16 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         self.enumeratedItemIdentifier = enumeratedItemIdentifier
         super.init()
 
-        Task {
-            guard let session = fileProviderData.session else {
-                return
-            }
+        guard let session = fileProviderData.session else {
+            return
+        }
 
-            if enumeratedItemIdentifier == .rootContainer {
-                self.serverUrl = NCUtilityFileSystem().getHomeServer(session: session)
-            } else {
-                if let metadata = await providerUtility.getTableMetadataFromItemIdentifierAsync(enumeratedItemIdentifier),
-                   let directorySource = await self.database.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
-                    if directorySource.serverUrl == NCUtilityFileSystem().getHomeServer(session: session) {
-                        serverUrl = directorySource.serverUrl
-                    } else {
-                        serverUrl = directorySource.serverUrl + "/" + metadata.fileName
-                    }
-                }
+        if enumeratedItemIdentifier == .rootContainer {
+            self.serverUrl = NCUtilityFileSystem().getHomeServer(session: session)
+        } else {
+            if let metadata = providerUtility.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier),
+               let directorySource = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
+                serverUrl = directorySource.serverUrl + "/" + metadata.fileName
             }
         }
     }

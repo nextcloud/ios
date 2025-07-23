@@ -13,9 +13,9 @@ import Alamofire
    -----------------------------------------------------------------------------------------------------------------------------------------------
  
  
-    itemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue            --> root
-    parentItemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue      --> .workingSet
- 
+    itemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue            --> _ROOT_
+    parentItemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue      --> _ROOT_
+
                                     ↓
  
     itemIdentifier = metadata.ocId (ex. 00ABC1)                                     --> func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier
@@ -48,52 +48,38 @@ final class FileProviderExtension: NSFileProviderExtension {
     // MARK: - Enumeration
 
     override func enumerator(for containerItemIdentifier: NSFileProviderItemIdentifier) throws -> NSFileProviderEnumerator {
-        var maybeEnumerator: NSFileProviderEnumerator?
-
-        if containerItemIdentifier != NSFileProviderItemIdentifier.workingSet {
-            if fileProviderData.setupAccount(domain: self.domain, providerExtension: self) == nil {
+        // Skip authentication checks for the working set container
+        if containerItemIdentifier != .workingSet {
+            // Ensure a valid account is configured for the extension
+            guard fileProviderData.setupAccount(domain: self.domain, providerExtension: self) != nil else {
                 throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo: [:])
-            } else if NCKeychain().passcode != nil, NCKeychain().requestPasscodeAtStart {
+            }
+
+            // Check if passcode protection is enabled and required
+            if NCKeychain().passcode != nil, NCKeychain().requestPasscodeAtStart {
                 throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo: ["code": NSNumber(value: NCGlobal.shared.errorUnauthorizedFilesPasscode)])
-            } else if NCKeychain().disableFilesApp || NCBrandOptions.shared.disable_openin_file {
+            }
+
+            // Check if Files app access is disabled by branding options
+            if NCKeychain().disableFilesApp || NCBrandOptions.shared.disable_openin_file {
                 throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo: ["code": NSNumber(value: NCGlobal.shared.errorDisableFilesApp)])
             }
         }
 
-        if containerItemIdentifier == NSFileProviderItemIdentifier.rootContainer {
-            maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier)
-        } else if containerItemIdentifier == NSFileProviderItemIdentifier.workingSet {
-            maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier)
-        } else {
-            // determine if the item is a directory or a file
-            // - for a directory, instantiate an enumerator of its subitems
-            // - for a file, instantiate an enumerator that observes changes to the file
-            let item = try self.item(for: containerItemIdentifier)
-            if item.contentType == UTType.folder {
-                maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier)
-            } else {
-                maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier)
-            }
-        }
-
-        guard let enumerator = maybeEnumerator else {
-            throw NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError, userInfo: [:])
-        }
-
-        return enumerator
+        // Return the enumerator for the requested container
+        return FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier)
     }
 
     // MARK: - Item
 
     override func item(for identifier: NSFileProviderItemIdentifier) throws -> NSFileProviderItem {
-        if identifier == .rootContainer {
-            guard let account = fileProviderData.session?.account,
-                  let metadata = database.getRootContainerMetadata(accout: account) else {
-                throw NSFileProviderError(.noSuchItem)
-            }
-            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: .workingSet)
+        if identifier == .rootContainer, let session = fileProviderData.session {
+            let metadata = database.createMetadataDirectory(fileName: NextcloudKit.shared.nkCommonInstance.rootFileName,
+                                                            ocId: NSFileProviderItemIdentifier.rootContainer.rawValue,
+                                                            serverUrl: utilityFileSystem.getHomeServer(session: session),
+                                                            session: session)
 
-            return item
+            return FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue))
         } else {
             guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(identifier),
                   let parentItemIdentifier = providerUtility.getParentItemIdentifier(metadata: metadata) else {
