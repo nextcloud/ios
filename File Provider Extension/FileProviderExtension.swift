@@ -80,14 +80,10 @@ class FileProviderExtension: NSFileProviderExtension {
 
     override func item(for identifier: NSFileProviderItemIdentifier) throws -> NSFileProviderItem {
         if identifier == .rootContainer {
-            let metadata = tableMetadata()
-            metadata.account = fileProviderData.shared.session.account
-            metadata.directory = true
-            metadata.ocId = NSFileProviderItemIdentifier.rootContainer.rawValue
-            metadata.fileName = "root"
-            metadata.fileNameView = "root"
-            metadata.serverUrl = utilityFileSystem.getHomeServer(session: fileProviderData.shared.session)
-            metadata.classFile = NKTypeClassFile.directory.rawValue
+            let metadata = database.createMetadataDirectory(fileName: "__NC_ROOT__",
+                                                            ocId: NSFileProviderItemIdentifier.rootContainer.rawValue,
+                                                            serverUrl: utilityFileSystem.getHomeServer(session: fileProviderData.shared.session),
+                                                            session: fileProviderData.shared.session)
             return FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue))
         } else {
             guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(identifier),
@@ -169,7 +165,7 @@ class FileProviderExtension: NSFileProviderExtension {
                         return
                     }
 
-                    await fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
+                    fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
 
                     let (task, error) = backgroundSession.download(serverUrlFileName: serverUrlFileName,
                                                                    fileNameLocalPath: fileNameLocalPath,
@@ -181,7 +177,7 @@ class FileProviderExtension: NSFileProviderExtension {
                         await self.database.setMetadataSessionAsync(ocId: ocId,
                                                                     sessionTaskIdentifier: task.taskIdentifier)
                         try await NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(itemIdentifier.rawValue))
-                        await fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
+                        fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
 
                         fileProviderData.shared.downloadPendingCompletionHandlers[task.taskIdentifier] = completionHandler
 
@@ -229,7 +225,7 @@ class FileProviderExtension: NSFileProviderExtension {
                                                                     status: NCGlobal.shared.metadataStatusUploading)
 
                         try await NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(itemIdentifier.rawValue))
-                        await fileProviderData.shared.signalEnumerator(ocId: ocId, type: .update)
+                        fileProviderData.shared.signalEnumerator(ocId: ocId, type: .update)
 
                         task.resume()
                     }
@@ -339,7 +335,7 @@ class FileProviderExtension: NSFileProviderExtension {
                                                                     status: NCGlobal.shared.metadataStatusUploading)
 
                         try await NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(ocIdTransfer))
-                        await fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
+                        fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
 
                         task.resume()
 

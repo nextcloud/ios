@@ -143,7 +143,6 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     }
 
     func fetchItemsForPage(serverUrl: String, pageNumber: Int, completion: @escaping (_ metadatas: [tableMetadata]?, _ isPaginated: Bool) -> Void) {
-        var serverUrlMetadataFolder: String?
         var isPaginated: Bool = false
         var paginateCount = recordsPerPage
         if pageNumber == 0 {
@@ -171,19 +170,21 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
             if error == .success, let files {
                 if pageNumber == 0 {
-                    self.database.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d AND fileName != %@", fileProviderData.shared.session.account, serverUrl, NCGlobal.shared.metadataStatusNormal, NextcloudKit.shared.nkCommonInstance.rootFileName))
-                    serverUrlMetadataFolder = serverUrl
-                }
-                self.database.convertFilesToMetadatas(files, serverUrlMetadataFolder: serverUrlMetadataFolder) { metadataFolder, metadatas in
-                    /// FOLDER
-                    if serverUrlMetadataFolder != nil {
-                        self.database.addMetadata(metadataFolder)
-                        self.database.addDirectory(e2eEncrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, richWorkspace: metadataFolder.richWorkspace, serverUrl: serverUrl, account: metadataFolder.account)
+                    self.database.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName != %@", fileProviderData.shared.session.account, serverUrl, NextcloudKit.shared.nkCommonInstance.rootFileName))
+                    self.database.convertFilesToMetadatas(files, capabilities: NCNetworking.shared.capabilities[fileProviderData.shared.session.account], serverUrlMetadataFolder: serverUrl) { metadataFolder, metadatas in
+                        // FOLDER
+                        if let metadataFolder {
+                            self.database.addMetadata(metadataFolder)
+                            self.database.addDirectory(e2eEncrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, richWorkspace: metadataFolder.richWorkspace, serverUrl: serverUrl, account: metadataFolder.account)
+                        }
+                        // FILES
+                        self.database.addMetadatas(metadatas)
+                        completion(metadatas, isPaginated)
                     }
-                    /// FILES
-                    self.database.addMetadatas(metadatas)
-                    completion(metadatas, isPaginated)
+                } else {
+
                 }
+
             } else {
                 if isPaginated {
                     completion(nil, isPaginated)

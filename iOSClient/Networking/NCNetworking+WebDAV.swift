@@ -75,7 +75,7 @@ extension NCNetworking {
             }
             let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
 
-            self.database.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE) { metadata in
+            self.database.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE, capabilities: self.capabilities[account]) { metadata in
                 // Remove all known download limits from shares related to the given file.
                 // This avoids obsolete download limit objects to stay around.
                 // Afterwards create new download limits, should any such be returned for the known shares.
@@ -554,7 +554,7 @@ extension NCNetworking {
         } completion: { _, files, _, error in
             guard error == .success, let files else { return completion(nil, error) }
 
-            self.database.convertFilesToMetadatas(files) { _, metadatas in
+            self.database.convertFilesToMetadatas(files, capabilities: self.capabilities[account]) { _, metadatas in
                 self.database.addMetadatas(metadatas)
                 completion(metadatas, error)
             }

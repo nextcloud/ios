@@ -9,7 +9,7 @@ import NextcloudKit
 import Photos
 
 extension NCManageDatabase {
-    func convertFileToMetadata(_ file: NKFile, isDirectoryE2EE: Bool, completion: @escaping (tableMetadata) -> Void) {
+    func convertFileToMetadata(_ file: NKFile, isDirectoryE2EE: Bool, capabilities: NKCapabilities.Capabilities?, completion: @escaping (tableMetadata) -> Void) {
         let metadata = self.createMetadata(file)
 
         #if !EXTENSION_FILE_PROVIDER_EXTENSION
@@ -21,17 +21,16 @@ extension NCManageDatabase {
         }
         #endif
 
-        Task { @MainActor in
-            if !metadata.directory {
-                let results = await NKTypeIdentifiers.shared.getInternalType(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory, account: file.account)
 
-                metadata.contentType = results.mimeType
-                metadata.iconName = results.iconName
-                metadata.classFile = results.classFile
-                metadata.typeIdentifier = results.typeIdentifier
-            }
-            completion(metadata)
+        if !metadata.directory {
+            let results = NKTypeIdentifiersHelper.shared.getInternalType(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory, capabilities: capabilities ?? NKCapabilities.Capabilities())
+
+            metadata.contentType = results.mimeType
+            metadata.iconName = results.iconName
+            metadata.classFile = results.classFile
+            metadata.typeIdentifier = results.typeIdentifier
         }
+        completion(metadata)
     }
 
     func convertFileToMetadataAsync(_ file: NKFile, isDirectoryE2EE: Bool) async -> tableMetadata {
@@ -58,11 +57,11 @@ extension NCManageDatabase {
         return metadata.detachedCopy()
     }
 
-    func convertFilesToMetadatas(_ files: [NKFile], serverUrlMetadataFolder: String? = nil, completion: @escaping (_ metadataFolder: tableMetadata, _ metadatas: [tableMetadata]) -> Void) {
+    func convertFilesToMetadatas(_ files: [NKFile], capabilities: NKCapabilities.Capabilities?, serverUrlMetadataFolder: String? = nil, completion: @escaping (_ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]) -> Void) {
         var counter: Int = 0
         var isDirectoryE2EE: Bool = false
         let listServerUrl = ThreadSafeDictionary<String, Bool>()
-        var metadataFolder = tableMetadata()
+        var metadataFolder: tableMetadata?
         var metadatas: [tableMetadata] = []
 
         for file in files {
@@ -73,9 +72,9 @@ extension NCManageDatabase {
                 listServerUrl[file.serverUrl] = isDirectoryE2EE
             }
 
-            convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE) { metadata in
+            convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE, capabilities: capabilities) { metadata in
                 if serverUrlMetadataFolder == metadata.serverUrlFileName || metadata.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
-                    metadataFolder = metadata
+                    metadataFolder = metadata.detachedCopy()
                 } else {
                     metadatas.append(metadata)
                 }
@@ -83,7 +82,7 @@ extension NCManageDatabase {
                 counter += 1
             }
         }
-        completion(metadataFolder.detachedCopy(), metadatas)
+        completion(metadataFolder, metadatas)
     }
 
     func convertFilesToMetadatasAsync(_ files: [NKFile], serverUrlMetadataFolder: String? = nil) async -> (metadataFolder: tableMetadata, metadatas: [tableMetadata]) {
