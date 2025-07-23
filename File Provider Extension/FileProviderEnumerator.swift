@@ -83,7 +83,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
                 if let metadatas {
                     for metadata in metadatas where !metadata.e2eEncrypted && (metadata.session.isEmpty || metadata.session == NCNetworking.shared.sessionUploadBackgroundExt) {
-                        if let parentItemIdentifier = await providerUtility.getParentItemIdentifierAsync(account: metadata.account, serverUrl: metadata.serverUrl) {
+                        if let parentItemIdentifier = providerUtility.getParentItemIdentifier(metadata: metadata) {
                             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
                             items.append(item)
                         }
