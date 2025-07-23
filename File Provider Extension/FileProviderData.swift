@@ -50,7 +50,7 @@ class fileProviderData: NSObject {
 
     // MARK: -
 
-    func setupAccount(domain: NSFileProviderDomain?, providerExtension: NSFileProviderExtension) -> tableAccount? {
+    func setupAccount(providerExtension: NSFileProviderExtension) -> tableAccount? {
         let version = NSString(format: NCBrandOptions.shared.textCopyrightNextcloudiOS as NSString, NCUtility().getVersionApp()) as String
         let tblAccount = self.database.getActiveTableAccount()
 

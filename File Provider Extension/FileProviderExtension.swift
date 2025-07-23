@@ -44,7 +44,7 @@ class FileProviderExtension: NSFileProviderExtension {
         super.init()
 
         _ = utilityFileSystem.directoryProviderStorage
-        _ = fileProviderData.shared.setupAccount(domain: domain, providerExtension: self)
+        _ = fileProviderData.shared.setupAccount(providerExtension: self)
     }
 
     deinit {
@@ -57,7 +57,7 @@ class FileProviderExtension: NSFileProviderExtension {
         // Skip authentication checks for the working set container
         if containerItemIdentifier != .workingSet {
             // Ensure a valid account is configured for the extension
-            guard fileProviderData.shared.setupAccount(domain: domain, providerExtension: self) != nil else {
+            guard fileProviderData.shared.setupAccount(providerExtension: self) != nil else {
                 throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo: [:])
             }
 
