@@ -206,18 +206,22 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                             NCActivityIndicator.shared.start(backgroundView: view)
                             NextcloudKit.shared.download(serverUrlFileName: url, fileNameLocalPath: fileNameLocalPath, account: self.metadata.account, requestHandler: { _ in
                             }, taskHandler: { task in
-                                self.database.setMetadataSession(ocId: self.metadata.ocId,
-                                                                 sessionTaskIdentifier: task.taskIdentifier,
-                                                                 status: self.global.metadataStatusDownloading)
+                                Task {
+                                    await self.database.setMetadataSessionAsync(ocId: self.metadata.ocId,
+                                                                                sessionTaskIdentifier: task.taskIdentifier,
+                                                                                status: self.global.metadataStatusDownloading)
+                                }
                             }, progressHandler: { _ in
                             }, completionHandler: { account, etag, _, _, headers, _, error in
                                 NCActivityIndicator.shared.stop()
-                                self.database.setMetadataSession(ocId: self.metadata.ocId,
-                                                                 session: "",
-                                                                 sessionTaskIdentifier: 0,
-                                                                 sessionError: "",
-                                                                 status: self.global.metadataStatusNormal,
-                                                                 etag: etag)
+                                Task {
+                                    await self.database.setMetadataSessionAsync(ocId: self.metadata.ocId,
+                                                                                session: "",
+                                                                                sessionTaskIdentifier: 0,
+                                                                                sessionError: "",
+                                                                                status: self.global.metadataStatusNormal,
+                                                                                etag: etag)
+                                }
                                 if error == .success && account == self.metadata.account {
                                     var item = fileNameLocalPath
 

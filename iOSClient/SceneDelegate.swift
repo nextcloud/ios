@@ -29,12 +29,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             self.window?.overrideUserInterfaceStyle = NCKeychain().appearanceInterfaceStyle
         }
 
-        if let activeTableAccount = self.database.getActiveTableAccount() {
-            nkLog(debug: "Account active \(activeTableAccount.account)")
+        if let activeTblAccount = self.database.getActiveTableAccount() {
+            nkLog(debug: "Account active \(activeTblAccount.account)")
 
-            NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
-            Task {
-                await NCNetworkingProcess.shared.setCurrentAccount(activeTableAccount.account)
+            Task { @MainActor in
+                // set capabilities
+                if let capabilities = await self.database.setCapabilities(account: activeTblAccount.account) {
+                    // set theming color
+                    NCBrandColor.shared.settingThemingColor(account: activeTblAccount.account, capabilities: capabilities)
+                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeTheming, userInfo: ["account": activeTblAccount.account])
+                }
+
+                await NCNetworkingProcess.shared.setCurrentAccount(activeTblAccount.account)
             }
             for tableAccount in self.database.getAllTableAccount() {
                 NextcloudKit.shared.appendSession(account: tableAccount.account,
@@ -48,7 +54,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                                                   httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
                                                   groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
                 Task {
-                    await self.database.applyCachedCapabilitiesAsync(account: tableAccount.account)
+                    await self.database.setCapabilities(account: tableAccount.account)
                 }
                 NCSession.shared.appendSession(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId)
             }
@@ -57,7 +63,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
                 SceneManager.shared.register(scene: scene, withRootViewController: controller)
                 /// Set the ACCOUNT
-                controller.account = activeTableAccount.account
+                controller.account = activeTblAccount.account
                 ///
                 window?.rootViewController = controller
                 window?.makeKeyAndVisible()
@@ -171,7 +177,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
 
-        nkLog(info: "Auto upload in background: \(tableAccount.autoUploadStart)")
+        nkLog(info: "Auto upload activated: \(tableAccount.autoUploadStart)")
         nkLog(info: "Update in background: \(UIApplication.shared.backgroundRefreshStatus == .available)")
 
         if CLLocationManager().authorizationStatus == .authorizedAlways && NCKeychain().location && tableAccount.autoUploadStart {
@@ -191,9 +197,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
 
         // Clear older files
-        let days = NCKeychain().cleanUpDay
-        let utilityFileSystem = NCUtilityFileSystem()
-        utilityFileSystem.cleanUp(directory: utilityFileSystem.directoryProviderStorage, days: TimeInterval(days))
+        Task {
+            let days = NCKeychain().cleanUpDay
+            let utilityFileSystem = NCUtilityFileSystem()
+            await utilityFileSystem.cleanUpAsync(directory: utilityFileSystem.directoryProviderStorage, days: TimeInterval(days))
+        }
     }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
@@ -251,7 +259,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                         NCDocumentCamera.shared.openScannerDocument(viewController: controller)
                     case self.global.actionTextDocument:
                         let session = SceneManager.shared.getSession(scene: scene)
-                        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
+                        let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
                         guard let creator = capabilities.directEditingCreators.first(where: { $0.editor == "text" }) else {
                             return
                         }

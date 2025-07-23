@@ -94,10 +94,12 @@ class NCViewerProviderContextMenu: UIViewController {
                         maxDownload = NCGlobal.shared.maxAutoDownload
                     }
                     if metadata.size <= maxDownload {
-                        if let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
-                                                                                                   session: self.networking.sessionDownload,
-                                                                                                   selector: "") {
-                            self.networking.download(metadata: metadata)
+                        Task {
+                            if let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
+                                                                                                                  session: self.networking.sessionDownload,
+                                                                                                                  selector: "") {
+                                self.networking.download(metadata: metadata)
+                            }
                         }
                     }
                 }
@@ -106,20 +108,24 @@ class NCViewerProviderContextMenu: UIViewController {
             if !utilityFileSystem.fileProviderStorageExists(metadata),
                self.networking.isOnline,
                (metadata.contentType == "image/gif" || metadata.contentType == "image/svg+xml") {
-                if let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadata.ocId,
-                                                                                           session: self.networking.sessionDownload,
-                                                                                           selector: "") {
-                    self.networking.download(metadata: metadata)
+                Task {
+                    if let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
+                                                                                                          session: self.networking.sessionDownload,
+                                                                                                          selector: "") {
+                        self.networking.download(metadata: metadata)
+                    }
                 }
             }
             // DOWNLOAD LIVE PHOTO
             if let metadataLivePhoto = self.metadataLivePhoto,
                self.networking.isOnline,
                !utilityFileSystem.fileProviderStorageExists(metadataLivePhoto) {
-                if let metadata = NCManageDatabase.shared.setMetadataSessionInWaitDownload(ocId: metadataLivePhoto.ocId,
-                                                                                           session: self.networking.sessionDownload,
-                                                                                           selector: "") {
-                    self.networking.download(metadata: metadata)
+                Task {
+                    if let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(ocId: metadataLivePhoto.ocId,
+                                                                                                          session: self.networking.sessionDownload,
+                                                                                                          selector: "") {
+                        self.networking.download(metadata: metadata)
+                    }
                 }
             }
         }

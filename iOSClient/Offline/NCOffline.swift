@@ -72,8 +72,8 @@ class NCOffline: NCCollectionViewCommon {
         }
 
         let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
-                                                              layoutForView: layoutForView,
-                                                              account: session.account)
+                                                              withLayout: layoutForView,
+                                                              withAccount: session.account)
 
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
         await super.reloadDataSource()

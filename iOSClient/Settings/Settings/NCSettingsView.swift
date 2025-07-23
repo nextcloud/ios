@@ -41,7 +41,7 @@ struct NCSettingsView: View {
     @ObservedObject var model: NCSettingsModel
 
     var capabilities: NKCapabilities.Capabilities {
-        NKCapabilities.shared.getCapabilitiesBlocking(for: model.controller?.account)
+        NCNetworking.shared.capabilities[model.controller?.account ?? ""] ?? NKCapabilities.Capabilities()
     }
 
     var body: some View {
@@ -52,7 +52,7 @@ struct NCSettingsView: View {
                     NCAutoUploadView(model: NCAutoUploadModel(controller: model.controller), albumModel: AlbumModel(controller: model.controller))
                 }) {
                     HStack {
-                        Image(systemName: "photo.circle")
+                        Image(systemName: "photo.on.rectangle.angled")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 25, height: 25)

@@ -66,11 +66,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     /// Monitoring File Transfers
     var isUploading: Bool {
-        if metadata.status == NCGlobal.shared.metadataStatusWaitUpload || metadata.status == NCGlobal.shared.metadataStatusUploading {
-            return true
-        } else {
-            return false
-        }
+        return metadata.status == NCGlobal.shared.metadataStatusUploading || metadata.status == NCGlobal.shared.metadataStatusWaitUpload
     }
     var isUploaded: Bool {
         if metadata.status == NCGlobal.shared.metadataStatusWaitUpload || metadata.status == NCGlobal.shared.metadataStatusUploading || metadata.status == NCGlobal.shared.metadataStatusUploadError {

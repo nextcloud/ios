@@ -10,20 +10,22 @@ class NCNetworkingE2EEMarkFolder: NSObject {
     let database = NCManageDatabase.shared
 
     func markFolderE2ee(account: String, serverUrlFileName: String, userId: String) async -> NKError {
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
         let resultsReadFileOrFolder = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrlFileName, depth: "0", account: account)
         guard resultsReadFileOrFolder.error == .success,
               var file = resultsReadFileOrFolder.files?.first else {
             return resultsReadFileOrFolder.error
         }
-        let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolderAsync(fileId: file.fileId, delete: false, account: account, options: NCNetworkingE2EE().getOptions(account: account))
+        let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolderAsync(fileId: file.fileId, delete: false, account: account, options: NCNetworkingE2EE().getOptions(account: account, capabilities: capabilities))
         guard resultsMarkE2EEFolder.error == .success else {
             return resultsMarkE2EEFolder.error
         }
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
 
         file.e2eEncrypted = true
 
-        let metadata = await self.database.addAndReturnMetadataAsync(self.database.convertFileToMetadata(file, isDirectoryE2EE: false))
+        guard let metadata = await self.database.addAndReturnMetadataAsync(await self.database.convertFileToMetadataAsync(file, isDirectoryE2EE: false)) else {
+            return .invalidData
+        }
 
         await self.database.addDirectoryAsync(e2eEncrypted: true, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
         await self.database.deleteE2eEncryptionAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrlFileName))

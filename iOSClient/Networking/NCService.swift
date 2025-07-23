@@ -95,7 +95,7 @@ class NCService: NSObject {
         let resultsDownload = await NextcloudKit.shared.downloadAvatarAsync(user: session.userId,
                                                                             fileNameLocalPath: self.utilityFileSystem.directoryUserData + "/" + fileName,
                                                                             sizeImage: NCGlobal.shared.avatarSize,
-                                                                            etag: tblAvatar?.etag,
+                                                                            etagResource: tblAvatar?.etag,
                                                                             account: account)
 
         if  resultsDownload.error == .success,
@@ -112,17 +112,21 @@ class NCService: NSObject {
         let resultsCapabilities = await NextcloudKit.shared.getCapabilitiesAsync(account: account)
         guard resultsCapabilities.error == .success,
               let data = resultsCapabilities.responseData?.data,
-              let capabilities = resultsCapabilities.capabilities else {
+              let capabiresultsCapabilitieslities = resultsCapabilities.capabilities else {
             return
         }
 
-        await self.database.addCapabilitiesAsync(data: data, account: account)
+        await self.database.setDataCapabilities(data: data, account: account)
 
         // Text direct editor (Nextcloud Text, Office, Collabora)
         let resultsTextEditor = await NextcloudKit.shared.textObtainEditorDetailsAsync(account: account)
         if resultsTextEditor.error == .success,
            let data = resultsTextEditor.responseData?.data {
-            await self.database.addCapabilitiesEditorsAsync(data: data, account: account)
+            await self.database.setDataCapabilitiesEditors(data: data, account: account)
+        }
+
+        guard let capabilities = await self.database.setCapabilities(account: account) else {
+            return
         }
 
         // Recommendations
@@ -131,7 +135,7 @@ class NCService: NSObject {
         }
 
         // Theming
-        if NCBrandColor.shared.settingThemingColor(account: account) {
+        if NCBrandColor.shared.settingThemingColor(account: account, capabilities: capabilities) {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": account])
         }
 
@@ -173,16 +177,18 @@ class NCService: NSObject {
 
         nkLog(tag: self.global.logTagSync, emoji: .start, message: "Synchronize favorite for account: \(account)")
 
+        await self.database.cleanTablesOcIds(account: account)
+
         let resultsFavorite = await NextcloudKit.shared.listingFavoritesAsync(showHiddenFiles: showHiddenFiles, account: account)
         if resultsFavorite.error == .success, let files = resultsFavorite.files {
-            let resultsMetadatas = await self.database.convertFilesToMetadatasAsync(files, useFirstAsMetadataFolder: false)
-            if !resultsMetadatas.metadatas.isEmpty {
-                await self.database.updateMetadatasFavoriteAsync(account: account, metadatas: resultsMetadatas.metadatas)
-            }
+            let (_, metadatas) = await self.database.convertFilesToMetadatasAsync(files)
+            await self.database.updateMetadatasFavoriteAsync(account: account, metadatas: metadatas)
         }
 
         // file already in dowloading
-        let metadatasInDownload = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND status == %d", account, self.global.metadataStatusDownloadingAllMode), limit: nil)
+        let predicate = NSPredicate(format: "account == %@ AND status == %d", account, self.global.metadataStatusDownloadingAllMode)
+        let metadatasInDownload = await self.database.getMetadatasAsync(predicate: predicate,
+                                                                        withLimit: nil)
 
         // Synchronize Directory
         let directories = await self.database.getTablesDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "serverUrl", ascending: true)
@@ -243,9 +249,9 @@ class NCService: NSObject {
     // MARK: -
 
     func sendClientDiagnosticsRemoteOperation(account: String) async {
-        let capabilities = await NKCapabilities.shared.getCapabilitiesAsync(for: account)
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
         guard capabilities.securityGuardDiagnostics,
-              self.database.existsDiagnostics(account: account) else {
+              await self.database.existsDiagnosticsAsync(account: account) else {
             return
         }
 

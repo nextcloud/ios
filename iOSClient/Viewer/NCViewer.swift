@@ -79,7 +79,9 @@ class NCViewer: NSObject {
         // DOCUMENTS
         if metadata.classFile == NKTypeClassFile.document.rawValue {
             // Set Last Opening Date
-            self.database.setLastOpeningDate(metadata: metadata)
+            Task {
+                await self.database.setLastOpeningDateAsync(metadata: metadata)
+            }
             // PDF
             if metadata.isPDF {
                 if let navigationController = viewController.navigationController,

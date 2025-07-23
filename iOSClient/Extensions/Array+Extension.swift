@@ -38,6 +38,16 @@ extension Array {
 
         return arrayOrdered
     }
+
+    func asyncFilter(_ isIncluded: @escaping (Element) async -> Bool) async -> [Element] {
+        var result: [Element] = []
+        for element in self {
+            if await isIncluded(element) {
+                result.append(element)
+            }
+        }
+        return result
+    }
 }
 
 extension Array where Element == URLQueryItem {

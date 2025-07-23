@@ -189,20 +189,23 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
                 cell.image.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
                 cell.image.contentMode = .scaleAspectFit
                 if recommendedFiles.hasPreview {
-                    NextcloudKit.shared.downloadPreview(fileId: metadata.fileId, account: metadata.account) { _, _, _, _, responseData, error in
-                        if error == .success, let data = responseData?.data {
+                    Task {
+                        let resultsPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: metadata.fileId, etag: metadata.etag, account: metadata.account)
+                        if resultsPreview.error == .success, let data = resultsPreview.responseData?.data {
                             self.utility.createImageFileFrom(data: data, ocId: metadata.ocId, etag: metadata.etag)
                             if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt512) {
-                                for case let cell as NCRecommendationsCell in self.collectionViewRecommendations.visibleCells {
-                                    if cell.id == recommendedFiles.id {
-                                        cell.image.contentMode = .scaleAspectFill
-                                        if metadata.classFile == NKTypeClassFile.document.rawValue {
-                                            cell.setImageCorner(withBorder: true)
+                                Task { @MainActor in
+                                    for case let cell as NCRecommendationsCell in self.collectionViewRecommendations.visibleCells {
+                                        if cell.id == recommendedFiles.id {
+                                            cell.image.contentMode = .scaleAspectFill
+                                            if metadata.classFile == NKTypeClassFile.document.rawValue {
+                                                cell.setImageCorner(withBorder: true)
+                                            }
+                                            UIView.transition(with: cell.image, duration: 0.75, options: .transitionCrossDissolve, animations: {
+                                                cell.image.image = image
+                                            }, completion: nil)
+                                            break
                                         }
-                                        UIView.transition(with: cell.image, duration: 0.75, options: .transitionCrossDissolve, animations: {
-                                            cell.image.image = image
-                                        }, completion: nil)
-                                        break
                                     }
                                 }
                             }

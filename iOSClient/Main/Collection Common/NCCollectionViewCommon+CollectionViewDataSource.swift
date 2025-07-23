@@ -47,7 +47,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 return
             }
 
-            for case let operation as NCCollectionViewDownloadThumbnail in self.netwoking.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
+            for case let operation as NCCollectionViewDownloadThumbnail in self.networking.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
                 operation.cancel()
             }
         }
@@ -62,8 +62,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         if metadata.hasPreview,
            !existsImagePreview,
-           self.netwoking.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
-            self.netwoking.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView, ext: ext))
+           self.networking.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
+            self.networking.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView, ext: ext))
         }
 
     }
@@ -230,17 +230,17 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         if metadata.directory {
-            let tblDirectory = database.getResultTableDirectory(ocId: metadata.ocId)
+            let tblDirectory = database.getTableDirectory(ocId: metadata.ocId)
 
             if metadata.e2eEncrypted {
                 cell.filePreviewImageView?.image = imageCache.getFolderEncrypted(account: metadata.account)
             } else if isShare {
                 cell.filePreviewImageView?.image = imageCache.getFolderSharedWithMe(account: metadata.account)
             } else if !metadata.shareType.isEmpty {
-                metadata.shareType.contains(3) ?
+                metadata.shareType.contains(NCShareCommon.shareTypeLink) ?
                 (cell.filePreviewImageView?.image = imageCache.getFolderPublic(account: metadata.account)) :
                 (cell.filePreviewImageView?.image = imageCache.getFolderSharedWithMe(account: metadata.account))
-            } else if !metadata.shareType.isEmpty && metadata.shareType.contains(3) {
+            } else if !metadata.shareType.isEmpty && metadata.shareType.contains(NCShareCommon.shareTypeLink) {
                 cell.filePreviewImageView?.image = imageCache.getFolderPublic(account: metadata.account)
             } else if metadata.mountType == "group" {
                 cell.filePreviewImageView?.image = imageCache.getFolderGroup(account: metadata.account)
@@ -261,7 +261,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.filePreviewImageView?.image = cell.filePreviewImageView?.image?.colorizeFolder(metadata: metadata, tblDirectory: tblDirectory)
 
         } else {
-            let tableLocalFile = database.getResultTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            let tableLocalFile = database.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
 
             if metadata.hasPreviewBorder {
                 cell.filePreviewImageView?.layer.borderWidth = 0.2
@@ -315,8 +315,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                             }
 
                             if !(tblAvatar?.loaded ?? false),
-                               self.netwoking.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
-                                self.netwoking.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: ownerId, fileName: fileName, account: metadata.account, view: collectionView, isPreviewImageView: true))
+                               self.networking.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
+                                self.networking.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: ownerId, fileName: fileName, account: metadata.account, view: collectionView, isPreviewImageView: true))
                             }
                         }
                     }
@@ -341,7 +341,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         if isShare {
             cell.fileSharedImage?.image = imageCache.getImageShared()
         } else if !metadata.shareType.isEmpty {
-            metadata.shareType.contains(3) ?
+            metadata.shareType.contains(NCShareCommon.shareTypeLink) ?
             (cell.fileSharedImage?.image = imageCache.getImageShareByLink()) :
             (cell.fileSharedImage?.image = imageCache.getImageShared())
         } else {
@@ -404,8 +404,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
 
                 if !(tblAvatar?.loaded ?? false),
-                   self.netwoking.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
-                    self.netwoking.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: metadata.ownerId, fileName: fileName, account: metadata.account, view: collectionView))
+                   self.networking.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
+                    self.networking.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: metadata.ownerId, fileName: fileName, account: metadata.account, view: collectionView))
                 }
             }
         }

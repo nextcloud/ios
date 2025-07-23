@@ -50,14 +50,14 @@ class NCCreateDocument: NSObject {
                     return NCContentPresenter().showError(error: error)
                 }
 
-                let metadata = self.database.createMetadata(fileName: fileName,
-                                                            ocId: UUID,
-                                                            serverUrl: serverUrl,
-                                                            url: url,
-                                                            session: session,
-                                                            sceneIdentifier: controller.sceneIdentifier)
-
-                NCViewer().view(viewController: viewController, metadata: metadata)
+                self.database.createMetadata(fileName: fileName,
+                                             ocId: UUID,
+                                             serverUrl: serverUrl,
+                                             url: url,
+                                             session: session,
+                                             sceneIdentifier: controller.sceneIdentifier) { metadata in
+                    NCViewer().view(viewController: viewController, metadata: metadata)
+                }
             }
 
         } else if editorId == "collabora" {
@@ -67,14 +67,14 @@ class NCCreateDocument: NSObject {
                     return NCContentPresenter().showError(error: error)
                 }
                 if account == returnedAccount {
-                    let metadata = self.database.createMetadata(fileName: fileName,
-                                                                ocId: UUID,
-                                                                serverUrl: serverUrl,
-                                                                url: url,
-                                                                session: session,
-                                                                sceneIdentifier: controller.sceneIdentifier)
-
-                    NCViewer().view(viewController: viewController, metadata: metadata)
+                    self.database.createMetadata(fileName: fileName,
+                                                 ocId: UUID,
+                                                 serverUrl: serverUrl,
+                                                 url: url,
+                                                 session: session,
+                                                 sceneIdentifier: controller.sceneIdentifier) { metadata in
+                        NCViewer().view(viewController: viewController, metadata: metadata)
+                    }
                 }
             }
         }

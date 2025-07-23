@@ -20,6 +20,7 @@ protocol Shareable: AnyObject {
     var expirationDate: NSDate? { get set }
     var shareWithDisplayname: String { get set }
     var attributes: String? { get set }
+    var itemType: String { get set }
 }
 
 // MARK: - Default Implementations

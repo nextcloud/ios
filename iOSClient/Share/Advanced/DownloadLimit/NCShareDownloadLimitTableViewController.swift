@@ -32,7 +32,7 @@ class NCShareDownloadLimitTableViewController: UITableViewController {
     /// Default value for limits as possibly provided by the server capabilities.
     ///
     var defaultLimit: Int {
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
+        let capabilities = NCNetworking.shared.capabilities[metadata.account] ?? NKCapabilities.Capabilities()
         return capabilities.fileSharingDownloadLimitDefaultLimit
     }
 

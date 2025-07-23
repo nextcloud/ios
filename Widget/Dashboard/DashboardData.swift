@@ -115,18 +115,13 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
         activeTableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", accountIdentifier))
     }
 
-    guard let activeTableAccount,
-          let capabilities = NCManageDatabase.shared.applyCachedCapabilitiesBlocking(account: activeTableAccount.account) else {
+    guard let activeTableAccount else {
         return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", comment: ""), account: ""))
     }
 
     // Default widget
     let result = NCManageDatabase.shared.getDashboardWidgetApplications(account: activeTableAccount.account).first
     let id: String = configuration?.applications?.identifier ?? (result?.id ?? "recommendations")
-
-    guard capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion25 else {
-        return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_widget_available_nc25_", comment: ""), account: activeTableAccount.account))
-    }
 
     // NETWORKING
     let password = NCKeychain().getPassword(account: activeTableAccount.account)

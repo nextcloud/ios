@@ -253,7 +253,7 @@ extension NCEndToEndMetadata {
                                 // Update metadata on tableMetadata
                                 metadata.fileNameView = encrypted.filename
 
-                                let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory, account: session.account)
+                                let results = await NKTypeIdentifiers.shared.getInternalType(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory, account: session.account)
 
                                 metadata.contentType = results.mimeType
                                 metadata.iconName = results.iconName
@@ -313,7 +313,7 @@ extension NCEndToEndMetadata {
                                 metadata.fileNameView = encrypted.filename
 
                                 // Update file type
-                                let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory, account: session.account)
+                                let results = await NKTypeIdentifiers.shared.getInternalType(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory, account: session.account)
 
                                 metadata.contentType = results.mimeType
                                 metadata.iconName = results.iconName
@@ -432,7 +432,7 @@ extension NCEndToEndMetadata {
                                 metadata.fileNameView = encrypted.filename
 
                                 // Update file type
-                                let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory, account: session.account)
+                                let results = await NKTypeIdentifiers.shared.getInternalType(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory, account: session.account)
 
                                 metadata.contentType = results.mimeType
                                 metadata.iconName = results.iconName

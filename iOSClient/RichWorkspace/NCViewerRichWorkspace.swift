@@ -65,15 +65,18 @@ import MarkdownKit
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        NCNetworking.shared.readFile(serverUrlFileName: self.serverUrl, account: session.account, queue: .main) { _ in
-        } completion: { account, metadata, error in
-            if error == .success, let metadata {
-                NCManageDatabase.shared.updateDirectoryRichWorkspace(metadata.richWorkspace, account: account, serverUrl: self.serverUrl)
-                if self.richWorkspaceText != metadata.richWorkspace, metadata.richWorkspace != nil {
-                    self.delegate?.richWorkspaceText = self.richWorkspaceText
-                    self.richWorkspaceText = metadata.richWorkspace!
-                    self.textView.attributedText = self.markdownParser.parse(metadata.richWorkspace!)
-                }
+        Task {
+            let resultsReadFile = await NCNetworking.shared.readFileAsync(serverUrlFileName: self.serverUrl, account: session.account)
+            guard resultsReadFile.error == .success, let metadata = resultsReadFile.metadata else {
+                return
+            }
+
+            await NCManageDatabase.shared.updateDirectoryRichWorkspaceAsync(metadata.richWorkspace, account: session.account, serverUrl: self.serverUrl)
+
+            if self.richWorkspaceText != metadata.richWorkspace, metadata.richWorkspace != nil {
+                self.delegate?.richWorkspaceText = self.richWorkspaceText
+                self.richWorkspaceText = metadata.richWorkspace!
+                self.textView.attributedText = self.markdownParser.parse(metadata.richWorkspace!)
             }
         }
     }

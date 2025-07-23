@@ -217,6 +217,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 image = utility.getImage(ocId: file.ocId, etag: file.etag, ext: NCGlobal.shared.previewExt512)
                 if image == nil, file.hasPreview {
                     let result = await NextcloudKit.shared.downloadPreviewAsync(fileId: file.fileId,
+                                                                                etag: file.etag,
                                                                                 account: activeTableAccount.account,
                                                                                 options: options)
                     if result.error == .success, let data = result.responseData?.data {
@@ -230,7 +231,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 }
 
                 let isDirectoryE2EE = utilityFileSystem.isDirectoryE2EE(file: file)
-                let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
+                let metadata = await NCManageDatabase.shared.convertFileToMetadataAsync(file, isDirectoryE2EE: isDirectoryE2EE)
 
                 // DATA
                 let data = FilesData(id: metadata.ocId, image: image ?? UIImage(), title: metadata.fileNameView, subTitle: subTitle, url: url, useTypeIconFile: useTypeIconFile)

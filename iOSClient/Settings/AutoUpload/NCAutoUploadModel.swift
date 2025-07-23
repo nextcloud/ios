@@ -179,6 +179,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             }
             Task {
                 _ = await NCAutoUpload.shared.startManualAutoUploadForAlbums(controller: self.controller,
+                                                                             model: self,
                                                                              assetCollections: assetCollections,
                                                                              account: session.account)
             }
@@ -213,16 +214,18 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// serverUrl: The server URL to set as the auto-upload directory.
     func setAutoUploadDirectory(serverUrl: String?) {
         guard let serverUrl else { return }
-        let home = NCUtilityFileSystem().getHomeServer(session: session)
-        if home != serverUrl {
-            let fileName = (serverUrl as NSString).lastPathComponent
-            self.database.setAccountAutoUploadFileName(fileName)
-            if let path = NCUtilityFileSystem().deleteLastPath(serverUrlPath: serverUrl, home: home) {
-                self.database.setAccountAutoUploadDirectory(path, session: session)
+        Task {
+            let home = NCUtilityFileSystem().getHomeServer(session: session)
+            if home != serverUrl {
+                let fileName = (serverUrl as NSString).lastPathComponent
+                await self.database.setAccountAutoUploadFileNameAsync(fileName)
+                if let path = NCUtilityFileSystem().deleteLastPath(serverUrlPath: serverUrl, home: home) {
+                    await self.database.setAccountAutoUploadDirectoryAsync(path, session: session)
+                }
             }
-        }
 
-        onViewAppear()
+            onViewAppear()
+        }
     }
 
     func createAlbumTitle(autoUploadAlbumIds: Set<String>) -> String {
@@ -241,9 +244,8 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     func deleteAutoUploadTransfer() {
         Task {
-            let autoUploadServerUrlBase = NCManageDatabase.shared.getAccountAutoUploadServerUrlBase(session: session)
-            await NCManageDatabase.shared.deleteAutoUploadTransferAsync(account: session.account,
-                                                                        autoUploadServerUrlBase: autoUploadServerUrlBase)
+            let autoUploadServerUrlBase = await NCManageDatabase.shared.getAccountAutoUploadServerUrlBaseAsync(session: session)
+            await NCManageDatabase.shared.deleteAutoUploadTransferAsync(account: session.account, autoUploadServerUrlBase: autoUploadServerUrlBase)
         }
     }
 
@@ -293,8 +295,10 @@ extension NCAutoUploadModel: EasyTipViewDelegate {
 
         if tip == nil {
             tip = EasyTipView(text: NSLocalizedString("_tip_autoupload_button_", comment: ""), preferences: preferences, delegate: self, tip: NCGlobal.shared.tipAutoUploadButton)
-            if let view = controller?.tabBar {
-                tip?.show(forView: view)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                if let view = self.controller?.tabBar {
+                    self.tip?.show(forView: view)
+                }
             }
         }
     }

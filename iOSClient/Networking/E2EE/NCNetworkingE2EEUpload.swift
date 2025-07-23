@@ -48,8 +48,11 @@ class NCNetworkingE2EEUpload: NSObject {
         metadata.session = NCNetworking.shared.sessionUpload
         metadata.status = global.metadataStatusUploading
         metadata.sessionError = ""
+        metadata.serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
 
-        let metadata = await self.database.addAndReturnMetadataAsync(metadata)
+        guard let metadata = await self.database.addAndReturnMetadataAsync(metadata) else {
+            return .invalidData
+        }
 
         guard let directory = await self.database.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
             finalError = NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))

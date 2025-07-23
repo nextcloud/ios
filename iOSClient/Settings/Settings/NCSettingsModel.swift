@@ -64,7 +64,7 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
 
     /// Triggered when the view appears.
     func onViewAppear() {
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: self.controller?.account ?? "")
+        let capabilities = NCNetworking.shared.capabilities[self.controller?.account ?? ""] ?? NKCapabilities.Capabilities()
         isLockActive = (keychain.passcode != nil)
         enableTouchID = keychain.touchFaceID
         lockScreen = !keychain.requestPasscodeAtStart

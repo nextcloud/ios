@@ -60,20 +60,20 @@ class NCShareDateCell: UITableViewCell {
     }
 
     private func isExpireDateEnforced(account: String) -> Bool {
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
+        let capabilities = NCNetworking.shared.capabilities[account] ?? NKCapabilities.Capabilities()
 
         switch self.shareType {
-        case shareCommon.SHARE_TYPE_LINK,
-            shareCommon.SHARE_TYPE_EMAIL,
-            shareCommon.SHARE_TYPE_GUEST:
+        case NCShareCommon.shareTypeLink,
+            NCShareCommon.shareTypeEmail,
+            NCShareCommon.shareTypeGuest:
             return capabilities.fileSharingPubExpireDateEnforced
-        case shareCommon.SHARE_TYPE_USER,
-            shareCommon.SHARE_TYPE_GROUP,
-            shareCommon.SHARE_TYPE_CIRCLE,
-            shareCommon.SHARE_TYPE_ROOM:
+        case NCShareCommon.shareTypeUser,
+            NCShareCommon.shareTypeGroup,
+            NCShareCommon.shareTypeTeam,
+            NCShareCommon.shareTypeRoom:
             return capabilities.fileSharingInternalExpireDateEnforced
-        case shareCommon.SHARE_TYPE_FEDERATED,
-            shareCommon.SHARE_TYPE_FEDERATED_GROUP:
+        case NCShareCommon.shareTypeFederated,
+            NCShareCommon.shareTypeFederatedGroup:
             return capabilities.fileSharingRemoteExpireDateEnforced
         default:
             return false
@@ -81,20 +81,20 @@ class NCShareDateCell: UITableViewCell {
     }
 
     private func defaultExpirationDays(account: String) -> Int {
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
+        let capabilities = NCNetworking.shared.capabilities[account] ?? NKCapabilities.Capabilities()
 
         switch self.shareType {
-        case shareCommon.SHARE_TYPE_LINK,
-            shareCommon.SHARE_TYPE_EMAIL,
-            shareCommon.SHARE_TYPE_GUEST:
+        case NCShareCommon.shareTypeLink,
+            NCShareCommon.shareTypeEmail,
+            NCShareCommon.shareTypeGuest:
             return capabilities.fileSharingPubExpireDateDays
-        case shareCommon.SHARE_TYPE_USER,
-            shareCommon.SHARE_TYPE_GROUP,
-            shareCommon.SHARE_TYPE_CIRCLE,
-            shareCommon.SHARE_TYPE_ROOM:
+        case NCShareCommon.shareTypeUser,
+            NCShareCommon.shareTypeGroup,
+            NCShareCommon.shareTypeTeam,
+            NCShareCommon.shareTypeRoom:
             return capabilities.fileSharingInternalExpireDateDays
-        case shareCommon.SHARE_TYPE_FEDERATED,
-            shareCommon.SHARE_TYPE_FEDERATED_GROUP:
+        case NCShareCommon.shareTypeFederated,
+            NCShareCommon.shareTypeFederatedGroup:
             return capabilities.fileSharingRemoteExpireDateDays
         default:
             return 0

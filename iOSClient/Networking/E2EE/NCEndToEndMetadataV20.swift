@@ -226,7 +226,7 @@ extension NCEndToEndMetadata {
                 metadata.fileNameView = fileName
 
                 // Update type
-                let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: fileName, mimeType: "", directory: false, account: session.account)
+                let results = await NKTypeIdentifiers.shared.getInternalType(fileName: fileName, mimeType: "", directory: false, account: session.account)
                 metadata.contentType = results.mimeType
                 metadata.iconName = results.iconName
                 metadata.classFile = results.classFile

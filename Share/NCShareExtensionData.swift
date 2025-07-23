@@ -12,12 +12,22 @@ class NCShareExtensionData: NSObject {
 
     override init() {
         self.tblAccount = NCManageDatabase.shared.getActiveTableAccount()
+        if let account = self.tblAccount?.account {
+            Task { @MainActor in
+                if let capabilities = await NCManageDatabase.shared.setCapabilities(account: account) {
+                    NCBrandColor.shared.settingThemingColor(account: account, capabilities: capabilities)
+                }
+            }
+        }
     }
 
     func setSessionAccount(_ account: String) async -> NCSession.Session {
         if account != self.tblAccount?.account,
            let tblAccount = await NCManageDatabase.shared.getTableAccountAsync(account: account) {
             self.tblAccount = tblAccount
+            if let capabilities = await NCManageDatabase.shared.setCapabilities(account: account) {
+                NCBrandColor.shared.settingThemingColor(account: account, capabilities: capabilities)
+            }
         }
 
         return getSession()

@@ -57,7 +57,15 @@ extension NCManageDatabase {
 
     // MARK: - Realm Read
 
-    func fetchSkipFileNames(account: String, autoUploadServerUrlBase: String) async -> Set<String> {
+    /// Asynchronously fetches a set of filenames that should be skipped for auto-upload,
+    /// based on metadata and ongoing transfers for a given account and server URL base.
+    ///
+    /// - Parameters:
+    ///   - account: The account identifier.
+    ///   - autoUploadServerUrlBase: The server base URL used for auto-upload.
+    /// - Returns: A set of file names that are either in metadata with a relevant status or currently being transferred.
+    func fetchSkipFileNamesAsync(account: String,
+                                 autoUploadServerUrlBase: String) async -> Set<String> {
         let result: Set<String>? = await performRealmReadAsync { realm in
             let metadatas = realm.objects(tableMetadata.self)
                 .filter("account == %@ AND autoUploadServerUrlBase == %@ AND status IN %@", account, autoUploadServerUrlBase, NCGlobal.shared.metadataStatusUploadingAllMode)
@@ -78,7 +86,8 @@ extension NCManageDatabase {
     ///   - account: The account identifier.
     ///   - autoUploadServerUrlBase: The server base URL for auto-upload.
     /// - Returns: The most recent upload `Date`, or `nil` if no entry exists.
-    func fetchLastAutoUploadedDateAsync(account: String, autoUploadServerUrlBase: String) async -> Date? {
+    func fetchLastAutoUploadedDateAsync(account: String,
+                                        autoUploadServerUrlBase: String) async -> Date? {
         await performRealmReadAsync { realm in
             realm.objects(tableAutoUploadTransfer.self)
                 .filter("account == %@ AND serverUrlBase == %@", account, autoUploadServerUrlBase)
@@ -87,8 +96,18 @@ extension NCManageDatabase {
         }
     }
 
-    func existsAutoUpload(account: String, autoUploadServerUrlBase: String) -> Bool {
+    func existsAutoUpload(account: String,
+                          autoUploadServerUrlBase: String) -> Bool {
         return performRealmRead { realm in
+            realm.objects(tableAutoUploadTransfer.self)
+                .filter("account == %@ AND serverUrlBase == %@", account, autoUploadServerUrlBase)
+                .first != nil
+        } ?? false
+    }
+
+    func existsAutoUploadAsync(account: String,
+                               autoUploadServerUrlBase: String) async -> Bool {
+        return await performRealmReadAsync { realm in
             realm.objects(tableAutoUploadTransfer.self)
                 .filter("account == %@ AND serverUrlBase == %@", account, autoUploadServerUrlBase)
                 .first != nil

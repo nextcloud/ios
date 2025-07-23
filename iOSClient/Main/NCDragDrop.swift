@@ -91,14 +91,15 @@ class NCDragDrop: NSObject {
 
         var invalidNameIndexes: [Int] = []
         let session = NCSession.shared.getSession(controller: controller)
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
+        let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
 
         for (index, metadata) in metadatas.enumerated() {
             if let fileNameError = FileNameValidator.checkFileName(metadata.fileName, account: session.account, capabilities: capabilities) {
                 if metadatas.count == 1 {
-                    let alert = UIAlertController.renameFile(metadata: metadata) { newFileName in
+                    let alert = UIAlertController.renameFile(fileName: metadata.fileNameView, serverUrl: metadata.serverUrl, nativeFormat: true, isDirectory: metadata.directory, capabilities: capabilities, account: metadata.account) { newFileName in
                         metadatas[index].fileName = newFileName
                         metadatas[index].fileNameView = newFileName
+                        metadatas[index].serverUrlFileName = metadatas[index].serverUrl + "/" + newFileName
                     }
 
                     controller?.present(alert, animated: true)
@@ -125,11 +126,11 @@ class NCDragDrop: NSObject {
         do {
             let data = try Data(contentsOf: url)
             Task {
-                let ocId = NSUUID().uuidString
                 let session = NCSession.shared.getSession(controller: controller)
-                let newFileName = FileAutoRenamer.rename(url.lastPathComponent, account: session.account)
+                let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
+                let ocId = NSUUID().uuidString
+                let newFileName = FileAutoRenamer.rename(url.lastPathComponent, capabilities: capabilities)
                 let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: newFileName)
-                let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
 
                 if let fileNameError = FileNameValidator.checkFileName(newFileName, account: session.account, capabilities: capabilities) {
                     await controller?.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
@@ -140,11 +141,11 @@ class NCDragDrop: NSObject {
 
                 try data.write(to: URL(fileURLWithPath: fileNamePath))
 
-                let metadataForUpload = await database.createMetadata(fileName: fileName,
-                                                                      ocId: ocId,
-                                                                      serverUrl: serverUrl,
-                                                                      session: session,
-                                                                      sceneIdentifier: controller?.sceneIdentifier)
+                let metadataForUpload = await database.createMetadataAsync(fileName: fileName,
+                                                                           ocId: ocId,
+                                                                           serverUrl: serverUrl,
+                                                                           session: session,
+                                                                           sceneIdentifier: controller?.sceneIdentifier)
 
                 metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
                 metadataForUpload.sessionSelector = global.selectorUploadFile

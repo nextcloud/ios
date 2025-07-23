@@ -60,7 +60,7 @@ extension UIViewController {
     }
 
     func showProfileMenu(userId: String, session: NCSession.Session, sender: Any?) {
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: session.account)
+        let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
         guard capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion23 else {
             return
         }

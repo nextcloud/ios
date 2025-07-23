@@ -9,7 +9,7 @@ import NextcloudKit
 import Photos
 
 extension NCManageDatabase {
-    func convertFileToMetadata(_ file: NKFile, isDirectoryE2EE: Bool) -> tableMetadata {
+    func convertFileToMetadata(_ file: NKFile, isDirectoryE2EE: Bool, capabilities: NKCapabilities.Capabilities?, completion: @escaping (tableMetadata) -> Void) {
         let metadata = self.createMetadata(file)
 
         #if !EXTENSION_FILE_PROVIDER_EXTENSION
@@ -21,15 +21,16 @@ extension NCManageDatabase {
         }
         #endif
 
+
         if !metadata.directory {
-            let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory, account: file.account)
+            let results = NKTypeIdentifiersHelper.shared.getInternalType(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory, capabilities: capabilities ?? NKCapabilities.Capabilities())
 
             metadata.contentType = results.mimeType
             metadata.iconName = results.iconName
             metadata.classFile = results.classFile
             metadata.typeIdentifier = results.typeIdentifier
         }
-        return metadata
+        completion(metadata)
     }
 
     func convertFileToMetadataAsync(_ file: NKFile, isDirectoryE2EE: Bool) async -> tableMetadata {
@@ -56,11 +57,11 @@ extension NCManageDatabase {
         return metadata.detachedCopy()
     }
 
-    func convertFilesToMetadatas(_ files: [NKFile], useFirstAsMetadataFolder: Bool, completion: @escaping (_ metadataFolder: tableMetadata, _ metadatas: [tableMetadata]) -> Void) {
+    func convertFilesToMetadatas(_ files: [NKFile], capabilities: NKCapabilities.Capabilities?, serverUrlMetadataFolder: String? = nil, completion: @escaping (_ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]) -> Void) {
         var counter: Int = 0
         var isDirectoryE2EE: Bool = false
         let listServerUrl = ThreadSafeDictionary<String, Bool>()
-        var metadataFolder = tableMetadata()
+        var metadataFolder: tableMetadata?
         var metadatas: [tableMetadata] = []
 
         for file in files {
@@ -71,20 +72,20 @@ extension NCManageDatabase {
                 listServerUrl[file.serverUrl] = isDirectoryE2EE
             }
 
-            let metadata = convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
+            convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE, capabilities: capabilities) { metadata in
+                if serverUrlMetadataFolder == metadata.serverUrlFileName || metadata.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
+                    metadataFolder = metadata.detachedCopy()
+                } else {
+                    metadatas.append(metadata)
+                }
 
-            if counter == 0 && useFirstAsMetadataFolder {
-                metadataFolder = metadata
-            } else {
-                metadatas.append(metadata)
+                counter += 1
             }
-
-            counter += 1
         }
-        completion(metadataFolder.detachedCopy(), metadatas)
+        completion(metadataFolder, metadatas)
     }
 
-    func convertFilesToMetadatasAsync(_ files: [NKFile], useFirstAsMetadataFolder: Bool) async -> (metadataFolder: tableMetadata, metadatas: [tableMetadata]) {
+    func convertFilesToMetadatasAsync(_ files: [NKFile], serverUrlMetadataFolder: String? = nil) async -> (metadataFolder: tableMetadata, metadatas: [tableMetadata]) {
         var counter: Int = 0
         var isDirectoryE2EE: Bool = false
         var listServerUrl: [String: Bool] = [:]
@@ -101,7 +102,7 @@ extension NCManageDatabase {
 
             let metadata = await convertFileToMetadataAsync(file, isDirectoryE2EE: isDirectoryE2EE)
 
-            if counter == 0 && useFirstAsMetadataFolder {
+            if serverUrlMetadataFolder == metadata.serverUrlFileName || metadata.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
                 metadataFolder = metadata
             } else {
                 metadatas.append(metadata)
@@ -146,7 +147,11 @@ extension NCManageDatabase {
         metadata.favorite = file.favorite
         metadata.fileId = file.fileId
         metadata.fileName = file.fileName
-        metadata.fileNameView = file.fileName
+        if file.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
+            metadata.fileNameView = file.account
+        } else {
+            metadata.fileNameView = file.fileName
+        }
         metadata.hasPreview = file.hasPreview
         metadata.hidden = file.hidden
         metadata.iconName = file.iconName
@@ -172,7 +177,7 @@ extension NCManageDatabase {
         metadata.richWorkspace = file.richWorkspace
         metadata.resourceType = file.resourceType
         metadata.serverUrl = file.serverUrl
-        metadata.serveUrlFileName = file.serverUrl + "/" + file.fileName
+        metadata.serverUrlFileName = file.serverUrl + "/" + file.fileName
         metadata.sharePermissionsCollaborationServices = file.sharePermissionsCollaborationServices
 
         for element in file.shareType {
@@ -222,7 +227,75 @@ extension NCManageDatabase {
                         subline: String? = nil,
                         iconUrl: String? = nil,
                         session: NCSession.Session,
-                        sceneIdentifier: String?) -> tableMetadata {
+                        sceneIdentifier: String?,
+                        completion: @escaping (tableMetadata) -> Void) {
+        Task { @MainActor in
+            let metadata = tableMetadata()
+
+            if isUrl {
+                metadata.classFile = NKTypeClassFile.url.rawValue
+                metadata.contentType = "text/uri-list"
+                metadata.iconName = NKTypeClassFile.url.rawValue
+                metadata.typeIdentifier = "public.url"
+            } else {
+                let results = await NKTypeIdentifiers.shared.getInternalType(fileName: fileName, mimeType: "", directory: false, account: session.account)
+                metadata.classFile = results.classFile
+                metadata.contentType = results.mimeType
+                metadata.iconName = results.iconName
+                metadata.typeIdentifier = results.typeIdentifier
+            }
+            if let iconUrl {
+                metadata.iconUrl = iconUrl
+            }
+
+            let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            metadata.account = session.account
+            metadata.creationDate = Date() as NSDate
+            metadata.date = Date() as NSDate
+            metadata.directory = false
+            metadata.hasPreview = true
+            metadata.etag = ocId
+            metadata.fileName = fileName
+            if fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
+                metadata.fileNameView = session.account
+            } else {
+                metadata.fileNameView = fileName
+            }
+            metadata.fileNameView = fileName
+            metadata.name = name
+            metadata.ocId = ocId
+            metadata.ocIdTransfer = ocId
+            metadata.permissions = "RGDNVW"
+            metadata.serverUrl = serverUrl
+            metadata.serverUrlFileName = serverUrl + "/" + fileName
+            metadata.subline = subline
+            metadata.uploadDate = Date() as NSDate
+            metadata.url = url
+            metadata.urlBase = session.urlBase
+            metadata.user = session.user
+            metadata.userId = session.userId
+            metadata.sceneIdentifier = sceneIdentifier
+            metadata.nativeFormat = !NCKeychain().formatCompatibility
+
+            if !metadata.urlBase.isEmpty, metadata.serverUrl.hasPrefix(metadata.urlBase) {
+                metadata.path = String(metadata.serverUrl.dropFirst(metadata.urlBase.count)) + "/"
+            }
+
+            completion(metadata)
+        }
+    }
+
+    func createMetadataAsync(fileName: String,
+                             ocId: String,
+                             serverUrl: String,
+                             url: String = "",
+                             isUrl: Bool = false,
+                             name: String = NCGlobal.shared.appName,
+                             subline: String? = nil,
+                             iconUrl: String? = nil,
+                             session: NCSession.Session,
+                             sceneIdentifier: String?) async -> tableMetadata {
         let metadata = tableMetadata()
 
         if isUrl {
@@ -231,7 +304,10 @@ extension NCManageDatabase {
             metadata.iconName = NKTypeClassFile.url.rawValue
             metadata.typeIdentifier = "public.url"
         } else {
-            let results = NKTypeIdentifiersHelper(actor: .shared).getInternalTypeSync(fileName: fileName, mimeType: "", directory: false, account: session.account)
+            let results = await NKTypeIdentifiers.shared.getInternalType(fileName: fileName,
+                                                                         mimeType: "",
+                                                                         directory: false,
+                                                                         account: session.account)
             metadata.classFile = results.classFile
             metadata.contentType = results.mimeType
             metadata.iconName = results.iconName
@@ -256,7 +332,7 @@ extension NCManageDatabase {
         metadata.ocIdTransfer = ocId
         metadata.permissions = "RGDNVW"
         metadata.serverUrl = serverUrl
-        metadata.serveUrlFileName = serverUrl + "/" + fileName
+        metadata.serverUrlFileName = serverUrl + "/" + fileName
         metadata.subline = subline
         metadata.uploadDate = Date() as NSDate
         metadata.url = url
@@ -293,7 +369,7 @@ extension NCManageDatabase {
         metadata.ocIdTransfer = ocId
         metadata.permissions = "RGDNVW"
         metadata.serverUrl = serverUrl
-        metadata.serveUrlFileName = serverUrl + "/" + fileName
+        metadata.serverUrlFileName = serverUrl + "/" + fileName
         metadata.uploadDate = Date() as NSDate
         metadata.urlBase = session.urlBase
         metadata.user = session.user

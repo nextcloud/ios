@@ -39,6 +39,11 @@ final class NCDebouncer {
     }
 
     private func commit() {
+        if !Thread.isMainThread {
+            DispatchQueue.main.async { [self] in self.commit() }
+            return
+        }
+
         timer?.invalidate()
         timer = nil
         eventCount = 0

@@ -82,7 +82,7 @@ enum NCUserPermission: CaseIterable, NCPermission {
     }
 
     static func forDirectoryE2EE(account: String) -> [NCPermission] {
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
+        let capabilities = NCNetworking.shared.capabilities[account] ?? NKCapabilities.Capabilities()
         if capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
             return NCUserPermission.allCases
         }
@@ -106,7 +106,7 @@ enum NCUserPermission: CaseIterable, NCPermission {
 
 enum NCLinkEmailPermission: CaseIterable, NCPermission {
     static func forDirectoryE2EE(account: String) -> [any NCPermission] {
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: account)
+        let capabilities = NCNetworking.shared.capabilities[account] ?? NKCapabilities.Capabilities()
         if capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
             return NCUserPermission.allCases
         }
@@ -223,11 +223,12 @@ struct NCShareConfig {
         self.shareable = share
         self.sharePermission = parentMetadata.sharePermissionsCollaborationServices
         self.isDirectory = parentMetadata.directory
-        let type: NCPermission.Type = (share.shareType == NCShareCommon().SHARE_TYPE_LINK || share.shareType == NCShareCommon().SHARE_TYPE_EMAIL) ? NCLinkEmailPermission.self : NCUserPermission.self
+        let type: NCPermission.Type = (share.shareType == NCShareCommon.shareTypeLink || share.shareType == NCShareCommon.shareTypeEmail) ? NCLinkEmailPermission.self : NCUserPermission.self
         self.permissions = parentMetadata.directory ? (parentMetadata.e2eEncrypted ? type.forDirectoryE2EE(account: parentMetadata.account) : type.forDirectory) : type.forFile
 
-        if share.shareType == NCShareCommon().SHARE_TYPE_LINK {
-            let hasDownloadLimitCapability = NKCapabilities.shared.getCapabilitiesBlocking(for: parentMetadata.account).fileSharingDownloadLimit
+        if share.shareType == NCShareCommon.shareTypeLink {
+            let capabilities = NCNetworking.shared.capabilities[parentMetadata.account] ?? NKCapabilities.Capabilities()
+            let hasDownloadLimitCapability = capabilities.fileSharingDownloadLimit
 
             if parentMetadata.isDirectory || hasDownloadLimitCapability == false {
                 self.advanced = NCAdvancedPermission.forLink.filter { $0 != .limitDownload }
