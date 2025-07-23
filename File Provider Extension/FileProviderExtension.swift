@@ -80,7 +80,7 @@ class FileProviderExtension: NSFileProviderExtension {
 
     override func item(for identifier: NSFileProviderItemIdentifier) throws -> NSFileProviderItem {
         if identifier == .rootContainer {
-            let metadata = database.createMetadataDirectory(fileName: "__NC_ROOT__",
+            let metadata = database.createMetadataDirectory(fileName: NextcloudKit.shared.nkCommonInstance.rootFileName,
                                                             ocId: NSFileProviderItemIdentifier.rootContainer.rawValue,
                                                             serverUrl: utilityFileSystem.getHomeServer(session: fileProviderData.shared.session),
                                                             session: fileProviderData.shared.session)
