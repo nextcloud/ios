@@ -43,20 +43,12 @@ class fileProviderData: NSObject {
     }
 
     enum TypeSignal: String {
-        case add
         case delete
         case update
         case workingSet
     }
 
-    struct UploadMetadata {
-        var id: String
-        var metadata: tableMetadata
-        var task: URLSessionUploadTask?
-    }
-    var uploadMetadata: [UploadMetadata] = []
-
-    // MARK: - 
+    // MARK: -
 
     func setupAccount(domain: NSFileProviderDomain?, providerExtension: NSFileProviderExtension) -> tableAccount? {
         let version = NSString(format: NCBrandOptions.shared.textCopyrightNextcloudiOS as NSString, NCUtility().getVersionApp()) as String
