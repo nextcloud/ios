@@ -179,6 +179,39 @@ class fileProviderData: NSObject {
         return item
     }
 
+    @discardableResult
+    func signalEnumerator(ocId: String, type: TypeSignal) -> FileProviderItem? {
+        guard let metadata = database.getMetadataFromOcId(ocId),
+              let parentItemIdentifier = fileProviderUtility().getParentItemIdentifier(metadata: metadata) else {
+            return nil
+        }
+        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+
+        // Get reference to FileProviderManager
+        let manager = fileProviderManager
+
+        switch type {
+        case .add:
+            // Signal parent to remove the item
+            manager.signalEnumerator(for: parentItemIdentifier) { _ in }
+            // Signal the item itself for updates
+            manager.signalEnumerator(for: item.itemIdentifier) { _ in }
+        case .delete:
+            // Signal parent to remove the item
+            manager.signalEnumerator(for: parentItemIdentifier) { _ in }
+        case .update:
+            // Signal the item itself for updates
+            manager.signalEnumerator(for: item.itemIdentifier) { _ in }
+        case .workingSet:
+            break
+        }
+
+        // Always signal the workingSet to keep "Recents" updated
+        manager.signalEnumerator(for: .workingSet) { _ in }
+
+        return item
+    }
+
     // MARK: - DOWNLOAD
 
     func downloadComplete(metadata: tableMetadata, task: URLSessionTask, etag: String?, error: NKError) async {
@@ -266,17 +299,3 @@ class fileProviderData: NSObject {
     }
 }
 
-class WorkingSetItem: NSObject, NSFileProviderItem {
-    var itemIdentifier: NSFileProviderItemIdentifier { .workingSet }
-    var parentItemIdentifier: NSFileProviderItemIdentifier { .rootContainer }
-    var filename: String { "Recent Items" }
-    var typeIdentifier: String { return UTType.folder.identifier }
-
-    var capabilities: NSFileProviderItemCapabilities {
-        return [.allowsContentEnumerating]
-    }
-
-    var contentModificationDate: Date? { Date() }
-    var creationDate: Date? { Date() }
-    var versionIdentifier: Data? { "1".data(using: .utf8) }
-}
