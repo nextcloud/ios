@@ -7,6 +7,7 @@
 //
 
 import NextcloudKit
+import UIKit
 
 extension FileAutoRenamer {
     static func rename(_ filename: String, isFolderPath: Bool = false, capabilities: NKCapabilities.Capabilities) -> String {

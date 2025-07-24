@@ -297,7 +297,6 @@ final class NCBrandColor: @unchecked Sendable {
         }
 
         if self.themingColor[account] != colorThemingColor || self.themingColorElement[account] != colorThemingColorElement || self.themingColorText[account] != colorThemingColorText {
-
             self.themingColor[account] = colorThemingColor
             self.themingColorElement[account] = colorThemingColorElement
             self.themingColorText[account] = colorThemingColorText

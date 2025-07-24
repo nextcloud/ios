@@ -464,8 +464,8 @@ fileprivate extension AVAsset {
 extension NCLivePhoto {
     /*
     func setLivephotoUpload(metadata: tableMetadata) {
-        let capabilities = NKCapabilities.shared.getCapabilitiesBlocking(for: metadata.account)
-        guard capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion28 else {
+        guard let capabilities = NCNetworking.shared.capabilities[metadata.account],
+              capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion28 else {
             return
         }
 
