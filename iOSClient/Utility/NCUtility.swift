@@ -33,7 +33,6 @@ final class NCUtility: NSObject, Sendable {
     let global = NCGlobal.shared
 
     func isTypeFileRichDocument(_ metadata: tableMetadata) -> Bool {
-        guard metadata.fileNameView != "." else { return false }
         let fileExtension = (metadata.fileNameView as NSString).pathExtension
         guard let capabilities = NCNetworking.shared.capabilities[metadata.account],
               !fileExtension.isEmpty,

@@ -405,7 +405,7 @@ class NCMetadataForSection: NSObject {
         for metadata in metadatasSorted {
 
             // skipped the root file
-            if metadata.fileName == "." || metadata.serverUrl == ".." {
+            if metadata.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
                 continue
             }
 

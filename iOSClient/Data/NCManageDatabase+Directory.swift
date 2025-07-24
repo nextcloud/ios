@@ -59,6 +59,35 @@ extension NCManageDatabase {
         }
     }
 
+    func addDirectory(e2eEncrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String? = nil, permissions: String? = nil, richWorkspace: String? = nil, serverUrl: String, account: String) {
+        performRealmWrite { realm in
+            if let existing = realm.objects(tableDirectory.self)
+                .filter("account == %@ AND ocId == %@", account, ocId)
+                .first {
+
+                existing.e2eEncrypted = e2eEncrypted
+                existing.favorite = favorite
+                if let etag { existing.etag = etag }
+                if let permissions { existing.permissions = permissions }
+                if let richWorkspace { existing.richWorkspace = richWorkspace }
+
+            } else {
+                let directory = tableDirectory()
+                directory.e2eEncrypted = e2eEncrypted
+                directory.favorite = favorite
+                directory.ocId = ocId
+                directory.fileId = fileId
+                if let etag { directory.etag = etag }
+                if let permissions { directory.permissions = permissions }
+                if let richWorkspace { directory.richWorkspace = richWorkspace }
+                directory.serverUrl = serverUrl
+                directory.account = account
+
+                realm.add(directory, update: .modified)
+            }
+        }
+    }
+
     func addDirectoriesAsync(metadatas: [tableMetadata]) async {
         let detached = metadatas.map { $0.detachedCopy() }
 
