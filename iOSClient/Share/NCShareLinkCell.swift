@@ -48,7 +48,7 @@ class NCShareLinkCell: UITableViewCell {
 
     func setupCellUI(titleAppendString: String? = nil) {
         var menuImageName = "ellipsis"
-        let permissions = NCPermissions()
+        let permissions = NCSharePermissions()
 
         menuButton.isHidden = isInternalLink
         descriptionLabel.isHidden = !isInternalLink

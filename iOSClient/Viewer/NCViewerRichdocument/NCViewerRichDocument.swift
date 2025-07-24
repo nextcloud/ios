@@ -67,6 +67,11 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
         webView = WKWebView(frame: CGRect.zero, configuration: config)
         webView.navigationDelegate = self
+
+        if #available(iOS 16.4, *) {
+            webView.isInspectable = true
+        }
+
         view.addSubview(webView)
 
         webView.translatesAutoresizingMaskIntoConstraints = false
