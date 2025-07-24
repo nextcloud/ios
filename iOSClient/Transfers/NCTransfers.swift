@@ -353,8 +353,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
                             }
                         }
 
-                        print(modifiedObject.progress)
-                        print("Modified: \(modifiedObject.status)")
+                        nkLog("Progress updated: \(modifiedObject.progress)")
+                        nkLog("Modified status: \(modifiedObject.status)")
                     }
                 case .error:
                     break
