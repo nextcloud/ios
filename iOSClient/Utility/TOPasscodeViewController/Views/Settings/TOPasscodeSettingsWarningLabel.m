@@ -98,7 +98,7 @@
         text = NSLocalizedString(@"1 Failed Passcode Attempt", @"");
     }
     else {
-        text = [NSString stringWithFormat:NSLocalizedString(@"%ld Failed Passcode Attempts", @""), (long)count];
+        text = [NSString stringWithFormat:NSLocalizedString(@"%ld Failed Passcode Attempts", @""), count];
     }
     self.label.text = text;
 
