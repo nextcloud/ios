@@ -236,14 +236,14 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
         }
 
         Task {
-            if (share.shareType == NCShareCommon().SHARE_TYPE_LINK || share.shareType == NCShareCommon().SHARE_TYPE_EMAIL) && NCPermissions().isPermissionToCanShare(share.permissions) {
+            if (share.shareType == NCShareCommon.shareTypeLink || share.shareType == NCShareCommon.shareTypeEmail) && NCPermissions().isPermissionToCanShare(share.permissions) {
                 share.permissions = share.permissions - NCPermissions().permissionShareShare
             }
 
             if isNewShare {
                 let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
 
-                if share.shareType != NCShareCommon().SHARE_TYPE_LINK, metadata.e2eEncrypted,
+                if share.shareType != NCShareCommon.shareTypeLink, metadata.e2eEncrypted,
                    capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
 
                     if await NCNetworkingE2EE().isInUpload(account: metadata.account, serverUrl: metadata.serverUrlFileName) {
