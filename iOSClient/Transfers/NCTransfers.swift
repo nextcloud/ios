@@ -352,9 +352,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
                                 cell.setProgress(progress: newProgress)
                             }
                         }
-
-                        nkLog("Progress updated: \(modifiedObject.progress)")
-                        nkLog("Modified status: \(modifiedObject.status)")
                     }
                 case .error:
                     break
