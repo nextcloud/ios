@@ -35,7 +35,7 @@ extension NCMedia: NCMediaLayoutDelegate {
         if dataSource.metadatas.count == 0 {
             return .zero
         } else {
-            return 70.0
+            return 100.0
         }
     }
 
