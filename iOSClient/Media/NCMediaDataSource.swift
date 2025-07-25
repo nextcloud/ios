@@ -192,13 +192,13 @@ extension NCMedia {
 
             await self.database.addMetadatasAsync(filtered)
 
-            if await self.dataSource.addMetadatas(metadatas) {
-                await self.collectionViewReloadData()
-            }
-
             await MainActor.run {
                 self.activityIndicator.stopAnimating()
                 self.searchMediaInProgress = false
+            }
+
+            if await self.dataSource.addMetadatas(metadatas) {
+                await self.collectionViewReloadData()
             }
         }
     }
@@ -273,6 +273,10 @@ public class NCMediaDataSource: NSObject {
         metadatas.removeAll()
     }
 
+    func isEmpty() -> Bool {
+        return self.metadatas.isEmpty
+    }
+
     func indexPath(forOcId ocId: String) -> IndexPath? {
         guard let index = self.metadatas.firstIndex(where: { $0.ocId == ocId }) else {
             return nil
@@ -307,6 +311,9 @@ public class NCMediaDataSource: NSObject {
     }
 
     func addMetadatas(_ metadatas: [tableMetadata]) -> Bool {
+        guard metadatas.isEmpty == false else {
+            return true
+        }
         var newMetadatas: [Metadata] = []
 
         for tableMetadata in metadatas {

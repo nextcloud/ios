@@ -17,8 +17,6 @@ class NCMedia: UIViewController {
     @IBOutlet weak var gradientView: UIView!
     @IBOutlet weak var stackView: UIStackView!
 
-    let semaphoreNotificationCenter = DispatchSemaphore(value: 1)
-
     let layout = NCMediaLayout()
     var layoutType = NCGlobal.shared.mediaLayoutRatio
     var documentPickerViewController: NCDocumentPickerViewController?
