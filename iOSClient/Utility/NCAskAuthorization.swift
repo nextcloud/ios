@@ -31,10 +31,10 @@ class NCAskAuthorization: NSObject {
 
     func askAuthorizationAudioRecord(viewController: UIViewController?, completion: @escaping (_ hasPermission: Bool) -> Void) {
 
-        switch AVAudioSession.sharedInstance().recordPermission {
-        case AVAudioSession.RecordPermission.granted:
+        switch AVAudioApplication.shared.recordPermission {
+        case .granted:
             completion(true)
-        case AVAudioSession.RecordPermission.denied:
+        case .denied:
             let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_err_permission_microphone_", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("_open_settings_", comment: ""), style: .default, handler: { _ in
 #if !EXTENSION
@@ -48,10 +48,10 @@ class NCAskAuthorization: NSObject {
             DispatchQueue.main.async {
                 viewController?.present(alert, animated: true, completion: nil)
             }
-        case AVAudioSession.RecordPermission.undetermined:
-            AVAudioSession.sharedInstance().requestRecordPermission { allowed in
+        case .undetermined:
+            AVAudioApplication.requestRecordPermission { granted in
                 DispatchQueue.main.async {
-                    if allowed {
+                    if granted {
                         completion(true)
                     } else {
                         completion(false)

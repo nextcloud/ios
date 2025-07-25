@@ -1,25 +1,6 @@
-//
-//  NCAccountSettingsView.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 06/06/24.
-//  Copyright © 2024 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2024 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
 import NextcloudKit
@@ -130,7 +111,7 @@ struct NCAccountSettingsView: View {
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                     .frame(height: model.getTableViewHeight())
                     .animation(.easeIn(duration: 0.3), value: animation)
-                    .onChange(of: model.indexActiveAccount) { index in
+                    .onChange(of: model.indexActiveAccount) { index, _ in
                         animation.toggle()
                         model.setAccount(account: model.tblAccounts[index].account)
                     }
@@ -144,7 +125,7 @@ struct NCAccountSettingsView: View {
                             TextField(NSLocalizedString("_alias_placeholder_", comment: ""), text: $model.alias)
                                 .font(.callout)
                                 .multilineTextAlignment(.trailing)
-                                .onChange(of: model.alias) { newValue in
+                                .onChange(of: model.alias) { newValue, _ in
                                     model.setAlias(newValue)
                                 }
                         }
@@ -180,7 +161,7 @@ struct NCAccountSettingsView: View {
                                 UserStatusView(showUserStatus: $showUserStatus, account: account)
                             }
                         }
-                        .onChange(of: showUserStatus) { _ in }
+                        .onChange(of: showUserStatus) { }
                     }
                     ///
                     /// Certificate server
@@ -295,7 +276,7 @@ struct NCAccountSettingsView: View {
         }
         .onDisappear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                model.delegate?.accountSettingsDidDismiss(tableAccount: model.tblAccount, controller: model.controller)
+                model.delegate?.accountSettingsDidDismiss(tblAccount: model.tblAccount, controller: model.controller)
             }
         }
     }

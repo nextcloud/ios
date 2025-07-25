@@ -28,6 +28,7 @@ import Alamofire
 
 extension NCCollectionViewCommon: UICollectionViewDelegate {
     func didSelectMetadata(_ metadata: tableMetadata, withOcIds: Bool) {
+        let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
         if metadata.e2eEncrypted {
             if capabilities.e2EEEnabled {
                 if !NCKeychain().isEndToEndEnabled(account: metadata.account) {
@@ -45,7 +46,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         if metadata.directory {
             pushMetadata(metadata)
         } else {
-            let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt1024)
+            let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
 
             if !metadata.isDirectoryE2EE, metadata.isImage || metadata.isAudioOrVideo {
                 let metadatas = self.dataSource.getMetadatas()
@@ -72,23 +73,22 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                         let hud = NCHud(self.tabBarController?.view)
                         var downloadRequest: DownloadRequest?
 
-                        hud.initHudRing(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
+                        hud.ringProgress(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
                             if let request = downloadRequest {
                                 request.cancel()
                             }
                         }
 
-                        self.networking.download(metadata: metadata) {
-                        } requestHandler: { request in
+                        let results = await self.networking.downloadFile(metadata: metadata) { request in
                             downloadRequest = request
                         } progressHandler: { progress in
                             hud.progress(progress.fractionCompleted)
-                        } completion: { afError, error in
-                            if error == .success || afError?.isExplicitlyCancelledError ?? false {
-                                hud.dismiss()
-                            } else {
-                                hud.error(text: error.errorDescription)
-                            }
+                        }
+                        if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {
+                            hud.dismiss()
+                        } else {
+                            hud.error(text: results.nkError.errorDescription)
+
                         }
                     } else if !metadata.url.isEmpty {
                         NCViewer().view(viewController: self, metadata: metadata, image: nil)
@@ -129,7 +129,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             return nil
         }
         let identifier = indexPath as NSCopying
-        var image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024)
+        var image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
 
         if image == nil {
             let cell = collectionView.cellForItem(at: indexPath)

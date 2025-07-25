@@ -44,13 +44,14 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation, @unchecked Sendabl
         guard !isCancelled else {
             return self.finish()
         }
+
         Task {
             let resultsPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: metadata.fileId, etag: metadata.etag, account: metadata.account)
             if resultsPreview.error == .success,
                let data = resultsPreview.responseData?.data,
                let collectionView = self.collectionView {
                 NCUtility().createImageFileFrom(data: data, metadata: self.metadata)
-                let image = self.utility.getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: self.ext)
+                let image = self.utility.getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: self.ext, userId: self.metadata.userId, urlBase: self.metadata.urlBase)
 
                 Task { @MainActor in
                     for case let cell as NCCellProtocol in collectionView.visibleCells where cell.fileOcId == self.metadata.ocId {

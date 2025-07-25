@@ -77,7 +77,10 @@ extension NCUtility {
             print("Storage exists or file is not an image")
         }
 
-        let url = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+        let url = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
+                                                                                         fileName: metadata.fileNameView,
+                                                                                         userId: metadata.userId,
+                                                                                         urlBase: metadata.urlBase))
 
         guard let originalSource = CGImageSourceCreateWithURL(url as CFURL, nil),
               let imageProperties = CGImageSourceCopyPropertiesAtIndex(originalSource, 0, nil) as NSDictionary? else {

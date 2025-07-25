@@ -144,16 +144,19 @@ class NCMainTabBarController: UITabBarController {
 
     private func timerCheck() {
         self.timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: false, block: { _ in
-            /// Check error
-            NCNetworking.shared.checkServerError(account: self.account, controller: self) {
-                Task { @MainActor in
-                    /// Update right bar button item
+            Task {
+                let capabilities = await NKCapabilities.shared.getCapabilities(for: self.account)
+
+                // Check error
+                await NCNetworking.shared.checkServerError(account: self.account, controller: self)
+
+                await MainActor.run {
+                    // Update right bar button item
                     if let navigationController = self.selectedViewController as? NCMainNavigationController {
                         navigationController.updateRightBarButtonItems(self.tabBar.items?[0])
                     }
-                    /// Update Activity tab bar
+                    // Update Activity tab bar
                     if let item = self.tabBar.items?[3] {
-                        let capabilities = await NKCapabilities.shared.getCapabilities(for: self.account)
                         item.isEnabled = capabilities.activityEnabled
                     }
 

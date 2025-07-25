@@ -34,19 +34,19 @@ struct NCFileNameView: View {
                 Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $model.maintainFilenameOriginal)
                     .font(.system(size: 16))
                     .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                    .onChange(of: model.maintainFilenameOriginal, perform: { newValue in
+                    .onChange(of: model.maintainFilenameOriginal) { newValue, _ in
                         model.toggleMaintainFilenameOriginal(newValue: newValue)
                         model.getFileName()
-                    })
+                    }
                 /// Filename
                 if !model.maintainFilenameOriginal {
                     Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $model.addFileNameType)
                         .font(.system(size: 16))
                         .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                        .onChange(of: model.addFileNameType, perform: { newValue in
+                        .onChange(of: model.addFileNameType) { newValue, _ in
                             model.toggleAddFilenameType(newValue: newValue)
                             model.getFileName()
-                        })
+                        }
                 }
             }
             .transition(.slide)
@@ -72,10 +72,10 @@ struct NCFileNameView: View {
                         .fontWeight(.medium)
                     Spacer()
                     TextField(NSLocalizedString("_filename_header_", comment: ""), text: $model.changedName)
-                        .onChange(of: model.changedName, perform: { _ in
+                        .onChange(of: model.changedName) {
                             model.submitChangedName()
                             model.getFileName()
-                        })
+                        }
                         .autocapitalization(.none)
                         .font(.system(size: 15))
                         .multilineTextAlignment(.trailing)

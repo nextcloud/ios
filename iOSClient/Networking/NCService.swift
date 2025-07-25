@@ -34,23 +34,36 @@ class NCService: NSObject {
 
     // MARK: -
 
-    public func startRequestServicesServer(account: String, controller: NCMainTabBarController?) {
-        guard !account.isEmpty
-        else {
+    public func startRequestServicesServer(account: String, controller: NCMainTabBarController?) async {
+        // Ensure the account string is not empty
+        guard !account.isEmpty else {
             return
         }
 
-        Task(priority: .utility) {
-            await self.database.clearAllAvatarLoadedAsync()
-            let result = await requestServerStatus(account: account, controller: controller)
-            if result {
-                await requestServerCapabilities(account: account, controller: controller)
-                await getAvatar(account: account)
-                await NCNetworkingE2EE().unlockAll(account: account)
-                await sendClientDiagnosticsRemoteOperation(account: account)
-                await synchronize(account: account)
-                await requestDashboardWidget(account: account)
-            }
+        // Clear cached avatar loading state from the local database
+        await self.database.clearAllAvatarLoadedAsync()
+
+        // Request the server status and continue only if it's valid
+        let result = await requestServerStatus(account: account, controller: controller)
+
+        if result {
+            // Request server capabilities and cache them
+            await requestServerCapabilities(account: account, controller: controller)
+
+            // Download and cache the user's avatar
+            await getAvatar(account: account)
+
+            // Attempt to unlock all E2EE keys for the account
+            await NCNetworkingE2EE().unlockAll(account: account)
+
+            // Send client-side diagnostic information to the server
+            await sendClientDiagnosticsRemoteOperation(account: account)
+
+            // Start a background synchronization task
+            await synchronize(account: account)
+
+            // Fetch and display dashboard widgets if available
+            await requestDashboardWidget(account: account)
         }
     }
 
@@ -111,8 +124,7 @@ class NCService: NSObject {
     private func requestServerCapabilities(account: String, controller: NCMainTabBarController?) async {
         let resultsCapabilities = await NextcloudKit.shared.getCapabilitiesAsync(account: account)
         guard resultsCapabilities.error == .success,
-              let data = resultsCapabilities.responseData?.data,
-              let capabiresultsCapabilitieslities = resultsCapabilities.capabilities else {
+              let data = resultsCapabilities.responseData?.data else {
             return
         }
 
@@ -174,10 +186,13 @@ class NCService: NSObject {
 
     func synchronize(account: String) async {
         let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: account)
+        guard let tblAccount = await self.database.getTableAccountAsync(account: account) else {
+            return
+        }
 
         nkLog(tag: self.global.logTagSync, emoji: .start, message: "Synchronize favorite for account: \(account)")
 
-        await self.database.cleanTablesOcIds(account: account)
+        await self.database.cleanTablesOcIds(account: tblAccount.account, userId: tblAccount.userId, urlBase: tblAccount.urlBase)
 
         let resultsFavorite = await NextcloudKit.shared.listingFavoritesAsync(showHiddenFiles: showHiddenFiles, account: account)
         if resultsFavorite.error == .success, let files = resultsFavorite.files {
@@ -193,14 +208,23 @@ class NCService: NSObject {
         // Synchronize Directory
         let directories = await self.database.getTablesDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "serverUrl", ascending: true)
         for directory in directories {
-            await NCNetworking.shared.synchronization(account: account, serverUrl: directory.serverUrl, metadatasInDownload: metadatasInDownload)
+            await NCNetworking.shared.synchronization(account: account,
+                                                      serverUrl: directory.serverUrl,
+                                                      userId: tblAccount.userId,
+                                                      urlBase: tblAccount.urlBase,
+                                                      metadatasInDownload: metadatasInDownload)
         }
 
         // Synchronize Files
         let files = await self.database.getTableLocalFilesAsync(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "fileName", ascending: true)
         for file in files {
             if let metadata = await self.database.getMetadataFromOcIdAsync(file.ocId),
-               await NCNetworking.shared.isFileDifferent(ocId: metadata.ocId, fileName: metadata.fileName, etag: metadata.etag, metadatasInDownload: metadatasInDownload) {
+               await NCNetworking.shared.isFileDifferent(ocId: metadata.ocId,
+                                                         fileName: metadata.fileName,
+                                                         etag: metadata.etag,
+                                                         metadatasInDownload: metadatasInDownload,
+                                                         userId: metadata.userId,
+                                                         urlBase: metadata.urlBase) {
                 await self.database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
                                                                           session: NCNetworking.shared.sessionDownloadBackground,
                                                                           selector: NCGlobal.shared.selectorSynchronizationOffline)

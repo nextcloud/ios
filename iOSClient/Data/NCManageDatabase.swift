@@ -200,7 +200,7 @@ final class NCManageDatabase: @unchecked Sendable {
 
     private func compactDB(_ totalBytes: Int, _ usedBytes: Int) -> Bool {
         let usedPercentage = (Double(usedBytes) / Double(totalBytes)) * 100
-        /// Compact the database if more than 25% of the space is free
+        // Compact the database if more than 25% of the space is free
         let shouldCompact = (usedPercentage < 75.0) && (totalBytes > 100 * 1024 * 1024)
 
         return shouldCompact
@@ -350,6 +350,19 @@ final class NCManageDatabase: @unchecked Sendable {
         }
     }
 
+    func clearTableAsync(_ table: Object.Type, account: String? = nil) async {
+        await performRealmWriteAsync { realm in
+            var results: Results<Object>
+            if let account = account {
+                results = realm.objects(table).filter("account == %@", account)
+            } else {
+                results = realm.objects(table)
+            }
+
+            realm.delete(results)
+        }
+    }
+
     func clearDatabase(account: String? = nil, removeAccount: Bool = false, removeAutoUpload: Bool = false) {
         if removeAccount {
             self.clearTable(tableAccount.self, account: account)
@@ -398,7 +411,7 @@ final class NCManageDatabase: @unchecked Sendable {
         self.clearTable(tableE2eCounter.self, account: account)
     }
 
-    func cleanTablesOcIds(account: String) async {
+    func cleanTablesOcIds(account: String, userId: String, urlBase: String) async {
         let metadatas = await getMetadatasAsync(predicate: NSPredicate(format: "account == %@", account))
         let directories = await getDirectoriesAsync(predicate: NSPredicate(format: "account == %@", account))
         let locals = await getTableLocalFilesAsync(predicate: NSPredicate(format: "account == %@", account))
@@ -414,7 +427,7 @@ final class NCManageDatabase: @unchecked Sendable {
             for ocId in localMissingOcIds {
                 group.addTask {
                     await self.deleteLocalFileOcIdAsync(ocId)
-                    self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
+                    self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, userId: userId, urlBase: urlBase))
                 }
             }
         }
@@ -527,22 +540,22 @@ final class NCManageDatabase: @unchecked Sendable {
     // MARK: -
     // MARK: SWIFTUI PREVIEW
 
-    func previewCreateDB() {
-        /// Account
+    func previewCreateDB() async {
+        // Account
         let account = "marinofaggiana https://cloudtest.nextcloud.com"
         let account2 = "mariorossi https://cloudtest.nextcloud.com"
-        addAccount(account, urlBase: "https://cloudtest.nextcloud.com", user: "marinofaggiana", userId: "marinofaggiana", password: "password")
-        addAccount(account2, urlBase: "https://cloudtest.nextcloud.com", user: "mariorossi", userId: "mariorossi", password: "password")
+        await addAccountAsync(account, urlBase: "https://cloudtest.nextcloud.com", user: "marinofaggiana", userId: "marinofaggiana", password: "password")
+        await addAccountAsync(account2, urlBase: "https://cloudtest.nextcloud.com", user: "mariorossi", userId: "mariorossi", password: "password")
         let userProfile = NKUserProfile()
         userProfile.displayName = "Marino Faggiana"
         userProfile.address = "Hirschstrasse 26, 70192 Stuttgart, Germany"
         userProfile.phone = "+49 (711) 252 428 - 90"
         userProfile.email = "cloudtest@nextcloud.com"
-        setAccountUserProfile(account: account, userProfile: userProfile)
+        await setAccountUserProfileAsync(account: account, userProfile: userProfile)
         let userProfile2 = NKUserProfile()
         userProfile2.displayName = "Mario Rossi"
         userProfile2.email = "cloudtest@nextcloud.com"
-        setAccountUserProfile(account: account2, userProfile: userProfile2)
+        await setAccountUserProfileAsync(account: account2, userProfile: userProfile2)
     }
 }
 

@@ -147,20 +147,20 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        let folderPath = utilityFileSystem.getFileNamePath("", serverUrl: serverUrl, session: session)
-        let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
+        Task { @MainActor in
+            let folderPath = utilityFileSystem.getFileNamePath("", serverUrl: serverUrl, session: session)
+            let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
 
-        if serverUrl.isEmpty || !FileNameValidator.checkFolderPath(folderPath, account: session.account, capabilities: capabilities) {
-            serverUrl = utilityFileSystem.getHomeServer(session: session)
-            titleCurrentFolder = NCBrandOptions.shared.brand
-        }
+            if serverUrl.isEmpty || !FileNameValidator.checkFolderPath(folderPath, account: session.account, capabilities: capabilities) {
+                serverUrl = utilityFileSystem.getHomeServer(session: session)
+                titleCurrentFolder = NCBrandOptions.shared.brand
+            }
 
-        autoUploadFileName = self.database.getAccountAutoUploadFileName(account: session.account)
-        autoUploadDirectory = self.database.getAccountAutoUploadDirectory(session: session)
+            autoUploadFileName = await self.database.getAccountAutoUploadFileNameAsync(account: session.account)
+            autoUploadDirectory = await self.database.getAccountAutoUploadDirectoryAsync(account: session.account, urlBase: session.urlBase, userId: session.userId)
 
-        self.navigationItem.title = titleCurrentFolder
+            self.navigationItem.title = titleCurrentFolder
 
-        Task {
             await reloadDataSource()
         }
     }
@@ -239,9 +239,11 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     }
 
     func createFolderButtonPressed(_ sender: UIButton) {
-        let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
-        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, session: session, capabilities: capabilities)
-        self.present(alertController, animated: true, completion: nil)
+        Task { @MainActor in
+            let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
+            let alertController = UIAlertController.createFolder(serverUrl: serverUrl, session: session, capabilities: capabilities)
+            self.present(alertController, animated: true, completion: nil)
+        }
     }
 
     @IBAction func valueChangedSwitchOverwrite(_ sender: UISwitch) {
@@ -263,28 +265,31 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     // MARK: - Push metadata
 
     func pushMetadata(_ metadata: tableMetadata) {
-        let serverUrlPush = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
-        guard let viewController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect else { return }
-        let capabilities = NCNetworking.shared.capabilities[metadata.account] ?? NKCapabilities.Capabilities()
+        Task { @MainActor in
+            let serverUrlPush = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
+            guard let viewController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect else { return }
+            let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
 
-        self.serverUrlPush = serverUrlPush
+            self.serverUrlPush = serverUrlPush
 
-        viewController.delegate = delegate
-        viewController.typeOfCommandView = typeOfCommandView
-        viewController.includeDirectoryE2EEncryption = includeDirectoryE2EEncryption
-        viewController.includeImages = includeImages
-        viewController.enableSelectFile = enableSelectFile
-        viewController.type = type
-        viewController.overwrite = overwrite
-        viewController.items = items
-        viewController.titleCurrentFolder = metadata.fileNameView
-        viewController.serverUrl = serverUrlPush
-        viewController.session = session
+            viewController.delegate = delegate
+            viewController.typeOfCommandView = typeOfCommandView
+            viewController.includeDirectoryE2EEncryption = includeDirectoryE2EEncryption
+            viewController.includeImages = includeImages
+            viewController.enableSelectFile = enableSelectFile
+            viewController.type = type
+            viewController.overwrite = overwrite
+            viewController.items = items
+            viewController.titleCurrentFolder = metadata.fileNameView
+            viewController.serverUrl = serverUrlPush
+            viewController.session = session
 
-        if let fileNameError = FileNameValidator.checkFileName(metadata.fileNameView, account: session.account, capabilities: capabilities) {
-            present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
-        } else {
-            navigationController?.pushViewController(viewController, animated: true)
+            if let fileNameError = FileNameValidator.checkFileName(metadata.fileNameView, account: session.account, capabilities: capabilities) {
+                let message = "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"
+                await UIAlertController.warningAsync(message: message, presenter: self)
+            } else {
+                navigationController?.pushViewController(viewController, animated: true)
+            }
         }
     }
 }
@@ -314,7 +319,7 @@ extension NCSelect: UICollectionViewDataSource {
 
         // Thumbnail
         if !metadata.directory {
-            if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512) {
+            if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512, userId: metadata.userId, urlBase: metadata.urlBase) {
                 (cell as? NCCellProtocol)?.filePreviewImageView?.image = image
             } else {
                 if metadata.iconName.isEmpty {

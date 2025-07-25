@@ -27,6 +27,7 @@ import UIKit
 import Photos
 import NextcloudKit
 import EasyTipView
+import SwiftUI
 
 enum AutoUploadTimespan: String, CaseIterable, Identifiable {
     case allPhotos = "_all_photos_"
@@ -143,59 +144,74 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     /// Updates the auto-upload image setting.
     func handleAutoUploadImageChange(newValue: Bool) {
-        database.updateAccountProperty(\.autoUploadImage, value: newValue, account: session.account)
+        Task {
+            await database.updateAccountPropertyAsync(\.autoUploadImage, value: newValue, account: session.account)
+        }
     }
 
     /// Updates the auto-upload image over WWAN setting.
     func handleAutoUploadWWAnPhotoChange(newValue: Bool) {
-        database.updateAccountProperty(\.autoUploadWWAnPhoto, value: newValue, account: session.account)
+        Task {
+            await database.updateAccountPropertyAsync(\.autoUploadWWAnPhoto, value: newValue, account: session.account)
+        }
     }
 
     /// Updates the auto-upload video setting.
     func handleAutoUploadVideoChange(newValue: Bool) {
-        database.updateAccountProperty(\.autoUploadVideo, value: newValue, account: session.account)
+        Task {
+            await database.updateAccountPropertyAsync(\.autoUploadVideo, value: newValue, account: session.account)
+        }
     }
 
     /// Updates the auto-upload video over WWAN setting.
     func handleAutoUploadWWAnVideoChange(newValue: Bool) {
-        database.updateAccountProperty(\.autoUploadWWAnVideo, value: newValue, account: session.account)
+        Task {
+            await database.updateAccountPropertyAsync(\.autoUploadWWAnVideo, value: newValue, account: session.account)
+        }
     }
 
     func handleAutoUploadOnlyNew(newValue: Bool) {
-        database.updateAccountProperty(\.autoUploadOnlyNew, value: newValue, account: session.account)
+        Task {
+            await database.updateAccountPropertyAsync(\.autoUploadOnlyNew, value: newValue, account: session.account)
+        }
     }
 
     /// Updates the auto-upload full content setting.
     func handleAutoUploadChange(newValue: Bool, assetCollections: [PHAssetCollection]) {
-        if let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)), tableAccount.autoUploadStart == newValue {
-            return
-        }
-
-        database.updateAccountProperty(\.autoUploadStart, value: newValue, account: session.account)
-
-        if newValue {
-            if autoUploadOnlyNew {
-                database.updateAccountProperty(\.autoUploadOnlyNewSinceDate, value: Date.now, account: session.account)
+        Task {
+            if let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", session.account)), tblAccount.autoUploadStart == newValue {
+                return
             }
-            Task {
+
+            await database.updateAccountPropertyAsync(\.autoUploadStart, value: newValue, account: session.account)
+
+            if newValue {
+                if autoUploadOnlyNew {
+                    await database.updateAccountPropertyAsync(\.autoUploadOnlyNewSinceDate, value: Date.now, account: session.account)
+                }
+
                 _ = await NCAutoUpload.shared.startManualAutoUploadForAlbums(controller: self.controller,
                                                                              model: self,
                                                                              assetCollections: assetCollections,
                                                                              account: session.account)
+            } else {
+                await database.clearMetadatasUploadAsync(account: session.account)
             }
-        } else {
-            database.clearMetadatasUpload(account: session.account)
         }
     }
 
     /// Updates the auto-upload create subfolder setting.
     func handleAutoUploadCreateSubfolderChange(newValue: Bool) {
-        database.updateAccountProperty(\.autoUploadCreateSubfolder, value: newValue, account: session.account)
+        Task {
+            await database.updateAccountPropertyAsync(\.autoUploadCreateSubfolder, value: newValue, account: session.account)
+        }
     }
 
     /// Updates the auto-upload subfolder granularity setting.
     func handleAutoUploadSubfolderGranularityChange(newValue: Granularity) {
-        database.updateAccountProperty(\.autoUploadSubfolderGranularity, value: newValue.rawValue, account: session.account)
+        Task {
+            await database.updateAccountPropertyAsync(\.autoUploadSubfolderGranularity, value: newValue.rawValue, account: session.account)
+        }
     }
 
     /// Returns the path for auto-upload based on the active account's settings.

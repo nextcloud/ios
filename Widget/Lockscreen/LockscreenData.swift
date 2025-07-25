@@ -53,7 +53,7 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
     }
 
     guard let activeTableAccount else {
-        return completion(LockscreenData(date: Date(), isPlaceholder: true, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: false))
+            return completion(LockscreenData(date: Date(), isPlaceholder: true, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: false))
     }
 
     // NETWORKING
@@ -72,44 +72,43 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
                                       groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
     let options = NKRequestOptions(timeout: 90, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-    if #available(iOSApplicationExtension 16.0, *) {
-        if family == .accessoryCircular {
-            NextcloudKit.shared.getUserMetadata(account: activeTableAccount.account, userId: activeTableAccount.userId, options: options) { _, userProfile, _, error in
-                if error == .success, let userProfile = userProfile {
-                    if userProfile.quotaRelative > 0 {
-                        quotaRelative = Float(userProfile.quotaRelative) / 100
-                    }
-                    let quotaUsed: String = utilityFileSystem.transformedSize(userProfile.quotaUsed)
-                    var quotaTotal: String = ""
 
-                    switch userProfile.quotaTotal {
-                    case -1:
-                        quotaTotal = ""
-                    case -2:
-                        quotaTotal = ""
-                    case -3:
-                        quotaTotal = ""
-                    default:
-                        quotaTotal = utilityFileSystem.transformedSize(userProfile.quotaTotal)
-                    }
-                    completion(LockscreenData(date: Date(), isPlaceholder: false, activity: "", link: URL(string: "https://")!, quotaRelative: quotaRelative, quotaUsed: quotaUsed, quotaTotal: quotaTotal, error: false))
-                } else {
-                    completion(LockscreenData(date: Date(), isPlaceholder: false, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: true))
+    if family == .accessoryCircular {
+        NextcloudKit.shared.getUserMetadata(account: activeTableAccount.account, userId: activeTableAccount.userId, options: options) { _, userProfile, _, error in
+            if error == .success, let userProfile = userProfile {
+                if userProfile.quotaRelative > 0 {
+                    quotaRelative = Float(userProfile.quotaRelative) / 100
                 }
+                let quotaUsed: String = utilityFileSystem.transformedSize(userProfile.quotaUsed)
+                var quotaTotal: String = ""
+
+                switch userProfile.quotaTotal {
+                case -1:
+                    quotaTotal = ""
+                case -2:
+                    quotaTotal = ""
+                case -3:
+                    quotaTotal = ""
+                default:
+                    quotaTotal = utilityFileSystem.transformedSize(userProfile.quotaTotal)
+                }
+                completion(LockscreenData(date: Date(), isPlaceholder: false, activity: "", link: URL(string: "https://")!, quotaRelative: quotaRelative, quotaUsed: quotaUsed, quotaTotal: quotaTotal, error: false))
+            } else {
+                completion(LockscreenData(date: Date(), isPlaceholder: false, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: true))
             }
-        } else if family == .accessoryRectangular {
-            NextcloudKit.shared.getDashboardWidgetsApplication("activity", account: activeTableAccount.account, options: options) { _, results, _, error in
-                var activity: String = NSLocalizedString("_no_data_available_", comment: "")
-                var link = URL(string: "https://")!
-                if error == .success, let result = results?.first {
-                    if let item = result.items?.first {
-                        if let title = item.title {  activity = title }
-                        if let itemLink = item.link, let url = URL(string: itemLink) { link = url }
-                    }
-                    completion(LockscreenData(date: Date(), isPlaceholder: false, activity: activity, link: link, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: false))
-                } else {
-                    completion(LockscreenData(date: Date(), isPlaceholder: false, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: true))
+        }
+    } else if family == .accessoryRectangular {
+        NextcloudKit.shared.getDashboardWidgetsApplication("activity", account: activeTableAccount.account, options: options) { _, results, _, error in
+            var activity: String = NSLocalizedString("_no_data_available_", comment: "")
+            var link = URL(string: "https://")!
+            if error == .success, let result = results?.first {
+                if let item = result.items?.first {
+                    if let title = item.title {  activity = title }
+                    if let itemLink = item.link, let url = URL(string: itemLink) { link = url }
                 }
+                completion(LockscreenData(date: Date(), isPlaceholder: false, activity: activity, link: link, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: false))
+            } else {
+                completion(LockscreenData(date: Date(), isPlaceholder: false, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: true))
             }
         }
     }

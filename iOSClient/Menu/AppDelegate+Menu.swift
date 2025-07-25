@@ -125,8 +125,7 @@ extension AppDelegate {
                          action: { _ in
                              let alertController = UIAlertController.createFolder(serverUrl: serverUrl, session: session, sceneIdentifier: controller.sceneIdentifier, capabilities: capabilities)
                              controller.present(alertController, animated: true, completion: nil)
-                         }
-                        )
+                         })
         )
 
         // Folder encrypted

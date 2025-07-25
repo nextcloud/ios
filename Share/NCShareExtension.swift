@@ -41,9 +41,7 @@ class NCShareExtension: UIViewController {
     var autoUploadDirectory = ""
     var progress: CGFloat = 0
     var counterUploaded: Int = 0
-    var uploadErrors: [tableMetadata] = []
     var uploadMetadata: [tableMetadata] = []
-    var uploadStarted = false
     let hud = NCHud()
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
@@ -154,7 +152,6 @@ class NCShareExtension: UIViewController {
 
     func cancel(with error: NCShareExtensionError) {
         // make sure no uploads are continued
-        uploadStarted = false
         extensionContext?.cancelRequest(withError: error)
     }
 
@@ -184,18 +181,16 @@ class NCShareExtension: UIViewController {
         backButton.setTitle(" " + NSLocalizedString("_back_", comment: ""), for: .normal)
         backButton.setTitleColor(.systemBlue, for: .normal)
         backButton.action(for: .touchUpInside) { _ in
-            if !self.uploadStarted {
-                while self.serverUrl.last != "/" { self.serverUrl.removeLast() }
-                self.serverUrl.removeLast()
-                Task {
-                    await self.reloadData()
-                }
-                var navigationTitle = (self.serverUrl as NSString).lastPathComponent
-                if self.utilityFileSystem.getHomeServer(session: session) == self.serverUrl {
-                    navigationTitle = NCBrandOptions.shared.brand
-                }
-                self.setNavigationBar(navigationTitle: navigationTitle)
+            while self.serverUrl.last != "/" { self.serverUrl.removeLast() }
+            self.serverUrl.removeLast()
+            Task {
+                await self.reloadData()
             }
+            var navigationTitle = (self.serverUrl as NSString).lastPathComponent
+            if self.utilityFileSystem.getHomeServer(session: session) == self.serverUrl {
+                navigationTitle = NCBrandOptions.shared.brand
+            }
+            self.setNavigationBar(navigationTitle: navigationTitle)
         }
 
         let image = utility.loadUserImage(for: tblAccount.user, displayName: tblAccount.displayName, urlBase: tblAccount.urlBase)
@@ -217,9 +212,7 @@ class NCShareExtension: UIViewController {
         profileButton.semanticContentAttribute = .forceLeftToRight
         profileButton.sizeToFit()
         profileButton.action(for: .touchUpInside) { _ in
-            if !self.uploadStarted {
-                self.showAccountPicker()
-            }
+            self.showAccountPicker()
         }
         var navItems = [UIBarButtonItem(customView: profileButton)]
         if serverUrl != utilityFileSystem.getHomeServer(session: session) {
@@ -277,13 +270,8 @@ extension NCShareExtension {
                   let capabilities = NCNetworking.shared.capabilities[tblAccount.account] else {
                 return
             }
-            guard !uploadStarted else { return }
             guard !filesName.isEmpty else { return showAlert(description: "_files_no_files_") }
             let session = self.extensionData.getSession()
-
-            counterUploaded = 0
-            uploadErrors = []
-            var dismissAfterUpload = true
 
             var conflicts: [tableMetadata] = []
             var invalidNameIndexes: [Int] = []
@@ -296,15 +284,12 @@ extension NCShareExtension {
                         showRenameFileDialog(named: fileName, account: tblAccount.account)
                         return
                     } else {
-                        present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))") {
-                            self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
-                        }, animated: true)
+                        let message = "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"
+                        await UIAlertController.warningAsync(message: message, presenter: self)
 
                         invalidNameIndexes.append(index)
-                        dismissAfterUpload = false
                         continue
                     }
-
                 }
             }
 
@@ -314,15 +299,18 @@ extension NCShareExtension {
 
             for fileName in filesName {
                 let ocId = NSUUID().uuidString
-                let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
+                let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId,
+                                                                               fileName: fileName,
+                                                                               userId: session.userId,
+                                                                               urlBase: session.urlBase)
                 guard utilityFileSystem.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath) else {
                     continue
                 }
                 let metadataForUpload = await self.database.createMetadataAsync(fileName: fileName,
-                                                                           ocId: ocId,
-                                                                           serverUrl: serverUrl,
-                                                                     session: session,
-                                                                     sceneIdentifier: nil)
+                                                                                ocId: ocId,
+                                                                                serverUrl: serverUrl,
+                                                                                session: session,
+                                                                                sceneIdentifier: nil)
 
                 metadataForUpload.session = NCNetworking.shared.sessionUpload
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFileShareExtension
@@ -348,85 +336,89 @@ extension NCShareExtension {
                 conflict.delegate = self
                 self.present(conflict, animated: true, completion: nil)
             } else {
-                uploadStarted = true
-                upload(dismissAfterUpload: dismissAfterUpload)
+                await uploadAndExit()
             }
         }
     }
 
-    func upload(dismissAfterUpload: Bool = true) {
-        Task { @MainActor in
-            guard uploadStarted else { return }
-            guard uploadMetadata.count > counterUploaded else {
-                return DispatchQueue.main.async {
-                    self.finishedUploading(dismissAfterUpload: dismissAfterUpload)
-                }
+    @MainActor
+    func uploadAndExit() async {
+        var error: NKError?
+        for metadata in self.uploadMetadata {
+            error = await self.upload(metadata: metadata)
+            if error != .success {
+                break
             }
-            let session = self.extensionData.getSession()
+        }
 
-            let metadata = uploadMetadata[counterUploaded]
-            let results = await NKTypeIdentifiers.shared.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false, account: session.account)
-            metadata.contentType = results.mimeType
-            metadata.iconName = results.iconName
-            metadata.classFile = results.classFile
-            metadata.typeIdentifier = results.typeIdentifier
-            metadata.serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+        if error == .success {
+            self.hud.success()
+        } else {
+            self.hud.error(text: error?.errorDescription)
+        }
 
-            // CHUNK
-            var chunkSize = NCGlobal.shared.chunkSizeMBCellular
-            if NCNetworking.shared.networkReachability == NKTypeReachability.reachableEthernetOrWiFi {
-                chunkSize = NCGlobal.shared.chunkSizeMBEthernetOrWiFi
+        try? await Task.sleep(nanoseconds: 1_500_000_000)
+
+        self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+    }
+
+    @MainActor
+    func upload(metadata: tableMetadata) async -> NKError? {
+        let session = self.extensionData.getSession()
+        var error: NKError = .success
+
+        let results = await NKTypeIdentifiers.shared.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false, account: session.account)
+        metadata.contentType = results.mimeType
+        metadata.iconName = results.iconName
+        metadata.classFile = results.classFile
+        metadata.typeIdentifier = results.typeIdentifier
+        metadata.serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+
+        // CHUNK
+        var chunkSize = NCGlobal.shared.chunkSizeMBCellular
+        if NCNetworking.shared.networkReachability == NKTypeReachability.reachableEthernetOrWiFi {
+            chunkSize = NCGlobal.shared.chunkSizeMBEthernetOrWiFi
+        }
+        if metadata.size > chunkSize {
+            metadata.chunk = chunkSize
+        } else {
+            metadata.chunk = 0
+        }
+        // E2EE
+        metadata.e2eEncrypted = metadata.isDirectoryE2EE
+
+        self.counterUploaded += 1
+        hud.ringProgress(view: self.view, text: NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUploaded) " + NSLocalizedString("_of_", comment: "") + " \(self.filesName.count)")
+
+        if metadata.isDirectoryE2EE {
+            error = await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: self)
+        } else if metadata.chunk > 0 {
+            var numChunks = 0
+            var counterUpload: Int = 0
+            hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""))
+
+            let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
+                numChunks = num
+            } counterChunk: { counter in
+                self.hud.progress(num: Float(counter), total: Float(numChunks))
+            } startFilesChunk: { _ in
+                self.hud.setText(text: NSLocalizedString("_keep_active_for_upload_", comment: ""))
+            } requestHandler: { _ in
+                self.hud.progress(num: Float(counterUpload), total: Float(numChunks))
+                counterUpload += 1
+            } assembling: {
+                self.hud.setText(text: NSLocalizedString("_wait_", comment: ""))
             }
-            if metadata.size > chunkSize {
-                metadata.chunk = chunkSize
-            } else {
-                metadata.chunk = 0
-            }
-            // E2EE
-            metadata.e2eEncrypted = metadata.isDirectoryE2EE
-
-            hud.initHudRing(view: self.view,
-                            text: NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(self.filesName.count)")
-
-            NCNetworking.shared.uploadHub(metadata: metadata, uploadE2EEDelegate: self, controller: self) {
-                self.hud.progress(0)
+            error = results.error
+        } else {
+            let results = await NCNetworking.shared.uploadFile(metadata: metadata) { _ in
             } progressHandler: { _, _, fractionCompleted in
                 self.hud.progress(fractionCompleted)
-            } completion: {error in
-                if error != .success {
-                    self.database.deleteMetadataOcId(metadata.ocId)
-                    self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-                    self.uploadErrors.append(metadata)
-                }
-                self.counterUploaded += 1
-                self.upload()
             }
+            error = results.error
         }
-    }
 
-    func finishedUploading(dismissAfterUpload: Bool = true) {
-        uploadStarted = false
-        if !uploadErrors.isEmpty {
-            let fileList = "- " + uploadErrors.map({ $0.fileName }).joined(separator: "\n  - ")
-            showAlert(title: "_error_files_upload_", description: fileList) {
-                self.extensionContext?.cancelRequest(withError: NCShareExtensionError.fileUpload)
-            }
-        } else {
-            hud.success()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
-            }
-        }
-    }
-}
-
-extension NCShareExtension: uploadE2EEDelegate {
-    func start() {
-        self.hud.progress(0)
-    }
-
-    func uploadE2EEProgress(_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) {
-        self.hud.progress(fractionCompleted)
+        return error
     }
 }
 

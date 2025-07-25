@@ -28,10 +28,6 @@ import Alamofire
 import Queuer
 import SwiftUI
 
-#if EXTENSION_FILE_PROVIDER_EXTENSION || EXTENSION_WIDGET
-@objc protocol uploadE2EEDelegate: AnyObject { }
-#endif
-
 @objc protocol ClientCertificateDelegate {
     func onIncorrectPassword()
     func didAskForClientCertificate()

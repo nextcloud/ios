@@ -34,12 +34,11 @@ var viewerMediaScreenMode: ScreenMode = .normal
 class NCViewerMediaPage: UIViewController {
     @IBOutlet weak var progressView: UIProgressView!
 
-    /// Parameters
+    // Parameters
     var ocIds: [String] = []
     var currentIndex: Int = 0
     var delegateViewController: UIViewController?
 
-    ///
     var modifiedOcId: [String] = []
     var nextIndex: Int?
     var panGestureRecognizer: UIPanGestureRecognizer!
@@ -223,7 +222,11 @@ class NCViewerMediaPage: UIViewController {
     }
 
     @objc private func openMenuMore(_ sender: Any?) {
-        let imageIcon = NCUtility().getImage(ocId: currentViewController.metadata.ocId, etag: currentViewController.metadata.etag, ext: NCGlobal.shared.previewExt512)
+        let imageIcon = NCUtility().getImage(ocId: currentViewController.metadata.ocId,
+                                             etag: currentViewController.metadata.etag,
+                                             ext: NCGlobal.shared.previewExt512,
+                                             userId: currentViewController.metadata.userId,
+                                             urlBase: currentViewController.metadata.urlBase)
 
         NCViewer().toggleMenu(controller: self.tabBarController as? NCMainTabBarController, metadata: currentViewController.metadata, webView: false, imageIcon: imageIcon, sender: sender)
     }
@@ -537,7 +540,10 @@ extension NCViewerMediaPage: UIGestureRecognizerDelegate {
             if let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: currentViewController.metadata),
                utilityFileSystem.fileProviderStorageExists(metadataLive) {
                 AudioServicesPlaySystemSound(1519) // peek feedback
-                currentViewController.playLivePhoto(filePath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId, fileNameView: metadataLive.fileName))
+                currentViewController.playLivePhoto(filePath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId,
+                                                                                                                fileName: metadataLive.fileName,
+                                                                                                                userId: metadataLive.userId,
+                                                                                                                urlBase: metadataLive.urlBase))
             }
         } else if gestureRecognizer.state == .ended {
             currentViewController.stopLivePhoto()
@@ -602,7 +608,7 @@ extension NCViewerMediaPage: NCTransferDelegate {
     func transferChange(status: String, metadata: tableMetadata, error: NKError) {
         DispatchQueue.main.async {
             switch status {
-                /// DOWNLOAD
+                // DOWNLOAD
             case self.global.networkingStatusDownloaded:
                 guard metadata.ocId == self.currentViewController.metadata.ocId else {
                     return
@@ -610,7 +616,10 @@ extension NCViewerMediaPage: NCTransferDelegate {
                 self.progressView.progress = 0
 
                 if metadata.isAudioOrVideo, let ncplayer = self.currentViewController.ncplayer {
-                    let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                    let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
+                                                                                                          fileName: metadata.fileNameView,
+                                                                                                          userId: metadata.userId,
+                                                                                                          urlBase: metadata.urlBase))
                     if ncplayer.isPlaying() {
                         ncplayer.playerPause()
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -623,7 +632,7 @@ extension NCViewerMediaPage: NCTransferDelegate {
                 } else if metadata.isImage {
                     self.currentViewController.loadImage()
                 }
-                /// UPLOAD
+                // UPLOAD
             case self.global.networkingStatusUploaded:
                 guard error == .success else { return }
                 if self.currentViewController.metadata.ocId == metadata.ocId {
@@ -640,7 +649,7 @@ extension NCViewerMediaPage: NCTransferDelegate {
     func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {
         DispatchQueue.main.async {
             switch status {
-                /// DELETE
+                // DELETE
             case NCGlobal.shared.networkingStatusDelete:
                 let hasAtLeastOneSuccess = metadatasError.contains { key, value in
                     self.ocIds.contains(key.ocId) && value == .success

@@ -48,9 +48,9 @@ class ParallelWorker {
         self.totalTasks = totalTasks
         self.titleKey = titleKey ?? "_wait_"
 
-        hud.initHudRing(view: controller?.view,
-                        text: NSLocalizedString(self.titleKey, comment: ""),
-                        tapToCancelDetailText: true) {
+        hud.ringProgress(view: controller?.view,
+                         text: NSLocalizedString(self.titleKey, comment: ""),
+                         tapToCancelDetailText: true) {
             self.isCancelled = true
             NCNetworking.shared.cancelUploadTasks()
             NCNetworking.shared.cancelDownloadTasks()

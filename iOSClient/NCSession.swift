@@ -23,8 +23,8 @@ final class NCSession: @unchecked Sendable {
     }
     private var sessions: ThreadSafeArray<Session> = ThreadSafeArray()
 
-    /// SESSION
-    ///
+    // SESSION
+    //
     public func appendSession(account: String, urlBase: String, user: String, userId: String) {
         if sessions.filter({ $0.account == account }).first != nil {
             return updateSession(account, userId: userId)
@@ -54,15 +54,15 @@ final class NCSession: @unchecked Sendable {
     public func getSession(controller: UIViewController?) -> Session {
         if let account = (controller as? NCMainTabBarController)?.account {
             return getSession(account: account)
-        } else if let tableAccount = NCManageDatabase.shared.getActiveTableAccount() {
-            return getSession(account: tableAccount.account)
+        } else if let tblAccount = NCManageDatabase.shared.getActiveTableAccount() {
+            return getSession(account: tblAccount.account)
         }
         return Session(account: "", urlBase: "", user: "", userId: "")
     }
 #endif
 
-    /// UTILITY
-    ///
+    // UTILITY
+    //
     public func getFileName(urlBase: String, user: String) -> String {
         let url = (URL(string: urlBase)?.host) ?? "localhost"
         let fileName = user + "@" + url + ".png"

@@ -89,31 +89,23 @@ struct LockscreenWidget: Widget {
     let kind: String = "LockscreenWidget"
 
     var body: some WidgetConfiguration {
-        if #available(iOSApplicationExtension 16.0, *) {
-            return IntentConfiguration(kind: kind, intent: AccountIntent.self, provider: LockscreenWidgetProvider()) { entry in
-                LockscreenWidgetView(entry: entry)
-            }
-            .supportedFamilies([.accessoryRectangular, .accessoryCircular])
-            .configurationDisplayName(NSLocalizedString("_title_lockscreenwidget_", comment: ""))
-            .description(NSLocalizedString("_description_lockscreenwidget_", comment: ""))
-#if !targetEnvironment(simulator)
-            .contentMarginsDisabled()
-#endif
-        } else {
-            return EmptyWidgetConfiguration()
+        return IntentConfiguration(kind: kind, intent: AccountIntent.self, provider: LockscreenWidgetProvider()) { entry in
+            LockscreenWidgetView(entry: entry)
         }
+        .supportedFamilies([.accessoryRectangular, .accessoryCircular])
+        .configurationDisplayName(NSLocalizedString("_title_lockscreenwidget_", comment: ""))
+        .description(NSLocalizedString("_description_lockscreenwidget_", comment: ""))
+#if !targetEnvironment(simulator)
+        .contentMarginsDisabled()
+#endif
     }
 }
 
 extension View {
     func widgetBackground(_ backgroundView: some View) -> some View {
 #if !targetEnvironment(simulator)
-        if #available(iOSApplicationExtension 17.0, *) {
-            return containerBackground(for: .widget) {
-                backgroundView
-            }
-        } else {
-            return background(backgroundView)
+        return containerBackground(for: .widget) {
+            backgroundView
         }
 #else
         return background(backgroundView)

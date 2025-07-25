@@ -9,31 +9,7 @@ import NextcloudKit
 import Photos
 
 extension NCManageDatabase {
-    func convertFileToMetadata(_ file: NKFile, isDirectoryE2EE: Bool, capabilities: NKCapabilities.Capabilities?, completion: @escaping (tableMetadata) -> Void) {
-        let metadata = self.createMetadata(file)
-
-        #if !EXTENSION_FILE_PROVIDER_EXTENSION
-        // E2EE find the fileName for fileNameView
-        if isDirectoryE2EE || file.e2eEncrypted {
-            if let tableE2eEncryption = getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", file.account, file.serverUrl, file.fileName)) {
-                metadata.fileNameView = tableE2eEncryption.fileName
-            }
-        }
-        #endif
-
-
-        if !metadata.directory {
-            let results = NKTypeIdentifiersHelper.shared.getInternalType(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory, capabilities: capabilities ?? NKCapabilities.Capabilities())
-
-            metadata.contentType = results.mimeType
-            metadata.iconName = results.iconName
-            metadata.classFile = results.classFile
-            metadata.typeIdentifier = results.typeIdentifier
-        }
-        completion(metadata)
-    }
-
-    func convertFileToMetadataAsync(_ file: NKFile, isDirectoryE2EE: Bool) async -> tableMetadata {
+    func convertFileToMetadataAsync(_ file: NKFile, isDirectoryE2EE: Bool, mediaSearch: Bool = false) async -> tableMetadata {
         let metadata = self.createMetadata(file)
 
         #if !EXTENSION_FILE_PROVIDER_EXTENSION
@@ -52,9 +28,61 @@ extension NCManageDatabase {
             metadata.iconName = results.iconName
             metadata.classFile = results.classFile
             metadata.typeIdentifier = results.typeIdentifier
+            metadata.mediaSearch = mediaSearch
         }
 
         return metadata.detachedCopy()
+    }
+
+    func convertFileToMetadata(_ file: NKFile, isDirectoryE2EE: Bool, capabilities: NKCapabilities.Capabilities?, completion: @escaping (tableMetadata) -> Void) {
+        let metadata = self.createMetadata(file)
+
+        #if !EXTENSION_FILE_PROVIDER_EXTENSION
+        // E2EE find the fileName for fileNameView
+        if isDirectoryE2EE || file.e2eEncrypted {
+            if let tableE2eEncryption = getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", file.account, file.serverUrl, file.fileName)) {
+                metadata.fileNameView = tableE2eEncryption.fileName
+            }
+        }
+        #endif
+
+        if !metadata.directory {
+            let results = NKTypeIdentifiersHelper.shared.getInternalType(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory, capabilities: capabilities ?? NKCapabilities.Capabilities())
+
+            metadata.contentType = results.mimeType
+            metadata.iconName = results.iconName
+            metadata.classFile = results.classFile
+            metadata.typeIdentifier = results.typeIdentifier
+        }
+        completion(metadata)
+    }
+
+    func convertFilesToMetadatasAsync(_ files: [NKFile], serverUrlMetadataFolder: String? = nil, mediaSearch: Bool = false) async -> (metadataFolder: tableMetadata, metadatas: [tableMetadata]) {
+        var counter: Int = 0
+        var isDirectoryE2EE: Bool = false
+        var listServerUrl: [String: Bool] = [:]
+        var metadataFolder = tableMetadata()
+        var metadatas: [tableMetadata] = []
+
+        for file in files {
+            if let key = listServerUrl[file.serverUrl] {
+                isDirectoryE2EE = key
+            } else {
+                isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(file: file)
+                listServerUrl[file.serverUrl] = isDirectoryE2EE
+            }
+
+            let metadata = await convertFileToMetadataAsync(file, isDirectoryE2EE: isDirectoryE2EE, mediaSearch: mediaSearch)
+
+            if serverUrlMetadataFolder == metadata.serverUrlFileName || metadata.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
+                metadataFolder = metadata
+            } else {
+                metadatas.append(metadata)
+            }
+
+            counter += 1
+        }
+        return (metadataFolder.detachedCopy(), metadatas)
     }
 
     func convertFilesToMetadatas(_ files: [NKFile], capabilities: NKCapabilities.Capabilities?, serverUrlMetadataFolder: String? = nil, completion: @escaping (_ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]) -> Void) {
@@ -83,34 +111,6 @@ extension NCManageDatabase {
             }
         }
         completion(metadataFolder, metadatas)
-    }
-
-    func convertFilesToMetadatasAsync(_ files: [NKFile], serverUrlMetadataFolder: String? = nil) async -> (metadataFolder: tableMetadata, metadatas: [tableMetadata]) {
-        var counter: Int = 0
-        var isDirectoryE2EE: Bool = false
-        var listServerUrl: [String: Bool] = [:]
-        var metadataFolder = tableMetadata()
-        var metadatas: [tableMetadata] = []
-
-        for file in files {
-            if let key = listServerUrl[file.serverUrl] {
-                isDirectoryE2EE = key
-            } else {
-                isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(file: file)
-                listServerUrl[file.serverUrl] = isDirectoryE2EE
-            }
-
-            let metadata = await convertFileToMetadataAsync(file, isDirectoryE2EE: isDirectoryE2EE)
-
-            if serverUrlMetadataFolder == metadata.serverUrlFileName || metadata.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
-                metadataFolder = metadata
-            } else {
-                metadatas.append(metadata)
-            }
-
-            counter += 1
-        }
-        return (metadataFolder.detachedCopy(), metadatas)
     }
 
     func createMetadata(_ file: NKFile) -> tableMetadata {
@@ -147,11 +147,7 @@ extension NCManageDatabase {
         metadata.favorite = file.favorite
         metadata.fileId = file.fileId
         metadata.fileName = file.fileName
-        if file.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
-            metadata.fileNameView = file.account
-        } else {
-            metadata.fileNameView = file.fileName
-        }
+        metadata.fileNameView = file.fileName
         metadata.hasPreview = file.hasPreview
         metadata.hidden = file.hidden
         metadata.iconName = file.iconName
@@ -257,11 +253,6 @@ extension NCManageDatabase {
             metadata.hasPreview = true
             metadata.etag = ocId
             metadata.fileName = fileName
-            if fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
-                metadata.fileNameView = session.account
-            } else {
-                metadata.fileNameView = fileName
-            }
             metadata.fileNameView = fileName
             metadata.name = name
             metadata.ocId = ocId
