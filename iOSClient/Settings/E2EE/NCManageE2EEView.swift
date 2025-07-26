@@ -125,7 +125,7 @@ struct NCManageE2EEView: View {
         .navigationBarTitleDisplayMode(.inline)
         .background(Color(UIColor.systemGroupedBackground))
         .defaultViewModifier(model)
-        .onChange(of: model.navigateBack) { newValue, _ in
+        .onChange(of: model.navigateBack) { _, newValue in
             if newValue {
                 presentationMode.wrappedValue.dismiss()
             }

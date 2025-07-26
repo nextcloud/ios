@@ -27,7 +27,7 @@ struct SelectAlbumView: View {
         .safeAreaInset(edge: .bottom, content: {
             Spacer().frame(height: 30)
         })
-        .onChange(of: selectedAlbums) { newValue, _ in
+        .onChange(of: selectedAlbums) { _, newValue in
             if newValue.count > 1, oldSelectedAlbums.contains(model.allPhotosCollection?.localIdentifier ?? "") {
                 selectedAlbums.remove(model.allPhotosCollection?.localIdentifier ?? "")
             } else if newValue.contains(model.allPhotosCollection?.localIdentifier ?? "") {

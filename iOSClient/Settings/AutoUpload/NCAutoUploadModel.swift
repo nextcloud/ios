@@ -179,7 +179,8 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// Updates the auto-upload full content setting.
     func handleAutoUploadChange(newValue: Bool, assetCollections: [PHAssetCollection]) {
         Task {
-            if let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", session.account)), tblAccount.autoUploadStart == newValue {
+            if let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", session.account)),
+               tblAccount.autoUploadStart == newValue {
                 return
             }
 

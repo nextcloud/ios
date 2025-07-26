@@ -25,7 +25,7 @@ struct NCTermOfServiceModelView: View {
                 }
                 .pickerStyle(MenuPickerStyle())
                 .frame(maxWidth: .infinity, alignment: .trailing)
-                .onChange(of: selectedLanguage) { newLanguage, _ in
+                .onChange(of: selectedLanguage) { _, newLanguage in
                     if let terms = model.terms[newLanguage] {
                         termsText = terms
                     } else {
