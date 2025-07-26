@@ -1,26 +1,7 @@
-//
-//  NCAutoUploadView.swift
-//  Nextcloud
-//
-//  Created by Aditya Tyagi on 06/03/24.
-//  Created by Marino Faggiana on 30/05/24.
-//  Copyright © 2024 Marino Faggiana. All rights reserved.
-//
-//  Author Aditya Tyagi <adityagi02@yahoo.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2024 Aditya Tyagi
+// SPDX-FileCopyrightText: 2024 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
 import UIKit
@@ -147,7 +128,7 @@ struct NCAutoUploadView: View {
                     }
                 })
 
-                /// Auto Upload Photo
+                // Auto Upload Photo
                 Section(content: {
                     Toggle(NSLocalizedString("_autoupload_photos_", comment: ""), isOn: $model.autoUploadImage)
                         .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
@@ -167,7 +148,7 @@ struct NCAutoUploadView: View {
                     }
                 })
 
-                /// Auto Upload Video
+                // Auto Upload Video
                 Section(content: {
                     Toggle(NSLocalizedString("_autoupload_videos_", comment: ""), isOn: $model.autoUploadVideo)
                         .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
@@ -187,7 +168,7 @@ struct NCAutoUploadView: View {
                     }
                 })
 
-                /// Auto Upload create subfolder
+                // Auto Upload create subfolder
                 Section(content: {
                     Toggle(NSLocalizedString("_autoupload_create_subfolder_", comment: ""), isOn: $model.autoUploadCreateSubfolder)
                         .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
@@ -211,7 +192,7 @@ struct NCAutoUploadView: View {
                     Text(NSLocalizedString("_autoupload_create_subfolder_footer_", comment: ""))
                 })
 
-                /// Location
+                // Location
                 Section(content: {
                     Toggle(NSLocalizedString("_enable_background_location_title_", comment: ""), isOn: $model.permissionGranted)
                         .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
@@ -225,7 +206,7 @@ struct NCAutoUploadView: View {
             }
             .disabled(model.autoUploadStart)
 
-            /// Auto Upload Full
+            // Auto Upload Full
             Section(content: {
                 Toggle(isOn: model.autoUploadOnlyNew || model.autoUploadStart ? $model.autoUploadStart : $showUploadAllPhotosWarning) {
                     Text(model.autoUploadStart ? "_stop_autoupload_" : "_start_autoupload_")

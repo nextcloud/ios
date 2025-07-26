@@ -1,26 +1,7 @@
-//
-//  NCAutoUploadModel.swift
-//  Nextcloud
-//
-//  Created by Aditya Tyagi on 08/03/24.
-//  Created by Marino Faggiana on 30/05/24.
-//  Copyright © 2024 Marino Faggiana. All rights reserved.
-//
-//  Author Aditya Tyagi <adityagi02@yahoo.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2024 Aditya Tyagi
+// SPDX-FileCopyrightText: 2024 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
 import UIKit
@@ -37,46 +18,46 @@ enum AutoUploadTimespan: String, CaseIterable, Identifiable {
 
 /// A model that allows the user to configure the `auto upload settings for Nextcloud`
 class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
-    /// A state variable that indicates whether auto upload for photos is enabled or not
+    // A state variable that indicates whether auto upload for photos is enabled or not
     @Published var autoUploadImage: Bool = false
-    /// A state variable that indicates whether auto upload for photos is restricted to Wi-Fi only or not
+    // A state variable that indicates whether auto upload for photos is restricted to Wi-Fi only or not
     @Published var autoUploadWWAnPhoto: Bool = false
-    /// A state variable that indicates whether auto upload for videos is enabled or not
+    // A state variable that indicates whether auto upload for videos is enabled or not
     @Published var autoUploadVideo: Bool = false
-    /// A state variable that indicates whether auto upload for videos is enabled or not
+    // A state variable that indicates whether auto upload for videos is enabled or not
     @Published var autoUploadWWAnVideo: Bool = false
-    /// A state variable that indicates whether auto upload is enabled or not
+    // A state variable that indicates whether auto upload is enabled or not
     @Published var autoUploadStart: Bool = false
-    /// A state variable that indicates whether auto upload creates subfolders based on date or not
+    // A state variable that indicates whether auto upload creates subfolders based on date or not
     @Published var autoUploadCreateSubfolder: Bool = false
-    /// A state variable that indicates the granularity of the subfolders, either daily, monthly, or yearly
+    // A state variable that indicates the granularity of the subfolders, either daily, monthly, or yearly
     @Published var autoUploadSubfolderGranularity: Granularity = .monthly
-    /// A state variable that indicates the date from when new photos/videos will be uploaded.
+    // A state variable that indicates the date from when new photos/videos will be uploaded.
     @Published var autoUploadOnlyNewSinceDate: Date?
-    /// A state variable that indicates from whether new photos only or all photos will be uploaded.
+    // A state variable that indicates from whether new photos only or all photos will be uploaded.
     @Published var autoUploadOnlyNew: Bool = false
-    /// A state variable that indicates whether a warning should be shown if all photos must be uploaded.
+    // A state variable that indicates whether a warning should be shown if all photos must be uploaded.
     @Published var showUploadAllPhotosWarning = false
-    /// A state variable that indicates whether Photos permissions have been granted or not.
+    // A state variable that indicates whether Photos permissions have been granted or not.
     @Published var photosPermissionsGranted = true
-    ///
+    //
     @Published var permissionGranted: Bool = false
 
-    /// A state variable that shows error in view in case of an error
+    // A state variable that shows error in view in case of an error
     @Published var showErrorAlert: Bool = false
     @Published var sectionName = ""
     @Published var isAuthorized: Bool = false
-    /// A string variable that contains error text
+    // A string variable that contains error text
     @Published var error: String = ""
     let database = NCManageDatabase.shared
 
-    /// Tip
+    // Tip
     var tip: EasyTipView?
-    /// Root View Controller
+    // Root View Controller
     var controller: NCMainTabBarController?
-    /// A variable user for change the auto upload directory
+    // A variable user for change the auto upload directory
     var serverUrl: String = ""
-    /// Get session
+    // Get session
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
     }

@@ -1,41 +1,23 @@
-//
-//  NCSettingsAdvancedView.swift
-//  Nextcloud
-//
-//  Created by Aditya Tyagi on 08/03/24.
-//  Created by Marino Faggiana on 30/05/24.
-//  Copyright © 2024 Marino Faggiana. All rights reserved.
-//
-//  Author Aditya Tyagi <adityagi02@yahoo.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2024 Aditya Tyagi
+// SPDX-FileCopyrightText: 2024 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import SwiftUI
 import NextcloudKit
 
 struct NCSettingsAdvancedView: View {
     @ObservedObject var model: NCSettingsAdvancedModel
-    /// State variable for indicating whether the exit alert is shown.
+    // State variable for indicating whether the exit alert is shown.
     @State var showExitAlert: Bool = false
-    /// State variable for indicating whether the cache alert is shown.
+    // State variable for indicating whether the cache alert is shown.
     @State var showCacheAlert: Bool = false
-    /// State variable for indicating whether to disable crash reporter.
+    // State variable for indicating whether to disable crash reporter.
     @State var showCrashReporter: Bool = false
 
     var body: some View {
         Form {
-            /// file name
+            // file name
             Section(content: {
                NavigationLink(destination: LazyView {
                    NCFileNameView(model: NCFileNameModel(controller: model.controller))
@@ -45,7 +27,7 @@ struct NCSettingsAdvancedView: View {
             }, footer: {
                 Text(fileNameMaskFooter)
             })
-            /// Most Compatible & Enable Live Photo
+            // Most Compatible & Enable Live Photo
             Section(content: {
                 Toggle(NSLocalizedString("_format_compatibility_", comment: ""), isOn: $model.mostCompatible)
                     .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
@@ -66,7 +48,7 @@ struct NCSettingsAdvancedView: View {
                 Text(NSLocalizedString("_upload_mov_livephoto_footer_", comment: ""))
             })
 
-            /// Remove from Camera Roll
+            // Remove from Camera Roll
             Section(content: {
                 Toggle(NSLocalizedString("_remove_photo_CameraRoll_", comment: ""), isOn: $model.removeFromCameraRoll)
                     .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
@@ -76,7 +58,7 @@ struct NCSettingsAdvancedView: View {
             }, footer: {
                 Text(NSLocalizedString("_remove_photo_CameraRoll_desc_", comment: ""))
             })
-            /// Section : Files App
+            // Section : Files App
             if !NCBrandOptions.shared.disable_openin_file {
                 Section(content: {
                     Toggle(NSLocalizedString("_disable_files_app_", comment: ""), isOn: $model.appIntegration)
@@ -88,7 +70,7 @@ struct NCSettingsAdvancedView: View {
                     Text(NSLocalizedString("_disable_files_app_footer_", comment: ""))
                 })
             }
-            /// Section: Privacy
+            // Section: Privacy
             if !NCBrandOptions.shared.disable_crash_service {
                 Section(content: {
                     Toggle(NSLocalizedString("_crashservice_title_", comment: ""), isOn: $model.crashReporter)
@@ -110,7 +92,7 @@ struct NCSettingsAdvancedView: View {
                     Text(NSLocalizedString("_privacy_footer_", comment: ""))
                 })
             }
-            /// Section: Diagnostic LOG
+            // Section: Diagnostic LOG
             if !NCBrandOptions.shared.disable_log {
                 Section(content: {
                     /// View Log File
@@ -127,7 +109,7 @@ struct NCSettingsAdvancedView: View {
                         }
                     })
                     .tint(Color(UIColor.label))
-                    /// Set Log Level()
+                    // Set Log Level()
                     Picker(NSLocalizedString("_set_log_level_", comment: ""), selection: $model.selectedLogLevel) {
                         ForEach(NKLogLevel.allCases) { level in
                             Text(level.displayText).tag(level)
@@ -141,7 +123,7 @@ struct NCSettingsAdvancedView: View {
                 }, footer: {
                     Text(NSLocalizedString("_diagnostics_footer_", comment: ""))
                 })
-                /// Set Log Level() & Capabilities
+                // Set Log Level() & Capabilities
                 if model.isAdminGroup {
                     Section(content: {
                         NavigationLink(destination: LazyView {
@@ -163,7 +145,7 @@ struct NCSettingsAdvancedView: View {
                     })
                 }
             }
-            /// Delete in Cache & Clear Cache
+            // Delete in Cache & Clear Cache
             Section(content: {
                 Picker(NSLocalizedString("_delete_old_files_", comment: ""), selection: $model.selectedInterval) {
                     ForEach(CacheDeletionInterval.allCases) { interval in
@@ -199,7 +181,7 @@ struct NCSettingsAdvancedView: View {
                 Text(model.footerTitle)
                     .multilineTextAlignment(.leading)
             })
-            /// Reset Application
+            // Reset Application
             Section(content: {
                 Button(action: {
                     showExitAlert.toggle()
