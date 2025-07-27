@@ -7,8 +7,13 @@
 #import "NCBridgeSwift.h"
 
 #import <CommonCrypto/CommonDigest.h>
+#import <CommonCrypto/CommonCrypto.h>
 #import <CommonCrypto/CommonKeyDerivation.h>
 #import <OpenSSL/OpenSSL.h>
+#import <openssl/provider.h>
+#import <openssl/evp.h>
+#import <openssl/err.h>
+
 
 #define addName(field, value) X509_NAME_add_entry_by_txt(name, field, MBSTRING_ASC, (unsigned char *)value, -1, -1, 0); NSLog(@"%s: %s", field, value);
 
@@ -42,14 +47,44 @@
 
 @implementation NCEndToEndEncryption
 
-//Singleton
 + (instancetype)shared {
     static dispatch_once_t once;
     static NCEndToEndEncryption *shared;
     dispatch_once(&once, ^{
+        // Load OpenSSL legacy provider once
+        nk_openssl_load_legacy_provider_if_needed();
         shared = [self new];
     });
     return shared;
+}
+
+void nk_openssl_load_legacy_provider_if_needed(void) {
+    OSSL_PROVIDER *deflt = OSSL_PROVIDER_load(NULL, "default");
+    if (!deflt) {
+        ERR_print_errors_fp(stderr);
+    }
+
+    OSSL_PROVIDER *legacy = OSSL_PROVIDER_load(NULL, "legacy");
+    if (!legacy) {
+        ERR_print_errors_fp(stderr);
+    }
+}
+
+- (BOOL)isValidPrivateKeyPEM:(NSString *)privateKeyPEM {
+    const char *pemCString = [privateKeyPEM UTF8String];
+    BIO *bio = BIO_new_mem_buf((void *)pemCString, -1);
+    if (!bio) return NO;
+
+    EVP_PKEY *pkey = PEM_read_bio_PrivateKey(bio, NULL, NULL, NULL);
+    BIO_free(bio);
+
+    if (pkey) {
+        EVP_PKEY_free(pkey);
+        return YES;
+    } else {
+        ERR_print_errors_fp(stderr); // ti stampa l’errore dettagliato
+        return NO;
+    }
 }
 
 #
@@ -357,40 +392,74 @@
 - (NSData *)decryptPrivateKey:(NSString *)privateKey passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey iterationCount:(unsigned int)iterationCount
 {
     NSMutableData *plain = [NSMutableData new];
+    NSMutableData *key = [NSMutableData dataWithLength:PBKDF2_KEY_LENGTH / 8];
 
-    // Key
-    NSMutableData *key = [NSMutableData dataWithLength:PBKDF2_KEY_LENGTH/8];
-    
-    // Split
     NSArray *cipherArray = [privateKey componentsSeparatedByString:IV_DELIMITER_ENCODED];
     if (cipherArray.count != 3) {
         cipherArray = [privateKey componentsSeparatedByString:IV_DELIMITER_ENCODED_OLD];
         if (cipherArray.count != 3) {
+            NSLog(@"Invalid format: expected 3 parts in encrypted private key");
             return nil;
         }
     }
-    
-    NSData *cipher = [[NSData alloc] initWithBase64EncodedString:cipherArray[0] options:0];
-    NSString *authenticationTagString = [privateKey substringWithRange:NSMakeRange([(NSString *)cipherArray[0] length] - AES_GCM_TAG_LENGTH, AES_GCM_TAG_LENGTH)];
-    NSData *authenticationTag = [[NSData alloc] initWithBase64EncodedString:authenticationTagString options:0];
+
+    NSString *cipherBase64 = cipherArray[0];
+    NSData *cipherData = [[NSData alloc] initWithBase64EncodedString:cipherBase64 options:0];
+    if (!cipherData) {
+        NSLog(@"Failed to decode cipher base64");
+        return nil;
+    }
+
+    NSString *tagString = [cipherBase64 substringWithRange:NSMakeRange(cipherBase64.length - AES_GCM_TAG_LENGTH, AES_GCM_TAG_LENGTH)];
+    NSData *authenticationTag = [[NSData alloc] initWithBase64EncodedString:tagString options:0];
+
     NSData *initializationVector = [[NSData alloc] initWithBase64EncodedString:cipherArray[1] options:0];
     NSData *salt = [[NSData alloc] initWithBase64EncodedString:cipherArray[2] options:0];
 
-    // Remove Authentication Tag
-    cipher = [cipher subdataWithRange:NSMakeRange(0, cipher.length - AES_GCM_TAG_LENGTH)];
-
-    // Remove all whitespaces from passphrase
-    passphrase = [passphrase stringByReplacingOccurrencesOfString:@" " withString:@""];
-    
-    CCKeyDerivationPBKDF(kCCPBKDF2, passphrase.UTF8String, passphrase.length, salt.bytes, salt.length, kCCPRFHmacAlgSHA1, iterationCount, key.mutableBytes, key.length);
-    
-    BOOL result = [self decryptData:cipher plain:&plain key:key keyLen:AES_KEY_256_LENGTH initializationVector:initializationVector authenticationTag:authenticationTag];
-    
-    if (result && plain) {
-        return plain;
+    if (!authenticationTag || !initializationVector || !salt) {
+        NSLog(@"One of IV, salt or tag is nil");
+        return nil;
     }
 
-    return nil;
+    // Rimuove tag dalla fine del cipher
+    NSData *cipher = [cipherData subdataWithRange:NSMakeRange(0, cipherData.length - authenticationTag.length)];
+
+    NSLog(@"Decrypting private key:");
+    NSLog(@"• Cipher (len=%lu): %@", (unsigned long)cipher.length, cipher);
+    NSLog(@"• Tag (len=%lu): %@", (unsigned long)authenticationTag.length, authenticationTag);
+    NSLog(@"• IV (len=%lu): %@", (unsigned long)initializationVector.length, initializationVector);
+    NSLog(@"• Salt (len=%lu): %@", (unsigned long)salt.length, salt);
+
+    passphrase = [passphrase stringByReplacingOccurrencesOfString:@" " withString:@""];
+
+    int derivation = CCKeyDerivationPBKDF(kCCPBKDF2,
+                                          passphrase.UTF8String, (int)passphrase.length,
+                                          salt.bytes, (int)salt.length,
+                                          kCCPRFHmacAlgSHA1,
+                                          iterationCount,
+                                          key.mutableBytes, key.length);
+
+    if (derivation != kCCSuccess) {
+        NSLog(@"PBKDF2 failed: %d", derivation);
+        return nil;
+    }
+
+    NSLog(@"Derived key: %@", key);
+
+    BOOL result = [self decryptData:cipher
+                              plain:&plain
+                                key:key
+                            keyLen:AES_KEY_256_LENGTH
+              initializationVector:initializationVector
+                 authenticationTag:authenticationTag];
+
+    if (!result) {
+        NSLog(@"AES-GCM decryption failed.");
+        return nil;
+    }
+
+    NSLog(@"✅ Decryption success. Plain data length: %lu", (unsigned long)plain.length);
+    return plain;
 }
 
 #
@@ -680,9 +749,11 @@
         return nil;
     
     EVP_PKEY *key = PEM_read_bio_PrivateKey(bio, NULL, NULL, NULL);
-    if (!key)
+    if (!key) {
+        ERR_print_errors_fp(stderr); // <-- Questo ti darà il motivo preciso
         return nil;
-    
+    }
+
     EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(key, NULL);
     if (!ctx)
         return nil;

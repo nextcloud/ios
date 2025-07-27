@@ -94,6 +94,24 @@ class NCEndToEndInitialize: NSObject {
         }
     }
 
+    func detectPrivateKeyFormat(from data: Data) -> String {
+        print("🔍 Hex dump:", data.prefix(32).map { String(format: "%02X", $0) }.joined(separator: " "))
+
+        // PKCS#8 has OBJECT IDENTIFIER for RSA
+        let oidRsaPrefix: [UInt8] = [0x30, 0x0D, 0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x01]
+
+        if let range = data.range(of: Data(oidRsaPrefix)) {
+            print("🔐 Format: PKCS#8 (BEGIN PRIVATE KEY)")
+            return "PKCS#8"
+        } else if data.starts(with: [0x30, 0x82]) {
+            print("🔐 Format: PKCS#1 (BEGIN RSA PRIVATE KEY)")
+            return "PKCS#1"
+        } else {
+            print("❌ Unknown key format")
+            return "Unknown"
+        }
+    }
+
     private func getPrivateKeyCipher() {
         // Request PrivateKey chiper to Server
         NextcloudKit.shared.getE2EEPrivateKey(account: session.account) { account, privateKeyChiper, _, error in
@@ -104,9 +122,22 @@ class NCEndToEndInitialize: NSObject {
                 let ok = UIAlertAction(title: "OK", style: .default, handler: { _ in
                     let passphrase = passphraseTextField?.text ?? ""
                     let publicKey = NCKeychain().getEndToEndCertificate(account: account)
-                    if let privateKeyData = (NCEndToEndEncryption.shared().decryptPrivateKey(privateKeyChiper, passphrase: passphrase, publicKey: publicKey, iterationCount: 1024)),
-                       let keyData = Data(base64Encoded: privateKeyData),
-                       let privateKey = String(data: keyData, encoding: .utf8) {
+                    if let privateKeyData = (NCEndToEndEncryption.shared().decryptPrivateKey(privateKeyChiper, passphrase: passphrase, publicKey: publicKey, iterationCount: 1024)) {
+
+                        self.detectPrivateKeyFormat(from: privateKeyData)
+
+
+                       //let keyData = Data(base64Encoded: privateKeyData),
+                       //let privateKey = String(data: keyData, encoding: .utf8) {
+
+                        let privateKey = """
+                        -----BEGIN PRIVATE KEY-----
+                        \(privateKeyData.base64EncodedString(options: [.lineLength64Characters, .endLineWithLineFeed]))
+                        -----END PRIVATE KEY-----
+                        """
+
+                        NCEndToEndEncryption.shared().isValidPrivateKeyPEM(privateKey)
+
                         NCKeychain().setEndToEndPrivateKey(account: account, privateKey: privateKey)
                     } else {
                         let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "Serious internal error to decrypt Private Key")
