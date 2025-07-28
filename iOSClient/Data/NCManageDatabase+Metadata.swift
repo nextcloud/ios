@@ -139,6 +139,9 @@ extension tableMetadata {
     }
 
     var isRenameable: Bool {
+        if !NCMetadataPermissions.canRename(self) {
+            return false
+        }
         if lock {
             return false
         }
@@ -340,7 +343,6 @@ extension tableMetadata {
 
 extension NCManageDatabase {
     func isMetadataShareOrMounted(metadata: tableMetadata, metadataFolder: tableMetadata?) -> Bool {
-        let metadataPermissions = NCMetadataPermissions()
         var isShare = false
         var isMounted = false
 

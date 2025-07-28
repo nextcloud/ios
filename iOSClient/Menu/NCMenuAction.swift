@@ -105,14 +105,13 @@ extension NCMenuAction {
         )
     }
 
-    /// Delete files either from cache or from Nextcloud
+    /// Delete files either from cache or from Nextcloud, or unshare (depending on context)
     static func deleteOrUnshareAction(selectedMetadatas: [tableMetadata], metadataFolder: tableMetadata? = nil, controller: NCMainTabBarController?, order: Int = 0, sender: Any?, completion: (() -> Void)? = nil) -> NCMenuAction {
         var titleDelete = NSLocalizedString("_delete_", comment: "")
         var message = NSLocalizedString("_want_delete_", comment: "")
         var icon = "trash"
         var destructive = false
         var color = NCBrandColor.shared.iconImageColor
-        let metadataPermissions = NCMetadataPermissions()
 
         if selectedMetadatas.count > 1 {
             titleDelete = NSLocalizedString("_delete_selected_files_", comment: "")

@@ -70,7 +70,7 @@ class NCFiles: NCCollectionViewCommon {
                 self.plusButton.backgroundColor = NCBrandColor.shared.getElement(account: activeTableAccount.account)
             }
         }
-        
+
         if self.serverUrl.isEmpty {
 
             ///

@@ -33,6 +33,10 @@ class NCMetadataPermissions: NSObject {
         return metadata.permissions.contains(permissionCanDeleteOrUnshare)
     }
 
+    static func canRename(_ metadata: tableMetadata) -> Bool {
+        return metadata.permissions.contains(permissionCanRename)
+    }
+
     static func permissionsContainsString(_ metadataPermissions: String, permissions: String) -> Bool {
         for char in permissions {
             if metadataPermissions.contains(char) == false {
