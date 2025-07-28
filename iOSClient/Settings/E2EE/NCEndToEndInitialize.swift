@@ -94,6 +94,24 @@ class NCEndToEndInitialize: NSObject {
         }
     }
 
+    func detectPrivateKeyFormat(from data: Data) -> String {
+        print("🔍 Hex dump:", data.prefix(32).map { String(format: "%02X", $0) }.joined(separator: " "))
+
+        // PKCS#8 has OBJECT IDENTIFIER for RSA
+        let oidRsaPrefix: [UInt8] = [0x30, 0x0D, 0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x01]
+
+        if let range = data.range(of: Data(oidRsaPrefix)) {
+            print("🔐 Format: PKCS#8 (BEGIN PRIVATE KEY)")
+            return "PKCS#8"
+        } else if data.starts(with: [0x30, 0x82]) {
+            print("🔐 Format: PKCS#1 (BEGIN RSA PRIVATE KEY)")
+            return "PKCS#1"
+        } else {
+            print("❌ Unknown key format")
+            return "Unknown"
+        }
+    }
+
     private func getPrivateKeyCipher() {
         // Request PrivateKey chiper to Server
         NextcloudKit.shared.getE2EEPrivateKey(account: session.account) { account, privateKeyChiper, _, error in
@@ -103,8 +121,7 @@ class NCEndToEndInitialize: NSObject {
                 let alertController = UIAlertController(title: NSLocalizedString("_e2e_passphrase_request_title_", comment: ""), message: NSLocalizedString("_e2e_passphrase_request_message_", comment: ""), preferredStyle: .alert)
                 let ok = UIAlertAction(title: "OK", style: .default, handler: { _ in
                     let passphrase = passphraseTextField?.text ?? ""
-                    let publicKey = NCKeychain().getEndToEndCertificate(account: account)
-                    if let privateKeyData = (NCEndToEndEncryption.shared().decryptPrivateKey(privateKeyChiper, passphrase: passphrase, publicKey: publicKey, iterationCount: 1024)),
+                    if let privateKeyData = NCEndToEndEncryption.shared().decryptPrivateKey(privateKeyChiper, passphrase: passphrase),
                        let keyData = Data(base64Encoded: privateKeyData),
                        let privateKey = String(data: keyData, encoding: .utf8) {
                         NCKeychain().setEndToEndPrivateKey(account: account, privateKey: privateKey)
@@ -184,7 +201,7 @@ class NCEndToEndInitialize: NSObject {
 
     private func createNewE2EE(e2ePassphrase: String, error: NKError, copyPassphrase: Bool) {
         var privateKeyString: NSString?
-        guard let privateKeyCipher = NCEndToEndEncryption.shared().encryptPrivateKey(session.userId, directory: utilityFileSystem.directoryUserData, passphrase: e2ePassphrase, privateKey: &privateKeyString, iterationCount: 1024) else {
+        guard let privateKeyCipher = NCEndToEndEncryption.shared().encryptPrivateKey(session.userId, directory: utilityFileSystem.directoryUserData, passphrase: e2ePassphrase, privateKey: &privateKeyString) else {
             let error = NKError(errorCode: error.errorCode, errorDescription: "Error creating private key cipher")
             NCContentPresenter().messageNotification("E2E privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
             return
