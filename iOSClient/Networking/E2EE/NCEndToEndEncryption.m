@@ -463,10 +463,26 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
     NSLog(@"• Salt (len=%lu): %@", (unsigned long)salt.length, salt);
 
     // AES-GCM decryption
-    BOOL result = [self decryptData:cipher plain:&plain key:key keyLen:AES_KEY_256_LENGTH initializationVector:initializationVector authenticationTag:authenticationTag];
+    BOOL success = [self decryptData:cipher plain:&plain key:key keyLen:AES_KEY_256_LENGTH initializationVector:initializationVector authenticationTag:authenticationTag];
 
-    if (!result) {
-        NSLog(@"AES-GCM decryption failed.");
+    if (!success) {
+        // Try OLD format (PBKDF2-HMAC-SHA1 + 1024)
+        derivation = CCKeyDerivationPBKDF(kCCPBKDF2,
+                                          passphrase.UTF8String,
+                                          (int)passphrase.length,
+                                          salt.bytes,
+                                          (int)salt.length,
+                                          kCCPRFHmacAlgSHA1,
+                                          1024,
+                                          key.mutableBytes,
+                                          key.length);
+        if (derivation == kCCSuccess) {
+            success = [self decryptData:cipher plain:&plain key:key keyLen:AES_KEY_256_LENGTH initializationVector:initializationVector authenticationTag:authenticationTag];
+        }
+    }
+
+    if (!success) {
+        NSLog(@"❌ Failed to decrypt with both PBKDF2 formats.");
         return nil;
     }
 
