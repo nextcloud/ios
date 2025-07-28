@@ -59,6 +59,12 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
     // MARK: - Passcode
 
     @objc func requestPasscodeType(_ passcodeType: String) {
+        #if DEBUG
+        self.passcodeType = passcodeType
+        correctPasscode()
+        return
+        #endif
+
         let laContext = LAContext()
         var error: NSError?
         let passcodeViewController = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: true)

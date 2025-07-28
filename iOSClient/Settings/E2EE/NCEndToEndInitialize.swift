@@ -121,23 +121,9 @@ class NCEndToEndInitialize: NSObject {
                 let alertController = UIAlertController(title: NSLocalizedString("_e2e_passphrase_request_title_", comment: ""), message: NSLocalizedString("_e2e_passphrase_request_message_", comment: ""), preferredStyle: .alert)
                 let ok = UIAlertAction(title: "OK", style: .default, handler: { _ in
                     let passphrase = passphraseTextField?.text ?? ""
-                    let publicKey = NCKeychain().getEndToEndCertificate(account: account)
-                    if let privateKeyData = (NCEndToEndEncryption.shared().decryptPrivateKey(privateKeyChiper, passphrase: passphrase, publicKey: publicKey, iterationCount: 1024)) {
-
-                        self.detectPrivateKeyFormat(from: privateKeyData)
-
-
-                       //let keyData = Data(base64Encoded: privateKeyData),
-                       //let privateKey = String(data: keyData, encoding: .utf8) {
-
-                        let privateKey = """
-                        -----BEGIN PRIVATE KEY-----
-                        \(privateKeyData.base64EncodedString(options: [.lineLength64Characters, .endLineWithLineFeed]))
-                        -----END PRIVATE KEY-----
-                        """
-
-                        NCEndToEndEncryption.shared().isValidPrivateKeyPEM(privateKey)
-
+                    if let privateKeyData = NCEndToEndEncryption.shared().decryptPrivateKey(privateKeyChiper, passphrase: passphrase),
+                       let keyData = Data(base64Encoded: privateKeyData),
+                       let privateKey = String(data: keyData, encoding: .utf8) {
                         NCKeychain().setEndToEndPrivateKey(account: account, privateKey: privateKey)
                     } else {
                         let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "Serious internal error to decrypt Private Key")
