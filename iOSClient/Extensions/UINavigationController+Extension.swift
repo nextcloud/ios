@@ -36,15 +36,8 @@ extension UINavigationController {
         appearance.configureWithDefaultBackground()
         appearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.textColor]
         appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.textColor]
+
         navigationBar.standardAppearance = appearance
-
-        let scrollEdgeAppearance = UINavigationBarAppearance()
-        scrollEdgeAppearance.configureWithDefaultBackground()
-        scrollEdgeAppearance.backgroundColor = .systemBackground
-        scrollEdgeAppearance.shadowColor = .clear
-        scrollEdgeAppearance.shadowImage = UIImage()
-        navigationBar.scrollEdgeAppearance = scrollEdgeAppearance
-
         navigationBar.tintColor = NCBrandColor.shared.iconImageColor
         navigationBar.prefersLargeTitles = true
 
