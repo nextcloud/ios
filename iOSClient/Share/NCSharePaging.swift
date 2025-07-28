@@ -50,7 +50,6 @@ class NCSharePaging: UIViewController {
         view.backgroundColor = .systemBackground
         title = NSLocalizedString("_details_", comment: "")
 
-        navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .done, target: self, action: #selector(exitTapped(_:)))
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)

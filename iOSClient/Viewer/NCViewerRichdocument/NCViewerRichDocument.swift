@@ -56,7 +56,6 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
         if !metadata.ocId.hasPrefix("TEMP") {
             navigationItem.rightBarButtonItem = UIBarButtonItem(image: NCImageCache.shared.getImageButtonMore(), style: .plain, target: self, action: #selector(openMenuMore(_:)))
         }
-        navigationController?.navigationBar.prefersLargeTitles = false
         navigationItem.title = metadata.fileNameView
         navigationItem.hidesBackButton = true
 

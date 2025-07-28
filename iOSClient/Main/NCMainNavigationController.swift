@@ -80,6 +80,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         super.viewDidLoad()
         self.delegate = self
 
+        setNavigationBarAppearance()
+
         menuButton.setImage(UIImage(systemName: "ellipsis.circle"), for: .normal)
         menuButton.tintColor = NCBrandColor.shared.iconImageColor
         menuButton.menu = createRightMenu()
@@ -147,7 +149,6 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     }
 
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        setNavigationBarAppearance()
         self.updateRightBarButtonItems()
     }
 

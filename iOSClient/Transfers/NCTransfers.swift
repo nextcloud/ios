@@ -31,7 +31,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         listLayout.itemHeight = 105
         self.database.setLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList)
         self.navigationItem.title = titleCurrentFolder
-        navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
 
         let close = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .done) {
             self.dismiss(animated: true)

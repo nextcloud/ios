@@ -54,7 +54,6 @@ class NCViewerMediaPage: UIViewController {
     let utilityFileSystem = NCUtilityFileSystem()
     let global = NCGlobal.shared
     let database = NCManageDatabase.shared
-    var prefersLargeTitles: Bool?
 
     // This prevents the scroll views to scroll when you drag and drop files/images/subjects (from this or other apps)
     // https://forums.developer.apple.com/forums/thread/89396 and https://forums.developer.apple.com/forums/thread/115736
@@ -103,9 +102,6 @@ class NCViewerMediaPage: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        prefersLargeTitles = navigationController?.navigationBar.prefersLargeTitles
-
-        navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
         let metadata = database.getMetadataFromOcId(ocIds[currentIndex])!
 
         singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
@@ -170,9 +166,6 @@ class NCViewerMediaPage: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        if let prefersLargeTitles {
-            navigationController?.navigationBar.prefersLargeTitles = prefersLargeTitles
-        }
         changeScreenMode(mode: .normal)
     }
 
@@ -305,6 +298,7 @@ class NCViewerMediaPage: UIViewController {
 
     func colorNavigationController(backgroundColor: UIColor, titleColor: UIColor, tintColor: UIColor?, withoutShadow: Bool) {
 
+        /*
         let appearance = UINavigationBarAppearance()
         appearance.titleTextAttributes = [.foregroundColor: titleColor]
         appearance.largeTitleTextAttributes = [.foregroundColor: titleColor]
@@ -323,6 +317,7 @@ class NCViewerMediaPage: UIViewController {
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.compactAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        */
     }
 
     // MARK: - NotificationCenter

@@ -52,8 +52,6 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
 
         refreshControl?.addTarget(self, action: #selector(getNetwokingNotification(_:)), for: .valueChanged)
 
-        navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
-
         let close = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .done) {
             self.dismiss(animated: true)
         }
