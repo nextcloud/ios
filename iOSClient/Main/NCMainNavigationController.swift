@@ -143,7 +143,6 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             }
         }
 
-        navigationBar.prefersLargeTitles = true
         setNavigationBarHidden(false, animated: true)
     }
 
