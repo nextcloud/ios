@@ -56,13 +56,6 @@ extension UINavigationController {
         appearance.backgroundColor = .systemGray6
         navigationBar.standardAppearance = appearance
 
-        let scrollEdgeAppearance = UINavigationBarAppearance()
-        scrollEdgeAppearance.configureWithDefaultBackground()
-        scrollEdgeAppearance.backgroundColor = .systemGroupedBackground
-        scrollEdgeAppearance.shadowColor = .clear
-        scrollEdgeAppearance.shadowImage = UIImage()
-        navigationBar.scrollEdgeAppearance = scrollEdgeAppearance
-
         navigationBar.tintColor = NCBrandColor.shared.iconImageColor
         navigationBar.prefersLargeTitles = false
 
