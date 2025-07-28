@@ -48,7 +48,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // self.navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.setNavigationBarAppearance()
         view.backgroundColor = .systemBackground
         self.title = NSLocalizedString("_activity_", comment: "")
 

@@ -33,7 +33,6 @@ extension UINavigationController {
 
     func setNavigationBarAppearance() {
         let appearance = UINavigationBarAppearance()
-
         appearance.configureWithDefaultBackground()
         appearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.textColor]
         appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.textColor]
@@ -41,16 +40,11 @@ extension UINavigationController {
 
         let scrollEdgeAppearance = UINavigationBarAppearance()
         scrollEdgeAppearance.configureWithDefaultBackground()
-
         scrollEdgeAppearance.backgroundColor = .systemBackground
         scrollEdgeAppearance.shadowColor = .clear
         scrollEdgeAppearance.shadowImage = UIImage()
-
         navigationBar.scrollEdgeAppearance = scrollEdgeAppearance
-        navigationBar.tintColor = NCBrandColor.shared.iconImageColor
 
-        navigationBar.standardAppearance = appearance
-        navigationBar.scrollEdgeAppearance = appearance
         navigationBar.tintColor = NCBrandColor.shared.iconImageColor
         navigationBar.prefersLargeTitles = true
 
@@ -63,7 +57,6 @@ extension UINavigationController {
 
     func setGroupAppearance() {
         let appearance = UINavigationBarAppearance()
-
         appearance.configureWithDefaultBackground()
         appearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.textColor]
         appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.textColor]
@@ -72,13 +65,13 @@ extension UINavigationController {
 
         let scrollEdgeAppearance = UINavigationBarAppearance()
         scrollEdgeAppearance.configureWithDefaultBackground()
-
         scrollEdgeAppearance.backgroundColor = .systemGroupedBackground
         scrollEdgeAppearance.shadowColor = .clear
         scrollEdgeAppearance.shadowImage = UIImage()
-
         navigationBar.scrollEdgeAppearance = scrollEdgeAppearance
+
         navigationBar.tintColor = NCBrandColor.shared.iconImageColor
+        navigationBar.prefersLargeTitles = false
 
         if #available(iOS 26.0, *) {
             navigationBar.prefersLargeTitles = false
@@ -88,7 +81,6 @@ extension UINavigationController {
     }
 
     func setMediaAppreance() {
-
         setNavigationBarHidden(true, animated: false)
     }
 }
