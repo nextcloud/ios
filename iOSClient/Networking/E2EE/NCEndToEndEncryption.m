@@ -70,23 +70,6 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
     }
 }
 
-- (BOOL)isValidPrivateKeyPEM:(NSString *)privateKeyPEM {
-    const char *pemCString = [privateKeyPEM UTF8String];
-    BIO *bio = BIO_new_mem_buf((void *)pemCString, -1);
-    if (!bio) return NO;
-
-    EVP_PKEY *pkey = PEM_read_bio_PrivateKey(bio, NULL, NULL, NULL);
-    BIO_free(bio);
-
-    if (pkey) {
-        EVP_PKEY_free(pkey);
-        return YES;
-    } else {
-        ERR_print_errors_fp(stderr); // ti stampa l’errore dettagliato
-        return NO;
-    }
-}
-
 #
 #pragma mark - Generate Certificate X509 - CSR - Private Key
 #
@@ -360,8 +343,10 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
     NSMutableData *key = [NSMutableData dataWithLength:PBKDF2_KEY_LENGTH / 8];
     NSData *salt = [self generateSalt:AES_SALT_LENGTH];
 
+    // Clean passphrase
     passphrase = [passphrase stringByReplacingOccurrencesOfString:@" " withString:@""];
 
+    // PBKDF2-HMAC-SHA256
     CCKeyDerivationPBKDF(kCCPBKDF2,
                          passphrase.UTF8String,
                          (int)passphrase.length,
@@ -375,14 +360,18 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
     NSData *initializationVector = [self generateIV:AES_IVEC_LENGTH];
     NSMutableData *authenticationTag = [NSMutableData dataWithLength:AES_TAG_LENGTH];
 
+    // Base64 encode private key
     NSString *pkEncoded = [_privateKeyData base64EncodedStringWithOptions:0];
     NSData *pkEncodedData = [pkEncoded dataUsingEncoding:NSUTF8StringEncoding];
 
-    BOOL result = [self encryptData:pkEncodedData cipher:&cipher key:key keyLen:AES_KEY_256_LENGTH initializationVector:initializationVector authenticationTag:&authenticationTag];
+    BOOL result = [self encryptData:pkEncodedData
+                             cipher:&cipher
+                                key:key
+                            keyLen:AES_KEY_256_LENGTH
+              initializationVector:initializationVector
+                 authenticationTag:&authenticationTag];
 
     if (result && cipher) {
-        [cipher appendData:authenticationTag]; // Append tag at the end
-
         NSString *cipherString = [cipher base64EncodedStringWithOptions:0];
         NSString *ivString = [initializationVector base64EncodedStringWithOptions:0];
         NSString *saltString = [salt base64EncodedStringWithOptions:0];
@@ -392,6 +381,7 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
                                        ivString, IV_DELIMITER_ENCODED,
                                        saltString];
 
+        // Output: decoded private key (for UI, debug, etc.)
         NSString *decodedPrivateKey = [[NSString alloc] initWithData:_privateKeyData encoding:NSUTF8StringEncoding];
         if (!decodedPrivateKey) {
             decodedPrivateKey = [_privateKeyData base64EncodedStringWithOptions:0];
