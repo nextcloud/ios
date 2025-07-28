@@ -14,7 +14,6 @@
 #import <openssl/evp.h>
 #import <openssl/err.h>
 
-
 #define addName(field, value) X509_NAME_add_entry_by_txt(name, field, MBSTRING_ASC, (unsigned char *)value, -1, -1, 0); NSLog(@"%s: %s", field, value);
 
 #define IV_DELIMITER_ENCODED_OLD    @"fA=="
@@ -36,6 +35,7 @@
 #define AES_IVEC_LENGTH             16
 #define AES_GCM_TAG_LENGTH          16
 #define AES_SALT_LENGTH             40
+#define AES_TAG_LENGTH              16
 
 @interface NCEndToEndEncryption ()
 {
@@ -348,7 +348,7 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
     return csr;
 }
 
-- (NSString *)encryptPrivateKey:(NSString *)userId directory:(NSString *)directory passphrase:(NSString *)passphrase privateKey:(NSString **)privateKey iterationCount:(unsigned int)iterationCount
+- (NSString *)encryptPrivateKey:(NSString *)userId directory:(NSString *)directory passphrase:(NSString *)passphrase privateKey:(NSString **)privateKey
 {
     NSMutableData *cipher = [NSMutableData new];
 
@@ -356,37 +356,52 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
         if (![self generateCertificateX509WithUserId:userId directory:directory])
             return nil;
     }
-    
-    NSMutableData *key = [NSMutableData dataWithLength:PBKDF2_KEY_LENGTH/8];
+
+    NSMutableData *key = [NSMutableData dataWithLength:PBKDF2_KEY_LENGTH / 8];
     NSData *salt = [self generateSalt:AES_SALT_LENGTH];
-    
-    // Remove all whitespaces from passphrase
+
     passphrase = [passphrase stringByReplacingOccurrencesOfString:@" " withString:@""];
-    
-    CCKeyDerivationPBKDF(kCCPBKDF2, passphrase.UTF8String, passphrase.length, salt.bytes, salt.length, kCCPRFHmacAlgSHA1, iterationCount, key.mutableBytes, key.length);
-    
+
+    CCKeyDerivationPBKDF(kCCPBKDF2,
+                         passphrase.UTF8String,
+                         (int)passphrase.length,
+                         salt.bytes,
+                         (int)salt.length,
+                         kCCPRFHmacAlgSHA256,
+                         600000,
+                         key.mutableBytes,
+                         key.length);
+
     NSData *initializationVector = [self generateIV:AES_IVEC_LENGTH];
-    NSData *authenticationTag = [NSData new];
-    
+    NSMutableData *authenticationTag = [NSMutableData dataWithLength:AES_TAG_LENGTH];
+
     NSString *pkEncoded = [_privateKeyData base64EncodedStringWithOptions:0];
     NSData *pkEncodedData = [pkEncoded dataUsingEncoding:NSUTF8StringEncoding];
 
     BOOL result = [self encryptData:pkEncodedData cipher:&cipher key:key keyLen:AES_KEY_256_LENGTH initializationVector:initializationVector authenticationTag:&authenticationTag];
-    
+
     if (result && cipher) {
-        
+        [cipher appendData:authenticationTag]; // Append tag at the end
+
         NSString *cipherString = [cipher base64EncodedStringWithOptions:0];
-        NSString *initializationVectorString = [initializationVector base64EncodedStringWithOptions:0];
+        NSString *ivString = [initializationVector base64EncodedStringWithOptions:0];
         NSString *saltString = [salt base64EncodedStringWithOptions:0];
-        NSString *encryptPrivateKey = [NSString stringWithFormat:@"%@%@%@%@%@", cipherString, IV_DELIMITER_ENCODED, initializationVectorString, IV_DELIMITER_ENCODED, saltString];
-        
-        *privateKey = [[NSString alloc] initWithData:_privateKeyData encoding:NSUTF8StringEncoding];
+
+        NSString *encryptPrivateKey = [NSString stringWithFormat:@"%@%@%@%@%@",
+                                       cipherString, IV_DELIMITER_ENCODED,
+                                       ivString, IV_DELIMITER_ENCODED,
+                                       saltString];
+
+        NSString *decodedPrivateKey = [[NSString alloc] initWithData:_privateKeyData encoding:NSUTF8StringEncoding];
+        if (!decodedPrivateKey) {
+            decodedPrivateKey = [_privateKeyData base64EncodedStringWithOptions:0];
+        }
+        *privateKey = decodedPrivateKey;
+
         return encryptPrivateKey;
-        
-    } else {
-        
-        return nil;
     }
+
+    return nil;
 }
 
 - (NSData *)decryptPrivateKey:(NSString *)privateKey passphrase:(NSString *)passphrase
@@ -448,10 +463,26 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
     NSLog(@"• Salt (len=%lu): %@", (unsigned long)salt.length, salt);
 
     // AES-GCM decryption
-    BOOL result = [self decryptData:cipher plain:&plain key:key keyLen:AES_KEY_256_LENGTH initializationVector:initializationVector authenticationTag:authenticationTag];
+    BOOL success = [self decryptData:cipher plain:&plain key:key keyLen:AES_KEY_256_LENGTH initializationVector:initializationVector authenticationTag:authenticationTag];
 
-    if (!result) {
-        NSLog(@"AES-GCM decryption failed.");
+    if (!success) {
+        // Try OLD format (PBKDF2-HMAC-SHA1 + 1024)
+        derivation = CCKeyDerivationPBKDF(kCCPBKDF2,
+                                          passphrase.UTF8String,
+                                          (int)passphrase.length,
+                                          salt.bytes,
+                                          (int)salt.length,
+                                          kCCPRFHmacAlgSHA1,
+                                          1024,
+                                          key.mutableBytes,
+                                          key.length);
+        if (derivation == kCCSuccess) {
+            success = [self decryptData:cipher plain:&plain key:key keyLen:AES_KEY_256_LENGTH initializationVector:initializationVector authenticationTag:authenticationTag];
+        }
+    }
+
+    if (!success) {
+        NSLog(@"❌ Failed to decrypt with both PBKDF2 formats.");
         return nil;
     }
 
@@ -605,13 +636,13 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
     return false;
 }
 
-- (BOOL)decryptFile:(NSString *)fileName fileNameView:(NSString *)fileNameView ocId:(NSString *)ocId userId:(NSString *)userId urlBase:(NSString *)urlBase key:(NSString *)key initializationVector:(NSString *)initializationVector authenticationTag:(NSString *)authenticationTag
+- (BOOL)decryptFile:(NSString *)fileName fileNameView:(NSString *)fileNameView ocId:(NSString *)ocId key:(NSString *)key initializationVector:(NSString *)initializationVector authenticationTag:(NSString *)authenticationTag
 {
     NSData *keyData = [[NSData alloc] initWithBase64EncodedString:key options:0];
     NSData *initializationVectorData = [[NSData alloc] initWithBase64EncodedString:initializationVector options:0];
     NSData *authenticationTagData = [[NSData alloc] initWithBase64EncodedString:authenticationTag options:0];
 
-    return [self decryptFile:[[[NCUtilityFileSystem alloc] init] getDirectoryProviderStorageOcId:ocId fileName:fileName userId: userId urlBase:urlBase] fileNamePlain:[[[NCUtilityFileSystem alloc] init] getDirectoryProviderStorageOcId:ocId fileName:fileNameView userId:userId urlBase:urlBase] key:keyData keyLen:AES_KEY_128_LENGTH initializationVector:initializationVectorData authenticationTag:authenticationTagData];
+    return [self decryptFile:[[[NCUtilityFileSystem alloc] init] getDirectoryProviderStorageOcId:ocId fileNameView:fileName] fileNamePlain:[[[NCUtilityFileSystem alloc] init] getDirectoryProviderStorageOcId:ocId fileNameView:fileNameView] key:keyData keyLen:AES_KEY_128_LENGTH initializationVector:initializationVectorData authenticationTag:authenticationTagData];
 }
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
