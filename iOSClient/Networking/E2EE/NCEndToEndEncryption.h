@@ -17,7 +17,7 @@
 // Certificate
 
 - (NSString *)createCSR:(NSString *)userId directory:(NSString *)directory;
-- (NSString *)encryptPrivateKey:(NSString *)userId directory: (NSString *)directory passphrase:(NSString *)passphrase privateKey:(NSString **)privateKey iterationCount:(unsigned int)iterationCount;
+- (NSString *)encryptPrivateKey:(NSString *)userId directory: (NSString *)directory passphrase:(NSString *)passphrase privateKey:(NSString **)privateKey;
 - (NSData *)decryptPrivateKey:(NSString *)privateKey passphrase:(NSString *)passphrase;
 - (BOOL)isValidPrivateKeyPEM:(NSString *)privateKeyPEM;
 

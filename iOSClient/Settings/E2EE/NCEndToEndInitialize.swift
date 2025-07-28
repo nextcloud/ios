@@ -202,7 +202,7 @@ class NCEndToEndInitialize: NSObject {
 
     private func createNewE2EE(e2ePassphrase: String, error: NKError, copyPassphrase: Bool) {
         var privateKeyString: NSString?
-        guard let privateKeyCipher = NCEndToEndEncryption.shared().encryptPrivateKey(session.userId, directory: utilityFileSystem.directoryUserData, passphrase: e2ePassphrase, privateKey: &privateKeyString, iterationCount: 1024) else {
+        guard let privateKeyCipher = NCEndToEndEncryption.shared().encryptPrivateKey(session.userId, directory: utilityFileSystem.directoryUserData, passphrase: e2ePassphrase, privateKey: &privateKeyString) else {
             let error = NKError(errorCode: error.errorCode, errorDescription: "Error creating private key cipher")
             NCContentPresenter().messageNotification("E2E privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
             return
