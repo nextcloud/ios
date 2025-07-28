@@ -64,7 +64,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         tabBarSelect = NCTrashSelectTabBar(controller: tabBarController, delegate: self)
 
         view.backgroundColor = .systemBackground
-        self.navigationController?.navigationBar.prefersLargeTitles = true
+    //    self.navigationController?.navigationBar.prefersLargeTitles = true
 
         collectionView.register(UINib(nibName: "NCTrashListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
         collectionView.register(UINib(nibName: "NCTrashGridCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
