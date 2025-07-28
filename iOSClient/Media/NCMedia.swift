@@ -174,7 +174,8 @@ class NCMedia: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        navigationController?.setMediaAppreance()
+        navigationController?.setNavigationBarHidden(true, animated: false)
+
         if dataSource.metadatas.isEmpty {
             Task {
                 await loadDataSource()

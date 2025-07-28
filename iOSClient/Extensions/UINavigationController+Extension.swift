@@ -47,8 +47,4 @@ extension UINavigationController {
             navigationBar.compactScrollEdgeAppearance = appearance
         }
     }
-
-    func setMediaAppreance() {
-        setNavigationBarHidden(true, animated: false)
-    }
 }
