@@ -24,7 +24,6 @@ extension NCMedia {
     @MainActor
     func collectionViewReloadData() {
         self.collectionView.reloadData()
-        self.refreshControl.endRefreshing()
         self.setTitleDate()
     }
 
@@ -74,7 +73,7 @@ extension NCMedia {
                 return attr1.frame.minY < attr2.frame.minY
             }
 
-            let visibleCells: [NCMediaCell] = sortedIndexPaths.compactMap { indexPath in
+            var visibleCells: [NCMediaCell] = sortedIndexPaths.compactMap { indexPath in
                 guard let cell = collectionView.cellForItem(at: indexPath) as? NCMediaCell else {
                     return nil
                 }
@@ -90,11 +89,18 @@ extension NCMedia {
                 }
             }
 
+            visibleCells = visibleCells.sorted {
+                guard let date1 = $0.datePhotosOriginal, let date2 = $1.datePhotosOriginal else {
+                    return false
+                }
+                return date1 > date2
+            }
+
             if !visibleCells.isEmpty, !distant {
                 firstCellDate = visibleCells.first?.datePhotosOriginal
                 lastCellDate = visibleCells.last?.datePhotosOriginal
 
-                if firstCellDate == self.dataSource.metadatas.first?.datePhotosOriginal {
+                if collectionView.contentOffset.y <= 0 {
                     lessDate = .distantFuture
                 } else {
                     lessDate = Calendar.current.date(byAdding: .second, value: 1, to: firstCellDate ?? .distantFuture) ?? .distantFuture
