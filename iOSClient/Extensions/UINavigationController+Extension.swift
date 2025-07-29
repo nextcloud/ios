@@ -33,19 +33,27 @@ extension UINavigationController {
 
     func setNavigationBarAppearance(backgroundColor: UIColor = .systemBackground, color: UIColor = NCBrandColor.shared.iconImageColor) {
         let appearance = UINavigationBarAppearance()
-        appearance.configureWithDefaultBackground()
-        appearance.titleTextAttributes = [.foregroundColor: color]
-        appearance.backgroundColor = backgroundColor
-        appearance.shadowColor = .clear
-
-        navigationBar.standardAppearance = appearance
-        navigationBar.scrollEdgeAppearance = appearance
-        navigationBar.tintColor = color
-        navigationBar.prefersLargeTitles = false
 
         if #available(iOS 26.0, *) {
+            appearance.configureWithTransparentBackground()
+            appearance.backgroundEffect = UIBlurEffect(style: .systemUltraThinMaterialLight)
+            appearance.backgroundColor = UIColor.white.withAlphaComponent(0.08)
+            appearance.shadowColor = .clear
+            appearance.titleTextAttributes = [.foregroundColor: color]
+
             navigationBar.compactAppearance = appearance
             navigationBar.compactScrollEdgeAppearance = appearance
+            navigationBar.prefersLargeTitles = false
+        } else {
+            appearance.configureWithDefaultBackground()
+            appearance.titleTextAttributes = [.foregroundColor: color]
+            appearance.backgroundColor = backgroundColor
+            appearance.shadowColor = .clear
+
+            navigationBar.standardAppearance = appearance
+            navigationBar.scrollEdgeAppearance = appearance
+            navigationBar.tintColor = color
+            navigationBar.prefersLargeTitles = false
         }
     }
 }
