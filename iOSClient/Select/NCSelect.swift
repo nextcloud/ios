@@ -79,8 +79,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationController?.setNavigationBarAppearance()
-
         view.backgroundColor = .systemBackground
         collectionView.backgroundColor = .systemBackground
 

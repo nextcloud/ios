@@ -85,7 +85,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         defaultBackgroundColor = pdfView.backgroundColor
         view.backgroundColor = defaultBackgroundColor
 
-        navigationController?.navigationBar.prefersLargeTitles = false
         navigationItem.title = titleView
 
         // PDF CONTAINER

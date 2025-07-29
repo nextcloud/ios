@@ -28,7 +28,6 @@ class NCMedia: UIViewController {
     let imageCache = NCImageCache.shared
     let networking = NCNetworking.shared
     var dataSource = NCMediaDataSource()
-    let refreshControl = UIRefreshControl()
     var isTop: Bool = true
     var isEditMode = false
     var fileSelect: [String] = []
@@ -136,14 +135,6 @@ class NCMedia: UIViewController {
         gradient.colors = [UIColor.black.withAlphaComponent(UIAccessibility.isReduceTransparencyEnabled ? 0.8 : 0.4).cgColor, UIColor.clear.cgColor]
         gradientView.layer.insertSublayer(gradient, at: 0)
 
-        collectionView.refreshControl = refreshControl
-        refreshControl.action(for: .valueChanged) { _ in
-            Task {
-                await self.loadDataSource()
-                await self.searchMediaUI(true)
-            }
-        }
-
         pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
         collectionView.addGestureRecognizer(pinchGesture)
 
@@ -174,7 +165,8 @@ class NCMedia: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        navigationController?.setMediaAppreance()
+        navigationController?.setNavigationBarHidden(true, animated: false)
+
         if dataSource.metadatas.isEmpty {
             Task {
                 await loadDataSource()

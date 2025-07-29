@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2020 Marino Faggiana
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-
 import UIKit
 import NextcloudKit
 import MarkdownKit
@@ -29,7 +28,6 @@ import MarkdownKit
         super.viewDidLoad()
 
         view.backgroundColor = .systemBackground
-        navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
         presentationController?.delegate = self
 
         let closeItem = UIBarButtonItem(title: NSLocalizedString("_back_", comment: ""), style: .plain, target: self, action: #selector(closeItemTapped(_:)))

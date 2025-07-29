@@ -31,42 +31,45 @@ extension UINavigationController {
         return self.visibleViewController!.topMostViewController()
     }
 
-    func setNavigationBarAppearance() {
+    func setNavigationBarAppearance(backgroundColor: UIColor = .systemBackground, color: UIColor = NCBrandColor.shared.iconImageColor, withEffect: Bool = true) {
         let appearance = UINavigationBarAppearance()
-        appearance.configureWithDefaultBackground()
-        appearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.textColor]
-        appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.textColor]
-
-        navigationBar.standardAppearance = appearance
-        navigationBar.tintColor = NCBrandColor.shared.iconImageColor
-        navigationBar.prefersLargeTitles = true
 
         if #available(iOS 26.0, *) {
-            navigationBar.prefersLargeTitles = false
+            if withEffect {
+                appearance.configureWithTransparentBackground()
+                appearance.backgroundEffect = UIBlurEffect(style: .systemUltraThinMaterialLight)
+                appearance.backgroundColor = .systemBackground
+                navigationBar.isTranslucent = true
+            } else {
+                appearance.configureWithOpaqueBackground()
+                appearance.backgroundEffect = nil
+                appearance.backgroundColor = backgroundColor
+                navigationBar.isTranslucent = false
+            }
+
+            appearance.shadowColor = .clear
+            appearance.shadowImage = UIImage()
+
+            appearance.titleTextAttributes = [.foregroundColor: color]
+
+            navigationBar.standardAppearance = appearance
+            navigationBar.scrollEdgeAppearance = appearance
             navigationBar.compactAppearance = appearance
             navigationBar.compactScrollEdgeAppearance = appearance
-        }
-    }
 
-    func setGroupAppearance() {
-        let appearance = UINavigationBarAppearance()
-        appearance.configureWithDefaultBackground()
-        appearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.textColor]
-        appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.textColor]
-        appearance.backgroundColor = .systemGray6
-        navigationBar.standardAppearance = appearance
-
-        navigationBar.tintColor = NCBrandColor.shared.iconImageColor
-        navigationBar.prefersLargeTitles = false
-
-        if #available(iOS 26.0, *) {
             navigationBar.prefersLargeTitles = false
-            navigationBar.compactAppearance = appearance
-            navigationBar.compactScrollEdgeAppearance = appearance
-        }
-    }
+            navigationBar.tintColor = color
+        } else {
+            appearance.configureWithDefaultBackground()
+            appearance.titleTextAttributes = [.foregroundColor: color]
+            appearance.backgroundColor = backgroundColor
+            appearance.shadowColor = .clear
+            appearance.shadowImage = UIImage()
 
-    func setMediaAppreance() {
-        setNavigationBarHidden(true, animated: false)
+            navigationBar.standardAppearance = appearance
+            navigationBar.scrollEdgeAppearance = appearance
+            navigationBar.tintColor = color
+            navigationBar.prefersLargeTitles = false
+        }
     }
 }

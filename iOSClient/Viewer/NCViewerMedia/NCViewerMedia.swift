@@ -91,7 +91,7 @@ class NCViewerMedia: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         scrollView.delegate = self
         scrollView.maximumZoomScale = 4
         scrollView.minimumZoomScale = 1
@@ -132,7 +132,6 @@ class NCViewerMedia: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        viewerMediaPage?.navigationController?.navigationBar.prefersLargeTitles = false
         viewerMediaPage?.navigationItem.title = (metadata.fileNameView as NSString).deletingPathExtension
 
         if metadata.isImage, let viewerMediaPage = self.viewerMediaPage {
