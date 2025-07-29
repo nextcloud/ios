@@ -142,6 +142,8 @@ class NCViewerMediaPage: UIViewController {
                 scrollView.delegate = self
             }
         }
+        
+        changeScreenMode(mode: viewerMediaScreenMode)
     }
 
     deinit {
@@ -156,8 +158,6 @@ class NCViewerMediaPage: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        changeScreenMode(mode: viewerMediaScreenMode)
     }
 
     override func viewDidAppear(_ animated: Bool) {
