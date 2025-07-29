@@ -31,24 +31,42 @@ extension UINavigationController {
         return self.visibleViewController!.topMostViewController()
     }
 
-    func setNavigationBarAppearance(backgroundColor: UIColor = .systemBackground, color: UIColor = NCBrandColor.shared.iconImageColor) {
+    func setNavigationBarAppearance(backgroundColor: UIColor = .systemBackground, color: UIColor = NCBrandColor.shared.iconImageColor, withEffect: Bool = true) {
         let appearance = UINavigationBarAppearance()
 
         if #available(iOS 26.0, *) {
-            appearance.configureWithTransparentBackground()
-            appearance.backgroundEffect = UIBlurEffect(style: .systemUltraThinMaterialLight)
-            appearance.backgroundColor = UIColor.white.withAlphaComponent(0.08)
-            appearance.shadowColor = .clear
-            appearance.titleTextAttributes = [.foregroundColor: color]
+            if withEffect {
+                appearance.configureWithTransparentBackground()
+                appearance.backgroundEffect = UIBlurEffect(style: .systemUltraThinMaterialLight)
+                appearance.backgroundColor = .systemBackground
+                navigationBar.isTranslucent = true
+            } else {
+                appearance.configureWithOpaqueBackground()
+                appearance.backgroundEffect = nil
+                appearance.backgroundColor = backgroundColor
+                navigationBar.isTranslucent = false
+            }
 
+            appearance.shadowColor = .clear
+            appearance.shadowImage = UIImage()
+            
+            appearance.titleTextAttributes = [.foregroundColor: color]
+            appearance.buttonAppearance.normal.titleTextAttributes = [.foregroundColor: color]
+            appearance.backButtonAppearance.normal.titleTextAttributes = [.foregroundColor: color]
+            
+            navigationBar.standardAppearance = appearance
+            navigationBar.scrollEdgeAppearance = appearance
             navigationBar.compactAppearance = appearance
             navigationBar.compactScrollEdgeAppearance = appearance
+
             navigationBar.prefersLargeTitles = false
+            navigationBar.tintColor = color
         } else {
             appearance.configureWithDefaultBackground()
             appearance.titleTextAttributes = [.foregroundColor: color]
             appearance.backgroundColor = backgroundColor
             appearance.shadowColor = .clear
+            appearance.shadowImage = UIImage()
 
             navigationBar.standardAppearance = appearance
             navigationBar.scrollEdgeAppearance = appearance
