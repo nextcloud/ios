@@ -31,15 +31,16 @@ extension UINavigationController {
         return self.visibleViewController!.topMostViewController()
     }
 
-    func setNavigationBarAppearance(backgroundColor: UIColor = .systemBackground) {
+    func setNavigationBarAppearance(backgroundColor: UIColor = .systemBackground, tintColor: UIColor = NCBrandColor.shared.iconImageColor) {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithDefaultBackground()
-        appearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.textColor]
-        appearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.textColor]
+        appearance.titleTextAttributes = [.foregroundColor: NCBrandColor.shared.textColor]
         appearance.backgroundColor = backgroundColor
+        appearance.shadowColor = .clear
 
         navigationBar.standardAppearance = appearance
-        navigationBar.tintColor = NCBrandColor.shared.iconImageColor
+        navigationBar.scrollEdgeAppearance = appearance
+        navigationBar.tintColor = tintColor
         navigationBar.prefersLargeTitles = false
 
         if #available(iOS 26.0, *) {
