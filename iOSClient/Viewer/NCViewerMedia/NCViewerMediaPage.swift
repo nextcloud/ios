@@ -124,7 +124,6 @@ class NCViewerMediaPage: UIViewController {
 
         let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadata)
         pageViewController.setViewControllers([viewerMedia], direction: .forward, animated: true, completion: nil)
-        changeScreenMode(mode: viewerMediaScreenMode)
 
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
 
@@ -153,6 +152,12 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDisableSwipeGesture), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: UIApplication.didBecomeActiveNotification, object: nil)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        changeScreenMode(mode: viewerMediaScreenMode)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -251,7 +256,7 @@ class NCViewerMediaPage: UIViewController {
                 textColor = .white
             } else {
                 navigationController?.setNavigationBarAppearance(backgroundColor: .systemBackground)
-                view.backgroundColor = .systemGray6
+                view.backgroundColor = .systemBackground
                 textColor = NCBrandColor.shared.textColor
             }
 
