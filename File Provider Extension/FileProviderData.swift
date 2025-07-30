@@ -34,13 +34,6 @@ class FileProviderData: NSObject {
         case workingSet
     }
 
-    struct UploadMetadata {
-        var id: String
-        var metadata: tableMetadata
-    }
-
-    var uploadMetadata: [UploadMetadata] = []
-
     // MARK: - 
 
     @discardableResult
@@ -224,25 +217,6 @@ class FileProviderData: NSObject {
             await self.database.deleteMetadataOcIdAsync(metadata.ocIdTransfer)
 
             await signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
-        }
-
-        removeUploadMetadata(id: metadata.ocIdTransfer)
-    }
-
-    func appendUploadMetadata(id: String, metadata: tableMetadata) {
-        if let index = uploadMetadata.firstIndex(where: { $0.id == id }) {
-            uploadMetadata.remove(at: index)
-        }
-        uploadMetadata.append(UploadMetadata(id: id, metadata: metadata))
-    }
-
-    func getUploadMetadata(id: String) -> UploadMetadata? {
-        return uploadMetadata.filter({ $0.id == id }).first
-    }
-
-    func removeUploadMetadata(id: String) {
-        if let index = uploadMetadata.firstIndex(where: { $0.id == id }) {
-            uploadMetadata.remove(at: index)
         }
     }
 }
