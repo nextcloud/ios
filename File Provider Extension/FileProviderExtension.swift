@@ -140,9 +140,15 @@ final class FileProviderExtension: NSFileProviderExtension {
                 Task {
                     let pathComponents = url.pathComponents
                     let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
-                    guard let metadata = await self.database.getMetadataFromOcIdAndocIdTransferAsync(itemIdentifier.rawValue) else {
-                        completionHandler(NSFileProviderError(.noSuchItem))
-                        return
+                    var metadata: tableMetadata?
+                    if let result = FileProviderData.shared.getUploadMetadata(id: itemIdentifier.rawValue) {
+                        metadata = result.metadata
+                    } else {
+                        metadata = await self.database.getMetadataFromOcIdAndocIdTransferAsync(itemIdentifier.rawValue)
+                    }
+                    
+                    guard let metadata else {
+                        return completionHandler(NSFileProviderError(.noSuchItem))
                     }
 
                     if metadata.directory || !metadata.session.isEmpty {
@@ -215,7 +221,13 @@ final class FileProviderExtension: NSFileProviderExtension {
                     assert(pathComponents.count > 2)
                     let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
                     let fileName = pathComponents[pathComponents.count - 1]
-                    guard let metadata = await self.database.getMetadataFromOcIdAndocIdTransferAsync(itemIdentifier.rawValue) else {
+                    var metadata: tableMetadata?
+                    if let result = FileProviderData.shared.getUploadMetadata(id: itemIdentifier.rawValue) {
+                        metadata = result.metadata
+                    } else {
+                        metadata = await self.database.getMetadataFromOcIdAndocIdTransferAsync(itemIdentifier.rawValue)
+                    }
+                    guard let metadata else {
                         return
                     }
                     let serverUrlFileName = metadata.serverUrl + "/" + fileName
@@ -379,6 +391,7 @@ final class FileProviderExtension: NSFileProviderExtension {
                         } catch {
                             print(error)
                         }
+                        FileProviderData.shared.appendUploadMetadata(id: ocIdTransfer, metadata: metadata)
 
                         await fileProviderData.signalEnumerator(ocId: metadata.ocId, type: .update)
 
