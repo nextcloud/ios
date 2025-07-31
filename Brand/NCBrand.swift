@@ -110,14 +110,13 @@ final class NCBrandOptions: @unchecked Sendable {
                 enforce_passcode_lock = (str as NSString).boolValue
             }
         }
-        #if DEBUG
-        pushNotificationServerProxy = "https://c0004.customerpush.nextcloud.com"
-        #else
+
         if pushNotificationServerProxy.isEmpty,
             brand == "Nextcloud" {
             pushNotificationServerProxy = "https://push-notifications.nextcloud.com"
+            // DEBUG SERVER PUSH
+            // pushNotificationServerProxy = "https://c0004.customerpush.nextcloud.com"
         }
-        #endif
     }
 
     @objc func getUserAgent() -> String {
@@ -128,8 +127,7 @@ final class NCBrandOptions: @unchecked Sendable {
 final class NCBrandColor: @unchecked Sendable {
     static let shared = NCBrandColor()
 
-    /// This is rewrited from customet theme, default is Nextcloud color
-    ///
+    // This is rewrited from customet theme, default is Nextcloud color
     let customer: UIColor = UIColor(red: 0.0 / 255.0, green: 130.0 / 255.0, blue: 201.0 / 255.0, alpha: 1.0)         // BLU NC : #0082c9
     var customerText: UIColor = .white
 

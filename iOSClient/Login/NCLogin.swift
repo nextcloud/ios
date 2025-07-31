@@ -112,8 +112,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
         if let dirGroupApps = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupApps) {
             // Nextcloud update share accounts
-            if let error = NCAccount().updateAppsShareAccounts() {
-                nkLog(error: "Create share accounts \(error.localizedDescription)")
+            Task {
+                await NCAccount().updateAppsShareAccounts()
             }
             // Nextcloud get share accounts
             if let shareAccounts = NKShareAccounts().getShareAccount(at: dirGroupApps, application: UIApplication.shared) {
@@ -419,7 +419,9 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             NCNetworking.shared.writeCertificate(host: host)
         }
 
-        NCAccount().createAccount(viewController: self, urlBase: urlBase, user: user, password: password, controller: self.controller)
+        Task {
+            await NCAccount().createAccount(viewController: self, urlBase: urlBase, user: user, password: password, controller: self.controller)
+        }
     }
 }
 

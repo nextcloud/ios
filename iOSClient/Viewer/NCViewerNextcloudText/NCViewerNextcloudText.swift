@@ -50,7 +50,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         if !metadata.ocId.hasPrefix("TEMP") {
             navigationItem.rightBarButtonItem = UIBarButtonItem(image: NCImageCache.shared.getImageButtonMore(), style: .plain, target: self, action: #selector(self.openMenuMore))
         }
-        navigationController?.navigationBar.prefersLargeTitles = false
         navigationItem.title = metadata.fileNameView
 
         if editor == "Nextcloud Text" {
@@ -227,7 +226,7 @@ extension NCViewerNextcloudText: NCTransferDelegate {
     func transferChange(status: String, metadata: tableMetadata, error: NKError) {
         DispatchQueue.main.async {
             switch status {
-            /// FAVORITE
+            // FAVORITE
             case NCGlobal.shared.networkingStatusFavorite:
                 if self.metadata.ocId == metadata.ocId {
                     self.metadata = metadata

@@ -28,48 +28,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if !NCKeychain().appearanceAutomatic {
             self.window?.overrideUserInterfaceStyle = NCKeychain().appearanceInterfaceStyle
         }
+        let alreadyMigratedMultiDomains = UserDefaults.standard.bool(forKey: global.udMigrationMultiDomains)
+        let activeTblAccount = self.database.getActiveTableAccount()
 
-        if let activeTblAccount = self.database.getActiveTableAccount() {
-            nkLog(debug: "Account active \(activeTblAccount.account)")
+        if let activeTblAccount, !alreadyMigratedMultiDomains {
 
-            Task { @MainActor in
-                // set capabilities
-                if let capabilities = await self.database.setCapabilities(account: activeTblAccount.account) {
-                    // set theming color
-                    NCBrandColor.shared.settingThemingColor(account: activeTblAccount.account, capabilities: capabilities)
-                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeTheming, userInfo: ["account": activeTblAccount.account])
-                }
+            window?.rootViewController = UIHostingController(rootView: MigrationMultiDomains(onCompleted: {
+                self.launchMainInterface(scene: scene, activeTblAccount: activeTblAccount)
+            }))
+            window?.makeKeyAndVisible()
 
-                await NCNetworkingProcess.shared.setCurrentAccount(activeTblAccount.account)
-            }
-            for tableAccount in self.database.getAllTableAccount() {
-                NextcloudKit.shared.appendSession(account: tableAccount.account,
-                                                  urlBase: tableAccount.urlBase,
-                                                  user: tableAccount.user,
-                                                  userId: tableAccount.userId,
-                                                  password: NCKeychain().getPassword(account: tableAccount.account),
-                                                  userAgent: userAgent,
-                                                  httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
-                                                  httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
-                                                  httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
-                                                  groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-                Task {
-                    await self.database.setCapabilities(account: tableAccount.account)
-                }
-                NCSession.shared.appendSession(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId)
-            }
+        } else if let activeTblAccount {
 
-            /// Main.storyboard
-            if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
-                SceneManager.shared.register(scene: scene, withRootViewController: controller)
-                /// Set the ACCOUNT
-                controller.account = activeTblAccount.account
-                ///
-                window?.rootViewController = controller
-                window?.makeKeyAndVisible()
-            }
+            self.launchMainInterface(scene: scene, activeTblAccount: activeTblAccount)
+
         } else {
             NCKeychain().removeAll()
+            UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
+
             if let bundleID = Bundle.main.bundleIdentifier {
                 UserDefaults.standard.removePersistentDomain(forName: bundleID)
             }
@@ -85,6 +61,63 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     window?.makeKeyAndVisible()
                 }
             }
+        }
+    }
+
+    private func launchMainInterface(scene: UIScene, activeTblAccount: tableAccount) {
+        nkLog(debug: "Account active \(activeTblAccount.account)")
+
+        // Save migration state
+        UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
+
+        Task {
+            if let capabilities = await self.database.setCapabilities(account: activeTblAccount.account) {
+                // set theming color
+                NCBrandColor.shared.settingThemingColor(account: activeTblAccount.account, capabilities: capabilities)
+                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeTheming, userInfo: ["account": activeTblAccount.account])
+            }
+
+            // Set up networking session
+            await NCNetworkingProcess.shared.setCurrentAccount(activeTblAccount.account)
+        }
+
+        // Set up networking session for all configured accounts
+        for tblAccount in self.database.getAllTableAccount() {
+            // Append account to NextcloudKit shared session
+            NextcloudKit.shared.appendSession(account: tblAccount.account,
+                                              urlBase: tblAccount.urlBase,
+                                              user: tblAccount.user,
+                                              userId: tblAccount.userId,
+                                              password: NCKeychain().getPassword(account: tblAccount.account),
+                                              userAgent: userAgent,
+                                              httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
+                                              httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
+                                              httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
+                                              groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+
+            // Perform async setup: restore capabilities and ensure file provider domain
+            Task {
+                await self.database.setCapabilities(account: tblAccount.account)
+                try? await FileProviderDomain().ensureDomainRegistered(userId: tblAccount.userId, urlBase: tblAccount.urlBase)
+            }
+
+            // Append session to internal session manager
+            NCSession.shared.appendSession(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user, userId: tblAccount.userId)
+        }
+
+        // Load Main.storyboard
+        if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+            SceneManager.shared.register(scene: scene, withRootViewController: controller)
+            // Set the ACCOUNT
+            controller.account = activeTblAccount.account
+            //
+            window?.rootViewController = controller
+            window?.makeKeyAndVisible()
+        }
+
+        // Clean orphaned FP Domains
+        Task {
+            await FileProviderDomain().cleanOrphanedFileProviderDomains()
         }
     }
 
@@ -110,23 +143,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            Task {
-                if let tableAccount = await self.database.getTableAccountAsync(account: session.account) {
-                    let num = await NCAutoUpload.shared.initAutoUpload(tblAccount: tableAccount)
-                    nkLog(start: "Auto upload with \(num) photo")
-                }
+        Task {
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
+            if let tblAccount = await self.database.getTableAccountAsync(account: session.account) {
+                let num = await NCAutoUpload.shared.initAutoUpload(tblAccount: tblAccount)
+                nkLog(start: "Auto upload with \(num) photo")
             }
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            NCService().startRequestServicesServer(account: session.account, controller: controller)
+        Task(priority: .utility) {
+            try? await Task.sleep(nanoseconds: 1_500_000_000)
+            await NCService().startRequestServicesServer(account: session.account, controller: controller)
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            Task {
-                await NCNetworking.shared.verifyZombie()
-            }
+        Task {
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            await NCNetworking.shared.verifyZombie()
         }
 
         NotificationCenter.default.postOnMainThread(name: global.notificationCenterRichdocumentGrabFocus)
@@ -142,15 +174,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneWillResignActive(_ scene: UIScene) {
         nkLog(debug: "Scene will resign active")
-
-        NSFileProviderManager.removeAllDomains { _ in
-            /*
-            if !NCKeychain().disableFilesApp,
-             self.database.getAllTableAccount().count > 1 {
-                FileProviderDomain().registerDomains()
-            }
-            */
-        }
 
         WidgetCenter.shared.reloadAllTimelines()
 
@@ -169,38 +192,36 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
-        Task {
-            await database.backupTableAccountToFileAsync()
-        }
+        // Must be outside the Task otherwise isAppSuspending suspends it
         let session = SceneManager.shared.getSession(scene: scene)
-        guard let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
+        guard let tblAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
             return
         }
+        Task { @MainActor in
+            await database.backupTableAccountToFileAsync()
 
-        nkLog(info: "Auto upload activated: \(tableAccount.autoUploadStart)")
-        nkLog(info: "Update in background: \(UIApplication.shared.backgroundRefreshStatus == .available)")
+            nkLog(info: "Auto upload in background: \(tblAccount.autoUploadStart)")
+            nkLog(info: "Update in background: \(UIApplication.shared.backgroundRefreshStatus == .available)")
 
-        if CLLocationManager().authorizationStatus == .authorizedAlways && NCKeychain().location && tableAccount.autoUploadStart {
-            NCBackgroundLocationUploadManager.shared.start()
-        } else {
-            NCBackgroundLocationUploadManager.shared.stop()
-        }
+            if CLLocationManager().authorizationStatus == .authorizedAlways && NCKeychain().location && tblAccount.autoUploadStart {
+                NCBackgroundLocationUploadManager.shared.start()
+            } else {
+                NCBackgroundLocationUploadManager.shared.stop()
+            }
 
-        if let error = NCAccount().updateAppsShareAccounts() {
-            nkLog(error: "Create Apps share accounts \(error.localizedDescription)")
-        }
+            if let error = await NCAccount().updateAppsShareAccounts() {
+                nkLog(error: "Create Apps share accounts \(error.localizedDescription)")
+            }
 
-        NCNetworking.shared.cancelAllTaskForGoInBackground()
+            NCNetworking.shared.cancelAllQueue()
 
-        if NCKeychain().presentPasscode {
-            showPrivacyProtectionWindow()
-        }
+            if NCKeychain().presentPasscode {
+                showPrivacyProtectionWindow()
+            }
 
-        // Clear older files
-        Task {
-            let days = NCKeychain().cleanUpDay
-            let utilityFileSystem = NCUtilityFileSystem()
-            await utilityFileSystem.cleanUpAsync(directory: utilityFileSystem.directoryProviderStorage, days: TimeInterval(days))
+            // Clear older files
+            await self.database.cleanTablesOcIds(account: tblAccount.account, userId: tblAccount.userId, urlBase: tblAccount.urlBase)
+            await NCUtilityFileSystem().cleanUpAsync()
         }
     }
 
@@ -216,7 +237,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             for tblAccount in tblAccounts {
                 let urlBase = URL(string: tblAccount.urlBase)
                 if url.contains(urlBase?.host ?? "") && userId == tblAccount.userId {
-                    await NCAccount().changeAccountAsync(tblAccount.account, userProfile: nil, controller: controller)
+                    await NCAccount().changeAccount(tblAccount.account, userProfile: nil, controller: controller)
                     // wait switch account
                     try? await Task.sleep(nanoseconds: 1_000_000_000)
                     return tblAccount
@@ -378,11 +399,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 extension SceneDelegate: NCPasscodeDelegate {
     func requestedAccount(controller: UIViewController?) {
-        let tableAccounts = self.database.getAllTableAccount()
-        if tableAccounts.count > 1, let accountRequestVC = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
+        let tblAccounts = self.database.getAllTableAccount()
+        if tblAccounts.count > 1, let accountRequestVC = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
             accountRequestVC.controller = controller
             accountRequestVC.activeAccount = (controller as? NCMainTabBarController)?.account
-            accountRequestVC.accounts = tableAccounts
+            accountRequestVC.accounts = tblAccounts
             accountRequestVC.enableTimerProgress = true
             accountRequestVC.enableAddAccount = false
             accountRequestVC.dismissDidEnterBackground = false
@@ -390,7 +411,7 @@ extension SceneDelegate: NCPasscodeDelegate {
             accountRequestVC.startTimer(nil)
 
             let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height / 5)
-            let numberCell = tableAccounts.count
+            let numberCell = tblAccounts.count
             let height = min(CGFloat(numberCell * Int(accountRequestVC.heightCell) + 45), screenHeighMax)
 
             let popup = NCPopupViewController(contentController: accountRequestVC, popupWidth: 300, popupHeight: height + 20)
@@ -409,7 +430,9 @@ extension SceneDelegate: NCAccountRequestDelegate {
     func accountRequestAddAccount() { }
 
     func accountRequestChangeAccount(account: String, controller: UIViewController?) {
-        NCAccount().changeAccount(account, userProfile: nil, controller: controller as? NCMainTabBarController) { }
+        Task {
+            await NCAccount().changeAccount(account, userProfile: nil, controller: controller as? NCMainTabBarController)
+        }
     }
 }
 

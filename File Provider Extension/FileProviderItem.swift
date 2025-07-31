@@ -77,7 +77,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     var uploadingError: Error? {
         if metadata.status == NCGlobal.shared.metadataStatusUploadError {
-            return fileProviderData.FileProviderError.uploadError
+            return FileProviderData.FileProviderError.uploadError
         } else {
             return nil
         }
@@ -98,7 +98,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     var downloadingError: Error? {
         if metadata.status == NCGlobal.shared.metadataStatusDownloadError {
-            return fileProviderData.FileProviderError.downloadError
+            return FileProviderData.FileProviderError.downloadError
         } else {
             return nil
         }
@@ -113,7 +113,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         }
     }
     var favoriteRank: NSNumber? {
-        if let rank = fileProviderData.shared.listFavoriteIdentifierRank[metadata.ocId] {
+        if let rank = FileProviderData.shared.listFavoriteIdentifierRank[metadata.ocId] {
             return rank
         } else {
             return nil
@@ -122,6 +122,10 @@ class FileProviderItem: NSObject, NSFileProviderItem {
 
     init(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier) {
         self.metadata = metadata.detachedCopy()
-        self.parentItemIdentifier = parentItemIdentifier
+        if metadata.ocId == "root" {
+            self.parentItemIdentifier = .rootContainer
+        } else {
+            self.parentItemIdentifier = parentItemIdentifier
+        }
     }
 }

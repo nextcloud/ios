@@ -156,7 +156,8 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 }
 
                 if let fileNameError = FileNameValidator.checkFileName(metadata.fileNameView, account: self.controller.account, capabilities: capabilities) {
-                    self.controller.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+                    let message = "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"
+                    await UIAlertController.warningAsync( message: message, presenter: self.controller)
                 } else {
                     if let metadata = await database.addAndReturnMetadataAsync(metadata) {
                         NCViewer().view(viewController: viewController, metadata: metadata)
@@ -172,7 +173,10 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                     let ocId = NSUUID().uuidString
                     let fileName = urlIn.lastPathComponent
                     let newFileName = FileAutoRenamer.rename(fileName, capabilities: capabilities)
-                    let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: newFileName)
+                    let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId,
+                                                                                   fileName: newFileName,
+                                                                                   userId: session.userId,
+                                                                                   urlBase: session.urlBase)
                     let urlOut = URL(fileURLWithPath: toPath)
                     guard self.copySecurityScopedResource(url: urlIn, urlOut: urlOut) != nil else {
                         continue
@@ -201,7 +205,10 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                     if let fileNameError = FileNameValidator.checkFileName(metadata.fileName, account: session.account, capabilities: capabilities) {
                         if metadatas.count == 1 {
 
-                            let newFileName = await UIAlertController.renameFileAsync(metadata: metadata, capabilities: capabilities, presenter: self.controller)
+                            let newFileName = await UIAlertController.renameFileAsync(fileName: metadata.fileName,
+                                                                                      capabilities: capabilities,
+                                                                                      account: metadata.account,
+                                                                                      presenter: self.controller)
 
                             metadatas[index].fileName = newFileName
                             metadatas[index].fileNameView = newFileName
@@ -211,7 +218,8 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
                             return
                         } else {
-                            self.controller.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+                            let message = "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"
+                            await UIAlertController.warningAsync( message: message, presenter: self.controller)
                             invalidNameIndexes.append(index)
                         }
                     }

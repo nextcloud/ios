@@ -211,8 +211,8 @@ extension NCManageDatabase {
 
     // MARK: - Realm write
 
-    func addAccount(_ account: String, urlBase: String, user: String, userId: String, password: String) {
-        performRealmWrite { realm in
+    func addAccountAsync(_ account: String, urlBase: String, user: String, userId: String, password: String) async {
+        await performRealmWriteAsync { realm in
             if let existing = realm.object(ofType: tableAccount.self, forPrimaryKey: account) {
                 realm.delete(existing)
             }
@@ -228,18 +228,6 @@ extension NCManageDatabase {
             newAccount.userId = userId
 
             realm.add(newAccount, update: .all)
-        }
-    }
-
-    func updateAccountProperty<T>(_ keyPath: ReferenceWritableKeyPath<tableAccount, T>, value: T, account: String) {
-        guard let activeAccount = getTableAccount(account: account) else { return }
-        activeAccount[keyPath: keyPath] = value
-        updateAccount(activeAccount)
-    }
-
-    func updateAccount(_ account: tableAccount) {
-        performRealmWrite { realm in
-            realm.add(account, update: .all)
         }
     }
 
@@ -265,10 +253,10 @@ extension NCManageDatabase {
         }
     }
 
-    func setAccountAlias(_ account: String, alias: String) {
+    func setAccountAliasAsync(_ account: String, alias: String) async {
         let alias = alias.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        performRealmWrite { realm in
+        await performRealmWriteAsync { realm in
             if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
                 result.alias = alias
             }
@@ -276,10 +264,10 @@ extension NCManageDatabase {
     }
 
     @discardableResult
-    func setAccountActive(_ account: String) -> tableAccount? {
+    func setAccountActiveAsync(_ account: String) async -> tableAccount? {
         var tblAccount: tableAccount?
 
-        performRealmWrite { realm in
+        await performRealmWriteAsync { realm in
             let results = realm.objects(tableAccount.self)
             for result in results {
                 if result.account == account {
@@ -307,38 +295,6 @@ extension NCManageDatabase {
                 .filter("active == true")
                 .first {
                 result.autoUploadDirectory = serverUrl
-            }
-        }
-    }
-
-    func setAccountUserProfile(account: String, userProfile: NKUserProfile, sync: Bool = true) {
-        performRealmWrite(sync: sync) { realm in
-            if let result = realm.objects(tableAccount.self)
-                .filter("account == %@", account)
-                .first {
-                result.address = userProfile.address
-                result.backend = userProfile.backend
-                result.backendCapabilitiesSetDisplayName = userProfile.backendCapabilitiesSetDisplayName
-                result.backendCapabilitiesSetPassword = userProfile.backendCapabilitiesSetPassword
-                result.displayName = userProfile.displayName
-                result.email = userProfile.email
-                result.enabled = userProfile.enabled
-                result.groups = userProfile.groups.joined(separator: ",")
-                result.language = userProfile.language
-                result.lastLogin = userProfile.lastLogin
-                result.locale = userProfile.locale
-                result.organisation = userProfile.organisation
-                result.phone = userProfile.phone
-                result.quota = userProfile.quota
-                result.quotaFree = userProfile.quotaFree
-                result.quotaRelative = userProfile.quotaRelative
-                result.quotaTotal = userProfile.quotaTotal
-                result.quotaUsed = userProfile.quotaUsed
-                result.storageLocation = userProfile.storageLocation
-                result.subadmin = userProfile.subadmin.joined(separator: ",")
-                result.twitter = userProfile.twitter
-                result.userId = userProfile.userId
-                result.website = userProfile.website
             }
         }
     }
@@ -618,6 +574,14 @@ extension NCManageDatabase {
             let results = realm.objects(tableAccount.self)
                 .sorted(byKeyPath: "account", ascending: true)
             return results.map { $0.account }
+        }
+    }
+
+    func getAccountsAsync() async -> [String]? {
+        await performRealmReadAsync { realm in
+            realm.objects(tableAccount.self)
+                .sorted(byKeyPath: "account", ascending: true)
+                .map { $0.account }
         }
     }
 

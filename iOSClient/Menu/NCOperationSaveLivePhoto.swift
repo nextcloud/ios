@@ -35,7 +35,7 @@ class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
         self.metadata = tableMetadata.init(value: metadata)
         self.metadataMOV = tableMetadata.init(value: metadataMOV)
         self.hud = NCHud(hudView)
-        hud?.initHudRing(text: NSLocalizedString("_download_image_", comment: ""), detailText: self.metadata.fileName)
+        hud?.ringProgress(text: NSLocalizedString("_download_image_", comment: ""), detailText: self.metadata.fileName)
     }
 
     override func start() {
@@ -50,33 +50,36 @@ class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
                 return self.finish()
             }
 
-            NCNetworking.shared.download(metadata: metadata) {
-            } requestHandler: { _ in
-            } progressHandler: { progress in
-                self.hud?.progress(progress.fractionCompleted)
-            } completion: { _, error in
-                guard error == .success else {
-                    self.hud?.error(text: NSLocalizedString("_livephoto_save_error_", comment: ""))
-                    return self.finish()
-                }
-                NCNetworking.shared.download(metadata: metadataLive) {
-                    self.hud?.setText(text: NSLocalizedString("_download_video_", comment: ""), detailText: self.metadataMOV.fileName)
-                } progressHandler: { progress in
-                    self.hud?.progress(progress.fractionCompleted)
-                } completion: { _, error in
-                    guard error == .success else {
-                        self.hud?.error(text: NSLocalizedString("_livephoto_save_error_", comment: ""))
-                        return self.finish()
-                    }
-                    self.saveLivePhotoToDisk(metadata: self.metadata, metadataMov: self.metadataMOV)
-                }
+            let resultsMetadata = await NCNetworking.shared.downloadFile(metadata: metadata) { _ in
+            } progressHandler: { progess in
+                self.hud?.progress(progess.fractionCompleted)
             }
+            guard resultsMetadata.nkError == .success else {
+                self.hud?.error(text: NSLocalizedString("_livephoto_save_error_", comment: ""))
+                return self.finish()
+            }
+
+            let resultsMetadataLive = await NCNetworking.shared.downloadFile(metadata: metadataLive) { _ in
+            } progressHandler: { progess in
+                self.hud?.progress(progess.fractionCompleted)
+            }
+            guard resultsMetadataLive.nkError == .success else {
+                self.hud?.error(text: NSLocalizedString("_livephoto_save_error_", comment: ""))
+                return self.finish()
+            }
+            self.saveLivePhotoToDisk(metadata: self.metadata, metadataMov: self.metadataMOV)
         }
     }
 
     func saveLivePhotoToDisk(metadata: tableMetadata, metadataMov: tableMetadata) {
-        let fileNameImage = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-        let fileNameMov = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataMov.ocId, fileNameView: metadataMov.fileNameView))
+        let fileNameImage = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
+                                                                                                   fileName: metadata.fileNameView,
+                                                                                                   userId: metadata.userId,
+                                                                                                   urlBase: metadata.urlBase))
+        let fileNameMov = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataMov.ocId,
+                                                                                                 fileName: metadataMov.fileNameView,
+                                                                                                 userId: metadataMov.userId,
+                                                                                                 urlBase: metadataMov.urlBase))
 
         self.hud?.progress(0)
         self.hud?.setText(text: NSLocalizedString("_livephoto_save_", comment: ""))

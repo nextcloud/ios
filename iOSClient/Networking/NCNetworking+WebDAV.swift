@@ -73,27 +73,34 @@ extension NCNetworking {
             guard error == .success, files?.count == 1, let file = files?.first else {
                 return completion(account, nil, error)
             }
-            let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
+            Task {
+                let isDirectoryE2EE = await self.utilityFileSystem.isDirectoryE2EEAsync(file: file)
+                let metadata = await self.database.convertFileToMetadataAsync(file, isDirectoryE2EE: isDirectoryE2EE)
 
-            self.database.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE, capabilities: self.capabilities[account]) { metadata in
                 // Remove all known download limits from shares related to the given file.
                 // This avoids obsolete download limit objects to stay around.
                 // Afterwards create new download limits, should any such be returned for the known shares.
 
-                let shares = self.database.getTableShares(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+                let shares = await self.database.getTableSharesAsync(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
 
                 for share in shares {
-                    self.database.deleteDownloadLimit(byAccount: metadata.account, shareToken: share.token, sync: false)
+                    await self.database.deleteDownloadLimitAsync(byAccount: metadata.account, shareToken: share.token)
 
                     if let receivedDownloadLimit = file.downloadLimits.first(where: { $0.token == share.token }) {
-                        self.database.createDownloadLimit(account: metadata.account,
-                                                          count: receivedDownloadLimit.count,
-                                                          limit: receivedDownloadLimit.limit,
-                                                          token: receivedDownloadLimit.token)
+                        await self.database.createDownloadLimitAsync(account: metadata.account,
+                                                                     count: receivedDownloadLimit.count,
+                                                                     limit: receivedDownloadLimit.limit,
+                                                                     token: receivedDownloadLimit.token)
                     }
                 }
 
-                completion(account, metadata, error)
+                if queue == .main {
+                    await MainActor.run {
+                        completion(account, metadata, error)
+                    }
+                } else {
+                    completion(account, metadata, error)
+                }
             }
         }
     }
@@ -267,23 +274,23 @@ extension NCNetworking {
         func deleteLocalFile(metadata: tableMetadata) async {
             if let metadataLive = await self.database.getMetadataLivePhotoAsync(metadata: metadata) {
                 await self.database.deleteLocalFileOcIdAsync(metadataLive.ocId)
-                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId))
+                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
             }
             await self.database.deleteVideoAsync(metadata.ocId)
             await self.database.deleteLocalFileOcIdAsync(metadata.ocId)
-            utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+            utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
 
             NCImageCache.shared.removeImageCache(ocIdPlusEtag: metadata.ocId + metadata.etag)
         }
 
         self.tapHudStopDelete = false
 
-        await database.cleanTablesOcIds(account: metadata.account)
+        await database.cleanTablesOcIds(account: metadata.account, userId: metadata.userId, urlBase: metadata.urlBase)
 
         if metadata.directory {
             if let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
                 await MainActor.run {
-                    ncHud.initHudRing(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDelete)
+                    ncHud.ringProgress(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDelete)
                 }
             }
             if let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, metadata.serverUrlFileName)) {
@@ -340,7 +347,7 @@ extension NCNetworking {
             Task {
                 if let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
                     await MainActor.run {
-                        ncHud.initHudRing(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDelete)
+                        ncHud.ringProgress(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDelete)
                     }
                 }
 
@@ -377,7 +384,7 @@ extension NCNetworking {
                     let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", metadata.account, metadata.serverUrl))
                     for metadata in metadatas {
                         database.deleteMetadataOcId(metadata.ocId)
-                        utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                        utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
                     }
                     return
                 }
@@ -519,7 +526,7 @@ extension NCNetworking {
                 completition(URL(string: metadata.url), true, .success)
             }
         } else if utilityFileSystem.fileProviderStorageExists(metadata) {
-            completition(URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)), false, .success)
+            completition(URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)), false, .success)
         } else {
             NextcloudKit.shared.getDirectDownload(fileId: metadata.fileId, account: metadata.account) { _, url, _, error in
                 if error == .success && url != nil {
@@ -554,7 +561,8 @@ extension NCNetworking {
         } completion: { _, files, _, error in
             guard error == .success, let files else { return completion(nil, error) }
 
-            self.database.convertFilesToMetadatas(files, capabilities: self.capabilities[account]) { _, metadatas in
+            Task {
+                let (_, metadatas) = await self.database.convertFilesToMetadatasAsync(files)
                 self.database.addMetadatas(metadatas)
                 completion(metadatas, error)
             }

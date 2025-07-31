@@ -41,11 +41,7 @@ class NCLoginProvider: UIViewController {
 
         let webView = WKWebView(frame: CGRect.zero, configuration: configuration)
         webView.customUserAgent = userAgent
-
-        if #available(iOS 16.4, *) {
-            webView.isInspectable = true
-        }
-
+        webView.isInspectable = true
         webView.navigationDelegate = self
         view.addSubview(webView)
 
@@ -178,17 +174,13 @@ class NCLoginProvider: UIViewController {
     private func handleGrant(urlBase: String, loginName: String, appPassword: String) async {
         nkLog(debug: "Handling login grant values for \(loginName) on \(urlBase)")
 
-        await withCheckedContinuation { continuation in
-            if controller == nil {
-                nkLog(debug: "View controller is still undefined, will resolve root view controller of first window.")
-                controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
-            }
-
-            NCAccount().createAccount(viewController: self, urlBase: urlBase, user: loginName, password: appPassword, controller: controller) {
-                nkLog(debug: "Account creation for \(loginName) on \(urlBase) completed based on login grant values.")
-            continuation.resume()
-            }
+        if controller == nil {
+            nkLog(debug: "View controller is still undefined, will resolve root view controller of first window.")
+            controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
         }
+
+        await NCAccount().createAccount(viewController: self, urlBase: urlBase, user: loginName, password: appPassword, controller: controller)
+        nkLog(debug: "Account creation for \(loginName) on \(urlBase) completed based on login grant values.")
     }
 
     ///
@@ -268,7 +260,9 @@ extension NCLoginProvider: WKNavigationDelegate {
                     self.controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
                 }
 
-                NCAccount().createAccount(viewController: self, urlBase: server, user: username, password: password, controller: controller)
+                Task { @MainActor in
+                    await NCAccount().createAccount(viewController: self, urlBase: server, user: username, password: password, controller: controller)
+                }
             }
         }
     }

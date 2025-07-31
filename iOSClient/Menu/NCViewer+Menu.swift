@@ -29,7 +29,7 @@ extension NCViewer {
     func toggleMenu(controller: NCMainTabBarController?, metadata: tableMetadata, webView: Bool, imageIcon: UIImage?, indexPath: IndexPath = IndexPath(), sender: Any?) {
         guard let metadata = self.database.getMetadataFromOcId(metadata.ocId),
               let controller,
-        let capabilities = NCNetworking.shared.capabilities[metadata.account] else {
+              let capabilities = NCNetworking.shared.capabilities[metadata.account] else {
             return
         }
         var actions = [NCMenuAction]()
@@ -146,7 +146,7 @@ extension NCViewer {
                                                                                                             session: NCNetworking.shared.sessionDownload,
                                                                                                             selector: NCGlobal.shared.selectorSaveAsScan,
                                                                                                             sceneIdentifier: controller.sceneIdentifier) {
-                                    NCNetworking.shared.download(metadata: metadata)
+                                    await NCNetworking.shared.downloadFile(metadata: metadata)
                                 }
                             }
                         }
@@ -180,7 +180,7 @@ extension NCViewer {
                                                                                                         session: NCNetworking.shared.sessionDownload,
                                                                                                         selector: "",
                                                                                                         sceneIdentifier: controller.sceneIdentifier) {
-                                NCNetworking.shared.download(metadata: metadata)
+                                await NCNetworking.shared.downloadFile(metadata: metadata)
                             }
                         }
                     }
@@ -239,7 +239,7 @@ extension NCViewer {
                                                                                                             session: NCNetworking.shared.sessionDownload,
                                                                                                             selector: NCGlobal.shared.selectorLoadFileQuickLook,
                                                                                                             sceneIdentifier: controller.sceneIdentifier) {
-                                    NCNetworking.shared.download(metadata: metadata)
+                                    await NCNetworking.shared.downloadFile(metadata: metadata)
                                 }
                             }
                         }

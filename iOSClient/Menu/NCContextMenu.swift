@@ -71,23 +71,21 @@ class NCContextMenu: NSObject {
                         return
                     }
 
-                    hud.initHudRing(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
+                    hud.ringProgress(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
                         if let request = downloadRequest {
                             request.cancel()
                         }
                     }
 
-                    self.networking.download(metadata: metadata) {
-                    } requestHandler: { request in
+                    let results = await self.networking.downloadFile(metadata: metadata) { request in
                         downloadRequest = request
                     } progressHandler: { progress in
                         hud.progress(progress.fractionCompleted)
-                    } completion: { afError, error in
-                        if error == .success || afError?.isExplicitlyCancelledError ?? false {
-                            hud.dismiss()
-                        } else {
-                            hud.error(text: error.errorDescription)
-                        }
+                    }
+                    if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {
+                        hud.dismiss()
+                    } else {
+                        hud.error(text: results.nkError.errorDescription)
                     }
                 }
             }
@@ -123,23 +121,21 @@ class NCContextMenu: NSObject {
                         return
                     }
 
-                    hud.initHudRing(text: NSLocalizedString("_downloading_", comment: "")) {
+                    hud.ringProgress(text: NSLocalizedString("_downloading_", comment: "")) {
                         if let request = downloadRequest {
                             request.cancel()
                         }
                     }
 
-                    self.networking.download(metadata: metadata) {
-                    } requestHandler: { request in
+                    let results = await self.networking.downloadFile(metadata: metadata) { request in
                         downloadRequest = request
                     } progressHandler: { progress in
                         hud.progress(progress.fractionCompleted)
-                    } completion: { afError, error in
-                        if error == .success || afError?.isExplicitlyCancelledError ?? false {
-                            hud.dismiss()
-                        } else {
-                            hud.error(text: error.errorDescription)
-                        }
+                    }
+                    if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {
+                        hud.dismiss()
+                    } else {
+                        hud.error(text: results.nkError.errorDescription)
                     }
                 }
             }

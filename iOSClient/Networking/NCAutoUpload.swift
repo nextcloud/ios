@@ -111,8 +111,7 @@ class NCAutoUpload: NSObject {
                                                                    ocId: UUID().uuidString,
                                                                    serverUrl: serverUrl,
                                                                    session: session,
-                                                                   sceneIdentifier: controller?.sceneIdentifier
-            )
+                                                                   sceneIdentifier: controller?.sceneIdentifier)
 
             if isLivePhoto {
                 metadata.livePhotoFile = (metadata.fileName as NSString).deletingPathExtension + ".mov"

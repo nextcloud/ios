@@ -78,7 +78,7 @@ class NCUploadScanDocument: ObservableObject {
 
     func createPDF(metadata: tableMetadata, completion: @escaping (_ error: Bool) -> Void) {
         DispatchQueue.global(qos: .userInteractive).async {
-            let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+            let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
             let pdfData = NSMutableData()
 
             if self.password.isEmpty {
@@ -355,17 +355,15 @@ struct UploadScanDocumentView: View {
                             isPresentedSelect = true
                         }
                         .complexModifier { view in
-                            if #available(iOS 16, *) {
-                                view.alignmentGuide(.listRowSeparatorLeading) { _ in
-                                    return 0
-                                }
+                            view.alignmentGuide(.listRowSeparatorLeading) { _ in
+                                return 0
                             }
                         }
                         HStack {
                             Text(NSLocalizedString("_filename_", comment: ""))
                             TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $fileName)
                                 .multilineTextAlignment(.trailing)
-                                .onChange(of: fileName) { _ in
+                                .onChange(of: fileName) {
                                     if let fileNameError = FileNameValidator.checkFileName(fileName, account: self.model.controller?.account, capabilities: capabilities) {
                                         footer = fileNameError.errorDescription
                                     } else {
@@ -395,7 +393,7 @@ struct UploadScanDocumentView: View {
                         HStack {
                             Toggle(NSLocalizedString("_text_recognition_", comment: ""), isOn: $isTextRecognition)
                                 .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getElement(account: model.session.account))))
-                                .onChange(of: isTextRecognition) { newValue in
+                                .onChange(of: isTextRecognition) { _, newValue in
                                     NCKeychain().textRecognitionStatus = newValue
                                 }
                         }
@@ -408,7 +406,7 @@ struct UploadScanDocumentView: View {
                         VStack(spacing: 20) {
                             Toggle(NSLocalizedString("_delete_all_scanned_images_", comment: ""), isOn: $removeAllFiles)
                                 .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getElement(account: model.session.account))))
-                                .onChange(of: removeAllFiles) { newValue in
+                                .onChange(of: removeAllFiles) { _, newValue in
                                     NCKeychain().deleteAllScanImages = newValue
                                 }
                             Button(NSLocalizedString("_save_", comment: "")) {

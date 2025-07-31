@@ -68,7 +68,10 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         switch metadata.sessionSelector {
         case NCGlobal.shared.selectorLoadFileQuickLook:
 
-            let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+            let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
+                                                                                      fileName: metadata.fileNameView,
+                                                                                      userId: metadata.userId,
+                                                                                      urlBase: metadata.urlBase)
             let fileNameTemp = NSTemporaryDirectory() + metadata.fileNameView
             let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNameTemp), isEditingEnabled: true, metadata: metadata)
             if let image = UIImage(contentsOfFile: fileNamePath) {
@@ -99,7 +102,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                 self.openActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
             } else {
                 if let viewController = controller.currentViewController() {
-                    let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
+                    let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
                     NCViewer().view(viewController: viewController, metadata: metadata, image: image)
                 }
             }
@@ -144,8 +147,8 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             }
         } else if metadata.directory {
             await database.setDirectoryAsync(serverUrl: metadata.serverUrlFileName, offline: true, metadata: metadata)
-            await self.database.cleanTablesOcIds(account: metadata.account)
-            await NCNetworking.shared.synchronization(account: metadata.account, serverUrl: metadata.serverUrlFileName, metadatasInDownload: nil)
+            await self.database.cleanTablesOcIds(account: metadata.account, userId: metadata.userId, urlBase: metadata.urlBase)
+            await NCNetworking.shared.synchronization(account: metadata.account, serverUrl: metadata.serverUrlFileName, userId: metadata.userId, urlBase: metadata.urlBase, metadatasInDownload: nil)
         } else {
             var metadatasSynchronizationOffline: [tableMetadata] = []
             metadatasSynchronizationOffline.append(metadata)
@@ -170,7 +173,10 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
 
         if let metadata = await database.getMetadataFromFileIdAsync(fileId) {
             do {
-                let attr = try FileManager.default.attributesOfItem(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+                let attr = try FileManager.default.attributesOfItem(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
+                                                                                                                              fileName: metadata.fileNameView,
+                                                                                                                              userId: metadata.userId,
+                                                                                                                              urlBase: metadata.urlBase))
                 let fileSize = attr[FileAttributeKey.size] as? UInt64 ?? 0
                 if fileSize > 0 {
                     NCViewer().view(viewController: viewController, metadata: metadata)
@@ -181,7 +187,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             }
         }
 
-        hud.initHudRing(tapToCancelDetailText: true) {
+        hud.ringProgress(tapToCancelDetailText: true) {
             if let request = downloadRequest {
                 request.cancel()
             }
@@ -198,7 +204,10 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         let metadata = await self.database.convertFileToMetadataAsync(file, isDirectoryE2EE: isDirectoryE2EE)
         await self.database.addMetadataAsync(metadata)
 
-        let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+        let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
+                                                                                       fileName: metadata.fileNameView,
+                                                                                       userId: metadata.userId,
+                                                                                       urlBase: metadata.urlBase)
 
         if metadata.isAudioOrVideo {
             NCViewer().view(viewController: viewController, metadata: metadata)
@@ -288,7 +297,10 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         var downloadMetadata: [(tableMetadata, URL)] = []
 
         for metadata in metadatas {
-            let fileURL = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+            let fileURL = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
+                                                                                                 fileName: metadata.fileNameView,
+                                                                                                 userId: metadata.userId,
+                                                                                                 urlBase: metadata.urlBase))
             if utilityFileSystem.fileProviderStorageExists(metadata) {
                 urls.append(fileURL)
             } else {
@@ -307,13 +319,15 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                         return completion()
                     }
 
-                    NCNetworking.shared.download(metadata: metadata) {
+                    await NCNetworking.shared.downloadFile(metadata: metadata) { _ in
                     } progressHandler: { progress in
                         processor.hud.progress(progress.fractionCompleted)
-                    } completion: { _, _ in
-                        if self.utilityFileSystem.fileProviderStorageExists(metadata) { urls.append(url) }
-                        completion()
                     }
+
+                    if self.utilityFileSystem.fileProviderStorageExists(metadata) {
+                        urls.append(url)
+                    }
+                    completion()
                 }
             }
         }
@@ -344,7 +358,10 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
     // MARK: - Save as scan
 
     func saveAsScan(metadata: tableMetadata, controller: NCMainTabBarController?) {
-        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
+                                                                             fileName: metadata.fileNameView,
+                                                                             userId: metadata.userId,
+                                                                             urlBase: metadata.urlBase)
         let fileNameDestination = utilityFileSystem.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, notUseMask: true)
         let fileNamePathDestination = utilityFileSystem.directoryScan + "/" + fileNameDestination
 
@@ -362,7 +379,10 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
     // MARK: - Save photo
 
     func saveAlbum(metadata: tableMetadata, controller: NCMainTabBarController?) {
-        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
+                                                                             fileName: metadata.fileNameView,
+                                                                             userId: metadata.userId,
+                                                                             urlBase: metadata.urlBase)
 
         NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
             guard hasPermission else {
@@ -406,6 +426,9 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
     func pastePasteboard(serverUrl: String, account: String, controller: NCMainTabBarController?) async {
         var fractionCompleted: Float = 0
         let processor = ParallelWorker(n: 5, titleKey: "_status_uploading_", totalTasks: nil, controller: controller)
+        guard let tblAccount = await self.database.getTableAccountAsync(account: account) else {
+            return
+        }
 
         func uploadPastePasteboard(fileName: String, serverUrlFileName: String, fileNameLocalPath: String, serverUrl: String, completion: @escaping () -> Void) {
             NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: account) { _ in
@@ -416,7 +439,10 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                 }
             } completionHandler: { account, ocId, etag, _, _, _, error in
                 if error == .success && etag != nil && ocId != nil {
-                    let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)
+                    let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId!,
+                                                                                        fileName: fileName,
+                                                                                        userId: tblAccount.userId,
+                                                                                        urlBase: tblAccount.urlBase)
                     self.utilityFileSystem.moveFile(atPath: fileNameLocalPath, toPath: toPath)
                     self.database.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
                     NCNetworking.shared.notifyAllDelegates { delegate in
@@ -440,7 +466,10 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                 let fileName = results.name + "_" + NCKeychain().incrementalNumber + "." + results.ext
                 let serverUrlFileName = serverUrl + "/" + fileName
                 let ocIdUpload = UUID().uuidString
-                let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocIdUpload, fileNameView: fileName)
+                let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocIdUpload,
+                                                                                          fileName: fileName,
+                                                                                          userId: tblAccount.userId,
+                                                                                          urlBase: tblAccount.urlBase)
                 do { try data.write(to: URL(fileURLWithPath: fileNameLocalPath)) } catch { continue }
                 processor.execute { completion in
                     uploadPastePasteboard(fileName: fileName, serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, serverUrl: serverUrl, completion: completion)

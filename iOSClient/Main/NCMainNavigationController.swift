@@ -80,6 +80,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         super.viewDidLoad()
         self.delegate = self
 
+        setNavigationBarAppearance()
+
         menuButton.setImage(UIImage(systemName: "ellipsis.circle"), for: .normal)
         menuButton.tintColor = NCBrandColor.shared.iconImageColor
         menuButton.menu = createRightMenu()
@@ -116,39 +118,52 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }), for: .touchUpInside)
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterUpdateNotification), object: nil, queue: nil) { _ in
-            let capabilities = NCNetworking.shared.capabilities[self.session.account] ?? NKCapabilities.Capabilities()
-            if capabilities.notification.count > 0 {
-                NextcloudKit.shared.getNotifications(account: self.session.account) { _ in
-                } completion: { _, notifications, _, error in
-                    if error == .success,
-                       let notifications,
-                       notifications.count > 0 {
-                        if !self.isNotificationsButtonVisible() {
-                            self.controller?.availableNotifications = true
-                            self.updateRightBarButtonItems()
-                        }
-                    } else {
-                        if self.isNotificationsButtonVisible() {
-                            self.controller?.availableNotifications = false
-                            self.updateRightBarButtonItems()
-                        }
+            Task { @MainActor in
+                let capabilities = await NKCapabilities.shared.getCapabilities(for: self.session.account)
+                guard capabilities.notification.count > 0 else {
+                    if self.isNotificationsButtonVisible() {
+                        self.controller?.availableNotifications = false
+                        self.updateRightBarButtonItems()
                     }
+                    return
                 }
-            } else {
-                if self.isNotificationsButtonVisible() {
-                    self.controller?.availableNotifications = false
-                    self.updateRightBarButtonItems()
+
+                let resultsNotification = await NextcloudKit.shared.getNotificationsAsync(account: self.session.account)
+                if resultsNotification.error == .success,
+                    let notifications = resultsNotification.notifications,
+                    notifications.count > 0 {
+                    if !self.isNotificationsButtonVisible() {
+                        self.controller?.availableNotifications = true
+                        self.updateRightBarButtonItems()
+                    }
+                } else {
+                    if self.isNotificationsButtonVisible() {
+                        self.controller?.availableNotifications = false
+                        self.updateRightBarButtonItems()
+                    }
                 }
             }
         }
 
-        navigationBar.prefersLargeTitles = true
         setNavigationBarHidden(false, animated: true)
     }
 
+    /// Called before a view controller is shown by the navigation controller.
+    /// This method checks if the view controller is of type `NCViewerMediaPage`.
+    /// If so, it skips applying the custom navigation bar appearance and right bar button items.
+    /// Otherwise, it applies the standard appearance and updates buttons accordingly.
+    ///
+    /// - Parameters:
+    ///   - navigationController: The navigation controller that will show the view controller.
+    ///   - viewController: The view controller that is about to be shown.
+    ///   - animated: True if the transition is animated; false otherwise.
+
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        guard !(viewController is NCViewerMediaPage) else {
+            return
+        }
         setNavigationBarAppearance()
-        self.updateRightBarButtonItems()
+        updateRightBarButtonItems()
     }
 
     // MARK: - Right
@@ -226,18 +241,14 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
                 // Update App Icon badge / File Icon badge
 #if DEBUG
-                if UIApplication.shared.applicationIconBadgeNumber != tranfersCount {
-                    UIApplication.shared.applicationIconBadgeNumber = tranfersCount
-                }
+                UNUserNotificationCenter.current().setBadgeCount(tranfersCount)
                 fileItem?.badgeValue = tranfersCount == 0 ? nil : "\(tranfersCount)"
 #else
                 if tranfersCount > 999 {
-                    UIApplication.shared.applicationIconBadgeNumber = 999
+                    UNUserNotificationCenter.current().setBadgeCount(999)
                     fileItem?.badgeValue = "999+"
                 } else {
-                    if UIApplication.shared.applicationIconBadgeNumber != tranfersCount {
-                        UIApplication.shared.applicationIconBadgeNumber = tranfersCount
-                    }
+                    UNUserNotificationCenter.current().setBadgeCount(tranfersCount)
                     fileItem?.badgeValue = tranfersCount == 0 ? nil : "\(tranfersCount)"
                 }
 #endif

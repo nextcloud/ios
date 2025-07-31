@@ -1,25 +1,6 @@
-//
-//  NCMediaDataSource.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 25/01/24.
-//  Copyright © 2024 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2024 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 import NextcloudKit
@@ -43,7 +24,6 @@ extension NCMedia {
     @MainActor
     func collectionViewReloadData() {
         self.collectionView.reloadData()
-        self.refreshControl.endRefreshing()
         self.setTitleDate()
     }
 
@@ -85,15 +65,42 @@ extension NCMedia {
             if self.dataSource.metadatas.isEmpty {
                 self.collectionViewReloadData()
             }
+            let sortedIndexPaths = collectionView.indexPathsForVisibleItems.sorted {
+                guard let attr1 = collectionView.layoutAttributesForItem(at: $0),
+                      let attr2 = collectionView.layoutAttributesForItem(at: $1) else {
+                    return false
+                }
+                return attr1.frame.minY < attr2.frame.minY
+            }
 
-            if let visibleCells = self.collectionView?.indexPathsForVisibleItems
-                .sorted(by: { $0.row < $1.row })
-                .compactMap({ self.collectionView?.cellForItem(at: $0) }) as? [NCMediaCell], !distant {
+            var visibleCells: [NCMediaCell] = sortedIndexPaths.compactMap { indexPath in
+                guard let cell = collectionView.cellForItem(at: indexPath) as? NCMediaCell else {
+                    return nil
+                }
 
+                // Convert cell frame to collectionView coordinate space
+                let cellFrameInCollection = collectionView.convert(cell.frame, from: cell.superview)
+
+                // Check if it intersects with the visible bounds
+                if cellFrameInCollection.intersects(collectionView.bounds) {
+                    return cell
+                } else {
+                    return nil
+                }
+            }
+
+            visibleCells = visibleCells.sorted {
+                guard let date1 = $0.datePhotosOriginal, let date2 = $1.datePhotosOriginal else {
+                    return false
+                }
+                return date1 > date2
+            }
+
+            if !visibleCells.isEmpty, !distant {
                 firstCellDate = visibleCells.first?.datePhotosOriginal
                 lastCellDate = visibleCells.last?.datePhotosOriginal
 
-                if firstCellDate == self.dataSource.metadatas.first?.datePhotosOriginal {
+                if collectionView.contentOffset.y <= 0 {
                     lessDate = .distantFuture
                 } else {
                     lessDate = Calendar.current.date(byAdding: .second, value: 1, to: firstCellDate ?? .distantFuture) ?? .distantFuture
@@ -123,7 +130,9 @@ extension NCMedia {
             greaterDateAny = greaterDate
         }
 
-        let limit = await MainActor.run { max(self.collectionView.visibleCells.count * 3, 300) }
+        let limit = await MainActor.run {
+            max(self.collectionView.visibleCells.count * 3, 300)
+        }
 
         let options = NKRequestOptions(timeout: 180, taskDescription: self.global.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
@@ -163,7 +172,7 @@ extension NCMedia {
         Task.detached(priority: .userInitiated) { [weak self] in
             guard let self else { return }
 
-            let (_, metadatas) = await self.database.convertFilesToMetadatasAsync(files)
+            let (_, metadatas) = await self.database.convertFilesToMetadatasAsync(files, mediaSearch: true)
 
             let filtered = await metadatas.asyncFilter { metadata in
                 if let stored = await self.database.getMetadataFromOcIdAsync(metadata.ocId) {
@@ -189,13 +198,13 @@ extension NCMedia {
 
             await self.database.addMetadatasAsync(filtered)
 
-            if await self.dataSource.addMetadatas(metadatas) {
-                await self.collectionViewReloadData()
-            }
-
             await MainActor.run {
                 self.activityIndicator.stopAnimating()
                 self.searchMediaInProgress = false
+            }
+
+            if await self.dataSource.addMetadatas(metadatas) {
+                await self.collectionViewReloadData()
             }
         }
     }
@@ -270,6 +279,10 @@ public class NCMediaDataSource: NSObject {
         metadatas.removeAll()
     }
 
+    func isEmpty() -> Bool {
+        return self.metadatas.isEmpty
+    }
+
     func indexPath(forOcId ocId: String) -> IndexPath? {
         guard let index = self.metadatas.firstIndex(where: { $0.ocId == ocId }) else {
             return nil
@@ -304,6 +317,9 @@ public class NCMediaDataSource: NSObject {
     }
 
     func addMetadatas(_ metadatas: [tableMetadata]) -> Bool {
+        guard metadatas.isEmpty == false else {
+            return true
+        }
         var newMetadatas: [Metadata] = []
 
         for tableMetadata in metadatas {

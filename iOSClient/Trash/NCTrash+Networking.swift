@@ -91,21 +91,21 @@ class NCOperationDownloadThumbnailTrash: ConcurrentOperation, @unchecked Sendabl
     var fileId: String
     var fileName: String
     var collectionView: UICollectionView
-    var account: String
+    var session: NCSession.Session
 
-    init(fileId: String, fileName: String, account: String, collectionView: UICollectionView) {
+    init(fileId: String, fileName: String, session: NCSession.Session, collectionView: UICollectionView) {
         self.fileId = fileId
         self.fileName = fileName
-        self.account = account
+        self.session = session
         self.collectionView = collectionView
     }
 
     override func start() {
         guard !isCancelled else { return self.finish() }
 
-        NextcloudKit.shared.downloadTrashPreview(fileId: fileId, account: account) { _, _, _, responseData, error in
+        NextcloudKit.shared.downloadTrashPreview(fileId: fileId, account: session.account) { _, _, _, responseData, error in
             if error == .success, let data = responseData?.data {
-                NCUtility().createImageFileFrom(data: data, ocId: self.fileId, etag: self.fileName)
+                NCUtility().createImageFileFrom(data: data, ocId: self.fileId, etag: self.fileName, userId: self.session.userId, urlBase: self.session.urlBase)
 
                 for case let cell as NCTrashCellProtocol in self.collectionView.visibleCells where cell.objectId == self.fileId {
                     cell.imageItem?.contentMode = .scaleAspectFill

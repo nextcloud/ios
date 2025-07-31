@@ -33,11 +33,8 @@ import Photos
     func refresh() {
         var newSmartAlbums: [PHAssetCollection] = []
         var newUserAlbums: [PHAssetCollection] = []
-//        smartAlbums.removeAll()
-//        userAlbums.removeAll()
 
         Task { @MainActor in
-//            smartAlbumAssetCollections = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: nil)
             smartAlbumAssetCollections?.enumerateObjects { [self] collection, _, _ in
                 if collection.assetCollectionSubtype == .smartAlbumUserLibrary {
                     allPhotosCollection = collection
@@ -48,7 +45,6 @@ import Photos
 
             let options = PHFetchOptions()
             options.predicate = NSPredicate(format: "estimatedAssetCount > 0") // Only normal albums have an estimated asset count. Smart albums do not and must be calculated manually via .assetCount
-//            userAlbumAssetCollections = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .any, options: options)
 
             userAlbumAssetCollections?.enumerateObjects { collection, _, _ in
                 newUserAlbums.append(collection)
@@ -66,8 +62,6 @@ import Photos
     func initAlbums() {
         var newSmartAlbums: [PHAssetCollection] = []
         var newUserAlbums: [PHAssetCollection] = []
-//        smartAlbums.removeAll()
-//        userAlbums.removeAll()
 
         Task { @MainActor in
             smartAlbumAssetCollections = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: nil)

@@ -64,7 +64,6 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         super.viewDidLoad()
 
         view.backgroundColor = .secondarySystemGroupedBackground
-        navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
         navigationItem.title = NSLocalizedString("_scanned_images_", comment: "")
 
         collectionViewSource.dragInteractionEnabled = true
@@ -352,9 +351,9 @@ extension NCScan: EasyTipViewDelegate {
             preferences.animating.showDuration = 1.5
             preferences.animating.dismissDuration = 1.5
 
-            if tipView == nil {
+            if tipView == nil, let view = self.view {
                 tipView = EasyTipView(text: NSLocalizedString("_tip_addcopyimage_", comment: ""), preferences: preferences, delegate: self)
-                tipView?.show(forView: add, withinSuperview: self.view)
+                tipView?.show(forView: add, withinSuperview: view)
             }
         }
     }

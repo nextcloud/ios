@@ -1,25 +1,6 @@
-//
-//  NCFileNameView.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 26/06/24.
-//  Copyright © 2024 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2024 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
 
@@ -28,31 +9,30 @@ struct NCFileNameView: View {
 
     var body: some View {
         Form {
-            /// Specify Filename
+            // Specify Filename
             Section(header: Text(NSLocalizedString("_mode_filename_", comment: ""))) {
-                ///
                 Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $model.maintainFilenameOriginal)
                     .font(.system(size: 16))
                     .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                    .onChange(of: model.maintainFilenameOriginal, perform: { newValue in
+                    .onChange(of: model.maintainFilenameOriginal) { _, newValue in
                         model.toggleMaintainFilenameOriginal(newValue: newValue)
                         model.getFileName()
-                    })
-                /// Filename
+                    }
+                // Filename
                 if !model.maintainFilenameOriginal {
                     Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $model.addFileNameType)
                         .font(.system(size: 16))
                         .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                        .onChange(of: model.addFileNameType, perform: { newValue in
+                        .onChange(of: model.addFileNameType) { _, newValue in
                             model.toggleAddFilenameType(newValue: newValue)
                             model.getFileName()
-                        })
+                        }
                 }
             }
             .transition(.slide)
             .animation(.easeInOut, value: model.maintainFilenameOriginal)
 
-            /// Filename Preview
+            // Filename Preview
             fileNamePreview
                 .animation(.easeInOut, value: model.addFileNameType)
         }
@@ -72,10 +52,10 @@ struct NCFileNameView: View {
                         .fontWeight(.medium)
                     Spacer()
                     TextField(NSLocalizedString("_filename_header_", comment: ""), text: $model.changedName)
-                        .onChange(of: model.changedName, perform: { _ in
+                        .onChange(of: model.changedName) {
                             model.submitChangedName()
                             model.getFileName()
-                        })
+                        }
                         .autocapitalization(.none)
                         .font(.system(size: 15))
                         .multilineTextAlignment(.trailing)

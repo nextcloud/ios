@@ -1,25 +1,6 @@
-//
-//  NCAccountSettingsModel.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 06/06/24.
-//  Copyright © 2024 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2024 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
 import UIKit
@@ -28,30 +9,30 @@ import NextcloudKit
 
 /// Protocol for know when the Account Settings has dimissed
 protocol NCAccountSettingsModelDelegate: AnyObject {
-    func accountSettingsDidDismiss(tableAccount: tableAccount?, controller: NCMainTabBarController?)
+    func accountSettingsDidDismiss(tblAccount: tableAccount?, controller: NCMainTabBarController?)
 }
 
 /// A model that allows the user to configure the account
 class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
-    /// AppDelegate
+    // AppDelegate
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    /// Root View Controller
+    // Root View Controller
     var controller: NCMainTabBarController?
-    /// All account
+    // All account
     var tblAccounts: [tableAccount] = []
-    /// Delegate
+    // Delegate
     weak var delegate: NCAccountSettingsModelDelegate?
-    /// Token observe tableAccount
+    // Token observe tableAccount
     var notificationToken: NotificationToken?
-    /// Account now
+    // Account now
     @Published var tblAccount: tableAccount?
-    /// Index
+    // Index
     @Published var indexActiveAccount: Int = 0
-    /// Current alias
+    // Current alias
     @Published var alias: String = ""
-    /// Set true for dismiss the view
+    // Set true for dismiss the view
     @Published var dismissView = false
-    /// DB
+    // DB
     let database = NCManageDatabase.shared
 
     /// Initialization code to set up the ViewModel with the active account
@@ -59,7 +40,9 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
         self.controller = controller
         self.delegate = delegate
         if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
-            database.previewCreateDB()
+            Task {
+                await self.database.previewCreateDB()
+            }
         }
         onViewAppear()
         observeTableAccount()
@@ -125,7 +108,9 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// Func to set alias
     func setAlias(_ value: String) {
         guard let tblAccount else { return }
-        database.setAccountAlias(tblAccount.account, alias: alias)
+        Task {
+            await database.setAccountAliasAsync(tblAccount.account, alias: alias)
+        }
     }
 
     /// Function to update the user data
@@ -185,8 +170,9 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
 
     /// Function to delete the current account
     func deleteAccount() {
-        if let tblAccount {
-            NCAccount().deleteAccount(tblAccount.account) {
+        Task { @MainActor in
+            if let tblAccount {
+                await NCAccount().deleteAccount(tblAccount.account)
                 let account = database.getAllTableAccount().first?.account
                 setAccount(account: account)
                 dismissView = true

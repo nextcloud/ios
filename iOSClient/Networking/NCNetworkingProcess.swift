@@ -187,7 +187,7 @@ actor NCNetworkingProcess {
 
         for metadata in metadatasWaitDownload where counterDownloading < httpMaximumConnectionsPerHostInDownload {
             counterDownloading += 1
-            networking.download(metadata: metadata)
+            await networking.downloadFileInBackground(metadata: metadata)
         }
 
         /// ------------------------ UPLOAD
@@ -229,8 +229,6 @@ actor NCNetworkingProcess {
                     guard counterUploading < httpMaximumConnectionsPerHostInUpload,
                           timer != nil else { return }
 
-                    /// isE2EE
-                    let isInDirectoryE2EE = metadata.isDirectoryE2EE
                     /// NO WiFi
                     if !isWiFi && metadata.session == networking.sessionUploadBackgroundWWan { continue }
 
@@ -254,9 +252,38 @@ actor NCNetworkingProcess {
                         }
                     }
 
-                    networking.uploadHub(metadata: metadata, controller: controller)
-                    if isInDirectoryE2EE || metadata.chunk > 0 {
+                    if metadata.isDirectoryE2EE {
+                        await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: controller)
+
                         httpMaximumConnectionsPerHostInUpload = 1
+                    } else if metadata.chunk > 0 {
+                        let controller = controller
+
+                        Task { @MainActor in
+                            var numChunks = 0
+                            var counterUpload: Int = 0
+                            let hud = NCHud(controller?.view)
+                            hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""))
+
+                            await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
+                                numChunks = num
+                            } counterChunk: { counter in
+                                hud.progress(num: Float(counter), total: Float(numChunks))
+                            } startFilesChunk: { _ in
+                                hud.setText(text: NSLocalizedString("_keep_active_for_upload_", comment: ""))
+                            } requestHandler: { _ in
+                                hud.progress(num: Float(counterUpload), total: Float(numChunks))
+                                counterUpload += 1
+                            } assembling: {
+                                hud.setText(text: NSLocalizedString("_wait_", comment: ""))
+                            }
+
+                            hud.dismiss()
+                        }
+
+                        httpMaximumConnectionsPerHostInUpload = 1
+                    } else {
+                        await networking.uploadFileInBackground(metadata: metadata)
                     }
                     counterUploading += 1
                 }
@@ -393,7 +420,7 @@ actor NCNetworkingProcess {
                                                                             account: result.account)
                 } else {
                     do {
-                        try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                        try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
                     } catch { }
                     await self.database.deleteVideoAsync(metadata.ocId)
                     await self.database.deleteMetadataOcIdAsync(metadata.ocId)
@@ -401,7 +428,7 @@ actor NCNetworkingProcess {
                     // LIVE PHOTO
                     if let metadataLive = await self.database.getMetadataLivePhotoAsync(metadata: metadata) {
                         do {
-                            try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId))
+                            try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId, userId: metadataLive.userId, urlBase: metadataLive.urlBase))
                         } catch { }
                         await self.database.deleteVideoAsync(metadataLive.ocId)
                         await self.database.deleteMetadataOcIdAsync(metadataLive.ocId)
@@ -503,7 +530,7 @@ actor NCNetworkingProcess {
 
                 if resultDelete.error == .success || resultDelete.error.errorCode == NCGlobal.shared.errorResourceNotFound {
                     do {
-                        try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                        try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
                     } catch { }
 
                     NCImageCache.shared.removeImageCache(ocIdPlusEtag: metadata.ocId + metadata.etag)

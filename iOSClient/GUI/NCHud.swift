@@ -1,10 +1,6 @@
-//
-//  NCHud.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 04/09/24.
-//  Copyright © 2024 Marino Faggiana. All rights reserved.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2024 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
 import UIKit
@@ -21,13 +17,11 @@ class NCHud: NSObject {
         super.init()
     }
 
-    func initHud(view: UIView? = nil, text: String? = nil, detailText: String? = nil) {
+    func indeterminateProgress(view: UIView? = nil, text: String? = nil, detailText: String? = nil) {
         DispatchQueue.main.async {
             if let view {
                 self.view = view
             }
-
-            self.hud.indicatorView = JGProgressHUDIndicatorView()
 
             self.hud.textLabel.text = text
             self.hud.textLabel.textColor = NCBrandColor.shared.iconImageColor
@@ -41,7 +35,7 @@ class NCHud: NSObject {
         }
     }
 
-    func initHudRing(view: UIView? = nil, text: String? = nil, detailText: String? = nil, tapToCancelDetailText: Bool = false, tapOperation: (() -> Void)? = nil) {
+    func ringProgress(view: UIView? = nil, text: String? = nil, detailText: String? = nil, tapToCancelDetailText: Bool = false, tapOperation: (() -> Void)? = nil) {
         DispatchQueue.main.async {
             self.hud.tapOnHUDViewBlock = { hud in
                 if let tapOperation {
@@ -55,6 +49,42 @@ class NCHud: NSObject {
             }
 
             self.hud.indicatorView = JGProgressHUDRingIndicatorView()
+            self.hud.progress = 0.0
+
+            let indicatorView = self.hud.indicatorView as? JGProgressHUDRingIndicatorView
+            indicatorView?.ringWidth = 1.5
+            indicatorView?.ringColor = NCBrandColor.shared.iconImageColor
+
+            self.hud.textLabel.text = text
+            self.hud.textLabel.textColor = NCBrandColor.shared.iconImageColor
+
+            if tapToCancelDetailText {
+                self.hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
+            } else {
+                self.hud.detailTextLabel.text = detailText
+            }
+            self.hud.detailTextLabel.textColor = NCBrandColor.shared.iconImageColor2
+
+            if let view = self.view {
+                self.hud.show(in: view)
+            }
+        }
+    }
+
+    func pieProgress(view: UIView? = nil, text: String? = nil, detailText: String? = nil, tapToCancelDetailText: Bool = false, tapOperation: (() -> Void)? = nil) {
+        DispatchQueue.main.async {
+            self.hud.tapOnHUDViewBlock = { hud in
+                if let tapOperation {
+                    tapOperation()
+                    hud.dismiss()
+                }
+            }
+
+            if let view {
+                self.view = view
+            }
+
+            self.hud.indicatorView = JGProgressHUDPieIndicatorView()
             self.hud.progress = 0.0
 
             let indicatorView = self.hud.indicatorView as? JGProgressHUDRingIndicatorView

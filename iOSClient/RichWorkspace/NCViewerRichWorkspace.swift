@@ -1,25 +1,6 @@
-//
-//  NCViewerRichWorkspace.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 14/01/2020.
-//  Copyright © 2020 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2020 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 import NextcloudKit
@@ -47,7 +28,6 @@ import MarkdownKit
         super.viewDidLoad()
 
         view.backgroundColor = .systemBackground
-        navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
         presentationController?.delegate = self
 
         let closeItem = UIBarButtonItem(title: NSLocalizedString("_back_", comment: ""), style: .plain, target: self, action: #selector(closeItemTapped(_:)))
@@ -66,6 +46,8 @@ import MarkdownKit
         super.viewDidAppear(animated)
 
         Task {
+            try? await Task.sleep(nanoseconds: 1_500_000_000)
+
             let resultsReadFile = await NCNetworking.shared.readFileAsync(serverUrlFileName: self.serverUrl, account: session.account)
             guard resultsReadFile.error == .success, let metadata = resultsReadFile.metadata else {
                 return

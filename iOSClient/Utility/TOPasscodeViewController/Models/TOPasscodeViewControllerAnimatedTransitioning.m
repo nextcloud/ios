@@ -48,7 +48,7 @@
 
 - (void)animateTransition:(id <UIViewControllerContextTransitioning>)transitionContext
 {
-    BOOL isPhone = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone;
+    BOOL isPhone = [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone;
     UIView *containerView = transitionContext.containerView;
     UIVisualEffectView *backgroundEffectView = self.passcodeViewController.backgroundEffectView;
     UIView *backgroundView = self.passcodeViewController.backgroundView;

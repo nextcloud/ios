@@ -65,7 +65,11 @@ final class NCImageCache: @unchecked Sendable {
                                     self.cache.removeAllValues()
                                     break
                                 }
-                                if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) {
+                                if let image = self.utility.getImage(ocId: metadata.ocId,
+                                                                     etag: metadata.etag,
+                                                                     ext: self.global.previewExt256,
+                                                                     userId: metadata.userId,
+                                                                     urlBase: metadata.urlBase) {
                                     self.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: self.global.previewExt256, cost: cost)
                                     cost += 1
                                 }
@@ -76,7 +80,6 @@ final class NCImageCache: @unchecked Sendable {
                     self.isLoadingCache = false
                 }
             }
-
 #endif
         }
     }
@@ -122,9 +125,9 @@ final class NCImageCache: @unchecked Sendable {
         var predicate = NSPredicate()
         let startServerUrl = self.utilityFileSystem.getHomeServer(session: session) + mediaPath
 
-            var showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND hasPreview == true AND (classFile == '\(NKTypeClassFile.image.rawValue)' OR classFile == '\(NKTypeClassFile.video.rawValue)') AND NOT (status IN %@)"
+            var showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND mediaSearch == true AND hasPreview == true AND (classFile == '\(NKTypeClassFile.image.rawValue)' OR classFile == '\(NKTypeClassFile.video.rawValue)') AND NOT (status IN %@)"
 
-            var showOnlyPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND hasPreview == true AND classFile == %@ AND NOT (status IN %@)"
+            var showOnlyPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND mediaSearch == true AND hasPreview == true AND classFile == %@ AND NOT (status IN %@)"
 
             if filterLivePhotoFile {
                 showBothPredicateMediaString = showBothPredicateMediaString + " AND NOT (livePhotoFile != '' AND classFile == '\(NKTypeClassFile.video.rawValue)')"

@@ -1,25 +1,6 @@
-//
-//  NCFileNameModel.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 26/06/24.
-//  Copyright © 2024 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2024 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
 import UIKit
@@ -29,21 +10,21 @@ import Photos
 
 /// A view model responsible for managing auto-upload file names.
 class NCFileNameModel: ObservableObject, ViewOnAppearHandling {
-    /// A keychain instance for handling authentication.
+    // A keychain instance for handling authentication.
     private var keychain = NCKeychain()
-    /// A shared global instance for managing application-wide settings.
+    // A shared global instance for managing application-wide settings.
     private let globalKey = NCGlobal.shared
-    /// A boolean indicating whether to maintain the original file name.
+    // A boolean indicating whether to maintain the original file name.
     @Published var maintainFilenameOriginal: Bool = NCKeychain().fileNameOriginal
-    /// A boolean indicating whether to specify a custom file name.
+    // A boolean indicating whether to specify a custom file name.
     @Published var addFileNameType: Bool = NCKeychain().fileNameType
-    /// The changed file name.
+    // The changed file name.
     @Published var changedName: String = ""
-    /// The complete new file name.
+    // The complete new file name.
     @Published var fileNamePreview: String = ""
-    /// Root View Controller
+    // Root View Controller
     @Published var controller: NCMainTabBarController?
-    /// Get session
+    // Get session
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
     }

@@ -1,10 +1,6 @@
-//
-//  NCDisplayView.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 30/05/24.
-//  Copyright © 2024 Marino Faggiana. All rights reserved.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2024 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
 
@@ -60,7 +56,7 @@ struct NCDisplayView: View {
 
                     Toggle(NSLocalizedString("_use_system_style_", comment: ""), isOn: $model.appearanceAutomatic)
                         .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                        .onChange(of: model.appearanceAutomatic) { _ in
+                        .onChange(of: model.appearanceAutomatic) {
                             model.updateAppearanceAutomatic()
                         }
                 }

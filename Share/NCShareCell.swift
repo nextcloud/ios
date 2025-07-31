@@ -7,7 +7,6 @@ import UIKit
 import NextcloudKit
 
 protocol NCShareCellDelegate: AnyObject {
-    var uploadStarted: Bool { get }
     func removeFile(named fileName: String)
     func showRenameFileDialog(named fileName: String, account: String)
     func renameFile(oldName: String, newName: String, account: String)
@@ -51,7 +50,6 @@ class NCShareCell: UITableViewCell {
     }
 
     @IBAction func buttonTapped(_ sender: Any) {
-        guard !fileName.isEmpty, delegate?.uploadStarted != true else { return }
         let alertController = UIAlertController(title: "", message: fileName, preferredStyle: .alert)
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_rename_file_", comment: ""), style: .default) { _ in

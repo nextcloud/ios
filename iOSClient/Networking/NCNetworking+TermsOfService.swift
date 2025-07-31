@@ -8,51 +8,50 @@ import SwiftUI
 import NextcloudKit
 
 extension NCNetworking {
-    func termsOfService(account: String, completion: @escaping () -> Void = {}) {
-        guard let capabilities = NCNetworking.shared.capabilities[account],
-              capabilities.termsOfService,
+    @MainActor
+    func termsOfService(account: String) async {
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
+        guard capabilities.termsOfService,
               let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier),
               let controller = SceneManager.shared.getControllers().first(where: { $0.account == account }),
               controller.presentedViewController as? UIHostingController<NCTermOfServiceModelView> == nil
         else {
-            return completion()
-        }
-
-        var tosArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
-        let options = NKRequestOptions(checkInterceptor: false)
-
-        NextcloudKit.shared.getTermsOfService(account: account, options: options) { _, tos, _, error in
-            if error == .success, let tos, !tos.hasUserSigned() {
-                let termOfServiceModel = NCTermOfServiceModel(controller: controller, tos: tos)
-                let termOfServiceView = NCTermOfServiceModelView(model: termOfServiceModel)
-                let termOfServiceController = UIHostingController(rootView: termOfServiceView)
-
-                controller.present(termOfServiceController, animated: true, completion: nil)
-            } else {
-                tosArray.removeAll { $0 == account }
-                groupDefaults.set(tosArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS)
-            }
-
-            completion()
-        }
-    }
-
-    func signTermsOfService(account: String, termId: Int, completion: @escaping (NKError) -> Void) {
-        guard let capabilities = NCNetworking.shared.capabilities[account],
-              capabilities.termsOfService,
-              let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier)
-        else {
             return
         }
+
         var tosArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
         let options = NKRequestOptions(checkInterceptor: false)
 
-        NextcloudKit.shared.signTermsOfService(termId: "\(termId)", account: account, options: options) { _, _, error in
-            if error == .success {
-                tosArray.removeAll { $0 == account }
-                groupDefaults.set(tosArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS)
-            }
-            completion(error)
+        let resultsGetToS = await NextcloudKit.shared.getTermsOfServiceAsync(account: account, options: options)
+        guard resultsGetToS.error == .success, let tos = resultsGetToS.tos, !tos.hasUserSigned() else {
+            tosArray.removeAll { $0 == account }
+            groupDefaults.set(tosArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS)
+            return
         }
+
+        let termOfServiceModel = NCTermOfServiceModel(controller: controller, tos: tos)
+        let termOfServiceView = NCTermOfServiceModelView(model: termOfServiceModel)
+        let termOfServiceController = UIHostingController(rootView: termOfServiceView)
+
+        controller.present(termOfServiceController, animated: true)
+    }
+
+    func signTermsOfService(account: String, termId: Int) async -> NKError? {
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
+        guard capabilities.termsOfService,
+              let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier)
+        else {
+            return nil
+        }
+        var tosArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
+        let options = NKRequestOptions(checkInterceptor: false)
+
+        let resultsSignToS = await  NextcloudKit.shared.signTermsOfServiceAsync(termId: "\(termId)", account: account, options: options)
+        if resultsSignToS.error == .success {
+            tosArray.removeAll { $0 == account }
+            groupDefaults.set(tosArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS)
+        }
+
+        return resultsSignToS.error
     }
 }

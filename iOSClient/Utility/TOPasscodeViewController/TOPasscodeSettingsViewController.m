@@ -393,7 +393,7 @@ const CGFloat kTOPasscodeKeypadMaxHeight = 330.0f;
     BOOL animated = ([self.view.layer animationForKey:@"bounds.size"] != nil);
     [self.keypadView setButtonLabelHorizontalLayout:horizontalLayout animated:animated];
 
-    CGFloat topContentHeight = self.topLayoutGuide.length;
+    CGFloat topContentHeight = self.view.safeAreaInsets.top;
 
     // Layout the container view
     frame = self.containerView.frame;

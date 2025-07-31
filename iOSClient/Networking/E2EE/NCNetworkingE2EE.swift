@@ -86,10 +86,10 @@ class NCNetworkingE2EE: NSObject {
                         removeUserId: String? = nil,
                         updateVersionV1V2: Bool = false,
                         account: String) async -> NKError {
-        let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
         var addCertificate: String?
         var method = "POST"
         let session = NCSession.shared.getSession(account: account)
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
         guard let directory = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) else {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_")
         }
@@ -234,7 +234,6 @@ class NCNetworkingE2EE: NSObject {
             return
         }
         let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
-
         let resultsLockE2EEFolder = await NextcloudKit.shared.lockE2EEFolderAsync(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, e2eCounter: nil, method: "DELETE", account: account, options: NCNetworkingE2EE().getOptions(account: account, capabilities: capabilities))
         if resultsLockE2EEFolder.error == .success {
             await self.database.deleteE2ETokenLockAsync(account: account, serverUrl: serverUrl)
@@ -246,7 +245,6 @@ class NCNetworkingE2EE: NSObject {
     func unlockAll(account: String) async {
         guard NCKeychain().isEndToEndEnabled(account: account) else { return }
         let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
-
         let results = await self.database.getE2EAllTokenLockAsync(account: account)
         for result in results {
             let resultsLockE2EEFolder = await NextcloudKit.shared.lockE2EEFolderAsync(fileId: result.fileId, e2eToken: result.e2eToken, e2eCounter: nil, method: "DELETE", account: account, options: NCNetworkingE2EE().getOptions(account: account, capabilities: capabilities))

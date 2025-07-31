@@ -45,48 +45,43 @@ extension NCNetworking {
     }
 
 #if !EXTENSION
-    func checkServerError(account: String, controller: NCMainTabBarController?, completion: @escaping () -> Void = {}) {
+    func checkServerError(account: String, controller: NCMainTabBarController?) async {
         guard let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier)
         else {
-            return completion()
+            return
         }
         var unavailableArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable) as? [String] ?? []
         let unauthorizedArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnauthorized) as? [String] ?? []
         let tosArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
 
-        /// Unavailable
+        // Unavailable
         if unavailableArray.contains(account) {
             let serverUrl = NCSession.shared.getSession(account: account).urlBase
-            NextcloudKit.shared.getServerStatus(serverUrl: serverUrl) { _, serverInfoResult in
-                switch serverInfoResult {
-                case .success(let serverInfo):
+            let resultsServerStatus = await NextcloudKit.shared.getServerStatusAsync(serverUrl: serverUrl)
+            switch resultsServerStatus.result {
+            case .success(let serverInfo):
+                unavailableArray.removeAll { $0 == account }
+                groupDefaults.set(unavailableArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable)
+                unavailableArray.removeAll { $0 == account }
+                groupDefaults.set(unavailableArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable)
 
-                    unavailableArray.removeAll { $0 == account }
-                    groupDefaults.set(unavailableArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsUnavailable)
-
-                    if serverInfo.maintenance {
-                        NCContentPresenter().showInfo(title: "_warning_", description: "_maintenance_mode_")
-                    }
-                case .failure:
-                    break
+                if serverInfo.maintenance {
+                    NCContentPresenter().showInfo(title: "_warning_", description: "_maintenance_mode_")
                 }
-                completion()
+            case .failure:
+                break
             }
-        /// Unauthorized
+        // Unauthorized
         } else if unauthorizedArray.contains(account) {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                NCAccount().checkRemoteUser(account: account, controller: controller) {
-                    completion()
-                }
+            nkLog(error: "Unauthorized for \(account)")
 
-            }
+            try? await Task.sleep(nanoseconds: 500_000_000)
+            await NCAccount().checkRemoteUser(account: account, controller: controller)
         /// ToS
         } else if tosArray.contains(account) {
-            NCNetworking.shared.termsOfService(account: account) {
-                completion()
-            }
-        } else {
-            completion()
+            nkLog(error: "Terms of service for \(account)")
+
+            await NCNetworking.shared.termsOfService(account: account)
         }
     }
 #endif

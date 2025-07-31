@@ -64,9 +64,9 @@
     CGRect frame = CGRectMake(0, 0, 40.0f, 21.0f);
     UIGraphicsBeginImageContextWithOptions(frame.size, NO, 0.0f);
     {
-        //// DeleteIcon
+        // DeleteIcon
         {
-            //// Border Drawing
+            // Border Drawing
             UIBezierPath* borderPath = [UIBezierPath bezierPath];
             [borderPath moveToPoint: CGPointMake(25.73, 1.5)];
             [borderPath addLineToPoint: CGPointMake(25.9, 1.53)];

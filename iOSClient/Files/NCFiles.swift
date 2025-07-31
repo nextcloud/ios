@@ -57,7 +57,10 @@ class NCFiles: NCCollectionViewCommon {
 
         plusButton.setTitle("", for: .normal)
         plusButton.setImage(image, for: .normal)
-        plusButton.backgroundColor = NCBrandColor.shared.getElement(account: session.account)
+        plusButton.backgroundColor = NCBrandColor.shared.customer
+        if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
+            self.plusButton.backgroundColor = NCBrandColor.shared.getElement(account: activeTableAccount.account)
+        }
         plusButton.accessibilityLabel = NSLocalizedString("_accessibility_add_upload_", comment: "")
         plusButton.layer.cornerRadius = plusButton.frame.size.width / 2.0
         plusButton.layer.masksToBounds = false
@@ -152,27 +155,30 @@ class NCFiles: NCCollectionViewCommon {
     // MARK: - Action
 
     @IBAction func plusButtonAction(_ sender: UIButton) {
-        resetPlusButtonAlpha()
         guard let controller else {
             return
         }
-        let fileFolderPath = NCUtilityFileSystem().getFileNamePath("", serverUrl: serverUrl, session: NCSession.shared.getSession(controller: controller))
-        let fileFolderName = (serverUrl as NSString).lastPathComponent
+        resetPlusButtonAlpha()
+        Task { @MainActor in
+            let capabilities = await NKCapabilities.shared.getCapabilities(for: controller.account)
+            let fileFolderPath = NCUtilityFileSystem().getFileNamePath("", serverUrl: serverUrl, session: NCSession.shared.getSession(controller: controller))
+            let fileFolderName = (serverUrl as NSString).lastPathComponent
 
-        if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", controller.account, serverUrl)) {
-            if !directory.permissions.contains("CK") {
-                let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_add_file_")
-                NCContentPresenter().showWarning(error: error)
+            if let directory = await NCManageDatabase.shared.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", controller.account, serverUrl)) {
+                if !directory.permissions.contains("CK") {
+                    let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_add_file_")
+                    NCContentPresenter().showWarning(error: error)
+                    return
+                }
+            }
+
+            if !FileNameValidator.checkFolderPath(fileFolderPath, account: controller.account, capabilities: capabilities) {
+                let message = "\(String(format: NSLocalizedString("_file_name_validator_error_reserved_name_", comment: ""), fileFolderName)) \(NSLocalizedString("_please_rename_file_", comment: ""))"
+                await UIAlertController.warningAsync( message: message, presenter: controller)
                 return
             }
+            self.appDelegate.toggleMenu(controller: controller, sender: sender)
         }
-
-        if !FileNameValidator.checkFolderPath(fileFolderPath, account: controller.account, capabilities: capabilities) {
-            controller.present(UIAlertController.warning(message: "\(String(format: NSLocalizedString("_file_name_validator_error_reserved_name_", comment: ""), fileFolderName)) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
-            return
-        }
-
-        self.appDelegate.toggleMenu(controller: controller, sender: sender)
     }
 
     // MARK: - DataSource
@@ -225,7 +231,10 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         func downloadMetadata(_ metadata: tableMetadata) async -> Bool {
-            let fileSize = utilityFileSystem.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
+            let fileSize = utilityFileSystem.fileProviderStorageSize(metadata.ocId,
+                                                                     fileName: metadata.fileNameView,
+                                                                     userId: metadata.userId,
+                                                                     urlBase: metadata.urlBase)
             guard fileSize > 0 else { return false }
 
             if let tblLocalFile = await database.getTableLocalFileAsync(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
@@ -249,7 +258,7 @@ class NCFiles: NCCollectionViewCommon {
                                                                                                 session: NCNetworking.shared.sessionDownload,
                                                                                                 selector: NCGlobal.shared.selectorDownloadFile,
                                                                                                 sceneIdentifier: self.controller?.sceneIdentifier) {
-                        NCNetworking.shared.download(metadata: metadata)
+                        await NCNetworking.shared.downloadFile(metadata: metadata)
                     }
                 }
             }
@@ -414,7 +423,7 @@ class NCFiles: NCCollectionViewCommon {
 
     // MARK: - NCAccountSettingsModelDelegate
 
-    override func accountSettingsDidDismiss(tableAccount: tableAccount?, controller: NCMainTabBarController?) {
+    override func accountSettingsDidDismiss(tblAccount: tableAccount?, controller: NCMainTabBarController?) {
         let currentAccount = session.account
 
         if database.getAllTableAccount().isEmpty {
@@ -427,8 +436,10 @@ class NCFiles: NCCollectionViewCommon {
             }
 
             UIApplication.shared.firstWindow?.rootViewController = navigationController
-        } else if let account = tableAccount?.account, account != currentAccount {
-            NCAccount().changeAccount(account, userProfile: nil, controller: controller) { }
+        } else if let account = tblAccount?.account, account != currentAccount {
+            Task {
+                await NCAccount().changeAccount(account, userProfile: nil, controller: controller)
+            }
         } else if self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session) {
             self.titleCurrentFolder = getNavigationTitle()
             navigationItem.title = self.titleCurrentFolder

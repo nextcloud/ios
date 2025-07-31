@@ -1,25 +1,6 @@
-//
-//  NCEndToEndInitialize.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 03/04/17.
-//  Copyright © 2017 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2017 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 import NextcloudKit
@@ -113,6 +94,24 @@ class NCEndToEndInitialize: NSObject {
         }
     }
 
+    func detectPrivateKeyFormat(from data: Data) -> String {
+        print("🔍 Hex dump:", data.prefix(32).map { String(format: "%02X", $0) }.joined(separator: " "))
+
+        // PKCS#8 has OBJECT IDENTIFIER for RSA
+        let oidRsaPrefix: [UInt8] = [0x30, 0x0D, 0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x01]
+
+        if let range = data.range(of: Data(oidRsaPrefix)) {
+            print("🔐 Format: PKCS#8 (BEGIN PRIVATE KEY)")
+            return "PKCS#8"
+        } else if data.starts(with: [0x30, 0x82]) {
+            print("🔐 Format: PKCS#1 (BEGIN RSA PRIVATE KEY)")
+            return "PKCS#1"
+        } else {
+            print("❌ Unknown key format")
+            return "Unknown"
+        }
+    }
+
     private func getPrivateKeyCipher() {
         // Request PrivateKey chiper to Server
         NextcloudKit.shared.getE2EEPrivateKey(account: session.account) { account, privateKeyChiper, _, error in
@@ -122,8 +121,7 @@ class NCEndToEndInitialize: NSObject {
                 let alertController = UIAlertController(title: NSLocalizedString("_e2e_passphrase_request_title_", comment: ""), message: NSLocalizedString("_e2e_passphrase_request_message_", comment: ""), preferredStyle: .alert)
                 let ok = UIAlertAction(title: "OK", style: .default, handler: { _ in
                     let passphrase = passphraseTextField?.text ?? ""
-                    let publicKey = NCKeychain().getEndToEndCertificate(account: account)
-                    if let privateKeyData = (NCEndToEndEncryption.shared().decryptPrivateKey(privateKeyChiper, passphrase: passphrase, publicKey: publicKey, iterationCount: 1024)),
+                    if let privateKeyData = NCEndToEndEncryption.shared().decryptPrivateKey(privateKeyChiper, passphrase: passphrase),
                        let keyData = Data(base64Encoded: privateKeyData),
                        let privateKey = String(data: keyData, encoding: .utf8) {
                         NCKeychain().setEndToEndPrivateKey(account: account, privateKey: privateKey)
@@ -203,7 +201,7 @@ class NCEndToEndInitialize: NSObject {
 
     private func createNewE2EE(e2ePassphrase: String, error: NKError, copyPassphrase: Bool) {
         var privateKeyString: NSString?
-        guard let privateKeyCipher = NCEndToEndEncryption.shared().encryptPrivateKey(session.userId, directory: utilityFileSystem.directoryUserData, passphrase: e2ePassphrase, privateKey: &privateKeyString, iterationCount: 1024) else {
+        guard let privateKeyCipher = NCEndToEndEncryption.shared().encryptPrivateKey(session.userId, directory: utilityFileSystem.directoryUserData, passphrase: e2ePassphrase, privateKey: &privateKeyString) else {
             let error = NKError(errorCode: error.errorCode, errorDescription: "Error creating private key cipher")
             NCContentPresenter().messageNotification("E2E privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
             return

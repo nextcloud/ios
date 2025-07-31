@@ -56,7 +56,6 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
         if !metadata.ocId.hasPrefix("TEMP") {
             navigationItem.rightBarButtonItem = UIBarButtonItem(image: NCImageCache.shared.getImageButtonMore(), style: .plain, target: self, action: #selector(openMenuMore(_:)))
         }
-        navigationController?.navigationBar.prefersLargeTitles = false
         navigationItem.title = metadata.fileNameView
         navigationItem.hidesBackButton = true
 
@@ -369,7 +368,7 @@ extension NCViewerRichDocument: NCTransferDelegate {
     func transferChange(status: String, metadata: tableMetadata, error: NKError) {
         DispatchQueue.main.async {
             switch status {
-            /// FAVORITE
+            // FAVORITE
             case NCGlobal.shared.networkingStatusFavorite:
                 if self.metadata.ocId == metadata.ocId {
                     self.metadata = metadata

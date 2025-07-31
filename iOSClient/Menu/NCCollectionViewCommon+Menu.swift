@@ -42,6 +42,7 @@ extension NCCollectionViewCommon {
         var isOffline: Bool = false
         let applicationHandle = NCApplicationHandle()
         var iconHeader: UIImage!
+        let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
 
         if metadata.directory, let directory = database.getTableDirectory(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
             isOffline = directory.offline
@@ -291,7 +292,7 @@ extension NCCollectionViewCommon {
                                                                                                     session: NCNetworking.shared.sessionDownload,
                                                                                                             selector: NCGlobal.shared.selectorSaveAsScan,
                                                                                                             sceneIdentifier: sceneIdentifier) {
-                                    NCNetworking.shared.download(metadata: metadata)
+                                    await NCNetworking.shared.downloadFile(metadata: metadata)
                                 }
                             }
                         }
@@ -311,9 +312,16 @@ extension NCCollectionViewCommon {
                     order: 120,
                     sender: sender,
                     action: { _ in
-                        Task {
+                        Task { @MainActor in
                             let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
-                            self.present(UIAlertController.renameFile(metadata: metadata, capabilities: capabilities), animated: true)
+                            let fileNameNew = await UIAlertController.renameFileAsync(fileName: metadata.fileNameView, isDirectory: metadata.directory, capabilities: capabilities, account: metadata.account, presenter: self)
+
+                            if await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
+                                NCContentPresenter().showError(error: NKError(errorCode: 0, errorDescription: "_rename_already_exists_"))
+                                return
+                            }
+
+                            NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew)
                         }
                     }
                 )
@@ -353,7 +361,7 @@ extension NCCollectionViewCommon {
                                                                                                             session: NCNetworking.shared.sessionDownload,
                                                                                                             selector: NCGlobal.shared.selectorLoadFileQuickLook,
                                                                                                             sceneIdentifier: sceneIdentifier) {
-                                    NCNetworking.shared.download(metadata: metadata)
+                                    await NCNetworking.shared.downloadFile(metadata: metadata)
                                 }
                             }
                         }

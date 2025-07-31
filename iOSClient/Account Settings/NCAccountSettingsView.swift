@@ -1,25 +1,6 @@
-//
-//  NCAccountSettingsView.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 06/06/24.
-//  Copyright © 2024 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2024 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
 import NextcloudKit
@@ -49,8 +30,8 @@ struct NCAccountSettingsView: View {
                         ForEach(0..<model.tblAccounts.count, id: \.self) { index in
                             let status = model.getUserStatus()
                             let avatar = NCUtility().loadUserImage(for: model.tblAccounts[index].user, displayName: model.tblAccounts[index].displayName, urlBase: model.tblAccounts[index].urlBase)
-                            ///
-                            /// User
+                            //
+                            // User
                             VStack {
                                 Image(uiImage: avatar)
                                     .resizable()
@@ -76,8 +57,8 @@ struct NCAccountSettingsView: View {
                                     .font(.caption)
                                 Spacer()
                                     .frame(height: 20)
-                                ///
-                                /// Personal data
+                                //
+                                // Personal data
                                 if let tblAccount = model.tblAccount {
                                     if !tblAccount.email.isEmpty {
                                         HStack {
@@ -130,12 +111,12 @@ struct NCAccountSettingsView: View {
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                     .frame(height: model.getTableViewHeight())
                     .animation(.easeIn(duration: 0.3), value: animation)
-                    .onChange(of: model.indexActiveAccount) { index in
+                    .onChange(of: model.indexActiveAccount) { _, index in
                         animation.toggle()
                         model.setAccount(account: model.tblAccounts[index].account)
                     }
-                    ///
-                    /// Change alias
+                    //
+                    // Change alias
                     VStack {
                         HStack {
                             Text(NSLocalizedString("_alias_", comment: "") + ":")
@@ -144,7 +125,7 @@ struct NCAccountSettingsView: View {
                             TextField(NSLocalizedString("_alias_placeholder_", comment: ""), text: $model.alias)
                                 .font(.callout)
                                 .multilineTextAlignment(.trailing)
-                                .onChange(of: model.alias) { newValue in
+                                .onChange(of: model.alias) { _, newValue in
                                     model.setAlias(newValue)
                                 }
                         }
@@ -154,8 +135,8 @@ struct NCAccountSettingsView: View {
                             .lineLimit(2)
                             .foregroundStyle(Color(UIColor.lightGray))
                     }
-                    ///
-                    /// User Status
+                    //
+                    // User Status
                     if capabilities.userStatusEnabled {
                         Button(action: {
                             showUserStatus = true
@@ -180,10 +161,10 @@ struct NCAccountSettingsView: View {
                                 UserStatusView(showUserStatus: $showUserStatus, account: account)
                             }
                         }
-                        .onChange(of: showUserStatus) { _ in }
+                        .onChange(of: showUserStatus) { }
                     }
-                    ///
-                    /// Certificate server
+                    //
+                    // Certificate server
                     if model.isAdminGroup() {
                         Button(action: {
                             showServerCertificate.toggle()
@@ -208,8 +189,8 @@ struct NCAccountSettingsView: View {
                                 certificateDetailsView(privateKeyString: "", host: host, title: NSLocalizedString("_certificate_view_", comment: ""))
                             }
                         }
-                        ///
-                        /// Certificate push
+                        //
+                        // Certificate push
                         Button(action: {
                             showPushCertificate.toggle()
                         }, label: {
@@ -247,8 +228,8 @@ struct NCAccountSettingsView: View {
                         }
                     }
                 })
-                ///
-                /// Delete account
+                //
+                // Delete account
                 Section(content: {
                     Button(action: {
                         showDeleteAccountAlert.toggle()
@@ -295,7 +276,7 @@ struct NCAccountSettingsView: View {
         }
         .onDisappear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                model.delegate?.accountSettingsDidDismiss(tableAccount: model.tblAccount, controller: model.controller)
+                model.delegate?.accountSettingsDidDismiss(tblAccount: model.tblAccount, controller: model.controller)
             }
         }
     }
