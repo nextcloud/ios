@@ -55,11 +55,9 @@ extension NCMedia {
         }
 
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
-
         var lessDate = Date.distantFuture
         var greaterDate = Date.distantPast
-        var firstCellDate: Date?
-        var lastCellDate: Date?
+        var visibleCells: [NCMediaCell] = []
 
         await MainActor.run {
             if self.dataSource.metadatas.isEmpty {
@@ -73,7 +71,7 @@ extension NCMedia {
                 return attr1.frame.minY < attr2.frame.minY
             }
 
-            var visibleCells: [NCMediaCell] = sortedIndexPaths.compactMap { indexPath in
+            visibleCells = sortedIndexPaths.compactMap { indexPath in
                 guard let cell = collectionView.cellForItem(at: indexPath) as? NCMediaCell else {
                     return nil
                 }
@@ -97,8 +95,8 @@ extension NCMedia {
             }
 
             if !visibleCells.isEmpty, !distant {
-                firstCellDate = visibleCells.first?.datePhotosOriginal
-                lastCellDate = visibleCells.last?.datePhotosOriginal
+                let firstCellDate = visibleCells.first?.datePhotosOriginal
+                let lastCellDate = visibleCells.last?.datePhotosOriginal
 
                 if collectionView.contentOffset.y <= 0 {
                     lessDate = .distantFuture
@@ -113,8 +111,6 @@ extension NCMedia {
                 }
             }
         }
-
-        nkLog(start: "Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate)")
 
         let elementDate: String
         var lessDateAny: Any
@@ -182,16 +178,14 @@ extension NCMedia {
                 }
             }
 
-            if let firstCellDate, let lastCellDate {
-                let datePredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-                    NSPredicate(format: "datePhotosOriginal >= %@ AND datePhotosOriginal <= %@", lastCellDate as NSDate, firstCellDate as NSDate),
-                    mediaPredicate
-                ])
-                if let metadatas = await self.database.getMetadatasAsync(predicate: datePredicate) {
-                    for metadata in metadatas where await !self.ocIdVerified.contains(metadata.ocId) {
-                        if self.networking.fileExistsQueue.operations.filter({ ($0 as? NCOperationFileExists)?.ocId == metadata.ocId }).isEmpty {
-                            self.networking.fileExistsQueue.addOperation(NCOperationFileExists(metadata: metadata))
-                        }
+            let datePredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+                NSPredicate(format: "datePhotosOriginal >= %@ AND datePhotosOriginal <= %@", lessDate as NSDate, greaterDate as NSDate),
+                mediaPredicate
+            ])
+            if let metadatas = await self.database.getMetadatasAsync(predicate: datePredicate) {
+                for metadata in metadatas where await !self.ocIdVerified.contains(metadata.ocId) {
+                    if self.networking.fileExistsQueue.operations.filter({ ($0 as? NCOperationFileExists)?.ocId == metadata.ocId }).isEmpty {
+                        self.networking.fileExistsQueue.addOperation(NCOperationFileExists(metadata: metadata))
                     }
                 }
             }
