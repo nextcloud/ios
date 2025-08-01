@@ -34,7 +34,6 @@ extension NCNetworking {
         downloadAvatarQueue.cancelAll()
         unifiedSearchQueue.cancelAll()
         saveLivePhotoQueue.cancelAll()
-        fileExistsQueue.cancelAll()
     }
 
     func cancelAllTask() {

@@ -231,7 +231,6 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
             return
         }
 
-        self.ocIdDeleted.append(ocId)
         await self.database.deleteMetadataOcIdAsync(ocId)
 
         await MainActor.run {

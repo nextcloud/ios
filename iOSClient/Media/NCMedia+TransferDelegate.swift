@@ -34,13 +34,4 @@ extension NCMedia: NCTransferDelegate {
             await self.searchMediaUI()
         }
     }
-
-    func transferFileExists(ocId: String, exists: Bool) {
-        Task {
-            if !exists {
-                await self.deleteImage(with: ocId)
-            }
-            ocIdVerified.append(ocId)
-        }
-    }
 }

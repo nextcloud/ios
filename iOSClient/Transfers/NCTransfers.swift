@@ -318,8 +318,12 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
                 switch change {
                 case .initial:
                     break
-                case .update(let collection, let deletions, let insertions, let modifications):
+                case .update(let collection, _, _, let modifications):
                     for index in modifications {
+                        guard index < collection.count else {
+                            continue
+                        }
+
                         let modifiedObject = collection[index]
 
                         for case let cell as NCTransferCell in self.collectionView.visibleCells {

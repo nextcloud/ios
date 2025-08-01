@@ -811,33 +811,3 @@ class NCOperationDownloadAvatar: ConcurrentOperation, @unchecked Sendable {
         }
     }
 }
-
-class NCOperationFileExists: ConcurrentOperation, @unchecked Sendable {
-    var serverUrlFileName: String
-    var account: String
-    var ocId: String
-
-    init(metadata: tableMetadata) {
-        serverUrlFileName = metadata.serverUrlFileName
-        account = metadata.account
-        ocId = metadata.ocId
-    }
-
-    override func start() {
-        guard !isCancelled else { return self.finish() }
-
-        NCNetworking.shared.fileExists(serverUrlFileName: serverUrlFileName, account: account) { _, _, _, error in
-            if error == .success {
-                NCNetworking.shared.notifyAllDelegates { delegate in
-                    delegate.transferFileExists(ocId: self.ocId, exists: true)
-                }
-            } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
-                NCNetworking.shared.notifyAllDelegates { delegate in
-                    delegate.transferFileExists(ocId: self.ocId, exists: false)
-                }
-            }
-
-            self.finish()
-        }
-    }
-}

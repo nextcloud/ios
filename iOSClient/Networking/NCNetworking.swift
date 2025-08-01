@@ -47,7 +47,6 @@ protocol NCTransferDelegate: AnyObject {
     func transferRequestData(serverUrl: String?)
     func transferCopy(metadata: tableMetadata, error: NKError)
     func transferMove(metadata: tableMetadata, error: NKError)
-    func transferFileExists(ocId: String, exists: Bool)
 }
 
 extension NCTransferDelegate {
@@ -62,7 +61,6 @@ extension NCTransferDelegate {
     func transferRequestData(serverUrl: String?) {}
     func transferCopy(metadata: tableMetadata, error: NKError) {}
     func transferMove(metadata: tableMetadata, error: NKError) {}
-    func transferFileExists(ocId: String, exists: Bool) {}
 }
 
 class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
@@ -156,7 +154,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     let unifiedSearchQueue = Queuer(name: "unifiedSearchQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     let saveLivePhotoQueue = Queuer(name: "saveLivePhotoQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     let downloadAvatarQueue = Queuer(name: "downloadAvatarQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
-    let fileExistsQueue = Queuer(name: "fileExistsQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
 
     // MARK: - init
 
