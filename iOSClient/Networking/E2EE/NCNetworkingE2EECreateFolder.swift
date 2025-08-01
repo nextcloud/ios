@@ -131,7 +131,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         await self.database.addMetadataAsync(metadata)
         await self.database.addDirectoryAsync(e2eEncrypted: true, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
 
-        NCNetworking.shared.notifyAllDelegates { delegate in
+        await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferChange(status: self.global.networkingStatusCreateFolder,
                                     metadata: metadata.detachedCopy(),
                                     error: .success)

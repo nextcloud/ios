@@ -352,8 +352,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         let favoriteOnTopAction = UIAction(title: NSLocalizedString("_favorite_on_top_", comment: ""), state: favoriteOnTop ? .on : .off) { _ in
             NCKeychain().setFavoriteOnTop(account: self.session.account, value: !favoriteOnTop)
 
-            NCNetworking.shared.notifyAllDelegates { delegate in
-                delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, status: nil)
+            Task {
+                await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                    delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, status: nil)
+                }
             }
             self.updateRightMenu()
         }
@@ -362,8 +364,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         let directoryOnTopAction = UIAction(title: NSLocalizedString("_directory_on_top_", comment: ""), state: directoryOnTop ? .on : .off) { _ in
             NCKeychain().setDirectoryOnTop(account: self.session.account, value: !directoryOnTop)
 
-            NCNetworking.shared.notifyAllDelegates { delegate in
-                delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, status: nil)
+            Task {
+                await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                    delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, status: nil)
+                }
             }
             self.updateRightMenu()
         }
@@ -381,8 +385,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         let personalFilesOnlyAction = UIAction(title: NSLocalizedString("_personal_files_only_", comment: ""), image: utility.loadImage(named: "folder.badge.person.crop", colors: NCBrandColor.shared.iconImageMultiColors), state: personalFilesOnly ? .on : .off) { _ in
             NCKeychain().setPersonalFilesOnly(account: self.session.account, value: !personalFilesOnly)
 
-            NCNetworking.shared.notifyAllDelegates { delegate in
-                delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, status: nil)
+            Task {
+                await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                    delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, status: nil)
+                }
             }
             self.updateRightMenu()
         }
@@ -391,8 +397,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), state: showDescriptionKeychain ? .on : .off) { _ in
             NCKeychain().showDescription = !showDescriptionKeychain
 
-            NCNetworking.shared.notifyAllDelegates { delegate in
-                delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, status: nil)
+            Task {
+                await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                    delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, status: nil)
+                }
             }
             self.updateRightMenu()
         }

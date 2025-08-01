@@ -40,7 +40,7 @@ class NCNetworkingE2EEMarkFolder: NSObject {
             return errorUploadMetadata
         }
 
-        NCNetworking.shared.notifyAllDelegates { delegate in
+        await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferChange(status: NCGlobal.shared.networkingStatusCreateFolder,
                                     metadata: metadata.detachedCopy(),
                                     error: .success)

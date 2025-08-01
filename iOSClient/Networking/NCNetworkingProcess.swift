@@ -317,6 +317,7 @@ actor NCNetworkingProcess {
     }
 
     private func metadataStatusWaitWebDav(metadatas: [tableMetadata]) async -> (status: Int?, error: NKError) {
+        let networking = NCNetworking.shared
 
         /// ------------------------ CREATE FOLDER
         ///
@@ -332,7 +333,7 @@ actor NCNetworkingProcess {
                                                                   session: NCSession.shared.getSession(account: metadata.account),
                                                                   selector: metadata.sessionSelector)
             if let sceneIdentifier = metadata.sceneIdentifier {
-                NCNetworking.shared.notifyDelegates(forScene: sceneIdentifier) { delegate in
+                await networking.transferDispatcher.notifyDelegates(forScene: sceneIdentifier) { delegate in
                     delegate.transferChange(status: self.global.networkingStatusCreateFolder,
                                             metadata: metadata,
                                             error: resultsCreateFolder.error)
@@ -340,7 +341,7 @@ actor NCNetworkingProcess {
                     delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
                 }
             } else {
-                NCNetworking.shared.notifyAllDelegates { delegate in
+                await networking.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusCreateFolder,
                                             metadata: metadata,
                                             error: resultsCreateFolder.error)
@@ -382,7 +383,7 @@ actor NCNetworkingProcess {
                 }
             }
 
-            NCNetworking.shared.notifyAllDelegates { delegate in
+            await networking.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferCopy(metadata: metadata, error: resultCopy.error)
             }
 
@@ -437,7 +438,7 @@ actor NCNetworkingProcess {
                 }
             }
 
-            NCNetworking.shared.notifyAllDelegates { delegate in
+            await networking.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferMove(metadata: metadata, error: resultMove.error)
             }
 
@@ -471,7 +472,7 @@ actor NCNetworkingProcess {
                                                              status: global.metadataStatusNormal)
             }
 
-            NCNetworking.shared.notifyAllDelegates { delegate in
+            await networking.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferChange(status: self.global.networkingStatusFavorite,
                                         metadata: metadata,
                                         error: resultsFavorite.error)
@@ -500,7 +501,7 @@ actor NCNetworkingProcess {
                 await self.database.restoreMetadataFileNameAsync(ocId: metadata.ocId)
             }
 
-            NCNetworking.shared.notifyAllDelegates { delegate in
+            await networking.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferChange(status: NCGlobal.shared.networkingStatusRename,
                                         metadata: metadata,
                                         error: resultRename.error)
@@ -552,7 +553,7 @@ actor NCNetworkingProcess {
                 }
             }
 
-            NCNetworking.shared.notifyAllDelegates { delegate in
+            await networking.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferChange(status: self.global.networkingStatusDelete,
                                         metadatasError: metadatasError)
             }

@@ -145,10 +145,9 @@ class NCViewerMedia: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        networking.addDelegate(self)
-
-        // Set Last Opening Date
         Task {
+            await NCNetworking.shared.transferDispatcher.addDelegate(self)
+            // Set Last Opening Date
             await self.database.setLastOpeningDateAsync(metadata: metadata)
         }
 
@@ -219,9 +218,11 @@ class NCViewerMedia: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        self.networking.removeDelegate(self)
+        Task {
+            await NCNetworking.shared.transferDispatcher.removeDelegate(self)
+        }
 
-        if let ncplayer = ncplayer, ncplayer.isPlaying() {
+        if let ncplayer, ncplayer.isPlaying() {
             ncplayer.playerPause()
         }
     }

@@ -175,7 +175,9 @@ class NCMedia: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        networking.addDelegate(self)
+        Task {
+            await networking.transferDispatcher.addDelegate(self)
+        }
 
         NotificationCenter.default.addObserver(self, selector: #selector(enterForeground(_:)), name: UIApplication.willEnterForegroundNotification, object: nil)
 
@@ -186,13 +188,12 @@ class NCMedia: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        networking.removeDelegate(self)
-
-        NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
-
         Task {
+            await networking.transferDispatcher.removeDelegate(self)
             await networkRemoveAll()
         }
+
+        NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {

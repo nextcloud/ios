@@ -165,19 +165,23 @@ class NCDragDrop: NSObject {
     }
 
     func copyFile(metadatas: [tableMetadata], serverUrl: String) {
-        for metadata in metadatas {
-            NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
-            NCNetworking.shared.notifyAllDelegates { delete in
-                delete.transferCopy(metadata: metadata, error: .success)
+        Task {
+            for metadata in metadatas {
+                NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
+                await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delete in
+                    delete.transferCopy(metadata: metadata, error: .success)
+                }
             }
         }
     }
 
     func moveFile(metadatas: [tableMetadata], serverUrl: String) {
-        for metadata in metadatas {
-            NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
-            NCNetworking.shared.notifyAllDelegates { delete in
-                delete.transferMove(metadata: metadata, error: .success)
+        Task {
+            for metadata in metadatas {
+                NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
+                await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delete in
+                    delete.transferMove(metadata: metadata, error: .success)
+                }
             }
         }
     }

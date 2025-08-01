@@ -306,7 +306,7 @@ extension NCNetworking {
         } else {
             await deleteLocalFile(metadata: metadata)
 
-            self.notifyAllDelegates { delegate in
+            await self.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
             }
         }
@@ -363,7 +363,7 @@ extension NCNetworking {
                     ncHud.progress(num: num, total: total)
                     if tapHudStopDelete { break }
                 }
-                self.notifyAllDelegates { delegate in
+                await self.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusDelete,
                                             metadatasError: metadatasError)
                 }
@@ -393,8 +393,8 @@ extension NCNetworking {
                 serverUrls.insert(metadata.serverUrl)
             }
 
-            self.notifyAllDelegates { delegate in
-                Task {
+            Task {
+                await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
                     for ocId in ocIds {
                         await self.database.setMetadataSessionAsync(ocId: ocId,
                                                                     status: self.global.metadataStatusWaitDelete)
@@ -429,8 +429,8 @@ extension NCNetworking {
             }
 #endif
         } else {
-            self.notifyAllDelegates { delegate in
-                Task {
+            Task {
+                await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
                     let status = self.global.metadataStatusWaitRename
                     await self.database.renameMetadataAsync(fileNameNew: fileNameNew, ocId: metadata.ocId, status: status)
                     delegate.transferReloadData(serverUrl: metadata.serverUrl, status: status)
@@ -449,8 +449,8 @@ extension NCNetworking {
             return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_"))
         }
 
-        self.notifyAllDelegates { delegate in
-            Task {
+        Task {
+            await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
                 let status = self.global.metadataStatusWaitMove
                 await self.database.setMetadataCopyMoveAsync(ocId: metadata.ocId, serverUrlTo: serverUrlTo, overwrite: overwrite.description, status: status)
                 delegate.transferReloadData(serverUrl: metadata.serverUrl, status: status)
@@ -468,8 +468,8 @@ extension NCNetworking {
             return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_"))
         }
 
-        self.notifyAllDelegates { delegate in
-            Task {
+        Task {
+            await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
                 let status = self.global.metadataStatusWaitCopy
                 await self.database.setMetadataCopyMoveAsync(ocId: metadata.ocId, serverUrlTo: serverUrlTo, overwrite: overwrite.description, status: status)
                 delegate.transferReloadData(serverUrl: metadata.serverUrl, status: status)
@@ -485,8 +485,8 @@ extension NCNetworking {
             return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_favorite_file_"))
         }
 
-        self.notifyAllDelegates { delegate in
-            Task {
+        Task {
+            await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
                 let status = self.global.metadataStatusWaitFavorite
                 await self.database.setMetadataFavoriteAsync(ocId: metadata.ocId, favorite: !metadata.favorite, saveOldFavorite: metadata.favorite.description, status: status)
                 delegate.transferReloadData(serverUrl: metadata.serverUrl, status: status)
@@ -508,8 +508,10 @@ extension NCNetworking {
                 guard error == .success, let metadata = metadata else { return }
                 self.database.addMetadata(metadata)
 
-                self.notifyAllDelegates { delegate in
-                    delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
+                Task {
+                    await self.transferDispatcher.notifyAllDelegates { delegate in
+                        delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
+                    }
                 }
             }
         }

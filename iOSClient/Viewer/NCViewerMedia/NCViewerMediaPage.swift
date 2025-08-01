@@ -163,8 +163,9 @@ class NCViewerMediaPage: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        NCNetworking.shared.addDelegate(self)
-
+        Task {
+            await NCNetworking.shared.transferDispatcher.addDelegate(self)
+        }
         startTimerAutoHide()
     }
 
@@ -177,7 +178,9 @@ class NCViewerMediaPage: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        NCNetworking.shared.removeDelegate(self)
+        Task {
+            await NCNetworking.shared.transferDispatcher.removeDelegate(self)
+        }
 
         currentViewController.ncplayer?.playerStop()
         timerAutoHide?.invalidate()

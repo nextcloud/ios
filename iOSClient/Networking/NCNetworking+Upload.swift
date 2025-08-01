@@ -34,7 +34,7 @@ extension NCNetworking {
                                                                               sessionTaskIdentifier: task.taskIdentifier,
                                                                               status: self.global.metadataStatusUploading) {
 
-                    self.notifyAllDelegates { delegate in
+                    await self.transferDispatcher.notifyAllDelegates { delegate in
                         delegate.transferChange(status: self.global.networkingStatusUploading,
                                                 metadata: metadata,
                                                 error: .success)
@@ -45,13 +45,13 @@ extension NCNetworking {
         } progressHandler: { progress in
             Task {
                 await self.database.setMetadataProgress(ocId: metadata.ocId, progress: progress.fractionCompleted)
-            }
-            self.notifyAllDelegates { delegate in
-                delegate.transferProgressDidUpdate(progress: Float(progress.fractionCompleted),
-                                                   totalBytes: progress.totalUnitCount,
-                                                   totalBytesExpected: progress.completedUnitCount,
-                                                   fileName: metadata.fileName,
-                                                   serverUrl: metadata.serverUrl)
+                await self.transferDispatcher.notifyAllDelegates { delegate in
+                    delegate.transferProgressDidUpdate(progress: Float(progress.fractionCompleted),
+                                                       totalBytes: progress.totalUnitCount,
+                                                       totalBytesExpected: progress.completedUnitCount,
+                                                       fileName: metadata.fileName,
+                                                       serverUrl: metadata.serverUrl)
+                }
             }
             progressHandler(progress.completedUnitCount, progress.totalUnitCount, progress.fractionCompleted)
         }
@@ -105,7 +105,7 @@ extension NCNetworking {
         } start: { filesChunk in
             Task {
                 await self.database.addChunksAsync(account: metadata.account, ocId: metadata.ocId, chunkFolder: chunkFolder, filesChunk: filesChunk)
-                self.notifyAllDelegates { delegate in
+                await self.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusUploading,
                                             metadata: metadata.detachedCopy(),
                                             error: .success)
@@ -124,13 +124,13 @@ extension NCNetworking {
         } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
             Task {
                 await self.database.setMetadataProgress(ocId: metadata.ocId, progress: fractionCompleted)
-            }
-            self.notifyAllDelegates { delegate in
-                delegate.transferProgressDidUpdate(progress: Float(fractionCompleted),
-                                                   totalBytes: totalBytes,
-                                                   totalBytesExpected: totalBytesExpected,
-                                                   fileName: metadata.fileName,
-                                                   serverUrl: metadata.serverUrl)
+                await self.transferDispatcher.notifyAllDelegates { delegate in
+                    delegate.transferProgressDidUpdate(progress: Float(fractionCompleted),
+                                                       totalBytes: totalBytes,
+                                                       totalBytesExpected: totalBytesExpected,
+                                                       fileName: metadata.fileName,
+                                                       serverUrl: metadata.serverUrl)
+                }
             }
             progressHandler(totalBytesExpected, totalBytes, fractionCompleted)
         } assembling: {
@@ -189,7 +189,7 @@ extension NCNetworking {
                                                                               sessionTaskIdentifier: task.taskIdentifier,
                                                                               status: self.global.metadataStatusUploading) {
 
-                self.notifyAllDelegates { delegate in
+                    await self.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusUploading,
                                             metadata: metadata,
                                             error: .success)
@@ -265,7 +265,7 @@ extension NCNetworking {
                capabilities.isLivePhotoServerAvailable {
                 await self.createLivePhoto(metadata: metadata)
             } else {
-                self.notifyAllDelegates { delegate in
+                await self.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusUploaded,
                                             metadata: metadata.detachedCopy(),
                                             error: error)
@@ -311,7 +311,7 @@ extension NCNetworking {
                                                                               status: self.global.metadataStatusUploadError,
                                                                               errorCode: error.errorCode) {
 
-                    self.notifyAllDelegates { delegate in
+                    await self.transferDispatcher.notifyAllDelegates { delegate in
                         delegate.transferChange(status: self.global.networkingStatusUploaded,
                                                 metadata: metadata,
                                                 error: error)
@@ -336,7 +336,7 @@ extension NCNetworking {
     func uploadCancelFile(metadata: tableMetadata) async {
         self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase))
         await self.database.deleteMetadataOcIdAsync(metadata.ocIdTransfer)
-        self.notifyAllDelegates { delegate in
+        await self.transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferChange(status: self.global.networkingStatusUploadCancel,
                                     metadata: metadata.detachedCopy(),
                                     error: .success)
@@ -473,13 +473,13 @@ extension NCNetworking {
                         task: URLSessionTask) {
         Task {
             await self.database.setMetadataProgress(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier, progress: Double(progress))
-        }
-        notifyAllDelegates { delegate in
-            delegate.transferProgressDidUpdate(progress: progress,
-                                               totalBytes: totalBytes,
-                                               totalBytesExpected: totalBytesExpected,
-                                               fileName: fileName,
-                                               serverUrl: serverUrl)
+            await self.transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferProgressDidUpdate(progress: progress,
+                                                   totalBytes: totalBytes,
+                                                   totalBytesExpected: totalBytesExpected,
+                                                   fileName: fileName,
+                                                   serverUrl: serverUrl)
+            }
         }
     }
 }
