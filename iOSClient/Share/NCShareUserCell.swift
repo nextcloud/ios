@@ -65,7 +65,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         let permissions = NCSharePermissions()
         labelTitle.text = (tableShare.shareWithDisplayname.isEmpty ? tableShare.shareWith : tableShare.shareWithDisplayname)
 
-        let type = getType(tableShare)
+        let type = getTypeString(tableShare)
         if !type.isEmpty {
             labelTitle.text?.append(" (\(type))")
         }
@@ -109,7 +109,8 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         imageItem.contentMode = .scaleAspectFill
 
         if tableShare.shareType == NCShareCommon.shareTypeTeam {
-            imageItem.image = utility.loadImage(named: "person.3.circle.fill", colors: [NCBrandColor.shared.iconImageColor])
+            imageItem.image = utility.loadImage(named: "person.3.fill", colors: [NCBrandColor.shared.iconImageColor])
+            imageItem.contentMode = .scaleAspectFit
         } else if results.image == nil {
             imageItem.image = utility.loadUserImage(for: tableShare.shareWith, displayName: tableShare.shareWithDisplayname, urlBase: metadata.urlBase)
         } else {
@@ -122,10 +123,12 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         }
     }
 
-    private func getType(_ tableShare: tableShareV2) -> String {
+    private func getTypeString(_ tableShare: tableShareV2) -> String {
         switch tableShare.shareType {
         case NCShareCommon.shareTypeFederated:
             return NSLocalizedString("_remote_", comment: "")
+        case NCShareCommon.shareTypeFederatedGroup:
+            return NSLocalizedString("_remote_group_", comment: "")
         case NCShareCommon.shareTypeRoom:
             return NSLocalizedString("_conversation_", comment: "")
         default:
