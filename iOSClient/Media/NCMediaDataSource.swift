@@ -11,12 +11,17 @@ extension NCMedia {
         guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", session.account)) else {
             return
         }
-        let predicate = self.imageCache.getMediaPredicateAsync(filterLivePhotoFile: true, session: session, mediaPath: tblAccount.mediaPath, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos)
-        if let metadatas = await self.database.getMetadatasAsync(predicate: predicate, sortedByKeyPath: "datePhotosOriginal", ascending: false) {
-            let filteredMetadatas = metadatas.filter { !self.ocIdDeleted.contains($0.ocId) }
+        let mediaPredicate = self.imageCache.getMediaPredicateAsync(filterLivePhotoFile: true,
+                                                                    session: session,
+                                                                    mediaPath: tblAccount.mediaPath,
+                                                                    showOnlyImages: self.showOnlyImages,
+                                                                    showOnlyVideos: self.showOnlyVideos)
+        if let metadatas = await self.database.getMetadatasAsync(predicate: mediaPredicate, sortedByKeyPath: "datePhotosOriginal", ascending: false) {
             await MainActor.run {
-                self.dataSource = NCMediaDataSource(metadatas: filteredMetadatas)
+                self.dataSource = NCMediaDataSource(metadatas: metadatas)
             }
+        } else {
+            self.dataSource.clearMetadatas()
         }
         self.collectionViewReloadData()
     }
@@ -55,11 +60,9 @@ extension NCMedia {
         }
 
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
-
         var lessDate = Date.distantFuture
         var greaterDate = Date.distantPast
-        var firstCellDate: Date?
-        var lastCellDate: Date?
+        var visibleCells: [NCMediaCell] = []
 
         await MainActor.run {
             if self.dataSource.metadatas.isEmpty {
@@ -73,7 +76,7 @@ extension NCMedia {
                 return attr1.frame.minY < attr2.frame.minY
             }
 
-            var visibleCells: [NCMediaCell] = sortedIndexPaths.compactMap { indexPath in
+            visibleCells = sortedIndexPaths.compactMap { indexPath in
                 guard let cell = collectionView.cellForItem(at: indexPath) as? NCMediaCell else {
                     return nil
                 }
@@ -97,8 +100,8 @@ extension NCMedia {
             }
 
             if !visibleCells.isEmpty, !distant {
-                firstCellDate = visibleCells.first?.datePhotosOriginal
-                lastCellDate = visibleCells.last?.datePhotosOriginal
+                let firstCellDate = visibleCells.first?.datePhotosOriginal
+                let lastCellDate = visibleCells.last?.datePhotosOriginal
 
                 if collectionView.contentOffset.y <= 0 {
                     lessDate = .distantFuture
@@ -113,8 +116,6 @@ extension NCMedia {
                 }
             }
         }
-
-        nkLog(start: "Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate)")
 
         let elementDate: String
         var lessDateAny: Any
@@ -161,50 +162,31 @@ extension NCMedia {
             }
         }
 
-        let mediaPredicate = self.imageCache.getMediaPredicateAsync(
-            filterLivePhotoFile: false,
-            session: session,
-            mediaPath: tblAccount.mediaPath,
-            showOnlyImages: self.showOnlyImages,
-            showOnlyVideos: self.showOnlyVideos
-        )
-
         Task.detached(priority: .userInitiated) { [weak self] in
-            guard let self else { return }
-
-            let (_, metadatas) = await self.database.convertFilesToMetadatasAsync(files, mediaSearch: true)
-
-            let filtered = await metadatas.asyncFilter { metadata in
-                if let stored = await self.database.getMetadataFromOcIdAsync(metadata.ocId) {
-                    return stored.status == self.global.metadataStatusNormal
-                } else {
-                    return true
-                }
+            guard let self else {
+                return
             }
+            let (_, remoteMetadatas) = await self.database.convertFilesToMetadatasAsync(files, mediaSearch: true)
 
-            if let firstCellDate, let lastCellDate {
-                let datePredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-                    NSPredicate(format: "datePhotosOriginal >= %@ AND datePhotosOriginal <= %@", lastCellDate as NSDate, firstCellDate as NSDate),
-                    mediaPredicate
-                ])
-                if let metadatas = await self.database.getMetadatasAsync(predicate: datePredicate) {
-                    for metadata in metadatas where await !self.ocIdVerified.contains(metadata.ocId) {
-                        if self.networking.fileExistsQueue.operations.filter({ ($0 as? NCOperationFileExists)?.ocId == metadata.ocId }).isEmpty {
-                            self.networking.fileExistsQueue.addOperation(NCOperationFileExists(metadata: metadata))
-                        }
-                    }
-                }
+            let mediaPredicate = await self.imageCache.getMediaPredicateAsync(filterLivePhotoFile: false,
+                                                                        session: session,
+                                                                        mediaPath: tblAccount.mediaPath,
+                                                                        showOnlyImages: self.showOnlyImages,
+                                                                        showOnlyVideos: self.showOnlyVideos)
+
+            let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+                NSPredicate(format: "datePhotosOriginal >= %@ AND datePhotosOriginal <= %@ AND mediaSearch == true", greaterDate as NSDate, lessDate as NSDate),
+                mediaPredicate
+            ])
+            let localMetadatas = await self.database.getMetadatasAsync(predicate: predicate)
+
+            if await database.mergeRemoteMetadatasAsync(remoteMetadatas: remoteMetadatas, localMetadatas: localMetadatas) {
+                await loadDataSource()
             }
-
-            await self.database.addMetadatasAsync(filtered)
 
             await MainActor.run {
                 self.activityIndicator.stopAnimating()
                 self.searchMediaInProgress = false
-            }
-
-            if await self.dataSource.addMetadatas(metadatas) {
-                await self.collectionViewReloadData()
             }
         }
     }
@@ -314,47 +296,5 @@ public class NCMediaDataSource: NSObject {
         self.metadatas.removeAll { item in
             ocId.contains(item.ocId)
         }
-    }
-
-    func addMetadatas(_ metadatas: [tableMetadata]) -> Bool {
-        guard metadatas.isEmpty == false else {
-            return true
-        }
-        var newMetadatas: [Metadata] = []
-
-        for tableMetadata in metadatas {
-            let metadata = getMetadataFromTableMetadata(tableMetadata)
-
-            // Skip invalid Live Photo case
-            if metadata.isLivePhoto, metadata.isVideo {
-                continue
-            }
-
-            if let index = self.metadatas.firstIndex(where: { $0.ocId == tableMetadata.ocId }) {
-                self.metadatas[index] = metadata
-            } else {
-                newMetadatas.append(metadata)
-            }
-        }
-
-        /*
-         • For many new elements (e.g., hundreds or thousands): It might be more efficient to add all the elements and then sort, especially if the sorting cost  O(n \log n)  is manageable and the final sort is preferable to handling many individual insertions.
-         • For a few new elements (fewer than 100): Inserting each element into the correct position might be simpler and less costly, particularly if the array isn’t too large.
-         */
-
-        guard !newMetadatas.isEmpty else {
-            return false
-        }
-
-        if newMetadatas.count < 100 {
-            for metadata in newMetadatas {
-                self.insertInMetadatas(metadata: metadata)
-            }
-        } else {
-            self.metadatas.append(contentsOf: newMetadatas)
-            self.metadatas.sort { $0.datePhotosOriginal > $1.datePhotosOriginal }
-        }
-
-        return true
     }
 }
