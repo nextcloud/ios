@@ -31,8 +31,6 @@ class NCMedia: UIViewController {
     var isTop: Bool = true
     var isEditMode = false
     var fileSelect: [String] = []
-    var ocIdVerified: [String] = []
-    var ocIdDeleted: [String] = []
     var searchMediaInProgress: Bool = false
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
@@ -230,11 +228,7 @@ class NCMedia: UIViewController {
         timerSearchNewMedia?.invalidate()
         timerSearchNewMedia = nil
 
-        networking.fileExistsQueue.cancelAll()
         networking.downloadThumbnailQueue.cancelAll()
-
-        ocIdVerified.removeAll()
-        ocIdDeleted.removeAll()
 
         let tasks = await networking.getAllDataTask()
         for task in tasks.filter({ $0.taskDescription == global.taskDescriptionRetrievesProperties }) {
