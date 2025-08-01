@@ -65,7 +65,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             guard let metadata = await self.database.getMetadataFromOcIdAndocIdTransferAsync(ocIdTransfer) else {
                 return
             }
-            NCNetworking.shared.cancelTask(metadata: metadata)
+            await NCNetworking.shared.cancelTask(metadata: metadata)
         }
     }
 
@@ -323,7 +323,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
                         guard index < collection.count else {
                             continue
                         }
-
                         let modifiedObject = collection[index]
 
                         for case let cell as NCTransferCell in self.collectionView.visibleCells {

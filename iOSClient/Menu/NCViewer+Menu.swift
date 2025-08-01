@@ -132,16 +132,16 @@ extension NCViewer {
                     icon: utility.loadImage(named: "doc.viewfinder", colors: [NCBrandColor.shared.iconImageColor]),
                     sender: sender,
                     action: { _ in
-                        if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                            NCNetworking.shared.notifyAllDelegates { delegate in
-                                let metadata = metadata.detachedCopy()
-                                metadata.sessionSelector = NCGlobal.shared.selectorSaveAsScan
-                                delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
-                                                        metadata: metadata,
-                                                        error: .success)
-                            }
-                        } else {
-                            Task {
+                        Task {
+                            if self.utilityFileSystem.fileProviderStorageExists(metadata) {
+                                await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                                    let metadata = metadata.detachedCopy()
+                                    metadata.sessionSelector = NCGlobal.shared.selectorSaveAsScan
+                                    delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
+                                                            metadata: metadata,
+                                                            error: .success)
+                                }
+                            } else {
                                 if let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
                                                                                                             session: NCNetworking.shared.sessionDownload,
                                                                                                             selector: NCGlobal.shared.selectorSaveAsScan,
@@ -225,16 +225,16 @@ extension NCViewer {
                     icon: utility.loadImage(named: "pencil.tip.crop.circle", colors: [NCBrandColor.shared.iconImageColor]),
                     sender: sender,
                     action: { _ in
-                        if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                            NCNetworking.shared.notifyAllDelegates { delegate in
-                                let metadata = metadata.detachedCopy()
-                                metadata.sessionSelector = NCGlobal.shared.selectorLoadFileQuickLook
-                                delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
-                                                        metadata: metadata,
-                                                        error: .success)
-                            }
-                        } else {
-                            Task {
+                        Task {
+                            if self.utilityFileSystem.fileProviderStorageExists(metadata) {
+                                await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                                    let metadata = metadata.detachedCopy()
+                                    metadata.sessionSelector = NCGlobal.shared.selectorLoadFileQuickLook
+                                    delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
+                                                            metadata: metadata,
+                                                            error: .success)
+                                }
+                            } else {
                                 if let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
                                                                                                             session: NCNetworking.shared.sessionDownload,
                                                                                                             selector: NCGlobal.shared.selectorLoadFileQuickLook,

@@ -136,8 +136,10 @@ class NCShareNetworking: NSObject {
                     }
                 }
 
-                NCNetworking.shared.notifyAllDelegates { delegate in
-                    delegate.transferRequestData(serverUrl: self.metadata.serverUrl)
+                Task {
+                    await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                        delegate.transferRequestData(serverUrl: self.metadata.serverUrl)
+                    }
                 }
             } else {
                 NCContentPresenter().showError(error: error)
@@ -156,8 +158,10 @@ class NCShareNetworking: NSObject {
                 self.database.deleteTableShare(account: account, idShare: idShare)
                 self.delegate?.unShareCompleted()
 
-                NCNetworking.shared.notifyAllDelegates { delegate in
-                    delegate.transferRequestData(serverUrl: self.metadata.serverUrl)
+                Task {
+                    await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                        delegate.transferRequestData(serverUrl: self.metadata.serverUrl)
+                    }
                 }
             } else {
                 NCContentPresenter().showError(error: error)
@@ -185,8 +189,10 @@ class NCShareNetworking: NSObject {
                     }
                 }
 
-                NCNetworking.shared.notifyAllDelegates { delegate in
-                    delegate.transferRequestData(serverUrl: self.metadata.serverUrl)
+                Task {
+                    await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                        delegate.transferRequestData(serverUrl: self.metadata.serverUrl)
+                    }
                 }
             } else {
                 NCContentPresenter().showError(error: error)

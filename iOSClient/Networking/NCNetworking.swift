@@ -63,6 +63,67 @@ extension NCTransferDelegate {
     func transferMove(metadata: tableMetadata, error: NKError) {}
 }
 
+/// Actor-based delegate dispatcher using weak references.
+actor NCTransferDelegateDispatcher {
+    // Weak reference collection of delegates
+    private var transferDelegates = NSHashTable<AnyObject>.weakObjects()
+
+    /// Adds a delegate safely.
+    func addDelegate(_ delegate: NCTransferDelegate) {
+        transferDelegates.add(delegate)
+    }
+
+    /// Remove a delegate safely.
+    func removeDelegate(_ delegate: NCTransferDelegate) {
+        transferDelegates.remove(delegate)
+    }
+
+    /// Notifies all delegates.
+    func notifyAllDelegates(_ block: (NCTransferDelegate) -> Void) {
+        let delegatesCopy = transferDelegates.allObjects
+        for delegate in delegatesCopy {
+            if let delegate = delegate as? NCTransferDelegate {
+                block(delegate)
+            }
+        }
+    }
+
+    func notifyAllDelegatesAsync(_ block: @escaping (NCTransferDelegate) async -> Void) async {
+        let delegatesCopy = transferDelegates.allObjects
+        for delegate in delegatesCopy {
+            if let delegate = delegate as? NCTransferDelegate {
+                await block(delegate)
+            }
+        }
+    }
+
+    /// Notifies the delegate for a specific scene.
+    func notifyDelegate(forScene sceneIdentifier: String, _ block: (NCTransferDelegate) -> Void) {
+        let delegatesCopy = transferDelegates.allObjects
+        for delegate in delegatesCopy {
+            if let delegate = delegate as? NCTransferDelegate,
+               delegate.sceneIdentifier == sceneIdentifier {
+                block(delegate)
+            }
+        }
+    }
+
+    /// Notifies matching and non-matching delegates for a specific scene.
+    func notifyDelegates(forScene sceneIdentifier: String,
+                         matching: (NCTransferDelegate) -> Void,
+                         others: (NCTransferDelegate) -> Void) {
+        let delegatesCopy = transferDelegates.allObjects
+        for delegate in delegatesCopy {
+            guard let delegate = delegate as? NCTransferDelegate else { continue }
+            if delegate.sceneIdentifier == sceneIdentifier {
+                matching(delegate)
+            } else {
+                others(delegate)
+            }
+        }
+    }
+}
+
 class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     static let shared = NCNetworking()
 
@@ -104,6 +165,10 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     // Capabilities
     var capabilities = ThreadSafeDictionary<String, NKCapabilities.Capabilities>()
 
+    //
+    let transferDispatcher = NCTransferDelegateDispatcher()
+    
+    /*
     // Delegate for multi scene
     private var transferDelegates = NSHashTable<AnyObject>.weakObjects()
 
@@ -146,6 +211,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
             }
         }
     }
+    */
 
     // OPERATIONQUEUE
     let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)

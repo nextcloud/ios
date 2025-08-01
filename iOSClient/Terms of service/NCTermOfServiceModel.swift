@@ -54,7 +54,7 @@ class NCTermOfServiceModel: ObservableObject {
             let error = await  NCNetworking.shared.signTermsOfService(account: controller.account, termId: termId)
             if let error {
                 if error == .success {
-                    NCNetworking.shared.notifyAllDelegates { delegate in
+                    await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                         delegate.transferRequestData(serverUrl: nil)
                     }
                 } else {

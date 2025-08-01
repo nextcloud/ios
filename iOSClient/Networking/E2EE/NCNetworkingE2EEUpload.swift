@@ -179,7 +179,7 @@ class NCNetworkingE2EEUpload: NSObject {
             await self.database.addLocalFileAsync(metadata: metadata)
             utility.createImageFileFrom(metadata: metadata)
 
-            NCNetworking.shared.notifyAllDelegates { delegate in
+            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferChange(status: global.networkingStatusUploaded,
                                         metadata: metadata,
                                         error: .success)
