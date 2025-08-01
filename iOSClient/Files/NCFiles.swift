@@ -260,7 +260,6 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     private func networkReadFolderAsync(serverUrl: String, refresh: Bool) async -> (metadatas: [tableMetadata]?, error: NKError, reloadRequired: Bool) {
-        let isDirectoryE2EE = await NCUtilityFileSystem().isDirectoryE2EEAsync(session: self.session, serverUrl: serverUrl)
         let resultsReadFile = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrl, account: session.account) { task in
             self.dataSourceTask = task
             if self.dataSource.isEmpty() {
@@ -270,6 +269,8 @@ class NCFiles: NCCollectionViewCommon {
         guard resultsReadFile.error == .success, let metadata = resultsReadFile.metadata else {
             return (nil, resultsReadFile.error, false)
         }
+        let e2eEncrypted = metadata.e2eEncrypted
+        let ocId = metadata.ocId
 
         await self.database.updateDirectoryRichWorkspaceAsync(metadata.richWorkspace, account: resultsReadFile.account, serverUrl: serverUrl)
         let tableDirectory = await self.database.getTableDirectoryAsync(ocId: metadata.ocId)
@@ -306,16 +307,18 @@ class NCFiles: NCCollectionViewCommon {
             self.richWorkspaceText = metadataFolder.richWorkspace
         }
 
-        guard let metadataFolder,
-              isDirectoryE2EE,
+        //
+        // E2EE section
+        //
+
+        guard e2eEncrypted,
               NCKeychain().isEndToEndEnabled(account: account),
               await !NCNetworkingE2EE().isInUpload(account: account, serverUrl: serverUrl) else {
             return (metadatas, error, true)
         }
 
-        /// E2EE
         let lock = await self.database.getE2ETokenLockAsync(account: account, serverUrl: serverUrl)
-        let results = await NCNetworkingE2EE().getMetadata(fileId: metadataFolder.ocId, e2eToken: lock?.e2eToken, account: account)
+        let results = await NCNetworkingE2EE().getMetadata(fileId: ocId, e2eToken: lock?.e2eToken, account: account)
 
         if results.error == .success,
            let e2eMetadata = results.e2eMetadata,
@@ -327,7 +330,6 @@ class NCFiles: NCCollectionViewCommon {
                 if version == "v1", capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
                     nkLog(tag: self.global.logTagE2EE, message: "Conversion v1 to v2")
                     NCActivityIndicator.shared.start()
-                    let serverUrl = metadataFolder.serverUrl + "/" + metadataFolder.fileName
                     let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, updateVersionV1V2: true, account: account)
                     if error != .success {
                         NCContentPresenter().showError(error: error)
@@ -341,7 +343,6 @@ class NCFiles: NCCollectionViewCommon {
             }
         } else if results.error.errorCode == NCGlobal.shared.errorResourceNotFound {
             // no metadata found, send a new metadata
-            let serverUrl = metadataFolder.serverUrl + "/" + metadataFolder.fileName
             let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, account: account)
             if error != .success {
                 NCContentPresenter().showError(error: error)
