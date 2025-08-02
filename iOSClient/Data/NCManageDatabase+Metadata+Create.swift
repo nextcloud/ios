@@ -11,21 +11,23 @@ import Photos
 extension NCManageDatabase {
     func convertFileToMetadataAsync(_ file: NKFile, mediaSearch: Bool = false, isDirectoryE2EE: Bool? = nil) async -> tableMetadata {
         let metadata = self.createMetadata(file)
-        let e2eEncrypted: Bool
+        let e2eEncryptedDirectory: Bool
         if let value = isDirectoryE2EE {
-            e2eEncrypted = value
+            e2eEncryptedDirectory = value
         } else {
-            e2eEncrypted = await NCUtilityFileSystem().isDirectoryE2EEAsync(serverUrl: file.serverUrl,
-                                                                                       urlBase: file.urlBase,
-                                                                                       userId: file.userId,
-                                                                                       account: file.account)
+            e2eEncryptedDirectory = await NCUtilityFileSystem().isDirectoryE2EEAsync(serverUrl: file.serverUrl,
+                                                                                     urlBase: file.urlBase,
+                                                                                     userId: file.userId,
+                                                                                     account: file.account)
         }
 
         #if !EXTENSION_FILE_PROVIDER_EXTENSION
         // E2EE find the fileName for fileNameView
-        if e2eEncrypted || file.e2eEncrypted {
+        if e2eEncryptedDirectory || file.e2eEncrypted {
             if let tableE2eEncryption = await getE2eEncryptionAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", file.account, file.serverUrl, file.fileName)) {
                 metadata.fileNameView = tableE2eEncryption.fileName
+            } else if e2eEncryptedDirectory {
+                metadata.fileNameView = "NOT DECRYPTED"
             }
         }
         #endif
@@ -45,16 +47,18 @@ extension NCManageDatabase {
 
     func convertFileToMetadata(_ file: NKFile, capabilities: NKCapabilities.Capabilities?, isDirectoryE2EE: Bool? = nil, completion: @escaping (tableMetadata) -> Void) {
         let metadata = self.createMetadata(file)
-        let e2eEncrypted: Bool = isDirectoryE2EE ?? NCUtilityFileSystem().isDirectoryE2EE(serverUrl: file.serverUrl,
-                                                                                          urlBase: file.urlBase,
-                                                                                          userId: file.userId,
-                                                                                          account: file.account)
+        let e2eEncryptedDirectory: Bool = isDirectoryE2EE ?? NCUtilityFileSystem().isDirectoryE2EE(serverUrl: file.serverUrl,
+                                                                                                   urlBase: file.urlBase,
+                                                                                                   userId: file.userId,
+                                                                                                   account: file.account)
 
         #if !EXTENSION_FILE_PROVIDER_EXTENSION
         // E2EE find the fileName for fileNameView
-        if e2eEncrypted || file.e2eEncrypted {
+        if e2eEncryptedDirectory || file.e2eEncrypted {
             if let tableE2eEncryption = getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", file.account, file.serverUrl, file.fileName)) {
                 metadata.fileNameView = tableE2eEncryption.fileName
+            } else if e2eEncryptedDirectory {
+                metadata.fileNameView = "NOT DECRYPTED"
             }
         }
         #endif
