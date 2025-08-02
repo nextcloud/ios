@@ -225,7 +225,7 @@ extension tableMetadata {
     }
 
     @objc var isDirectoryE2EE: Bool {
-        return NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, account: account)
+        return NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, urlBase: urlBase, userId: userId, account: account)
     }
 
     var isLivePhoto: Bool {
@@ -1312,12 +1312,17 @@ extension NCManageDatabase {
             return nil
         }
         let fileName = url.lastPathComponent
-        let serverUrl = url.deletingLastPathComponent().absoluteString
-            .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        var baseUrl = url.deletingLastPathComponent().absoluteString
+        if baseUrl.hasSuffix("/") {
+            baseUrl.removeLast()
+        }
+        guard let decodedBaseUrl = baseUrl.removingPercentEncoding else {
+            return nil
+        }
 
         return await performRealmReadAsync { realm in
             let object = realm.objects(tableMetadata.self)
-                .filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName)
+                .filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, decodedBaseUrl, fileName)
                 .first
             return object?.detachedCopy()
         }
@@ -1328,12 +1333,17 @@ extension NCManageDatabase {
             return nil
         }
         let fileName = url.lastPathComponent
-        let serverUrl = url.deletingLastPathComponent().absoluteString
-            .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        var baseUrl = url.deletingLastPathComponent().absoluteString
+        if baseUrl.hasSuffix("/") {
+            baseUrl.removeLast()
+        }
+        guard let decodedBaseUrl = baseUrl.removingPercentEncoding else {
+            return nil
+        }
 
         return performRealmRead { realm in
             let object = realm.objects(tableMetadata.self)
-                .filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName)
+                .filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, decodedBaseUrl, fileName)
                 .first
             return object?.detachedCopy()
         }

@@ -33,7 +33,7 @@ extension AppDelegate {
         let session = NCSession.shared.getSession(controller: controller)
         let utilityFileSystem = NCUtilityFileSystem()
         let serverUrl = controller.currentServerUrl()
-        let isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, account: session.account)
+        let isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account)
         let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
         let utility = NCUtility()
         let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()

@@ -255,14 +255,20 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         } catch { print("Error: \(error)") }
     }
 
-    func isDirectoryE2EE(serverUrl: String, account: String) -> Bool {
+    func isDirectoryE2EE(serverUrl: String, urlBase: String, userId: String, account: String) -> Bool {
+        guard serverUrl != getHomeServer(urlBase: urlBase, userId: userId) else {
+            return false
+        }
         if let metadata = NCManageDatabase.shared.getMetadataDirectory(serverUrl: serverUrl, account: account) {
             return metadata.e2eEncrypted
         }
         return false
     }
 
-    func isDirectoryE2EEAsync(serverUrl: String, account: String) async -> Bool {
+    func isDirectoryE2EEAsync(serverUrl: String, urlBase: String, userId: String, account: String) async -> Bool {
+        guard serverUrl != getHomeServer(urlBase: urlBase, userId: userId) else {
+            return false
+        }
         if let metadata = await NCManageDatabase.shared.getMetadataDirectoryAsync(serverUrl: serverUrl, account: account) {
             return metadata.e2eEncrypted
         }
@@ -276,7 +282,8 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     ///   - serverUrl: The full URL of the starting directory (may include trailing slash).
     ///   - account: The account identifier used to query metadata.
     /// - Returns: The topmost `tableMetadata` that is end-to-end encrypted, or `nil` if none is found.
-    func getMetadataE2EETopAsync(serverUrl: String, account: String) async -> tableMetadata? {
+    func getMetadataE2EETopAsync(serverUrl: String, session: NCSession.Session) async -> tableMetadata? {
+        let homeServer = getHomeServer(session: session)
         guard var url = URL(string: serverUrl) else {
             return nil
         }
@@ -289,29 +296,31 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
             if urlString.hasSuffix("/") {
                 urlString.removeLast()
             }
+            // Decode the URL to match Realm keys
+            guard let decodedUrlString = urlString.removingPercentEncoding else {
+                return top
+            }
 
             // Query metadata for current directory
-            if let metadata = NCManageDatabase.shared.getMetadataDirectory(serverUrl: urlString, account: account) {
+            if let metadata = NCManageDatabase.shared.getMetadataDirectory(serverUrl: decodedUrlString, account: session.account) {
                 if metadata.e2eEncrypted {
                     top = metadata
                 } else {
-                    // Stop if the current directory is not encrypted
                     return top
                 }
             } else {
-                // No metadata found, stop the traversal
                 return top
             }
 
             // Move to the parent directory
             let parent = url.deletingLastPathComponent()
 
-            // Normalize both URLs to ensure comparison works even with or without trailing slash
+            // Check if we reached the homeServer (decoded too)
             let normalizedParent = parent.absoluteString.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-            let normalizedCurrent = url.absoluteString.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-
-            // Stop if the parent is the same as current (i.e. root reached)
-            if normalizedParent == normalizedCurrent {
+            guard let decodedParent = normalizedParent.removingPercentEncoding else {
+                break
+            }
+            if decodedParent == homeServer {
                 break
             }
 

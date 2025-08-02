@@ -11,7 +11,7 @@ import Photos
 extension NCManageDatabase {
     func convertFileToMetadataAsync(_ file: NKFile, mediaSearch: Bool = false) async -> tableMetadata {
         let metadata = self.createMetadata(file)
-        let isDirectoryE2EE = await NCUtilityFileSystem().isDirectoryE2EEAsync(serverUrl: file.serverUrl, account: file.account)
+        let isDirectoryE2EE = await NCUtilityFileSystem().isDirectoryE2EEAsync(serverUrl: file.serverUrl, urlBase: file.urlBase, userId: file.userId ,account: file.account)
 
         #if !EXTENSION_FILE_PROVIDER_EXTENSION
         // E2EE find the fileName for fileNameView
@@ -37,7 +37,7 @@ extension NCManageDatabase {
 
     func convertFileToMetadata(_ file: NKFile, capabilities: NKCapabilities.Capabilities?, completion: @escaping (tableMetadata) -> Void) {
         let metadata = self.createMetadata(file)
-        let isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: file.serverUrl, account: file.account)
+        let isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: file.serverUrl, urlBase: file.urlBase, userId: file.userId, account: file.account)
 
         #if !EXTENSION_FILE_PROVIDER_EXTENSION
         // E2EE find the fileName for fileNameView
@@ -70,7 +70,7 @@ extension NCManageDatabase {
             if let key = listServerUrl[file.serverUrl] {
                 isDirectoryE2EE = key
             } else {
-                isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: file.serverUrl, account: file.account)
+                isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: file.serverUrl, urlBase: file.urlBase, userId: file.userId, account: file.account)
                 listServerUrl[file.serverUrl] = isDirectoryE2EE
             }
 
@@ -98,7 +98,7 @@ extension NCManageDatabase {
             if let key = listServerUrl[file.serverUrl] {
                 isDirectoryE2EE = key
             } else {
-                isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: file.serverUrl, account: file.account)
+                isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: file.serverUrl, urlBase: file.urlBase, userId: file.userId, account: file.account)
                 listServerUrl[file.serverUrl] = isDirectoryE2EE
             }
 

@@ -276,18 +276,18 @@ extension NCManageDatabase {
         }
     }
 
-    func getE2EUsersAsync(account: String, ocIdServerUrl: String) async -> [tableE2eUsers] {
+    func getE2EUsersAsync(account: String, directoryTopOcId: String) async -> [tableE2eUsers] {
         await performRealmReadAsync { realm in
             realm.objects(tableE2eUsers.self)
-                .filter("account == %@ AND ocIdServerUrl == %@", account, ocIdServerUrl)
+                .filter("account == %@ AND ocIdServerUrl == %@", account, directoryTopOcId)
                 .map { tableE2eUsers(value: $0) } // detached copy
         } ?? []
     }
 
-    func getE2EUserAsync(account: String, ocIdServerUrl: String, userId: String) async -> tableE2eUsers? {
+    func getE2EUserAsync(account: String, directoryTopOcId: String, userId: String) async -> tableE2eUsers? {
         await performRealmReadAsync { realm in
             realm.objects(tableE2eUsers.self)
-                .filter("account == %@ AND ocIdServerUrl == %@ AND userId == %@", account, ocIdServerUrl, userId)
+                .filter("account == %@ AND ocIdServerUrl == %@ AND userId == %@", account, directoryTopOcId, userId)
                 .first
                 .map { tableE2eUsers(value: $0) } // detached copy
         }

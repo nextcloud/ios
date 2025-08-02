@@ -152,7 +152,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         // E2EE create preview
-        if NCUtilityFileSystem().isDirectoryE2EE(serverUrl: metadata.serverUrl, account: metadata.account),
+        if NCUtilityFileSystem().isDirectoryE2EE(serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, account: metadata.account),
            metadata.isImageOrVideo,
            !utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase) {
             utility.createImageFileFrom(metadata: metadata)
