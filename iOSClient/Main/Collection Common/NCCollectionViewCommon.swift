@@ -48,7 +48,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var backgroundImageView = UIImageView()
     var serverUrl: String = ""
     var isEditMode = false
-    var isDirectoryEncrypted = false
     var fileSelect: [String] = []
     var metadataFolder: tableMetadata?
     var richWorkspaceText: String?
@@ -791,10 +790,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - DataSource
 
     func reloadDataSource() async {
-        if isSearchingMode {
-            isDirectoryEncrypted = false
-        } else {
-            isDirectoryEncrypted = NCUtilityFileSystem().isDirectoryE2EE(session: session, serverUrl: serverUrl)
+        if !isSearchingMode {
             Task.detached {
                 if await self.isRecommendationActived() {
                     await self.networking.createRecommendations(session: self.session, serverUrl: self.serverUrl, collectionView: self.collectionView)

@@ -256,68 +256,66 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     }
 
     func isDirectoryE2EE(serverUrl: String, account: String) -> Bool {
-        return isDirectoryE2EE(session: NCSession.shared.getSession(account: account), serverUrl: serverUrl)
-    }
-
-    func isDirectoryE2EE(file: NKFile) -> Bool {
-        let session = NCSession.Session(account: file.account, urlBase: file.urlBase, user: file.user, userId: file.userId)
-        return isDirectoryE2EE(session: session, serverUrl: file.serverUrl)
-    }
-
-    func isDirectoryE2EE(session: NCSession.Session, serverUrl: String) -> Bool {
-        if serverUrl == getHomeServer(session: session) {
-            return false
-        }
-        if let directory = NCManageDatabase.shared.getTableDirectory(account: session.account, serverUrl: serverUrl) {
-            return directory.e2eEncrypted
+        if let metadata = NCManageDatabase.shared.getMetadataDirectory(serverUrl: serverUrl, account: account) {
+            return metadata.e2eEncrypted
         }
         return false
     }
 
-    func isDirectoryE2EEAsync(file: NKFile) async -> Bool {
-        let session = NCSession.Session(account: file.account, urlBase: file.urlBase, user: file.user, userId: file.userId)
-        return await isDirectoryE2EEAsync(session: session, serverUrl: file.serverUrl)
-    }
-
-    func isDirectoryE2EEAsync(session: NCSession.Session, serverUrl: String) async -> Bool {
-        if serverUrl == getHomeServer(session: session) {
-            return false
-        }
-        if let directory = await NCManageDatabase.shared.getTableDirectoryAsync(account: session.account, serverUrl: serverUrl) {
-            return directory.e2eEncrypted
+    func isDirectoryE2EEAsync(serverUrl: String, account: String) async -> Bool {
+        if let metadata = await NCManageDatabase.shared.getMetadataDirectoryAsync(serverUrl: serverUrl, account: account) {
+            return metadata.e2eEncrypted
         }
         return false
     }
 
-    func isDirectoryE2EETop(account: String, serverUrl: String) -> Bool {
-        guard let serverUrl = serverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-            return false
-        }
-
-        if let url = URL(string: serverUrl)?.deletingLastPathComponent(),
-           let serverUrl = String(url.absoluteString.dropLast()).removingPercentEncoding {
-            if let directory = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: serverUrl) {
-                return !directory.e2eEncrypted
-            }
-        }
-        return true
-    }
-
-    func getDirectoryE2EETopAsync(serverUrl: String, account: String) async -> tableDirectory? {
-        guard var serverUrl = serverUrl.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+    /// Traverses up the directory hierarchy from the given URL and returns the topmost directory
+    /// that is marked as end-to-end encrypted (`e2eEncrypted == true`).
+    /// The search stops when a non-encrypted parent is found or when the root is reached.
+    /// - Parameters:
+    ///   - serverUrl: The full URL of the starting directory (may include trailing slash).
+    ///   - account: The account identifier used to query metadata.
+    /// - Returns: The topmost `tableMetadata` that is end-to-end encrypted, or `nil` if none is found.
+    func getMetadataE2EETopAsync(serverUrl: String, account: String) async -> tableMetadata? {
+        guard var url = URL(string: serverUrl) else {
             return nil
         }
-        var top: tableDirectory?
+        var top: tableMetadata?
 
-        while let url = URL(string: serverUrl)?.deletingLastPathComponent(),
-              let serverUrlencoding = serverUrl.removingPercentEncoding,
-              let directory = await NCManageDatabase.shared.getTableDirectoryAsync(account: account, serverUrl: serverUrlencoding) {
-            if directory.e2eEncrypted {
-                top = directory
+        while true {
+            var urlString = url.absoluteString
+
+            // Remove trailing slash if present to conform to metadata key format
+            if urlString.hasSuffix("/") {
+                urlString.removeLast()
+            }
+
+            // Query metadata for current directory
+            if let metadata = NCManageDatabase.shared.getMetadataDirectory(serverUrl: urlString, account: account) {
+                if metadata.e2eEncrypted {
+                    top = metadata
+                } else {
+                    // Stop if the current directory is not encrypted
+                    return top
+                }
             } else {
+                // No metadata found, stop the traversal
                 return top
             }
-            serverUrl = String(url.absoluteString.dropLast())
+
+            // Move to the parent directory
+            let parent = url.deletingLastPathComponent()
+
+            // Normalize both URLs to ensure comparison works even with or without trailing slash
+            let normalizedParent = parent.absoluteString.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+            let normalizedCurrent = url.absoluteString.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+
+            // Stop if the parent is the same as current (i.e. root reached)
+            if normalizedParent == normalizedCurrent {
+                break
+            }
+
+            url = parent
         }
 
         return top

@@ -39,7 +39,7 @@ extension UIAlertController {
                              capabilities: NKCapabilities.Capabilities,
                              completion: ((_ error: NKError) -> Void)? = nil) -> UIAlertController {
         let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message: nil, preferredStyle: .alert)
-        let isDirectoryEncrypted = NCUtilityFileSystem().isDirectoryE2EE(session: session, serverUrl: serverUrl)
+        let isDirectoryEncrypted = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, account: session.account)
 
         let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in
             guard let fileNameFolder = alertController.textFields?.first?.text else { return }

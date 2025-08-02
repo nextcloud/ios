@@ -45,14 +45,13 @@ extension NCNetworking {
         let (metadataFolder, metadatas) = await self.database.convertFilesToMetadatasAsync(files, serverUrlMetadataFolder: serverUrl)
 
         await self.database.addMetadataAsync(metadataFolder)
-        await self.database.addDirectoryAsync(e2eEncrypted: metadataFolder.e2eEncrypted,
-                                              favorite: metadataFolder.favorite,
+        await self.database.addDirectoryAsync(serverUrl: serverUrl,
                                               ocId: metadataFolder.ocId,
                                               fileId: metadataFolder.fileId,
                                               etag: metadataFolder.etag,
                                               permissions: metadataFolder.permissions,
                                               richWorkspace: metadataFolder.richWorkspace,
-                                              serverUrl: serverUrl,
+                                              favorite: metadataFolder.favorite,
                                               account: metadataFolder.account)
         await self.database.updateMetadatasFilesAsync(metadatas, serverUrl: serverUrl, account: account)
 
@@ -74,8 +73,7 @@ extension NCNetworking {
                 return completion(account, nil, error)
             }
             Task {
-                let isDirectoryE2EE = await self.utilityFileSystem.isDirectoryE2EEAsync(file: file)
-                let metadata = await self.database.convertFileToMetadataAsync(file, isDirectoryE2EE: isDirectoryE2EE)
+                let metadata = await self.database.convertFileToMetadataAsync(file)
 
                 // Remove all known download limits from shares related to the given file.
                 // This avoids obsolete download limit objects to stay around.
@@ -224,12 +222,11 @@ extension NCNetworking {
         func writeDirectoryMetadata(_ metadata: tableMetadata) async {
             await self.database.deleteMetadataAsync(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", session.account, fileName, serverUrl))
             await self.database.addMetadataAsync(metadata)
-            await self.database.addDirectoryAsync(e2eEncrypted: metadata.e2eEncrypted,
-                                                  favorite: metadata.favorite,
+            await self.database.addDirectoryAsync(serverUrl: fileNameFolderUrl,
                                                   ocId: metadata.ocId,
                                                   fileId: metadata.fileId,
                                                   permissions: metadata.permissions,
-                                                  serverUrl: fileNameFolderUrl,
+                                                  favorite: metadata.favorite,
                                                   account: session.account)
         }
 

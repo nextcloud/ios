@@ -80,11 +80,12 @@ extension NCEndToEndMetadata {
     // --------------------------------------------------------------------------------------------
 
     func encodeMetadataV20(serverUrl: String, ocIdServerUrl: String, addUserId: String?, addCertificate: String?, removeUserId: String?, session: NCSession.Session) async -> (metadata: String?, signature: String?, counter: Int, error: NKError) {
-        guard let directoryTop = await utilityFileSystem.getDirectoryE2EETopAsync(serverUrl: serverUrl, account: session.account), let certificate = NCKeychain().getEndToEndCertificate(account: session.account) else {
+        guard let metadataDirectoryTop = await utilityFileSystem.getMetadataE2EETopAsync(serverUrl: serverUrl, account: session.account),
+              let certificate = NCKeychain().getEndToEndCertificate(account: session.account) else {
             return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_ \(NCGlobal.shared.errorUnexpectedResponseFromDB)"))
         }
 
-        let isDirectoryTop = utilityFileSystem.isDirectoryE2EETop(account: session.account, serverUrl: serverUrl)
+        let isDirectoryTop = serverUrl == metadataDirectoryTop.serverUrl
         var metadataKey: String?
         var keyChecksums: [String] = []
         var usersCodable: [E2eeV20.Users] = []
@@ -105,7 +106,7 @@ extension NCEndToEndMetadata {
             guard var key = NCEndToEndEncryption.shared().generateKey() else {
                 return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_"))
             }
-            if let tableUserId = await self.database.getE2EUserAsync(account: session.account, ocIdServerUrl: directoryTop.ocId, userId: session.userId),
+            if let tableUserId = await self.database.getE2EUserAsync(account: session.account, ocIdServerUrl: metadataDirectoryTop.ocId, userId: session.userId),
                let metadataKey = tableUserId.metadataKey {
                 key = metadataKey
             } else {
@@ -128,7 +129,7 @@ extension NCEndToEndMetadata {
             metadataKey = key.base64EncodedString()
 
         } else {
-            guard let tableUserId = await self.database.getE2EUserAsync(account: session.account, ocIdServerUrl: directoryTop.ocId, userId: session.userId), let key = tableUserId.metadataKey else {
+            guard let tableUserId = await self.database.getE2EUserAsync(account: session.account, ocIdServerUrl: metadataDirectoryTop.ocId, userId: session.userId), let key = tableUserId.metadataKey else {
                 return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_"))
             }
 
@@ -138,7 +139,7 @@ extension NCEndToEndMetadata {
         // USERS
         // CHECKSUM
         //
-        let users = await self.database.getE2EUsersAsync(account: session.account, ocIdServerUrl: directoryTop.ocId)
+        let users = await self.database.getE2EUsersAsync(account: session.account, ocIdServerUrl: metadataDirectoryTop.ocId)
         for user in users {
             if isDirectoryTop {
                 usersCodable.append(E2eeV20.Users(userId: user.userId, certificate: user.certificate, encryptedMetadataKey: user.encryptedMetadataKey))
@@ -201,10 +202,10 @@ extension NCEndToEndMetadata {
 
     func decodeMetadataV20(_ json: String, signature: String?, serverUrl: String, ocIdServerUrl: String, session: NCSession.Session) async -> NKError {
         guard let data = json.data(using: .utf8),
-              let directoryTop = await utilityFileSystem.getDirectoryE2EETopAsync(serverUrl: serverUrl, account: session.account) else {
-            return NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadata, errorDescription: "_e2e_error_")
+              let metadataDirectoryTop = await utilityFileSystem.getMetadataE2EETopAsync(serverUrl: serverUrl, account: session.account) else {
+            return NKError(errorCode: NCGlobal.shared.errorE2EEKeyDirectoryTop, errorDescription: "_e2e_error_")
         }
-        let isDirectoryTop = utilityFileSystem.isDirectoryE2EETop(account: session.account, serverUrl: serverUrl)
+        let isDirectoryTop = serverUrl == metadataDirectoryTop.serverUrl
 
         func addE2eEncryption(fileNameIdentifier: String, fileName: String, authenticationTag: String, key: String, initializationVector: String, metadataKey: String, mimetype: String) async {
             if let metadata = await self.database.getMetadataAsync(predicate: NSPredicate(format: "account == %@ AND fileName == %@", session.account, fileNameIdentifier)) {
@@ -263,7 +264,7 @@ extension NCEndToEndMetadata {
 
             // GET metadataKey, decryptedMetadataKey
             //
-            guard let tableUser = await self.database.getE2EUserAsync(account: session.account, ocIdServerUrl: directoryTop.ocId, userId: session.userId),
+            guard let tableUser = await self.database.getE2EUserAsync(account: session.account, ocIdServerUrl: metadataDirectoryTop.ocId, userId: session.userId),
                   let metadataKey = tableUser.metadataKey?.base64EncodedString(),
                   let decryptedMetadataKey = tableUser.metadataKey else {
                 return NKError(errorCode: NCGlobal.shared.errorE2EENoUserFound, errorDescription: "_e2e_error_")

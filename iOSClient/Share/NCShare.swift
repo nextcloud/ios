@@ -95,9 +95,9 @@ class NCShare: UIViewController, NCSharePagingContent {
         Task {
             self.capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
             if metadata.e2eEncrypted {
-                let direcrory = self.database.getTableDirectory(account: metadata.account, serverUrl: metadata.serverUrl)
+                let metadataDirectory = await self.database.getMetadataDirectoryAsync(serverUrl: metadata.serverUrl, account: metadata.account)
                 if capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV12 ||
-                    (capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 && direcrory?.e2eEncrypted ?? false) {
+                    (capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 && metadataDirectory?.e2eEncrypted ?? false) {
                     searchFieldTopConstraint.constant = -50
                     searchField.alpha = 0
                     btnContact.alpha = 0

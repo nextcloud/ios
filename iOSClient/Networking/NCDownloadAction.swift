@@ -202,8 +202,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             return
         }
 
-        let isDirectoryE2EE = await self.utilityFileSystem.isDirectoryE2EEAsync(file: file)
-        let metadata = await self.database.convertFileToMetadataAsync(file, isDirectoryE2EE: isDirectoryE2EE)
+        let metadata = await self.database.convertFileToMetadataAsync(file)
         await self.database.addMetadataAsync(metadata)
 
         let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,

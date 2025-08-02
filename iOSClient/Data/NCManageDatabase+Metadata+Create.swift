@@ -9,8 +9,9 @@ import NextcloudKit
 import Photos
 
 extension NCManageDatabase {
-    func convertFileToMetadataAsync(_ file: NKFile, isDirectoryE2EE: Bool, mediaSearch: Bool = false) async -> tableMetadata {
+    func convertFileToMetadataAsync(_ file: NKFile, mediaSearch: Bool = false) async -> tableMetadata {
         let metadata = self.createMetadata(file)
+        let isDirectoryE2EE = await NCUtilityFileSystem().isDirectoryE2EEAsync(serverUrl: file.serverUrl, account: file.account)
 
         #if !EXTENSION_FILE_PROVIDER_EXTENSION
         // E2EE find the fileName for fileNameView
@@ -34,8 +35,9 @@ extension NCManageDatabase {
         return metadata.detachedCopy()
     }
 
-    func convertFileToMetadata(_ file: NKFile, isDirectoryE2EE: Bool, capabilities: NKCapabilities.Capabilities?, completion: @escaping (tableMetadata) -> Void) {
+    func convertFileToMetadata(_ file: NKFile, capabilities: NKCapabilities.Capabilities?, completion: @escaping (tableMetadata) -> Void) {
         let metadata = self.createMetadata(file)
+        let isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: file.serverUrl, account: file.account)
 
         #if !EXTENSION_FILE_PROVIDER_EXTENSION
         // E2EE find the fileName for fileNameView
@@ -68,11 +70,11 @@ extension NCManageDatabase {
             if let key = listServerUrl[file.serverUrl] {
                 isDirectoryE2EE = key
             } else {
-                isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(file: file)
+                isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: file.serverUrl, account: file.account)
                 listServerUrl[file.serverUrl] = isDirectoryE2EE
             }
 
-            let metadata = await convertFileToMetadataAsync(file, isDirectoryE2EE: isDirectoryE2EE, mediaSearch: mediaSearch)
+            let metadata = await convertFileToMetadataAsync(file, mediaSearch: mediaSearch)
 
             if serverUrlMetadataFolder == metadata.serverUrlFileName || metadata.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
                 metadataFolder = metadata
@@ -96,11 +98,11 @@ extension NCManageDatabase {
             if let key = listServerUrl[file.serverUrl] {
                 isDirectoryE2EE = key
             } else {
-                isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(file: file)
+                isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: file.serverUrl, account: file.account)
                 listServerUrl[file.serverUrl] = isDirectoryE2EE
             }
 
-            convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE, capabilities: capabilities) { metadata in
+            convertFileToMetadata(file, capabilities: capabilities) { metadata in
                 if serverUrlMetadataFolder == metadata.serverUrlFileName || metadata.fileName == NextcloudKit.shared.nkCommonInstance.rootFileName {
                     metadataFolder = metadata.detachedCopy()
                 } else {
