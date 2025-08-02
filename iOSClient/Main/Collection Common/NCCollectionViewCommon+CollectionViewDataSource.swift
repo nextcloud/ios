@@ -38,7 +38,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         // get layout for view
         self.layoutForView = self.database.getLayoutForView(account: self.session.account, key: self.layoutKey, serverUrl: self.serverUrl)
         // is a Directory E2EE
-        self.isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: self.serverUrl, urlBase: self.session.urlBase, userId: self.session.userId, account: self.session.account)
+        if isSearchingMode {
+            self.isDirectoryE2EE = false
+        } else {
+            self.isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: self.serverUrl, urlBase: self.session.urlBase, userId: self.session.userId, account: self.session.account)
+        }
         return self.dataSource.numberOfItemsInSection(section)
     }
 
