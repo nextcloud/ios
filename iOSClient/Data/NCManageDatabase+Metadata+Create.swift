@@ -27,7 +27,7 @@ extension NCManageDatabase {
             if let tableE2eEncryption = await getE2eEncryptionAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", file.account, file.serverUrl, file.fileName)) {
                 metadata.fileNameView = tableE2eEncryption.fileName
             } else if e2eEncryptedDirectory {
-                metadata.fileNameView = "NOT DECRYPTED"
+                metadata.fileNameView = NSLocalizedString("_e2e_file_encrypted_", comment: "")
             }
         }
         #endif
@@ -58,7 +58,7 @@ extension NCManageDatabase {
             if let tableE2eEncryption = getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", file.account, file.serverUrl, file.fileName)) {
                 metadata.fileNameView = tableE2eEncryption.fileName
             } else if e2eEncryptedDirectory {
-                metadata.fileNameView = "NOT DECRYPTED"
+                metadata.fileNameView = NSLocalizedString("_e2e_file_encrypted_", comment: "")
             }
         }
         #endif
