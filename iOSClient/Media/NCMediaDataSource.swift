@@ -167,7 +167,6 @@ extension NCMedia {
                 return
             }
             let (_, remoteMetadatas) = await self.database.convertFilesToMetadatasAsync(files, mediaSearch: true)
-
             let mediaPredicate = await self.imageCache.getMediaPredicateAsync(filterLivePhotoFile: false,
                                                                         session: session,
                                                                         mediaPath: tblAccount.mediaPath,

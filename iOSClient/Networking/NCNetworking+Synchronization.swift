@@ -38,20 +38,19 @@ extension NCNetworking {
 
             for file in files {
                 if file.directory {
-                    let metadata = await self.database.convertFileToMetadataAsync(file, isDirectoryE2EE: false)
+                    let metadata = await self.database.convertFileToMetadataAsync(file)
                     await self.database.addMetadataAsync(metadata)
-                    await self.database.addDirectoryAsync(e2eEncrypted: metadata.e2eEncrypted,
-                                                          favorite: metadata.favorite,
+                    await self.database.addDirectoryAsync(serverUrl: metadata.serverUrlFileName,
                                                           ocId: metadata.ocId,
                                                           fileId: metadata.fileId,
                                                           etag: metadata.etag,
                                                           permissions: metadata.permissions,
                                                           richWorkspace: metadata.richWorkspace,
-                                                          serverUrl: metadata.serverUrlFileName,
+                                                          favorite: metadata.favorite,
                                                           account: metadata.account)
                 } else {
                     if await isFileDifferent(ocId: file.ocId, fileName: file.fileName, etag: file.etag, metadatasInDownload: metadatasInDownload, userId: userId, urlBase: urlBase) {
-                        let metadata = await self.database.convertFileToMetadataAsync(file, isDirectoryE2EE: false)
+                        let metadata = await self.database.convertFileToMetadataAsync(file)
                         metadata.session = self.sessionDownloadBackground
                         metadata.sessionSelector = NCGlobal.shared.selectorSynchronizationOffline
                         metadata.sessionTaskIdentifier = 0

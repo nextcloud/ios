@@ -242,8 +242,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                     useTypeIconFile = true
                 }
 
-                let isDirectoryE2EE = utilityFileSystem.isDirectoryE2EE(file: file)
-                let metadata = await NCManageDatabase.shared.convertFileToMetadataAsync(file, isDirectoryE2EE: isDirectoryE2EE)
+                let metadata = await NCManageDatabase.shared.convertFileToMetadataAsync(file)
 
                 // DATA
                 let data = FilesData(id: metadata.ocId, image: image ?? UIImage(), title: metadata.fileNameView, subTitle: subTitle, url: url, useTypeIconFile: useTypeIconFile)

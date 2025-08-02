@@ -81,7 +81,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
                 return UICollectionViewDropProposal(operation: .forbidden)
             }
         } else {
-            if serverUrl.isEmpty || NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, account: self.session.account) {
+            if serverUrl.isEmpty || NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, urlBase: self.session.urlBase, userId: self.session.userId, account: self.session.account) {
                 DragDropHover.shared.cleanPushDragDropHover()
                 return UICollectionViewDropProposal(operation: .forbidden)
             }

@@ -196,7 +196,6 @@ extension NCCollectionViewCommon {
                             let results = await NextcloudKit.shared.markE2EEFolderAsync(fileId: metadata.fileId, delete: true, account: metadata.account)
                             if results.error == .success {
                                 await self.database.deleteE2eEncryptionAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrlFileName))
-                                await self.database.setDirectoryAsync(serverUrl: metadata.serverUrlFileName, encrypted: false, account: metadata.account)
                                 await self.database.setMetadataEncryptedAsync(ocId: metadata.ocId, encrypted: false)
                                 await self.reloadDataSource()
                             } else {

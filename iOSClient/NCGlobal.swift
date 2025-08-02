@@ -194,6 +194,8 @@ final class NCGlobal: Sendable {
     let errorE2EEEncodedKey: Int                = -98014
     let errorE2EENoUserFound: Int               = -98015
     let errorE2EEUploadInProgress: Int          = -98016
+    let errorE2EEKeyDirectoryTop: Int           = -98017
+
 
     // Selector
     //

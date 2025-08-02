@@ -186,7 +186,7 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
             var metadatasUploadInConflict: [tableMetadata] = []
             let autoUploadServerUrlBase = database.getAccountAutoUploadServerUrlBase(session: self.session)
             var serverUrl = useAutoUploadFolder ? autoUploadServerUrlBase : serverUrl
-            let isInDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(session: session, serverUrl: serverUrl)
+            let isInDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account)
 
             for tlAsset in assets {
                 guard let asset = tlAsset.phAsset, let previewStore = previewStore.first(where: { $0.id == asset.localIdentifier }) else { continue }

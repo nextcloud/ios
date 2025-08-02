@@ -112,12 +112,15 @@ class NCGroupfolders: NCCollectionViewCommon {
                 return
             }
 
-            let isDirectoryE2EE = await self.utilityFileSystem.isDirectoryE2EEAsync(file: file)
-            let metadata = await self.database.convertFileToMetadataAsync(file, isDirectoryE2EE: isDirectoryE2EE)
+            let metadata = await self.database.convertFileToMetadataAsync(file)
 
             await self.database.addMetadataAsync(metadata)
-            await self.database.addDirectoryAsync(e2eEncrypted: isDirectoryE2EE, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
-
+            await self.database.addDirectoryAsync(serverUrl: serverUrlFileName,
+                                                  ocId: metadata.ocId,
+                                                  fileId: metadata.fileId,
+                                                  permissions: metadata.permissions,
+                                                  favorite: metadata.favorite,
+                                                  account: metadata.account)
             await self.reloadDataSource()
         }
     }
