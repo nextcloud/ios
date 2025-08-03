@@ -35,14 +35,12 @@ class NCNetworkingE2EE: NSObject {
 
     // MARK: -
 
-    func getMetadata(fileId: String,
-                     e2eToken: String?,
-                     account: String) async -> (account: String,
-                                                version: String?,
-                                                e2eMetadata: String?,
-                                                signature: String?,
-                                                responseData: AFDataResponse<Data>?,
-                                                error: NKError) {
+    func getMetadata(fileId: String, e2eToken: String?, account: String) async -> (account: String,
+                                                                                   version: String?,
+                                                                                   e2eMetadata: String?,
+                                                                                   signature: String?,
+                                                                                   responseData: AFDataResponse<Data>?,
+                                                                                   error: NKError) {
         let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
 
         switch capabilities.e2EEApiVersion {

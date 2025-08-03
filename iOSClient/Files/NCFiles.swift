@@ -348,7 +348,7 @@ class NCFiles: NCCollectionViewCommon {
                 NCContentPresenter().showError(error: error)
             }
         } else {
-            NCContentPresenter().showError(error: NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadata, errorDescription: "_e2e_error_"))
+            NCContentPresenter().showError(error: results.error)
         }
         return (metadatas, error, true)
     }
