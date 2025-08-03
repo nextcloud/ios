@@ -181,7 +181,7 @@ final class NCGlobal: Sendable {
     let errorE2EEVersion: Int                   = -98001
     let errorE2EEKeyChecksums: Int              = -98002
     let errorE2EEKeyEncodeMetadata: Int         = -98003
-    let errorE2EEKeyDecodeMetadata: Int         = -98004
+    let errorE2EEKeyDecodeMetadataV12: Int      = -98004
     let errorE2EEKeyVerifySignature: Int        = -98005
     let errorE2EEKeyCiphertext: Int             = -98006
     let errorE2EEKeyFiledropCiphertext: Int     = -98007
