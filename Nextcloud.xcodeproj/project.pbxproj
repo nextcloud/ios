@@ -5785,7 +5785,6 @@
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/iOSClient.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5808,7 +5807,6 @@
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/iOSClient.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -6253,8 +6251,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nicklockwood/LRUCache";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.4;
+				kind = exactVersion;
+				version = 1.0.7;
 			};
 		};
 		F76DA961277B760E0082465B /* XCRemoteSwiftPackageReference "Queuer" */ = {
