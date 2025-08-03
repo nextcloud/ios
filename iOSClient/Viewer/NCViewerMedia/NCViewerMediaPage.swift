@@ -253,12 +253,12 @@ class NCViewerMediaPage: UIViewController {
             }
 
             if metadata.isAudioOrVideo {
-                navigationController?.setNavigationBarAppearance(backgroundColor: .black, color: .white, withEffect: false)
+                navigationController?.setNavigationBarAppearance(textColor: .white)
                 currentViewController.playerToolBar?.show()
                 view.backgroundColor = .black
                 textColor = .white
             } else {
-                navigationController?.setNavigationBarAppearance(backgroundColor: .systemBackground)
+                navigationController?.setNavigationBarAppearance()
                 view.backgroundColor = .systemBackground
                 textColor = NCBrandColor.shared.textColor
             }
