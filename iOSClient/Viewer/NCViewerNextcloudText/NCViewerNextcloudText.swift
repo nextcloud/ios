@@ -47,14 +47,25 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        var items: [UIBarButtonItem] = []
+
         if !metadata.ocId.hasPrefix("TEMP") {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(image: NCImageCache.shared.getImageButtonMore(), style: .plain, target: self, action: #selector(self.openMenuMore))
+            let moreButton = UIBarButtonItem(
+                image: NCImageCache.shared.getImageButtonMore(),
+                style: .plain,
+                target: self,
+                action: #selector(self.openMenuMore)
+            )
+            items.append(moreButton)
         }
+
         navigationItem.title = metadata.fileNameView
 
         if editor == "Nextcloud Text" {
             navigationItem.hidesBackButton = true
         }
+
+        navigationItem.setRightBarButtonItems(items, animated: false)
 
         let config = WKWebViewConfiguration()
         config.websiteDataStore = WKWebsiteDataStore.nonPersistent()

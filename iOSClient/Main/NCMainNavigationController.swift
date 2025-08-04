@@ -160,14 +160,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
         setNavigationBarAppearance()
-        if viewController is NCViewerMediaPage ||
-            viewController is NCViewerNextcloudText ||
-            viewController is NCViewerRichDocument ||
-            viewController is NCViewerPDF {
-
-        } else {
-            updateRightBarButtonItems()
-        }
+        updateRightBarButtonItems()
     }
 
     // MARK: - Right
