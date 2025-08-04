@@ -142,8 +142,6 @@ class NCViewerMediaPage: UIViewController {
                 scrollView.delegate = self
             }
         }
-
-        changeScreenMode(mode: viewerMediaScreenMode)
     }
 
     deinit {
@@ -158,6 +156,9 @@ class NCViewerMediaPage: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
+        changeScreenMode(mode: viewerMediaScreenMode)
+        tabBarController?.tabBar.isHidden = true
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -166,6 +167,7 @@ class NCViewerMediaPage: UIViewController {
         Task {
             await NCNetworking.shared.transferDispatcher.addDelegate(self)
         }
+
         startTimerAutoHide()
     }
 
@@ -173,6 +175,7 @@ class NCViewerMediaPage: UIViewController {
         super.viewWillDisappear(animated)
 
         changeScreenMode(mode: .normal)
+        tabBarController?.tabBar.isHidden = false
     }
 
     override func viewDidDisappear(_ animated: Bool) {
