@@ -105,7 +105,11 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             } else {
                 if let viewController = controller.currentViewController() {
                     let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
-                    NCViewer().view(viewController: viewController, metadata: metadata, image: image)
+                    Task {
+                        if let vc = await NCViewer().getViewerController(metadata: metadata, image: image, delegate: viewController) {
+                            await viewController.navigationController?.pushViewController(vc, animated: true)
+                        }
+                    }
                 }
             }
 
@@ -181,7 +185,9 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                                                                                                                               urlBase: metadata.urlBase))
                 let fileSize = attr[FileAttributeKey.size] as? UInt64 ?? 0
                 if fileSize > 0 {
-                    NCViewer().view(viewController: viewController, metadata: metadata)
+                    if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController) {
+                        viewController.navigationController?.pushViewController(vc, animated: true)
+                    }
                     return
                 }
             } catch {
@@ -211,7 +217,9 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                                                                                        urlBase: metadata.urlBase)
 
         if metadata.isAudioOrVideo {
-            NCViewer().view(viewController: viewController, metadata: metadata)
+            if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController) {
+                viewController.navigationController?.pushViewController(vc, animated: true)
+            }
             return
         }
 
@@ -238,7 +246,9 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
 
         if download.nkError == .success {
             await self.database.addLocalFileAsync(metadata: metadata)
-            NCViewer().view(viewController: viewController, metadata: metadata)
+            if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController) {
+                viewController.navigationController?.pushViewController(vc, animated: true)
+            }
         }
     }
 

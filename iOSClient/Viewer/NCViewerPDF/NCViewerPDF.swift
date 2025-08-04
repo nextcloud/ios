@@ -31,7 +31,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
     var metadata: tableMetadata?
     var url: URL?
-    var titleView: String?
     var imageIcon: UIImage?
 
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
@@ -84,8 +83,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         }
         defaultBackgroundColor = pdfView.backgroundColor
         view.backgroundColor = defaultBackgroundColor
-
-        navigationItem.title = titleView
 
         // PDF CONTAINER
 
@@ -141,6 +138,8 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
+        tabBarController?.tabBar.isHidden = true
 
         // PDF THUMBNAIL
 
@@ -252,6 +251,12 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         showTip()
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        tabBarController?.tabBar.isHidden = false
+    }
+    
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 

@@ -113,21 +113,30 @@ class NCMedia: UIViewController {
         menuButton.showsMenuAsPrimaryAction = true
         menuButton.configuration = UIButton.Configuration.plain()
         menuButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
-        menuButton.addBlur(style: .systemUltraThinMaterial)
+        if #available(iOS 26.0, *) {
+        } else {
+            menuButton.addBlur(style: .systemUltraThinMaterial)
+        }
 
         assistantButton.backgroundColor = .clear
         assistantButton.layer.cornerRadius = 15
         assistantButton.layer.masksToBounds = true
         assistantButton.configuration = UIButton.Configuration.plain()
         assistantButton.setImage(UIImage(systemName: "sparkles"), for: .normal)
-        assistantButton.addBlur(style: .systemUltraThinMaterial)
-
+        if #available(iOS 26.0, *) {
+        } else {
+            assistantButton.addBlur(style: .systemUltraThinMaterial)
+        }
+        
         selectOrCancelButton.backgroundColor = .clear
         selectOrCancelButton.layer.cornerRadius = 15
         selectOrCancelButton.layer.masksToBounds = true
         selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
-        selectOrCancelButton.addBlur(style: .systemUltraThinMaterial)
-
+        if #available(iOS 26.0, *) {
+        } else {
+            selectOrCancelButton.addBlur(style: .systemUltraThinMaterial)
+        }
+        
         gradient.startPoint = CGPoint(x: 0, y: 0.1)
         gradient.endPoint = CGPoint(x: 0, y: 1)
         gradient.colors = [UIColor.black.withAlphaComponent(UIAccessibility.isReduceTransparencyEnabled ? 0.8 : 0.4).cgColor, UIColor.clear.cgColor]

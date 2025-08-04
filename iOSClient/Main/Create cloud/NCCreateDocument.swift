@@ -30,9 +30,12 @@ class NCCreateDocument: NSObject {
     let database = NCManageDatabase.shared
     let global = NCGlobal.shared
 
-    func createDocument(controller: NCMainTabBarController, fileNamePath: String, fileName: String, editorId: String, creatorId: String? = nil, templateId: String, account: String) {
+    @MainActor
+    func createDocument(controller: NCMainTabBarController, fileNamePath: String, fileName: String, editorId: String, creatorId: String? = nil, templateId: String, account: String) async {
         let session = NCSession.shared.getSession(account: account)
-        guard let viewController = controller.currentViewController() else { return }
+        guard let viewController = controller.currentViewController() else {
+            return
+        }
         var UUID = NSUUID().uuidString
         UUID = "TEMP" + UUID.replacingOccurrences(of: "-", with: "")
         var options = NKRequestOptions()
@@ -44,38 +47,36 @@ class NCCreateDocument: NSObject {
             } else if editorId == "text" {
                 options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
             }
-
-            NextcloudKit.shared.textCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateId, account: account, options: options) { _, url, _, error in
-                guard error == .success, let url else {
-                    return NCContentPresenter().showError(error: error)
-                }
-
-                self.database.createMetadata(fileName: fileName,
-                                             ocId: UUID,
-                                             serverUrl: serverUrl,
-                                             url: url,
-                                             session: session,
-                                             sceneIdentifier: controller.sceneIdentifier) { metadata in
-                    NCViewer().view(viewController: viewController, metadata: metadata)
-                }
+            let results = await NextcloudKit.shared.textCreateFileAsync(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateId, account: account, options: options)
+            guard results.error == .success, let url = results.url else {
+                return NCContentPresenter().showError(error: results.error)
+            }
+            let metadata = await self.database.createMetadataAsync(fileName: fileName,
+                                                                   ocId: UUID,
+                                                                   serverUrl: serverUrl,
+                                                                   url: url,
+                                                                   session: session,
+                                                                   sceneIdentifier: controller.sceneIdentifier)
+            if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController) {
+                viewController.navigationController?.pushViewController(vc, animated: true)
             }
 
         } else if editorId == "collabora" {
 
-            NextcloudKit.shared.createRichdocuments(path: fileNamePath, templateId: templateId, account: account) { returnedAccount, url, _, error in
-                guard error == .success, let url else {
-                    return NCContentPresenter().showError(error: error)
-                }
-                if account == returnedAccount {
-                    self.database.createMetadata(fileName: fileName,
-                                                 ocId: UUID,
-                                                 serverUrl: serverUrl,
-                                                 url: url,
-                                                 session: session,
-                                                 sceneIdentifier: controller.sceneIdentifier) { metadata in
-                        NCViewer().view(viewController: viewController, metadata: metadata)
-                    }
-                }
+            let results = await NextcloudKit.shared.createRichdocumentsAsync(path: fileNamePath, templateId: templateId, account: account)
+            guard results.error == .success, let url = results.url else {
+                return NCContentPresenter().showError(error: results.error)
+            }
+
+            let metadata = await self.database.createMetadataAsync(fileName: fileName,
+                                                                   ocId: UUID,
+                                                                   serverUrl: serverUrl,
+                                                                   url: url,
+                                                                   session: session,
+                                                                   sceneIdentifier: controller.sceneIdentifier)
+
+            if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController) {
+                viewController.navigationController?.pushViewController(vc, animated: true)
             }
         }
     }

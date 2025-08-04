@@ -318,38 +318,56 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         let lock = await self.database.getE2ETokenLockAsync(account: account, serverUrl: serverUrl)
+        if let e2eToken = lock?.e2eToken {
+            nkLog(tag: self.global.logTagE2EE, message: "Tocken: \(e2eToken)", minimumLogLevel: .verbose)
+        }
+
         let results = await NCNetworkingE2EE().getMetadata(fileId: ocId, e2eToken: lock?.e2eToken, account: account)
 
-        if results.error == .success,
-           let e2eMetadata = results.e2eMetadata,
-           let signature = results.signature,
-           let version = results.version {
-            let error = await NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: signature, serverUrl: serverUrl, session: self.session)
-            let capabilities = await NKCapabilities.shared.getCapabilities(for: self.session.account)
-            if error == .success {
-                if version == "v1", capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
-                    nkLog(tag: self.global.logTagE2EE, message: "Conversion v1 to v2")
-                    NCActivityIndicator.shared.start()
-                    let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, updateVersionV1V2: true, account: account)
-                    if error != .success {
-                        NCContentPresenter().showError(error: error)
-                    }
-                    NCActivityIndicator.shared.stop()
+        nkLog(tag: self.global.logTagE2EE, message: "Get metadata with error: \(results.error.errorCode)")
+        nkLog(tag: self.global.logTagE2EE, message: "Get metadata with metadata: \(results.e2eMetadata ?? ""), signature: \(results.signature ?? ""), version \(results.version ?? "")", minimumLogLevel: .verbose)
+
+        guard results.error == .success,
+              let e2eMetadata = results.e2eMetadata,
+              let signature = results.signature,
+              let version = results.version else {
+
+            // show error
+            NCContentPresenter().showError(error: results.error)
+
+            // No metadata fount, send it
+            if results.error.errorCode == NCGlobal.shared.errorResourceNotFound {
+                NCContentPresenter().showInfo(description: "Metadata not found")
+                let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, account: account)
+                if error != .success {
+                    NCContentPresenter().showError(error: error)
                 }
-            } else {
-                // Client Diagnostic
-                await self.database.addDiagnosticAsync(account: account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
-                NCContentPresenter().showError(error: error)
             }
-        } else if results.error.errorCode == NCGlobal.shared.errorResourceNotFound {
-            // no metadata found, send a new metadata
-            let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, account: account)
-            if error != .success {
-                NCContentPresenter().showError(error: error)
+            return (metadatas, error, true)
+        }
+
+        let errorDecodeMetadata = await NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: signature, serverUrl: serverUrl, session: self.session)
+        nkLog(debug: "Decode e2ee metadata with error: \(errorDecodeMetadata.errorCode)")
+
+        if errorDecodeMetadata == .success {
+            let capabilities = await NKCapabilities.shared.getCapabilities(for: self.session.account)
+            if version == "v1", capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
+                NCContentPresenter().showInfo(description: "Conversion metadata v1 to v2 required, please wait...")
+                nkLog(tag: self.global.logTagE2EE, message: "Conversion v1 to v2")
+                NCActivityIndicator.shared.start()
+
+                let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, updateVersionV1V2: true, account: account)
+                if error != .success {
+                    NCContentPresenter().showError(error: error)
+                }
+                NCActivityIndicator.shared.stop()
             }
         } else {
-            NCContentPresenter().showError(error: results.error)
+            // Client Diagnostic
+            await self.database.addDiagnosticAsync(account: account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
+            NCContentPresenter().showError(error: error)
         }
+
         return (metadatas, error, true)
     }
 

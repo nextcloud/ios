@@ -91,7 +91,7 @@ class NCViewerMedia: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         scrollView.delegate = self
         scrollView.maximumZoomScale = 4
         scrollView.minimumZoomScale = 1
@@ -132,6 +132,7 @@ class NCViewerMedia: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        tabBarController?.tabBar.isHidden = true
         viewerMediaPage?.navigationItem.title = (metadata.fileNameView as NSString).deletingPathExtension
 
         if metadata.isImage, let viewerMediaPage = self.viewerMediaPage {
@@ -212,6 +213,7 @@ class NCViewerMedia: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+
         dismissTip()
     }
 

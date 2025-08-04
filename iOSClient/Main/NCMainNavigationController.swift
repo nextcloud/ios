@@ -159,9 +159,6 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     ///   - animated: True if the transition is animated; false otherwise.
 
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        guard !(viewController is NCViewerMediaPage) else {
-            return
-        }
         setNavigationBarAppearance()
         updateRightBarButtonItems()
     }
