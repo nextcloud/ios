@@ -9,7 +9,7 @@
 import Foundation
 
 /// Metadata permissions, represented as symbols (letters)
-class NCMetadataPermissions: NSObject {
+enum NCMetadataPermissions {
     static let permissionShared = "S"
     static let permissionCanShare = "R"
     static let permissionMounted = "M"

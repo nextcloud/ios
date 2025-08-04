@@ -123,7 +123,6 @@ extension NCShareExtension: UICollectionViewDataSource {
     func setupDirectoryCell(_ cell: NCListCell, indexPath: IndexPath, with metadata: tableMetadata) {
         var isShare = false
         var isMounted = false
-        let metadataPermissions = NCMetadataPermissions()
         let session = self.extensionData.getSession()
 
         if let metadataFolder = metadataFolder {

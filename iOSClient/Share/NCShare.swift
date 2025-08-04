@@ -46,7 +46,6 @@ class NCShare: UIViewController, NCSharePagingContent {
 
     public var metadata: tableMetadata!
     public var height: CGFloat = 0
-    let shareCommon = NCShareCommon()
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     let database = NCManageDatabase.shared
@@ -54,7 +53,7 @@ class NCShare: UIViewController, NCSharePagingContent {
     var shareLinksCount = 0
 
     var canReshare: Bool {
-        return ((metadata.sharePermissionsCollaborationServices & NCSharePermissions().permissionReshareShare) != 0)
+        return ((metadata.sharePermissionsCollaborationServices & NCSharePermissions.permissionReshareShare) != 0)
     }
 
     var session: NCSession.Session {

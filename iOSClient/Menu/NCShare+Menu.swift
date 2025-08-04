@@ -96,17 +96,16 @@ extension NCShare {
 
     func toggleQuickPermissionsMenu(isDirectory: Bool, share: tableShare, sender: Any?) {
         var actions = [NCMenuAction]()
-        let permissions = NCSharePermissions()
 
         actions.append(contentsOf:
             [NCMenuAction(
                 title: NSLocalizedString("_share_read_only_", comment: ""),
                 icon: utility.loadImage(named: "eye", colors: [NCBrandColor.shared.iconImageColor]),
-                selected: share.permissions == (permissions.permissionReadShare + permissions.permissionReshareShare) || share.permissions == permissions.permissionReadShare,
+                selected: share.permissions == (NCSharePermissions.permissionReadShare + NCSharePermissions.permissionReshareShare) || share.permissions == NCSharePermissions.permissionReadShare,
                 on: false,
                 sender: sender,
                 action: { _ in
-                    let permissions = permissions.getPermissionValue(canCreate: false, canEdit: false, canDelete: false, canShare: false, isDirectory: isDirectory)
+                    let permissions = NCSharePermissions.getPermissionValue(canCreate: false, canEdit: false, canDelete: false, canShare: false, isDirectory: isDirectory)
                     self.updateSharePermissions(share: share, permissions: permissions)
                 }
             ),
@@ -117,7 +116,7 @@ extension NCShare {
                 on: false,
                 sender: sender,
                 action: { _ in
-                    let permissions = permissions.getPermissionValue(canCreate: true, canEdit: true, canDelete: true, canShare: true, isDirectory: isDirectory)
+                    let permissions = NCSharePermissions.getPermissionValue(canCreate: true, canEdit: true, canDelete: true, canShare: true, isDirectory: isDirectory)
                     self.updateSharePermissions(share: share, permissions: permissions)
                 }
             ),
@@ -147,11 +146,11 @@ extension NCShare {
             actions.insert(NCMenuAction(
                        title: NSLocalizedString("_share_file_drop_", comment: ""),
                        icon: utility.loadImage(named: "arrow.up.document", colors: [NCBrandColor.shared.iconImageColor]),
-                       selected: share.permissions == permissions.permissionCreateShare,
+                       selected: share.permissions == NCSharePermissions.permissionCreateShare,
                        on: false,
                        sender: sender,
                        action: { _ in
-                           let permissions = permissions.getPermissionValue(canRead: false, canCreate: true, canEdit: false, canDelete: false, canShare: false, isDirectory: isDirectory)
+                           let permissions = NCSharePermissions.getPermissionValue(canRead: false, canCreate: true, canEdit: false, canDelete: false, canShare: false, isDirectory: isDirectory)
                            self.updateSharePermissions(share: share, permissions: permissions)
                        }
                    ), at: 2)
@@ -161,12 +160,11 @@ extension NCShare {
     }
 
     fileprivate func hasUploadPermission(tableShare: tableShare) -> Bool {
-        let permissions = NCSharePermissions()
         let uploadPermissions = [
-            permissions.permissionMaxFileShare,
-            permissions.permissionMaxFolderShare,
-            permissions.permissionDefaultFileRemoteShareNoSupportShareOption,
-            permissions.permissionDefaultFolderRemoteShareNoSupportShareOption]
+            NCSharePermissions.permissionMaxFileShare,
+            NCSharePermissions.permissionMaxFolderShare,
+            NCSharePermissions.permissionDefaultFileRemoteShareNoSupportShareOption,
+            NCSharePermissions.permissionDefaultFolderRemoteShareNoSupportShareOption]
         return uploadPermissions.contains(tableShare.permissions)
     }
 

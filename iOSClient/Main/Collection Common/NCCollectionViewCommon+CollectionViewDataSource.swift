@@ -141,7 +141,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         var cell: NCCellProtocol & UICollectionViewCell
-        let metadataPermissions = NCMetadataPermissions()
         var isShare = false
         var isMounted = false
         var a11yValues: [String] = []
