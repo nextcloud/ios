@@ -33,6 +33,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     var metadata: tableMetadata = tableMetadata()
     var imageIcon: UIImage?
     let utility = NCUtility()
+    var items: [UIBarButtonItem] = []
 
     var sceneIdentifier: String {
         (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
@@ -47,8 +48,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        var items: [UIBarButtonItem] = []
-
         if !metadata.ocId.hasPrefix("TEMP") {
             let moreButton = UIBarButtonItem(
                 image: NCImageCache.shared.getImageButtonMore(),
@@ -58,14 +57,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
             )
             items.append(moreButton)
         }
-
-        navigationItem.title = metadata.fileNameView
-
-        if editor == "Nextcloud Text" {
-            navigationItem.hidesBackButton = true
-        }
-
-        navigationItem.setRightBarButtonItems(items, animated: false)
 
         let config = WKWebViewConfiguration()
         config.websiteDataStore = WKWebsiteDataStore.nonPersistent()
@@ -111,6 +102,14 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
+        navigationItem.title = metadata.fileNameView
+
+        if editor == "Nextcloud Text" {
+            navigationItem.hidesBackButton = true
+        }
+        navigationItem.setRightBarButtonItems(items, animated: false)
+        navigationItem.setLeftBarButtonItems(nil, animated: false)
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)

@@ -160,7 +160,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
         setNavigationBarAppearance()
-        updateRightBarButtonItems()
+        // updateRightBarButtonItems()
     }
 
     // MARK: - Right
