@@ -24,16 +24,14 @@ extension FileProviderExtension {
                 let resultsReadFile = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, account: account)
 
                 if resultsReadFile.error == .success, let file = resultsReadFile.files?.first {
-                    let isDirectoryEncrypted = await self.utilityFileSystem.isDirectoryE2EEAsync(file: file)
-                    let metadata = await self.database.convertFileToMetadataAsync(file, isDirectoryE2EE: isDirectoryEncrypted)
+                    let metadata = await self.database.convertFileToMetadataAsync(file)
 
-                    await self.database.addDirectoryAsync(e2eEncrypted: false,
-                                                          favorite: false,
+                    await self.database.addDirectoryAsync(serverUrl: serverUrlFileName,
                                                           ocId: file.ocId,
                                                           fileId: metadata.fileId,
                                                           etag: metadata.etag,
                                                           permissions: metadata.permissions,
-                                                          serverUrl: serverUrlFileName,
+                                                          favorite: false,
                                                           account: metadata.account)
 
                     await self.database.addMetadataAsync(metadata)

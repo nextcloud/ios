@@ -63,7 +63,7 @@ extension NCNetworking {
                                                                               sessionTaskIdentifier: task.taskIdentifier,
                                                                               status: self.global.metadataStatusDownloading) {
 
-                    self.notifyAllDelegates { delegate in
+                    await self.transferDispatcher.notifyAllDelegates { delegate in
                         delegate.transferChange(status: self.global.networkingStatusDownloading,
                                                 metadata: metadata,
                                                 error: .success)
@@ -75,13 +75,13 @@ extension NCNetworking {
         } progressHandler: { progress in
             Task {
                 await self.database.setMetadataProgress(ocId: metadata.ocId, progress: progress.fractionCompleted)
-            }
-            self.notifyAllDelegates { delegate in
-                delegate.transferProgressDidUpdate(progress: Float(progress.fractionCompleted),
-                                                   totalBytes: progress.totalUnitCount,
-                                                   totalBytesExpected: progress.completedUnitCount,
-                                                   fileName: metadata.fileName,
-                                                   serverUrl: metadata.serverUrl)
+                await self.transferDispatcher.notifyAllDelegates { delegate in
+                    delegate.transferProgressDidUpdate(progress: Float(progress.fractionCompleted),
+                                                       totalBytes: progress.totalUnitCount,
+                                                       totalBytesExpected: progress.completedUnitCount,
+                                                       fileName: metadata.fileName,
+                                                       serverUrl: metadata.serverUrl)
+                }
             }
             progressHandler(progress)
         }
@@ -131,7 +131,7 @@ extension NCNetworking {
                                                                      sessionTaskIdentifier: task.taskIdentifier,
                                                                      status: self.global.metadataStatusDownloading) {
 
-                self.notifyAllDelegates { delegate in
+                await self.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusDownloading,
                                             metadata: metadata,
                                             error: .success)
@@ -194,7 +194,7 @@ extension NCNetworking {
                                                                                      sessionError: "",
                                                                                      status: self.global.metadataStatusNormal,
                                                                                      etag: etag) {
-                    self.notifyAllDelegates { delegate in
+                    await self.transferDispatcher.notifyAllDelegates { delegate in
                         delegate.transferChange(status: self.global.networkingStatusDownloaded,
                                                 metadata: updatedMetadata,
                                                 error: error)
@@ -215,7 +215,7 @@ extension NCNetworking {
                                                                                   sessionError: "",
                                                                                   selector: "",
                                                                                   status: self.global.metadataStatusNormal) {
-                            self.notifyAllDelegates { delegate in
+                        await self.transferDispatcher.notifyAllDelegates { delegate in
                                 delegate.transferChange(status: self.global.networkingStatusDownloadCancel,
                                                         metadata: metadata,
                                                         error: .success)
@@ -229,7 +229,7 @@ extension NCNetworking {
                                                                                   selector: "",
                                                                                   status: self.global.metadataStatusNormal) {
 
-                        self.notifyAllDelegates { delegate in
+                        await self.transferDispatcher.notifyAllDelegates { delegate in
                             delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
                                                     metadata: metadata,
                                                     error: error)
@@ -268,13 +268,13 @@ extension NCNetworking {
 
         Task {
             await self.database.setMetadataProgress(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier, progress: Double(progress))
-        }
-        notifyAllDelegates { delegate in
-            delegate.transferProgressDidUpdate(progress: progress,
-                                               totalBytes: totalBytes,
-                                               totalBytesExpected: totalBytesExpected,
-                                               fileName: fileName,
-                                               serverUrl: serverUrl)
+            await self.transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferProgressDidUpdate(progress: progress,
+                                                   totalBytes: totalBytes,
+                                                   totalBytesExpected: totalBytesExpected,
+                                                   fileName: fileName,
+                                                   serverUrl: serverUrl)
+            }
         }
     }
 }

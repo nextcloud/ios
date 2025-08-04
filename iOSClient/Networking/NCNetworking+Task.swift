@@ -66,136 +66,69 @@ extension NCNetworking {
 
     // MARK: -
 
-    func cancelTask(metadata: tableMetadata) {
-        let serverUrl = metadata.serverUrl
+    func cancelTask(metadata: tableMetadata) async {
+        var serverUrls = Set<String>()
+        let networking = NCNetworking.shared
 
-        /// FAVORITE
-        ///
-        if metadata.status == global.metadataStatusWaitFavorite {
-            Task {
-                let favorite = (metadata.storeFlag as? NSString)?.boolValue ?? false
-                await database.setMetadataFavoriteAsync(ocId: metadata.ocId, favorite: favorite, saveOldFavorite: nil, status: global.metadataStatusNormal)
-
-                NCNetworking.shared.notifyAllDelegates { delegate in
-                    delegate.transferReloadData(serverUrl: serverUrl, status: nil)
+        switch metadata.status {
+        // FAVORITE
+        case global.metadataStatusWaitFavorite:
+            let favorite = (metadata.storeFlag as? NSString)?.boolValue ?? false
+            await database.setMetadataFavoriteAsync(ocId: metadata.ocId, favorite: favorite, saveOldFavorite: nil, status: global.metadataStatusNormal)
+            serverUrls.insert(metadata.serverUrl)
+        // COPY MOVE
+        case global.metadataStatusWaitCopy, global.metadataStatusWaitMove:
+            await database.setMetadataCopyMoveAsync(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
+            serverUrls.insert(metadata.serverUrl)
+        // DELETE
+        case global.metadataStatusWaitDelete:
+            await database.setMetadataSessionAsync(ocId: metadata.ocId, status: global.metadataStatusNormal)
+            serverUrls.insert(metadata.serverUrl)
+        // RENAME
+        case global.metadataStatusWaitRename:
+            await database.restoreMetadataFileNameAsync(ocId: metadata.ocId)
+            serverUrls.insert(metadata.serverUrl)
+        // CREATE FOLDER
+        case global.metadataStatusWaitCreateFolder:
+            if let metadatas = await database.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status != 0", metadata.account, metadata.serverUrl)) {
+                for metadata in metadatas {
+                    await database.deleteMetadataOcIdAsync(metadata.ocId)
+                    utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
+                    serverUrls.insert(metadata.serverUrl)
                 }
             }
-        }
-
-        /// COPY
-        ///
-        else if metadata.status == global.metadataStatusWaitCopy {
-            Task {
-                await database.setMetadataCopyMoveAsync(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
-
-                NCNetworking.shared.notifyAllDelegates { delegate in
-                    delegate.transferReloadData(serverUrl: serverUrl, status: nil)
-                }
-            }
-        }
-
-        /// MOVE
-        ///
-        else if metadata.status == global.metadataStatusWaitMove {
-            Task {
-                await database.setMetadataCopyMoveAsync(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
-
-                NCNetworking.shared.notifyAllDelegates { delegate in
-                    delegate.transferReloadData(serverUrl: serverUrl, status: nil)
-                }
-            }
-        }
-
-        /// DELETE
-        ///
-        else if metadata.status == global.metadataStatusWaitDelete {
-            Task {
-                await database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                       status: global.metadataStatusNormal)
-
-                NCNetworking.shared.notifyAllDelegates { delegate in
-                    delegate.transferReloadData(serverUrl: serverUrl, status: nil)
-                }
-            }
-        }
-
-        /// RENAME
-        ///
-        else if metadata.status == global.metadataStatusWaitRename {
-            Task {
-                await database.restoreMetadataFileNameAsync(ocId: metadata.ocId)
-
-                NCNetworking.shared.notifyAllDelegates { delegate in
-                    delegate.transferReloadData(serverUrl: serverUrl, status: nil)
-                }
-                return
-            }
-        }
-
-        /// CREATE FOLDER
-        ///
-        else if metadata.status == global.metadataStatusWaitCreateFolder {
-            Task {
-                var serverUrls = Set<String>()
-
-                if let metadatas = await database.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status != 0", metadata.account, metadata.serverUrl)) {
-                    for metadata in metadatas {
-                        await database.deleteMetadataOcIdAsync(metadata.ocId)
-                        utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
-                        serverUrls.insert(metadata.serverUrl)
-                    }
-
-                    NCNetworking.shared.notifyAllDelegates { delegate in
-                        serverUrls.forEach { serverUrl in
-                            delegate.transferReloadData(serverUrl: serverUrl, status: nil)
-                        }
-                    }
-                }
-            }
-        }
-
-        /// NO SESSION
-        ///
-        else if metadata.session.isEmpty {
-            Task {
-                await self.database.deleteMetadataOcIdAsync(metadata.ocId)
-                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
-
-                NCNetworking.shared.notifyAllDelegates { delegate in
-                    delegate.transferReloadData(serverUrl: serverUrl, status: nil)
-                }
-            }
-        }
-
-        /// DOWNLOAD
-        ///
-        else if metadata.session.contains("download") {
+        default:
+            // DOWNLOAD
+            if metadata.session.contains("download") {
                 if metadata.session == sessionDownload {
                     cancelDownloadTasks(metadata: metadata)
                 } else if metadata.session == sessionDownloadBackground {
                     cancelDownloadBackgroundTask(metadata: metadata)
                 }
-
-                self.notifyAllDelegates { delegate in
+                await networking.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusDownloadCancel,
                                             metadata: metadata.detachedCopy(),
                                             error: .success)
+                }
+            // UPLOAD
+            } else if metadata.session.contains("upload") {
+                if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUpload {
+                    cancelUploadTasks(metadata: metadata)
+                } else {
+                    cancelUploadBackgroundTask(metadata: metadata)
+                }
+                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
+                await networking.transferDispatcher.notifyAllDelegates { delegate in
+                    delegate.transferChange(status: self.global.networkingStatusUploadCancel,
+                                            metadata: metadata.detachedCopy(),
+                                            error: .success)
+                }
             }
         }
 
-        /// UPLOAD
-        ///
-        else if metadata.session.contains("upload") {
-            if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUpload {
-                cancelUploadTasks(metadata: metadata)
-            } else {
-                cancelUploadBackgroundTask(metadata: metadata)
-            }
-            utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
-            self.notifyAllDelegates { delegate in
-                delegate.transferChange(status: self.global.networkingStatusUploadCancel,
-                                        metadata: metadata.detachedCopy(),
-                                        error: .success)
+        await networking.transferDispatcher.notifyAllDelegates { delegate in
+            serverUrls.forEach { serverUrl in
+                delegate.transferReloadData(serverUrl: serverUrl, status: nil)
             }
         }
     }
@@ -204,11 +137,7 @@ extension NCNetworking {
         Task {
             if let metadatas = await database.getMetadatasAsync(predicate: NSPredicate(format: "status IN %@", global.metadataStatusWaitWebDav)) {
                 for metadata in metadatas {
-                    cancelTask(metadata: metadata)
-                }
-
-                NCNetworking.shared.notifyAllDelegates { delegate in
-                    delegate.transferReloadData(serverUrl: nil, status: global.metadataStatusNormal)
+                    await cancelTask(metadata: metadata)
                 }
             }
         }

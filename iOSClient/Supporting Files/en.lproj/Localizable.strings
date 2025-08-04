@@ -457,6 +457,7 @@
 "_e2e_settings_remove_message_"     = "Confirm removal of encryption along with the passphrase.";
 "_e2e_set_folder_encrypted_"        = "Encrypt";
 "_e2e_remove_folder_encrypted_"     = "Decrypt";
+"_e2e_file_encrypted_"              = "File encrypted";
 "_e2e_goto_settings_for_enable_"    = "This is an encrypted directory, go to \"Settings\" and enable end-to-end encryption";
 "_e2e_error_"                       = "An internal end-to-end encryption error occurred.";
 "_e2e_in_upload_"                   = "Upload in progress, please wait for all files to be transferred.";

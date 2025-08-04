@@ -29,8 +29,7 @@ extension NCNetworking {
                 let results = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, account: session.account)
 
                 if results.error == .success, let file = results.files?.first {
-                    let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
-                    let metadata = await self.database.convertFileToMetadataAsync(file, isDirectoryE2EE: isDirectoryE2EE)
+                    let metadata = await self.database.convertFileToMetadataAsync(file)
                     self.database.addMetadataIfNeededAsync(metadata, sync: false)
 
                     if metadata.isLivePhoto, metadata.isVideo {

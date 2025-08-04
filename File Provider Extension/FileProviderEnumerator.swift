@@ -208,14 +208,13 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             // FOLDER
             if serverUrlMetadataFolder != nil {
                 await self.database.addMetadataAsync(metadataFolder)
-                await self.database.addDirectoryAsync(e2eEncrypted: metadataFolder.e2eEncrypted,
-                                                      favorite: metadataFolder.favorite,
+                await self.database.addDirectoryAsync(serverUrl: serverUrl,
                                                       ocId: metadataFolder.ocId,
                                                       fileId: metadataFolder.fileId,
                                                       etag: metadataFolder.etag,
                                                       permissions: metadataFolder.permissions,
                                                       richWorkspace: metadataFolder.richWorkspace,
-                                                      serverUrl: serverUrl,
+                                                      favorite: metadataFolder.favorite,
                                                       account: metadataFolder.account)
             }
 
@@ -232,14 +231,13 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             for metadata in metadatas {
                 if metadata.isDirectory {
                     let serverUrl = serverUrl + "/" + metadata.fileName
-                    await self.database.addDirectoryAsync(e2eEncrypted: metadata.e2eEncrypted,
-                                                          favorite: metadata.favorite,
+                    await self.database.addDirectoryAsync(serverUrl: serverUrl,
                                                           ocId: metadata.ocId,
                                                           fileId: metadata.fileId,
                                                           etag: metadata.etag,
                                                           permissions: metadata.permissions,
                                                           richWorkspace: metadata.richWorkspace,
-                                                          serverUrl: serverUrl,
+                                                          favorite: metadata.favorite,
                                                           account: metadata.account)
                 }
             }

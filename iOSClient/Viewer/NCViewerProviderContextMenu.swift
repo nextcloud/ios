@@ -139,7 +139,9 @@ class NCViewerProviderContextMenu: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        self.networking.addDelegate(self)
+        Task {
+            await NCNetworking.shared.transferDispatcher.addDelegate(self)
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -151,7 +153,9 @@ class NCViewerProviderContextMenu: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        self.networking.removeDelegate(self)
+        Task {
+            await NCNetworking.shared.transferDispatcher.removeDelegate(self)
+        }
     }
 
     // MARK: - Viewer

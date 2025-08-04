@@ -25,7 +25,9 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
     func setup(sceneIdentifier: String) {
         self.sceneIdentifier = sceneIdentifier
 
-        NCNetworking.shared.addDelegate(self)
+        Task {
+            await NCNetworking.shared.transferDispatcher.addDelegate(self)
+        }
     }
 
     // MARK: - Download
@@ -200,8 +202,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             return
         }
 
-        let isDirectoryE2EE = await self.utilityFileSystem.isDirectoryE2EEAsync(file: file)
-        let metadata = await self.database.convertFileToMetadataAsync(file, isDirectoryE2EE: isDirectoryE2EE)
+        let metadata = await self.database.convertFileToMetadataAsync(file)
         await self.database.addMetadataAsync(metadata)
 
         let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
@@ -445,8 +446,10 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                                                                                         urlBase: tblAccount.urlBase)
                     self.utilityFileSystem.moveFile(atPath: fileNameLocalPath, toPath: toPath)
                     self.database.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
-                    NCNetworking.shared.notifyAllDelegates { delegate in
-                        delegate.transferRequestData(serverUrl: serverUrl)
+                    Task {
+                        await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                            delegate.transferRequestData(serverUrl: serverUrl)
+                        }
                     }
                 } else {
                     NCContentPresenter().showError(error: error)

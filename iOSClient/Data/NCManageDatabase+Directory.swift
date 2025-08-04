@@ -10,7 +10,6 @@ import NextcloudKit
 class tableDirectory: Object {
     @objc dynamic var account = ""
     @objc dynamic var colorFolder: String?
-    @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileId = ""
@@ -30,13 +29,19 @@ extension NCManageDatabase {
 
     // MARK: - Realm write
 
-    func addDirectoryAsync(e2eEncrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String? = nil, permissions: String? = nil, richWorkspace: String? = nil, serverUrl: String, account: String) async {
+    func addDirectoryAsync(serverUrl: String,
+                           ocId: String,
+                           fileId: String,
+                           etag: String? = nil,
+                           permissions: String? = nil,
+                           richWorkspace: String? = nil,
+                           favorite: Bool,
+                           account: String) async {
         await performRealmWriteAsync { realm in
             if let existing = realm.objects(tableDirectory.self)
                 .filter("account == %@ AND ocId == %@", account, ocId)
                 .first {
 
-                existing.e2eEncrypted = e2eEncrypted
                 existing.favorite = favorite
                 if let etag { existing.etag = etag }
                 if let permissions { existing.permissions = permissions }
@@ -44,7 +49,6 @@ extension NCManageDatabase {
 
             } else {
                 let directory = tableDirectory()
-                directory.e2eEncrypted = e2eEncrypted
                 directory.favorite = favorite
                 directory.ocId = ocId
                 directory.fileId = fileId
@@ -59,13 +63,19 @@ extension NCManageDatabase {
         }
     }
 
-    func addDirectory(e2eEncrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String? = nil, permissions: String? = nil, richWorkspace: String? = nil, serverUrl: String, account: String) {
+    func addDirectory(serverUrl: String,
+                      ocId: String,
+                      fileId: String,
+                      etag: String? = nil,
+                      permissions: String? = nil,
+                      richWorkspace: String? = nil,
+                      favorite: Bool,
+                      account: String) {
         performRealmWrite { realm in
             if let existing = realm.objects(tableDirectory.self)
                 .filter("account == %@ AND ocId == %@", account, ocId)
                 .first {
 
-                existing.e2eEncrypted = e2eEncrypted
                 existing.favorite = favorite
                 if let etag { existing.etag = etag }
                 if let permissions { existing.permissions = permissions }
@@ -73,7 +83,6 @@ extension NCManageDatabase {
 
             } else {
                 let directory = tableDirectory()
-                directory.e2eEncrypted = e2eEncrypted
                 directory.favorite = favorite
                 directory.ocId = ocId
                 directory.fileId = fileId
@@ -98,7 +107,6 @@ extension NCManageDatabase {
                     .first
 
                 if let existing {
-                    existing.e2eEncrypted = metadata.e2eEncrypted
                     existing.favorite = metadata.favorite
                     existing.etag = metadata.etag
                     existing.permissions = metadata.permissions
@@ -106,7 +114,6 @@ extension NCManageDatabase {
                 } else {
                     let directory = tableDirectory()
                     directory.account = metadata.account
-                    directory.e2eEncrypted = metadata.e2eEncrypted
                     directory.etag = metadata.etag
                     directory.favorite = metadata.favorite
                     directory.fileId = metadata.fileId
@@ -151,13 +158,17 @@ extension NCManageDatabase {
         }
     }
 
-    func setDirectoryAsync(serverUrl: String, serverUrlTo: String? = nil, etag: String? = nil, ocId: String? = nil, fileId: String? = nil, encrypted: Bool, richWorkspace: String? = nil, account: String) async {
+    func setDirectoryAsync(serverUrl: String,
+                           serverUrlTo: String? = nil,
+                           ocId: String? = nil,
+                           fileId: String? = nil,
+                           etag: String? = nil,
+                           richWorkspace: String? = nil,
+                           account: String) async {
         await performRealmWriteAsync { realm in
             if let result = realm.objects(tableDirectory.self)
                 .filter("account == %@ AND serverUrl == %@", account, serverUrl)
                 .first {
-
-                result.e2eEncrypted = encrypted
 
                 if let etag = etag {
                     result.etag = etag
@@ -201,7 +212,6 @@ extension NCManageDatabase {
                 directory.account = metadata.account
                 directory.serverUrl = serverUrl
                 directory.offline = offline
-                directory.e2eEncrypted = metadata.e2eEncrypted
                 directory.favorite = metadata.favorite
                 directory.fileId = metadata.fileId
                 directory.ocId = metadata.ocId
@@ -240,7 +250,6 @@ extension NCManageDatabase {
                 directory.account = metadata.account
                 directory.serverUrl = serverUrl
                 directory.colorFolder = colorFolder
-                directory.e2eEncrypted = metadata.e2eEncrypted
                 directory.favorite = metadata.favorite
                 directory.fileId = metadata.fileId
                 directory.ocId = metadata.ocId

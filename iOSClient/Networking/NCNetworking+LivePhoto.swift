@@ -45,13 +45,12 @@ extension NCNetworking {
         } else {
             metadata.livePhotoFile = ""
             await self.database.addMetadataAsync(metadata)
-            self.notifyAllDelegates { delegate in
+            await self.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferChange(status: self.global.networkingStatusUploadedLivePhoto,
                                         metadata: metadata,
                                         error: .success)
             }
         }
-
     }
 
     func setLivePhoto(metadataFirst: tableMetadata?, metadataLast: tableMetadata?, livePhoto: Bool = true) async {
@@ -80,7 +79,7 @@ extension NCNetworking {
 
         if resultsMetadataFirst.error == .success, resultsMetadataLast.error == .success {
             nkLog(debug: "Upload set LivePhoto for files " + (metadataFirst.fileName as NSString).deletingPathExtension)
-            notifyAllDelegates { delegate in
+            await self.transferDispatcher.notifyAllDelegates { delegate in
                delegate.transferChange(status: self.global.networkingStatusUploadedLivePhoto,
                                        metadata: metadataFirst,
                                        error: .success)

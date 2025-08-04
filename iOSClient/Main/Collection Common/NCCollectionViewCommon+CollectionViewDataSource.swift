@@ -37,7 +37,12 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         self.autoUploadDirectory = self.database.getAccountAutoUploadDirectory(session: self.session)
         // get layout for view
         self.layoutForView = self.database.getLayoutForView(account: self.session.account, key: self.layoutKey, serverUrl: self.serverUrl)
-
+        // is a Directory E2EE
+        if isSearchingMode {
+            self.isDirectoryE2EE = false
+        } else {
+            self.isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: self.serverUrl, urlBase: self.session.urlBase, userId: self.session.userId, account: self.session.account)
+        }
         return self.dataSource.numberOfItemsInSection(section)
     }
 
@@ -152,7 +157,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         // E2EE create preview
-        if self.isDirectoryEncrypted,
+        if self.isDirectoryE2EE,
            metadata.isImageOrVideo,
            !utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase) {
             utility.createImageFileFrom(metadata: metadata)

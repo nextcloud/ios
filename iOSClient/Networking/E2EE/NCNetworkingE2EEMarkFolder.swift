@@ -23,12 +23,17 @@ class NCNetworkingE2EEMarkFolder: NSObject {
 
         file.e2eEncrypted = true
 
-        let metadataFromFiles = await self.database.convertFileToMetadataAsync(file, isDirectoryE2EE: false)
+        let metadataFromFiles = await self.database.convertFileToMetadataAsync(file)
         guard let metadata = await self.database.addAndReturnMetadataAsync(metadataFromFiles) else {
             return .invalidData
         }
 
-        await self.database.addDirectoryAsync(e2eEncrypted: true, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
+        await self.database.addDirectoryAsync(serverUrl: serverUrlFileName,
+                                              ocId: metadata.ocId,
+                                              fileId: metadata.fileId,
+                                              permissions: metadata.permissions,
+                                              favorite: metadata.favorite,
+                                              account: metadata.account)
         await self.database.deleteE2eEncryptionAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrlFileName))
         if capabilities.e2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
             await self.database.updateCounterE2eMetadataAsync(account: account, ocIdServerUrl: metadata.ocId, counter: 0)
@@ -40,7 +45,7 @@ class NCNetworkingE2EEMarkFolder: NSObject {
             return errorUploadMetadata
         }
 
-        NCNetworking.shared.notifyAllDelegates { delegate in
+        await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferChange(status: NCGlobal.shared.networkingStatusCreateFolder,
                                     metadata: metadata.detachedCopy(),
                                     error: .success)

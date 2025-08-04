@@ -55,12 +55,14 @@ class NCContextMenu: NSObject {
         let share = UIAction(title: NSLocalizedString("_share_", comment: ""),
                              image: utility.loadImage(named: "square.and.arrow.up") ) { _ in
             if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
-                self.networking.notifyAllDelegates { delegate in
-                    let metadata = self.metadata.detachedCopy()
-                    metadata.sessionSelector = self.global.selectorOpenIn
-                    delegate.transferChange(status: self.global.networkingStatusDownloaded,
-                                            metadata: metadata,
-                                            error: .success)
+                Task {
+                    await self.networking.transferDispatcher.notifyAllDelegates { delegate in
+                        let metadata = self.metadata.detachedCopy()
+                        metadata.sessionSelector = self.global.selectorOpenIn
+                        delegate.transferChange(status: self.global.networkingStatusDownloaded,
+                                                metadata: metadata,
+                                                error: .success)
+                    }
                 }
             } else {
                 Task { @MainActor in
@@ -104,16 +106,16 @@ class NCContextMenu: NSObject {
 
         let modify = UIAction(title: NSLocalizedString("_modify_", comment: ""),
                               image: utility.loadImage(named: "pencil.tip.crop.circle")) { _ in
-            if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
-                self.networking.notifyAllDelegates { delegate in
-                    let metadata = self.metadata.detachedCopy()
-                    metadata.sessionSelector = self.global.selectorLoadFileQuickLook
-                    delegate.transferChange(status: self.global.networkingStatusDownloaded,
-                                            metadata: metadata,
-                                            error: .success)
-                }
-            } else {
-                Task { @MainActor in
+            Task { @MainActor in
+                if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
+                    await self.networking.transferDispatcher.notifyAllDelegates { delegate in
+                        let metadata = self.metadata.detachedCopy()
+                        metadata.sessionSelector = self.global.selectorLoadFileQuickLook
+                        delegate.transferChange(status: self.global.networkingStatusDownloaded,
+                                                metadata: metadata,
+                                                error: .success)
+                    }
+                } else {
                     guard let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(ocId: self.metadata.ocId,
                                                                                                    session: self.networking.sessionDownload,
                                                                                                    selector: self.global.selectorLoadFileQuickLook,
@@ -173,7 +175,7 @@ class NCContextMenu: NSObject {
                 let error = await self.networking.deleteCache(self.metadata, sceneIdentifier: self.sceneIdentifier)
                 metadatasError[self.metadata.detachedCopy()] = error
 
-                self.networking.notifyAllDelegates { delegate in
+                await self.networking.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusDelete,
                                             metadatasError: metadatasError)
                 }

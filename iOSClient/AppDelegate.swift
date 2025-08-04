@@ -432,8 +432,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         func openNotification(controller: NCMainTabBarController) {
             if app == NCGlobal.shared.termsOfServiceName {
-                NCNetworking.shared.notifyAllDelegates { delegate in
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                Task {
+                    await NCNetworking.shared.transferDispatcher.notifyAllDelegatesAsync { delegate in
+                        try? await Task.sleep(nanoseconds: 500_000_000)
                         delegate.transferRequestData(serverUrl: nil)
                     }
                 }

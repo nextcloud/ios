@@ -196,7 +196,6 @@ extension NCCollectionViewCommon {
                             let results = await NextcloudKit.shared.markE2EEFolderAsync(fileId: metadata.fileId, delete: true, account: metadata.account)
                             if results.error == .success {
                                 await self.database.deleteE2eEncryptionAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrlFileName))
-                                await self.database.setDirectoryAsync(serverUrl: metadata.serverUrlFileName, encrypted: false, account: metadata.account)
                                 await self.database.setMetadataEncryptedAsync(ocId: metadata.ocId, encrypted: false)
                                 await self.reloadDataSource()
                             } else {
@@ -278,18 +277,18 @@ extension NCCollectionViewCommon {
                     order: 110,
                     sender: sender,
                     action: { _ in
-                        if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                            NCNetworking.shared.notifyAllDelegates { delegate in
-                                let metadata = metadata.detachedCopy()
-                                metadata.sessionSelector = NCGlobal.shared.selectorSaveAsScan
-                                delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
-                                                        metadata: metadata,
-                                                        error: .success)
-                            }
-                        } else {
-                            Task {
+                        Task {
+                            if self.utilityFileSystem.fileProviderStorageExists(metadata) {
+                                await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                                    let metadata = metadata.detachedCopy()
+                                    metadata.sessionSelector = NCGlobal.shared.selectorSaveAsScan
+                                    delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
+                                                            metadata: metadata,
+                                                            error: .success)
+                                }
+                            } else {
                                 if let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
-                                                                                                    session: NCNetworking.shared.sessionDownload,
+                                                                                                            session: NCNetworking.shared.sessionDownload,
                                                                                                             selector: NCGlobal.shared.selectorSaveAsScan,
                                                                                                             sceneIdentifier: sceneIdentifier) {
                                     await NCNetworking.shared.downloadFile(metadata: metadata)
@@ -347,16 +346,16 @@ extension NCCollectionViewCommon {
                     order: 150,
                     sender: sender,
                     action: { _ in
-                        if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                            NCNetworking.shared.notifyAllDelegates { delegate in
-                                let metadata = metadata.detachedCopy()
-                                metadata.sessionSelector = NCGlobal.shared.selectorLoadFileQuickLook
-                                delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
-                                                        metadata: metadata,
-                                                        error: .success)
-                            }
-                        } else {
-                            Task {
+                        Task {
+                            if self.utilityFileSystem.fileProviderStorageExists(metadata) {
+                                await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                                    let metadata = metadata.detachedCopy()
+                                    metadata.sessionSelector = NCGlobal.shared.selectorLoadFileQuickLook
+                                    delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
+                                                            metadata: metadata,
+                                                            error: .success)
+                                }
+                            } else {
                                 if let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
                                                                                                             session: NCNetworking.shared.sessionDownload,
                                                                                                             selector: NCGlobal.shared.selectorLoadFileQuickLook,

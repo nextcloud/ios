@@ -236,12 +236,7 @@ extension tableMetadata {
     }
 
     @objc var isDirectoryE2EE: Bool {
-        let session = NCSession.Session(account: account, urlBase: urlBase, user: user, userId: userId)
-        return NCUtilityFileSystem().isDirectoryE2EE(session: session, serverUrl: serverUrl)
-    }
-
-    var isDirectoryE2EETop: Bool {
-        NCUtilityFileSystem().isDirectoryE2EETop(account: account, serverUrl: serverUrl)
+        return NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, urlBase: urlBase, userId: userId, account: account)
     }
 
     var isLivePhoto: Bool {
@@ -942,6 +937,36 @@ extension NCManageDatabase {
         }
     }
 
+    /// Syncs the remote and local metadata.
+    /// Returns true if there were changes (additions or deletions), false if everything was already up-to-date.
+    func mergeRemoteMetadatasAsync(remoteMetadatas: [tableMetadata], localMetadatas: [tableMetadata]) async -> Bool {
+        // Set of ocId
+        let remoteOcIds = Set(remoteMetadatas.map { $0.ocId })
+        let localOcIds = Set(localMetadatas.map { $0.ocId })
+
+        // Calculate diffs
+        let toDeleteOcIds = localOcIds.subtracting(remoteOcIds)
+        let toAddOcIds = remoteOcIds.subtracting(localOcIds)
+
+        guard !toDeleteOcIds.isEmpty || !toAddOcIds.isEmpty else {
+            return false // No changes needed
+        }
+
+        let toDeleteKeys = Array(toDeleteOcIds)
+
+        await performRealmWriteAsync { realm in
+            let toAdd = remoteMetadatas.filter { toAddOcIds.contains($0.ocId) }
+            let toDelete = toDeleteKeys.compactMap {
+                realm.object(ofType: tableMetadata.self, forPrimaryKey: $0)
+            }
+
+            realm.delete(toDelete)
+            realm.add(toAdd, update: .modified)
+        }
+
+        return true
+    }
+
     // MARK: - Realm Read
 
     func getAllTableMetadataAsync() async -> [tableMetadata] {
@@ -1292,33 +1317,45 @@ extension NCManageDatabase {
         } ?? false
     }
 
-    /// Syncs the remote and local metadata.
-    /// Returns true if there were changes (additions or deletions), false if everything was already up-to-date.
-    func mergeRemoteMetadatasAsync(remoteMetadatas: [tableMetadata], localMetadatas: [tableMetadata]) async -> Bool {
-        // Set of ocId
-        let remoteOcIds = Set(remoteMetadatas.map { $0.ocId })
-        let localOcIds = Set(localMetadatas.map { $0.ocId })
-
-        // Calculate diffs
-        let toDeleteOcIds = localOcIds.subtracting(remoteOcIds)
-        let toAddOcIds = remoteOcIds.subtracting(localOcIds)
-
-        guard !toDeleteOcIds.isEmpty || !toAddOcIds.isEmpty else {
-            return false // No changes needed
+    func getMetadataDirectoryAsync(serverUrl: String, account: String) async -> tableMetadata? {
+        guard let url = URL(string: serverUrl) else {
+            return nil
+        }
+        let fileName = url.lastPathComponent
+        var baseUrl = url.deletingLastPathComponent().absoluteString
+        if baseUrl.hasSuffix("/") {
+            baseUrl.removeLast()
+        }
+        guard let decodedBaseUrl = baseUrl.removingPercentEncoding else {
+            return nil
         }
 
-        let toDeleteKeys = Array(toDeleteOcIds)
+        return await performRealmReadAsync { realm in
+            let object = realm.objects(tableMetadata.self)
+                .filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, decodedBaseUrl, fileName)
+                .first
+            return object?.detachedCopy()
+        }
+    }
 
-        await performRealmWriteAsync { realm in
-            let toAdd = remoteMetadatas.filter { toAddOcIds.contains($0.ocId) }
-            let toDelete = toDeleteKeys.compactMap {
-                realm.object(ofType: tableMetadata.self, forPrimaryKey: $0)
-            }
-
-            realm.delete(toDelete)
-            realm.add(toAdd, update: .modified)
+    func getMetadataDirectory(serverUrl: String, account: String) -> tableMetadata? {
+        guard let url = URL(string: serverUrl) else {
+            return nil
+        }
+        let fileName = url.lastPathComponent
+        var baseUrl = url.deletingLastPathComponent().absoluteString
+        if baseUrl.hasSuffix("/") {
+            baseUrl.removeLast()
+        }
+        guard let decodedBaseUrl = baseUrl.removingPercentEncoding else {
+            return nil
         }
 
-        return true
+        return performRealmRead { realm in
+            let object = realm.objects(tableMetadata.self)
+                .filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, decodedBaseUrl, fileName)
+                .first
+            return object?.detachedCopy()
+        }
     }
 }

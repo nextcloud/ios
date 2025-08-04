@@ -208,7 +208,7 @@ extension NCEndToEndMetadata {
                 let key = String(data: keyData, encoding: .utf8) {
                 metadataKey = key
             } else {
-                return NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadata, errorDescription: "_e2e_error_")
+                return NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadataV12, errorDescription: "_e2e_error_")
             }
 
             // DATA

@@ -107,7 +107,9 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        NCNetworking.shared.addDelegate(self)
+        Task {
+            await NCNetworking.shared.transferDispatcher.addDelegate(self)
+        }
 
         NCActivityIndicator.shared.start(backgroundView: view)
     }
@@ -115,7 +117,9 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        NCNetworking.shared.removeDelegate(self)
+        Task {
+            await NCNetworking.shared.transferDispatcher.removeDelegate(self)
+        }
 
         if let navigationController = self.navigationController {
             if !navigationController.viewControllers.contains(self) {
@@ -356,9 +360,11 @@ extension NCViewerRichDocument: UINavigationControllerDelegate {
     override func didMove(toParent parent: UIViewController?) {
         super.didMove(toParent: parent)
 
-        if parent == nil {
-            NCNetworking.shared.notifyAllDelegates { delegate in
-                delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
+        Task {
+            if parent == nil {
+                await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                    delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
+                }
             }
         }
     }
