@@ -134,8 +134,11 @@ class NCViewer: NSObject {
                 }
                 if metadata.url.isEmpty {
                     let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
+
                     NCActivityIndicator.shared.start(backgroundView: delegate?.view)
                     let results = await NextcloudKit.shared.textOpenFileAsync(fileNamePath: fileNamePath, editor: editor, account: metadata.account, options: options)
+                    NCActivityIndicator.shared.stop()
+                    
                     guard results.error == .success, let url = results.url else {
                         NCContentPresenter().showError(error: results.error)
                         return nil
