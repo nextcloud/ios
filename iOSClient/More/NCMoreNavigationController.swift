@@ -9,6 +9,8 @@ class NCMoreNavigationController: NCMainNavigationController {
     override func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
         if viewController is NCCollectionViewCommon || viewController is NCActivity || viewController is NCTrash {
             setNavigationBarAppearance()
+        } else {
+            setNavigationBarAppearance(backgroundColor: .systemGray6)
         }
     }
 

@@ -142,7 +142,7 @@ class NCViewerMediaPage: UIViewController {
                 scrollView.delegate = self
             }
         }
-        
+
         changeScreenMode(mode: viewerMediaScreenMode)
     }
 
@@ -253,14 +253,16 @@ class NCViewerMediaPage: UIViewController {
             }
 
             if metadata.isAudioOrVideo {
-                navigationController?.setNavigationBarAppearance(textColor: .white)
+                navigationController?.setNavigationBarAppearance(textColor: .white, backgroundColor: .black)
                 currentViewController.playerToolBar?.show()
                 view.backgroundColor = .black
                 textColor = .white
+                moreNavigationItem.image = NCImageCache.shared.getImageButtonMore(colors: [.white])
             } else {
                 navigationController?.setNavigationBarAppearance()
                 view.backgroundColor = .systemBackground
                 textColor = NCBrandColor.shared.textColor
+                moreNavigationItem.image = NCImageCache.shared.getImageButtonMore()
             }
 
         } else if !currentViewController.detailView.isShown {
@@ -314,7 +316,6 @@ class NCViewerMediaPage: UIViewController {
     // MARK: - Command Center
 
     func updateCommandCenter(ncplayer: NCPlayer, title: String) {
-
         var nowPlayingInfo = [String: Any]()
 
         UIApplication.shared.beginReceivingRemoteControlEvents()

@@ -91,7 +91,7 @@ class NCViewerMedia: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         scrollView.delegate = self
         scrollView.maximumZoomScale = 4
         scrollView.minimumZoomScale = 1
