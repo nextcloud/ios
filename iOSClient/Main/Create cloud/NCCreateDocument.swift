@@ -56,7 +56,12 @@ class NCCreateDocument: NSObject {
                                              url: url,
                                              session: session,
                                              sceneIdentifier: controller.sceneIdentifier) { metadata in
-                    NCViewer().view(viewController: viewController, metadata: metadata)
+                    NCViewer().getViewerController(metadata: metadata, delegate: viewController) { vc in
+                        guard let vc else {
+                            return
+                        }
+                        viewController.navigationController?.pushViewController(vc, animated: true)
+                    }
                 }
             }
 
@@ -73,7 +78,12 @@ class NCCreateDocument: NSObject {
                                                  url: url,
                                                  session: session,
                                                  sceneIdentifier: controller.sceneIdentifier) { metadata in
-                        NCViewer().view(viewController: viewController, metadata: metadata)
+                        NCViewer().getViewerController(metadata: metadata, delegate: viewController) { vc in
+                            guard let vc else {
+                                return
+                            }
+                            viewController.navigationController?.pushViewController(vc, animated: true)
+                        }
                     }
                 }
             }

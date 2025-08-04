@@ -54,11 +54,21 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                                                $0.classFile == NKTypeClassFile.video.rawValue ||
                                                $0.classFile == NKTypeClassFile.audio.rawValue }.map(\.ocId)
 
-                return NCViewer().view(viewController: self, metadata: metadata, ocIds: withOcIds ? ocIds : nil, image: image)
+                NCViewer().getViewerController(metadata: metadata, ocIds: withOcIds ? ocIds : nil, image: image, delegate: self) { vc in
+                    guard let vc else {
+                        return
+                    }
+                    self.navigationController?.pushViewController(vc, animated: true)
+                }
 
             } else if metadata.isAvailableEditorView || utilityFileSystem.fileProviderStorageExists(metadata) || metadata.name == self.global.talkName {
 
-                NCViewer().view(viewController: self, metadata: metadata, image: image)
+                NCViewer().getViewerController(metadata: metadata, image: image, delegate: self) { vc in
+                    guard let vc else {
+                        return
+                    }
+                    self.navigationController?.pushViewController(vc, animated: true)
+                }
 
             } else if NextcloudKit.shared.isNetworkReachable() {
                 Task { @MainActor in
@@ -91,7 +101,12 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
                         }
                     } else if !metadata.url.isEmpty {
-                        NCViewer().view(viewController: self, metadata: metadata, image: nil)
+                        NCViewer().getViewerController(metadata: metadata, delegate: self) { vc in
+                            guard let vc else {
+                                return
+                            }
+                            self.navigationController?.pushViewController(vc, animated: true)
+                        }
                     }
                 }
             } else {

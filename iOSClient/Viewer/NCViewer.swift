@@ -31,7 +31,7 @@ class NCViewer: NSObject {
     let database = NCManageDatabase.shared
     private var viewerQuickLook: NCViewerQuickLook?
 
-    func view(viewController: UIViewController, metadata: tableMetadata, ocIds: [String]? = nil, image: UIImage? = nil) {
+    func getViewerController(metadata: tableMetadata, ocIds: [String]? = nil, image: UIImage? = nil, delegate: UIViewController? = nil, completion: @escaping (UIViewController?) -> Void) {
         let session = NCSession.shared.getSession(account: metadata.account)
 
         // URL
@@ -45,82 +45,76 @@ class NCViewer: NSObject {
                         let urlString = "nextcloudtalk://open-conversation?server=\(session.urlBase)&user=\(session.userId)&withRoomToken=\(roomToken)"
                         if let url = URL(string: urlString), UIApplication.shared.canOpenURL(url) {
                             UIApplication.shared.open(url)
-                            return
                         }
                     }
                 }
-            }
-            if let url = URL(string: metadata.url) {
+            } else if let url = URL(string: metadata.url) {
                 UIApplication.shared.open(url)
             }
-            return
+            return completion(nil)
         }
 
         // IMAGE AUDIO VIDEO
-        if metadata.isImage || metadata.isAudioOrVideo {
-            if let navigationController = viewController.navigationController,
-               let viewerMediaPageContainer: NCViewerMediaPage = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateInitialViewController() as? NCViewerMediaPage {
+        else if metadata.isImage || metadata.isAudioOrVideo {
+            let viewerMediaPageContainer = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateInitialViewController() as? NCViewerMediaPage
 
-                viewerMediaPageContainer.delegateViewController = viewController
-
-                if let ocIds {
-                    viewerMediaPageContainer.currentIndex = ocIds.firstIndex(where: { $0 == metadata.ocId }) ?? 0
-                    viewerMediaPageContainer.ocIds = ocIds
-                } else {
-                    viewerMediaPageContainer.currentIndex = 0
-                    viewerMediaPageContainer.ocIds = [metadata.ocId]
-                }
-
-                navigationController.pushViewController(viewerMediaPageContainer, animated: true)
+            viewerMediaPageContainer?.delegateViewController = delegate
+            if let ocIds {
+                viewerMediaPageContainer?.currentIndex = ocIds.firstIndex(where: { $0 == metadata.ocId }) ?? 0
+                viewerMediaPageContainer?.ocIds = ocIds
+            } else {
+                viewerMediaPageContainer?.currentIndex = 0
+                viewerMediaPageContainer?.ocIds = [metadata.ocId]
             }
-            return
+
+            return completion(viewerMediaPageContainer)
         }
 
         // DOCUMENTS
-        if metadata.classFile == NKTypeClassFile.document.rawValue {
+        else if metadata.classFile == NKTypeClassFile.document.rawValue {
             // Set Last Opening Date
             Task {
                 await self.database.setLastOpeningDateAsync(metadata: metadata)
             }
             // PDF
             if metadata.isPDF {
-                if let navigationController = viewController.navigationController,
-                   let viewController: NCViewerPDF = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateInitialViewController() as? NCViewerPDF {
-                    viewController.metadata = metadata
-                    viewController.titleView = metadata.fileNameView
-                    viewController.imageIcon = image
-                    navigationController.pushViewController(viewController, animated: true)
-                }
-                return
+                let viewController = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateInitialViewController() as? NCViewerPDF
+
+                viewController?.metadata = metadata
+                viewController?.titleView = metadata.fileNameView
+                viewController?.imageIcon = image
+
+                return completion(viewController)
             }
             // RichDocument: Collabora
             if metadata.isAvailableRichDocumentEditorView {
                 if metadata.url.isEmpty {
-                    NCActivityIndicator.shared.start(backgroundView: viewController.view)
+                    NCActivityIndicator.shared.start(backgroundView: delegate?.view)
                     NextcloudKit.shared.createUrlRichdocuments(fileID: metadata.fileId, account: metadata.account) { _, url, _, error in
                         NCActivityIndicator.shared.stop()
                         if error == .success, url != nil {
-                            if let navigationController = viewController.navigationController,
-                               let viewController: NCViewerRichDocument = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichDocument {
-                                viewController.metadata = metadata
-                                viewController.link = url!
-                                viewController.imageIcon = image
-                                navigationController.pushViewController(viewController, animated: true)
-                            }
+                            let viewController = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichDocument
+
+                            viewController?.metadata = metadata
+                            viewController?.link = url!
+                            viewController?.imageIcon = image
+
+                            return completion(viewController)
+
                         } else if error != .success {
                             NCContentPresenter().showError(error: error)
                         }
+                        return completion(nil)
                     }
                 } else {
-                    if let navigationController = viewController.navigationController,
-                       let viewController: NCViewerRichDocument = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichDocument {
-                        viewController.metadata = metadata
-                        viewController.link = metadata.url
-                        viewController.imageIcon = image
-                        navigationController.pushViewController(viewController, animated: true)
-                    }
+                    let viewController = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichDocument
+
+                    viewController?.metadata = metadata
+                    viewController?.link = metadata.url
+                    viewController?.imageIcon = image
+
+                    return completion(viewController)
                 }
-                return
             }
             // DirectEditing: Nextcloud Text - OnlyOffice
             if metadata.isAvailableDirectEditingEditorView {
@@ -139,54 +133,58 @@ class NCViewer: NSObject {
                 }
                 if metadata.url.isEmpty {
                     let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
-                    NCActivityIndicator.shared.start(backgroundView: viewController.view)
+                    NCActivityIndicator.shared.start(backgroundView: delegate?.view)
                     NextcloudKit.shared.textOpenFile(fileNamePath: fileNamePath, editor: editor, account: metadata.account, options: options) { _, url, _, error in
                         NCActivityIndicator.shared.stop()
                         if error == .success, url != nil {
-                            if let navigationController = viewController.navigationController,
-                               let viewController: NCViewerNextcloudText = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as? NCViewerNextcloudText {
-                                viewController.metadata = metadata
-                                viewController.editor = editorViewController
-                                viewController.link = url!
-                                viewController.imageIcon = image
-                                navigationController.pushViewController(viewController, animated: true)
-                            }
+                            let viewController = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as? NCViewerNextcloudText
+
+                            viewController?.metadata = metadata
+                            viewController?.editor = editorViewController
+                            viewController?.link = url!
+                            viewController?.imageIcon = image
+
+                            return completion(viewController)
+
                         } else if error != .success {
                             NCContentPresenter().showError(error: error)
                         }
+                        return completion(nil)
                     }
                 } else {
-                    if let navigationController = viewController.navigationController,
-                       let viewController: NCViewerNextcloudText = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as? NCViewerNextcloudText {
-                        viewController.metadata = metadata
-                        viewController.editor = editorViewController
-                        viewController.link = metadata.url
-                        viewController.imageIcon = image
-                        navigationController.pushViewController(viewController, animated: true)
-                    }
+                    let viewController = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as? NCViewerNextcloudText
+
+                    viewController?.metadata = metadata
+                    viewController?.editor = editorViewController
+                    viewController?.link = metadata.url
+                    viewController?.imageIcon = image
+
+                    return completion(viewController)
                 }
-                return
             }
         }
 
         // QLPreview
-        let item = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
-                                                                                          fileName: metadata.fileNameView,
-                                                                                          userId: metadata.userId,
-                                                                                          urlBase: metadata.urlBase))
-        if QLPreviewController.canPreview(item as QLPreviewItem) {
-            let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
-            utilityFileSystem.copyFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
-                                                                                                 fileName: metadata.fileNameView,
-                                                                                                 userId: metadata.userId,
-                                                                                                 urlBase: metadata.urlBase), toPath: fileNamePath)
-            let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), isEditingEnabled: false, metadata: metadata)
-            viewController.present(viewerQuickLook, animated: true)
-        } else {
-            // Document Interaction Controller
-            if let controller = viewController.tabBarController as? NCMainTabBarController {
-                NCDownloadAction.shared.openActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
+        else {
+            let item = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
+                                                                                              fileName: metadata.fileNameView,
+                                                                                              userId: metadata.userId,
+                                                                                              urlBase: metadata.urlBase))
+            if QLPreviewController.canPreview(item as QLPreviewItem) {
+                let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
+                utilityFileSystem.copyFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
+                                                                                                     fileName: metadata.fileNameView,
+                                                                                                     userId: metadata.userId,
+                                                                                                     urlBase: metadata.urlBase), toPath: fileNamePath)
+                let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), isEditingEnabled: false, metadata: metadata)
+                delegate?.present(viewerQuickLook, animated: true)
+            } else {
+                // Document Interaction Controller
+                if let controller = delegate?.tabBarController as? NCMainTabBarController {
+                    NCDownloadAction.shared.openActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
+                }
             }
+            return completion(nil)
         }
     }
 }

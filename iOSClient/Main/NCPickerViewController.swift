@@ -160,7 +160,12 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                     await UIAlertController.warningAsync( message: message, presenter: self.controller)
                 } else {
                     if let metadata = await database.addAndReturnMetadataAsync(metadata) {
-                        NCViewer().view(viewController: viewController, metadata: metadata)
+                        NCViewer().getViewerController(metadata: metadata, delegate: viewController) { vc in
+                            guard let vc else {
+                                return
+                            }
+                            viewController.navigationController?.pushViewController(vc, animated: true)
+                        }
                     }
                 }
             } else {
