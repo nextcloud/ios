@@ -57,6 +57,13 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
             )
             items.append(moreButton)
         }
+        
+        navigationItem.title = metadata.fileNameView
+        navigationItem.rightBarButtonItems = items
+        navigationItem.leftBarButtonItems = nil
+        if editor == "Nextcloud Text" {
+            navigationItem.hidesBackButton = true
+        }
 
         let config = WKWebViewConfiguration()
         config.websiteDataStore = WKWebsiteDataStore.nonPersistent()
@@ -102,14 +109,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-        navigationItem.title = metadata.fileNameView
-
-        if editor == "Nextcloud Text" {
-            navigationItem.hidesBackButton = true
-        }
-        navigationItem.setRightBarButtonItems(items, animated: false)
-        navigationItem.setLeftBarButtonItems(nil, animated: false)
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
