@@ -292,6 +292,10 @@ extension tableMetadata {
         return (contentType == "application/pdf" || contentType == "com.adobe.pdf")
     }
 
+    var isCsv: Bool {
+        return (contentType == "text/csv")
+    }
+
     /// Returns false if the user is lokced out of the file. I.e. The file is locked but by somone else
     func canUnlock(as user: String) -> Bool {
         return !lock || (lockOwner == user && lockOwnerType == 0)
