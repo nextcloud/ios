@@ -178,10 +178,8 @@ extension NCMedia {
                                                                            session: self.session,
                                                                            sceneIdentifier: self.controller?.sceneIdentifier)
                     await self.database.addMetadataAsync(metadata)
-                    NCViewer().getViewerController(metadata: metadata, delegate: self) { vc in
-                        guard let vc else {
-                            return
-                        }
+
+                    if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: self) {
                         self.navigationController?.pushViewController(vc, animated: true)
                     }
                 }

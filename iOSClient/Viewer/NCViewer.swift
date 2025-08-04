@@ -31,7 +31,8 @@ class NCViewer: NSObject {
     let database = NCManageDatabase.shared
     private var viewerQuickLook: NCViewerQuickLook?
 
-    func getViewerController(metadata: tableMetadata, ocIds: [String]? = nil, image: UIImage? = nil, delegate: UIViewController? = nil, completion: @escaping (UIViewController?) -> Void) {
+    @MainActor
+    func getViewerController(metadata: tableMetadata, ocIds: [String]? = nil, image: UIImage? = nil, delegate: UIViewController? = nil) async -> UIViewController? {
         let session = NCSession.shared.getSession(account: metadata.account)
 
         // URL
@@ -44,14 +45,14 @@ class NCViewer: NSObject {
                     if let roomToken = talkComponents?.first {
                         let urlString = "nextcloudtalk://open-conversation?server=\(session.urlBase)&user=\(session.userId)&withRoomToken=\(roomToken)"
                         if let url = URL(string: urlString), UIApplication.shared.canOpenURL(url) {
-                            UIApplication.shared.open(url)
+                            await UIApplication.shared.open(url)
                         }
                     }
                 }
             } else if let url = URL(string: metadata.url) {
-                UIApplication.shared.open(url)
+                await UIApplication.shared.open(url)
             }
-            return completion(nil)
+            return nil
         }
 
         // IMAGE AUDIO VIDEO
@@ -67,15 +68,14 @@ class NCViewer: NSObject {
                 viewerMediaPageContainer?.ocIds = [metadata.ocId]
             }
 
-            return completion(viewerMediaPageContainer)
+            return viewerMediaPageContainer
         }
 
         // DOCUMENTS
         else if metadata.classFile == NKTypeClassFile.document.rawValue {
             // Set Last Opening Date
-            Task {
-                await self.database.setLastOpeningDateAsync(metadata: metadata)
-            }
+            await self.database.setLastOpeningDateAsync(metadata: metadata)
+
             // PDF
             if metadata.isPDF {
                 let viewController = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateInitialViewController() as? NCViewerPDF
@@ -84,28 +84,29 @@ class NCViewer: NSObject {
                 viewController?.titleView = metadata.fileNameView
                 viewController?.imageIcon = image
 
-                return completion(viewController)
+                return viewController
             }
             // RichDocument: Collabora
             if metadata.isAvailableRichDocumentEditorView {
                 if metadata.url.isEmpty {
+
                     NCActivityIndicator.shared.start(backgroundView: delegate?.view)
-                    NextcloudKit.shared.createUrlRichdocuments(fileID: metadata.fileId, account: metadata.account) { _, url, _, error in
-                        NCActivityIndicator.shared.stop()
-                        if error == .success, url != nil {
-                            let viewController = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichDocument
+                    let results = await NextcloudKit.shared.createUrlRichdocumentsAsync(fileID: metadata.fileId, account: metadata.account)
+                    NCActivityIndicator.shared.stop()
 
-                            viewController?.metadata = metadata
-                            viewController?.link = url!
-                            viewController?.imageIcon = image
-
-                            return completion(viewController)
-
-                        } else if error != .success {
-                            NCContentPresenter().showError(error: error)
-                        }
-                        return completion(nil)
+                    guard results.error == .success, let url = results.url else {
+                        NCContentPresenter().showError(error: results.error)
+                        return nil
                     }
+
+                    let viewController = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichDocument
+
+                    viewController?.metadata = metadata
+                    viewController?.link = url
+                    viewController?.imageIcon = image
+
+                    return viewController
+
                 } else {
                     let viewController = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichDocument
 
@@ -113,7 +114,7 @@ class NCViewer: NSObject {
                     viewController?.link = metadata.url
                     viewController?.imageIcon = image
 
-                    return completion(viewController)
+                    return viewController
                 }
             }
             // DirectEditing: Nextcloud Text - OnlyOffice
@@ -134,23 +135,20 @@ class NCViewer: NSObject {
                 if metadata.url.isEmpty {
                     let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
                     NCActivityIndicator.shared.start(backgroundView: delegate?.view)
-                    NextcloudKit.shared.textOpenFile(fileNamePath: fileNamePath, editor: editor, account: metadata.account, options: options) { _, url, _, error in
-                        NCActivityIndicator.shared.stop()
-                        if error == .success, url != nil {
-                            let viewController = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as? NCViewerNextcloudText
-
-                            viewController?.metadata = metadata
-                            viewController?.editor = editorViewController
-                            viewController?.link = url!
-                            viewController?.imageIcon = image
-
-                            return completion(viewController)
-
-                        } else if error != .success {
-                            NCContentPresenter().showError(error: error)
-                        }
-                        return completion(nil)
+                    let results = await NextcloudKit.shared.textOpenFileAsync(fileNamePath: fileNamePath, editor: editor, account: metadata.account, options: options)
+                    guard results.error == .success, let url = results.url else {
+                        NCContentPresenter().showError(error: results.error)
+                        return nil
                     }
+
+                    let viewController = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as? NCViewerNextcloudText
+
+                    viewController?.metadata = metadata
+                    viewController?.editor = editorViewController
+                    viewController?.link = url
+                    viewController?.imageIcon = image
+
+                    return viewController
                 } else {
                     let viewController = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as? NCViewerNextcloudText
 
@@ -159,11 +157,10 @@ class NCViewer: NSObject {
                     viewController?.link = metadata.url
                     viewController?.imageIcon = image
 
-                    return completion(viewController)
+                    return viewController
                 }
             }
         }
-
         // QLPreview
         else {
             let item = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
@@ -184,7 +181,7 @@ class NCViewer: NSObject {
                     NCDownloadAction.shared.openActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
                 }
             }
-            return completion(nil)
         }
+        return nil
     }
 }

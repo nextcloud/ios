@@ -159,13 +159,9 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                     let message = "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"
                     await UIAlertController.warningAsync( message: message, presenter: self.controller)
                 } else {
-                    if let metadata = await database.addAndReturnMetadataAsync(metadata) {
-                        NCViewer().getViewerController(metadata: metadata, delegate: viewController) { vc in
-                            guard let vc else {
-                                return
-                            }
-                            viewController.navigationController?.pushViewController(vc, animated: true)
-                        }
+                    if let metadata = await database.addAndReturnMetadataAsync(metadata),
+                       let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController) {
+                        viewController.navigationController?.pushViewController(vc, animated: true)
                     }
                 }
             } else {

@@ -46,32 +46,23 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         if metadata.directory {
             pushMetadata(metadata)
         } else {
-            let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
+            Task { @MainActor in
+                let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
 
-            if !metadata.isDirectoryE2EE, metadata.isImage || metadata.isAudioOrVideo {
-                let metadatas = self.dataSource.getMetadatas()
-                let ocIds = metadatas.filter { $0.classFile == NKTypeClassFile.image.rawValue ||
-                                               $0.classFile == NKTypeClassFile.video.rawValue ||
-                                               $0.classFile == NKTypeClassFile.audio.rawValue }.map(\.ocId)
+                if !metadata.isDirectoryE2EE, metadata.isImage || metadata.isAudioOrVideo {
+                    let metadatas = self.dataSource.getMetadatas()
+                    let ocIds = metadatas.filter { $0.classFile == NKTypeClassFile.image.rawValue ||
+                        $0.classFile == NKTypeClassFile.video.rawValue ||
+                        $0.classFile == NKTypeClassFile.audio.rawValue }.map(\.ocId)
 
-                NCViewer().getViewerController(metadata: metadata, ocIds: withOcIds ? ocIds : nil, image: image, delegate: self) { vc in
-                    guard let vc else {
-                        return
+                    if let vc = await NCViewer().getViewerController(metadata: metadata, ocIds: withOcIds ? ocIds : nil, image: image, delegate: self) {
+                        self.navigationController?.pushViewController(vc, animated: true)
                     }
-                    self.navigationController?.pushViewController(vc, animated: true)
-                }
-
-            } else if metadata.isAvailableEditorView || utilityFileSystem.fileProviderStorageExists(metadata) || metadata.name == self.global.talkName {
-
-                NCViewer().getViewerController(metadata: metadata, image: image, delegate: self) { vc in
-                    guard let vc else {
-                        return
+                } else if metadata.isAvailableEditorView || utilityFileSystem.fileProviderStorageExists(metadata) || metadata.name == self.global.talkName {
+                    if let vc = await NCViewer().getViewerController(metadata: metadata, image: image, delegate: self) {
+                        self.navigationController?.pushViewController(vc, animated: true)
                     }
-                    self.navigationController?.pushViewController(vc, animated: true)
-                }
-
-            } else if NextcloudKit.shared.isNetworkReachable() {
-                Task { @MainActor in
+                } else if NextcloudKit.shared.isNetworkReachable() {
                     guard let  metadata = await database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
                                                                                                session: self.networking.sessionDownload,
                                                                                                selector: global.selectorLoadFileView,
@@ -101,18 +92,14 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
                         }
                     } else if !metadata.url.isEmpty {
-                        NCViewer().getViewerController(metadata: metadata, delegate: self) { vc in
-                            guard let vc else {
-                                return
-                            }
+                        if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: self) {
                             self.navigationController?.pushViewController(vc, animated: true)
                         }
                     }
+                } else {
+                    let error = NKError(errorCode: global.errorOffline, errorDescription: "_go_online_")
+                    NCContentPresenter().showInfo(error: error)
                 }
-            } else {
-                let error = NKError(errorCode: global.errorOffline, errorDescription: "_go_online_")
-
-                NCContentPresenter().showInfo(error: error)
             }
         }
     }
