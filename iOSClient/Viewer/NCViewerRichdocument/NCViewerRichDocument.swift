@@ -56,7 +56,6 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
         if !metadata.ocId.hasPrefix("TEMP") {
             navigationItem.rightBarButtonItem = UIBarButtonItem(image: NCImageCache.shared.getImageButtonMore(), style: .plain, target: self, action: #selector(openMenuMore(_:)))
         }
-        navigationItem.title = metadata.fileNameView
         navigationItem.hidesBackButton = true
 
         let config = WKWebViewConfiguration()
@@ -92,6 +91,8 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        tabBarController?.tabBar.isHidden = true
+
         NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.grabFocus), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRichdocumentGrabFocus), object: nil)
 
@@ -111,6 +112,8 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+
+        tabBarController?.tabBar.isHidden = false
 
         Task {
             await NCNetworking.shared.transferDispatcher.removeDelegate(self)

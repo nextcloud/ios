@@ -78,13 +78,13 @@ class NCViewer: NSObject {
 
             // PDF
             if metadata.isPDF {
-                let viewController = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateInitialViewController() as? NCViewerPDF
+                let vc = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateInitialViewController() as? NCViewerPDF
 
-                viewController?.metadata = metadata
-                viewController?.titleView = metadata.fileNameView
-                viewController?.imageIcon = image
-
-                return viewController
+                vc?.metadata = metadata
+                vc?.imageIcon = image
+                vc?.navigationItem.title = metadata.fileNameView
+                
+                return vc
             }
             // RichDocument: Collabora
             if metadata.isAvailableRichDocumentEditorView {
@@ -99,22 +99,24 @@ class NCViewer: NSObject {
                         return nil
                     }
 
-                    let viewController = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichDocument
+                    let vc = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichDocument
 
-                    viewController?.metadata = metadata
-                    viewController?.link = url
-                    viewController?.imageIcon = image
+                    vc?.metadata = metadata
+                    vc?.link = url
+                    vc?.imageIcon = image
+                    vc?.navigationItem.title = metadata.fileNameView
 
-                    return viewController
+                    return vc
 
                 } else {
-                    let viewController = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichDocument
+                    let vc = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichDocument
 
-                    viewController?.metadata = metadata
-                    viewController?.link = metadata.url
-                    viewController?.imageIcon = image
+                    vc?.metadata = metadata
+                    vc?.link = metadata.url
+                    vc?.imageIcon = image
+                    vc?.navigationItem.title = metadata.fileNameView
 
-                    return viewController
+                    return vc
                 }
             }
             // DirectEditing: Nextcloud Text - OnlyOffice
@@ -144,23 +146,25 @@ class NCViewer: NSObject {
                         return nil
                     }
 
-                    let viewController = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as? NCViewerNextcloudText
+                    let vc = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as? NCViewerNextcloudText
 
-                    viewController?.metadata = metadata
-                    viewController?.editor = editorViewController
-                    viewController?.link = url
-                    viewController?.imageIcon = image
+                    vc?.metadata = metadata
+                    vc?.editor = editorViewController
+                    vc?.link = url
+                    vc?.imageIcon = image
+                    vc?.navigationItem.title = metadata.fileNameView
 
-                    return viewController
+                    return vc
                 } else {
-                    let viewController = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as? NCViewerNextcloudText
+                    let vc = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as? NCViewerNextcloudText
 
-                    viewController?.metadata = metadata
-                    viewController?.editor = editorViewController
-                    viewController?.link = metadata.url
-                    viewController?.imageIcon = image
+                    vc?.metadata = metadata
+                    vc?.editor = editorViewController
+                    vc?.link = metadata.url
+                    vc?.imageIcon = image
+                    vc?.navigationItem.title = metadata.fileNameView
 
-                    return viewController
+                    return vc
                 }
             }
         }

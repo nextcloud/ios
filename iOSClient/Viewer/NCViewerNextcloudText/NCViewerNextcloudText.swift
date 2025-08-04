@@ -58,7 +58,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
             items.append(moreButton)
         }
         
-        navigationItem.title = metadata.fileNameView
         navigationItem.rightBarButtonItems = items
         navigationItem.leftBarButtonItems = nil
         if editor == "Nextcloud Text" {
@@ -110,6 +109,8 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        tabBarController?.tabBar.isHidden = true
+
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
@@ -126,6 +127,8 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+
+        tabBarController?.tabBar.isHidden = false
 
         Task {
             await NCNetworking.shared.transferDispatcher.removeDelegate(self)
