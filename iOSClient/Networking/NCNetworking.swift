@@ -45,8 +45,8 @@ protocol NCTransferDelegate: AnyObject {
     func transferChange(status: String, metadatasError: [tableMetadata: NKError])
     func transferReloadData(serverUrl: String?, status: Int?)
     func transferRequestData(serverUrl: String?)
-    func transferCopy(metadata: tableMetadata, error: NKError)
-    func transferMove(metadata: tableMetadata, error: NKError)
+    func transferCopy(metadata: tableMetadata, serverUrlTo: String, error: NKError)
+    func transferMove(metadata: tableMetadata, serverUrlTo: String, error: NKError)
 }
 
 extension NCTransferDelegate {
@@ -59,8 +59,8 @@ extension NCTransferDelegate {
     func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {}
     func transferReloadData(serverUrl: String?, status: Int?) {}
     func transferRequestData(serverUrl: String?) {}
-    func transferCopy(metadata: tableMetadata, error: NKError) {}
-    func transferMove(metadata: tableMetadata, error: NKError) {}
+    func transferCopy(metadata: tableMetadata, serverUrlTo: String, error: NKError) {}
+    func transferMove(metadata: tableMetadata, serverUrlTo: String, error: NKError) {}
 }
 
 /// Actor-based delegate dispatcher using weak references.
