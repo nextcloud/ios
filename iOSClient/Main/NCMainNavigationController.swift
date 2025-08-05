@@ -82,10 +82,12 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
         setNavigationBarAppearance()
 
-        menuButton.setImage(UIImage(systemName: "ellipsis.circle"), for: .normal)
-        menuButton.tintColor = NCBrandColor.shared.iconImageColor
-        menuButton.menu = createRightMenu()
-        menuButton.showsMenuAsPrimaryAction = true
+        Task {
+            menuButton.setImage(UIImage(systemName: "ellipsis.circle"), for: .normal)
+            menuButton.tintColor = NCBrandColor.shared.iconImageColor
+            menuButton.menu = await createRightMenu()
+            menuButton.showsMenuAsPrimaryAction = true
+        }
 
         assistantButton.setImage(UIImage(systemName: "sparkles"), for: .normal)
         assistantButton.tintColor = NCBrandColor.shared.iconImageColor
@@ -123,7 +125,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 guard capabilities.notification.count > 0 else {
                     if self.isNotificationsButtonVisible() {
                         self.controller?.availableNotifications = false
-                        self.updateRightBarButtonItems()
+                        await self.updateRightBarButtonItems()
                     }
                     return
                 }
@@ -134,12 +136,12 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                     notifications.count > 0 {
                     if !self.isNotificationsButtonVisible() {
                         self.controller?.availableNotifications = true
-                        self.updateRightBarButtonItems()
+                        await self.updateRightBarButtonItems()
                     }
                 } else {
                     if self.isNotificationsButtonVisible() {
                         self.controller?.availableNotifications = false
-                        self.updateRightBarButtonItems()
+                        await self.updateRightBarButtonItems()
                     }
                 }
             }
@@ -159,13 +161,15 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     ///   - animated: True if the transition is animated; false otherwise.
 
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        setNavigationBarAppearance()
-        updateRightBarButtonItems()
+        Task {
+            setNavigationBarAppearance()
+            await updateRightBarButtonItems()
+        }
     }
 
     // MARK: - Right
 
-    func setNavigationRightItems() {
+    func setNavigationRightItems() async {
         if let collectionViewCommon,
            collectionViewCommon.isEditMode {
             collectionViewCommon.tabBarSelect?.update(fileSelect: collectionViewCommon.fileSelect, metadatas: collectionViewCommon.getSelectedMetadatas(), userId: session.userId)
@@ -187,11 +191,11 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         } else {
             trashViewController?.tabBarSelect?.hide()
             collectionViewCommon?.tabBarSelect?.hide()
-            self.updateRightBarButtonItems()
+            await self.updateRightBarButtonItems()
         }
     }
 
-    func updateRightBarButtonItems(_ fileItem: UITabBarItem? = nil) {
+    func updateRightBarButtonItems(_ fileItem: UITabBarItem? = nil) async {
         guard !(collectionViewCommon?.isEditMode ?? false),
               !(trashViewController?.isEditMode ?? false),
               !(topViewController is NCViewerMediaPage),
@@ -202,76 +206,76 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             return
         }
 
-        Task {
-            let tranfersCount = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status != %i", self.global.metadataStatusNormal))?.count ?? 0
-            let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
 
-            await MainActor.run {
-                var tempRightBarButtonItems: [UIBarButtonItem] = createRightMenu() == nil ? [] : [self.menuBarButtonItem]
-                var tempTotalTags = tempRightBarButtonItems.count == 0 ? 0 : self.menuBarButtonItem.tag
-                var totalTags = 0
+        let tranfersCount = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status != %i", self.global.metadataStatusNormal))?.count ?? 0
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
+        let rightmenu = await createRightMenu()
 
-                if let rightBarButtonItems = topViewController?.navigationItem.rightBarButtonItems {
-                    for item in rightBarButtonItems {
-                        totalTags += item.tag
-                    }
+        await MainActor.run {
+            var tempRightBarButtonItems: [UIBarButtonItem] = rightmenu == nil ? [] : [self.menuBarButtonItem]
+            var tempTotalTags = tempRightBarButtonItems.count == 0 ? 0 : self.menuBarButtonItem.tag
+            var totalTags = 0
+
+            if let rightBarButtonItems = topViewController?.navigationItem.rightBarButtonItems {
+                for item in rightBarButtonItems {
+                    totalTags += item.tag
                 }
+            }
 
-                if capabilities.assistantEnabled {
-                    tempRightBarButtonItems.append(self.assistantButtonItem)
-                    tempTotalTags += self.assistantButtonItem.tag
-                }
+            if capabilities.assistantEnabled {
+                tempRightBarButtonItems.append(self.assistantButtonItem)
+                tempTotalTags += self.assistantButtonItem.tag
+            }
 
-                if let controller, controller.availableNotifications {
-                    tempRightBarButtonItems.append(self.notificationsButtonItem)
-                    tempTotalTags += self.notificationsButtonItem.tag
-                }
+            if let controller, controller.availableNotifications {
+                tempRightBarButtonItems.append(self.notificationsButtonItem)
+                tempTotalTags += self.notificationsButtonItem.tag
+            }
 
-                if tranfersCount > 0 {
-                    tempRightBarButtonItems.append(self.transfersButtonItem)
-                    tempTotalTags += self.transfersButtonItem.tag
-                }
+            if tranfersCount > 0 {
+                tempRightBarButtonItems.append(self.transfersButtonItem)
+                tempTotalTags += self.transfersButtonItem.tag
+            }
 
-                if totalTags != tempTotalTags {
-                    topViewController?.navigationItem.rightBarButtonItems = tempRightBarButtonItems
-                }
+            if totalTags != tempTotalTags {
+                topViewController?.navigationItem.rightBarButtonItems = tempRightBarButtonItems
+            }
 
-                // Update App Icon badge / File Icon badge
+            // Update App Icon badge / File Icon badge
 #if DEBUG
+            UNUserNotificationCenter.current().setBadgeCount(tranfersCount)
+            fileItem?.badgeValue = tranfersCount == 0 ? nil : "\(tranfersCount)"
+#else
+            if tranfersCount > 999 {
+                UNUserNotificationCenter.current().setBadgeCount(999)
+                fileItem?.badgeValue = "999+"
+            } else {
                 UNUserNotificationCenter.current().setBadgeCount(tranfersCount)
                 fileItem?.badgeValue = tranfersCount == 0 ? nil : "\(tranfersCount)"
-#else
-                if tranfersCount > 999 {
-                    UNUserNotificationCenter.current().setBadgeCount(999)
-                    fileItem?.badgeValue = "999+"
-                } else {
-                    UNUserNotificationCenter.current().setBadgeCount(tranfersCount)
-                    fileItem?.badgeValue = tranfersCount == 0 ? nil : "\(tranfersCount)"
-                }
-#endif
             }
+#endif
         }
     }
 
-    func createRightMenu() -> UIMenu? { return nil }
+    func createRightMenu() async -> UIMenu? { return nil }
 
-    func updateRightMenu() {
+    func updateRightMenu() async {
         if let rightBarButtonItems = topViewController?.navigationItem.rightBarButtonItems,
             let menuBarButtonItem = rightBarButtonItems.first(where: { $0.tag == menuButtonTag }),
             let menuButton = menuBarButtonItem.customView as? UIButton {
-            menuButton.menu = createRightMenu()
+            menuButton.menu = await createRightMenu()
         }
     }
 
-    func createRightMenuActions() -> (select: UIAction,
-                                      viewStyleSubmenu: UIMenu,
-                                      sortSubmenu: UIMenu,
-                                      favoriteOnTop: UIAction,
-                                      directoryOnTop: UIAction,
-                                      hiddenFiles: UIAction,
-                                      personalFilesOnly: UIAction,
-                                      showDescription: UIAction,
-                                      showRecommendedFiles: UIAction?)? {
+    func createRightMenuActions() async -> (select: UIAction,
+                                            viewStyleSubmenu: UIMenu,
+                                            sortSubmenu: UIMenu,
+                                            favoriteOnTop: UIAction,
+                                            directoryOnTop: UIAction,
+                                            hiddenFiles: UIAction,
+                                            personalFilesOnly: UIAction,
+                                            showDescription: UIAction,
+                                            showRecommendedFiles: UIAction?)? {
         guard let collectionViewCommon else {
             return nil
         }
@@ -285,27 +289,35 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
 
         let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: utility.loadImage(named: "list.bullet"), state: layoutForView.layout == global.layoutList ? .on : .off) { _ in
-            layoutForView.layout = self.global.layoutList
-            collectionViewCommon.changeLayout(layoutForView: layoutForView)
-            self.updateRightMenu()
+            Task {
+                layoutForView.layout = self.global.layoutList
+                collectionViewCommon.changeLayout(layoutForView: layoutForView)
+                await self.updateRightMenu()
+            }
         }
 
         let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: utility.loadImage(named: "square.grid.2x2"), state: layoutForView.layout == global.layoutGrid ? .on : .off) { _ in
-            layoutForView.layout = self.global.layoutGrid
-            collectionViewCommon.changeLayout(layoutForView: layoutForView)
-            self.updateRightMenu()
+            Task {
+                layoutForView.layout = self.global.layoutGrid
+                collectionViewCommon.changeLayout(layoutForView: layoutForView)
+                await self.updateRightMenu()
+            }
         }
 
         let mediaSquare = UIAction(title: NSLocalizedString("_media_square_", comment: ""), image: utility.loadImage(named: "square.grid.3x3"), state: layoutForView.layout == global.layoutPhotoSquare ? .on : .off) { _ in
-            layoutForView.layout = self.global.layoutPhotoSquare
-            collectionViewCommon.changeLayout(layoutForView: layoutForView)
-            self.updateRightMenu()
+            Task {
+                layoutForView.layout = self.global.layoutPhotoSquare
+                collectionViewCommon.changeLayout(layoutForView: layoutForView)
+                await self.updateRightMenu()
+            }
         }
 
         let mediaRatio = UIAction(title: NSLocalizedString("_media_ratio_", comment: ""), image: utility.loadImage(named: "rectangle.grid.3x2"), state: layoutForView.layout == self.global.layoutPhotoRatio ? .on : .off) { _ in
-            layoutForView.layout = self.global.layoutPhotoRatio
-            collectionViewCommon.changeLayout(layoutForView: layoutForView)
-            self.updateRightMenu()
+            Task {
+                layoutForView.layout = self.global.layoutPhotoRatio
+                collectionViewCommon.changeLayout(layoutForView: layoutForView)
+                await self.updateRightMenu()
+            }
         }
 
         let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid, mediaSquare, mediaRatio])
@@ -317,30 +329,36 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         let isSize = layoutForView.sort == "size"
 
         let byName = UIAction(title: NSLocalizedString("_name_", comment: ""), image: isName ? ascendingChevronImage : nil, state: isName ? .on : .off) { _ in
-            if isName {
-                layoutForView.ascending = !layoutForView.ascending
+            Task {
+                if isName {
+                    layoutForView.ascending = !layoutForView.ascending
+                }
+                layoutForView.sort = "fileName"
+                collectionViewCommon.changeLayout(layoutForView: layoutForView)
+                await self.updateRightMenu()
             }
-            layoutForView.sort = "fileName"
-            collectionViewCommon.changeLayout(layoutForView: layoutForView)
-            self.updateRightMenu()
         }
 
         let byNewest = UIAction(title: NSLocalizedString("_date_", comment: ""), image: isDate ? ascendingChevronImage : nil, state: isDate ? .on : .off) { _ in
-            if isDate {
-                layoutForView.ascending = !layoutForView.ascending
+            Task {
+                if isDate {
+                    layoutForView.ascending = !layoutForView.ascending
+                }
+                layoutForView.sort = "date"
+                collectionViewCommon.changeLayout(layoutForView: layoutForView)
+                await self.updateRightMenu()
             }
-            layoutForView.sort = "date"
-            collectionViewCommon.changeLayout(layoutForView: layoutForView)
-            self.updateRightMenu()
         }
 
         let byLargest = UIAction(title: NSLocalizedString("_size_", comment: ""), image: isSize ? ascendingChevronImage : nil, state: isSize ? .on : .off) { _ in
-            if isSize {
-                layoutForView.ascending = !layoutForView.ascending
+            Task {
+                if isSize {
+                    layoutForView.ascending = !layoutForView.ascending
+                }
+                layoutForView.sort = "size"
+                collectionViewCommon.changeLayout(layoutForView: layoutForView)
+                await self.updateRightMenu()
             }
-            layoutForView.sort = "size"
-            collectionViewCommon.changeLayout(layoutForView: layoutForView)
-            self.updateRightMenu()
         }
 
         let sortSubmenu = UIMenu(title: NSLocalizedString("_order_by_", comment: ""), options: .displayInline, children: [byName, byNewest, byLargest])
@@ -352,8 +370,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, status: nil)
                 }
+                await self.updateRightMenu()
             }
-            self.updateRightMenu()
         }
 
         let directoryOnTop = NCKeychain().getDirectoryOnTop(account: self.session.account)
@@ -363,8 +381,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, status: nil)
                 }
+                await self.updateRightMenu()
             }
-            self.updateRightMenu()
         }
 
         let hiddenFiles = NCKeychain().getShowHiddenFiles(account: self.session.account)
@@ -372,8 +390,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             NCKeychain().setShowHiddenFiles(account: self.session.account, value: !hiddenFiles)
             Task {
                 await self.collectionViewCommon?.getServerData(refresh: true)
+                await self.updateRightMenu()
             }
-            self.updateRightMenu()
         }
 
         let personalFilesOnly = NCKeychain().getPersonalFilesOnly(account: self.session.account)
@@ -384,20 +402,19 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, status: nil)
                 }
+                await self.updateRightMenu()
             }
-            self.updateRightMenu()
         }
 
         let showDescriptionKeychain = NCKeychain().showDescription
         let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), state: showDescriptionKeychain ? .on : .off) { _ in
             NCKeychain().showDescription = !showDescriptionKeychain
-
             Task {
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, status: nil)
                 }
+                await self.updateRightMenu()
             }
-            self.updateRightMenu()
         }
 
         let showRecommendedFilesKeychain = NCKeychain().showRecommendedFiles
@@ -406,16 +423,18 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
         if capabilityRecommendations {
             showRecommendedFiles = UIAction(title: NSLocalizedString("_show_recommended_files_", comment: ""), state: showRecommendedFilesKeychain ? .on : .off) { _ in
-                NCKeychain().showRecommendedFiles = !showRecommendedFilesKeychain
-                collectionViewCommon.collectionView.reloadData()
-                self.updateRightMenu()
+                Task {
+                    NCKeychain().showRecommendedFiles = !showRecommendedFilesKeychain
+                    collectionViewCommon.collectionView.reloadData()
+                    await self.updateRightMenu()
+                }
             }
         }
 
         return (select, viewStyleSubmenu, sortSubmenu, favoriteOnTopAction, directoryOnTopAction, hiddenFilesAction, personalFilesOnlyAction, showDescription, showRecommendedFiles)
     }
 
-    func createTrashRightMenuActions() -> [UIMenuElement]? {
+    func createTrashRightMenuActions() async -> [UIMenuElement]? {
         guard let trashViewController else {
             return nil
         }
@@ -430,12 +449,16 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             trashViewController.setEditMode(true)
         }
         let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: utility.loadImage(named: "list.bullet", colors: [NCBrandColor.shared.iconImageColor]), state: layoutForView.layout == self.global.layoutList ? .on : .off) { _ in
-            trashViewController.onListSelected()
-            self.updateRightMenu()
+            Task {
+                trashViewController.onListSelected()
+                await self.updateRightMenu()
+            }
         }
         let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: utility.loadImage(named: "square.grid.2x2", colors: [NCBrandColor.shared.iconImageColor]), state: layoutForView.layout == self.global.layoutGrid ? .on : .off) { _ in
-            trashViewController.onGridSelected()
-            self.updateRightMenu()
+            Task {
+                trashViewController.onGridSelected()
+                await self.updateRightMenu()
+            }
         }
 
         let emptyTrash = UIAction(title: NSLocalizedString("_empty_trash_", comment: ""), image: utility.loadImage(named: "trash", colors: [NCBrandColor.shared.iconImageColor])) { _ in
@@ -465,5 +488,5 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
     // MARK: - Left
 
-    func setNavigationLeftItems() { }
+    func setNavigationLeftItems() async { }
 }
