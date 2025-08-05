@@ -53,6 +53,7 @@ class NCViewCertificateDetails: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        navigationController?.setNavigationBarAppearance()
         navigationItem.title = certificateTitle
         buttonCancel.title = NSLocalizedString("_close_", comment: "")
 

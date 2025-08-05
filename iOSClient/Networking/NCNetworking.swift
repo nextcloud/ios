@@ -398,6 +398,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { _ in
                     completion(error)
                 }))
+                #if !EXTENSION
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { _ in
                     if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() as? UINavigationController,
                        let vcCertificateDetails = navigationController.topViewController as? NCViewCertificateDetails {
@@ -405,6 +406,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
                         viewController?.present(navigationController, animated: true)
                     }
                 }))
+                #endif
                 viewController?.present(alertController, animated: true)
             }
         }

@@ -45,6 +45,8 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
         title = NSLocalizedString("_notifications_", comment: "")
         view.backgroundColor = .systemBackground
 
+        navigationController?.setNavigationBarAppearance()
+
         tableView.tableFooterView = UIView()
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 50.0
