@@ -59,7 +59,8 @@ class NCFiles: NCCollectionViewCommon {
         plusButton.setImage(image, for: .normal)
         plusButton.backgroundColor = NCBrandColor.shared.customer
         if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
-            self.plusButton.backgroundColor = NCBrandColor.shared.getElement(account: activeTableAccount.account)
+            let color = NCBrandColor.shared.getElement(account: activeTableAccount.account)
+            self.plusButton.backgroundColor = color
         }
         plusButton.accessibilityLabel = NSLocalizedString("_accessibility_add_upload_", comment: "")
         plusButton.layer.cornerRadius = plusButton.frame.size.width / 2.0
@@ -70,7 +71,8 @@ class NCFiles: NCCollectionViewCommon {
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil, queue: nil) { _ in
             if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
-                self.plusButton.backgroundColor = NCBrandColor.shared.getElement(account: activeTableAccount.account)
+                let color = NCBrandColor.shared.getElement(account: activeTableAccount.account)
+                self.plusButton.backgroundColor = color
             }
         }
 
@@ -206,8 +208,9 @@ class NCFiles: NCCollectionViewCommon {
             nkLog(info: "Inside metadata folder \(metadataFolder.fileName) with permissions: \(metadataFolder.permissions)")
 
             // disable + button if no create permission
+            let color = NCBrandColor.shared.getElement(account: self.session.account)
             plusButton.isEnabled = metadataFolder.isCreatable
-            plusButton.backgroundColor = metadataFolder.isCreatable ? NCBrandColor.shared.customer : .lightGray
+            plusButton.backgroundColor = metadataFolder.isCreatable ? color : .lightGray
         }
 
         let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
