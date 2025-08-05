@@ -25,11 +25,22 @@
 
 #import <UIKit/UIKit.h>
 
+@interface NCPushKeyPair : NSObject
+
+@property (nonatomic, strong, readonly) NSData *publicKey;
+@property (nonatomic, strong, readonly) NSData *privateKey;
+
+- (instancetype)initWithPublicKey:(NSData *)publicKey privateKey:(NSData *)privateKey;
+
+@end
+
 @interface NCPushNotificationEncryption : NSObject
 
 + (instancetype)shared;
-- (BOOL)generatePushNotificationsKeyPair:(NSString *)account;
+- (NCPushKeyPair *)generatePushNotificationsKeyPair:(NSString *)account;
 - (NSString *)decryptPushNotification:(NSString *)message withDevicePrivateKey:(NSData *)privateKey;
 - (NSString *)stringWithDeviceToken:(NSData *)deviceToken;
 
 @end
+
+

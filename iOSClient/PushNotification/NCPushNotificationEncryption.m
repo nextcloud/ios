@@ -31,6 +31,19 @@
 
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
+@implementation NCPushKeyPair
+
+- (instancetype)initWithPublicKey:(NSData *)publicKey privateKey:(NSData *)privateKey {
+    self = [super init];
+    if (self) {
+        _publicKey = publicKey;
+        _privateKey = privateKey;
+    }
+    return self;
+}
+
+@end
+
 @implementation NCPushNotificationEncryption
 
 //Singleton
@@ -43,7 +56,7 @@
     return shared;
 }
 
-- (BOOL)generatePushNotificationsKeyPair:(NSString *)account
+- (NCPushKeyPair *)generatePushNotificationsKeyPair:(NSString *)account
 {
     EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, NULL);
     if (!ctx) {
@@ -76,7 +89,6 @@
 
     BIO_read(publicKeyBIO, keyBytes, len);
     NSData *publicKey = [NSData dataWithBytes:keyBytes length:len];
-    [[[NCKeychain alloc] init] setPushNotificationPublicKeyWithAccount:account data:publicKey];
     NSLog(@"Push Notifications public Key generated: \n%@", [[NSString alloc] initWithData:publicKey encoding:NSUTF8StringEncoding]);
 
     // PrivateKey
@@ -88,7 +100,6 @@
     
     BIO_read(privateKeyBIO, keyBytes, len);
     NSData *privateKey = [NSData dataWithBytes:keyBytes length:len];
-    [[[NCKeychain alloc] init] setPushNotificationPrivateKeyWithAccount:account data:privateKey];
     NSLog(@"Push Notifications private Key generated: \n%@", [[NSString alloc] initWithData:privateKey encoding:NSUTF8StringEncoding]);
 
     EVP_PKEY_free(pkey);
@@ -96,7 +107,7 @@
     BIO_free(publicKeyBIO);
     BIO_free(privateKeyBIO);
 
-    return YES;
+    return [[NCPushKeyPair alloc] initWithPublicKey:publicKey privateKey:privateKey];
 }
 
 - (NSString *)decryptPushNotification:(NSString *)message withDevicePrivateKey:(NSData *)privateKey

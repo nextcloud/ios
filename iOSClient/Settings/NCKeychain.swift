@@ -7,7 +7,7 @@ import UIKit
 import KeychainAccess
 import NextcloudKit
 
-@objc class NCKeychain: NSObject {
+final class NCKeychain: NSObject {
     let keychain = Keychain(service: "com.nextcloud.keychain")
 
     var showDescription: Bool {
@@ -47,7 +47,7 @@ import NextcloudKit
         }
     }
 
-    @objc var passcode: String? {
+    var passcode: String? {
         get {
             migrate(key: "passcodeBlock")
             if let value = try? keychain.get("passcodeBlock"), !value.isEmpty {
@@ -555,7 +555,7 @@ import NextcloudKit
         return try? keychain.getData(key)
     }
 
-    @objc func setPushNotificationPublicKey(account: String, data: Data?) {
+    func setPushNotificationPublicKey(account: String, data: Data?) {
         let key = "PNPublicKey" + account
         keychain[data: key] = data
     }
@@ -565,7 +565,7 @@ import NextcloudKit
         return try? keychain.getData(key)
     }
 
-    @objc func setPushNotificationPrivateKey(account: String, data: Data?) {
+    func setPushNotificationPrivateKey(account: String, data: Data?) {
         let key = "PNPrivateKey" + account
         keychain[data: key] = data
     }
@@ -663,5 +663,21 @@ import NextcloudKit
 
     func removeAll() {
         try? keychain.removeAll()
+    }
+}
+
+extension Keychain {
+    func getAsync(_ key: String) async -> String? {
+        await withCheckedContinuation { continuation in
+            Task {
+                let result = try? self.get(key)
+                continuation.resume(returning: result)
+            }
+        }
+    }
+
+    func getBoolAsync(_ key: String, default defaultValue: Bool = true) async -> Bool {
+        let stringValue = await getAsync(key)
+        return Bool(stringValue ?? "") ?? defaultValue
     }
 }

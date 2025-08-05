@@ -45,11 +45,17 @@ class NCPushNotification {
     }
 
     func subscribingNextcloudServerPushNotification(account: String, urlBase: String, user: String, pushKitToken: String?) {
-        NCPushNotificationEncryption.shared().generatePushNotificationsKeyPair(account)
-        guard let pushKitToken,
+        guard let keyPair = NCPushNotificationEncryption.shared().generatePushNotificationsKeyPair(account),
+              let pushKitToken,
               let pushTokenHash = NCEndToEndEncryption.shared().createSHA512(pushKitToken),
               let pushPublicKey = keychain.getPushNotificationPublicKey(account: account),
-              let pushDevicePublicKey = String(data: pushPublicKey, encoding: .utf8)  else { return }
+              let pushDevicePublicKey = String(data: pushPublicKey, encoding: .utf8) else {
+            return
+        }
+
+        NCKeychain().setPushNotificationPublicKey(account: account, data: keyPair.publicKey)
+        NCKeychain().setPushNotificationPrivateKey(account: account, data: keyPair.privateKey)
+
         let proxyServerPath = NCBrandOptions.shared.pushNotificationServerProxy
 
         NextcloudKit.shared.subscribingPushNotification(serverUrl: urlBase, pushTokenHash: pushTokenHash, devicePublicKey: pushDevicePublicKey, proxyServerUrl: proxyServerPath, account: account) { account, deviceIdentifier, signature, publicKey, _, error in
