@@ -384,7 +384,7 @@ actor NCNetworkingProcess {
             }
 
             await networking.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferCopy(metadata: metadata, error: resultCopy.error)
+                delegate.transferCopy(metadata: metadata, serverUrlTo: serverUrlTo, error: resultCopy.error)
             }
 
             if resultCopy.error != .success {
@@ -412,34 +412,18 @@ actor NCNetworkingProcess {
             if resultMove.error == .success {
                 let result = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrlFileNameDestination, account: metadata.account)
                 if result.error == .success, let metadata = result.metadata {
-                    await self.database.addMetadataAsync(metadata)
-                }
-                // Remove source metadata
-                if metadata.directory {
-                    let serverUrl = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
-                    await self.database.deleteDirectoryAndSubDirectoryAsync(serverUrl: serverUrl,
-                                                                            account: result.account)
-                } else {
-                    do {
-                        try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
-                    } catch { }
-                    await self.database.deleteVideoAsync(metadata.ocId)
-                    await self.database.deleteMetadataOcIdAsync(metadata.ocId)
-                    await self.database.deleteLocalFileOcIdAsync(metadata.ocId)
-                    // LIVE PHOTO
-                    if let metadataLive = await self.database.getMetadataLivePhotoAsync(metadata: metadata) {
-                        do {
-                            try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId, userId: metadataLive.userId, urlBase: metadataLive.urlBase))
-                        } catch { }
-                        await self.database.deleteVideoAsync(metadataLive.ocId)
-                        await self.database.deleteMetadataOcIdAsync(metadataLive.ocId)
-                        await self.database.deleteLocalFileOcIdAsync(metadataLive.ocId)
+                    // Remove directory
+                    if metadata.directory {
+                        let serverUrl = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
+                        await self.database.deleteDirectoryAndSubDirectoryAsync(serverUrl: serverUrl,
+                                                                                account: result.account)
                     }
+                    await self.database.addMetadataAsync(metadata)
                 }
             }
 
             await networking.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferMove(metadata: metadata, error: resultMove.error)
+                delegate.transferMove(metadata: metadata, serverUrlTo: serverUrlTo, error: resultMove.error)
             }
 
             if resultMove.error != .success {
