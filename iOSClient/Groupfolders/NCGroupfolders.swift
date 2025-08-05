@@ -60,8 +60,8 @@ class NCGroupfolders: NCCollectionViewCommon {
 
     override func reloadDataSource() async {
         var metadatas: [tableMetadata] = []
-        let directoryOnTop = await NCKeychain().getDirectoryOnTopAsync(account: session.account)
-        let favoriteOnTop = await NCKeychain().getFavoriteOnTopAsync(account: session.account)
+        let directoryOnTop = await NCKeychain().getDirectoryOnTop(account: session.account)
+        let favoriteOnTop = await NCKeychain().getFavoriteOnTop(account: session.account)
 
         if self.serverUrl.isEmpty {
             metadatas = await database.getMetadatasFromGroupfoldersAsync(session: session,

@@ -56,8 +56,8 @@ class NCOffline: NCCollectionViewCommon {
     override func reloadDataSource() async {
         var ocIds: [String] = []
         var predicate: NSPredicate = defaultPredicate
-        let directoryOnTop = await NCKeychain().getDirectoryOnTopAsync(account: session.account)
-        let favoriteOnTop = await NCKeychain().getFavoriteOnTopAsync(account: session.account)
+        let directoryOnTop = await NCKeychain().getDirectoryOnTop(account: session.account)
+        let favoriteOnTop = await NCKeychain().getFavoriteOnTop(account: session.account)
 
         if self.serverUrl.isEmpty {
             let directories = await self.database.getTablesDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND offline == true", session.account), sorted: "serverUrl", ascending: true)

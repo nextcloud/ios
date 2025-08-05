@@ -59,8 +59,8 @@ class NCRecent: NCCollectionViewCommon {
     // MARK: - DataSource
 
     override func reloadDataSource() async {
-        let directoryOnTop = await NCKeychain().getDirectoryOnTopAsync(account: session.account)
-        let favoriteOnTop = await NCKeychain().getFavoriteOnTopAsync(account: session.account)
+        let directoryOnTop = await NCKeychain().getDirectoryOnTop(account: session.account)
+        let favoriteOnTop = await NCKeychain().getFavoriteOnTop(account: session.account)
         if let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND fileName != %@", session.account, NextcloudKit.shared.nkCommonInstance.rootFileName), sortedByKeyPath: "date", ascending: false) {
 
             self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,

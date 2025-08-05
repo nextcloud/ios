@@ -68,8 +68,8 @@ class NCShares: NCCollectionViewCommon {
     // MARK: - DataSource
 
     override func reloadDataSource() async {
-        let directoryOnTop = await NCKeychain().getDirectoryOnTopAsync(account: session.account)
-        let favoriteOnTop = await NCKeychain().getFavoriteOnTopAsync(account: session.account)
+        let directoryOnTop = await NCKeychain().getDirectoryOnTop(account: session.account)
+        let favoriteOnTop = await NCKeychain().getFavoriteOnTop(account: session.account)
         let metadatas = await database.getMetadatasAsync(predicate: NSPredicate(format: "ocId IN %@", ocIdShares),
                                                          withLayout: layoutForView,
                                                          withAccount: session.account)

@@ -507,8 +507,8 @@ final class NCManageDatabase: @unchecked Sendable {
 
     func sortedMetadata(layoutForView: NCDBLayoutForView?, account: String, metadatas: [tableMetadata]) async -> [tableMetadata] {
         let layout: NCDBLayoutForView = layoutForView ?? NCDBLayoutForView()
-        let directoryOnTop = await NCKeychain().getDirectoryOnTopAsync(account: account)
-        let favoriteOnTop = await NCKeychain().getFavoriteOnTopAsync(account: account)
+        let directoryOnTop = await NCKeychain().getDirectoryOnTop(account: account)
+        let favoriteOnTop = await NCKeychain().getFavoriteOnTop(account: account)
 
         let sorted = metadatas.sorted { lhs, rhs in
             if favoriteOnTop, lhs.favorite != rhs.favorite {

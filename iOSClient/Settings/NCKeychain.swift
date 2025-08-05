@@ -453,16 +453,7 @@ final class NCKeychain: NSObject {
         }
     }
 
-    func getFavoriteOnTop(account: String) -> Bool {
-        let key = "favoriteOnTop" + account
-        if let value = try? keychain.get(key), let result = Bool(value) {
-            return result
-        } else {
-            return true
-        }
-    }
-
-    func getFavoriteOnTopAsync(account: String) async -> Bool {
+    func getFavoriteOnTop(account: String) async -> Bool {
         let key = "favoriteOnTop" + account
         return await withCheckedContinuation { continuation in
             Task {
@@ -484,16 +475,7 @@ final class NCKeychain: NSObject {
         }
     }
 
-    func getDirectoryOnTop(account: String) -> Bool {
-        let key = "directoryOnTop" + account
-        if let value = try? keychain.get(key), let result = Bool(value) {
-            return result
-        } else {
-            return true
-        }
-    }
-
-    func getDirectoryOnTopAsync(account: String) async -> Bool {
+    func getDirectoryOnTop(account: String) async -> Bool {
         let key = "directoryOnTop" + account
         return await withCheckedContinuation { continuation in
             Task {

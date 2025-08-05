@@ -844,8 +844,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 }
             } providers: { account, searchProviders in
                 Task {
-                    let directoryOnTop = await NCKeychain().getDirectoryOnTopAsync(account: account)
-                    let favoriteOnTop = await NCKeychain().getFavoriteOnTopAsync(account: account)
+                    let directoryOnTop = await NCKeychain().getDirectoryOnTop(account: account)
+                    let favoriteOnTop = await NCKeychain().getFavoriteOnTop(account: account)
                     self.providers = searchProviders
                     self.searchResults = []
                     self.dataSource = NCCollectionViewDataSource(metadatas: [],
@@ -881,8 +881,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                         await self.reloadDataSource()
                         return
                     }
-                    let directoryOnTop = await NCKeychain().getDirectoryOnTopAsync(account: self.session.account)
-                    let favoriteOnTop = await NCKeychain().getFavoriteOnTopAsync(account: self.session.account)
+                    let directoryOnTop = await NCKeychain().getDirectoryOnTop(account: self.session.account)
+                    let favoriteOnTop = await NCKeychain().getFavoriteOnTop(account: self.session.account)
                     let ocId = metadatasSearch.map { $0.ocId }
                     let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "ocId IN %@", ocId),
                                                                           withLayout: self.layoutForView,
