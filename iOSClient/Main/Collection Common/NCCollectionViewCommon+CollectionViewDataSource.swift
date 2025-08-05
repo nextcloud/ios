@@ -141,7 +141,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         var cell: NCCellProtocol & UICollectionViewCell
-        let permissions = NCPermissions()
         var isShare = false
         var isMounted = false
         var a11yValues: [String] = []
@@ -202,8 +201,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         if metadataFolder != nil {
-            isShare = metadata.permissions.contains(permissions.permissionShared) && !metadataFolder!.permissions.contains(permissions.permissionShared)
-            isMounted = metadata.permissions.contains(permissions.permissionMounted) && !metadataFolder!.permissions.contains(permissions.permissionMounted)
+            isShare = metadata.permissions.contains(NCMetadataPermissions.permissionShared) && !metadataFolder!.permissions.contains(NCMetadataPermissions.permissionShared)
+            isMounted = metadata.permissions.contains(NCMetadataPermissions.permissionMounted) && !metadataFolder!.permissions.contains(NCMetadataPermissions.permissionMounted)
         }
 
         cell.fileAccount = metadata.account
@@ -549,6 +548,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                         emptyImage = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: [NCBrandColor.shared.getElement(account: session.account)])
                         emptyTitle = NSLocalizedString("_files_no_files_", comment: "")
                         emptyDescription = NSLocalizedString("_folder_offline_desc_", comment: "")
+                    } else if let metadataFolder, !metadataFolder.isCreatable {
+                        emptyImage = imageCache.getFolder(account: session.account)
+                        emptyTitle = NSLocalizedString("_files_no_files_", comment: "")
+                        emptyDescription = NSLocalizedString("_no_file_no_permission_to_create_", comment: "")
                     } else {
                         emptyImage = imageCache.getFolder(account: session.account)
                         emptyTitle = NSLocalizedString("_files_no_files_", comment: "")

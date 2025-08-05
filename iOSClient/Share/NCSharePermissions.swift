@@ -24,75 +24,65 @@
 import UIKit
 import Foundation
 
-class NCPermissions: NSObject {
-    let permissionShared = "S"
-    let permissionCanShare = "R"
-    let permissionMounted = "M"
-    let permissionFileCanWrite = "W"
-    let permissionCanCreateFile = "C"
-    let permissionCanCreateFolder = "K"
-    let permissionCanDelete = "D"
-    let permissionCanRename = "N"
-    let permissionCanMove = "V"
-
+enum NCSharePermissions {
     // Share permission
-    // permissions - (int) 1 = read; 2 = update; 4 = create; 8 = delete; 16 = share; 31 = all
+    // permissions - (int) 1 = read; 2 = update; 4 = create; 8 = delete; 16 = Reshare; 31 = all
     //
-    let permissionReadShare: Int = 1
-    let permissionEditShare: Int = 2
-    let permissionCreateShare: Int = 4
-    let permissionDeleteShare: Int = 8
-    let permissionShareShare: Int = 16
-    //
-    let permissionMinFileShare: Int = 1
-    let permissionMaxFileShare: Int = 19
-    let permissionMinFolderShare: Int = 1
-    let permissionMaxFolderShare: Int = 31
-    let permissionDefaultFileRemoteShareNoSupportShareOption: Int = 3
-    let permissionDefaultFolderRemoteShareNoSupportShareOption: Int = 15
+    static let permissionReadShare: Int = 1
+    static let permissionEditShare: Int = 2
+    static let permissionCreateShare: Int = 4
+    static let permissionDeleteShare: Int = 8
+    static let permissionReshareShare: Int = 16
+
+    static let permissionMinFileShare: Int = 1
+    static let permissionMaxFileShare: Int = 19
+    static let permissionMinFolderShare: Int = 1
+    static let permissionMaxFolderShare: Int = 31
+    static let permissionDefaultFileRemoteShareNoSupportShareOption: Int = 3
+    static let permissionDefaultFolderRemoteShareNoSupportShareOption: Int = 15
 
     // Additional attributes. This also includes the permission to download.
     // Check https://docs.nextcloud.com/server/latest/developer_manual/client_apis/OCS/ocs-share-api.html#share-attributes
-    let permissionDownloadShare: Int = 0
+    static let permissionDownloadShare: Int = 0
 
-    func isPermissionToRead(_ permission: Int) -> Bool {
+    static func hasPermissionToRead(_ permission: Int) -> Bool {
         return ((permission & permissionReadShare) > 0)
     }
 
-    func isPermissionToCanDelete(_ permission: Int) -> Bool {
+    static func hasPermissionToDelete(_ permission: Int) -> Bool {
         return ((permission & permissionDeleteShare) > 0)
     }
 
-    func isPermissionToCanCreate(_ permission: Int) -> Bool {
+    static func hasPermissionToCreate(_ permission: Int) -> Bool {
         return ((permission & permissionCreateShare) > 0)
     }
 
-    func isPermissionToCanEdit(_ permission: Int) -> Bool {
+    static func hasPermissionToEdit(_ permission: Int) -> Bool {
         return ((permission & permissionEditShare) > 0)
     }
 
-    func isPermissionToCanShare(_ permission: Int) -> Bool {
-        return ((permission & permissionShareShare) > 0)
+    static func hasPermissionToShare(_ permission: Int) -> Bool {
+        return ((permission & permissionReshareShare) > 0)
     }
 
-    func isAnyPermissionToEdit(_ permission: Int) -> Bool {
-        let canCreate = isPermissionToCanCreate(permission)
-        let canEdit = isPermissionToCanEdit(permission)
-        let canDelete = isPermissionToCanDelete(permission)
+    static func isAnyPermissionToEdit(_ permission: Int) -> Bool {
+        let canCreate = hasPermissionToCreate(permission)
+        let canEdit = hasPermissionToEdit(permission)
+        let canDelete = hasPermissionToDelete(permission)
         return canCreate || canEdit || canDelete
     }
 
     /// "Can edit" means it has can read, create, edit, and delete.
-    func canEdit(_ permission: Int, isDirectory: Bool) -> Bool {
-        let canRead   = isPermissionToRead(permission)
-        let canCreate = isDirectory ? isPermissionToCanCreate(permission) : true
-        let canEdit = isPermissionToCanEdit(permission)
-        let canDelete = isDirectory ? isPermissionToCanDelete(permission) : true
+    static func canEdit(_ permission: Int, isDirectory: Bool) -> Bool {
+        let canRead   = hasPermissionToRead(permission)
+        let canCreate = isDirectory ? hasPermissionToCreate(permission) : true
+        let canEdit = hasPermissionToEdit(permission)
+        let canDelete = isDirectory ? hasPermissionToDelete(permission) : true
         return canCreate && canEdit && canRead && canDelete
     }
 
     /// Read permission is always true for a share, hence why it's not here.
-    func getPermissionValue(canRead: Bool = true, canCreate: Bool, canEdit: Bool, canDelete: Bool, canShare: Bool, isDirectory: Bool) -> Int {
+    static func getPermissionValue(canRead: Bool = true, canCreate: Bool, canEdit: Bool, canDelete: Bool, canShare: Bool, isDirectory: Bool) -> Int {
         var permission = 0
 
         if canRead {
@@ -109,7 +99,7 @@ class NCPermissions: NSObject {
             permission = permission + permissionDeleteShare
         }
         if canShare {
-            permission = permission + permissionShareShare
+            permission = permission + permissionReshareShare
         }
 
         return permission

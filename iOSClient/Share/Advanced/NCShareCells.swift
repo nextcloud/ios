@@ -64,12 +64,12 @@ enum NCUserPermission: CaseIterable, NCPermission {
     }
 
     var permissionBitFlag: Int {
-        switch self {
-        case .read: return NCPermissions().permissionReadShare
-        case .reshare: return NCPermissions().permissionShareShare
-        case .edit: return NCPermissions().permissionEditShare
-        case .create: return NCPermissions().permissionCreateShare
-        case .delete: return NCPermissions().permissionDeleteShare
+        return switch self {
+        case .read: NCSharePermissions.permissionReadShare
+        case .reshare: NCSharePermissions.permissionReshareShare
+        case .edit: NCSharePermissions.permissionEditShare
+        case .create: NCSharePermissions.permissionCreateShare
+        case .delete: NCSharePermissions.permissionDeleteShare
         }
     }
 
@@ -122,11 +122,11 @@ enum NCLinkEmailPermission: CaseIterable, NCPermission {
     }
 
     var permissionBitFlag: Int {
-        switch self {
-        case .read: return NCPermissions().permissionReadShare
-        case .edit: return NCPermissions().permissionEditShare
-        case .create: return NCPermissions().permissionCreateShare
-        case .delete: return NCPermissions().permissionDeleteShare
+        return switch self {
+        case .read: NCSharePermissions.permissionReadShare
+        case .edit: NCSharePermissions.permissionEditShare
+        case .create: NCSharePermissions.permissionCreateShare
+        case .delete: NCSharePermissions.permissionDeleteShare
         }
     }
 

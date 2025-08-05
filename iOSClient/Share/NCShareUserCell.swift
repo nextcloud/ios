@@ -62,10 +62,9 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
             name: NSLocalizedString("_show_profile_", comment: ""),
             target: self,
             selector: #selector(tapAvatarImage(_:)))]
-        let permissions = NCPermissions()
         labelTitle.text = (tableShare.shareWithDisplayname.isEmpty ? tableShare.shareWith : tableShare.shareWithDisplayname)
 
-        let type = getType(tableShare)
+        let type = getTypeString(tableShare)
         if !type.isEmpty {
             labelTitle.text?.append(" (\(type))")
         }
@@ -77,7 +76,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         imageDownArrow.isHidden = false
         buttonMenu.isHidden = false
         buttonMenu.accessibilityLabel = NSLocalizedString("_more_", comment: "")
-        imageItem.image = NCShareCommon().getImageShareType(shareType: tableShare.shareType)
+        imageItem.image = NCShareCommon.getImageShareType(shareType: tableShare.shareType)
 
         let status = utility.getUserStatus(userIcon: tableShare.userIcon, userStatus: tableShare.userStatus, userMessage: tableShare.userMessage)
         imageStatus.image = status.statusImage
@@ -95,9 +94,9 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         btnQuickStatus.setTitle("", for: .normal)
         btnQuickStatus.contentHorizontalAlignment = .left
 
-        if permissions.canEdit(tableShare.permissions, isDirectory: isDirectory) { // Can edit
+        if NCSharePermissions.canEdit(tableShare.permissions, isDirectory: isDirectory) { // Can edit
             labelQuickStatus.text = NSLocalizedString("_share_editing_", comment: "")
-        } else if tableShare.permissions == permissions.permissionReadShare { // Read only
+        } else if tableShare.permissions == NCSharePermissions.permissionReadShare { // Read only
             labelQuickStatus.text = NSLocalizedString("_share_read_only_", comment: "")
         } else { // Custom permissions
             labelQuickStatus.text = NSLocalizedString("_custom_permissions_", comment: "")
@@ -109,7 +108,8 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         imageItem.contentMode = .scaleAspectFill
 
         if tableShare.shareType == NCShareCommon.shareTypeTeam {
-            imageItem.image = utility.loadImage(named: "person.3.circle.fill", colors: [NCBrandColor.shared.iconImageColor])
+            imageItem.image = utility.loadImage(named: "person.3.fill", colors: [NCBrandColor.shared.iconImageColor])
+            imageItem.contentMode = .scaleAspectFit
         } else if results.image == nil {
             imageItem.image = utility.loadUserImage(for: tableShare.shareWith, displayName: tableShare.shareWithDisplayname, urlBase: metadata.urlBase)
         } else {
@@ -122,10 +122,12 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         }
     }
 
-    private func getType(_ tableShare: tableShareV2) -> String {
+    private func getTypeString(_ tableShare: tableShareV2) -> String {
         switch tableShare.shareType {
         case NCShareCommon.shareTypeFederated:
             return NSLocalizedString("_remote_", comment: "")
+        case NCShareCommon.shareTypeFederatedGroup:
+            return NSLocalizedString("_remote_group_", comment: "")
         case NCShareCommon.shareTypeRoom:
             return NSLocalizedString("_conversation_", comment: "")
         default:
@@ -188,8 +190,8 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
 
     func setupCell(sharee: NKSharee, session: NCSession.Session) {
         let utility = NCUtility()
-        imageItem.image = NCShareCommon().getImageShareType(shareType: sharee.shareType)
-        imageShareeType.image = NCShareCommon().getImageShareType(shareType: sharee.shareType)
+        imageItem.image = NCShareCommon.getImageShareType(shareType: sharee.shareType)
+        imageShareeType.image = NCShareCommon.getImageShareType(shareType: sharee.shareType)
         let status = utility.getUserStatus(userIcon: sharee.userIcon, userStatus: sharee.userStatus, userMessage: sharee.userMessage)
 
         if let statusImage = status.statusImage {

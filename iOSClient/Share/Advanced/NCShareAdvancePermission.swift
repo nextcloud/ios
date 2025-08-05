@@ -132,7 +132,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
             // check reshare permission, if restricted add note
-            let maxPermission = metadata.directory ? NCPermissions().permissionMaxFolderShare : NCPermissions().permissionMaxFileShare
+            let maxPermission = metadata.directory ? NCSharePermissions.permissionMaxFolderShare : NCSharePermissions.permissionMaxFileShare
             return shareConfig.sharePermission != maxPermission ? shareConfig.permissions.count + 1 : shareConfig.permissions.count
         } else if section == 1 {
             return shareConfig.advanced.count
@@ -236,8 +236,8 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
         }
 
         Task {
-            if (share.shareType == NCShareCommon.shareTypeLink || share.shareType == NCShareCommon.shareTypeEmail) && NCPermissions().isPermissionToCanShare(share.permissions) {
-                share.permissions = share.permissions - NCPermissions().permissionShareShare
+            if (share.shareType == NCShareCommon.shareTypeLink || share.shareType == NCShareCommon.shareTypeEmail) && NCSharePermissions.hasPermissionToShare(share.permissions) {
+                share.permissions = share.permissions - NCSharePermissions.permissionReshareShare
             }
 
             if isNewShare {

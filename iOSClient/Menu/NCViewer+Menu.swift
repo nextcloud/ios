@@ -252,7 +252,7 @@ extension NCViewer {
         // DELETE
         //
         if !webView, metadata.isDeletable {
-            actions.append(.deleteAction(selectedMetadatas: [metadata], metadataFolder: nil, controller: controller, sender: sender))
+            actions.append(.deleteOrUnshareAction(selectedMetadatas: [metadata], metadataFolder: nil, controller: controller, sender: sender))
         }
 
         controller.presentMenu(with: actions, sender: sender)

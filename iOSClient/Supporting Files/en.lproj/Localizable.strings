@@ -329,6 +329,7 @@
 "_files_"                       = "files";
 "_file_"                        = "file";
 "_no_file_pull_down_"           = "Upload a file or pull down to refresh";
+"_no_file_no_permission_to_create_" = "You don't have permission to create or upload files in this folder.";
 "_limited_dimension_"           = "Maximum size reached";
 "_save_selected_files_"         = "Save to photo gallery";
 "_file_not_saved_cameraroll_"   = "Error: File not saved in photo album";
@@ -416,6 +417,7 @@
 "_share_reshare_disabled_"      = "You are not allowed to reshare this file/folder.";
 "_share_reshare_restricted_"    = "Note: You only have limited permission to reshare this file/folder.";
 "_remote_"                      = "Remote";
+"_remote_group_"                = "Remote group";
 "_conversation_"                = "Conversation";
 
 "_no_transfer_"                     = "No transfers yet";

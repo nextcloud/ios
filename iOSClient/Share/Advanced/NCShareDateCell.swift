@@ -12,7 +12,6 @@ class NCShareDateCell: UITableViewCell {
     let textField = UITextField()
     var shareType: Int
     var onReload: (() -> Void)?
-    let shareCommon = NCShareCommon()
 
     init(share: Shareable) {
         self.shareType = share.shareType

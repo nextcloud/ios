@@ -23,7 +23,7 @@
 import UIKit
 import DropDown
 
-class NCShareCommon: NSObject {
+enum NCShareCommon {
     static let shareTypeUser = 0
     static let shareTypeGroup = 1
     static let shareTypeLink = 3
@@ -38,7 +38,7 @@ class NCShareCommon: NSObject {
     static let itemTypeFile = "file"
     static let itemTypeFolder = "folder"
 
-    func createLinkAvatar(imageName: String, colorCircle: UIColor) -> UIImage? {
+    static func createLinkAvatar(imageName: String, colorCircle: UIColor) -> UIImage? {
         let size: CGFloat = 200
 
         let bottomImage = UIImage(named: "circle_fill")!.image(color: colorCircle, size: size / 2)
@@ -52,7 +52,7 @@ class NCShareCommon: NSObject {
         return image
     }
 
-    func copyLink(link: String, viewController: UIViewController, sender: Any) {
+    static func copyLink(link: String, viewController: UIViewController, sender: Any) {
         let objectsToShare = [link]
 
         let activityViewController = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
@@ -68,7 +68,7 @@ class NCShareCommon: NSObject {
         }
     }
 
-    func getImageShareType(shareType: Int) -> UIImage? {
+    static func getImageShareType(shareType: Int) -> UIImage? {
 
         switch shareType {
         case NCShareCommon.shareTypeUser:

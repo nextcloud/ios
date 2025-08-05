@@ -141,6 +141,9 @@ extension tableMetadata {
     }
 
     var isRenameable: Bool {
+        if !NCMetadataPermissions.canRename(self) {
+            return false
+        }
         if lock {
             return false
         }
@@ -193,8 +196,16 @@ extension tableMetadata {
         return isPDF || isImage
     }
 
+    var isCreatable: Bool {
+        if isDirectory {
+            return NCMetadataPermissions.canCreateFolder(self)
+        } else {
+            return NCMetadataPermissions.canCreateFile(self)
+        }
+    }
+
     var isDeletable: Bool {
-        if !isDirectoryE2EE && e2eEncrypted {
+        if (!isDirectoryE2EE && e2eEncrypted) || !NCMetadataPermissions.canDelete(self) {
             return false
         }
         return true
@@ -329,16 +340,15 @@ extension tableMetadata {
 
 extension NCManageDatabase {
     func isMetadataShareOrMounted(metadata: tableMetadata, metadataFolder: tableMetadata?) -> Bool {
-        let permissions = NCPermissions()
         var isShare = false
         var isMounted = false
 
         if metadataFolder != nil {
-            isShare = metadata.permissions.contains(permissions.permissionShared) && !metadataFolder!.permissions.contains(permissions.permissionShared)
-            isMounted = metadata.permissions.contains(permissions.permissionMounted) && !metadataFolder!.permissions.contains(permissions.permissionMounted)
+            isShare = metadata.permissions.contains(NCMetadataPermissions.permissionShared) && !metadataFolder!.permissions.contains(NCMetadataPermissions.permissionShared)
+            isMounted = metadata.permissions.contains(NCMetadataPermissions.permissionMounted) && !metadataFolder!.permissions.contains(NCMetadataPermissions.permissionMounted)
         } else if let directory = getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
-            isShare = metadata.permissions.contains(permissions.permissionShared) && !directory.permissions.contains(permissions.permissionShared)
-            isMounted = metadata.permissions.contains(permissions.permissionMounted) && !directory.permissions.contains(permissions.permissionMounted)
+            isShare = metadata.permissions.contains(NCMetadataPermissions.permissionShared) && !directory.permissions.contains(NCMetadataPermissions.permissionShared)
+            isMounted = metadata.permissions.contains(NCMetadataPermissions.permissionMounted) && !directory.permissions.contains(NCMetadataPermissions.permissionMounted)
         }
 
         if isShare || isMounted {

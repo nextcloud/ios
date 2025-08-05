@@ -85,15 +85,6 @@ final class NCUtility: NSObject, Sendable {
         return Array(Set(names))
     }
 
-    func permissionsContainsString(_ metadataPermissions: String, permissions: String) -> Bool {
-        for char in permissions {
-            if metadataPermissions.contains(char) == false {
-                return false
-            }
-        }
-        return true
-    }
-
     func getCustomUserAgentNCText() -> String {
         if UIDevice.current.userInterfaceIdiom == .phone {
             // NOTE: Hardcoded (May 2022)
