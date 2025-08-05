@@ -31,7 +31,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
         if metadata.e2eEncrypted {
             if capabilities.e2EEEnabled {
-                if !NCKeychain().isEndToEndEnabled(account: metadata.account) {
+                if !NCPreferences().isEndToEndEnabled(account: metadata.account) {
                     let e2ee = NCEndToEndInitialize()
                     e2ee.delegate = self
                     e2ee.initEndToEndEncryption(controller: self.controller, metadata: metadata)

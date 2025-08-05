@@ -41,8 +41,6 @@ class NCFavorite: NCCollectionViewCommon {
 
     override func reloadDataSource() async {
         var predicate = self.defaultPredicate
-        let directoryOnTop = await NCKeychain().getDirectoryOnTop(account: session.account)
-        let favoriteOnTop = await NCKeychain().getFavoriteOnTop(account: session.account)
 
         if self.serverUrl.isEmpty {
            predicate = NSPredicate(format: "account == %@ AND favorite == true AND NOT (status IN %@)", session.account, global.metadataStatusHideInView)
@@ -54,8 +52,6 @@ class NCFavorite: NCCollectionViewCommon {
 
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
                                                      layoutForView: layoutForView,
-                                                     directoryOnTop: directoryOnTop,
-                                                     favoriteOnTop: favoriteOnTop,
                                                      account: session.account)
         await super.reloadDataSource()
 
@@ -71,7 +67,7 @@ class NCFavorite: NCCollectionViewCommon {
 
         showLoadingTitle()
 
-        let showHiddenFiles = await NCKeychain().getShowHiddenFilesAsync(account: session.account)
+        let showHiddenFiles = await NCPreferences().getShowHiddenFilesAsync(account: session.account)
 
         let resultsListingFavorites = await NextcloudKit.shared.listingFavoritesAsync(showHiddenFiles: showHiddenFiles,
                                                                                       account: session.account) { task in

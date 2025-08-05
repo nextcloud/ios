@@ -122,7 +122,7 @@ actor NCNetworkingProcess {
                 let resultsScreenAwake = metadatas.filter { global.metadataStatusForScreenAwake.contains($0.status) }
 
                 if enableControllingScreenAwake {
-                    ScreenAwakeManager.shared.mode = resultsScreenAwake.isEmpty && !hasSyncTask ? .off : NCKeychain().screenAwakeMode
+                    ScreenAwakeManager.shared.mode = resultsScreenAwake.isEmpty && !hasSyncTask ? .off : NCPreferences().screenAwakeMode
                 }
 
                 await runMetadataPipelineAsync()
@@ -140,7 +140,7 @@ actor NCNetworkingProcess {
     }
 
     private func removeUploadedAssetsIfNeeded() async {
-        guard NCKeychain().removePhotoCameraRoll,
+        guard NCPreferences().removePhotoCameraRoll,
               let localIdentifiers = await self.database.getAssetLocalIdentifiersUploadedAsync(),
               !localIdentifiers.isEmpty else {
             return

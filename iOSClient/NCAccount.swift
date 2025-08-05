@@ -57,7 +57,7 @@ class NCAccount: NSObject {
         await changeAccount(account, userProfile: userProfile, controller: controller)
         nkLog(debug: "NCAccount changed user profile to \(userProfile.userId).")
 
-        NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
+        NCPreferences().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
 
         if let controller {
             controller.account = account
@@ -154,9 +154,9 @@ class NCAccount: NSObject {
         await NKCapabilities.shared.removeCapabilities(for: account)
         NCNetworking.shared.capabilities.removeValue(forKey: account)
         // Remove keychain security
-        NCKeychain().setPassword(account: account, password: nil)
-        NCKeychain().clearAllKeysEndToEnd(account: account)
-        NCKeychain().clearAllKeysPushNotification(account: account)
+        NCPreferences().setPassword(account: account, password: nil)
+        NCPreferences().clearAllKeysEndToEnd(account: account)
+        NCPreferences().clearAllKeysPushNotification(account: account)
         // Remove Account Server in Error
         NCNetworking.shared.removeServerErrorAccount(account)
     }
@@ -184,7 +184,7 @@ class NCAccount: NSObject {
     }
 
     func checkRemoteUser(account: String, controller: NCMainTabBarController?) async {
-        let token = NCKeychain().getPassword(account: account)
+        let token = NCPreferences().getPassword(account: account)
         guard let tblAccount = await NCManageDatabase.shared.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", account)) else {
             return
         }

@@ -241,7 +241,7 @@ class NCNetworkingE2EE: NSObject {
     }
 
     func unlockAll(account: String) async {
-        guard NCKeychain().isEndToEndEnabled(account: account) else { return }
+        guard NCPreferences().isEndToEndEnabled(account: account) else { return }
         let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
         let results = await self.database.getE2EAllTokenLockAsync(account: account)
         for result in results {

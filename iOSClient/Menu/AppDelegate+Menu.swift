@@ -112,7 +112,7 @@ extension AppDelegate {
             )
         )
 
-        if NCKeychain().isEndToEndEnabled(account: session.account) {
+        if NCPreferences().isEndToEndEnabled(account: session.account) {
             actions.append(.seperator(order: 0, sender: sender))
         }
 
@@ -129,7 +129,7 @@ extension AppDelegate {
         )
 
         // Folder encrypted
-        if serverUrl == utilityFileSystem.getHomeServer(session: session) && NCKeychain().isEndToEndEnabled(account: session.account) {
+        if serverUrl == utilityFileSystem.getHomeServer(session: session) && NCPreferences().isEndToEndEnabled(account: session.account) {
             actions.append(
                 NCMenuAction(title: NSLocalizedString("_create_folder_e2ee_", comment: ""),
                              icon: NCImageCache.shared.getFolderEncrypted(account: session.account),
@@ -141,7 +141,7 @@ extension AppDelegate {
             )
         }
 
-        if NCKeychain().isEndToEndEnabled(account: session.account) {
+        if NCPreferences().isEndToEndEnabled(account: session.account) {
             actions.append(.seperator(order: 0, sender: sender))
         }
 

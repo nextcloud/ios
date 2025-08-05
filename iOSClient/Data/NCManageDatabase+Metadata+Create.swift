@@ -284,7 +284,7 @@ extension NCManageDatabase {
             metadata.user = session.user
             metadata.userId = session.userId
             metadata.sceneIdentifier = sceneIdentifier
-            metadata.nativeFormat = !NCKeychain().formatCompatibility
+            metadata.nativeFormat = !NCPreferences().formatCompatibility
 
             if !metadata.urlBase.isEmpty, metadata.serverUrl.hasPrefix(metadata.urlBase) {
                 metadata.path = String(metadata.serverUrl.dropFirst(metadata.urlBase.count)) + "/"
@@ -348,7 +348,7 @@ extension NCManageDatabase {
         metadata.user = session.user
         metadata.userId = session.userId
         metadata.sceneIdentifier = sceneIdentifier
-        metadata.nativeFormat = !NCKeychain().formatCompatibility
+        metadata.nativeFormat = !NCPreferences().formatCompatibility
 
         if !metadata.urlBase.isEmpty, metadata.serverUrl.hasPrefix(metadata.urlBase) {
             metadata.path = String(metadata.serverUrl.dropFirst(metadata.urlBase.count)) + "/"

@@ -411,6 +411,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     }
 
     private func getActiveAccountCertificate(account: String) {
-        (self.p12Data, self.p12Password) = NCKeychain().getClientCertificate(account: account)
+        (self.p12Data, self.p12Password) = NCPreferences().getClientCertificate(account: account)
     }
 }

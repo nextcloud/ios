@@ -51,7 +51,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     internal let utilityFileSystem = NCUtilityFileSystem()
     internal let utility = NCUtility()
     internal let database = NCManageDatabase.shared
-    internal var filter: NCGlobal.TypeFilterScanDocument = NCKeychain().typeFilterScanDocument
+    internal var filter: NCGlobal.TypeFilterScanDocument = NCPreferences().typeFilterScanDocument
     internal var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
     }
@@ -192,7 +192,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
             break
         }
 
-        NCKeychain().typeFilterScanDocument = filter
+        NCPreferences().typeFilterScanDocument = filter
         collectionViewDestination.reloadData()
     }
 

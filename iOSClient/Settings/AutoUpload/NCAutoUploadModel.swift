@@ -254,18 +254,18 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
                 Task { @MainActor in
                     let result = await NCBackgroundLocationUploadManager.shared.requestAuthorizationAlwaysAsync(from: controller)
                     self.permissionGranted = result
-                    NCKeychain().location = result
+                    NCPreferences().location = result
                 }
             } else {
                 self.permissionGranted = false
-                NCKeychain().location = false
+                NCPreferences().location = false
             }
         }
     }
 
     func checkPermission() {
         let status = CLLocationManager().authorizationStatus
-        permissionGranted = (status == .authorizedAlways && NCKeychain().location)
+        permissionGranted = (status == .authorizedAlways && NCPreferences().location)
     }
 }
 

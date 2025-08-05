@@ -9,7 +9,7 @@ import NextcloudKit
 
 class NCPushNotification {
     static let shared = NCPushNotification()
-    let keychain = NCKeychain()
+    let keychain = NCPreferences()
     let global = NCGlobal.shared
 
     func applicationdidReceiveRemoteNotification(userInfo: [AnyHashable: Any], completion: @escaping (_ result: UIBackgroundFetchResult) -> Void) {
@@ -49,8 +49,8 @@ class NCPushNotification {
             return
         }
 
-        NCKeychain().setPushNotificationPublicKey(account: account, data: keyPair.publicKey)
-        NCKeychain().setPushNotificationPrivateKey(account: account, data: keyPair.privateKey)
+        NCPreferences().setPushNotificationPublicKey(account: account, data: keyPair.publicKey)
+        NCPreferences().setPushNotificationPrivateKey(account: account, data: keyPair.privateKey)
 
         let proxyServerPath = NCBrandOptions.shared.pushNotificationServerProxy
 

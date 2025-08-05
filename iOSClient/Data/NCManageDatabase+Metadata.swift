@@ -209,7 +209,7 @@ extension tableMetadata {
     }
 
     var canUnsetDirectoryAsE2EE: Bool {
-        return !isDirectoryE2EE && directory && size == 0 && e2eEncrypted && NCKeychain().isEndToEndEnabled(account: account)
+        return !isDirectoryE2EE && directory && size == 0 && e2eEncrypted && NCPreferences().isEndToEndEnabled(account: account)
     }
 
     var isDownload: Bool {

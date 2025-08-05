@@ -117,7 +117,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     var showDescription: Bool {
-        !headerRichWorkspaceDisable && NCKeychain().showDescription
+        !headerRichWorkspaceDisable && NCPreferences().showDescription
     }
 
     var isRecommendationActived: Bool {
@@ -843,19 +843,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     await self.reloadDataSource()
                 }
             } providers: { account, searchProviders in
-                Task {
-                    let directoryOnTop = await NCKeychain().getDirectoryOnTop(account: account)
-                    let favoriteOnTop = await NCKeychain().getFavoriteOnTop(account: account)
-                    self.providers = searchProviders
-                    self.searchResults = []
-                    self.dataSource = NCCollectionViewDataSource(metadatas: [],
-                                                                 layoutForView: self.layoutForView,
-                                                                 providers: self.providers,
-                                                                 searchResults: self.searchResults,
-                                                                 directoryOnTop: directoryOnTop,
-                                                                 favoriteOnTop: favoriteOnTop,
-                                                                 account: account)
-                }
+                self.providers = searchProviders
+                self.searchResults = []
+                self.dataSource = NCCollectionViewDataSource(metadatas: [],
+                                                             layoutForView: self.layoutForView,
+                                                             providers: self.providers,
+                                                             searchResults: self.searchResults,
+                                                             account: account)
             } update: { _, _, searchResult, metadatas in
                 guard let metadatas, !metadatas.isEmpty, self.isSearchingMode, let searchResult else { return }
                 self.networking.unifiedSearchQueue.addOperation(NCCollectionViewUnifiedSearch(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult))
@@ -881,8 +875,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                         await self.reloadDataSource()
                         return
                     }
-                    let directoryOnTop = await NCKeychain().getDirectoryOnTop(account: self.session.account)
-                    let favoriteOnTop = await NCKeychain().getFavoriteOnTop(account: self.session.account)
                     let ocId = metadatasSearch.map { $0.ocId }
                     let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "ocId IN %@", ocId),
                                                                           withLayout: self.layoutForView,
@@ -892,8 +884,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                                                  layoutForView: self.layoutForView,
                                                                  providers: self.providers,
                                                                  searchResults: self.searchResults,
-                                                                 directoryOnTop: directoryOnTop,
-                                                                 favoriteOnTop: favoriteOnTop,
                                                                  account: self.session.account)
                     self.networkSearchInProgress = false
                     await self.reloadDataSource()
@@ -969,7 +959,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if isRecommendationActived,
            !isSearchingMode,
-           NCKeychain().showRecommendedFiles,
+           NCPreferences().showRecommendedFiles,
            !self.database.getRecommendedFiles(account: self.session.account).isEmpty {
             heightHeaderRecommendations = self.heightHeaderRecommendations
             heightHeaderSection = self.heightHeaderSection

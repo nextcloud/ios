@@ -153,7 +153,7 @@ extension NCManageDatabase {
                             let account = tblAccount.account
                             if account.isEmpty { continue }
 
-                            let password = NCKeychain().getPassword(account: account)
+                            let password = NCPreferences().getPassword(account: account)
                             if !password.isEmpty {
                                 codableObjects.append(tblAccount.tableAccountToCodable())
                             }
@@ -196,7 +196,7 @@ extension NCManageDatabase {
 
             try realm.write {
                 for codableObject in codableObjects {
-                    if !NCKeychain().getPassword(account: codableObject.account).isEmpty {
+                    if !NCPreferences().getPassword(account: codableObject.account).isEmpty {
                         let tableAccount = tableAccount(codableObject: codableObject)
                         realm.add(tableAccount, update: .all)
                     }
@@ -218,7 +218,7 @@ extension NCManageDatabase {
             }
 
             // Save password in Keychain
-            NCKeychain().setPassword(account: account, password: password)
+            NCPreferences().setPassword(account: account, password: password)
 
             let newAccount = tableAccount()
 

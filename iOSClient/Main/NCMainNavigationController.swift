@@ -363,10 +363,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
         let sortSubmenu = UIMenu(title: NSLocalizedString("_order_by_", comment: ""), options: .displayInline, children: [byName, byNewest, byLargest])
 
-        let favoriteOnTop = await NCKeychain().getFavoriteOnTop(account: self.session.account)
+        let favoriteOnTop = NCPreferences().getFavoriteOnTop(account: self.session.account)
         let favoriteOnTopAction = UIAction(title: NSLocalizedString("_favorite_on_top_", comment: ""), state: favoriteOnTop ? .on : .off) { _ in
             Task {
-                await NCKeychain().setFavoriteOnTop(account: self.session.account, value: !favoriteOnTop)
+                NCPreferences().setFavoriteOnTop(account: self.session.account, value: !favoriteOnTop)
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, status: nil)
                 }
@@ -374,10 +374,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             }
         }
 
-        let directoryOnTop = await NCKeychain().getDirectoryOnTop(account: self.session.account)
+        let directoryOnTop = NCPreferences().getDirectoryOnTop(account: self.session.account)
         let directoryOnTopAction = UIAction(title: NSLocalizedString("_directory_on_top_", comment: ""), state: directoryOnTop ? .on : .off) { _ in
             Task {
-                await NCKeychain().setDirectoryOnTop(account: self.session.account, value: !directoryOnTop)
+                NCPreferences().setDirectoryOnTop(account: self.session.account, value: !directoryOnTop)
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, status: nil)
                 }
@@ -385,19 +385,19 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             }
         }
 
-        let hiddenFiles = await NCKeychain().getShowHiddenFilesAsync(account: self.session.account)
+        let hiddenFiles = await NCPreferences().getShowHiddenFilesAsync(account: self.session.account)
         let hiddenFilesAction = UIAction(title: NSLocalizedString("_show_hidden_files_", comment: ""), state: hiddenFiles ? .on : .off) { _ in
             Task {
-                await NCKeychain().setShowHiddenFiles(account: self.session.account, value: !hiddenFiles)
+                await NCPreferences().setShowHiddenFiles(account: self.session.account, value: !hiddenFiles)
                 await self.collectionViewCommon?.getServerData(refresh: true)
                 await self.updateRightMenu()
             }
         }
 
-        let personalFilesOnly = await NCKeychain().getPersonalFilesOnlyAsync(account: self.session.account)
+        let personalFilesOnly = NCPreferences().getPersonalFilesOnly(account: self.session.account)
         let personalFilesOnlyAction = UIAction(title: NSLocalizedString("_personal_files_only_", comment: ""), image: utility.loadImage(named: "folder.badge.person.crop", colors: NCBrandColor.shared.iconImageMultiColors), state: personalFilesOnly ? .on : .off) { _ in
             Task {
-                await NCKeychain().setPersonalFilesOnly(account: self.session.account, value: !personalFilesOnly)
+                NCPreferences().setPersonalFilesOnly(account: self.session.account, value: !personalFilesOnly)
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, status: nil)
                 }
@@ -405,9 +405,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             }
         }
 
-        let showDescriptionKeychain = NCKeychain().showDescription
+        let showDescriptionKeychain = NCPreferences().showDescription
         let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), state: showDescriptionKeychain ? .on : .off) { _ in
-            NCKeychain().showDescription = !showDescriptionKeychain
+            NCPreferences().showDescription = !showDescriptionKeychain
             Task {
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, status: nil)
@@ -416,14 +416,14 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             }
         }
 
-        let showRecommendedFilesKeychain = NCKeychain().showRecommendedFiles
+        let showRecommendedFilesKeychain = NCPreferences().showRecommendedFiles
         let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
         let capabilityRecommendations = capabilities.recommendations
 
         if capabilityRecommendations {
             showRecommendedFiles = UIAction(title: NSLocalizedString("_show_recommended_files_", comment: ""), state: showRecommendedFilesKeychain ? .on : .off) { _ in
                 Task {
-                    NCKeychain().showRecommendedFiles = !showRecommendedFilesKeychain
+                    NCPreferences().showRecommendedFiles = !showRecommendedFilesKeychain
                     collectionViewCommon.collectionView.reloadData()
                     await self.updateRightMenu()
                 }

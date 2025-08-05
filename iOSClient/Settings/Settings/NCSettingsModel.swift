@@ -11,7 +11,7 @@ import NextcloudKit
 
 class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
     // Keychain access
-    var keychain = NCKeychain()
+    var keychain = NCPreferences()
     // State to control the lock on/off section
     @Published var isLockActive: Bool = false
     // State to control the enable TouchID toggle

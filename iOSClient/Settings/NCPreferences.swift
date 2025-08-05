@@ -7,7 +7,7 @@ import UIKit
 import KeychainAccess
 import NextcloudKit
 
-final class NCKeychain: NSObject {
+final class NCPreferences: NSObject {
     let keychain = Keychain(service: "com.nextcloud.keychain")
 
     var showDescription: Bool {
@@ -427,73 +427,31 @@ final class NCKeychain: NSObject {
         keychain[key] = password
     }
 
-    func setPersonalFilesOnly(account: String, value: Bool) async {
-        let key = "personalFilesOnly" + account
-        await withCheckedContinuation { continuation in
-            Task {
-                keychain[key] = String(value)
-                continuation.resume()
-            }
-        }
+    func setPersonalFilesOnly(account: String, value: Bool) {
+        let userDefaultsKey = "personalFilesOnly" + "_\(account)"
+        UserDefaults.standard.set(value, forKey: userDefaultsKey)
     }
 
     func getPersonalFilesOnly(account: String) -> Bool {
-        let key = "personalFilesOnly" + account
-        if let value = try? keychain.get(key), let result = Bool(value) {
-            return result
-        } else {
-            return false
-        }
+        return migrateKeychainBoolToUserDefaults(key: "personalFilesOnly", account: account, defaultValue: true)
     }
 
-    func getPersonalFilesOnlyAsync(account: String) async -> Bool {
-        let key = "personalFilesOnly" + account
-        return await withCheckedContinuation { continuation in
-            Task {
-                let result = (try? keychain.get(key)).flatMap(Bool.init) ?? false
-                continuation.resume(returning: result)
-            }
-        }
+    func setFavoriteOnTop(account: String, value: Bool) {
+        let userDefaultsKey = "favoriteOnTop" + "_\(account)"
+        UserDefaults.standard.set(value, forKey: userDefaultsKey)
     }
 
-    func setFavoriteOnTop(account: String, value: Bool) async {
-        let key = "favoriteOnTop" + account
-        await withCheckedContinuation { continuation in
-            Task {
-                keychain[key] = String(value)
-                continuation.resume()
-            }
-        }
+    func getFavoriteOnTop(account: String) -> Bool {
+        return migrateKeychainBoolToUserDefaults(key: "favoriteOnTop", account: account, defaultValue: true)
     }
 
-    func getFavoriteOnTop(account: String) async -> Bool {
-        let key = "favoriteOnTop" + account
-        return await withCheckedContinuation { continuation in
-            Task {
-                let result = (try? keychain.get(key)).flatMap(Bool.init) ?? true
-                continuation.resume(returning: result)
-            }
-        }
+    func setDirectoryOnTop(account: String, value: Bool) {
+        let userDefaultsKey = "directoryOnTop" + "_\(account)"
+        UserDefaults.standard.set(value, forKey: userDefaultsKey)
     }
 
-    func setDirectoryOnTop(account: String, value: Bool) async {
-        let key = "directoryOnTop" + account
-        await withCheckedContinuation { continuation in
-            Task {
-                keychain[key] = String(value)
-                continuation.resume()
-            }
-        }
-    }
-
-    func getDirectoryOnTop(account: String) async -> Bool {
-        let key = "directoryOnTop" + account
-        return await withCheckedContinuation { continuation in
-            Task {
-                let result = (try? keychain.get(key)).flatMap(Bool.init) ?? true
-                continuation.resume(returning: result)
-            }
-        }
+    func getDirectoryOnTop(account: String) -> Bool {
+        return migrateKeychainBoolToUserDefaults(key: "directoryOnTop", account: account, defaultValue: true)
     }
 
     func setShowHiddenFiles(account: String, value: Bool) async {
@@ -523,6 +481,24 @@ final class NCKeychain: NSObject {
                 continuation.resume(returning: result)
             }
         }
+    }
+
+    func migrateKeychainBoolToUserDefaults(key: String, account: String, defaultValue: Bool) -> Bool {
+        let userDefaultsKey = "\(key)_\(account)"
+        let keychainKey = "\(key)\(account)"
+
+        if let value = UserDefaults.standard.object(forKey: userDefaultsKey) as? Bool {
+            return value
+        }
+
+        if let value = try? keychain.get(keychainKey), let boolValue = Bool(value) {
+            UserDefaults.standard.set(boolValue, forKey: userDefaultsKey)
+            try? keychain.remove(keychainKey)
+            return boolValue
+        }
+
+        UserDefaults.standard.set(defaultValue, forKey: userDefaultsKey)
+        return defaultValue
     }
 
     // MARK: - E2EE
@@ -707,4 +683,3 @@ final class NCKeychain: NSObject {
         try? keychain.removeAll()
     }
 }
-

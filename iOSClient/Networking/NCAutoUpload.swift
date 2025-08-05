@@ -23,7 +23,7 @@ class NCAutoUpload: NSObject {
               tblAccount.autoUploadOnlyNew else {
             return 0
         }
-        let albumIds = NCKeychain().getAutoUploadAlbumIds(account: tblAccount.account)
+        let albumIds = NCPreferences().getAutoUploadAlbumIds(account: tblAccount.account)
         let assetCollections = PHAssetCollection.allAlbums.filter({albumIds.contains($0.localIdentifier)})
 
         let result = await getCameraRollAssets(controller: nil, assetCollections: assetCollections, tblAccount: tableAccount(value: tblAccount))
@@ -83,8 +83,8 @@ class NCAutoUpload: NSObject {
         let session = NCSession.shared.getSession(account: tblAccount.account)
         let autoUploadServerUrlBase = await self.database.getAccountAutoUploadServerUrlBaseAsync(account: tblAccount.account, urlBase: tblAccount.urlBase, userId: tblAccount.userId)
         var metadatas: [tableMetadata] = []
-        let formatCompatibility = NCKeychain().formatCompatibility
-        let keychainLivePhoto = NCKeychain().livePhoto
+        let formatCompatibility = NCPreferences().formatCompatibility
+        let keychainLivePhoto = NCPreferences().livePhoto
         let fileSystem = NCUtilityFileSystem()
         let skipFileNames = await self.database.fetchSkipFileNamesAsync(account: tblAccount.account,
                                                                         autoUploadServerUrlBase: autoUploadServerUrlBase)

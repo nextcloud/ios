@@ -7,7 +7,7 @@ import SwiftUI
 
 class NCDisplayModel: ObservableObject, ViewOnAppearHandling {
     // Keychain access
-    var keychain = NCKeychain()
+    var keychain = NCPreferences()
     // Root View Controller
     @Published var controller: NCMainTabBarController?
     // State variable for enabling the automatic appreance

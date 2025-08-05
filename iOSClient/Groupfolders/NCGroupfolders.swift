@@ -60,8 +60,6 @@ class NCGroupfolders: NCCollectionViewCommon {
 
     override func reloadDataSource() async {
         var metadatas: [tableMetadata] = []
-        let directoryOnTop = await NCKeychain().getDirectoryOnTop(account: session.account)
-        let favoriteOnTop = await NCKeychain().getFavoriteOnTop(account: session.account)
 
         if self.serverUrl.isEmpty {
             metadatas = await database.getMetadatasFromGroupfoldersAsync(session: session,
@@ -74,8 +72,6 @@ class NCGroupfolders: NCCollectionViewCommon {
 
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
                                                      layoutForView: layoutForView,
-                                                     directoryOnTop: directoryOnTop,
-                                                     favoriteOnTop: favoriteOnTop,
                                                      account: session.account)
         await super.reloadDataSource()
 
@@ -92,7 +88,7 @@ class NCGroupfolders: NCCollectionViewCommon {
         showLoadingTitle()
 
         let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
-        let showHiddenFiles = await NCKeychain().getShowHiddenFilesAsync(account: session.account)
+        let showHiddenFiles = await NCPreferences().getShowHiddenFilesAsync(account: session.account)
 
         let resultsGroupfolders = await NextcloudKit.shared.getGroupfoldersAsync(account: session.account) { task in
             self.dataSourceTask = task

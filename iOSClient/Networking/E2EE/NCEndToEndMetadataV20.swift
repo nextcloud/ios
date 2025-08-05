@@ -83,7 +83,7 @@ extension NCEndToEndMetadata {
         guard let directoryTop = await utilityFileSystem.getMetadataE2EETopAsync(serverUrl: serverUrl, session: session) else {
             return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorE2EEKeyDirectoryTop, errorDescription: "_e2e_error_"))
         }
-        guard let certificate = NCKeychain().getEndToEndCertificate(account: session.account) else {
+        guard let certificate = NCPreferences().getEndToEndCertificate(account: session.account) else {
             return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_ \(NCGlobal.shared.errorUnexpectedResponseFromDB)"))
         }
 
@@ -261,7 +261,7 @@ extension NCEndToEndMetadata {
                         var metadataKey: Data?
                         if let encryptedMetadataKey = user.encryptedMetadataKey {
                             let data = Data(base64Encoded: encryptedMetadataKey)
-                            if let decrypted = NCEndToEndEncryption.shared().decryptAsymmetricData(data, privateKey: NCKeychain().getEndToEndPrivateKey(account: session.account)) {
+                            if let decrypted = NCEndToEndEncryption.shared().decryptAsymmetricData(data, privateKey: NCPreferences().getEndToEndPrivateKey(account: session.account)) {
                                 metadataKey = decrypted
                             }
                         }
@@ -298,7 +298,7 @@ extension NCEndToEndMetadata {
                     let authenticationTag = filedop.value.authenticationTag
                     for user in filedop.value.users where user.userId == session.userId {
                         let data = Data(base64Encoded: user.encryptedFiledropKey)
-                        if let decryptedFiledropKey = NCEndToEndEncryption.shared().decryptAsymmetricData(data, privateKey: NCKeychain().getEndToEndPrivateKey(account: session.account)) {
+                        if let decryptedFiledropKey = NCEndToEndEncryption.shared().decryptAsymmetricData(data, privateKey: NCPreferences().getEndToEndPrivateKey(account: session.account)) {
                             let filedropKey = decryptedFiledropKey.base64EncodedString()
                             guard let decryptedFiledrop = NCEndToEndEncryption.shared().decryptPayloadFile(ciphertext, key: filedropKey, initializationVector: nonce, authenticationTag: authenticationTag),
                                   decryptedFiledrop.isGzipped else {
@@ -424,7 +424,7 @@ extension NCEndToEndMetadata {
             let decoded = try? JSONSerialization.data(withJSONObject: dataSerialization, options: [.sortedKeys, .withoutEscapingSlashes])
             let base64 = decoded!.base64EncodedString()
             if let base64Data = base64.data(using: .utf8),
-               let signatureData = NCEndToEndEncryption.shared().generateSignatureCMS(base64Data, certificate: certificate, privateKey: NCKeychain().getEndToEndPrivateKey(account: session.account), userId: session.userId) {
+               let signatureData = NCEndToEndEncryption.shared().generateSignatureCMS(base64Data, certificate: certificate, privateKey: NCPreferences().getEndToEndPrivateKey(account: session.account), userId: session.userId) {
                 return signatureData.base64EncodedString()
             }
         } catch {

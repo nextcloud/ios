@@ -189,9 +189,7 @@ class NCFiles: NCCollectionViewCommon {
             return
         }
 
-        let directoryOnTop = await NCKeychain().getDirectoryOnTop(account: self.session.account)
-        let favoriteOnTop = await NCKeychain().getFavoriteOnTop(account: self.session.account)
-        let personalFilesOnly = await NCKeychain().getPersonalFilesOnlyAsync(account: self.session.account)
+        let personalFilesOnly = NCPreferences().getPersonalFilesOnly(account: self.session.account)
         let predicate: NSPredicate = {
             if personalFilesOnly {
                 return self.personalFilesOnlyPredicate
@@ -210,8 +208,6 @@ class NCFiles: NCCollectionViewCommon {
 
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
                                                      layoutForView: layoutForView,
-                                                     directoryOnTop: directoryOnTop,
-                                                     favoriteOnTop: favoriteOnTop,
                                                      account: session.account)
         await super.reloadDataSource()
 
@@ -319,7 +315,7 @@ class NCFiles: NCCollectionViewCommon {
         //
 
         guard e2eEncrypted,
-              NCKeychain().isEndToEndEnabled(account: account),
+              NCPreferences().isEndToEndEnabled(account: account),
               await !NCNetworkingE2EE().isInUpload(account: account, serverUrl: serverUrl) else {
             return (metadatas, error, true)
         }

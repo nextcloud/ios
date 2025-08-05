@@ -59,7 +59,7 @@ extension NCShareExtension: NCAccountRequestDelegate {
                                               urlBase: tblAccount.urlBase,
                                               user: tblAccount.user,
                                               userId: tblAccount.userId,
-                                              password: NCKeychain().getPassword(account: tblAccount.account),
+                                              password: NCPreferences().getPassword(account: tblAccount.account),
                                               userAgent: userAgent,
                                               httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
                                               httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,

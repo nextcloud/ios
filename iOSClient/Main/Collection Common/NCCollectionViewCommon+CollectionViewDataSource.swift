@@ -502,7 +502,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 let recommendations = self.database.getRecommendedFiles(account: self.session.account)
                 var sectionText = NSLocalizedString("_all_files_", comment: "")
 
-                if NCKeychain().getPersonalFilesOnly(account: session.account) {
+                if NCPreferences().getPersonalFilesOnly(account: session.account) {
                     sectionText = NSLocalizedString("_personal_files_", comment: "")
                 }
 
