@@ -13,7 +13,7 @@ extension NCNetworking {
             return
         }
 
-        let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: session.account)
+        let showHiddenFiles = await NCKeychain().getShowHiddenFilesAsync(account: session.account)
         var recommendationsToInsert: [NKRecommendation] = []
         let results = await NextcloudKit.shared.getRecommendedFilesAsync(account: session.account)
         var serverUrlFileName = ""

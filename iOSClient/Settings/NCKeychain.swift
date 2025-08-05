@@ -427,9 +427,14 @@ final class NCKeychain: NSObject {
         keychain[key] = password
     }
 
-    func setPersonalFilesOnly(account: String, value: Bool) {
+    func setPersonalFilesOnly(account: String, value: Bool) async {
         let key = "personalFilesOnly" + account
-        keychain[key] = String(value)
+        await withCheckedContinuation { continuation in
+            Task {
+                keychain[key] = String(value)
+                continuation.resume()
+            }
+        }
     }
 
     func getPersonalFilesOnly(account: String) -> Bool {
@@ -441,7 +446,15 @@ final class NCKeychain: NSObject {
         }
     }
 
-    //MARK: - FAVORITE ON TOP
+    func getPersonalFilesOnlyAsync(account: String) async -> Bool {
+        let key = "personalFilesOnly" + account
+        return await withCheckedContinuation { continuation in
+            Task {
+                let result = (try? keychain.get(key)).flatMap(Bool.init) ?? false
+                continuation.resume(returning: result)
+            }
+        }
+    }
 
     func setFavoriteOnTop(account: String, value: Bool) async {
         let key = "favoriteOnTop" + account
@@ -463,8 +476,6 @@ final class NCKeychain: NSObject {
         }
     }
 
-    // MARK: - DIRECTORY ON TOP
-
     func setDirectoryOnTop(account: String, value: Bool) async {
         let key = "directoryOnTop" + account
         await withCheckedContinuation { continuation in
@@ -485,9 +496,14 @@ final class NCKeychain: NSObject {
         }
     }
 
-    func setShowHiddenFiles(account: String, value: Bool) {
+    func setShowHiddenFiles(account: String, value: Bool) async {
         let key = "showHiddenFiles" + account
-        keychain[key] = String(value)
+        await withCheckedContinuation { continuation in
+            Task {
+                keychain[key] = String(value)
+                continuation.resume()
+            }
+        }
     }
 
     func getShowHiddenFiles(account: String) -> Bool {
@@ -496,6 +512,16 @@ final class NCKeychain: NSObject {
             return result
         } else {
             return false
+        }
+    }
+
+    func getShowHiddenFilesAsync(account: String) async -> Bool {
+        let key = "showHiddenFiles" + account
+        return await withCheckedContinuation { continuation in
+            Task {
+                let result = (try? keychain.get(key)).flatMap(Bool.init) ?? false
+                continuation.resume(returning: result)
+            }
         }
     }
 

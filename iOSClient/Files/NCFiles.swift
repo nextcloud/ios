@@ -191,8 +191,9 @@ class NCFiles: NCCollectionViewCommon {
 
         let directoryOnTop = await NCKeychain().getDirectoryOnTop(account: self.session.account)
         let favoriteOnTop = await NCKeychain().getFavoriteOnTop(account: self.session.account)
+        let personalFilesOnly = await NCKeychain().getPersonalFilesOnlyAsync(account: self.session.account)
         let predicate: NSPredicate = {
-            if NCKeychain().getPersonalFilesOnly(account: self.session.account) {
+            if personalFilesOnly {
                 return self.personalFilesOnlyPredicate
             } else {
                 return self.defaultPredicate

@@ -71,7 +71,7 @@ class NCFavorite: NCCollectionViewCommon {
 
         showLoadingTitle()
 
-        let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: session.account)
+        let showHiddenFiles = await NCKeychain().getShowHiddenFilesAsync(account: session.account)
 
         let resultsListingFavorites = await NextcloudKit.shared.listingFavoritesAsync(showHiddenFiles: showHiddenFiles,
                                                                                       account: session.account) { task in

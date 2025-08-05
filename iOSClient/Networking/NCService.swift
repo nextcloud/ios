@@ -185,7 +185,7 @@ class NCService: NSObject {
     // MARK: -
 
     func synchronize(account: String) async {
-        let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: account)
+        let showHiddenFiles = await NCKeychain().getShowHiddenFilesAsync(account: account)
         guard let tblAccount = await self.database.getTableAccountAsync(account: account) else {
             return
         }

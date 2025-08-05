@@ -385,20 +385,19 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             }
         }
 
-        let hiddenFiles = NCKeychain().getShowHiddenFiles(account: self.session.account)
+        let hiddenFiles = await NCKeychain().getShowHiddenFilesAsync(account: self.session.account)
         let hiddenFilesAction = UIAction(title: NSLocalizedString("_show_hidden_files_", comment: ""), state: hiddenFiles ? .on : .off) { _ in
-            NCKeychain().setShowHiddenFiles(account: self.session.account, value: !hiddenFiles)
             Task {
+                await NCKeychain().setShowHiddenFiles(account: self.session.account, value: !hiddenFiles)
                 await self.collectionViewCommon?.getServerData(refresh: true)
                 await self.updateRightMenu()
             }
         }
 
-        let personalFilesOnly = NCKeychain().getPersonalFilesOnly(account: self.session.account)
+        let personalFilesOnly = await NCKeychain().getPersonalFilesOnlyAsync(account: self.session.account)
         let personalFilesOnlyAction = UIAction(title: NSLocalizedString("_personal_files_only_", comment: ""), image: utility.loadImage(named: "folder.badge.person.crop", colors: NCBrandColor.shared.iconImageMultiColors), state: personalFilesOnly ? .on : .off) { _ in
-            NCKeychain().setPersonalFilesOnly(account: self.session.account, value: !personalFilesOnly)
-
             Task {
+                await NCKeychain().setPersonalFilesOnly(account: self.session.account, value: !personalFilesOnly)
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, status: nil)
                 }
