@@ -127,22 +127,24 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     }
 
     func setEditMode(_ editMode: Bool) {
-        isEditMode = editMode
-        fileSelect.removeAll()
+        Task {
+            isEditMode = editMode
+            fileSelect.removeAll()
 
-        navigationItem.hidesBackButton = editMode
-        navigationController?.interactivePopGestureRecognizer?.isEnabled = !editMode
-        searchController(enabled: !editMode)
-        isHiddenPlusButton(editMode)
+            navigationItem.hidesBackButton = editMode
+            navigationController?.interactivePopGestureRecognizer?.isEnabled = !editMode
+            searchController(enabled: !editMode)
+            isHiddenPlusButton(editMode)
 
-        if editMode {
-            navigationItem.leftBarButtonItems = nil
-        } else {
-            (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
+            if editMode {
+                navigationItem.leftBarButtonItems = nil
+            } else {
+                await (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
+            }
+            await (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
+
+            self.collectionView.reloadData()
         }
-        (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
-
-        self.collectionView.reloadData()
     }
 
     func convertLivePhoto(metadataFirst: tableMetadata?, metadataLast: tableMetadata?) {

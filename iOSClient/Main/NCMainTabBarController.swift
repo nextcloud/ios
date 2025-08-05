@@ -122,9 +122,9 @@ class NCMainTabBarController: UITabBarController {
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { _ in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            Task {
                 if !isAppInBackground {
-                    self.timerCheck()
+                    await self.timerCheck()
                 }
             }
         }
@@ -142,28 +142,25 @@ class NCMainTabBarController: UITabBarController {
         }
     }
 
-    private func timerCheck() {
-        self.timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: false, block: { _ in
-            Task {
-                let capabilities = await NKCapabilities.shared.getCapabilities(for: self.account)
+    @MainActor
+    private func timerCheck() async {
+        while true {
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
 
-                // Check error
-                await NCNetworking.shared.checkServerError(account: self.account, controller: self)
+            let capabilities = await NKCapabilities.shared.getCapabilities(for: self.account)
 
-                await MainActor.run {
-                    // Update right bar button item
-                    if let navigationController = self.selectedViewController as? NCMainNavigationController {
-                        navigationController.updateRightBarButtonItems(self.tabBar.items?[0])
-                    }
-                    // Update Activity tab bar
-                    if let item = self.tabBar.items?[3] {
-                        item.isEnabled = capabilities.activityEnabled
-                    }
+            // Check error
+            await NCNetworking.shared.checkServerError(account: self.account, controller: self)
 
-                    self.timerCheck()
-                }
+            // Update right bar button item
+            if let navigationController = self.selectedViewController as? NCMainNavigationController {
+                await navigationController.updateRightBarButtonItems(self.tabBar.items?[0])
             }
-        })
+            // Update Activity tab bar
+            if let item = self.tabBar.items?[3] {
+                item.isEnabled = capabilities.activityEnabled
+            }
+        }
     }
 
     func currentViewController() -> UIViewController? {

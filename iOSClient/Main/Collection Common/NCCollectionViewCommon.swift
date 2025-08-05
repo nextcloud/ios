@@ -275,8 +275,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         isEditMode = false
 
-        (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
-        (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
+        Task {
+            await (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
+            await (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
+        }
 
         layoutForView = database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl)
         if isLayoutList {
@@ -584,7 +586,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         self.collectionView.collectionViewLayout.invalidateLayout()
 
-        (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
+        Task {
+            await (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
+        }
     }
 
     func getNavigationTitle() -> String {
@@ -792,6 +796,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - DataSource
 
+    @MainActor
     func reloadDataSource() async {
         if !isSearchingMode {
             Task.detached {
@@ -801,15 +806,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
         }
 
-        DispatchQueue.main.async {
-            UIView.transition(with: self.collectionView,
-                              duration: 0.20,
-                              options: .transitionCrossDissolve,
-                              animations: { self.collectionView.reloadData() },
-                              completion: nil)
+        UIView.transition(with: self.collectionView,
+                          duration: 0.20,
+                          options: .transitionCrossDissolve,
+                          animations: { self.collectionView.reloadData() },
+                          completion: nil)
 
-            (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
-        }
+        await (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
     }
 
     func getServerData(refresh: Bool = false) async {

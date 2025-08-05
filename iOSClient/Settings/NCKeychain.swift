@@ -472,7 +472,7 @@ final class NCKeychain: NSObject {
         }
     }
 
-    //MARK: - DIRECTORY ON TOP
+    // MARK: - DIRECTORY ON TOP
 
     func setDirectoryOnTop(account: String, value: Bool) async {
         let key = "directoryOnTop" + account
