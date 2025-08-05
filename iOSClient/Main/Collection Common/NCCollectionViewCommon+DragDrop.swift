@@ -115,6 +115,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
             // TODO: NOT POSSIBLE DRAG DROP DIFFERENT ACCOUNT
             if let metadata = metadatas.first,
                metadata.account != self.session.account {
+                NCContentPresenter().showInfo(description: "_move_copy_diff_account_")
                 return
             }
             DragDropHover.shared.sourceMetadatas = metadatas

@@ -97,6 +97,7 @@
 "_file_conflict_exists_"    = "Already existing files";
 "_file_not_rewite_doc_"     = "It is not possible to overwrite a document but only to create a new one.";
 "_move_or_copy_"            = "Move or copy";
+"_move_copy_diff_account_"  = "You cannot copy or move files between different accounts.";
 "_copy_"                    = "Copy";
 "_now_"                     = "Now";
 "_wait_"                    = "Please wait …";
