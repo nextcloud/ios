@@ -67,8 +67,7 @@ class NCFavorite: NCCollectionViewCommon {
 
         showLoadingTitle()
 
-        let showHiddenFiles = await NCPreferences().getShowHiddenFilesAsync(account: session.account)
-
+        let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: session.account)
         let resultsListingFavorites = await NextcloudKit.shared.listingFavoritesAsync(showHiddenFiles: showHiddenFiles,
                                                                                       account: session.account) { task in
             self.dataSourceTask = task

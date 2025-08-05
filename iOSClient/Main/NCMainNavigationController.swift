@@ -385,10 +385,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             }
         }
 
-        let hiddenFiles = await NCPreferences().getShowHiddenFilesAsync(account: self.session.account)
+        let hiddenFiles = NCPreferences().getShowHiddenFiles(account: self.session.account)
         let hiddenFilesAction = UIAction(title: NSLocalizedString("_show_hidden_files_", comment: ""), state: hiddenFiles ? .on : .off) { _ in
             Task {
-                await NCPreferences().setShowHiddenFiles(account: self.session.account, value: !hiddenFiles)
+                NCPreferences().setShowHiddenFiles(account: self.session.account, value: !hiddenFiles)
                 await self.collectionViewCommon?.getServerData(refresh: true)
                 await self.updateRightMenu()
             }

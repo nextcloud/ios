@@ -16,7 +16,7 @@ extension FileProviderExtension {
             let account = session.account
             let directoryName = utilityFileSystem.createFileName(directoryName, serverUrl: tableDirectory.serverUrl, account: account)
             let serverUrlFileName = tableDirectory.serverUrl + "/" + directoryName
-            let showHiddenFiles = await NCPreferences().getShowHiddenFilesAsync(account: account)
+            let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: account)
 
             let resultsCreateFolder = await NextcloudKit.shared.createFolderAsync(serverUrlFileName: serverUrlFileName, account: account)
 

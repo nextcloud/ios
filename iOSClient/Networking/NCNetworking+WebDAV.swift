@@ -35,7 +35,7 @@ extension NCNetworking {
                          options: NKRequestOptions = NKRequestOptions(),
                          taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in }) async -> (account: String, metadataFolder: tableMetadata?, metadatas: [tableMetadata]?, error: NKError) {
 
-        let showHiddenFiles = await NCPreferences().getShowHiddenFilesAsync(account: account)
+        let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: account)
 
         let resultsReadFolder = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: showHiddenFiles, account: account, options: options)
 
