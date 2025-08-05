@@ -181,7 +181,7 @@ final class NCPreferences: NSObject {
             return NKLogLevel(rawValue: value) ?? NKLogLevel.normal
         }
         set {
-            setUserDefaults(newValue, forKey: "logLevel")
+            setUserDefaults(newValue.rawValue, forKey: "logLevel")
         }
     }
 
