@@ -6276,7 +6276,7 @@
 			repositoryURL = "https://github.com/scenee/FloatingPanel";
 			requirement = {
 				kind = exactVersion;
-				version = 2.8.6;
+				version = 3.0.0;
 			};
 		};
 		F77333862927A72100466E35 /* XCRemoteSwiftPackageReference "OpenSSL" */ = {
