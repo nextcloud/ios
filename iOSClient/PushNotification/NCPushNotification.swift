@@ -1,10 +1,6 @@
-//
-//  NCPushNotification.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 26/06/24.
-//  Copyright © 2024 Marino Faggiana. All rights reserved.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2024 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
 import UIKit
@@ -13,7 +9,7 @@ import NextcloudKit
 
 class NCPushNotification {
     static let shared = NCPushNotification()
-    let keychain = NCKeychain()
+    let keychain = NCPreferences()
     let global = NCGlobal.shared
 
     func applicationdidReceiveRemoteNotification(userInfo: [AnyHashable: Any], completion: @escaping (_ result: UIBackgroundFetchResult) -> Void) {
@@ -45,11 +41,17 @@ class NCPushNotification {
     }
 
     func subscribingNextcloudServerPushNotification(account: String, urlBase: String, user: String, pushKitToken: String?) {
-        NCPushNotificationEncryption.shared().generatePushNotificationsKeyPair(account)
-        guard let pushKitToken,
+        guard let keyPair = NCPushNotificationEncryption.shared().generatePushNotificationsKeyPair(account),
+              let pushKitToken,
               let pushTokenHash = NCEndToEndEncryption.shared().createSHA512(pushKitToken),
               let pushPublicKey = keychain.getPushNotificationPublicKey(account: account),
-              let pushDevicePublicKey = String(data: pushPublicKey, encoding: .utf8)  else { return }
+              let pushDevicePublicKey = String(data: pushPublicKey, encoding: .utf8) else {
+            return
+        }
+
+        NCPreferences().setPushNotificationPublicKey(account: account, data: keyPair.publicKey)
+        NCPreferences().setPushNotificationPrivateKey(account: account, data: keyPair.privateKey)
+
         let proxyServerPath = NCBrandOptions.shared.pushNotificationServerProxy
 
         NextcloudKit.shared.subscribingPushNotification(serverUrl: urlBase, pushTokenHash: pushTokenHash, devicePublicKey: pushDevicePublicKey, proxyServerUrl: proxyServerPath, account: account) { account, deviceIdentifier, signature, publicKey, _, error in

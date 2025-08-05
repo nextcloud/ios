@@ -117,7 +117,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     var showDescription: Bool {
-        !headerRichWorkspaceDisable && NCKeychain().showDescription
+        !headerRichWorkspaceDisable && NCPreferences().showDescription
     }
 
     var isRecommendationActived: Bool {
@@ -275,8 +275,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         isEditMode = false
 
-        (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
-        (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
+        Task {
+            await (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
+            await (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
+        }
 
         layoutForView = database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl)
         if isLayoutList {
@@ -584,7 +586,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         self.collectionView.collectionViewLayout.invalidateLayout()
 
-        (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
+        Task {
+            await (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
+        }
     }
 
     func getNavigationTitle() -> String {
@@ -792,6 +796,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - DataSource
 
+    @MainActor
     func reloadDataSource() async {
         if !isSearchingMode {
             Task.detached {
@@ -801,15 +806,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
         }
 
-        DispatchQueue.main.async {
-            UIView.transition(with: self.collectionView,
-                              duration: 0.20,
-                              options: .transitionCrossDissolve,
-                              animations: { self.collectionView.reloadData() },
-                              completion: nil)
+        UIView.transition(with: self.collectionView,
+                          duration: 0.20,
+                          options: .transitionCrossDissolve,
+                          animations: { self.collectionView.reloadData() },
+                          completion: nil)
 
-            (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
-        }
+        await (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
     }
 
     func getServerData(refresh: Bool = false) async {
@@ -842,7 +845,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             } providers: { account, searchProviders in
                 self.providers = searchProviders
                 self.searchResults = []
-                self.dataSource = NCCollectionViewDataSource(metadatas: [], layoutForView: self.layoutForView, providers: self.providers, searchResults: self.searchResults, account: account)
+                self.dataSource = NCCollectionViewDataSource(metadatas: [],
+                                                             layoutForView: self.layoutForView,
+                                                             providers: self.providers,
+                                                             searchResults: self.searchResults,
+                                                             account: account)
             } update: { _, _, searchResult, metadatas in
                 guard let metadatas, !metadatas.isEmpty, self.isSearchingMode, let searchResult else { return }
                 self.networking.unifiedSearchQueue.addOperation(NCCollectionViewUnifiedSearch(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult))
@@ -873,7 +880,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                                                           withLayout: self.layoutForView,
                                                                           withAccount: self.session.account)
 
-                    self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: self.layoutForView, providers: self.providers, searchResults: self.searchResults, account: self.session.account)
+                    self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
+                                                                 layoutForView: self.layoutForView,
+                                                                 providers: self.providers,
+                                                                 searchResults: self.searchResults,
+                                                                 account: self.session.account)
                     self.networkSearchInProgress = false
                     await self.reloadDataSource()
                 }
@@ -948,7 +959,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if isRecommendationActived,
            !isSearchingMode,
-           NCKeychain().showRecommendedFiles,
+           NCPreferences().showRecommendedFiles,
            !self.database.getRecommendedFiles(account: self.session.account).isEmpty {
             heightHeaderRecommendations = self.heightHeaderRecommendations
             heightHeaderSection = self.heightHeaderSection

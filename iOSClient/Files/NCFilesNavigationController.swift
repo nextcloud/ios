@@ -21,14 +21,16 @@ class NCFilesNavigationController: NCMainNavigationController {
                 return
             }
 
-            self.setNavigationLeftItems()
+            Task {
+                await self.setNavigationLeftItems()
+            }
         }
     }
 
     // MARK: - Right
 
-    override func createRightMenu() -> UIMenu? {
-        guard let items = self.createRightMenuActions(),
+    override func createRightMenu() async -> UIMenu? {
+        guard let items = await self.createRightMenuActions(),
               let collectionViewCommon
         else {
             return nil
@@ -53,7 +55,7 @@ class NCFilesNavigationController: NCMainNavigationController {
 
     // MARK: - Left
 
-    override func setNavigationLeftItems() {
+    override func setNavigationLeftItems() async {
         guard let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", self.session.account))
         else {
             self.collectionViewCommon?.navigationItem.leftBarButtonItems = nil

@@ -175,7 +175,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         if pageNumber > 0 {
             offset += 1
         }
-        let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: account)
+        let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: account)
         let options = NKRequestOptions(paginate: true,
                                        paginateToken: self.paginateToken,
                                        paginateOffset: offset,

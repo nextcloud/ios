@@ -11,13 +11,13 @@ import Photos
 /// A view model responsible for managing auto-upload file names.
 class NCFileNameModel: ObservableObject, ViewOnAppearHandling {
     // A keychain instance for handling authentication.
-    private var keychain = NCKeychain()
+    private var keychain = NCPreferences()
     // A shared global instance for managing application-wide settings.
     private let globalKey = NCGlobal.shared
     // A boolean indicating whether to maintain the original file name.
-    @Published var maintainFilenameOriginal: Bool = NCKeychain().fileNameOriginal
+    @Published var maintainFilenameOriginal: Bool = NCPreferences().fileNameOriginal
     // A boolean indicating whether to specify a custom file name.
-    @Published var addFileNameType: Bool = NCKeychain().fileNameType
+    @Published var addFileNameType: Bool = NCPreferences().fileNameType
     // The changed file name.
     @Published var changedName: String = ""
     // The complete new file name.

@@ -55,7 +55,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UserDefaults.standard.register(defaults: ["UserAgent": userAgent])
 
         #if !DEBUG
-        if !NCKeychain().disableCrashservice, !NCBrandOptions.shared.disable_crash_service {
+        if !NCPreferences().disableCrashservice, !NCBrandOptions.shared.disable_crash_service {
             FirebaseApp.configure()
         }
         #endif
@@ -65,9 +65,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup,
                                   delegate: NCNetworking.shared)
 
-        NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCKeychain().log))
+        NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCPreferences().log))
 
-        nkLog(start: "Start session with level \(NCKeychain().log) " + versionNextcloudiOS)
+        nkLog(start: "Start session with level \(NCPreferences().log) " + versionNextcloudiOS)
 
         // Try to restore accounts
         if self.database.getActiveTableAccount() == nil {
@@ -109,7 +109,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         scheduleAppProcessing()
 
         if NCBrandOptions.shared.enforce_passcode_lock {
-            NCKeychain().requestPasscodeAtStart = true
+            NCPreferences().requestPasscodeAtStart = true
         }
 
         // Activation singleton
@@ -514,7 +514,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         utilityFileSystem.removeDocumentsDirectory()
         utilityFileSystem.removeTemporaryDirectory()
 
-        NCKeychain().removeAll()
+        NCPreferences().removeAll()
 
         exit(0)
     }

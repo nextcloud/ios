@@ -44,7 +44,7 @@ class FileProviderData: NSObject {
         let tblAccounts = self.database.getAllTableAccount()
         var matchAccount: tableAccount?
 
-        NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCKeychain().log))
+        NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCPreferences().log))
 
         if let domain {
             self.domain = domain
@@ -76,7 +76,7 @@ class FileProviderData: NSObject {
                                           urlBase: matchAccount.urlBase,
                                           user: matchAccount.user,
                                           userId: matchAccount.userId,
-                                          password: NCKeychain().getPassword(account: matchAccount.account),
+                                          password: NCPreferences().getPassword(account: matchAccount.account),
                                           userAgent: userAgent,
                                           httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
                                           httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,

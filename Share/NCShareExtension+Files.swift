@@ -16,7 +16,9 @@ extension NCShareExtension {
         let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
                                                               withLayout: layoutForView,
                                                               withAccount: session.account)
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
+                                                     layoutForView: layoutForView,
+                                                     account: session.account)
         self.collectionView.reloadData()
     }
 
@@ -80,7 +82,7 @@ class NCFilesExtensionHandler {
                     originalName = url.lastPathComponent
 
                     if fileNames.contains(originalName) {
-                        let incrementalNumber = NCKeychain().incrementalNumber
+                        let incrementalNumber = NCPreferences().incrementalNumber
                         originalName = "\(url.deletingPathExtension().lastPathComponent) \(incrementalNumber).\(url.pathExtension)"
                     }
                 }

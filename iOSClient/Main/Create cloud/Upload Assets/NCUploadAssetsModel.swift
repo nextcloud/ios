@@ -68,7 +68,7 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
                 continue
             }
 
-            self.previewStore.append(PreviewStore(id: localIdentifier, asset: asset, assetType: asset.type, uti: uti, nativeFormat: !NCKeychain().formatCompatibility, fileName: ""))
+            self.previewStore.append(PreviewStore(id: localIdentifier, asset: asset, assetType: asset.type, uti: uti, nativeFormat: !NCPreferences().formatCompatibility, fileName: ""))
 
         }
 
@@ -199,7 +199,7 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
 
                 if previewStore.assetType == .livePhoto,
                    !isInDirectoryE2EE,
-                   NCKeychain().livePhoto,
+                   NCPreferences().livePhoto,
                    previewStore.data == nil {
                     livePhoto = true
                 }

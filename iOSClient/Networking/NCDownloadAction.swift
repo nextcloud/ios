@@ -476,7 +476,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                 guard let data = UIPasteboard.general.data(forPasteboardType: item.key, inItemSet: IndexSet([index]))?.first else {
                     continue
                 }
-                let fileName = results.name + "_" + NCKeychain().incrementalNumber + "." + results.ext
+                let fileName = results.name + "_" + NCPreferences().incrementalNumber + "." + results.ext
                 let serverUrlFileName = serverUrl + "/" + fileName
                 let ocIdUpload = UUID().uuidString
                 let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocIdUpload,

@@ -124,7 +124,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     let id: String = configuration?.applications?.identifier ?? (result?.id ?? "recommendations")
 
     // NETWORKING
-    let password = NCKeychain().getPassword(account: activeTableAccount.account)
+    let password = NCPreferences().getPassword(account: activeTableAccount.account)
 
     NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup, delegate: NCNetworking.shared)
     NextcloudKit.shared.appendSession(account: activeTableAccount.account,
@@ -141,7 +141,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     // LOG
     let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
 
-    NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCKeychain().log))
+    NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCPreferences().log))
 
     nkLog(debug: "Start \(NCBrandOptions.shared.brand) dashboard widget session " + versionNextcloudiOS)
 

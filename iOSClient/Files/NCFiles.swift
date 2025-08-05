@@ -109,9 +109,9 @@ class NCFiles: NCCollectionViewCommon {
 
                 self.titleCurrentFolder = self.getNavigationTitle()
                 self.navigationItem.title = self.titleCurrentFolder
-                (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
 
                 Task {
+                    await (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
                     await self.reloadDataSource()
                     await self.getServerData()
                 }
@@ -189,8 +189,9 @@ class NCFiles: NCCollectionViewCommon {
             return
         }
 
+        let personalFilesOnly = NCPreferences().getPersonalFilesOnly(account: self.session.account)
         let predicate: NSPredicate = {
-            if NCKeychain().getPersonalFilesOnly(account: self.session.account) {
+            if personalFilesOnly {
                 return self.personalFilesOnlyPredicate
             } else {
                 return self.defaultPredicate
@@ -213,7 +214,9 @@ class NCFiles: NCCollectionViewCommon {
                                                               withLayout: self.layoutForView,
                                                               withAccount: self.session.account)
 
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
+                                                     layoutForView: layoutForView,
+                                                     account: session.account)
         await super.reloadDataSource()
 
         cachingAsync(metadatas: metadatas)
@@ -320,7 +323,7 @@ class NCFiles: NCCollectionViewCommon {
         //
 
         guard e2eEncrypted,
-              NCKeychain().isEndToEndEnabled(account: account),
+              NCPreferences().isEndToEndEnabled(account: account),
               await !NCNetworkingE2EE().isInUpload(account: account, serverUrl: serverUrl) else {
             return (metadatas, error, true)
         }
@@ -464,6 +467,8 @@ class NCFiles: NCCollectionViewCommon {
             navigationItem.title = self.titleCurrentFolder
         }
 
-        (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
+        Task {
+            await (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
+        }
     }
 }

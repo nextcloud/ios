@@ -50,7 +50,9 @@ class NCFavorite: NCCollectionViewCommon {
                                                               withLayout: layoutForView,
                                                               withAccount: session.account)
 
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
+                                                     layoutForView: layoutForView,
+                                                     account: session.account)
         await super.reloadDataSource()
 
         cachingAsync(metadatas: metadatas)
@@ -65,8 +67,7 @@ class NCFavorite: NCCollectionViewCommon {
 
         showLoadingTitle()
 
-        let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: session.account)
-
+        let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: session.account)
         let resultsListingFavorites = await NextcloudKit.shared.listingFavoritesAsync(showHiddenFiles: showHiddenFiles,
                                                                                       account: session.account) { task in
             self.dataSourceTask = task

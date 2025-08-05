@@ -1,27 +1,6 @@
-//
-//  NCPushNotificationEncryption.m
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 25/07/18.
-//  Copyright © 2018 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-//  This code derived from : Nextcloud Talk - NCSettingsController Created by Ivan Sein on 26.06.17. Copyright © 2017 struktur AG. All rights reserved.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2018 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 #import "NCPushNotificationEncryption.h"
 #import "NCBridgeSwift.h"
@@ -30,6 +9,19 @@
 #import "NCEndToEndEncryption.h"
 
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
+@implementation NCPushKeyPair
+
+- (instancetype)initWithPublicKey:(NSData *)publicKey privateKey:(NSData *)privateKey {
+    self = [super init];
+    if (self) {
+        _publicKey = publicKey;
+        _privateKey = privateKey;
+    }
+    return self;
+}
+
+@end
 
 @implementation NCPushNotificationEncryption
 
@@ -43,7 +35,7 @@
     return shared;
 }
 
-- (BOOL)generatePushNotificationsKeyPair:(NSString *)account
+- (NCPushKeyPair *)generatePushNotificationsKeyPair:(NSString *)account
 {
     EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, NULL);
     if (!ctx) {
@@ -76,7 +68,6 @@
 
     BIO_read(publicKeyBIO, keyBytes, len);
     NSData *publicKey = [NSData dataWithBytes:keyBytes length:len];
-    [[[NCKeychain alloc] init] setPushNotificationPublicKeyWithAccount:account data:publicKey];
     NSLog(@"Push Notifications public Key generated: \n%@", [[NSString alloc] initWithData:publicKey encoding:NSUTF8StringEncoding]);
 
     // PrivateKey
@@ -88,7 +79,6 @@
     
     BIO_read(privateKeyBIO, keyBytes, len);
     NSData *privateKey = [NSData dataWithBytes:keyBytes length:len];
-    [[[NCKeychain alloc] init] setPushNotificationPrivateKeyWithAccount:account data:privateKey];
     NSLog(@"Push Notifications private Key generated: \n%@", [[NSString alloc] initWithData:privateKey encoding:NSUTF8StringEncoding]);
 
     EVP_PKEY_free(pkey);
@@ -96,7 +86,7 @@
     BIO_free(publicKeyBIO);
     BIO_free(privateKeyBIO);
 
-    return YES;
+    return [[NCPushKeyPair alloc] initWithPublicKey:publicKey privateKey:privateKey];
 }
 
 - (NSString *)decryptPushNotification:(NSString *)message withDevicePrivateKey:(NSData *)privateKey

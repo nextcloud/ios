@@ -11,7 +11,7 @@ import SwiftUI
 
 class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     // Keychain access
-    var keychain = NCKeychain()
+    var keychain = NCPreferences()
     // State variable for indicating if the user is in Admin group
     @Published var isAdminGroup: Bool = false
     // State variable for indicating the most compatible format.

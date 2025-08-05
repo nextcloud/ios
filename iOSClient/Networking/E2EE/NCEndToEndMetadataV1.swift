@@ -79,7 +79,7 @@ extension NCEndToEndMetadata {
         var filesCodable: [String: E2eeV12.Files]?
         var filedrop: [String: E2eeV12.Filedrop] = [:]
         var filedropCodable: [String: E2eeV12.Filedrop]?
-        let privateKey = NCKeychain().getEndToEndPrivateKey(account: account)
+        let privateKey = NCPreferences().getEndToEndPrivateKey(account: account)
         var fileNameIdentifiers: [String] = []
 
         let e2eEncryptions = await self.database.getE2eEncryptionsAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
@@ -150,7 +150,7 @@ extension NCEndToEndMetadata {
         }
 
         // Create checksum
-        let passphrase = NCKeychain().getEndToEndPassphrase(account: account)?.replacingOccurrences(of: " ", with: "") ?? ""
+        let passphrase = NCPreferences().getEndToEndPassphrase(account: account)?.replacingOccurrences(of: " ", with: "") ?? ""
         let dataChecksum = (passphrase + fileNameIdentifiers.sorted().joined() + metadataKey).data(using: .utf8)
         let checksum = NCEndToEndEncryption.shared().createSHA256(dataChecksum)
 
@@ -184,7 +184,7 @@ extension NCEndToEndMetadata {
         }
 
         let decoder = JSONDecoder()
-        let privateKey = NCKeychain().getEndToEndPrivateKey(account: session.account)
+        let privateKey = NCPreferences().getEndToEndPrivateKey(account: session.account)
         var metadataVersion: Double = 0
         var metadataKey = ""
 
@@ -331,7 +331,7 @@ extension NCEndToEndMetadata {
             }
 
             // verify checksum
-            let passphrase = NCKeychain().getEndToEndPassphrase(account: session.account)?.replacingOccurrences(of: " ", with: "") ?? ""
+            let passphrase = NCPreferences().getEndToEndPassphrase(account: session.account)?.replacingOccurrences(of: " ", with: "") ?? ""
             let dataChecksum = (passphrase + fileNameIdentifiers.sorted().joined() + metadata.metadataKey).data(using: .utf8)
             let checksum = NCEndToEndEncryption.shared().createSHA256(dataChecksum)
             if metadata.checksum != checksum {
@@ -355,7 +355,7 @@ extension NCEndToEndMetadata {
         }
 
         let decoder = JSONDecoder()
-        let privateKey = NCKeychain().getEndToEndPrivateKey(account: session.account)
+        let privateKey = NCPreferences().getEndToEndPrivateKey(account: session.account)
         var metadataVersion: Double = 0
 
         do {

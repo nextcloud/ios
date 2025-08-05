@@ -41,7 +41,7 @@ class NotificationService: UNNotificationServiceExtension {
             do {
                 if let message = bestAttemptContent.userInfo["subject"] as? String {
                     for tableAccount in NCManageDatabase.shared.getAllTableAccount() {
-                        guard let privateKey = NCKeychain().getPushNotificationPrivateKey(account: tableAccount.account) else {
+                        guard let privateKey = NCPreferences().getPushNotificationPrivateKey(account: tableAccount.account) else {
                             bestAttemptContent.body = "Error retrieving private key for \(tableAccount.account)"
                             continue
                         }

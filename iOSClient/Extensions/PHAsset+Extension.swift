@@ -18,7 +18,7 @@ extension PHAsset {
             return filename
         }
 
-        return "IMG_" + NCKeychain().incrementalNumber + getExtension()
+        return "IMG_" + NCPreferences().incrementalNumber + getExtension()
     }
 
     private func getExtension() -> String {

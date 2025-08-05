@@ -81,14 +81,14 @@ class NCShareExtension: UIViewController {
         uploadView.addGestureRecognizer(uploadGesture)
 
         let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
-        NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCKeychain().log))
+        NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCPreferences().log))
 
         nkLog(start: "Start Share session " + versionNextcloudiOS)
 
         NCBrandColor.shared.createUserColors()
 
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { _ in
-            if NCKeychain().presentPasscode {
+            if NCPreferences().presentPasscode {
                 NCPasscode.shared.presentPasscode(viewController: self, delegate: self) {
                     NCPasscode.shared.enableTouchFaceID()
                 }
@@ -122,7 +122,7 @@ class NCShareExtension: UIViewController {
             }
         }
 
-        if NCKeychain().presentPasscode {
+        if NCPreferences().presentPasscode {
             NCPasscode.shared.presentPasscode(viewController: self, delegate: self) {
                 NCPasscode.shared.enableTouchFaceID()
             }

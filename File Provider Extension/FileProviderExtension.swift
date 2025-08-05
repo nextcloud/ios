@@ -56,12 +56,12 @@ final class FileProviderExtension: NSFileProviderExtension {
             }
 
             // Check if passcode protection is enabled and required
-            if NCKeychain().passcode != nil, NCKeychain().requestPasscodeAtStart {
+            if NCPreferences().passcode != nil, NCPreferences().requestPasscodeAtStart {
                 throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo: ["code": NSNumber(value: NCGlobal.shared.errorUnauthorizedFilesPasscode)])
             }
 
             // Check if Files app access is disabled by branding options
-            if NCKeychain().disableFilesApp || NCBrandOptions.shared.disable_openin_file {
+            if NCPreferences().disableFilesApp || NCBrandOptions.shared.disable_openin_file {
                 throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo: ["code": NSNumber(value: NCGlobal.shared.errorDisableFilesApp)])
             }
         }

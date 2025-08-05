@@ -220,7 +220,7 @@ extension tableMetadata {
     }
 
     var canUnsetDirectoryAsE2EE: Bool {
-        return !isDirectoryE2EE && directory && size == 0 && e2eEncrypted && NCKeychain().isEndToEndEnabled(account: account)
+        return !isDirectoryE2EE && directory && size == 0 && e2eEncrypted && NCPreferences().isEndToEndEnabled(account: account)
     }
 
     var isDownload: Bool {
@@ -1159,7 +1159,7 @@ extension NCManageDatabase {
     func getMetadatasFromGroupfoldersAsync(session: NCSession.Session, layoutForView: NCDBLayoutForView?) async -> [tableMetadata] {
         let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
 
-        return await performRealmReadAsync { realm in
+        let detachedMetadatas: [tableMetadata] = await performRealmReadAsync { realm in
             var ocIds: [String] = []
 
             // Safely fetch and detach groupfolders
@@ -1183,14 +1183,13 @@ extension NCManageDatabase {
             }
 
             // Fetch and detach the corresponding metadatas
-            let metadatas = realm.objects(tableMetadata.self)
+            return realm.objects(tableMetadata.self)
                 .filter("ocId IN %@", ocIds)
                 .map { $0.detachedCopy() }
-
-            let sorted = self.sortedMetadata(layoutForView: layoutForView, account: session.account, metadatas: Array(metadatas))
-
-            return sorted
         } ?? []
+
+        let sorted = await self.sortedMetadata(layoutForView: layoutForView, account: session.account, metadatas: detachedMetadatas)
+        return sorted
     }
 
     func getRootContainerMetadata(accout: String) -> tableMetadata? {
@@ -1284,8 +1283,7 @@ extension NCManageDatabase {
                 .map { $0.detachedCopy() }
         } ?? []
 
-        let sorted = self.sortedMetadata(layoutForView: layoutForView, account: account, metadatas: detachedMetadatas)
-
+        let sorted = await self.sortedMetadata(layoutForView: layoutForView, account: account, metadatas: detachedMetadatas)
         return sorted
     }
 

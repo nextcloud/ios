@@ -255,7 +255,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
                                                               withSort: sortDescriptors,
                                                               withLimit: 100)
         if let metadatas, !metadatas.isEmpty {
-            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: self.layoutForView)
+            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
+                                                         layoutForView: self.layoutForView)
         } else {
             self.dataSource.removeAll()
         }

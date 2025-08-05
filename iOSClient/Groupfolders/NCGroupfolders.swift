@@ -70,7 +70,9 @@ class NCGroupfolders: NCCollectionViewCommon {
                                                          withAccount: session.account)
         }
 
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
+                                                     layoutForView: layoutForView,
+                                                     account: session.account)
         await super.reloadDataSource()
 
         cachingAsync(metadatas: metadatas)
@@ -86,7 +88,7 @@ class NCGroupfolders: NCCollectionViewCommon {
         showLoadingTitle()
 
         let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
-        let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: session.account)
+        let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: session.account)
 
         let resultsGroupfolders = await NextcloudKit.shared.getGroupfoldersAsync(account: session.account) { task in
             self.dataSourceTask = task

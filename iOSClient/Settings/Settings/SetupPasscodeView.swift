@@ -20,11 +20,11 @@ struct SetupPasscodeView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
         let laContext = LAContext()
         var error: NSError?
-        if !NCKeychain().passcode.isEmptyOrNil, !changePasscode {
+        if !NCPreferences().passcode.isEmptyOrNil, !changePasscode {
             let passcodeVC = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: true)
             passcodeVC.keypadButtonShowLettering = false
 
-            if NCKeychain().touchFaceID, laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error), error == nil {
+            if NCPreferences().touchFaceID, laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error), error == nil {
                 switch laContext.biometryType {
                 case .faceID:
                     passcodeVC.biometryType = .faceID
@@ -72,7 +72,7 @@ struct SetupPasscodeView: UIViewControllerRepresentable {
                     DispatchQueue.main.async {
                         if success {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                NCKeychain().passcode = nil
+                                NCPreferences().passcode = nil
                                 passcodeViewController.dismiss(animated: true)
                             }
                         }
@@ -82,7 +82,7 @@ struct SetupPasscodeView: UIViewControllerRepresentable {
         }
 
         func passcodeSettingsViewController(_ passcodeSettingsViewController: TOPasscodeSettingsViewController, didAttemptCurrentPasscode passcode: String) -> Bool {
-            if passcode == NCKeychain().passcode {
+            if passcode == NCPreferences().passcode {
                 return true
             } else if passcodeSettingsViewController.failedPasscodeAttemptCount == parent.maxFailedAttempts {
                 passcodeSettingsViewController.dismiss(animated: true)
@@ -93,7 +93,7 @@ struct SetupPasscodeView: UIViewControllerRepresentable {
         }
 
         func passcodeSettingsViewController(_ passcodeSettingsViewController: TOPasscodeSettingsViewController, didChangeToNewPasscode passcode: String, of type: TOPasscodeType) {
-            NCKeychain().passcode = passcode
+            NCPreferences().passcode = passcode
             parent.isLockActive = true
             passcodeSettingsViewController.dismiss(animated: true)
         }
@@ -103,9 +103,9 @@ struct SetupPasscodeView: UIViewControllerRepresentable {
         }
 
         func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode passcode: String) -> Bool {
-            if passcode == NCKeychain().passcode {
+            if passcode == NCPreferences().passcode {
                 parent.isLockActive = false
-                NCKeychain().passcode = nil
+                NCPreferences().passcode = nil
                 return true
             }
 

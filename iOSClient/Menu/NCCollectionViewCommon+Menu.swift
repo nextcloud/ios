@@ -160,7 +160,7 @@ extension NCCollectionViewCommon {
            metadata.directory,
            metadata.size == 0,
            !metadata.e2eEncrypted,
-           NCKeychain().isEndToEndEnabled(account: metadata.account),
+           NCPreferences().isEndToEndEnabled(account: metadata.account),
            metadata.serverUrl == NCUtilityFileSystem().getHomeServer(urlBase: metadata.urlBase, userId: metadata.userId) {
             actions.append(
                 NCMenuAction(

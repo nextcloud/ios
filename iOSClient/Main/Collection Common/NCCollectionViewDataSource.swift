@@ -53,8 +53,8 @@ class NCCollectionViewDataSource: NSObject {
         self.metadatas = metadatas
         self.layoutForView = layoutForView
         if let account {
-            self.directoryOnTop = NCKeychain().getDirectoryOnTop(account: account)
-            self.favoriteOnTop = NCKeychain().getFavoriteOnTop(account: account)
+            self.directoryOnTop = NCPreferences().getDirectoryOnTop(account: account)
+            self.favoriteOnTop = NCPreferences().getFavoriteOnTop(account: account)
         }
         // unified search
         self.providers = providers

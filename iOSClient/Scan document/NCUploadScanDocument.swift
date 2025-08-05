@@ -302,9 +302,9 @@ struct UploadScanDocumentView: View {
     @State var footer = ""
     @State var password: String = ""
     @State var isSecuredPassword: Bool = true
-    @State var isTextRecognition: Bool = NCKeychain().textRecognitionStatus
-    @State var quality = NCKeychain().qualityScanDocument
-    @State var removeAllFiles: Bool = NCKeychain().deleteAllScanImages
+    @State var isTextRecognition: Bool = NCPreferences().textRecognitionStatus
+    @State var quality = NCPreferences().qualityScanDocument
+    @State var removeAllFiles: Bool = NCPreferences().deleteAllScanImages
     @State var isPresentedSelect = false
     @State var isPresentedUploadConflict = false
 
@@ -394,7 +394,7 @@ struct UploadScanDocumentView: View {
                             Toggle(NSLocalizedString("_text_recognition_", comment: ""), isOn: $isTextRecognition)
                                 .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getElement(account: model.session.account))))
                                 .onChange(of: isTextRecognition) { _, newValue in
-                                    NCKeychain().textRecognitionStatus = newValue
+                                    NCPreferences().textRecognitionStatus = newValue
                                 }
                         }
                     }
@@ -407,7 +407,7 @@ struct UploadScanDocumentView: View {
                             Toggle(NSLocalizedString("_delete_all_scanned_images_", comment: ""), isOn: $removeAllFiles)
                                 .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getElement(account: model.session.account))))
                                 .onChange(of: removeAllFiles) { _, newValue in
-                                    NCKeychain().deleteAllScanImages = newValue
+                                    NCPreferences().deleteAllScanImages = newValue
                                 }
                             Button(NSLocalizedString("_save_", comment: "")) {
                                 let fileName = model.fileName(fileName)
@@ -434,7 +434,7 @@ struct UploadScanDocumentView: View {
                         VStack {
                             Slider(value: $quality, in: 0...4, step: 1, onEditingChanged: { touch in
                                 if !touch {
-                                    NCKeychain().qualityScanDocument = quality
+                                    NCPreferences().qualityScanDocument = quality
                                 }
                             })
                             .accentColor(Color(NCBrandColor.shared.getElement(account: model.session.account)))

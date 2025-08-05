@@ -103,9 +103,9 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         }
 
         isEditMode = false
-        (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
 
         Task {
+            await (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
             await self.reloadDataSource()
             await loadListingTrash()
         }
@@ -168,10 +168,11 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     func reloadDataSource(withQueryDB: Bool = true) async {
         let results = await self.database.getTableTrashAsync(filePath: getFilePath(), account: session.account)
 
+        await (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
+
         await MainActor.run {
             self.datasource = results
             self.collectionView.reloadData()
-            (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
 
             guard let blinkFileId = self.blinkFileId else { return }
 

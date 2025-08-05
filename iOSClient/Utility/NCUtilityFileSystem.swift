@@ -547,7 +547,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
 
     func createFileName(_ fileName: String, fileDate: Date, fileType: PHAssetMediaType, notUseMask: Bool = false) -> String {
         var fileName = fileName
-        let keychain = NCKeychain()
+        let keychain = NCPreferences()
         var addFileNameType: Bool = keychain.fileNameType
         let useFileNameOriginal: Bool = keychain.fileNameOriginal
         var numberFileName: String = ""
@@ -726,7 +726,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     }
 
     func cleanUpAsync() async {
-        let days = TimeInterval(NCKeychain().cleanUpDay)
+        let days = TimeInterval(NCPreferences().cleanUpDay)
         if days == 0 {
             return
         }

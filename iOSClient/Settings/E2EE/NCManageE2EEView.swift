@@ -40,7 +40,7 @@ struct NCManageE2EEView: View {
                     }
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        if NCKeychain().passcode != nil {
+                        if NCPreferences().passcode != nil {
                             model.requestPasscodeType("readPassphrase")
                         } else {
                             NCContentPresenter().showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
@@ -61,7 +61,7 @@ struct NCManageE2EEView: View {
                     }
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        if NCKeychain().passcode != nil {
+                        if NCPreferences().passcode != nil {
                             model.requestPasscodeType("removeLocallyEncryption")
                         } else {
                             NCContentPresenter().showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))
@@ -89,7 +89,7 @@ struct NCManageE2EEView: View {
                         }
                         .contentShape(Rectangle())
                         .onTapGesture {
-                            if NCKeychain().passcode != nil {
+                            if NCPreferences().passcode != nil {
                                 model.requestPasscodeType("startE2E")
                             } else {
                                 NCContentPresenter().showInfo(error: NKError(errorCode: 0, errorDescription: "_e2e_settings_lock_not_active_"))

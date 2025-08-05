@@ -108,7 +108,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
     }
 
     // NETWORKING
-    let password = NCKeychain().getPassword(account: activeTableAccount.account)
+    let password = NCPreferences().getPassword(account: activeTableAccount.account)
 
     NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup, delegate: NCNetworking.shared)
     NextcloudKit.shared.appendSession(account: activeTableAccount.account,
@@ -178,12 +178,12 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
     dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
     let lessDateString = dateFormatter.string(from: Date())
     let requestBody = String(format: requestBodyRecent, "/files/" + activeTableAccount.userId, lessDateString)
-    let showHiddenFiles = NCKeychain().getShowHiddenFiles(account: activeTableAccount.account)
+    let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: activeTableAccount.account)
 
     // LOG
     let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
 
-    NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCKeychain().log))
+    NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCPreferences().log))
 
     nkLog(debug: "Start \(NCBrandOptions.shared.brand) widget session " + versionNextcloudiOS)
 

@@ -25,8 +25,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
 
         self.window = UIWindow(windowScene: windowScene)
-        if !NCKeychain().appearanceAutomatic {
-            self.window?.overrideUserInterfaceStyle = NCKeychain().appearanceInterfaceStyle
+        if !NCPreferences().appearanceAutomatic {
+            self.window?.overrideUserInterfaceStyle = NCPreferences().appearanceInterfaceStyle
         }
         let alreadyMigratedMultiDomains = UserDefaults.standard.bool(forKey: global.udMigrationMultiDomains)
         let activeTblAccount = self.database.getActiveTableAccount()
@@ -43,7 +43,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             self.launchMainInterface(scene: scene, activeTblAccount: activeTblAccount)
 
         } else {
-            NCKeychain().removeAll()
+            NCPreferences().removeAll()
             UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
 
             if let bundleID = Bundle.main.bundleIdentifier {
@@ -88,7 +88,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                                               urlBase: tblAccount.urlBase,
                                               user: tblAccount.user,
                                               userId: tblAccount.userId,
-                                              password: NCKeychain().getPassword(account: tblAccount.account),
+                                              password: NCPreferences().getPassword(account: tblAccount.account),
                                               userAgent: userAgent,
                                               httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
                                               httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
@@ -134,11 +134,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         if let window = SceneManager.shared.getWindow(scene: scene), let controller = SceneManager.shared.getController(scene: scene) {
             window.rootViewController = controller
-            if NCKeychain().presentPasscode {
+            if NCPreferences().presentPasscode {
                 NCPasscode.shared.presentPasscode(viewController: controller, delegate: self) {
                     NCPasscode.shared.enableTouchFaceID()
                 }
-            } else if NCKeychain().accountRequest {
+            } else if NCPreferences().accountRequest {
                 requestedAccount(controller: controller)
             }
         }
@@ -180,7 +180,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let session = SceneManager.shared.getSession(scene: scene)
         guard !session.account.isEmpty else { return }
 
-        if NCKeychain().privacyScreenEnabled {
+        if NCPreferences().privacyScreenEnabled {
             if SwiftEntryKit.isCurrentlyDisplaying {
                 SwiftEntryKit.dismiss {
                     self.showPrivacyProtectionWindow()
@@ -203,7 +203,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             nkLog(info: "Auto upload in background: \(tblAccount.autoUploadStart)")
             nkLog(info: "Update in background: \(UIApplication.shared.backgroundRefreshStatus == .available)")
 
-            if CLLocationManager().authorizationStatus == .authorizedAlways && NCKeychain().location && tblAccount.autoUploadStart {
+            if CLLocationManager().authorizationStatus == .authorizedAlways && NCPreferences().location && tblAccount.autoUploadStart {
                 NCBackgroundLocationUploadManager.shared.start()
             } else {
                 NCBackgroundLocationUploadManager.shared.stop()
@@ -215,7 +215,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
             NCNetworking.shared.cancelAllQueue()
 
-            if NCKeychain().presentPasscode {
+            if NCPreferences().presentPasscode {
                 showPrivacyProtectionWindow()
             }
 

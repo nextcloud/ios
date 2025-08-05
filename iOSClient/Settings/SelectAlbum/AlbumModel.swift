@@ -101,13 +101,13 @@ import Photos
     func setSavedAlbumIds(selectedAlbums: Set<String>) {
         guard let account = controller?.account else { return }
 
-        NCKeychain().setAutoUploadAlbumIds(account: account, albumIds: Array(selectedAlbums))
+        NCPreferences().setAutoUploadAlbumIds(account: account, albumIds: Array(selectedAlbums))
     }
 
     func getSavedAlbumIds() -> Set<String> {
         guard let account = controller?.account else { return [] }
 
-        let albumIds = NCKeychain().getAutoUploadAlbumIds(account: account)
+        let albumIds = NCPreferences().getAutoUploadAlbumIds(account: account)
 
         return Set(albumIds)
     }

@@ -215,7 +215,7 @@ struct NCAccountSettingsView: View {
                                     let host = url.host {
                                     let privateKeyString: String = {
                                         if let account = model.tblAccount?.account,
-                                           let privateKey = NCKeychain().getPushNotificationPrivateKey(account: account) {
+                                           let privateKey = NCPreferences().getPushNotificationPrivateKey(account: account) {
                                                 let prefixData = Data(privateKey.prefix(8))
                                                 return prefixData.base64EncodedString()
                                             } else {
