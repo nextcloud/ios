@@ -840,9 +840,19 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     await self.reloadDataSource()
                 }
             } providers: { account, searchProviders in
-                self.providers = searchProviders
-                self.searchResults = []
-                self.dataSource = NCCollectionViewDataSource(metadatas: [], layoutForView: self.layoutForView, providers: self.providers, searchResults: self.searchResults, account: account)
+                Task {
+                    let directoryOnTop = await NCKeychain().getDirectoryOnTopAsync(account: account)
+                    let favoriteOnTop = await NCKeychain().getFavoriteOnTopAsync(account: account)
+                    self.providers = searchProviders
+                    self.searchResults = []
+                    self.dataSource = NCCollectionViewDataSource(metadatas: [],
+                                                                 layoutForView: self.layoutForView,
+                                                                 providers: self.providers,
+                                                                 searchResults: self.searchResults,
+                                                                 directoryOnTop: directoryOnTop,
+                                                                 favoriteOnTop: favoriteOnTop,
+                                                                 account: account)
+                }
             } update: { _, _, searchResult, metadatas in
                 guard let metadatas, !metadatas.isEmpty, self.isSearchingMode, let searchResult else { return }
                 self.networking.unifiedSearchQueue.addOperation(NCCollectionViewUnifiedSearch(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult))
@@ -868,12 +878,20 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                         await self.reloadDataSource()
                         return
                     }
+                    let directoryOnTop = await NCKeychain().getDirectoryOnTopAsync(account: self.session.account)
+                    let favoriteOnTop = await NCKeychain().getFavoriteOnTopAsync(account: self.session.account)
                     let ocId = metadatasSearch.map { $0.ocId }
                     let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "ocId IN %@", ocId),
                                                                           withLayout: self.layoutForView,
                                                                           withAccount: self.session.account)
 
-                    self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: self.layoutForView, providers: self.providers, searchResults: self.searchResults, account: self.session.account)
+                    self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
+                                                                 layoutForView: self.layoutForView,
+                                                                 providers: self.providers,
+                                                                 searchResults: self.searchResults,
+                                                                 directoryOnTop: directoryOnTop,
+                                                                 favoriteOnTop: favoriteOnTop,
+                                                                 account: self.session.account)
                     self.networkSearchInProgress = false
                     await self.reloadDataSource()
                 }

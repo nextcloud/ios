@@ -68,11 +68,17 @@ class NCShares: NCCollectionViewCommon {
     // MARK: - DataSource
 
     override func reloadDataSource() async {
+        let directoryOnTop = await NCKeychain().getDirectoryOnTopAsync(account: session.account)
+        let favoriteOnTop = await NCKeychain().getFavoriteOnTopAsync(account: session.account)
         let metadatas = await database.getMetadatasAsync(predicate: NSPredicate(format: "ocId IN %@", ocIdShares),
                                                          withLayout: layoutForView,
                                                          withAccount: session.account)
 
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
+                                                     layoutForView: layoutForView,
+                                                     directoryOnTop: directoryOnTop,
+                                                     favoriteOnTop: favoriteOnTop,
+                                                     account: session.account)
 
         await super.reloadDataSource()
 

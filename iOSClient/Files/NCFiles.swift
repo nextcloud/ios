@@ -189,6 +189,8 @@ class NCFiles: NCCollectionViewCommon {
             return
         }
 
+        let directoryOnTop = await NCKeychain().getDirectoryOnTopAsync(account: self.session.account)
+        let favoriteOnTop = await NCKeychain().getFavoriteOnTopAsync(account: self.session.account)
         let predicate: NSPredicate = {
             if NCKeychain().getPersonalFilesOnly(account: self.session.account) {
                 return self.personalFilesOnlyPredicate
@@ -205,7 +207,11 @@ class NCFiles: NCCollectionViewCommon {
                                                               withLayout: self.layoutForView,
                                                               withAccount: self.session.account)
 
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
+                                                     layoutForView: layoutForView,
+                                                     directoryOnTop: directoryOnTop,
+                                                     favoriteOnTop: favoriteOnTop,
+                                                     account: session.account)
         await super.reloadDataSource()
 
         cachingAsync(metadatas: metadatas)

@@ -250,12 +250,17 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             RealmSwift.SortDescriptor(keyPath: "status", ascending: false),
             RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
         ]
+        let directoryOnTop = await NCKeychain().getDirectoryOnTopAsync(account: session.account)
+        let favoriteOnTop = await NCKeychain().getFavoriteOnTopAsync(account: session.account)
 
         let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
                                                               withSort: sortDescriptors,
                                                               withLimit: 100)
         if let metadatas, !metadatas.isEmpty {
-            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: self.layoutForView)
+            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
+                                                         layoutForView: self.layoutForView,
+                                                         directoryOnTop: directoryOnTop,
+                                                         favoriteOnTop: favoriteOnTop)
         } else {
             self.dataSource.removeAll()
         }

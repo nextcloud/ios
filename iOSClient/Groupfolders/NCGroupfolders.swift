@@ -60,6 +60,8 @@ class NCGroupfolders: NCCollectionViewCommon {
 
     override func reloadDataSource() async {
         var metadatas: [tableMetadata] = []
+        let directoryOnTop = await NCKeychain().getDirectoryOnTopAsync(account: session.account)
+        let favoriteOnTop = await NCKeychain().getFavoriteOnTopAsync(account: session.account)
 
         if self.serverUrl.isEmpty {
             metadatas = await database.getMetadatasFromGroupfoldersAsync(session: session,
@@ -70,7 +72,11 @@ class NCGroupfolders: NCCollectionViewCommon {
                                                          withAccount: session.account)
         }
 
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
+                                                     layoutForView: layoutForView,
+                                                     directoryOnTop: directoryOnTop,
+                                                     favoriteOnTop: favoriteOnTop,
+                                                     account: session.account)
         await super.reloadDataSource()
 
         cachingAsync(metadatas: metadatas)

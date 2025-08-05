@@ -11,12 +11,18 @@ import NextcloudKit
 extension NCShareExtension {
     func reloadData() async {
         let session = self.extensionData.getSession()
+        let directoryOnTop = await NCKeychain().getDirectoryOnTopAsync(account: session.account)
+        let favoriteOnTop = await NCKeychain().getFavoriteOnTopAsync(account: session.account)
         let layoutForView = await NCManageDatabase.shared.getLayoutForViewAsync(account: session.account, key: keyLayout, serverUrl: serverUrl)
         let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName != %@ AND directory == true", session.account, serverUrl, NextcloudKit.shared.nkCommonInstance.rootFileName)
         let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
                                                               withLayout: layoutForView,
                                                               withAccount: session.account)
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, account: session.account)
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
+                                                     layoutForView: layoutForView,
+                                                     directoryOnTop: directoryOnTop,
+                                                     favoriteOnTop: favoriteOnTop,
+                                                     account: session.account)
         self.collectionView.reloadData()
     }
 

@@ -46,15 +46,17 @@ class NCCollectionViewDataSource: NSObject {
          layoutForView: NCDBLayoutForView? = nil,
          providers: [NKSearchProvider]? = nil,
          searchResults: [NKSearchResult]? = nil,
+         directoryOnTop: Bool,
+         favoriteOnTop: Bool,
          account: String? = nil) {
         super.init()
         removeAll()
 
         self.metadatas = metadatas
         self.layoutForView = layoutForView
-        if let account {
-            self.directoryOnTop = NCKeychain().getDirectoryOnTop(account: account)
-            self.favoriteOnTop = NCKeychain().getFavoriteOnTop(account: account)
+        if account != nil {
+            self.directoryOnTop = directoryOnTop
+            self.favoriteOnTop = favoriteOnTop
         }
         // unified search
         self.providers = providers

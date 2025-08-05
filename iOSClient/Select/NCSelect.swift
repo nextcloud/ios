@@ -504,6 +504,8 @@ extension NCSelect: UICollectionViewDelegateFlowLayout {
 extension NCSelect {
     func reloadDataSource() async {
         var predicate = NSPredicate()
+        let directoryOnTop = await NCKeychain().getDirectoryOnTopAsync(account: session.account)
+        let favoriteOnTop = await NCKeychain().getFavoriteOnTopAsync(account: session.account)
 
         if includeDirectoryE2EEncryption {
             if includeImages {
@@ -524,7 +526,10 @@ extension NCSelect {
         let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
                                                               withLayout: NCDBLayoutForView(),
                                                               withAccount: session.account)
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, account: session.account)
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
+                                                     directoryOnTop: directoryOnTop,
+                                                     favoriteOnTop: favoriteOnTop,
+                                                     account: session.account)
         self.collectionView.reloadData()
     }
 

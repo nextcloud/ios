@@ -441,9 +441,16 @@ final class NCKeychain: NSObject {
         }
     }
 
-    func setFavoriteOnTop(account: String, value: Bool) {
+    //MARK: - FAVORITE ON TOP
+
+    func setFavoriteOnTop(account: String, value: Bool) async {
         let key = "favoriteOnTop" + account
-        keychain[key] = String(value)
+        await withCheckedContinuation { continuation in
+            Task {
+                keychain[key] = String(value)
+                continuation.resume()
+            }
+        }
     }
 
     func getFavoriteOnTop(account: String) -> Bool {
@@ -455,9 +462,26 @@ final class NCKeychain: NSObject {
         }
     }
 
-    func setDirectoryOnTop(account: String, value: Bool) {
+    func getFavoriteOnTopAsync(account: String) async -> Bool {
+        let key = "favoriteOnTop" + account
+        return await withCheckedContinuation { continuation in
+            Task {
+                let result = (try? keychain.get(key)).flatMap(Bool.init) ?? true
+                continuation.resume(returning: result)
+            }
+        }
+    }
+
+    //MARK: - DIRECTORY ON TOP
+
+    func setDirectoryOnTop(account: String, value: Bool) async {
         let key = "directoryOnTop" + account
-        keychain[key] = String(value)
+        await withCheckedContinuation { continuation in
+            Task {
+                keychain[key] = String(value)
+                continuation.resume()
+            }
+        }
     }
 
     func getDirectoryOnTop(account: String) -> Bool {
@@ -466,6 +490,16 @@ final class NCKeychain: NSObject {
             return result
         } else {
             return true
+        }
+    }
+
+    func getDirectoryOnTopAsync(account: String) async -> Bool {
+        let key = "directoryOnTop" + account
+        return await withCheckedContinuation { continuation in
+            Task {
+                let result = (try? keychain.get(key)).flatMap(Bool.init) ?? true
+                continuation.resume(returning: result)
+            }
         }
     }
 
@@ -666,18 +700,3 @@ final class NCKeychain: NSObject {
     }
 }
 
-extension Keychain {
-    func getAsync(_ key: String) async -> String? {
-        await withCheckedContinuation { continuation in
-            Task {
-                let result = try? self.get(key)
-                continuation.resume(returning: result)
-            }
-        }
-    }
-
-    func getBoolAsync(_ key: String, default defaultValue: Bool = true) async -> Bool {
-        let stringValue = await getAsync(key)
-        return Bool(stringValue ?? "") ?? defaultValue
-    }
-}

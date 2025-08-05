@@ -347,9 +347,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
         let favoriteOnTop = NCKeychain().getFavoriteOnTop(account: self.session.account)
         let favoriteOnTopAction = UIAction(title: NSLocalizedString("_favorite_on_top_", comment: ""), state: favoriteOnTop ? .on : .off) { _ in
-            NCKeychain().setFavoriteOnTop(account: self.session.account, value: !favoriteOnTop)
-
             Task {
+                await NCKeychain().setFavoriteOnTop(account: self.session.account, value: !favoriteOnTop)
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, status: nil)
                 }
@@ -359,9 +358,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
         let directoryOnTop = NCKeychain().getDirectoryOnTop(account: self.session.account)
         let directoryOnTopAction = UIAction(title: NSLocalizedString("_directory_on_top_", comment: ""), state: directoryOnTop ? .on : .off) { _ in
-            NCKeychain().setDirectoryOnTop(account: self.session.account, value: !directoryOnTop)
-
             Task {
+                await NCKeychain().setDirectoryOnTop(account: self.session.account, value: !directoryOnTop)
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, status: nil)
                 }
