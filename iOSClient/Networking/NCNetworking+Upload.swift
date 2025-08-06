@@ -237,16 +237,11 @@ extension NCNetworking {
             await self.database.addMetadataAsync(metadata)
 
             if selector == self.global.selectorUploadFileNODelete {
-                if isAppInBackground {
-                    self.utilityFileSystem.moveFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase),
-                                                    toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, userId: metadata.userId, urlBase: metadata.urlBase))
-                } else {
-                    self.utilityFileSystem.moveFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase),
-                                                    toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, userId: metadata.userId, urlBase: metadata.urlBase))
-                }
-
+                self.utilityFileSystem.moveFile(
+                    atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase),
+                    toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, userId: metadata.userId, urlBase: metadata.urlBase)
+                )
                 await self.database.addLocalFileAsync(metadata: metadata)
-
             } else {
                 self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase))
             }
@@ -283,27 +278,20 @@ extension NCNetworking {
                 // Client Diagnostic
                 await self.database.addDiagnosticAsync(account: metadata.account, issue: self.global.diagnosticIssueVirusDetected)
             } else if error.errorCode == self.global.errorForbidden {
-                if isAppInBackground {
-                    await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                                sessionTaskIdentifier: 0,
-                                                                sessionError: error.errorDescription,
-                                                                status: self.global.metadataStatusUploadError,
-                                                                errorCode: error.errorCode)
-                } else {
-                    #if EXTENSION
-                    await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                                sessionTaskIdentifier: 0,
-                                                                sessionError: error.errorDescription,
-                                                                status: self.global.metadataStatusUploadError,
-                                                                errorCode: error.errorCode)
-                    #else
+                await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                            sessionTaskIdentifier: 0,
+                                                            sessionError: error.errorDescription,
+                                                            status: self.global.metadataStatusUploadError,
+                                                            errorCode: error.errorCode)
+                #if !EXTENSION
+                if !isAppInBackground {
                     if capabilities.termsOfService {
                         await termsOfService(metadata: metadata)
                     } else {
                         await uploadForbidden(metadata: metadata, error: error)
                     }
-                    #endif
                 }
+                #endif
             } else {
                 if let metadata = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
                                                                               sessionTaskIdentifier: 0,
