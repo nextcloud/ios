@@ -36,28 +36,23 @@ extension UINavigationController {
 
         if #available(iOS 26.0, *) {
             appearance.configureWithDefaultBackground()
-            appearance.titleTextAttributes = [.foregroundColor: textColor]
-
-            navigationController?.navigationBar.standardAppearance = appearance
-            navigationController?.navigationBar.scrollEdgeAppearance = appearance
-
-            navigationBar.tintColor = textColor
-            navigationBar.prefersLargeTitles = false
         } else {
             appearance.configureWithTransparentBackground()
             appearance.backgroundColor = backgroundColor
-            appearance.titleTextAttributes = [.foregroundColor: textColor]
 
             appearance.shadowColor = .clear
             appearance.shadowImage = UIImage()
-
-            navigationBar.standardAppearance = appearance
-            navigationBar.scrollEdgeAppearance = appearance
-            navigationBar.compactAppearance = appearance
-            navigationBar.compactScrollEdgeAppearance = appearance
-
-            navigationBar.tintColor = textColor
-            navigationBar.prefersLargeTitles = false
         }
+        
+        appearance.titleTextAttributes = [.foregroundColor: textColor]
+
+        navigationBar.standardAppearance = appearance
+        navigationBar.scrollEdgeAppearance = appearance
+        navigationBar.compactAppearance = appearance
+        navigationBar.compactScrollEdgeAppearance = appearance
+        
+        navigationBar.tintColor = textColor
+        navigationBar.prefersLargeTitles = false
+        
     }
 }

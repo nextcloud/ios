@@ -39,7 +39,7 @@ class NCMenuAction {
     var selected: Bool = false
     var isOn: Bool = false
     var action: ((_ menuAction: NCMenuAction) -> Void)?
-    var rowHeight: CGFloat { self.title == NCMenuAction.seperatorIdentifier ? NCMenuAction.seperatorHeight : self.details != nil ? 76 : 56 }
+    var rowHeight: CGFloat { self.title == NCMenuAction.seperatorIdentifier ? NCMenuAction.seperatorHeight : self.details != nil ? 76 : 60 }
     var order: Int = 0
     var sender: Any?
 
