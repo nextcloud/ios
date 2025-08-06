@@ -124,6 +124,7 @@ class NCMedia: UIViewController {
         assistantButton.configuration = UIButton.Configuration.plain()
         assistantButton.setImage(UIImage(systemName: "sparkles"), for: .normal)
         if #available(iOS 26.0, *) {
+            selectOrCancelButton.addBlur(style: .systemUltraThinMaterial)
         } else {
             assistantButton.addBlur(style: .systemUltraThinMaterial)
         }
@@ -133,6 +134,7 @@ class NCMedia: UIViewController {
         selectOrCancelButton.layer.masksToBounds = true
         selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
         if #available(iOS 26.0, *) {
+            selectOrCancelButton.addBlur(style: .systemUltraThinMaterial)
         } else {
             selectOrCancelButton.addBlur(style: .systemUltraThinMaterial)
         }
