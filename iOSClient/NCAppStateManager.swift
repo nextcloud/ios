@@ -25,6 +25,7 @@ var isAppInBackground: Bool = true
 /// Additionally, it logs lifecycle transitions using `nkLog(debug:)`.
 final class NCAppStateManager {
     static let shared = NCAppStateManager()
+    private(set) var activeScene: UIWindowScene?
 
     private init() {
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { _ in
@@ -45,5 +46,23 @@ final class NCAppStateManager {
 
             nkLog(debug: "Application did enter in background")
         }
+
+        NotificationCenter.default.addObserver(forName: UIScene.didActivateNotification, object: nil, queue: .main) { notification in
+            if let scene = notification.object as? UIWindowScene {
+                self.activeScene = scene
+                nkLog(debug: "Scene did activate: \(scene.session.persistentIdentifier)")
+            }
+        }
+    }
+
+    private func updateActiveScene() {
+        let active = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .first(where: { $0.activationState == .foregroundActive })
+            self.activeScene = active
+        }
+
+    func isSceneFocused(_ scene: UIWindowScene?) -> Bool {
+        return scene == activeScene
     }
 }

@@ -888,13 +888,7 @@
 		F7CBC1262BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CBC1222BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.swift */; };
 		F7CEE6002BA9A5C9003EFD89 /* NCTrashGridCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7CEE5FE2BA9A5C9003EFD89 /* NCTrashGridCell.xib */; };
 		F7CEE6012BA9A5C9003EFD89 /* NCTrashGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CEE5FF2BA9A5C9003EFD89 /* NCTrashGridCell.swift */; };
-		F7CF067B2E0FF3990063AD04 /* NCAppStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CF067A2E0FF38F0063AD04 /* NCAppStateManager.swift */; };
-		F7CF067C2E0FF3990063AD04 /* NCAppStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CF067A2E0FF38F0063AD04 /* NCAppStateManager.swift */; };
-		F7CF067D2E0FF3990063AD04 /* NCAppStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CF067A2E0FF38F0063AD04 /* NCAppStateManager.swift */; };
-		F7CF067E2E0FF3990063AD04 /* NCAppStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CF067A2E0FF38F0063AD04 /* NCAppStateManager.swift */; };
-		F7CF067F2E0FF3990063AD04 /* NCAppStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CF067A2E0FF38F0063AD04 /* NCAppStateManager.swift */; };
 		F7CF06802E0FF3990063AD04 /* NCAppStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CF067A2E0FF38F0063AD04 /* NCAppStateManager.swift */; };
-		F7CF06812E0FF3990063AD04 /* NCAppStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CF067A2E0FF38F0063AD04 /* NCAppStateManager.swift */; };
 		F7CF06832E1127460063AD04 /* NCManageDatabase+Metadata+Create.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CF06822E11273F0063AD04 /* NCManageDatabase+Metadata+Create.swift */; };
 		F7CF06842E1127460063AD04 /* NCManageDatabase+Metadata+Create.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CF06822E11273F0063AD04 /* NCManageDatabase+Metadata+Create.swift */; };
 		F7CF06852E1127460063AD04 /* NCManageDatabase+Metadata+Create.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CF06822E11273F0063AD04 /* NCManageDatabase+Metadata+Create.swift */; };
@@ -4188,7 +4182,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F73EF7BD2B0224AB0087E6E9 /* NCManageDatabase+ExternalSites.swift in Sources */,
-				F7CF067B2E0FF3990063AD04 /* NCAppStateManager.swift in Sources */,
 				F71433E72C778FFB00E20B5A /* NotificationCenter+MainThread.swift in Sources */,
 				F39170AA2CB82024006127BC /* FileAutoRenamer+Extensions.swift in Sources */,
 				F73EF7C52B02250B0087E6E9 /* NCManageDatabase+GPS.swift in Sources */,
@@ -4305,7 +4298,6 @@
 				F78E2D6A29AF02DB0024D4F3 /* Database.swift in Sources */,
 				F7C687EE2D22BDE5004757BC /* NCManageDatabase+RecommendedFiles.swift in Sources */,
 				F7490E7429882BCC009DCE94 /* NCManageDatabase.swift in Sources */,
-				F7CF067E2E0FF3990063AD04 /* NCAppStateManager.swift in Sources */,
 				F7490E6E29882B56009DCE94 /* NCBrand.swift in Sources */,
 				F7490E8129882C79009DCE94 /* NCManageDatabase+DashboardWidget.swift in Sources */,
 				F73EF7D42B0225BA0087E6E9 /* NCManageDatabase+Tag.swift in Sources */,
@@ -4398,7 +4390,6 @@
 				AF4BF615275629E20081CEEF /* NCManageDatabase+Account.swift in Sources */,
 				F798F0E225880608000DAFFD /* UIColor+Extension.swift in Sources */,
 				F7327E3F2B73B92800A462C7 /* NCNetworking+Synchronization.swift in Sources */,
-				F7CF067F2E0FF3990063AD04 /* NCAppStateManager.swift in Sources */,
 				F7C9B9202B582F550064EA91 /* NCManageDatabase+SecurityGuard.swift in Sources */,
 				F78E2D6829AF02DB0024D4F3 /* Database.swift in Sources */,
 				AA8D31562D41052300FE2775 /* NCManageDatabase+DownloadLimit.swift in Sources */,
@@ -4506,7 +4497,6 @@
 				F39170AE2CB82024006127BC /* FileAutoRenamer+Extensions.swift in Sources */,
 				F76DEE9728F808AF0041B1C9 /* LockscreenData.swift in Sources */,
 				F72EA95A28B7BD0D00C88F0C /* FilesWidgetView.swift in Sources */,
-				F7CF067C2E0FF3990063AD04 /* NCAppStateManager.swift in Sources */,
 				F768823C2C0DD231001CF441 /* NCPreferences.swift in Sources */,
 				F71F6D082B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */,
 				F78302FE28B4C44700B84583 /* NCBrand.swift in Sources */,
@@ -4655,7 +4645,6 @@
 				F771E3F820E239B500AFB62D /* FileProviderExtension+Thumbnail.swift in Sources */,
 				F76882392C0DD230001CF441 /* NCPreferences.swift in Sources */,
 				F39170AB2CB82024006127BC /* FileAutoRenamer+Extensions.swift in Sources */,
-				F7CF067D2E0FF3990063AD04 /* NCAppStateManager.swift in Sources */,
 				F343A4BF2A1E734600DDA874 /* Optional+Extension.swift in Sources */,
 				AF4BF62027562B3F0081CEEF /* NCManageDatabase+Activity.swift in Sources */,
 				F73ADD2226554FD10069EA0D /* NCContentPresenter.swift in Sources */,
@@ -5023,7 +5012,6 @@
 				F7817CFA29801A3500FFBC65 /* Data+Extension.swift in Sources */,
 				F7BF9D842934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift in Sources */,
 				F73EF7A92B0223900087E6E9 /* NCManageDatabase+Comments.swift in Sources */,
-				F7CF06812E0FF3990063AD04 /* NCAppStateManager.swift in Sources */,
 				F7A8D73C28F181BC008BBE1C /* NCBrand.swift in Sources */,
 				F711A4DE2AF92CAE00095DD8 /* NCUtility+Date.swift in Sources */,
 				F768823B2C0DD231001CF441 /* NCPreferences.swift in Sources */,
