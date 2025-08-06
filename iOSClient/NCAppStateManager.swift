@@ -26,9 +26,6 @@ var isAppInBackground: Bool = true
 final class NCAppStateManager {
     static let shared = NCAppStateManager()
 
-    private var lastSceneIdentifier: String?
-        private var windowObservers: [NSKeyValueObservation] = []
-
     private init() {
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { _ in
             hasBecomeActiveOnce = true
@@ -47,30 +44,6 @@ final class NCAppStateManager {
             isAppInBackground = true
 
             nkLog(debug: "Application did enter in background")
-        }
-
-        observeSceneFocus()
-    }
-
-    private func observeSceneFocus() {
-        windowObservers.removeAll()
-
-        for scene in UIApplication.shared.connectedScenes {
-            guard let windowScene = scene as? UIWindowScene else { continue }
-            for window in windowScene.windows {
-                let observer = window.observe(\.isKeyWindow, options: [.new]) { [weak self] window, change in
-                    guard let self = self, change.newValue == true else { return }
-
-                    let sceneID = windowScene.session.persistentIdentifier
-                    if self.lastSceneIdentifier != sceneID {
-                        self.lastSceneIdentifier = sceneID
-                        nkLog(debug: "🌟 Scene did focus: \(sceneID)")
-                        // NotificationCenter.default.post(name: .sceneDidFocus, object: windowScene)
-                    }
-                }
-
-                windowObservers.append(observer)
-            }
         }
     }
 }
