@@ -245,12 +245,12 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         try? await UNUserNotificationCenter.current().setBadgeCount(transferCount)
         fileItem?.badgeValue = transferCount == 0 ? nil : "\(transferCount)"
 #else
-        if tranfersCount > 999 {
+        if transferCount > 999 {
             try? await UNUserNotificationCenter.current().setBadgeCount(999)
             fileItem?.badgeValue = "999+"
         } else {
             try? await UNUserNotificationCenter.current().setBadgeCount(transferCount)
-            fileItem?.badgeValue = tranfersCount == 0 ? nil : "\(transferCount)"
+            fileItem?.badgeValue = transferCount == 0 ? nil : "\(transferCount)"
         }
 #endif
 
