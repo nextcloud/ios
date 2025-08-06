@@ -25,7 +25,9 @@ var isAppInBackground: Bool = true
 /// Additionally, it logs lifecycle transitions using `nkLog(debug:)`.
 final class NCAppStateManager {
     static let shared = NCAppStateManager()
-    private(set) var activeScene: UIWindowScene?
+
+    private var lastSceneID: String?
+    private var isRunning = false
 
     private init() {
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { _ in
@@ -47,22 +49,33 @@ final class NCAppStateManager {
             nkLog(debug: "Application did enter in background")
         }
 
-        NotificationCenter.default.addObserver(forName: UIScene.didActivateNotification, object: nil, queue: .main) { notification in
-            if let scene = notification.object as? UIWindowScene {
-                self.activeScene = scene
-                nkLog(debug: "Scene did activate: \(scene.session.persistentIdentifier)")
+        Task.detached(priority: .utility) { [weak self] in
+            guard let self else { return }
+            await self.startMonitoring()
+        }
+    }
+
+    @MainActor
+    func startMonitoring() async {
+            while true {
+                if let scene = UIApplication.shared.connectedScenes
+                    .compactMap({ $0 as? UIWindowScene })
+                    .first(where: { $0.activationState == .foregroundActive }),
+                   let _ = scene.keyWindow {
+
+                    let id = scene.session.persistentIdentifier
+                    if id != lastSceneID {
+                        lastSceneID = id
+                        print("\(id)")
+                        /*
+                        await MainActor.run {
+                            NotificationCenter.default.post(name: .sceneDidFocus, object: scene)
+                        }
+                        */
+                    }
+                }
+
+                try? await Task.sleep(nanoseconds: 500_000_000) // 0.5s
             }
         }
-    }
-
-    private func updateActiveScene() {
-        let active = UIApplication.shared.connectedScenes
-            .compactMap { $0 as? UIWindowScene }
-            .first(where: { $0.activationState == .foregroundActive })
-            self.activeScene = active
-        }
-
-    func isSceneFocused(_ scene: UIWindowScene?) -> Bool {
-        return scene == activeScene
-    }
 }
