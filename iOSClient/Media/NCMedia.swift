@@ -103,8 +103,6 @@ class NCMedia: UIViewController {
         collectionView.collectionViewLayout = layout
         layoutType = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "", layout: global.mediaLayoutRatio).layout
 
-        tabBarSelect = NCMediaSelectTabBar(controller: self.tabBarController, delegate: self)
-
         titleDate.text = ""
 
         menuButton.backgroundColor = .clear
@@ -172,6 +170,10 @@ class NCMedia: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        if tabBarSelect == nil {
+            tabBarSelect = NCMediaSelectTabBar(controller: self.tabBarController, viewController: self, delegate: self)
+        }
+
         navigationController?.setNavigationBarHidden(true, animated: false)
 
         if dataSource.metadatas.isEmpty {
@@ -218,7 +220,6 @@ class NCMedia: UIViewController {
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
 
-        tabBarSelect?.setFrame()
         gradient.frame = gradientView.bounds
     }
 
