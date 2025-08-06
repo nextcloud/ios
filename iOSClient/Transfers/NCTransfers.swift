@@ -28,15 +28,15 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        listLayout.itemHeight = 105
-        self.database.setLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList)
-        self.navigationItem.title = titleCurrentFolder
-
+        navigationController?.setNavigationBarAppearance()
+        navigationItem.title = titleCurrentFolder
         let close = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .done) {
             self.dismiss(animated: true)
         }
+        navigationItem.leftBarButtonItems = [close]
 
-        self.navigationItem.leftBarButtonItems = [close]
+        listLayout.itemHeight = 105
+        self.database.setLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList)
 
         observeMetadata()
     }

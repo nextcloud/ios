@@ -343,7 +343,6 @@ class NCFiles: NCCollectionViewCommon {
 
         guard results.error == .success,
               let e2eMetadata = results.e2eMetadata,
-              let signature = results.signature,
               let version = results.version else {
 
             // show error
@@ -360,7 +359,7 @@ class NCFiles: NCCollectionViewCommon {
             return (metadatas, error, true)
         }
 
-        let errorDecodeMetadata = await NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: signature, serverUrl: serverUrl, session: self.session)
+        let errorDecodeMetadata = await NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: results.signature, serverUrl: serverUrl, session: self.session)
         nkLog(debug: "Decode e2ee metadata with error: \(errorDecodeMetadata.errorCode)")
 
         if errorDecodeMetadata == .success {

@@ -211,7 +211,7 @@ final class NCPreferences: NSObject {
             return getBoolPreference(key: "privacyScreen", defaultValue: false)
         }
         set {
-            keychain["privacyScreen"] = String(newValue)
+            setUserDefaults(newValue, forKey: "privacyScreen")
         }
     }
 

@@ -144,8 +144,9 @@ class NCMainTabBarController: UITabBarController {
 
     @MainActor
     private func timerCheck() async {
+        var nanoseconds: UInt64 = 3_000_000_000
         while true {
-            try? await Task.sleep(nanoseconds: 1_000_000_000)
+            try? await Task.sleep(nanoseconds: nanoseconds)
 
             let capabilities = await NKCapabilities.shared.getCapabilities(for: self.account)
 
@@ -154,7 +155,8 @@ class NCMainTabBarController: UITabBarController {
 
             // Update right bar button item
             if let navigationController = self.selectedViewController as? NCMainNavigationController {
-                await navigationController.updateRightBarButtonItems(self.tabBar.items?[0])
+                let transferCount = await navigationController.updateRightBarButtonItems(self.tabBar.items?[0])
+                nanoseconds = transferCount == 0 ? 3_000_000_000 : 1_500_000_000
             }
             // Update Activity tab bar
             if let item = self.tabBar.items?[3] {
