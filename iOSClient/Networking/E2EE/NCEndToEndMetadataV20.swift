@@ -281,6 +281,7 @@ extension NCEndToEndMetadata {
 
             // SIGNATURE CHECK
             //
+            // TODO: if null exit with error
             if let signature, !signature.isEmpty {
                 if !verifySignature(account: session.account, signature: signature, userId: tableUser.userId, metadata: metadata, users: users, version: version, certificate: tableUser.certificate) {
                     nkLog(tag: global.logTagE2EE, message: "Error verify signature")
@@ -328,6 +329,7 @@ extension NCEndToEndMetadata {
 
             // CHECKSUM CHECK
             //
+            // TODO: if null exit with error
             if let keyChecksums = jsonCiphertextMetadata.keyChecksums, !keyChecksums.isEmpty {
                 guard let hash = NCEndToEndEncryption.shared().createSHA256(decryptedMetadataKey),
                       keyChecksums.contains(hash) else {
