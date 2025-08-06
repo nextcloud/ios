@@ -26,8 +26,8 @@ var isAppInBackground: Bool = true
 final class NCAppStateManager {
     static let shared = NCAppStateManager()
 
-    private var gestureRecognizers: [String: UIGestureRecognizer] = [:]
-    private var gestureDelegates: [String: SceneTapInterceptor] = [:]
+    private var lastSceneIdentifier: String?
+        private var windowObservers: [NSKeyValueObservation] = []
 
     private init() {
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { _ in
@@ -49,50 +49,28 @@ final class NCAppStateManager {
             nkLog(debug: "Application did enter in background")
         }
 
-        NotificationCenter.default.addObserver(forName: UIScene.didActivateNotification, object: nil, queue: .main) { notification in
-            if let scene = notification.object as? UIWindowScene {
-                self.installSceneFocusTapMonitor(scene: scene)
+        observeSceneFocus()
+    }
+
+    private func observeSceneFocus() {
+        windowObservers.removeAll()
+
+        for scene in UIApplication.shared.connectedScenes {
+            guard let windowScene = scene as? UIWindowScene else { continue }
+            for window in windowScene.windows {
+                let observer = window.observe(\.isKeyWindow, options: [.new]) { [weak self] window, change in
+                    guard let self = self, change.newValue == true else { return }
+
+                    let sceneID = windowScene.session.persistentIdentifier
+                    if self.lastSceneIdentifier != sceneID {
+                        self.lastSceneIdentifier = sceneID
+                        nkLog(debug: "🌟 Scene did focus: \(sceneID)")
+                        // NotificationCenter.default.post(name: .sceneDidFocus, object: windowScene)
+                    }
+                }
+
+                windowObservers.append(observer)
             }
         }
     }
-
-    private func installSceneFocusTapMonitor(scene: UIWindowScene) {
-            guard let window = scene.windows.first else { return }
-
-            let sceneID = scene.session.persistentIdentifier
-            if gestureRecognizers[sceneID] != nil { return } // già installato
-
-            let interceptor = SceneTapInterceptor()
-            let tapRecognizer = UITapGestureRecognizer(target: Self.self, action: #selector(handleSceneTap(_:)))
-            tapRecognizer.name = "SceneFocusTapMonitor"
-            tapRecognizer.cancelsTouchesInView = false
-            tapRecognizer.delegate = interceptor
-
-            window.addGestureRecognizer(tapRecognizer)
-
-            // 🔒 Manteniamo vivi i riferimenti
-            gestureRecognizers[sceneID] = tapRecognizer
-            gestureDelegates[sceneID] = interceptor
-        }
-
-        @objc func handleSceneTap(_ recognizer: UITapGestureRecognizer) {
-            guard let window = recognizer.view as? UIWindow,
-                  let scene = window.windowScene else { return }
-
-            nkLog(debug: "🟢 Scene tapped / focused: \(scene.session.persistentIdentifier)")
-            NotificationCenter.default.post(name: .sceneDidReceiveUserTap, object: scene)
-        }
 }
-
-/// Allows tap recognizer to work across all UI.
-private class SceneTapInterceptor: NSObject, UIGestureRecognizerDelegate {
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        return true
-    }
-}
-
-
-extension Notification.Name {
-    static let sceneDidReceiveUserTap = Notification.Name("sceneDidReceiveUserTap")
-}
-
