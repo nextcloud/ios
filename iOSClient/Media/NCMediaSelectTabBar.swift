@@ -15,35 +15,27 @@ class NCMediaSelectTabBar: ObservableObject {
     open weak var delegate: NCMediaSelectTabBarDelegate?
     @Published var selectCount: Int = 0
 
-    init(controller: UITabBarController? = nil, delegate: NCMediaSelectTabBarDelegate? = nil) {
+    init(controller: UITabBarController? = nil, viewController: UIViewController, delegate: NCMediaSelectTabBarDelegate? = nil) {
         guard let controller else { return }
         let mediaTabBarSelectView = MediaTabBarSelectView(tabBarSelect: self)
         hostingController = UIHostingController(rootView: mediaTabBarSelectView)
+        let height = controller.tabBar.frame.height
 
         self.controller = controller
         self.delegate = delegate
 
-        setFrame()
-
-        hostingController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
         hostingController.view.backgroundColor = .clear
         hostingController.view.isHidden = true
 
-        controller.view.addSubview(hostingController.view)
-    }
-
-    func setFrame() {
-        guard let controller,
-              let hostingController
-        else {
-            return
-        }
-        let bottomAreaInsets: CGFloat = controller.tabBar.safeAreaInsets.bottom == 0 ? 34 : 0
-
-        hostingController.view.frame = CGRect(x: controller.tabBar.frame.origin.x,
-                                              y: controller.tabBar.frame.origin.y - bottomAreaInsets,
-                                              width: controller.tabBar.frame.width,
-                                              height: controller.tabBar.frame.height + bottomAreaInsets)
+        viewController.view.addSubview(hostingController.view)
+        
+        NSLayoutConstraint.activate([
+            hostingController.view.leadingAnchor.constraint(equalTo: viewController.view.leadingAnchor),
+            hostingController.view.trailingAnchor.constraint(equalTo: viewController.view.trailingAnchor),
+            hostingController.view.bottomAnchor.constraint(equalTo: viewController.view.bottomAnchor),
+            hostingController.view.heightAnchor.constraint(equalToConstant: height)
+        ])
     }
 
     func show() {
@@ -101,5 +93,5 @@ struct MediaTabBarSelectView: View {
 }
 
 #Preview {
-    MediaTabBarSelectView(tabBarSelect: NCMediaSelectTabBar())
+    MediaTabBarSelectView(tabBarSelect: NCMediaSelectTabBar(controller: nil, viewController: UIViewController(), delegate: nil))
 }

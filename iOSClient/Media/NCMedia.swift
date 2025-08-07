@@ -103,8 +103,6 @@ class NCMedia: UIViewController {
         collectionView.collectionViewLayout = layout
         layoutType = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "", layout: global.mediaLayoutRatio).layout
 
-        tabBarSelect = NCMediaSelectTabBar(controller: self.tabBarController, delegate: self)
-
         titleDate.text = ""
 
         menuButton.backgroundColor = .clear
@@ -124,7 +122,6 @@ class NCMedia: UIViewController {
         assistantButton.configuration = UIButton.Configuration.plain()
         assistantButton.setImage(UIImage(systemName: "sparkles"), for: .normal)
         if #available(iOS 26.0, *) {
-            selectOrCancelButton.addBlur(style: .systemUltraThinMaterial)
         } else {
             assistantButton.addBlur(style: .systemUltraThinMaterial)
         }
@@ -134,7 +131,6 @@ class NCMedia: UIViewController {
         selectOrCancelButton.layer.masksToBounds = true
         selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
         if #available(iOS 26.0, *) {
-            selectOrCancelButton.addBlur(style: .systemUltraThinMaterial)
         } else {
             selectOrCancelButton.addBlur(style: .systemUltraThinMaterial)
         }
@@ -173,6 +169,10 @@ class NCMedia: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
+        if tabBarSelect == nil {
+            tabBarSelect = NCMediaSelectTabBar(controller: self.tabBarController, viewController: self, delegate: self)
+        }
 
         navigationController?.setNavigationBarHidden(true, animated: false)
 
@@ -220,7 +220,6 @@ class NCMedia: UIViewController {
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
 
-        tabBarSelect?.setFrame()
         gradient.frame = gradientView.bounds
     }
 
