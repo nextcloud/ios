@@ -213,7 +213,7 @@ extension NCEndToEndMetadata {
         let directoryTopOcId = directoryTop.ocId
         let isDirectoryTop = serverUrl == directoryTop.serverUrlFileName
 
-        nkLog(tag: global.logTagE2EE, message: "Start decode metadata v2.0. Directory top: \(directoryTop)")
+        nkLog(tag: global.logTagE2EE, message: "Start decode metadata v2.0. Directory top: \(directoryTop.serverUrlFileName)")
 
         func addE2eEncryption(fileNameIdentifier: String, fileName: String, authenticationTag: String, key: String, initializationVector: String, metadataKey: String, mimetype: String) async {
             if let metadata = await self.database.getMetadataAsync(predicate: NSPredicate(format: "account == %@ AND fileName == %@", session.account, fileNameIdentifier)) {
@@ -324,7 +324,8 @@ extension NCEndToEndMetadata {
                 return NKError(errorCode: NCGlobal.shared.errorE2EEKeyCiphertext, errorDescription: "_e2e_error_")
             }
             let data = try decryptedMetadata.gunzipped()
-            if let jsonText = String(data: data, encoding: .utf8) { print(jsonText) }
+            // DEBUG
+            // if let jsonText = String(data: data, encoding: .utf8) { print(jsonText) }
             let jsonCiphertextMetadata = try JSONDecoder().decode(E2eeV20.Metadata.ciphertext.self, from: data)
 
             // CHECKSUM CHECK
@@ -338,7 +339,7 @@ extension NCEndToEndMetadata {
                 }
             }
 
-            print("\n\nCOUNTER -------------------------------")
+            print("\n\nCOUNTER ---------------------")
             print("Counter: \(jsonCiphertextMetadata.counter)")
 
             // COUNTER CHECK
@@ -375,7 +376,7 @@ extension NCEndToEndMetadata {
                                                     version: version)
 
             if let files = jsonCiphertextMetadata.files {
-                print("\nFILES ---------------------------------\n")
+                print("\nFILES -----------------------\n")
                 for file in files {
                     await addE2eEncryption(fileNameIdentifier: file.key, fileName: file.value.filename, authenticationTag: file.value.authenticationTag, key: file.value.key, initializationVector: file.value.nonce, metadataKey: metadataKey, mimetype: file.value.mimetype)
 
@@ -386,8 +387,8 @@ extension NCEndToEndMetadata {
                 }
             }
 
-            if let folders = jsonCiphertextMetadata.folders {
-                print("FOLDERS--------------------------------\n")
+            if let folders = jsonCiphertextMetadata.folders, !folders.isEmpty {
+                print("FOLDERS----------------------\n")
                 for folder in folders {
                     await addE2eEncryption(fileNameIdentifier: folder.key, fileName: folder.value, authenticationTag: metadata.authenticationTag, key: metadataKey, initializationVector: metadata.nonce, metadataKey: metadataKey, mimetype: "httpd/unix-directory")
 
@@ -397,7 +398,7 @@ extension NCEndToEndMetadata {
                 }
             }
 
-            print("---------------------------------------\n\n")
+            print("DECODE SUCCESS ------------------------\n\n")
 
         } catch let error {
             nkLog(tag: global.logTagE2EE, message: "Error decoding JSON V2.0: \(error.localizedDescription)")
