@@ -62,8 +62,6 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         super.viewDidLoad()
         navigationController?.setNavigationBarAppearance()
 
-        tabBarSelect = NCTrashSelectTabBar(controller: tabBarController, delegate: self)
-
         view.backgroundColor = .systemBackground
 
         collectionView.register(UINib(nibName: "NCTrashListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
@@ -90,6 +88,10 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
+        if tabBarSelect == nil {
+            tabBarSelect = NCTrashSelectTabBar(controller: tabBarController, viewController: self, delegate: self)
+        }
 
         navigationController?.setNavigationBarAppearance()
         navigationItem.title = titleCurrentFolder
@@ -121,8 +123,6 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-
-        tabBarSelect?.setFrame()
     }
 
     // MARK: TAP EVENT

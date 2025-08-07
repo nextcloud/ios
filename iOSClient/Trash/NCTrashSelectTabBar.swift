@@ -36,7 +36,7 @@ class NCTrashSelectTabBar: ObservableObject {
 
     @Published var isSelectedEmpty = true
 
-    init(controller: UITabBarController? = nil, delegate: NCTrashSelectTabBarDelegate? = nil) {
+    init(controller: UITabBarController? = nil, viewController: UIViewController, delegate: NCTrashSelectTabBarDelegate? = nil) {
         let rootView = NCTrashSelectTabBarView(tabBarSelect: self)
         hostingController = UIHostingController(rootView: rootView)
 
@@ -45,27 +45,20 @@ class NCTrashSelectTabBar: ObservableObject {
 
         guard let controller, let hostingController else { return }
 
-        setFrame()
+        let height = controller.tabBar.frame.height
 
-        hostingController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
         hostingController.view.backgroundColor = .clear
         hostingController.view.isHidden = true
 
-        controller.view.addSubview(hostingController.view)
-    }
-
-    func setFrame() {
-        guard let controller,
-              let hostingController
-        else {
-            return
-        }
-        let bottomAreaInsets: CGFloat = controller.tabBar.safeAreaInsets.bottom == 0 ? 34 : 0
-
-        hostingController.view.frame = CGRect(x: controller.tabBar.frame.origin.x,
-                                              y: controller.tabBar.frame.origin.y - bottomAreaInsets,
-                                              width: controller.tabBar.frame.width,
-                                              height: controller.tabBar.frame.height + bottomAreaInsets)
+        viewController.view.addSubview(hostingController.view)
+        
+        NSLayoutConstraint.activate([
+            hostingController.view.leadingAnchor.constraint(equalTo: viewController.view.leadingAnchor),
+            hostingController.view.trailingAnchor.constraint(equalTo: viewController.view.trailingAnchor),
+            hostingController.view.bottomAnchor.constraint(equalTo: viewController.view.bottomAnchor),
+            hostingController.view.heightAnchor.constraint(equalToConstant: height)
+        ])
     }
 
     func show() {
@@ -154,5 +147,5 @@ struct NCTrashSelectTabBarView: View {
 }
 
 #Preview {
-    NCTrashSelectTabBarView(tabBarSelect: NCTrashSelectTabBar())
+    NCTrashSelectTabBarView(tabBarSelect: NCTrashSelectTabBar(viewController: UIViewController()))
 }

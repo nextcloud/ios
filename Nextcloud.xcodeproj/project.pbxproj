@@ -1023,6 +1023,15 @@
 		F7FA80002C0F4F3B0072FC60 /* NCUploadAssetsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FA7FFE2C0F4F3B0072FC60 /* NCUploadAssetsModel.swift */; };
 		F7FA80012C0F4F3B0072FC60 /* NCUploadAssetsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FA7FFF2C0F4F3B0072FC60 /* NCUploadAssetsView.swift */; };
 		F7FAFD3A28BFA948000777FE /* NCNotification+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FAFD3928BFA947000777FE /* NCNotification+Menu.swift */; };
+		F7FDFF692E437E55000D7688 /* NCAccountRequest.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7FDFF512E437E55000D7688 /* NCAccountRequest.storyboard */; };
+		F7FDFF6A2E437E55000D7688 /* NCShareAccounts.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7FDFF532E437E55000D7688 /* NCShareAccounts.storyboard */; };
+		F7FDFF6B2E437E55000D7688 /* NCAccountRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FDFF522E437E55000D7688 /* NCAccountRequest.swift */; };
+		F7FDFF6C2E437E55000D7688 /* NCShareAccounts.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FDFF542E437E55000D7688 /* NCShareAccounts.swift */; };
+		F7FDFF6D2E437E55000D7688 /* NCAccountSettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FDFF562E437E55000D7688 /* NCAccountSettingsModel.swift */; };
+		F7FDFF6E2E437E55000D7688 /* NCAccountSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FDFF572E437E55000D7688 /* NCAccountSettingsView.swift */; };
+		F7FDFF6F2E437E55000D7688 /* NCAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FDFF592E437E55000D7688 /* NCAccount.swift */; };
+		F7FDFF702E437E55000D7688 /* NCAccountRequest.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7FDFF512E437E55000D7688 /* NCAccountRequest.storyboard */; };
+		F7FDFF722E437E55000D7688 /* NCAccountRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FDFF522E437E55000D7688 /* NCAccountRequest.swift */; };
 		F7FF2CB12842159500EBB7A1 /* NCSectionHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7FF2CB02842159500EBB7A1 /* NCSectionHeader.xib */; };
 /* End PBXBuildFile section */
 
@@ -1888,91 +1897,18 @@
 		F7FA7FFE2C0F4F3B0072FC60 /* NCUploadAssetsModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCUploadAssetsModel.swift; sourceTree = "<group>"; };
 		F7FA7FFF2C0F4F3B0072FC60 /* NCUploadAssetsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCUploadAssetsView.swift; sourceTree = "<group>"; };
 		F7FAFD3928BFA947000777FE /* NCNotification+Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCNotification+Menu.swift"; sourceTree = "<group>"; };
+		F7FDFF512E437E55000D7688 /* NCAccountRequest.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCAccountRequest.storyboard; sourceTree = "<group>"; };
+		F7FDFF522E437E55000D7688 /* NCAccountRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAccountRequest.swift; sourceTree = "<group>"; };
+		F7FDFF532E437E55000D7688 /* NCShareAccounts.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCShareAccounts.storyboard; sourceTree = "<group>"; };
+		F7FDFF542E437E55000D7688 /* NCShareAccounts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareAccounts.swift; sourceTree = "<group>"; };
+		F7FDFF562E437E55000D7688 /* NCAccountSettingsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAccountSettingsModel.swift; sourceTree = "<group>"; };
+		F7FDFF572E437E55000D7688 /* NCAccountSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAccountSettingsView.swift; sourceTree = "<group>"; };
+		F7FDFF592E437E55000D7688 /* NCAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAccount.swift; sourceTree = "<group>"; };
 		F7FF2CB02842159500EBB7A1 /* NCSectionHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCSectionHeader.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		F7EF2AFE2E43170C0081B2C9 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"Account Request/NCAccountRequest.storyboard",
-				"Account Request/NCAccountRequest.swift",
-				"Account Request/NCShareAccounts.storyboard",
-				"Account Request/NCShareAccounts.swift",
-				"Account Settings/NCAccountSettingsModel.swift",
-				"Account Settings/NCAccountSettingsView.swift",
-				NCAccount.swift,
-			);
-			target = F7346E0F28B0EF5B006CE2D2 /* Widget */;
-		};
-		F7EF2AFF2E43170C0081B2C9 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"Account Request/NCAccountRequest.storyboard",
-				"Account Request/NCAccountRequest.swift",
-				"Account Request/NCShareAccounts.storyboard",
-				"Account Request/NCShareAccounts.swift",
-				"Account Settings/NCAccountSettingsModel.swift",
-				"Account Settings/NCAccountSettingsView.swift",
-				NCAccount.swift,
-			);
-			target = F7C9738F28F17131002C43E2 /* WidgetDashboardIntentHandler */;
-		};
-		F7EF2B002E43170C0081B2C9 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"Account Request/NCShareAccounts.storyboard",
-				"Account Request/NCShareAccounts.swift",
-				"Account Settings/NCAccountSettingsModel.swift",
-				"Account Settings/NCAccountSettingsView.swift",
-				NCAccount.swift,
-			);
-			target = F71459B41D12E3B700CAFEEC /* Share */;
-		};
-		F7EF2B012E43170C0081B2C9 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"Account Request/NCAccountRequest.storyboard",
-				"Account Request/NCAccountRequest.swift",
-				"Account Request/NCShareAccounts.storyboard",
-				"Account Request/NCShareAccounts.swift",
-				"Account Settings/NCAccountSettingsModel.swift",
-				"Account Settings/NCAccountSettingsView.swift",
-				NCAccount.swift,
-			);
-			target = F771E3CF20E2392D00AFB62D /* File Provider Extension */;
-		};
-		F7EF2B022E43170C0081B2C9 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"Account Request/NCAccountRequest.storyboard",
-				"Account Request/NCAccountRequest.swift",
-				"Account Request/NCShareAccounts.storyboard",
-				"Account Request/NCShareAccounts.swift",
-				"Account Settings/NCAccountSettingsModel.swift",
-				"Account Settings/NCAccountSettingsView.swift",
-				NCAccount.swift,
-			);
-			target = F70716E22987F81400E72C1D /* File Provider Extension UI */;
-		};
-		F7EF2B032E43170C0081B2C9 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"Account Request/NCAccountRequest.storyboard",
-				"Account Request/NCAccountRequest.swift",
-				"Account Request/NCShareAccounts.storyboard",
-				"Account Request/NCShareAccounts.swift",
-				"Account Settings/NCAccountSettingsModel.swift",
-				"Account Settings/NCAccountSettingsView.swift",
-				NCAccount.swift,
-			);
-			target = 2C33C47E23E2C475005F963B /* Notification Service Extension */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		AA517BB42D66149900F8D37C /* .tx */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = .tx; sourceTree = "<group>"; };
-		F7EF2AED2E43170C0081B2C9 /* Account */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (F7EF2AFE2E43170C0081B2C9 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, F7EF2AFF2E43170C0081B2C9 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, F7EF2B002E43170C0081B2C9 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, F7EF2B012E43170C0081B2C9 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, F7EF2B022E43170C0081B2C9 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, F7EF2B032E43170C0081B2C9 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = Account; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3396,7 +3332,7 @@
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
 				F769CA1B2966EF4F00039397 /* GUI */,
 				F70211F31BAC56E9003FC03E /* Main */,
-				F7EF2AED2E43170C0081B2C9 /* Account */,
+				F7FDFF5A2E437E55000D7688 /* Account */,
 				F7A321621E9E37960069AD1B /* Activity */,
 				F76687042B7D067400779E3F /* AudioRecorder */,
 				F3A0478E2BD2668800658E7B /* Assistant */,
@@ -3463,6 +3399,36 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		F7FDFF552E437E55000D7688 /* Account Request */ = {
+			isa = PBXGroup;
+			children = (
+				F7FDFF512E437E55000D7688 /* NCAccountRequest.storyboard */,
+				F7FDFF522E437E55000D7688 /* NCAccountRequest.swift */,
+				F7FDFF532E437E55000D7688 /* NCShareAccounts.storyboard */,
+				F7FDFF542E437E55000D7688 /* NCShareAccounts.swift */,
+			);
+			path = "Account Request";
+			sourceTree = "<group>";
+		};
+		F7FDFF582E437E55000D7688 /* Account Settings */ = {
+			isa = PBXGroup;
+			children = (
+				F7FDFF562E437E55000D7688 /* NCAccountSettingsModel.swift */,
+				F7FDFF572E437E55000D7688 /* NCAccountSettingsView.swift */,
+			);
+			path = "Account Settings";
+			sourceTree = "<group>";
+		};
+		F7FDFF5A2E437E55000D7688 /* Account */ = {
+			isa = PBXGroup;
+			children = (
+				F7FDFF552E437E55000D7688 /* Account Request */,
+				F7FDFF582E437E55000D7688 /* Account Settings */,
+				F7FDFF592E437E55000D7688 /* NCAccount.swift */,
+			);
+			path = Account;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -3478,9 +3444,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				F7EF2AED2E43170C0081B2C9 /* Account */,
 			);
 			name = "Notification Service Extension";
 			packageProductDependencies = (
@@ -3599,9 +3562,6 @@
 			);
 			dependencies = (
 			);
-			fileSystemSynchronizedGroups = (
-				F7EF2AED2E43170C0081B2C9 /* Account */,
-			);
 			name = "File Provider Extension UI";
 			packageProductDependencies = (
 				F7490E7129882BB4009DCE94 /* RealmSwift */,
@@ -3627,9 +3587,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				F7EF2AED2E43170C0081B2C9 /* Account */,
 			);
 			name = Share;
 			packageProductDependencies = (
@@ -3664,9 +3621,6 @@
 			);
 			dependencies = (
 			);
-			fileSystemSynchronizedGroups = (
-				F7EF2AED2E43170C0081B2C9 /* Account */,
-			);
 			name = Widget;
 			packageProductDependencies = (
 				F783030C28B4C59A00B84583 /* SwiftEntryKit */,
@@ -3694,9 +3648,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				F7EF2AED2E43170C0081B2C9 /* Account */,
 			);
 			name = "File Provider Extension";
 			packageProductDependencies = (
@@ -3732,9 +3683,6 @@
 				F7346E1B28B0EF5E006CE2D2 /* PBXTargetDependency */,
 				F7C9739828F17131002C43E2 /* PBXTargetDependency */,
 				F70716EC2987F81500E72C1D /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				F7EF2AED2E43170C0081B2C9 /* Account */,
 			);
 			name = Nextcloud;
 			packageProductDependencies = (
@@ -3787,9 +3735,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				F7EF2AED2E43170C0081B2C9 /* Account */,
 			);
 			name = WidgetDashboardIntentHandler;
 			packageProductDependencies = (
@@ -4035,6 +3980,7 @@
 				F76C26A62850D3A500E42BDF /* Images.xcassets in Resources */,
 				F714805E262ED52900693E51 /* NCSectionFooter.xib in Resources */,
 				F700222D1EC479840080073F /* Custom.xcassets in Resources */,
+				F7FDFF702E437E55000D7688 /* NCAccountRequest.storyboard in Resources */,
 				F79ED0F22D2FCA6A00A389D9 /* NCRecommendationsCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4132,6 +4078,8 @@
 				F7FF2CB12842159500EBB7A1 /* NCSectionHeader.xib in Resources */,
 				F7D1612023CF19E30039EBBF /* NCViewerRichWorkspace.storyboard in Resources */,
 				F77B0F631D118A16002130FE /* Localizable.strings in Resources */,
+				F7FDFF692E437E55000D7688 /* NCAccountRequest.storyboard in Resources */,
+				F7FDFF6A2E437E55000D7688 /* NCShareAccounts.storyboard in Resources */,
 				F774264A22EB4D0000B23912 /* NCSearchUserDropDownCell.xib in Resources */,
 				F7CB689A2541676B0050EC94 /* NCMore.storyboard in Resources */,
 				F77B0F7D1D118A16002130FE /* Images.xcassets in Resources */,
@@ -4373,6 +4321,7 @@
 				F7F563052E15762B00631A11 /* MigrationMultiDomains.swift in Sources */,
 				F74B6D982A7E239A00F03C5F /* NCManageDatabase+Chunk.swift in Sources */,
 				F7CF06872E1127460063AD04 /* NCManageDatabase+Metadata+Create.swift in Sources */,
+				F7FDFF722E437E55000D7688 /* NCAccountRequest.swift in Sources */,
 				F7707687263A853700A1BA94 /* NCContentPresenter.swift in Sources */,
 				F343A4B62A1E084200DDA874 /* PHAsset+Extension.swift in Sources */,
 				F70460532499095400BB98A7 /* NotificationCenter+MainThread.swift in Sources */,
@@ -4924,6 +4873,11 @@
 				F78B87E92B62550800C65ADC /* NCMediaDownloadThumbnail.swift in Sources */,
 				D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */,
 				F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */,
+				F7FDFF6B2E437E55000D7688 /* NCAccountRequest.swift in Sources */,
+				F7FDFF6C2E437E55000D7688 /* NCShareAccounts.swift in Sources */,
+				F7FDFF6D2E437E55000D7688 /* NCAccountSettingsModel.swift in Sources */,
+				F7FDFF6E2E437E55000D7688 /* NCAccountSettingsView.swift in Sources */,
+				F7FDFF6F2E437E55000D7688 /* NCAccount.swift in Sources */,
 				F769454822E9F20D000A798A /* NCShareNetworking.swift in Sources */,
 				F749B64A297B0CBB00087535 /* NCManageDatabase+Share.swift in Sources */,
 				F7C9555521F0C5470024296E /* NCActivity.swift in Sources */,
@@ -5974,7 +5928,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -6040,7 +5994,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 10;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;

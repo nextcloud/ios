@@ -178,6 +178,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
                 collectionViewCommon.setEditMode(false)
             }
+            select.tintColor = .systemBackground
             collectionViewCommon.navigationItem.rightBarButtonItems = [select]
         } else if let trashViewController,
                     trashViewController.isEditMode {
@@ -187,6 +188,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
                 trashViewController.setEditMode(false)
             }
+            select.tintColor = .systemBackground
             trashViewController.navigationItem.rightBarButtonItems = [select]
         } else {
             trashViewController?.tabBarSelect?.hide()

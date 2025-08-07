@@ -52,36 +52,28 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
     @Published var canConvertLivePhoto = false
     @Published var metadatas: [tableMetadata] = []
 
-    init(controller: NCMainTabBarController? = nil, delegate: NCCollectionViewCommonSelectTabBarDelegate? = nil) {
+    init(controller: NCMainTabBarController? = nil, viewController: UIViewController, delegate: NCCollectionViewCommonSelectTabBarDelegate? = nil) {
         let rootView = NCCollectionViewCommonSelectTabBarView(tabBarSelect: self)
+        let height = controller?.tabBar.frame.height ?? 64
         hostingController = UIHostingController(rootView: rootView)
 
         self.controller = controller
         self.delegate = delegate
 
-        guard let controller, let hostingController else { return }
+        guard let hostingController else { return }
 
-        setFrame()
-
-        hostingController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
         hostingController.view.backgroundColor = .clear
         hostingController.view.isHidden = true
 
-        controller.view.addSubview(hostingController.view)
-    }
-
-    func setFrame() {
-        guard let controller,
-              let hostingController
-        else {
-            return
-        }
-        let bottomAreaInsets: CGFloat = controller.tabBar.safeAreaInsets.bottom == 0 ? 34 : 0
-
-        hostingController.view.frame = CGRect(x: controller.tabBar.frame.origin.x,
-                                              y: controller.tabBar.frame.origin.y - bottomAreaInsets,
-                                              width: controller.tabBar.frame.width,
-                                              height: controller.tabBar.frame.height + bottomAreaInsets)
+        viewController.view.addSubview(hostingController.view)
+        
+        NSLayoutConstraint.activate([
+            hostingController.view.leadingAnchor.constraint(equalTo: viewController.view.leadingAnchor),
+            hostingController.view.trailingAnchor.constraint(equalTo: viewController.view.trailingAnchor),
+            hostingController.view.bottomAnchor.constraint(equalTo: viewController.view.bottomAnchor),
+            hostingController.view.heightAnchor.constraint(equalToConstant: height)
+        ])
     }
 
     func show() {
@@ -259,5 +251,5 @@ struct NCCollectionViewCommonSelectTabBarView: View {
 }
 
 #Preview {
-    NCCollectionViewCommonSelectTabBarView(tabBarSelect: NCCollectionViewCommonSelectTabBar())
+    NCCollectionViewCommonSelectTabBarView(tabBarSelect: NCCollectionViewCommonSelectTabBar(controller: nil, viewController: UIViewController(), delegate: nil))
 }
