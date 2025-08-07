@@ -271,21 +271,12 @@ extension NCEndToEndMetadata {
 
             // SIGNATURE CHECK
             //
-            if let signature {
-                if !verifySignature(account: session.account, signature: signature, userId: tableUser.userId, metadata: metadata, users: users, version: version, certificate: tableUser.certificate) {
-                    return NKError(errorCode: NCGlobal.shared.errorE2EEKeyVerifySignature, errorDescription: "_e2e_error_")
-                }
-            }
-
-            /*
+            // TODO: if null exit with error
             if let signature, !signature.isEmpty {
                 if !verifySignature(account: session.account, signature: signature, userId: tableUser.userId, metadata: metadata, users: users, version: version, certificate: tableUser.certificate) {
                     return NKError(errorCode: NCGlobal.shared.errorE2EEKeyVerifySignature, errorDescription: "_e2e_error_")
                 }
-            } else {
-                return NKError(errorCode: NCGlobal.shared.errorE2EEKeyVerifySignature, errorDescription: "_e2e_error_")
             }
-            */
 
             // FILEDROP
             //
@@ -325,7 +316,8 @@ extension NCEndToEndMetadata {
 
             // CHECKSUM CHECK
             //
-            if let keyChecksums = jsonCiphertextMetadata.keyChecksums {
+            // TODO: if null exit with error
+            if let keyChecksums = jsonCiphertextMetadata.keyChecksums, !keyChecksums.isEmpty {
                 guard let hash = NCEndToEndEncryption.shared().createSHA256(decryptedMetadataKey),
                       keyChecksums.contains(hash) else {
                     return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
