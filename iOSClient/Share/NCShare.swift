@@ -245,7 +245,12 @@ extension NCShare: NCShareNetworkingDelegate {
     }
 
     func getSharees(sharees: [NKSharee]?) {
-        guard let sharees else { return }
+        guard let sharees else {
+            return
+        }
+        
+        // close keyboard
+        self.view.endEditing(true)
 
         dropDown = DropDown()
         let appearance = DropDown.appearance()
@@ -441,7 +446,7 @@ extension NCShare: UISearchBarDelegate {
         if searchText.isEmpty {
             dropDown.hide()
         } else {
-            perform(#selector(searchSharees(_:)), with: nil, afterDelay: 0.5)
+            perform(#selector(searchSharees(_:)), with: nil, afterDelay: 1)
         }
     }
 
