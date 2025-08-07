@@ -959,6 +959,7 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
     EVP_CIPHER_CTX_free(ctx);
     return success;
 }
+
 // Decryption data using GCM mode
 // Decrypt data using AES-GCM mode
 - (BOOL)decryptData:(NSData *)cipher
