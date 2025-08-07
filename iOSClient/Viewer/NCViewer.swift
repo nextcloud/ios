@@ -34,9 +34,11 @@ class NCViewer: NSObject {
     @MainActor
     func getViewerController(metadata: tableMetadata, ocIds: [String]? = nil, image: UIImage? = nil, delegate: UIViewController? = nil) async -> UIViewController? {
         let session = NCSession.shared.getSession(account: metadata.account)
+        let isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: metadata.serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account)
 
         // URL
-        if metadata.classFile == NKTypeClassFile.url.rawValue {
+        if metadata.classFile == NKTypeClassFile.url.rawValue,
+           !isDirectoryE2EE {
             // nextcloudtalk://open-conversation?server={serverURL}&user={userId}&withRoomToken={roomToken}
             if metadata.name == NCGlobal.shared.talkName {
                 let pathComponents = metadata.url.components(separatedBy: "/")
@@ -72,7 +74,8 @@ class NCViewer: NSObject {
         }
 
         // DOCUMENTS
-        else if metadata.classFile == NKTypeClassFile.document.rawValue {
+        else if metadata.classFile == NKTypeClassFile.document.rawValue,
+                !isDirectoryE2EE {
             // Set Last Opening Date
             await self.database.setLastOpeningDateAsync(metadata: metadata)
 
@@ -83,7 +86,7 @@ class NCViewer: NSObject {
                 vc?.metadata = metadata
                 vc?.imageIcon = image
                 vc?.navigationItem.title = metadata.fileNameView
-                
+
                 return vc
             }
             // RichDocument: Collabora
@@ -140,7 +143,7 @@ class NCViewer: NSObject {
                     NCActivityIndicator.shared.start(backgroundView: delegate?.view)
                     let results = await NextcloudKit.shared.textOpenFileAsync(fileNamePath: fileNamePath, editor: editor, account: metadata.account, options: options)
                     NCActivityIndicator.shared.stop()
-                    
+
                     guard results.error == .success, let url = results.url else {
                         NCContentPresenter().showError(error: results.error)
                         return nil
