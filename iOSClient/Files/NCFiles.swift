@@ -326,6 +326,8 @@ class NCFiles: NCCollectionViewCommon {
         //
 
         guard e2eEncrypted,
+              let metadatas,
+              !metadatas.isEmpty,
               NCPreferences().isEndToEndEnabled(account: account),
               await !NCNetworkingE2EE().isInUpload(account: account, serverUrl: serverUrl) else {
             return (metadatas, error, true)
