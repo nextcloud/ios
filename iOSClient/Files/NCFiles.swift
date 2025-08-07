@@ -69,9 +69,10 @@ class NCFiles: NCCollectionViewCommon {
         plusButton.layer.shadowRadius = 3.0
         plusButton.layer.shadowOpacity = 0.5
 
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil, queue: nil) { _ in
-            if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
-                let color = NCBrandColor.shared.getElement(account: activeTableAccount.account)
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil, queue: nil) { notification in
+            if let userInfo = notification.userInfo,
+               let account = userInfo["account"] as? String {
+                let color = NCBrandColor.shared.getElement(account: account)
                 self.plusButton.backgroundColor = color
             }
         }
@@ -85,10 +86,14 @@ class NCFiles: NCCollectionViewCommon {
             self.titleCurrentFolder = getNavigationTitle()
 
             NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
-                if let userInfo = notification.userInfo, let account = userInfo["account"] as? String {
+                if let userInfo = notification.userInfo,
+                   let account = userInfo["account"] as? String {
                     if let controller = userInfo["controller"] as? NCMainTabBarController,
                        controller == self.controller {
                         controller.account = account
+                        
+                        let color = NCBrandColor.shared.getElement(account: account)
+                        self.plusButton.backgroundColor = color
                     } else {
                         return
                     }
@@ -347,17 +352,18 @@ class NCFiles: NCCollectionViewCommon {
               let e2eMetadata = results.e2eMetadata,
               let version = results.version else {
 
-            // show error
-            NCContentPresenter().showError(error: results.error)
-
-            // No metadata fount, send it
+            // No metadata fount, re-send it
             if results.error.errorCode == NCGlobal.shared.errorResourceNotFound {
                 NCContentPresenter().showInfo(description: "Metadata not found")
                 let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, account: account)
                 if error != .success {
                     NCContentPresenter().showError(error: error)
                 }
+            } else {
+                // show error
+                NCContentPresenter().showError(error: results.error)
             }
+
             return (metadatas, error, true)
         }
 

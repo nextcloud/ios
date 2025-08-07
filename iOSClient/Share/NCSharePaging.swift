@@ -50,7 +50,7 @@ class NCSharePaging: UIViewController {
         view.backgroundColor = .systemBackground
         title = NSLocalizedString("_details_", comment: "")
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .done, target: self, action: #selector(exitTapped(_:)))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .plain, target: self, action: #selector(exitTapped(_:)))
 
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(notification:)), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -108,6 +108,10 @@ class NCSharePaging: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        navigationController?.setNavigationBarAppearance()
+
+
         let capabilities = NCNetworking.shared.capabilities[metadata.account] ?? NKCapabilities.Capabilities()
 
         if !capabilities.fileSharingApiEnabled && !capabilities.filesComments && capabilities.activity.isEmpty {
@@ -172,7 +176,6 @@ class NCSharePaging: UIViewController {
 // MARK: - PagingViewController Delegate
 
 extension NCSharePaging: PagingViewControllerDelegate {
-
     func pagingViewController(_ pagingViewController: PagingViewController, willScrollToItem pagingItem: PagingItem, startingViewController: UIViewController, destinationViewController: UIViewController) {
 
         currentVC?.textField?.resignFirstResponder()
@@ -183,9 +186,7 @@ extension NCSharePaging: PagingViewControllerDelegate {
 // MARK: - PagingViewController DataSource
 
 extension NCSharePaging: PagingViewControllerDataSource {
-
     func pagingViewController(_: PagingViewController, viewControllerAt index: Int) -> UIViewController {
-
         let height: CGFloat = 50
 
         if pages[index] == .activity {

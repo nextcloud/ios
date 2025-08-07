@@ -37,7 +37,7 @@ extension UIToolbar {
             buttons.append(clearButton)
         }
         buttons.append(UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil))
-        let doneButton = UIBarButtonItem(title: NSLocalizedString("_done_", comment: ""), style: .done) {
+        let doneButton = UIBarButtonItem(title: NSLocalizedString("_done_", comment: ""), style: .plain) {
             onDone()
         }
         buttons.append(doneButton)
