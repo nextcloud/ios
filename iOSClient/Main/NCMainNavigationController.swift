@@ -175,7 +175,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             collectionViewCommon.tabBarSelect?.update(fileSelect: collectionViewCommon.fileSelect, metadatas: collectionViewCommon.getSelectedMetadatas(), userId: session.userId)
             collectionViewCommon.tabBarSelect?.show()
 
-            let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
+            let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .plain) {
                 collectionViewCommon.setEditMode(false)
             }
             select.tintColor = .systemBackground
@@ -185,7 +185,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             trashViewController.tabBarSelect.update(selectOcId: [])
             trashViewController.tabBarSelect.show()
 
-            let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
+            let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .plain) {
                 trashViewController.setEditMode(false)
             }
             select.tintColor = .systemBackground

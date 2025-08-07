@@ -54,7 +54,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
 
         refreshControl?.addTarget(self, action: #selector(getNetwokingNotification(_:)), for: .valueChanged)
 
-        let close = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .done) {
+        let close = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .plain) {
             self.dismiss(animated: true)
         }
 

@@ -69,9 +69,10 @@ class NCFiles: NCCollectionViewCommon {
         plusButton.layer.shadowRadius = 3.0
         plusButton.layer.shadowOpacity = 0.5
 
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil, queue: nil) { _ in
-            if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
-                let color = NCBrandColor.shared.getElement(account: activeTableAccount.account)
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil, queue: nil) { notification in
+            if let userInfo = notification.userInfo,
+               let account = userInfo["account"] as? String {
+                let color = NCBrandColor.shared.getElement(account: account)
                 self.plusButton.backgroundColor = color
             }
         }
@@ -85,10 +86,14 @@ class NCFiles: NCCollectionViewCommon {
             self.titleCurrentFolder = getNavigationTitle()
 
             NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
-                if let userInfo = notification.userInfo, let account = userInfo["account"] as? String {
+                if let userInfo = notification.userInfo,
+                   let account = userInfo["account"] as? String {
                     if let controller = userInfo["controller"] as? NCMainTabBarController,
                        controller == self.controller {
                         controller.account = account
+                        
+                        let color = NCBrandColor.shared.getElement(account: account)
+                        self.plusButton.backgroundColor = color
                     } else {
                         return
                     }

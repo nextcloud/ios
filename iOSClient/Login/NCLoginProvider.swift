@@ -53,7 +53,7 @@ class NCLoginProvider: UIViewController {
 
         self.webView = webView
 
-        let navigationItemBack = UIBarButtonItem(image: UIImage(systemName: "arrow.left"), style: .done, target: self, action: #selector(goBack(_:)))
+        let navigationItemBack = UIBarButtonItem(image: UIImage(systemName: "arrow.left"), style: .plain, target: self, action: #selector(goBack(_:)))
         navigationItemBack.tintColor = uiColor
         navigationItem.leftBarButtonItem = navigationItemBack
     }

@@ -30,7 +30,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         navigationController?.setNavigationBarAppearance()
         navigationItem.title = titleCurrentFolder
-        let close = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .done) {
+        let close = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .plain) {
             self.dismiss(animated: true)
         }
         navigationItem.leftBarButtonItems = [close]
