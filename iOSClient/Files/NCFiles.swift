@@ -347,17 +347,18 @@ class NCFiles: NCCollectionViewCommon {
               let e2eMetadata = results.e2eMetadata,
               let version = results.version else {
 
-            // show error
-            NCContentPresenter().showError(error: results.error)
-
-            // No metadata fount, send it
+            // No metadata fount, re-send it
             if results.error.errorCode == NCGlobal.shared.errorResourceNotFound {
                 NCContentPresenter().showInfo(description: "Metadata not found")
                 let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, account: account)
                 if error != .success {
                     NCContentPresenter().showError(error: error)
                 }
+            } else {
+                // show error
+                NCContentPresenter().showError(error: results.error)
             }
+
             return (metadatas, error, true)
         }
 
