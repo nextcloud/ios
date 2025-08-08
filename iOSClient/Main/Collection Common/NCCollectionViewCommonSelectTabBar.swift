@@ -53,21 +53,26 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
     @Published var metadatas: [tableMetadata] = []
 
     init(controller: NCMainTabBarController? = nil, viewController: UIViewController, delegate: NCCollectionViewCommonSelectTabBarDelegate? = nil) {
+        guard let controller else {
+            return
+        }
         let rootView = NCCollectionViewCommonSelectTabBarView(tabBarSelect: self)
-        let height = controller?.tabBar.frame.height ?? 64
+        let bottomAreaInsets: CGFloat = controller.tabBar.safeAreaInsets.bottom == 0 ? 34 : 0
+        let height = controller.tabBar.frame.height + bottomAreaInsets
         hostingController = UIHostingController(rootView: rootView)
+        guard let hostingController else {
+            return
+        }
 
         self.controller = controller
         self.delegate = delegate
-
-        guard let hostingController else { return }
 
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false
         hostingController.view.backgroundColor = .clear
         hostingController.view.isHidden = true
 
         viewController.view.addSubview(hostingController.view)
-        
+
         NSLayoutConstraint.activate([
             hostingController.view.leadingAnchor.constraint(equalTo: viewController.view.leadingAnchor),
             hostingController.view.trailingAnchor.constraint(equalTo: viewController.view.trailingAnchor),
@@ -77,7 +82,10 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
     }
 
     func show() {
-        guard let controller, let hostingController else { return }
+        guard let controller,
+              let hostingController else {
+            return
+        }
 
         controller.hide()
 
@@ -91,15 +99,13 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
     }
 
     func hide() {
-        guard let controller, let hostingController else { return }
+        guard let controller,
+              let hostingController else {
+            return
+        }
 
         hostingController.view.isHidden = true
         controller.show()
-    }
-
-    func isHidden() -> Bool {
-        guard let hostingController else { return false }
-        return hostingController.view.isHidden
     }
 
     func update(fileSelect: [String], metadatas: [tableMetadata]? = nil, userId: String? = nil) {

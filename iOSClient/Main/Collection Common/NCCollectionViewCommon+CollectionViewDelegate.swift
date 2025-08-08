@@ -43,13 +43,55 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             }
         }
 
+        func downloadFile() async {
+            let hud = NCHud(self.tabBarController?.view)
+            var downloadRequest: DownloadRequest?
+            guard let  metadata = await database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
+                                                                                       session: self.networking.sessionDownload,
+                                                                                       selector: global.selectorLoadFileView,
+                                                                                       sceneIdentifier: self.controller?.sceneIdentifier) else {
+                return
+            }
+
+            hud.ringProgress(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
+                if let request = downloadRequest {
+                    request.cancel()
+                }
+            }
+
+            let results = await self.networking.downloadFile(metadata: metadata) { request in
+                downloadRequest = request
+            } progressHandler: { progress in
+                hud.progress(progress.fractionCompleted)
+            }
+            if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {
+                hud.dismiss()
+            } else {
+                hud.error(text: results.nkError.errorDescription)
+            }
+        }
+
         if metadata.directory {
             pushMetadata(metadata)
         } else {
             Task { @MainActor in
                 let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt1024, userId: metadata.userId, urlBase: metadata.urlBase)
+                let fileExists = utilityFileSystem.fileProviderStorageExists(metadata)
 
-                if !metadata.isDirectoryE2EE, metadata.isImage || metadata.isAudioOrVideo {
+                // --- E2EE -------
+                if metadata.isDirectoryE2EE {
+                    if fileExists {
+                        if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: self) {
+                            self.navigationController?.pushViewController(vc, animated: true)
+                        }
+                    } else {
+                        await downloadFile()
+                    }
+                    return
+                }
+                // ---------------
+
+                if metadata.isImage || metadata.isAudioOrVideo {
                     let metadatas = self.dataSource.getMetadatas()
                     let ocIds = metadatas.filter { $0.classFile == NKTypeClassFile.image.rawValue ||
                         $0.classFile == NKTypeClassFile.video.rawValue ||
@@ -71,30 +113,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                     }
 
                     if metadata.name == "files" {
-                        let hud = NCHud(self.tabBarController?.view)
-                        var downloadRequest: DownloadRequest?
-
-                        hud.ringProgress(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
-                            if let request = downloadRequest {
-                                request.cancel()
-                            }
-                        }
-
-                        let results = await self.networking.downloadFile(metadata: metadata) { request in
-                            downloadRequest = request
-                        } progressHandler: { progress in
-                            hud.progress(progress.fractionCompleted)
-                        }
-                        if results.nkError == .success || results.afError?.isExplicitlyCancelledError ?? false {
-                            hud.dismiss()
-                        } else {
-                            hud.error(text: results.nkError.errorDescription)
-
-                        }
-                    } else if !metadata.url.isEmpty {
-                        if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: self) {
-                            self.navigationController?.pushViewController(vc, animated: true)
-                        }
+                        await downloadFile()
+                    } else if !metadata.url.isEmpty,
+                              let vc = await NCViewer().getViewerController(metadata: metadata, delegate: self) {
+                        self.navigationController?.pushViewController(vc, animated: true)
                     }
                 } else {
                     let error = NKError(errorCode: global.errorOffline, errorDescription: "_go_online_")

@@ -206,4 +206,13 @@ extension NCManageDatabase {
                 .first
         }
     }
+
+    func getTableLocalFileAsync(ocId: String) async -> tableLocalFile? {
+        await performRealmReadAsync { realm in
+            realm.objects(tableLocalFile.self)
+                .filter("ocId == %@", ocId)
+                .first
+                .map { tableLocalFile(value: $0) }
+        }
+    }
 }
