@@ -329,7 +329,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                         let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
                         alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
 
-                        controller.present(alertController, animated: true, completion: { })
+                        controller.present(alertController, animated: true)
                         return
                     }
                     let davFiles = "remote.php/dav/files/" + tblAccount.userId
