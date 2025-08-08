@@ -151,6 +151,9 @@ class NCNetworkingE2EEUpload: NSObject {
         // UPLOAD
         //
         let resultsSendFile = await sendFile(metadata: metadata, e2eToken: e2eToken, hud: hud, controller: controller)
+        if resultsSendFile.error != .success {
+            NCContentPresenter().showError(error: resultsSendFile.error)
+        }
 
         // UNLOCK
         //

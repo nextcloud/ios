@@ -148,9 +148,9 @@ extension NCMedia {
         guard result.error == .success, let files = result.files, !self.showOnlyImages, !self.showOnlyVideos else {
             nkLog(error: "Media search failed: \(result.error.errorDescription)")
             await MainActor.run {
+                self.searchMediaInProgress = false
                 self.collectionViewReloadData()
                 self.activityIndicator.stopAnimating()
-                self.searchMediaInProgress = false
             }
             return
         }
@@ -179,13 +179,15 @@ extension NCMedia {
             ])
             let localMetadatas = await self.database.getMetadatasAsync(predicate: predicate)
 
-            if await database.mergeRemoteMetadatasAsync(remoteMetadatas: remoteMetadatas, localMetadatas: localMetadatas) {
-                await loadDataSource()
-            }
-
             await MainActor.run {
                 self.activityIndicator.stopAnimating()
                 self.searchMediaInProgress = false
+            }
+
+            if await database.mergeRemoteMetadatasAsync(remoteMetadatas: remoteMetadatas, localMetadatas: localMetadatas) {
+                await loadDataSource()
+            } else if await self.dataSource.isEmpty() {
+                await self.collectionViewReloadData()
             }
         }
     }

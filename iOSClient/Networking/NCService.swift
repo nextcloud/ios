@@ -137,7 +137,7 @@ class NCService: NSObject {
             await self.database.setDataCapabilitiesEditors(data: data, account: account)
         }
 
-        guard let capabilities = await self.database.setCapabilities(account: account) else {
+        guard let capabilities = await self.database.getCapabilities(account: account) else {
             return
         }
 

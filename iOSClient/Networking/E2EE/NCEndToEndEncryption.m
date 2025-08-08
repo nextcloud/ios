@@ -895,9 +895,21 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
     return status; // OpenSSL uses 1 for success
 }
 
-// Encryption file using GCM mode
+/// Encrypts a file using AES-GCM and appends the authentication tag at the end of the output file.
+/// The generated authentication tag is also returned via the authenticationTag parameter.
+/// The output file structure will be: [ciphertext || tag].
+///
+/// @param fileName The full path to the input plaintext file.
+/// @param fileNameCipher The full path to the output file where the ciphertext will be written.
+/// @param key The AES key as NSData. Length must match the keyLen parameter.
+/// @param keyLen The AES key length in bytes (AES_KEY_128_LENGTH or AES_KEY_256_LENGTH).
+/// @param initializationVector The IV/nonce as NSData, recommended 12 bytes for AES-GCM.
+/// @param authenticationTag A pointer to an NSData* that will receive the generated authentication tag (typically 16 bytes).
+///
+/// @return YES if encryption completes successfully, NO otherwise.
 - (BOOL)encryptFile:(NSString *)fileName fileNameCipher:(NSString *)fileNameCipher key:(NSData *)key keyLen:(int)keyLen initializationVector:(NSData *)initializationVector authenticationTag:(NSData **)authenticationTag
 {
+    // Select cipher based on key length
     const EVP_CIPHER *cipher = NULL;
     if (keyLen == AES_KEY_128_LENGTH) {
         cipher = EVP_aes_128_gcm();
@@ -911,14 +923,18 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
     const unsigned char *cIV = initializationVector.bytes;
     unsigned char cTag[AES_GCM_TAG_LENGTH] = {0};
 
+    // Create encryption context
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
     if (!ctx) return NO;
 
     BOOL success = NO;
 
     do {
+        // Initialize encryption operation
         if (EVP_EncryptInit_ex(ctx, cipher, NULL, NULL, NULL) <= 0) break;
+        // Set IV length
         if (EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, (int)initializationVector.length, NULL) <= 0) break;
+        // Set key and IV
         if (EVP_EncryptInit_ex(ctx, NULL, NULL, cKey, cIV) <= 0) break;
 
         NSInputStream *inStream = [NSInputStream inputStreamWithFileAtPath:fileName];
@@ -930,6 +946,7 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
         unsigned char outBuf[streamBuffer + EVP_MAX_BLOCK_LENGTH];
         int outLen = 0;
 
+        // Read plaintext from file, encrypt, and write ciphertext
         while ([inStream hasBytesAvailable]) {
             NSInteger bytesRead = [inStream read:inBuf maxLength:streamBuffer];
             if (bytesRead <= 0) break;
@@ -939,15 +956,15 @@ void nk_openssl_load_legacy_provider_if_needed(void) {
             if ([outStream write:outBuf maxLength:outLen] != outLen) break;
         }
 
-        // Finalize
+        // Finalize encryption (GCM usually produces no extra bytes here)
         if (EVP_EncryptFinal_ex(ctx, outBuf, &outLen) <= 0) break;
         if (outLen > 0 && [outStream write:outBuf maxLength:outLen] != outLen) break;
 
-        // Get GCM tag
+        // Retrieve the authentication tag
         if (EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, sizeof(cTag), cTag) <= 0) break;
         *authenticationTag = [NSData dataWithBytes:cTag length:sizeof(cTag)];
 
-        // Append tag to end of file
+        // Append the tag to the end of the output file
         if ([outStream write:cTag maxLength:sizeof(cTag)] != sizeof(cTag)) break;
 
         success = YES;
@@ -1059,13 +1076,27 @@ initializationVector:(NSData *)initializationVector
     return YES;
 }
 
-// Decryption file using GCM mode
-- (BOOL)decryptFile:(NSString *)fileName fileNamePlain:(NSString *)fileNamePlain key:(NSData *)key keyLen:(int)keyLen initializationVector:(NSData *)initializationVector authenticationTag:(NSData *)authenticationTag
-{
+/// Decrypts a file encrypted with AES-GCM, excluding a trailing authentication tag if present.
+/// This method reads the ciphertext from the specified file, decrypts it using the provided key and IV,
+/// and writes the resulting plaintext to the output file. If the encrypted file contains the provided
+/// authentication tag appended at the end, those bytes are excluded from the decryption process to avoid
+/// producing extra characters in the output.
+///
+/// @param fileName The full path to the input file containing the ciphertext (and optionally the appended tag).
+/// @param fileNamePlain The full path to the output file where the decrypted plaintext will be written.
+/// @param key The AES key as NSData. Length must match the keyLen parameter.
+/// @param keyLen The AES key length in bytes (AES_KEY_128_LENGTH or AES_KEY_256_LENGTH).
+/// @param initializationVector The IV/nonce as NSData, recommended 12 bytes for AES-GCM.
+/// @param authenticationTag The authentication tag as NSData (typically 16 bytes).
+///
+/// @return YES if the file is successfully decrypted and the authentication tag is verified, NO otherwise.
+- (BOOL)decryptFile:(NSString *)fileName fileNamePlain:(NSString *)fileNamePlain key:(NSData *)key keyLen:(int)keyLen initializationVector:(NSData *)initializationVector authenticationTag:(NSData *)authenticationTag {
+    // Validate mandatory parameters
     if (!fileName || !fileNamePlain || !key || !initializationVector || !authenticationTag) {
         return NO;
     }
 
+    // Select cipher based on key length
     const EVP_CIPHER *cipher = NULL;
     if (keyLen == AES_KEY_128_LENGTH) {
         cipher = EVP_aes_128_gcm();
@@ -1089,15 +1120,19 @@ initializationVector:(NSData *)initializationVector
     NSOutputStream *outStream = nil;
 
     do {
+        // Initialize decryption operation
         int status = EVP_DecryptInit_ex(ctx, cipher, NULL, NULL, NULL);
         if (status <= 0) break;
 
+        // Set IV length
         status = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, ivLen, NULL);
         if (status <= 0) break;
 
+        // Set key and IV
         status = EVP_DecryptInit_ex(ctx, NULL, NULL, cKey, cIV);
         if (status <= 0) break;
 
+        // Open input and output streams
         inStream = [NSInputStream inputStreamWithFileAtPath:fileName];
         outStream = [NSOutputStream outputStreamToFileAtPath:fileNamePlain append:NO];
         [inStream open];
@@ -1105,12 +1140,46 @@ initializationVector:(NSData *)initializationVector
 
         if (![inStream hasBytesAvailable] || ![outStream hasSpaceAvailable]) break;
 
+        // Determine ciphertext length, excluding the tag if it is appended to the file
+        unsigned long long fileSize = 0;
+        unsigned long long cipherSize = 0;
+        @autoreleasepool {
+            NSError *attrErr = nil;
+            NSDictionary *attr = [[NSFileManager defaultManager] attributesOfItemAtPath:fileName error:&attrErr];
+            if (attr && !attrErr) {
+                fileSize = [attr fileSize];
+                cipherSize = fileSize;
+
+                // Check if the last bytes match the provided authentication tag
+                if (fileSize >= (unsigned long long)tagLen && tagLen > 0) {
+                    NSFileHandle *fh = [NSFileHandle fileHandleForReadingAtPath:fileName];
+                    if (fh) {
+                        @try {
+                            [fh seekToFileOffset:(fileSize - (unsigned long long)tagLen)];
+                            NSData *tail = [fh readDataOfLength:(NSUInteger)tagLen];
+                            if (tail.length == (NSUInteger)tagLen &&
+                                memcmp(tail.bytes, cTag, (size_t)tagLen) == 0) {
+                                cipherSize = fileSize - (unsigned long long)tagLen; // Exclude the tag from decryption input
+                            }
+                        } @catch (__unused NSException *e) {
+                            // Ignore any file handle error, fallback to using full file
+                        }
+                        [fh closeFile];
+                    }
+                }
+            }
+        }
+        // -------------------------------------------------------------------------------
+
         unsigned char inBuf[streamBuffer];
         unsigned char outBuf[streamBuffer];
         int outLen = 0;
 
-        while ([inStream hasBytesAvailable]) {
-            NSInteger bytesRead = [inStream read:inBuf maxLength:streamBuffer];
+        // Read exactly the ciphertext portion (excluding tag if found)
+        unsigned long long remaining = cipherSize;
+        while (remaining > 0) {
+            NSUInteger toRead = (NSUInteger)MIN((unsigned long long)streamBuffer, remaining);
+            NSInteger bytesRead = [inStream read:inBuf maxLength:toRead];
             if (bytesRead <= 0) break;
 
             status = EVP_DecryptUpdate(ctx, outBuf, &outLen, inBuf, (int)bytesRead);
@@ -1118,12 +1187,17 @@ initializationVector:(NSData *)initializationVector
 
             NSInteger written = [outStream write:outBuf maxLength:outLen];
             if (written != outLen) break;
+
+            remaining -= (unsigned long long)bytesRead;
         }
 
-        // Set tag and finalize
+        if (remaining != 0) break; // Ciphertext not fully processed
+
+        // Set the provided tag before finalizing
         status = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, tagLen, (void *)cTag);
         if (status <= 0) break;
 
+        // Finalize decryption (verifies tag authenticity)
         outLen = 0;
         status = EVP_DecryptFinal_ex(ctx, outBuf, &outLen);
         if (status <= 0) break;
@@ -1137,6 +1211,7 @@ initializationVector:(NSData *)initializationVector
 
     } while (NO);
 
+    // Close streams and free context
     if (inStream) [inStream close];
     if (outStream) [outStream close];
     if (ctx) EVP_CIPHER_CTX_free(ctx);

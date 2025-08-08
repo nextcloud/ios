@@ -14,7 +14,7 @@ class NCShareExtensionData: NSObject {
         self.tblAccount = NCManageDatabase.shared.getActiveTableAccount()
         if let account = self.tblAccount?.account {
             Task { @MainActor in
-                if let capabilities = await NCManageDatabase.shared.setCapabilities(account: account) {
+                if let capabilities = await NCManageDatabase.shared.getCapabilities(account: account) {
                     NCBrandColor.shared.settingThemingColor(account: account, capabilities: capabilities)
                 }
             }
@@ -25,7 +25,7 @@ class NCShareExtensionData: NSObject {
         if account != self.tblAccount?.account,
            let tblAccount = await NCManageDatabase.shared.getTableAccountAsync(account: account) {
             self.tblAccount = tblAccount
-            if let capabilities = await NCManageDatabase.shared.setCapabilities(account: account) {
+            if let capabilities = await NCManageDatabase.shared.getCapabilities(account: account) {
                 NCBrandColor.shared.settingThemingColor(account: account, capabilities: capabilities)
             }
         }

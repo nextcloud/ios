@@ -71,7 +71,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
 
         Task {
-            if let capabilities = await self.database.setCapabilities(account: activeTblAccount.account) {
+            if let capabilities = await self.database.getCapabilities(account: activeTblAccount.account) {
                 // set theming color
                 NCBrandColor.shared.settingThemingColor(account: activeTblAccount.account, capabilities: capabilities)
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeTheming, userInfo: ["account": activeTblAccount.account])
@@ -97,7 +97,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
             // Perform async setup: restore capabilities and ensure file provider domain
             Task {
-                await self.database.setCapabilities(account: tblAccount.account)
+                await self.database.getCapabilities(account: tblAccount.account)
                 try? await FileProviderDomain().ensureDomainRegistered(userId: tblAccount.userId, urlBase: tblAccount.urlBase)
             }
 

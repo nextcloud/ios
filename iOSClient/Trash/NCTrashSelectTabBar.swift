@@ -37,22 +37,26 @@ class NCTrashSelectTabBar: ObservableObject {
     @Published var isSelectedEmpty = true
 
     init(controller: UITabBarController? = nil, viewController: UIViewController, delegate: NCTrashSelectTabBarDelegate? = nil) {
+        guard let controller else {
+            return
+        }
         let rootView = NCTrashSelectTabBarView(tabBarSelect: self)
+        let bottomAreaInsets: CGFloat = controller.tabBar.safeAreaInsets.bottom == 0 ? 34 : 0
+        let height = controller.tabBar.frame.height + bottomAreaInsets
         hostingController = UIHostingController(rootView: rootView)
+        guard let hostingController else {
+            return
+        }
 
         self.controller = controller
         self.delegate = delegate
-
-        guard let controller, let hostingController else { return }
-
-        let height = controller.tabBar.frame.height
 
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false
         hostingController.view.backgroundColor = .clear
         hostingController.view.isHidden = true
 
         viewController.view.addSubview(hostingController.view)
-        
+
         NSLayoutConstraint.activate([
             hostingController.view.leadingAnchor.constraint(equalTo: viewController.view.leadingAnchor),
             hostingController.view.trailingAnchor.constraint(equalTo: viewController.view.trailingAnchor),
@@ -63,7 +67,9 @@ class NCTrashSelectTabBar: ObservableObject {
 
     func show() {
         guard let controller,
-              let hostingController else { return }
+              let hostingController else {
+            return
+        }
 
         controller.tabBar.isHidden = true
 
@@ -80,8 +86,7 @@ class NCTrashSelectTabBar: ObservableObject {
 
     func hide() {
         guard let controller,
-              let hostingController
-        else {
+              let hostingController else {
             return
         }
 

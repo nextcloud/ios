@@ -165,53 +165,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     // Capabilities
     var capabilities = ThreadSafeDictionary<String, NKCapabilities.Capabilities>()
 
-    //
     let transferDispatcher = NCTransferDelegateDispatcher()
-    
-    /*
-    // Delegate for multi scene
-    private var transferDelegates = NSHashTable<AnyObject>.weakObjects()
-
-    func addDelegate(_ delegate: NCTransferDelegate) {
-        transferDelegates.add(delegate)
-    }
-
-    func removeDelegate(_ delegate: NCTransferDelegate) {
-        transferDelegates.remove(delegate)
-    }
-
-    func notifyAllDelegates(_ block: (NCTransferDelegate) -> Void) {
-        for delegate in transferDelegates.allObjects {
-            if let delegate = delegate as? NCTransferDelegate {
-                block(delegate)
-            }
-        }
-    }
-
-    func notifyDelegate(forScene sceneIdentifier: String, _ block: (NCTransferDelegate) -> Void) {
-        for delegate in transferDelegates.allObjects {
-            if let delegate = delegate as? NCTransferDelegate, delegate.sceneIdentifier == sceneIdentifier {
-                block(delegate)
-            }
-        }
-    }
-
-    func notifyDelegates(forScene sceneIdentifier: String,
-                         matching: (NCTransferDelegate) -> Void,
-                         others: (NCTransferDelegate) -> Void) {
-        for delegate in transferDelegates.allObjects {
-            guard let delegate = delegate as? NCTransferDelegate
-            else {
-                continue
-            }
-            if delegate.sceneIdentifier == sceneIdentifier {
-                matching(delegate)
-            } else {
-                others(delegate)
-            }
-        }
-    }
-    */
 
     // OPERATIONQUEUE
     let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)

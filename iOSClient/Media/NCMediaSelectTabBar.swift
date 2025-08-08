@@ -10,16 +10,22 @@ protocol NCMediaSelectTabBarDelegate: AnyObject {
 }
 
 class NCMediaSelectTabBar: ObservableObject {
-    var hostingController: UIViewController!
+    var hostingController: UIViewController?
     var controller: UITabBarController?
     open weak var delegate: NCMediaSelectTabBarDelegate?
     @Published var selectCount: Int = 0
 
     init(controller: UITabBarController? = nil, viewController: UIViewController, delegate: NCMediaSelectTabBarDelegate? = nil) {
-        guard let controller else { return }
-        let mediaTabBarSelectView = MediaTabBarSelectView(tabBarSelect: self)
-        hostingController = UIHostingController(rootView: mediaTabBarSelectView)
-        let height = controller.tabBar.frame.height
+        guard let controller else {
+            return
+        }
+        let rootView = MediaTabBarSelectView(tabBarSelect: self)
+        let bottomAreaInsets: CGFloat = controller.tabBar.safeAreaInsets.bottom == 0 ? 34 : 0
+        let height = controller.tabBar.frame.height + bottomAreaInsets
+        hostingController = UIHostingController(rootView: rootView)
+        guard let hostingController else {
+            return
+        }
 
         self.controller = controller
         self.delegate = delegate
@@ -29,7 +35,7 @@ class NCMediaSelectTabBar: ObservableObject {
         hostingController.view.isHidden = true
 
         viewController.view.addSubview(hostingController.view)
-        
+
         NSLayoutConstraint.activate([
             hostingController.view.leadingAnchor.constraint(equalTo: viewController.view.leadingAnchor),
             hostingController.view.trailingAnchor.constraint(equalTo: viewController.view.trailingAnchor),
@@ -39,16 +45,26 @@ class NCMediaSelectTabBar: ObservableObject {
     }
 
     func show() {
+        guard let controller,
+              let hostingController else {
+            return
+        }
+
         hostingController.view.isHidden = false
         hostingController.view.transform = .init(translationX: 0, y: hostingController.view.frame.height)
         UIView.animate(withDuration: 0.2) {
-            self.hostingController.view.transform = .init(translationX: 0, y: 0)
+            hostingController.view.transform = .init(translationX: 0, y: 0)
         }
-        controller?.tabBar.isHidden = true
+        controller.tabBar.isHidden = true
     }
 
     func hide() {
-        controller?.tabBar.isHidden = false
+        guard let controller,
+              let hostingController else {
+            return
+        }
+
+        controller.tabBar.isHidden = false
         hostingController.view.isHidden = true
     }
 }
