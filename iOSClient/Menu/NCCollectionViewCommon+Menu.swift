@@ -407,6 +407,20 @@ extension NCCollectionViewCommon {
             actions.append(.deleteOrUnshareAction(selectedMetadatas: [metadata], metadataFolder: metadataFolder, controller: self.controller, order: 170, sender: sender))
         }
 
+        capabilities.declarativeUI?.contextMenu.forEach { item in
+                   actions.append(
+                       NCMenuAction(
+                           title: item.title,
+                           icon: utility.loadImage(named: "testtube.2", colors: [NCBrandColor.shared.presentationIconColor]),
+                           order: Int.max,
+                           sender: sender,
+                           action: { _ in
+
+                           }
+                       )
+                   )
+               }
+
         applicationHandle.addCollectionViewCommonMenu(metadata: metadata, image: image, actions: &actions)
 
         presentMenu(with: actions, controller: controller, sender: sender)
