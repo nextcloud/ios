@@ -79,7 +79,7 @@ extension NCManageDatabase {
     ///
     /// - Parameter account: The identifier of the account whose cached capabilities should be applied.
     @discardableResult
-    func setCapabilities(account: String) async -> NKCapabilities.Capabilities? {
+    func getCapabilities(account: String) async -> NKCapabilities.Capabilities? {
         let results = await performRealmReadAsync { realm in
             realm.object(ofType: tableCapabilities.self, forPrimaryKey: account)
                 .map { tableCapabilities(value: $0) }

@@ -97,7 +97,7 @@ class NCAccount: NSObject {
                 await NCService().startRequestServicesServer(account: account, controller: controller)
             }
             // Capabilities
-            if let capabilities = await self.database.setCapabilities(account: account) {
+            if let capabilities = await self.database.getCapabilities(account: account) {
                 // set theming color
                 NCBrandColor.shared.settingThemingColor(account: account, capabilities: capabilities)
             }
