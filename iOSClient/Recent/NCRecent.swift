@@ -74,7 +74,7 @@ class NCRecent: NCCollectionViewCommon {
         await super.reloadDataSource()
     }
 
-    override func getServerData(refresh: Bool = false) async {
+    override func getServerData(forced: Bool = false) async {
         await super.getServerData()
 
         defer {

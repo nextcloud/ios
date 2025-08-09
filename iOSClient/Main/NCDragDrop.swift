@@ -24,6 +24,7 @@
 import UIKit
 import UniformTypeIdentifiers
 import NextcloudKit
+import Alamofire
 
 class NCDragDrop: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
@@ -183,12 +184,41 @@ class NCDragDrop: NSObject {
     }
 
     @MainActor
-    func downloadUpload(view: UIView, metadatas: [tableMetadata], destination: String, session: NCSession.Session) async {
-        let hud = NCHud(view)
-        var taskUpload: URLSessionTask?
+    func downloadUpload(collectionViewCommon: NCCollectionViewCommon, metadatas: [tableMetadata], destination: String, session: NCSession.Session) async {
+        let hud = NCHud(collectionViewCommon.controller?.view)
+        var requestUpload: UploadRequest?
 
-        hud.pieProgress(text: NSLocalizedString("_keep_active_for_upload_", comment: ""),
-                        tapToCancelDetailText: true) {
+        func uploadFile(metadata: tableMetadata) async {
+            let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
+                                                                                      fileName: metadata.fileName,
+                                                                                      userId: metadata.userId,
+                                                                                      urlBase: metadata.urlBase)
+            let serverUrlFileName = destination + "/" + metadata.fileName
+
+            hud.pieProgress(text: NSLocalizedString("_keep_active_for_upload_", comment: ""),
+                            tapToCancelDetailText: true) {
+                if let requestUpload {
+                    requestUpload.cancel()
+                }
+            }
+
+            let results = await NCNetworking.shared.uploadFile(fileNameLocalPath: fileNameLocalPath,
+                                                               serverUrlFileName: serverUrlFileName,
+                                                               creationDate: metadata.creationDate as Date,
+                                                               dateModificationFile: metadata.date as Date,
+                                                               account: session.account,
+                                                               withUploadComplete: false) { request in
+                requestUpload = request
+            } progressHandler: { _, _, fractionCompleted in
+                hud.progress(fractionCompleted)
+            }
+
+            if results.error == .success {
+                hud.dismiss()
+                await collectionViewCommon.getServerData(forced: true)
+            } else {
+                hud.error(text: results.error.errorDescription)
+            }
         }
 
         for metadata in metadatas {
@@ -197,29 +227,9 @@ class NCDragDrop: NSObject {
             }
             let fileExists = utilityFileSystem.fileProviderStorageExists(metadata)
             if fileExists {
-                let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
-                                                                                          fileName: metadata.fileName,
-                                                                                          userId: metadata.userId,
-                                                                                          urlBase: metadata.urlBase)
-                let serverUrlFileName = destination + "/" + metadata.fileName
-                let results = await NCNetworking.shared.uploadFile(fileNameLocalPath: fileNameLocalPath,
-                                                     serverUrlFileName: serverUrlFileName,
-                                                     creationDate: metadata.creationDate as Date,
-                                                     dateModificationFile: metadata.date as Date,
-                                                     account: session.account,
-                                                     withUploadComplete: false) { _ in
-                } taskHandler: { task in
-                    taskUpload = task
-                } progressHandler: { _, _, fractionCompleted in
-                    hud.progress(fractionCompleted)
-                }
-                hud.dismiss()
-
-                if results.error == .success {
-
-                } else {
-
-                }
+                await uploadFile(metadata: metadata)
+            } else {
+                
             }
         }
     }

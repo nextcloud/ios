@@ -219,8 +219,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
             Task { @MainActor in
-                // Perform async server refresh
-                await self.getServerData(refresh: true)
+                // Perform async server forced
+                await self.getServerData(forced: true)
 
                 // Stop the refresh control after data is loaded
                 self.refreshControl.endRefreshing()
@@ -816,7 +816,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         await (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
     }
 
-    func getServerData(refresh: Bool = false) async {
+    func getServerData(forced: Bool = false) async {
         dataSourceTask?.cancel()
     }
 
