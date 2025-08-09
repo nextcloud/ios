@@ -513,7 +513,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    func transferCopy(metadata: tableMetadata, serverUrlTo: String, error: NKError) {
+    func transferCopy(metadata: tableMetadata, destination: String, error: NKError) {
         if error != .success {
             NCContentPresenter().showError(error: error)
         }
@@ -522,14 +522,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return networkSearch()
         }
 
-        if metadata.serverUrl == self.serverUrl || serverUrlTo == self.serverUrl {
+        if metadata.serverUrl == self.serverUrl || destination == self.serverUrl {
             Task {
                 await self.reloadDataSource()
             }
         }
     }
 
-    func transferMove(metadata: tableMetadata, serverUrlTo: String, error: NKError) {
+    func transferMove(metadata: tableMetadata, destination: String, error: NKError) {
         if error != .success {
             NCContentPresenter().showError(error: error)
         }
@@ -538,7 +538,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return networkSearch()
         }
 
-        if metadata.serverUrl == self.serverUrl || serverUrlTo == self.serverUrl {
+        if metadata.serverUrl == self.serverUrl || destination == self.serverUrl {
             Task {
                 await self.reloadDataSource()
             }

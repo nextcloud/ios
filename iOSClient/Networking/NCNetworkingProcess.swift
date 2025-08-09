@@ -361,14 +361,14 @@ actor NCNetworkingProcess {
                 return (global.metadataStatusWaitCopy, .cancelled)
             }
 
-            let serverUrlTo = metadata.serverUrlTo
-            var serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
+            let destination = metadata.destination
+            var serverUrlFileNameDestination = destination + "/" + metadata.fileName
             let overwrite = (metadata.storeFlag as? NSString)?.boolValue ?? false
 
             /// Within same folder
-            if metadata.serverUrl == serverUrlTo {
+            if metadata.serverUrl == destination {
                 let fileNameCopy = await NCNetworking.shared.createFileName(fileNameBase: metadata.fileName, account: metadata.account, serverUrl: metadata.serverUrl)
-                serverUrlFileNameDestination = serverUrlTo + "/" + fileNameCopy
+                serverUrlFileNameDestination = destination + "/" + fileNameCopy
             }
 
             let resultCopy = await NextcloudKit.shared.copyFileOrFolderAsync(serverUrlFileNameSource: metadata.serverUrlFileName, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
@@ -384,7 +384,7 @@ actor NCNetworkingProcess {
             }
 
             await networking.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferCopy(metadata: metadata, serverUrlTo: serverUrlTo, error: resultCopy.error)
+                delegate.transferCopy(metadata: metadata, destination: destination, error: resultCopy.error)
             }
 
             if resultCopy.error != .success {
@@ -400,8 +400,8 @@ actor NCNetworkingProcess {
                 return (global.metadataStatusWaitMove, .cancelled)
             }
 
-            let serverUrlTo = metadata.serverUrlTo
-            let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
+            let destination = metadata.destination
+            let serverUrlFileNameDestination = destination + "/" + metadata.fileName
             let overwrite = (metadata.storeFlag as? NSString)?.boolValue ?? false
 
             let resultMove = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: metadata.serverUrlFileName, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
@@ -423,7 +423,7 @@ actor NCNetworkingProcess {
             }
 
             await networking.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferMove(metadata: metadata, serverUrlTo: serverUrlTo, error: resultMove.error)
+                delegate.transferMove(metadata: metadata, destination: destination, error: resultMove.error)
             }
 
             if resultMove.error != .success {
