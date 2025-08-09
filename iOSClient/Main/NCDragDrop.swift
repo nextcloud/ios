@@ -188,19 +188,15 @@ class NCDragDrop: NSObject {
         guard let metadatas = DragDropHover.shared.sourceMetadatas else {
             return
         }
+        let hud = NCHud(collectionViewCommon.controller?.view)
         var uploadRequest: UploadRequest?
         var downloadRequest: DownloadRequest?
 
-        // Download a file
-        func downloadFile(metadata: tableMetadata) async -> NKError {
-            let results = await NCNetworking.shared.downloadFile(metadata: metadata,
-                                                                 withDownloadComplete: true) { request in
-                downloadRequest = request
-            }
-            return results.nkError
+        func setDetailText(status: String, percent: Int) {
+            let text = "\(NSLocalizedString("_tap_to_cancel_", comment: "")) \(status) (\(percent)%)"
+            hud.setDetailText(text)
         }
 
-        let hud = NCHud(collectionViewCommon.controller?.view)
         hud.pieProgress(text: NSLocalizedString("_keep_active_for_transfers_", comment: ""),
                         tapToCancelDetailText: true) {
             if let downloadRequest {
@@ -223,6 +219,9 @@ class NCDragDrop: NSObject {
                 let results = await NCNetworking.shared.downloadFile(metadata: metadata,
                                                                      withDownloadComplete: true) { request in
                     downloadRequest = request
+                } progressHandler: { progress in
+                    let status = NSLocalizedString("_status_downloading_", comment: "").lowercased()
+                    setDetailText(status: status, percent: Int(progress.fractionCompleted * 100))
                 }
                 guard results.nkError == .success else {
                     hud.error(text: results.nkError.errorDescription)
@@ -246,8 +245,10 @@ class NCDragDrop: NSObject {
                                                                account: session.account,
                                                                withUploadComplete: false) { request in
                 uploadRequest = request
+            } progressHandler: { _, _, fractionCompleted in
+                let status = NSLocalizedString("_status_uploading_", comment: "").lowercased()
+                setDetailText(status: status, percent: Int(fractionCompleted * 100))
             }
-
             guard results.error == .success else {
                 hud.error(text: results.error.errorDescription)
                 break

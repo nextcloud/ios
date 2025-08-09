@@ -400,12 +400,12 @@ extension NCShareExtension {
             } counterChunk: { counter in
                 self.hud.progress(num: Float(counter), total: Float(numChunks))
             } startFilesChunk: { _ in
-                self.hud.setText(text: NSLocalizedString("_keep_active_for_upload_", comment: ""))
+                self.hud.setText(NSLocalizedString("_keep_active_for_upload_", comment: ""))
             } requestHandler: { _ in
                 self.hud.progress(num: Float(counterUpload), total: Float(numChunks))
                 counterUpload += 1
             } assembling: {
-                self.hud.setText(text: NSLocalizedString("_wait_", comment: ""))
+                self.hud.setText(NSLocalizedString("_wait_", comment: ""))
             }
             error = results.error
         } else {

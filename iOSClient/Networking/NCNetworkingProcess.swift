@@ -270,12 +270,12 @@ actor NCNetworkingProcess {
                             } counterChunk: { counter in
                                 hud.progress(num: Float(counter), total: Float(numChunks))
                             } startFilesChunk: { _ in
-                                hud.setText(text: NSLocalizedString("_keep_active_for_upload_", comment: ""))
+                                hud.setText(NSLocalizedString("_keep_active_for_upload_", comment: ""))
                             } requestHandler: { _ in
                                 hud.progress(num: Float(counterUpload), total: Float(numChunks))
                                 counterUpload += 1
                             } assembling: {
-                                hud.setText(text: NSLocalizedString("_wait_", comment: ""))
+                                hud.setText(NSLocalizedString("_wait_", comment: ""))
                             }
 
                             hud.dismiss()

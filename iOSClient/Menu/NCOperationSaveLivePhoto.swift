@@ -82,7 +82,7 @@ class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
                                                                                                  urlBase: metadataMov.urlBase))
 
         self.hud?.progress(0)
-        self.hud?.setText(text: NSLocalizedString("_livephoto_save_", comment: ""))
+        self.hud?.setText(NSLocalizedString("_livephoto_save_", comment: ""))
 
         NCLivePhoto.generate(from: fileNameImage, videoURL: fileNameMov, progress: { progress in
             self.hud?.progress(progress)
