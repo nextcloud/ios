@@ -66,7 +66,7 @@ class ParallelWorker {
             guard !self.isCancelled else { return self.completionGroup.leave() }
             task {
                 self.completedTasks += 1
-                self.hud.setText(text: "\(NSLocalizedString(self.titleKey, comment: ""))")
+                self.hud.setText("\(NSLocalizedString(self.titleKey, comment: ""))")
                 self.semaphore.signal()
                 self.completionGroup.leave()
             }

@@ -1,29 +1,11 @@
-//
-//  NCDragDrop.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 27/04/24.
-//  Copyright © 2024 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2024 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 import UniformTypeIdentifiers
 import NextcloudKit
+import Alamofire
 
 class NCDragDrop: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
@@ -164,26 +146,100 @@ class NCDragDrop: NSObject {
         }
     }
 
-    func copyFile(metadatas: [tableMetadata], serverUrl: String) {
-        Task {
-            for metadata in metadatas {
-                NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
-                await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delete in
-                    delete.transferCopy(metadata: metadata, serverUrlTo: serverUrl, error: .success)
-                }
+    func copyFile(metadatas: [tableMetadata], destination: String) async {
+        for metadata in metadatas {
+            NCNetworking.shared.copyMetadata(metadata, destination: destination, overwrite: false)
+            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferCopy(metadata: metadata, destination: destination, error: .success)
             }
         }
     }
 
-    func moveFile(metadatas: [tableMetadata], serverUrl: String) {
-        Task {
-            for metadata in metadatas {
-                NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
-                await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delete in
-                    delete.transferMove(metadata: metadata, serverUrlTo: serverUrl, error: .success)
-                }
+    func moveFile(metadatas: [tableMetadata], destination: String) async {
+        for metadata in metadatas {
+            NCNetworking.shared.moveMetadata(metadata, destination: destination, overwrite: false)
+            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferMove(metadata: metadata, destination: destination, error: .success)
             }
         }
+    }
+
+    @MainActor
+    func transfers(collectionViewCommon: NCCollectionViewCommon, destination: String, session: NCSession.Session) async {
+        guard let metadatas = DragDropHover.shared.sourceMetadatas else {
+            return
+        }
+        let hud = NCHud(collectionViewCommon.controller?.view)
+        var uploadRequest: UploadRequest?
+        var downloadRequest: DownloadRequest?
+
+        func setDetailText(status: String, percent: Int) {
+            let text = "\(NSLocalizedString("_tap_to_cancel_", comment: "")) \(status) (\(percent)%)"
+            hud.setDetailText(text)
+        }
+
+        hud.pieProgress(text: NSLocalizedString("_keep_active_for_transfers_", comment: ""),
+                        tapToCancelDetailText: true) {
+            if let downloadRequest {
+                downloadRequest.cancel()
+            } else if let uploadRequest {
+                uploadRequest.cancel()
+            }
+        }
+
+        for (index, metadata) in metadatas.enumerated() {
+            if metadata.directory {
+                continue
+            }
+
+            downloadRequest = nil
+            uploadRequest = nil
+
+            // DOWNLOAD
+            if !utilityFileSystem.fileProviderStorageExists(metadata) {
+                let results = await NCNetworking.shared.downloadFile(metadata: metadata,
+                                                                     withDownloadComplete: true) { request in
+                    downloadRequest = request
+                } progressHandler: { progress in
+                    let status = NSLocalizedString("_status_downloading_", comment: "").lowercased()
+                    setDetailText(status: status, percent: Int(progress.fractionCompleted * 100))
+                }
+                guard results.nkError == .success else {
+                    hud.error(text: results.nkError.errorDescription)
+                    break
+                }
+            }
+
+            // UPLOAD
+            let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
+                                                                                      fileName: metadata.fileName,
+                                                                                      userId: metadata.userId,
+                                                                                      urlBase: metadata.urlBase)
+
+            let fileName = await NCNetworking.shared.createFileName(fileNameBase: metadata.fileName, account: session.account, serverUrl: destination)
+            let serverUrlFileName = destination + "/" + fileName
+
+            let results = await NCNetworking.shared.uploadFile(fileNameLocalPath: fileNameLocalPath,
+                                                               serverUrlFileName: serverUrlFileName,
+                                                               creationDate: metadata.creationDate as Date,
+                                                               dateModificationFile: metadata.date as Date,
+                                                               account: session.account,
+                                                               withUploadComplete: false) { request in
+                uploadRequest = request
+            } progressHandler: { _, _, fractionCompleted in
+                let status = NSLocalizedString("_status_uploading_", comment: "").lowercased()
+                setDetailText(status: status, percent: Int(fractionCompleted * 100))
+            }
+            guard results.error == .success else {
+                hud.error(text: results.error.errorDescription)
+                break
+            }
+
+            hud.progress(Double(index + 1) / Double(metadatas.count))
+        }
+
+        await collectionViewCommon.getServerData(forced: true)
+        hud.success()
     }
 }
 

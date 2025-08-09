@@ -152,9 +152,14 @@ class NCHud: NSObject {
         }
     }
 
-    func setText(text: String?, detailText: String? = nil) {
+    func setText(_ text: String?) {
         DispatchQueue.main.async {
             self.hud.textLabel.text = text
+        }
+    }
+
+    func setDetailText(_ detailText: String) {
+        DispatchQueue.main.async {
             self.hud.detailTextLabel.text = detailText
         }
     }

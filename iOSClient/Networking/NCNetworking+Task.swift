@@ -78,7 +78,7 @@ extension NCNetworking {
             serverUrls.insert(metadata.serverUrl)
         // COPY MOVE
         case global.metadataStatusWaitCopy, global.metadataStatusWaitMove:
-            await database.setMetadataCopyMoveAsync(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
+            await database.setMetadataCopyMoveAsync(ocId: metadata.ocId, destination: "", overwrite: nil, status: global.metadataStatusNormal)
             serverUrls.insert(metadata.serverUrl)
         // DELETE
         case global.metadataStatusWaitDelete:

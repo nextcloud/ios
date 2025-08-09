@@ -91,7 +91,6 @@ class NCFiles: NCCollectionViewCommon {
                     if let controller = userInfo["controller"] as? NCMainTabBarController,
                        controller == self.controller {
                         controller.account = account
-                        
                         let color = NCBrandColor.shared.getElement(account: account)
                         self.plusButton.backgroundColor = color
                     } else {
@@ -230,7 +229,7 @@ class NCFiles: NCCollectionViewCommon {
         cachingAsync(metadatas: metadatas)
     }
 
-    override func getServerData(refresh: Bool = false) async {
+    override func getServerData(forced: Bool = false) async {
         await super.getServerData()
 
         defer {
@@ -256,7 +255,7 @@ class NCFiles: NCCollectionViewCommon {
             return false
         }
 
-        let resultsReadFolder = await networkReadFolderAsync(serverUrl: self.serverUrl, refresh: refresh)
+        let resultsReadFolder = await networkReadFolderAsync(serverUrl: self.serverUrl, forced: forced)
         guard resultsReadFolder.error == .success, resultsReadFolder.reloadRequired else {
             return
         }
@@ -278,7 +277,7 @@ class NCFiles: NCCollectionViewCommon {
         await self.reloadDataSource()
     }
 
-    private func networkReadFolderAsync(serverUrl: String, refresh: Bool) async -> (metadatas: [tableMetadata]?, error: NKError, reloadRequired: Bool) {
+    private func networkReadFolderAsync(serverUrl: String, forced: Bool) async -> (metadatas: [tableMetadata]?, error: NKError, reloadRequired: Bool) {
         let resultsReadFile = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrl, account: session.account) { task in
             self.dataSourceTask = task
             if self.dataSource.isEmpty() {
@@ -295,7 +294,7 @@ class NCFiles: NCCollectionViewCommon {
         let tableDirectory = await self.database.getTableDirectoryAsync(ocId: metadata.ocId)
 
         let shouldSkipUpdate: Bool = (
-            !refresh &&
+            !forced &&
             tableDirectory?.etag == metadata.etag &&
             !metadata.e2eEncrypted &&
             !self.dataSource.isEmpty()

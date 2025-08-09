@@ -1,25 +1,6 @@
-//
-//  NCCollectionViewCommon.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 12/09/2020.
-//  Copyright © 2020 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2020 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 import SwiftUI
@@ -219,8 +200,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
             Task { @MainActor in
-                // Perform async server refresh
-                await self.getServerData(refresh: true)
+                // Perform async server forced
+                await self.getServerData(forced: true)
 
                 // Stop the refresh control after data is loaded
                 self.refreshControl.endRefreshing()
@@ -513,7 +494,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    func transferCopy(metadata: tableMetadata, serverUrlTo: String, error: NKError) {
+    func transferCopy(metadata: tableMetadata, destination: String, error: NKError) {
         if error != .success {
             NCContentPresenter().showError(error: error)
         }
@@ -522,14 +503,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return networkSearch()
         }
 
-        if metadata.serverUrl == self.serverUrl || serverUrlTo == self.serverUrl {
+        if metadata.serverUrl == self.serverUrl || destination == self.serverUrl {
             Task {
                 await self.reloadDataSource()
             }
         }
     }
 
-    func transferMove(metadata: tableMetadata, serverUrlTo: String, error: NKError) {
+    func transferMove(metadata: tableMetadata, destination: String, error: NKError) {
         if error != .success {
             NCContentPresenter().showError(error: error)
         }
@@ -538,7 +519,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return networkSearch()
         }
 
-        if metadata.serverUrl == self.serverUrl || serverUrlTo == self.serverUrl {
+        if metadata.serverUrl == self.serverUrl || destination == self.serverUrl {
             Task {
                 await self.reloadDataSource()
             }
@@ -816,7 +797,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         await (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
     }
 
-    func getServerData(refresh: Bool = false) async {
+    func getServerData(forced: Bool = false) async {
         dataSourceTask?.cancel()
     }
 

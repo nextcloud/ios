@@ -93,7 +93,7 @@ class tableMetadata: Object {
     @objc dynamic var sceneIdentifier: String?
     @objc dynamic var serverUrl = ""
     @objc dynamic var serverUrlFileName = ""
-    @objc dynamic var serverUrlTo = ""
+    @objc dynamic var destination = ""
     @objc dynamic var session = ""
     @objc dynamic var sessionDate: Date?
     @objc dynamic var sessionError = ""
@@ -894,7 +894,7 @@ extension NCManageDatabase {
             if let result = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first {
-                result.serverUrlTo = serverUrlTo
+                result.destination = serverUrlTo
                 result.storeFlag = overwrite
                 result.status = status
 
@@ -908,7 +908,7 @@ extension NCManageDatabase {
     }
 
     /// Asynchronously updates a `tableMetadata` entry to set copy/move status and target server URL.
-    func setMetadataCopyMoveAsync(ocId: String, serverUrlTo: String, overwrite: String?, status: Int) async {
+    func setMetadataCopyMoveAsync(ocId: String, destination: String, overwrite: String?, status: Int) async {
         await performRealmWriteAsync { realm in
             guard let result = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
@@ -916,7 +916,7 @@ extension NCManageDatabase {
                 return
             }
 
-            result.serverUrlTo = serverUrlTo
+            result.destination = destination
             result.storeFlag = overwrite
             result.status = status
             result.sessionDate = (status == NCGlobal.shared.metadataStatusNormal) ? nil : Date()

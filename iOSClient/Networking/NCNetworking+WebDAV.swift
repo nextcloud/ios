@@ -438,7 +438,7 @@ extension NCNetworking {
 
     // MARK: - Move
 
-    func moveMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) {
+    func moveMetadata(_ metadata: tableMetadata, destination: String, overwrite: Bool) {
         let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanRename)
 
         if (!metadata.permissions.isEmpty && !permission) ||
@@ -449,7 +449,7 @@ extension NCNetworking {
         Task {
             await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
                 let status = self.global.metadataStatusWaitMove
-                await self.database.setMetadataCopyMoveAsync(ocId: metadata.ocId, serverUrlTo: serverUrlTo, overwrite: overwrite.description, status: status)
+                await self.database.setMetadataCopyMoveAsync(ocId: metadata.ocId, destination: destination, overwrite: overwrite.description, status: status)
                 delegate.transferReloadData(serverUrl: metadata.serverUrl, status: status)
             }
         }
@@ -457,7 +457,7 @@ extension NCNetworking {
 
     // MARK: - Copy
 
-    func copyMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) {
+    func copyMetadata(_ metadata: tableMetadata, destination: String, overwrite: Bool) {
         let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanRename)
 
         if (!metadata.permissions.isEmpty && !permission) ||
@@ -468,7 +468,7 @@ extension NCNetworking {
         Task {
             await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
                 let status = self.global.metadataStatusWaitCopy
-                await self.database.setMetadataCopyMoveAsync(ocId: metadata.ocId, serverUrlTo: serverUrlTo, overwrite: overwrite.description, status: status)
+                await self.database.setMetadataCopyMoveAsync(ocId: metadata.ocId, destination: destination, overwrite: overwrite.description, status: status)
                 delegate.transferReloadData(serverUrl: metadata.serverUrl, status: status)
             }
         }

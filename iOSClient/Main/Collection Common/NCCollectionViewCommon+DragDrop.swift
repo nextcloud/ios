@@ -1,25 +1,6 @@
-//
-//  NCCollectionViewCommon+DragDrop.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 19/04/24.
-//  Copyright © 2024 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2024 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
 import UIKit
@@ -112,14 +93,17 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
         DragDropHover.shared.sourceMetadatas = nil
 
         if let metadatas = NCDragDrop().performDrop(collectionView, performDropWith: coordinator, serverUrl: self.serverUrl, isImageVideo: false, controller: self.controller) {
-            // TODO: NOT POSSIBLE DRAG DROP DIFFERENT ACCOUNT
-            if let metadata = metadatas.first,
-               metadata.account != self.session.account {
-                NCContentPresenter().showInfo(description: "_move_copy_diff_account_")
-                return
+            if let metadata = metadatas.first, metadata.account != self.session.account {
+                DragDropHover.shared.sourceMetadatas = metadatas
+                Task {
+                    await NCDragDrop().transfers(collectionViewCommon: self,
+                                                 destination: serverUrl,
+                                                 session: self.session)
+                }
+            } else {
+                DragDropHover.shared.sourceMetadatas = metadatas
+                openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView))
             }
-            DragDropHover.shared.sourceMetadatas = metadatas
-            openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView))
         }
     }
 
@@ -144,22 +128,26 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
 
     @objc func copyMenuFile(_ sender: Any?) {
         guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas else { return }
-        var serverUrl: String = self.serverUrl
+        var destination: String = self.serverUrl
 
         if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
-            serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
+            destination = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
         }
-        NCDragDrop().copyFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
+        Task {
+            await NCDragDrop().copyFile(metadatas: sourceMetadatas, destination: destination)
+        }
     }
 
     @objc func moveMenuFile(_ sender: Any?) {
         guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas else { return }
-        var serverUrl: String = self.serverUrl
+        var destination: String = self.serverUrl
 
         if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
-            serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
+            destination = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
         }
-        NCDragDrop().moveFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
+        Task {
+            await NCDragDrop().moveFile(metadatas: sourceMetadatas, destination: destination)
+        }
     }
 }
 

@@ -204,22 +204,31 @@ class NCNetworkingE2EEUpload: NSObject {
             } counterChunk: { counter in
                 hud.progress(num: Float(counter), total: Float(self.numChunks))
             } startFilesChunk: { _ in
-                hud.setText(text: NSLocalizedString("_keep_active_for_upload_", comment: ""))
+                hud.setText(NSLocalizedString("_keep_active_for_upload_", comment: ""))
             } requestHandler: { _ in
                 hud.progress(num: Float(counterUpload), total: Float(self.numChunks))
                 counterUpload += 1
             } assembling: {
-                hud.setText(text: NSLocalizedString("_wait_", comment: ""))
+                hud.setText(NSLocalizedString("_wait_", comment: ""))
             }
 
             return (results.file?.ocId, results.file?.etag, results.file?.date, results.error)
 
         } else {
+            let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
+                                                                                      fileName: metadata.fileName,
+                                                                                      userId: metadata.userId,
+                                                                                      urlBase: metadata.urlBase)
 
-            let results = await NCNetworking.shared.uploadFile(metadata: metadata,
+            let results = await NCNetworking.shared.uploadFile(fileNameLocalPath: fileNameLocalPath,
+                                                               serverUrlFileName: metadata.serverUrlFileName,
+                                                               creationDate: metadata.creationDate as Date,
+                                                               dateModificationFile: metadata.date as Date,
+                                                               account: metadata.account,
+                                                               metadata: metadata,
                                                                withUploadComplete: false,
                                                                customHeaders: ["e2e-token": e2eToken]) { _ in
-                hud.setText(text: NSLocalizedString("_keep_active_for_upload_", comment: ""))
+                hud.setText(NSLocalizedString("_keep_active_for_upload_", comment: ""))
             } progressHandler: { _, _, fractionCompleted in
                 hud.progress(fractionCompleted)
             }

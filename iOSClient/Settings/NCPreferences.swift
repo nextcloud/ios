@@ -34,7 +34,7 @@ final class NCPreferences: NSObject {
             return NCGlobal.TypeFilterScanDocument(rawValue: rawValue) ?? .original
         }
         set {
-            setUserDefaults(newValue, forKey: "ScanDocumentTypeFilter")
+            setUserDefaults(newValue.rawValue, forKey: "ScanDocumentTypeFilter")
         }
     }
 

@@ -58,7 +58,7 @@ class NCFavorite: NCCollectionViewCommon {
         cachingAsync(metadatas: metadatas)
     }
 
-    override func getServerData(refresh: Bool = false) async {
+    override func getServerData(forced: Bool = false) async {
         await super.getServerData()
 
         defer {
