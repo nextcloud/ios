@@ -112,6 +112,20 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
         DragDropHover.shared.sourceMetadatas = nil
 
         if let metadatas = NCDragDrop().performDrop(collectionView, performDropWith: coordinator, serverUrl: self.serverUrl, isImageVideo: false, controller: self.controller) {
+            if let metadata = metadatas.first, metadata.account != self.session.account {
+                DragDropHover.shared.sourceMetadatas = metadatas
+                Task {
+                    await NCDragDrop().downloadUpload(view: collectionView,
+                                                      metadatas: metadatas,
+                                                      destination: serverUrl,
+                                                      session: self.session)
+                }
+            } else {
+                DragDropHover.shared.sourceMetadatas = metadatas
+                openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView))
+            }
+
+            /*
             // TODO: NOT POSSIBLE DRAG DROP DIFFERENT ACCOUNT
             if let metadata = metadatas.first,
                metadata.account != self.session.account {
@@ -120,6 +134,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
             }
             DragDropHover.shared.sourceMetadatas = metadatas
             openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView))
+            */
         }
     }
 
@@ -144,22 +159,26 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
 
     @objc func copyMenuFile(_ sender: Any?) {
         guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas else { return }
-        var serverUrl: String = self.serverUrl
+        var destination: String = self.serverUrl
 
         if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
-            serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
+            destination = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
         }
-        NCDragDrop().copyFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
+        Task {
+            await NCDragDrop().copyFile(metadatas: sourceMetadatas, destination: destination)
+        }
     }
 
     @objc func moveMenuFile(_ sender: Any?) {
         guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas else { return }
-        var serverUrl: String = self.serverUrl
+        var destination: String = self.serverUrl
 
         if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
-            serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
+            destination = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
         }
-        NCDragDrop().moveFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
+        Task {
+            await NCDragDrop().moveFile(metadatas: sourceMetadatas, destination: destination)
+        }
     }
 }
 

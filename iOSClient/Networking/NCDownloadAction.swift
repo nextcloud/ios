@@ -546,14 +546,14 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
     // MARK: - NCSelect + Delegate
 
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool, session: NCSession.Session) {
-        if let serverUrl, !items.isEmpty {
+        if let destination = serverUrl, !items.isEmpty {
             if copy {
                 for case let metadata as tableMetadata in items {
                     if metadata.status != NCGlobal.shared.metadataStatusNormal, metadata.status != NCGlobal.shared.metadataStatusWaitCopy {
                         continue
                     }
 
-                    NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
+                    NCNetworking.shared.copyMetadata(metadata, destination: destination, overwrite: overwrite)
                 }
 
             } else if move {
@@ -562,7 +562,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                         continue
                     }
 
-                    NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
+                    NCNetworking.shared.moveMetadata(metadata, destination: destination, overwrite: overwrite)
                 }
             }
         }

@@ -908,7 +908,7 @@ extension NCManageDatabase {
     }
 
     /// Asynchronously updates a `tableMetadata` entry to set copy/move status and target server URL.
-    func setMetadataCopyMoveAsync(ocId: String, serverUrlTo: String, overwrite: String?, status: Int) async {
+    func setMetadataCopyMoveAsync(ocId: String, destination: String, overwrite: String?, status: Int) async {
         await performRealmWriteAsync { realm in
             guard let result = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
@@ -916,7 +916,7 @@ extension NCManageDatabase {
                 return
             }
 
-            result.destination = serverUrlTo
+            result.destination = destination
             result.storeFlag = overwrite
             result.status = status
             result.sessionDate = (status == NCGlobal.shared.metadataStatusNormal) ? nil : Date()

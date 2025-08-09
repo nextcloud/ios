@@ -164,23 +164,61 @@ class NCDragDrop: NSObject {
         }
     }
 
-    func copyFile(metadatas: [tableMetadata], serverUrl: String) {
-        Task {
-            for metadata in metadatas {
-                NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
-                await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delete in
-                    delete.transferCopy(metadata: metadata, destination: serverUrl, error: .success)
-                }
+    func copyFile(metadatas: [tableMetadata], destination: String) async {
+        for metadata in metadatas {
+            NCNetworking.shared.copyMetadata(metadata, destination: destination, overwrite: false)
+            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delete in
+                delete.transferCopy(metadata: metadata, destination: destination, error: .success)
             }
         }
     }
 
-    func moveFile(metadatas: [tableMetadata], serverUrl: String) {
-        Task {
-            for metadata in metadatas {
-                NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
-                await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delete in
-                    delete.transferMove(metadata: metadata, destination: serverUrl, error: .success)
+    func moveFile(metadatas: [tableMetadata], destination: String) async {
+        for metadata in metadatas {
+            NCNetworking.shared.moveMetadata(metadata, destination: destination, overwrite: false)
+            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delete in
+                delete.transferMove(metadata: metadata, destination: destination, error: .success)
+            }
+        }
+    }
+
+    @MainActor
+    func downloadUpload(view: UIView, metadatas: [tableMetadata], destination: String, session: NCSession.Session) async {
+        let hud = NCHud(view)
+        var taskUpload: URLSessionTask?
+
+        hud.pieProgress(text: NSLocalizedString("_keep_active_for_upload_", comment: ""),
+                        tapToCancelDetailText: true) {
+        }
+
+        for metadata in metadatas {
+            if metadata.directory {
+                continue
+            }
+            let fileExists = utilityFileSystem.fileProviderStorageExists(metadata)
+            if fileExists {
+                let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
+                                                                                          fileName: metadata.fileName,
+                                                                                          userId: metadata.userId,
+                                                                                          urlBase: metadata.urlBase)
+                let serverUrlFileName = destination + "/" + metadata.fileName
+                let results = await NCNetworking.shared.uploadFile(fileNameLocalPath: fileNameLocalPath,
+                                                     serverUrlFileName: serverUrlFileName,
+                                                     creationDate: metadata.creationDate as Date,
+                                                     dateModificationFile: metadata.date as Date,
+                                                     account: session.account,
+                                                     withUploadComplete: false) { _ in
+                } taskHandler: { task in
+                    taskUpload = task
+                } progressHandler: { _, _, fractionCompleted in
+                    hud.progress(fractionCompleted)
+                }
+                hud.dismiss()
+
+                if results.error == .success {
+
+                } else {
+
                 }
             }
         }

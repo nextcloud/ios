@@ -7,7 +7,12 @@ extension NCNetworking {
     // MARK: - Upload file in foreground
 
     @discardableResult
-    func uploadFile(metadata: tableMetadata,
+    func uploadFile(fileNameLocalPath: String,
+                    serverUrlFileName: String,
+                    creationDate: Date,
+                    dateModificationFile: Date,
+                    account: String,
+                    metadata: tableMetadata? = nil,
                     withUploadComplete: Bool = true,
                     customHeaders: [String: String]? = nil,
                     requestHandler: @escaping (_ request: UploadRequest) -> Void = { _ in },
@@ -21,16 +26,12 @@ extension NCNetworking {
               headers: [AnyHashable: Any]?,
               error: NKError) {
         let options = NKRequestOptions(customHeader: customHeaders, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-        let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
-                                                                                  fileName: metadata.fileName,
-                                                                                  userId: metadata.userId,
-                                                                                  urlBase: metadata.urlBase)
-
-        let results = await NextcloudKit.shared.uploadAsync(serverUrlFileName: metadata.serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, account: metadata.account, options: options) { request in
+        let results = await NextcloudKit.shared.uploadAsync(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: creationDate, dateModificationFile: dateModificationFile, account: account, options: options) { request in
             requestHandler(request)
         } taskHandler: { task in
             Task {
-                if let metadata = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                if let metadata,
+                   let metadata = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
                                                                               sessionTaskIdentifier: task.taskIdentifier,
                                                                               status: self.global.metadataStatusUploading) {
 
@@ -44,19 +45,21 @@ extension NCNetworking {
             taskHandler(task)
         } progressHandler: { progress in
             Task {
-                await self.database.setMetadataProgress(ocId: metadata.ocId, progress: progress.fractionCompleted)
-                await self.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferProgressDidUpdate(progress: Float(progress.fractionCompleted),
-                                                       totalBytes: progress.totalUnitCount,
-                                                       totalBytesExpected: progress.completedUnitCount,
-                                                       fileName: metadata.fileName,
-                                                       serverUrl: metadata.serverUrl)
+                if let metadata {
+                    await self.database.setMetadataProgress(ocId: metadata.ocId, progress: progress.fractionCompleted)
+                    await self.transferDispatcher.notifyAllDelegates { delegate in
+                        delegate.transferProgressDidUpdate(progress: Float(progress.fractionCompleted),
+                                                           totalBytes: progress.totalUnitCount,
+                                                           totalBytesExpected: progress.completedUnitCount,
+                                                           fileName: metadata.fileName,
+                                                           serverUrl: metadata.serverUrl)
+                    }
                 }
             }
             progressHandler(progress.completedUnitCount, progress.totalUnitCount, progress.fractionCompleted)
         }
 
-        if withUploadComplete {
+        if withUploadComplete, let metadata {
             await self.uploadComplete(withMetadata: metadata, ocId: results.ocId, etag: results.etag, date: results.date, size: results.size, error: results.error)
         }
 

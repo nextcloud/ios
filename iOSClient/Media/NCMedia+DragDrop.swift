@@ -62,8 +62,10 @@ extension NCMedia: UICollectionViewDropDelegate {
         guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas else { return }
 
         if let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) {
-            let serverUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
-            NCDragDrop().copyFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
+            let destination = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
+            Task {
+                await NCDragDrop().copyFile(metadatas: sourceMetadatas, destination: destination)
+            }
         }
     }
 
@@ -71,8 +73,10 @@ extension NCMedia: UICollectionViewDropDelegate {
         guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas else { return }
 
         if let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) {
-            let serverUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
-            NCDragDrop().moveFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
+            let destination = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
+            Task {
+                await NCDragDrop().moveFile(metadatas: sourceMetadatas, destination: destination)
+            }
         }
     }
 }

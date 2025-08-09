@@ -409,7 +409,17 @@ extension NCShareExtension {
             }
             error = results.error
         } else {
-            let results = await NCNetworking.shared.uploadFile(metadata: metadata) { _ in
+            let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
+                                                                                      fileName: metadata.fileName,
+                                                                                      userId: metadata.userId,
+                                                                                      urlBase: metadata.urlBase)
+
+            let results = await NCNetworking.shared.uploadFile(fileNameLocalPath: fileNameLocalPath,
+                                                               serverUrlFileName: metadata.serverUrlFileName,
+                                                               creationDate: metadata.creationDate as Date,
+                                                               dateModificationFile: metadata.date as Date,
+                                                               account: metadata.account,
+                                                               metadata: metadata) { _ in
             } progressHandler: { _, _, fractionCompleted in
                 self.hud.progress(fractionCompleted)
             }
