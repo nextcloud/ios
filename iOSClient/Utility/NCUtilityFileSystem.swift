@@ -22,7 +22,6 @@
 //
 
 import UIKit
-import NextcloudKit
 import PhotosUI
 
 final class NCUtilityFileSystem: NSObject, @unchecked Sendable {

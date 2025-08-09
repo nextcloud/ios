@@ -168,8 +168,8 @@ class NCDragDrop: NSObject {
     func copyFile(metadatas: [tableMetadata], destination: String) async {
         for metadata in metadatas {
             NCNetworking.shared.copyMetadata(metadata, destination: destination, overwrite: false)
-            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delete in
-                delete.transferCopy(metadata: metadata, destination: destination, error: .success)
+            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferCopy(metadata: metadata, destination: destination, error: .success)
             }
         }
     }
@@ -177,8 +177,8 @@ class NCDragDrop: NSObject {
     func moveFile(metadatas: [tableMetadata], destination: String) async {
         for metadata in metadatas {
             NCNetworking.shared.moveMetadata(metadata, destination: destination, overwrite: false)
-            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delete in
-                delete.transferMove(metadata: metadata, destination: destination, error: .success)
+            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferMove(metadata: metadata, destination: destination, error: .success)
             }
         }
     }
@@ -225,7 +225,9 @@ class NCDragDrop: NSObject {
                                                                                       fileName: metadata.fileName,
                                                                                       userId: metadata.userId,
                                                                                       urlBase: metadata.urlBase)
-            let serverUrlFileName = destination + "/" + metadata.fileName
+
+            let fileName = await NCNetworking.shared.createFileName(fileNameBase: metadata.fileName, account: session.account, serverUrl: destination)
+            let serverUrlFileName = destination + "/" + fileName
 
             hud.pieProgress(text: NSLocalizedString("_keep_active_for_transfers_", comment: ""),
                             tapToCancelDetailText: true) {
