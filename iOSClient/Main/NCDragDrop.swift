@@ -193,34 +193,44 @@ class NCDragDrop: NSObject {
 
         // Download a file
         func downloadFile(metadata: tableMetadata) async -> NKError {
-            let hud = NCHud(collectionViewCommon.controller?.view)
-            hud.pieProgress(text: NSLocalizedString("_keep_active_for_transfers_", comment: ""),
-                            tapToCancelDetailText: true) {
-                if let downloadRequest {
-                    downloadRequest.cancel()
-                }
-            }
-
             let results = await NCNetworking.shared.downloadFile(metadata: metadata,
                                                                  withDownloadComplete: true) { request in
                 downloadRequest = request
-            } progressHandler: { progress in
-                hud.progress(progress.fractionCompleted)
             }
-
-            if results.nkError == .success {
-                hud.dismiss()
-                await collectionViewCommon.getServerData(forced: true)
-            } else {
-                hud.error(text: results.nkError.errorDescription)
-            }
-
             return results.nkError
         }
 
-        // Upload a file
-        func uploadFile(metadata: tableMetadata) async -> NKError {
-            let hud = NCHud(collectionViewCommon.controller?.view)
+        let hud = NCHud(collectionViewCommon.controller?.view)
+        hud.pieProgress(text: NSLocalizedString("_keep_active_for_transfers_", comment: ""),
+                        tapToCancelDetailText: true) {
+            if let downloadRequest {
+                downloadRequest.cancel()
+            } else if let uploadRequest {
+                uploadRequest.cancel()
+            }
+        }
+
+        for (index, metadata) in metadatas.enumerated() {
+            if metadata.directory {
+                continue
+            }
+
+            downloadRequest = nil
+            uploadRequest = nil
+
+            // DOWNLOAD
+            if !utilityFileSystem.fileProviderStorageExists(metadata) {
+                let results = await NCNetworking.shared.downloadFile(metadata: metadata,
+                                                                     withDownloadComplete: true) { request in
+                    downloadRequest = request
+                }
+                guard results.nkError == .success else {
+                    hud.error(text: results.nkError.errorDescription)
+                    break
+                }
+            }
+
+            // UPLOAD
             let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
                                                                                       fileName: metadata.fileName,
                                                                                       userId: metadata.userId,
@@ -229,13 +239,6 @@ class NCDragDrop: NSObject {
             let fileName = await NCNetworking.shared.createFileName(fileNameBase: metadata.fileName, account: session.account, serverUrl: destination)
             let serverUrlFileName = destination + "/" + fileName
 
-            hud.pieProgress(text: NSLocalizedString("_keep_active_for_transfers_", comment: ""),
-                            tapToCancelDetailText: true) {
-                if let uploadRequest {
-                    uploadRequest.cancel()
-                }
-            }
-
             let results = await NCNetworking.shared.uploadFile(fileNameLocalPath: fileNameLocalPath,
                                                                serverUrlFileName: serverUrlFileName,
                                                                creationDate: metadata.creationDate as Date,
@@ -243,37 +246,18 @@ class NCDragDrop: NSObject {
                                                                account: session.account,
                                                                withUploadComplete: false) { request in
                 uploadRequest = request
-            } progressHandler: { _, _, fractionCompleted in
-                hud.progress(fractionCompleted)
             }
 
-            if results.error == .success {
-                hud.dismiss()
-                await collectionViewCommon.getServerData(forced: true)
-            } else {
+            guard results.error == .success else {
                 hud.error(text: results.error.errorDescription)
-            }
-
-            return results.error
-        }
-
-        for metadata in metadatas {
-            if metadata.directory {
-                continue
-            }
-
-            if !utilityFileSystem.fileProviderStorageExists(metadata) {
-                let error = await downloadFile(metadata: metadata)
-                guard error == .success else {
-                    break
-                }
-            }
-
-            let error = await uploadFile(metadata: metadata)
-            guard error == .success else {
                 break
             }
+
+            hud.progress(Double(index + 1) / Double(metadatas.count))
         }
+
+        await collectionViewCommon.getServerData(forced: true)
+        hud.success()
     }
 }
 
