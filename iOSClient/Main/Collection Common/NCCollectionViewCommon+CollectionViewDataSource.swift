@@ -598,19 +598,24 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 if sections > 1 && section != sections - 1 {
                     footer.separatorIsHidden(false)
                 }
-
+                
                 // If the number of entries(metadatas) is lower than the cursor, then there are no more entries.
                 // The blind spot in this is when the number of entries is the same as the cursor. If so, we don't have a way of knowing if there are no more entries.
                 // This is as good as it gets for determining last page without server-side flag.
                 let isLastPage = (metadatasCount < metadataForSection?.lastSearchResult?.cursor ?? 0) || metadataForSection?.lastSearchResult?.entries.isEmpty == true
-
+                
                 if isSearchingMode && isPaginated && metadatasCount > 0 && !isLastPage {
                     footer.buttonIsHidden(false)
                 }
-
+                
                 if unifiedSearchInProgress {
                     footer.showActivityIndicatorSection()
                 }
+            } else if isEditMode {
+                let itemsSelected = self.fileSelect.count
+                let items = self.dataSource.numberOfItemsInSection(section)
+                footer.setTitleLabel("\(itemsSelected) / \(items)")
+                footer.separatorIsHidden(false)
             } else {
                 if sections == 1 || section == sections - 1 {
                     let info = self.dataSource.getFooterInformation()

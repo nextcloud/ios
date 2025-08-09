@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24112" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina5_9" orientation="landscape" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24057"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -40,7 +39,7 @@
                     </constraints>
                 </view>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gzy-cT-Gjn" userLabel="LabelFooter">
-                    <rect key="frame" x="10" y="13.666666666666664" width="355" height="16"/>
+                    <rect key="frame" x="10" y="50" width="355" height="16"/>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
@@ -51,14 +50,11 @@
                 <constraint firstAttribute="trailing" secondItem="TK1-KX-Qe0" secondAttribute="trailing" constant="10" id="PoY-CD-99O"/>
                 <constraint firstAttribute="trailing" secondItem="gzy-cT-Gjn" secondAttribute="trailing" constant="10" id="QzY-ac-CRO"/>
                 <constraint firstAttribute="leading" secondItem="s2m-yO-4x0" secondAttribute="leading" id="ai4-Qy-YWi"/>
-                <constraint firstItem="gzy-cT-Gjn" firstAttribute="centerY" secondItem="Vin-9E-7nW" secondAttribute="centerY" constant="-30" id="avP-sX-JB5">
-                    <variation key="heightClass=compact-widthClass=regular" constant="-15"/>
-                    <variation key="heightClass=regular-widthClass=compact" constant="-15"/>
-                </constraint>
                 <constraint firstItem="qWG-SR-Qly" firstAttribute="centerY" secondItem="TK1-KX-Qe0" secondAttribute="centerY" id="baS-g9-E8a"/>
                 <constraint firstAttribute="trailing" secondItem="s2m-yO-4x0" secondAttribute="trailing" id="dWj-wQ-cfb"/>
                 <constraint firstItem="TK1-KX-Qe0" firstAttribute="bottom" secondItem="s2m-yO-4x0" secondAttribute="bottom" constant="-1" id="ekM-Ii-N58"/>
                 <constraint firstItem="gzy-cT-Gjn" firstAttribute="leading" secondItem="Vin-9E-7nW" secondAttribute="leading" constant="10" id="hZz-MT-pHg"/>
+                <constraint firstItem="gzy-cT-Gjn" firstAttribute="top" secondItem="TK1-KX-Qe0" secondAttribute="bottom" constant="20" id="nTR-XD-Ov0"/>
                 <constraint firstItem="TK1-KX-Qe0" firstAttribute="top" secondItem="Vin-9E-7nW" secondAttribute="top" id="qRR-61-ojt"/>
                 <constraint firstItem="TK1-KX-Qe0" firstAttribute="leading" secondItem="Vin-9E-7nW" secondAttribute="leading" constant="10" id="xqA-FX-AlG"/>
             </constraints>

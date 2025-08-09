@@ -985,7 +985,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         var size = CGSize(width: collectionView.frame.width, height: 0)
 
         if section == sections - 1 {
-            size.height += 85
+            size.height += 100
         } else {
             size.height += 1
         }
@@ -993,6 +993,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if isSearchingMode && isPaginated && metadatasCount > 0 {
             size.height += 30
         }
+        
+        if isEditMode {
+            size.height = 200
+        }
+        
         return size
     }
 }
