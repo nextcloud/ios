@@ -57,7 +57,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
             )
             items.append(moreButton)
         }
-        
+
         navigationItem.rightBarButtonItems = items
         navigationItem.leftBarButtonItems = nil
         if editor == "Nextcloud Text" {

@@ -248,7 +248,7 @@ extension NCShare: NCShareNetworkingDelegate {
         guard let sharees else {
             return
         }
-        
+
         // close keyboard
         self.view.endEditing(true)
 
