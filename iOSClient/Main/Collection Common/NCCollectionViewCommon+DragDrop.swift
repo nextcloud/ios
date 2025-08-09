@@ -115,26 +115,14 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
             if let metadata = metadatas.first, metadata.account != self.session.account {
                 DragDropHover.shared.sourceMetadatas = metadatas
                 Task {
-                    await NCDragDrop().downloadUpload(collectionViewCommon: self,
-                                                      metadatas: metadatas,
-                                                      destination: serverUrl,
-                                                      session: self.session)
+                    await NCDragDrop().transfers(collectionViewCommon: self,
+                                                 destination: serverUrl,
+                                                 session: self.session)
                 }
             } else {
                 DragDropHover.shared.sourceMetadatas = metadatas
                 openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView))
             }
-
-            /*
-            // TODO: NOT POSSIBLE DRAG DROP DIFFERENT ACCOUNT
-            if let metadata = metadatas.first,
-               metadata.account != self.session.account {
-                NCContentPresenter().showInfo(description: "_move_copy_diff_account_")
-                return
-            }
-            DragDropHover.shared.sourceMetadatas = metadatas
-            openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView))
-            */
         }
     }
 

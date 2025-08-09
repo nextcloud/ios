@@ -184,21 +184,53 @@ class NCDragDrop: NSObject {
     }
 
     @MainActor
-    func downloadUpload(collectionViewCommon: NCCollectionViewCommon, metadatas: [tableMetadata], destination: String, session: NCSession.Session) async {
-        let hud = NCHud(collectionViewCommon.controller?.view)
-        var requestUpload: UploadRequest?
+    func transfers(collectionViewCommon: NCCollectionViewCommon, destination: String, session: NCSession.Session) async {
+        guard let metadatas = DragDropHover.shared.sourceMetadatas else {
+            return
+        }
+        var uploadRequest: UploadRequest?
+        var downloadRequest: DownloadRequest?
 
-        func uploadFile(metadata: tableMetadata) async {
+        // Download a file
+        func downloadFile(metadata: tableMetadata) async -> NKError {
+            let hud = NCHud(collectionViewCommon.controller?.view)
+            hud.pieProgress(text: NSLocalizedString("_keep_active_for_transfers_", comment: ""),
+                            tapToCancelDetailText: true) {
+                if let downloadRequest {
+                    downloadRequest.cancel()
+                }
+            }
+
+            let results = await NCNetworking.shared.downloadFile(metadata: metadata,
+                                                                 withDownloadComplete: true) { request in
+                downloadRequest = request
+            } progressHandler: { progress in
+                hud.progress(progress.fractionCompleted)
+            }
+
+            if results.nkError == .success {
+                hud.dismiss()
+                await collectionViewCommon.getServerData(forced: true)
+            } else {
+                hud.error(text: results.nkError.errorDescription)
+            }
+
+            return results.nkError
+        }
+
+        // Upload a file
+        func uploadFile(metadata: tableMetadata) async -> NKError {
+            let hud = NCHud(collectionViewCommon.controller?.view)
             let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
                                                                                       fileName: metadata.fileName,
                                                                                       userId: metadata.userId,
                                                                                       urlBase: metadata.urlBase)
             let serverUrlFileName = destination + "/" + metadata.fileName
 
-            hud.pieProgress(text: NSLocalizedString("_keep_active_for_upload_", comment: ""),
+            hud.pieProgress(text: NSLocalizedString("_keep_active_for_transfers_", comment: ""),
                             tapToCancelDetailText: true) {
-                if let requestUpload {
-                    requestUpload.cancel()
+                if let uploadRequest {
+                    uploadRequest.cancel()
                 }
             }
 
@@ -208,7 +240,7 @@ class NCDragDrop: NSObject {
                                                                dateModificationFile: metadata.date as Date,
                                                                account: session.account,
                                                                withUploadComplete: false) { request in
-                requestUpload = request
+                uploadRequest = request
             } progressHandler: { _, _, fractionCompleted in
                 hud.progress(fractionCompleted)
             }
@@ -219,17 +251,25 @@ class NCDragDrop: NSObject {
             } else {
                 hud.error(text: results.error.errorDescription)
             }
+
+            return results.error
         }
 
         for metadata in metadatas {
             if metadata.directory {
                 continue
             }
-            let fileExists = utilityFileSystem.fileProviderStorageExists(metadata)
-            if fileExists {
-                await uploadFile(metadata: metadata)
-            } else {
-                
+
+            if !utilityFileSystem.fileProviderStorageExists(metadata) {
+                let error = await downloadFile(metadata: metadata)
+                guard error == .success else {
+                    break
+                }
+            }
+
+            let error = await uploadFile(metadata: metadata)
+            guard error == .success else {
+                break
             }
         }
     }
