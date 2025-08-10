@@ -29,7 +29,7 @@ import NextcloudKit
 // Source:
 // https://stackoverflow.com/questions/2338035/installing-a-configuration-profile-on-iphone-programmatically
 
-class NCConfigServer: NSObject, UIActionSheetDelegate, URLSessionDelegate {
+final class NCConfigServer: NSObject, UIActionSheetDelegate, URLSessionDelegate {
     // Start service
     func startService(url: URL, account: String) {
         let defaultSessionConfiguration = URLSessionConfiguration.default
