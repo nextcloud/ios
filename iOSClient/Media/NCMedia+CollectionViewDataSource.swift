@@ -24,7 +24,6 @@ extension NCMedia: UICollectionViewDataSource {
             let video = dataSource.metadatas.count - images
 
             footer.setTitleLabel("\(images) " + NSLocalizedString("_images_", comment: "") + " • " + "\(video) " + NSLocalizedString("_video_", comment: ""))
-            footer.separatorIsHidden(true)
             return footer
         }
     }

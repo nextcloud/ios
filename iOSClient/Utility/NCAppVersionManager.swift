@@ -37,7 +37,8 @@ class NCAppVersionManager {
     }
 
     func checkAndUpdateInstallState() {
-        if previousVersion == nil, (currentVersion == version || currentVersion == nil) {
+        if previousVersion == nil,
+           currentVersion == version || currentVersion == nil {
             defaults.set(version, forKey: versionKey)
         } else if currentVersion != version {
             if let currentVersion {

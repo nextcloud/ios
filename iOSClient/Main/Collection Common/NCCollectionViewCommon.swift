@@ -974,26 +974,25 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - Footer size
 
     func sizeForFooterInSection(section: Int) -> CGSize {
+        guard let controller else {
+            return CGSize.zero
+        }
         let sections = dataSource.numberOfSections()
-        let metadataForSection = self.dataSource.getMetadataForSection(section)
-        let isPaginated = metadataForSection?.lastSearchResult?.isPaginated ?? false
-        let metadatasCount: Int = metadataForSection?.lastSearchResult?.entries.count ?? 0
-        var size = CGSize(width: collectionView.frame.width, height: 0)
-
-        if section == sections - 1 {
-            size.height += 100
-        } else {
-            size.height += 1
-        }
-
-        if isSearchingMode && isPaginated && metadatasCount > 0 {
-            size.height += 30
-        }
+        let bottomAreaInsets: CGFloat = controller.tabBar.safeAreaInsets.bottom == 0 ? 34 : 0
+        let height = controller.tabBar.frame.height + bottomAreaInsets
 
         if isEditMode {
-            size.height = 200
+            return CGSize(width: collectionView.frame.width, height: 90 + height)
         }
 
-        return size
+        if isSearchingMode {
+            return CGSize(width: collectionView.frame.width, height: 50)
+        }
+
+        if section == sections - 1 {
+            return CGSize(width: collectionView.frame.width, height: height)
+        } else {
+            return CGSize(width: collectionView.frame.width, height: 0)
+        }
     }
 }
