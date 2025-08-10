@@ -157,12 +157,10 @@ class NCEndToEndInitialize: NSObject {
                     }
                 })
 
-                let cancel = UIAlertAction(title: "Cancel", style: .cancel) { _ -> Void in
-                }
-
+                let cancel = UIAlertAction(title: "Cancel", style: .cancel)
                 alertController.addAction(ok)
                 alertController.addAction(cancel)
-                alertController.addTextField { textField -> Void in
+                alertController.addTextField { textField in
                     passphraseTextField = textField
                     passphraseTextField?.placeholder = NSLocalizedString("_enter_passphrase_", comment: "")
                 }
