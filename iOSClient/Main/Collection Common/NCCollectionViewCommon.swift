@@ -982,7 +982,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let height = controller.tabBar.frame.height + bottomAreaInsets
 
         if isEditMode {
-            return CGSize(width: collectionView.frame.width, height: 80 + height)
+            return CGSize(width: collectionView.frame.width, height: 90 + height)
         }
 
         if isSearchingMode {
