@@ -982,22 +982,27 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let isPaginated = metadataForSection?.lastSearchResult?.isPaginated ?? false
         let metadatasCount: Int = metadataForSection?.lastSearchResult?.entries.count ?? 0
         var size = CGSize(width: collectionView.frame.width, height: 0)
-        let stdHeight: CGFloat = 120
-
-        if section == sections - 1 {
-            size.height = stdHeight
-        } else {
-            size.height = 1
-        }
-
-        if isSearchingMode && isPaginated && metadatasCount > 0 {
-            size.height = stdHeight
-        }
 
         if isEditMode {
             let bottomAreaInsets: CGFloat = controller.tabBar.safeAreaInsets.bottom == 0 ? 34 : 0
             let height = controller.tabBar.frame.height + bottomAreaInsets
-            size.height = stdHeight + height
+            size.height = 80 + height
+            
+            return size
+        }
+        
+        if isSearchingMode,
+           isPaginated,
+           metadatasCount > 0 {
+            size.height = 120
+            
+            return size
+        }
+
+        if section == sections - 1 {
+            size.height = 120
+        } else {
+            size.height = 1
         }
 
         return size
