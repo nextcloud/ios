@@ -160,7 +160,7 @@
 "_more_action_title_" = "More Details";
 "_wait_file_preparation_" = "Please wait, preparing file upload…";
 "_keep_active_for_upload_" = "Keep the application active until the sending is completed…";
-"_keep_active_for_transfers_" = "Keep the application active until the transfers is completed…";
+"_keep_active_for_transfers_" = "Keep the application active until the transfers are completed…";
 "_wait_file_encryption_"  = "Please wait, encrypting file…";
 "_passcode_counter_fail_" = "Too many failed attempts, please wait before reattempting.";
 "_seconds_"               = "seconds";
