@@ -987,7 +987,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             let bottomAreaInsets: CGFloat = controller.tabBar.safeAreaInsets.bottom == 0 ? 34 : 0
             let height = controller.tabBar.frame.height + bottomAreaInsets
             size.height = 80 + height
-            
+
             return size
         }
 
@@ -995,7 +995,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
            isPaginated,
            metadatasCount > 0 {
             size.height = 120
-            
+
             return size
         }
 
