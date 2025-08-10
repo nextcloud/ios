@@ -100,7 +100,7 @@ class NCEndToEndInitialize: NSObject {
         // PKCS#8 has OBJECT IDENTIFIER for RSA
         let oidRsaPrefix: [UInt8] = [0x30, 0x0D, 0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x01]
 
-        if let range = data.range(of: Data(oidRsaPrefix)) {
+        if data.range(of: Data(oidRsaPrefix)) != nil {
             print("🔐 Format: PKCS#8 (BEGIN PRIVATE KEY)")
             return "PKCS#8"
         } else if data.starts(with: [0x30, 0x82]) {

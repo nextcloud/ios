@@ -107,7 +107,7 @@ class NCViewerProviderContextMenu: UIViewController {
             // DOWNLOAD IMAGE GIF SVG
             if !utilityFileSystem.fileProviderStorageExists(metadata),
                self.networking.isOnline,
-               (metadata.contentType == "image/gif" || metadata.contentType == "image/svg+xml") {
+               metadata.contentType == "image/gif" || metadata.contentType == "image/svg+xml" {
                 Task {
                     if let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
                                                                                                           session: self.networking.sessionDownload,

@@ -137,7 +137,7 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
                !metadataFirst.isLivePhoto,
                let metadataLast = metadatas.last,
                !metadataLast.isLivePhoto,
-               ((metadataFirst.isVideo && metadataLast.isImage) || (metadataFirst.isImage && metadataLast.isVideo)) {
+               (metadataFirst.isVideo && metadataLast.isImage) || (metadataFirst.isImage && metadataLast.isVideo) {
                 canConvertLivePhoto = true
             }
         }

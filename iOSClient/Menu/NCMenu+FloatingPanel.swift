@@ -49,7 +49,7 @@ class NCMenuFloatingPanelLayout: FloatingPanelLayout {
         } else if let windowScene = UIApplication.shared.connectedScenes.first(where: { $0 is UIWindowScene }) as? UIWindowScene {
             window = windowScene.windows.first(where: { $0.isKeyWindow })
         }
-    
+
         let safeBottom = controller?.viewIfLoaded?.safeAreaInsets.bottom ?? 0
         let requestedHeight = panelHeight + safeBottom
 
