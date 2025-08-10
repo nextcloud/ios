@@ -404,6 +404,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         } else if item.url == "openSettings" {
             let settingsView = NCSettingsView(model: NCSettingsModel(controller: self.controller))
             let settingsController = UIHostingController(rootView: settingsView)
+            settingsController.title = NSLocalizedString("_settings_", comment: "")
             navigationController?.pushViewController(settingsController, animated: true)
         } else {
             applicationHandle.didSelectItem(item, viewController: self)
