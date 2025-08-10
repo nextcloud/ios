@@ -611,6 +611,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 if unifiedSearchInProgress {
                     footer.showActivityIndicatorSection()
                 }
+            } else if isEditMode {
+                let itemsSelected = self.fileSelect.count
+                let items = self.dataSource.numberOfItemsInSection(section)
+                footer.setTitleLabel("\(itemsSelected) \(NSLocalizedString("_of_", comment: "")) \(items) \(NSLocalizedString("_selected_", comment: ""))")
+                footer.separatorIsHidden(false)
             } else {
                 if sections == 1 || section == sections - 1 {
                     let info = self.dataSource.getFooterInformation()

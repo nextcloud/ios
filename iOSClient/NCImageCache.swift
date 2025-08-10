@@ -155,7 +155,7 @@ final class NCImageCache: @unchecked Sendable {
         return utility.loadImage(named: "person.fill.badge.plus", colors: colors)
     }
 
-    func getImageCanShare(colors: [UIColor] =  NCBrandColor.shared.iconImageMultiColors) -> UIImage {
+    func getImageCanShare(colors: [UIColor] = NCBrandColor.shared.iconImageMultiColors) -> UIImage {
         return utility.loadImage(named: "person.fill.badge.plus", colors: colors)
     }
 

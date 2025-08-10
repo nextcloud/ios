@@ -125,7 +125,7 @@ class NCMedia: UIViewController {
         } else {
             assistantButton.addBlur(style: .systemUltraThinMaterial)
         }
-        
+
         selectOrCancelButton.backgroundColor = .clear
         selectOrCancelButton.layer.cornerRadius = 15
         selectOrCancelButton.layer.masksToBounds = true
@@ -134,7 +134,7 @@ class NCMedia: UIViewController {
         } else {
             selectOrCancelButton.addBlur(style: .systemUltraThinMaterial)
         }
-        
+
         gradient.startPoint = CGPoint(x: 0, y: 0.1)
         gradient.endPoint = CGPoint(x: 0, y: 1)
         gradient.colors = [UIColor.black.withAlphaComponent(UIAccessibility.isReduceTransparencyEnabled ? 0.8 : 0.4).cgColor, UIColor.clear.cgColor]

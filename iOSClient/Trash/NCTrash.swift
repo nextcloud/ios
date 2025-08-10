@@ -121,10 +121,6 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         dataSourceTask?.cancel()
     }
 
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-    }
-
     // MARK: TAP EVENT
 
     func tapRestoreListItem(with id: String, image: UIImage?, sender: Any) {

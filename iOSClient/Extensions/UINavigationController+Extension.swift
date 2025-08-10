@@ -43,16 +43,15 @@ extension UINavigationController {
             appearance.shadowColor = .clear
             appearance.shadowImage = UIImage()
         }
-        
+
         appearance.titleTextAttributes = [.foregroundColor: textColor]
 
         navigationBar.standardAppearance = appearance
         navigationBar.scrollEdgeAppearance = appearance
         navigationBar.compactAppearance = appearance
         navigationBar.compactScrollEdgeAppearance = appearance
-        
+
         navigationBar.tintColor = textColor
         navigationBar.prefersLargeTitles = false
-        
     }
 }

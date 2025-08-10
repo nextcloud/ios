@@ -71,7 +71,8 @@ class NCFiles: NCCollectionViewCommon {
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil, queue: nil) { notification in
             if let userInfo = notification.userInfo,
-               let account = userInfo["account"] as? String {
+               let account = userInfo["account"] as? String,
+               self.controller?.account == account {
                 let color = NCBrandColor.shared.getElement(account: account)
                 self.plusButton.backgroundColor = color
             }
@@ -79,9 +80,9 @@ class NCFiles: NCCollectionViewCommon {
 
         if self.serverUrl.isEmpty {
 
-            ///
-            /// Set ServerURL when start (isEmpty)
-            ///
+            //
+            // Set ServerURL when start (isEmpty)
+            //
             self.serverUrl = utilityFileSystem.getHomeServer(session: session)
             self.titleCurrentFolder = getNavigationTitle()
 
