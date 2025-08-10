@@ -325,8 +325,10 @@ final class NCCameraRoll: CameraRollExtractor {
     /// This method is compatible with Swift 6, avoids non-Sendable captures,
     /// and performs safe background processing.
     private func createMetadataLivePhoto(metadata: tableMetadata, asset: PHAsset?) async -> tableMetadata? {
-        guard let asset else { return nil }
-
+        guard let asset else {
+            return nil
+        }
+        let session = NCSession.shared.getSession(account: metadata.account)
         let options = PHLivePhotoRequestOptions()
         let ocId = UUID().uuidString
         let fileName = (metadata.fileName as NSString).deletingPathExtension + ".mov"
@@ -373,8 +375,11 @@ final class NCCameraRoll: CameraRollExtractor {
                     continuation.resume(returning: nil)
                     return
                 }
-                let session = NCSession.shared.getSession(account: metadata.account)
-                self.database.createMetadata(fileName: fileName, ocId: ocId, serverUrl: metadata.serverUrl, session: session, sceneIdentifier: metadata.sceneIdentifier) { metadataLivePhoto in
+                NCManageDatabase.shared.createMetadata(fileName: fileName,
+                                             ocId: ocId,
+                                             serverUrl: metadata.serverUrl,
+                                             session: session,
+                                             sceneIdentifier: metadata.sceneIdentifier) { metadataLivePhoto in
                     metadataLivePhoto.livePhotoFile = metadata.fileName
                     metadataLivePhoto.isExtractFile = true
                     metadataLivePhoto.session = metadata.session

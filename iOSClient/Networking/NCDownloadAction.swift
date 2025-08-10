@@ -228,7 +228,8 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             downloadRequest = request
         } taskHandler: { task in
             Task {
-                await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                let ocId = metadata.ocId
+                await self.database.setMetadataSessionAsync(ocId: ocId,
                                                             sessionTaskIdentifier: task.taskIdentifier,
                                                             status: self.global.metadataStatusDownloading)
             }
