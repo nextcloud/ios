@@ -982,7 +982,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let isPaginated = metadataForSection?.lastSearchResult?.isPaginated ?? false
         let metadatasCount: Int = metadataForSection?.lastSearchResult?.entries.count ?? 0
         var size = CGSize(width: collectionView.frame.width, height: 0)
-        let stdHeight: CGFloat = 100
+        let stdHeight: CGFloat = 120
 
         if section == sections - 1 {
             size.height = stdHeight
