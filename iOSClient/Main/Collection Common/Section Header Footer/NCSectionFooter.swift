@@ -13,8 +13,6 @@ class NCSectionFooter: UICollectionReusableView {
     @IBOutlet weak var buttonSection: UIButton!
     @IBOutlet weak var activityIndicatorSection: UIActivityIndicatorView!
     @IBOutlet weak var labelSection: UILabel!
-    @IBOutlet weak var separator: UIView!
-    @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var buttonSectionHeightConstraint: NSLayoutConstraint!
 
     weak var delegate: NCSectionFooterDelegate?
@@ -27,9 +25,6 @@ class NCSectionFooter: UICollectionReusableView {
         self.backgroundColor = .clear
         labelSection.textColor = NCBrandColor.shared.textColor2
         labelSection.text = ""
-
-        separator.backgroundColor = .separator
-        separatorHeightConstraint.constant = 0.5
 
         buttonIsHidden(true)
         activityIndicatorSection.isHidden = true
@@ -67,10 +62,6 @@ class NCSectionFooter: UICollectionReusableView {
 
     func setButtonText(_ text: String) {
         buttonSection.setTitle(text, for: .normal)
-    }
-
-    func separatorIsHidden(_ isHidden: Bool) {
-        separator.isHidden = isHidden
     }
 
     func buttonIsHidden(_ isHidden: Bool) {

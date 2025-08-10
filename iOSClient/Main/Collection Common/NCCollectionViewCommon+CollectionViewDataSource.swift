@@ -590,15 +590,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             footer.setTitleLabel("")
             footer.setButtonText(NSLocalizedString("_show_more_results_", comment: ""))
-            footer.separatorIsHidden(true)
             footer.buttonIsHidden(true)
             footer.hideActivityIndicatorSection()
 
             if isSearchingMode {
-                if sections > 1 && section != sections - 1 {
-                    footer.separatorIsHidden(false)
-                }
-
                 // If the number of entries(metadatas) is lower than the cursor, then there are no more entries.
                 // The blind spot in this is when the number of entries is the same as the cursor. If so, we don't have a way of knowing if there are no more entries.
                 // This is as good as it gets for determining last page without server-side flag.
@@ -615,13 +610,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 let itemsSelected = self.fileSelect.count
                 let items = self.dataSource.numberOfItemsInSection(section)
                 footer.setTitleLabel("\(itemsSelected) \(NSLocalizedString("_of_", comment: "")) \(items) \(NSLocalizedString("_selected_", comment: ""))")
-                footer.separatorIsHidden(false)
             } else {
                 if sections == 1 || section == sections - 1 {
                     let info = self.dataSource.getFooterInformation()
                     footer.setTitleLabel(directories: info.directories, files: info.files, size: info.size)
-                } else {
-                    footer.separatorIsHidden(false)
                 }
             }
             return footer

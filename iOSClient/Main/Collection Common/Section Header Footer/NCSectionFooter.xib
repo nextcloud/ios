@@ -39,23 +39,12 @@
                 <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="qWG-SR-Qly">
                     <rect key="frame" x="167.66666666666666" y="15" width="20" height="20"/>
                 </activityIndicatorView>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="s2m-yO-4x0" userLabel="separator">
-                    <rect key="frame" x="0.0" y="39" width="355" height="1"/>
-                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="1" id="FYD-Pc-spZ"/>
-                    </constraints>
-                </view>
             </subviews>
             <constraints>
                 <constraint firstItem="qWG-SR-Qly" firstAttribute="centerX" secondItem="Vin-9E-7nW" secondAttribute="centerX" id="18M-RP-YIn"/>
                 <constraint firstAttribute="trailing" secondItem="TK1-KX-Qe0" secondAttribute="trailing" constant="10" id="PoY-CD-99O"/>
                 <constraint firstAttribute="trailing" secondItem="gzy-cT-Gjn" secondAttribute="trailing" constant="10" id="QzY-ac-CRO"/>
                 <constraint firstItem="qWG-SR-Qly" firstAttribute="centerY" secondItem="TK1-KX-Qe0" secondAttribute="centerY" id="Xah-18-9F9"/>
-                <constraint firstAttribute="leading" secondItem="s2m-yO-4x0" secondAttribute="leading" id="ai4-Qy-YWi"/>
-                <constraint firstAttribute="trailing" secondItem="s2m-yO-4x0" secondAttribute="trailing" id="dWj-wQ-cfb"/>
-                <constraint firstItem="TK1-KX-Qe0" firstAttribute="bottom" secondItem="s2m-yO-4x0" secondAttribute="bottom" id="ekM-Ii-N58"/>
                 <constraint firstItem="gzy-cT-Gjn" firstAttribute="leading" secondItem="Vin-9E-7nW" secondAttribute="leading" constant="10" id="hZz-MT-pHg"/>
                 <constraint firstItem="gzy-cT-Gjn" firstAttribute="top" secondItem="Vin-9E-7nW" secondAttribute="top" constant="12" id="na6-d0-F2E"/>
                 <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="gzy-cT-Gjn" secondAttribute="bottom" priority="250" constant="12" id="vbm-Ho-bei"/>
@@ -68,15 +57,13 @@
                 <outlet property="buttonSection" destination="TK1-KX-Qe0" id="Y2u-vO-1c4"/>
                 <outlet property="buttonSectionHeightConstraint" destination="Qvv-k4-hfY" id="kif-9a-gD8"/>
                 <outlet property="labelSection" destination="gzy-cT-Gjn" id="hhG-DH-GJc"/>
-                <outlet property="separator" destination="s2m-yO-4x0" id="iBM-eM-d33"/>
-                <outlet property="separatorHeightConstraint" destination="FYD-Pc-spZ" id="MBt-D9-VxE"/>
             </connections>
             <point key="canvasLocation" x="128.94088669950739" y="264.80000000000001"/>
         </collectionReusableView>
     </objects>
     <resources>
         <systemColor name="linkColor">
-            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

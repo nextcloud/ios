@@ -153,7 +153,6 @@ extension NCTrash: UICollectionViewDataSource {
             else { return NCSectionFooter() }
             if let datasource {
                 footer.setTitleLabel(setTextFooter(datasource: datasource))
-                footer.separatorIsHidden(true)
             }
             return footer
         }

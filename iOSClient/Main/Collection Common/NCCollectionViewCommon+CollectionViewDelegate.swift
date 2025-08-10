@@ -120,7 +120,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             }
             self.collectionView.reloadItems(at: [indexPath])
             self.tabBarSelect?.update(fileSelect: self.fileSelect, metadatas: self.getSelectedMetadatas(), userId: metadata.userId)
-            self.collectionView.reloadSections(IndexSet(integer: indexPath.section))
+            // self.collectionView.reloadSections(IndexSet(integer: indexPath.section))
 
             return
         }
