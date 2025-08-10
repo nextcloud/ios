@@ -990,7 +990,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             
             return size
         }
-        
+
         if isSearchingMode,
            isPaginated,
            metadatasCount > 0 {
