@@ -135,6 +135,23 @@
             ReferencedContainer = "container:Nextcloud.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "DEBUG_AUTO_LOGIN_PASSWORD"
+            value = "admin2"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "DEBUG_AUTO_LOGIN_BASE_URL"
+            value = "https://localhost:8444"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+         <EnvironmentVariable
+            key = "DEBUG_AUTO_LOGIN_USERNAME"
+            value = "admin2"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+      </EnvironmentVariables>
       <LocationScenarioReference
          identifier = "London, England"
          referenceType = "1">
