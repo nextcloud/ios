@@ -158,7 +158,7 @@ class NCAutoUpload: NSObject {
         }
 
         if !metadatas.isEmpty {
-            let metadatasFolder = await self.database.createMetadatasFolder(assets: assets, useSubFolder: tblAccount.autoUploadCreateSubfolder, session: session)
+            let metadatasFolder = await self.database.createMetadatasFolderAsync(assets: assets, useSubFolder: tblAccount.autoUploadCreateSubfolder, session: session)
             await self.database.addMetadatasAsync(metadatasFolder + metadatas)
         }
 
