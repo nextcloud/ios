@@ -303,19 +303,6 @@ extension NCNetworking {
     // MARK: -
 
     func verifyZombie() async {
-        // NO SESSION
-        //
-        if let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "session == '' AND status != %d",
-                                                                                        self.global.metadataStatusNormal)) {
-
-            for metadata in metadatas {
-                await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                            sessionError: "",
-                                                            selector: "",
-                                                            status: self.global.metadataStatusNormal)
-            }
-        }
-
         // UPLOADING-FOREGROUND
         //
         if let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "session == %@ AND status == %d",
