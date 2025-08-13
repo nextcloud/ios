@@ -524,6 +524,15 @@ extension NCManageDatabase {
         } ?? NCGlobal.shared.subfolderGranularityMonthly
     }
 
+    func getAccountAutoUploadSubfolderGranularityAsync() async -> Int {
+        await performRealmReadAsync { realm in
+            realm.objects(tableAccount.self)
+                .filter("active == true")
+                .first?
+                .autoUploadSubfolderGranularity
+        } ?? NCGlobal.shared.subfolderGranularityMonthly
+    }
+
     func getAccountAutoUploadOnlyNewSinceDate() -> Date? {
         return performRealmRead { realm in
             realm.objects(tableAccount.self)

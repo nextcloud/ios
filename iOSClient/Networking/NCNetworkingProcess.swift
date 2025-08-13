@@ -328,10 +328,10 @@ actor NCNetworkingProcess {
             }
 
             let resultsCreateFolder = await networking.createFolder(fileName: metadata.fileName,
-                                                                  serverUrl: metadata.serverUrl,
-                                                                  overwrite: true,
-                                                                  session: NCSession.shared.getSession(account: metadata.account),
-                                                                  selector: metadata.sessionSelector)
+                                                                    serverUrl: metadata.serverUrl,
+                                                                    overwrite: true,
+                                                                    session: NCSession.shared.getSession(account: metadata.account),
+                                                                    selector: metadata.sessionSelector)
             if let sceneIdentifier = metadata.sceneIdentifier {
                 await networking.transferDispatcher.notifyDelegates(forScene: sceneIdentifier) { delegate in
                     delegate.transferChange(status: self.global.networkingStatusCreateFolder,

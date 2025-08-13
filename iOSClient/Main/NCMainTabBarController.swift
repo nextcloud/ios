@@ -24,7 +24,7 @@ class NCMainTabBarController: UITabBarController {
     let navigationCollectionViewCommon = ThreadSafeArray<NavigationCollectionViewCommon>()
     private var previousIndex: Int?
     private var checkUserDelaultErrorInProgress: Bool = false
-    private var timer: Timer?
+    private var timerTask: Task<Void, Never>?
     private let global = NCGlobal.shared
 
     var window: UIWindow? {
@@ -98,14 +98,13 @@ class NCMainTabBarController: UITabBarController {
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
-            self.timer?.invalidate()
-            self.timer = nil
+            self.timerTask?.cancel()
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { _ in
-            Task {
-                if !isAppInBackground {
-                    await self.timerCheck()
+            if !isAppInBackground {
+                self.timerTask = Task { @MainActor [weak self] in
+                    await self?.timerCheck()
                 }
             }
         }
@@ -126,8 +125,13 @@ class NCMainTabBarController: UITabBarController {
     @MainActor
     private func timerCheck() async {
         var nanoseconds: UInt64 = 3_000_000_000
-        while true {
+
+        while !Task.isCancelled {
             try? await Task.sleep(nanoseconds: nanoseconds)
+
+            guard isViewLoaded, view.window != nil else {
+                continue
+            }
 
             let capabilities = await NKCapabilities.shared.getCapabilities(for: self.account)
 
