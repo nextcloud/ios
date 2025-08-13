@@ -88,6 +88,30 @@ extension NCManageDatabase {
             return layout
         }
 
+        var layout = layout ?? NCGlobal.shared.layoutList
+        let tblAccount = performRealmRead { realm in
+            realm.objects(tableAccount.self)
+                .filter("account == %@", account)
+                .first
+        }
+
+        // Get AutoUpload serverUrl
+        if let tblAccount {
+            let homeServer = utilityFileSystem.getHomeServer(urlBase: tblAccount.urlBase, userId: tblAccount.userId)
+            let defaultServerUrlAutoUpload = homeServer + "/" + NCBrandOptions.shared.folderDefaultAutoUpload
+            var serverUrlAutoUpload = tblAccount.autoUploadDirectory.isEmpty ? homeServer : tblAccount.autoUploadDirectory
+
+            if tblAccount.autoUploadFileName.isEmpty {
+                serverUrlAutoUpload += "/" + NCBrandOptions.shared.folderDefaultAutoUpload
+            } else {
+                serverUrlAutoUpload += "/" + tblAccount.autoUploadFileName
+            }
+
+            if serverUrl.starts(with: defaultServerUrlAutoUpload) || serverUrl.starts(with: serverUrlAutoUpload) {
+                layout = NCGlobal.shared.layoutPhotoSquare
+            }
+        }
+
         DispatchQueue.global(qos: .utility).async {
             _ = self.setLayoutForView(account: account, key: key, serverUrl: serverUrl, layout: layout)
         }
@@ -96,9 +120,8 @@ extension NCManageDatabase {
         placeholder.index = index
         placeholder.account = account
         placeholder.keyStore = keyStore
-        if let layout {
-            placeholder.layout = layout
-        }
+        placeholder.layout = layout
+
         return placeholder
     }
 
