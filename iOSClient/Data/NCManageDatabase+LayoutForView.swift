@@ -134,7 +134,7 @@ extension NCManageDatabase {
             }
         }
 
-        // Return standatd layout
+        // Standatd layout
         let layout = layout ?? NCGlobal.shared.layoutList
         DispatchQueue.global(qos: .utility).async {
             self.setLayoutForView(account: account, key: key, serverUrl: serverUrl, layout: layout)
@@ -172,7 +172,6 @@ extension NCManageDatabase {
                 layout.keyStore = keyStore
             }
 
-            // Applica la modifica in modo sicuro
             self.performRealmWrite { realm in
                 updateBlock(&layout)
                 realm.add(layout, update: .all)
