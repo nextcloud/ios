@@ -88,7 +88,6 @@ extension NCManageDatabase {
             return layout
         }
 
-        var layout = layout ?? NCGlobal.shared.layoutList
         let tblAccount = performRealmRead { realm in
             realm.objects(tableAccount.self)
                 .filter("account == %@", account)
@@ -106,11 +105,26 @@ extension NCManageDatabase {
                 serverUrlAutoUpload += "/" + tblAccount.autoUploadFileName
             }
 
-            if serverUrl.starts(with: defaultServerUrlAutoUpload) || serverUrl.starts(with: serverUrlAutoUpload) {
-                // Get AutoUpload serverUrl
-                layout = NCGlobal.shared.layoutPhotoSquare
+            if serverUrl == defaultServerUrlAutoUpload || serverUrl == serverUrlAutoUpload {
+
+                // AutoUpload serverUrl / Photo
+                let photosLayoutForView = NCDBLayoutForView()
+                photosLayoutForView.index = index
+                photosLayoutForView.account = account
+                photosLayoutForView.keyStore = keyStore
+                photosLayoutForView.layout = NCGlobal.shared.layoutPhotoSquare
+                photosLayoutForView.sort = "date"
+                photosLayoutForView.ascending = false
+
+                DispatchQueue.global(qos: .utility).async {
+                    self.setLayoutForView(layoutForView: photosLayoutForView)
+                }
+
+                return photosLayoutForView
+
             } else if !serverUrl.isEmpty,
                       let previusServerUrl = NCUtilityFileSystem().deleteLastPath(serverUrlPath: serverUrl, home: homeServer) {
+
                 // Get previus serverUrl
                 let index = account + " " + previusServerUrl
                 if let previusLayoutForView = performRealmRead({
@@ -121,16 +135,20 @@ extension NCManageDatabase {
                 }) {
                     previusLayoutForView.index = account + " " + serverUrl
                     previusLayoutForView.keyStore = serverUrl
+
                     DispatchQueue.global(qos: .utility).async {
-                        _ = self.setLayoutForView(layoutForView: previusLayoutForView)
+                        self.setLayoutForView(layoutForView: previusLayoutForView)
                     }
+
                     return previusLayoutForView
                 }
             }
         }
 
+        // Return standatd layout
+        let layout = layout ?? NCGlobal.shared.layoutList
         DispatchQueue.global(qos: .utility).async {
-            _ = self.setLayoutForView(account: account, key: key, serverUrl: serverUrl, layout: layout)
+            self.setLayoutForView(account: account, key: key, serverUrl: serverUrl, layout: layout)
         }
 
         let placeholder = NCDBLayoutForView()
