@@ -145,7 +145,7 @@ class NCMedia: UIViewController {
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: global.notificationCenterChangeUser), object: nil, queue: nil) { _ in
             Task { @MainActor in
-                self.layoutType = await self.database.getLayoutForViewAsync(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "").layout
+                self.layoutType = self.database.getLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "").layout
                 self.imageCache.removeAll()
                 await self.loadDataSource()
                 await self.searchMediaUI(true)
