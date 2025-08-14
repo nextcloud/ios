@@ -28,13 +28,7 @@ extension NCManageDatabase {
     func setLayoutForView(account: String,
                           key: String,
                           serverUrl: String,
-                          layout: String? = nil,
-                          sort: String? = nil,
-                          ascending: Bool? = nil,
-                          groupBy: String? = nil,
-                          titleButtonHeader: String? = nil,
-                          columnGrid: Int? = nil,
-                          columnPhoto: Int? = nil) -> NCDBLayoutForView? {
+                          layout: String? = nil) -> NCDBLayoutForView? {
         let keyStore = serverUrl.isEmpty ? key : serverUrl
         let indexKey = account + " " + keyStore
         var finalObject = NCDBLayoutForView()
@@ -47,14 +41,9 @@ extension NCManageDatabase {
                 finalObject.account = account
                 finalObject.keyStore = keyStore
             }
-
-            if let layout { finalObject.layout = layout }
-            if let sort { finalObject.sort = sort }
-            if let ascending { finalObject.ascending = ascending }
-            if let groupBy { finalObject.groupBy = groupBy }
-            if let titleButtonHeader { finalObject.titleButtonHeader = titleButtonHeader }
-            if let columnGrid { finalObject.columnGrid = columnGrid }
-            if let columnPhoto { finalObject.columnPhoto = columnPhoto }
+            if let layout {
+                finalObject.layout = layout
+            }
 
             realm.add(finalObject, update: .all)
         }
@@ -160,10 +149,10 @@ extension NCManageDatabase {
         return placeholder
     }
 
-    func updateLayoutForView(account: String,
-                             key: String,
-                             serverUrl: String,
-                             updateBlock: @escaping (inout NCDBLayoutForView) -> Void) {
+    func updatePhotoLayoutForView(account: String,
+                                  key: String,
+                                  serverUrl: String,
+                                  updateBlock: @escaping (inout NCDBLayoutForView) -> Void) {
         DispatchQueue.global(qos: .utility).async {
             let keyStore = serverUrl.isEmpty ? key : serverUrl
             let index = account + " " + keyStore
