@@ -15,7 +15,6 @@ class NCDBLayoutForView: Object {
     @Persisted var sort: String = "fileName"
     @Persisted var ascending: Bool = true
     @Persisted var groupBy: String = "none"
-    @Persisted var titleButtonHeader: String = "_sorted_by_name_a_z_"
     @Persisted var columnGrid: Int = 3
     @Persisted var columnPhoto: Int = 3
 }
@@ -54,6 +53,28 @@ extension NCManageDatabase {
 
         performRealmWrite { realm in
             realm.add(object, update: .all)
+        }
+
+        if subFolders {
+            let keyStore = layoutForView.keyStore
+            if let layouts = performRealmRead({
+                $0.objects(NCDBLayoutForView.self)
+                    .filter("keyStore BEGINSWITH %@", keyStore)
+                    .map { NCDBLayoutForView(value: $0) }
+            }) {
+                for layout in layouts {
+                    layout.layout = layoutForView.layout
+                    layout.sort = layoutForView.sort
+                    layout.ascending = layoutForView.ascending
+                    layout.groupBy = layoutForView.groupBy
+                    layout.columnGrid = layoutForView.columnGrid
+                    layout.columnPhoto = layoutForView.columnPhoto
+                    
+                    performRealmWrite { realm in
+                        realm.add(layout, update: .all)
+                    }
+                }
+            }
         }
 
         return NCDBLayoutForView(value: object)
