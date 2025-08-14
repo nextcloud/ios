@@ -95,7 +95,6 @@ extension NCManageDatabase {
                 .first
         }
 
-        // Get AutoUpload serverUrl
         if let tblAccount {
             let homeServer = utilityFileSystem.getHomeServer(urlBase: tblAccount.urlBase, userId: tblAccount.userId)
             let defaultServerUrlAutoUpload = homeServer + "/" + NCBrandOptions.shared.folderDefaultAutoUpload
@@ -108,7 +107,25 @@ extension NCManageDatabase {
             }
 
             if serverUrl.starts(with: defaultServerUrlAutoUpload) || serverUrl.starts(with: serverUrlAutoUpload) {
+                // Get AutoUpload serverUrl
                 layout = NCGlobal.shared.layoutPhotoSquare
+            } else if !serverUrl.isEmpty,
+                      let previusServerUrl = NCUtilityFileSystem().deleteLastPath(serverUrlPath: serverUrl, home: homeServer) {
+                // Get previus serverUrl
+                let index = account + " " + previusServerUrl
+                if let previusLayoutForView = performRealmRead({
+                    $0.objects(NCDBLayoutForView.self)
+                        .filter("index == %@", index)
+                        .first
+                        .map { NCDBLayoutForView(value: $0) }
+                }) {
+                    previusLayoutForView.index = account + " " + serverUrl
+                    previusLayoutForView.keyStore = serverUrl
+                    DispatchQueue.global(qos: .utility).async {
+                        _ = self.setLayoutForView(layoutForView: previusLayoutForView)
+                    }
+                    return previusLayoutForView
+                }
             }
         }
 
