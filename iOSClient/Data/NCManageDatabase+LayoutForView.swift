@@ -49,7 +49,7 @@ extension NCManageDatabase {
     }
 
     @discardableResult
-    func setLayoutForView(layoutForView: NCDBLayoutForView) -> NCDBLayoutForView? {
+    func setLayoutForView(layoutForView: NCDBLayoutForView, subFolders: Bool = false) -> NCDBLayoutForView? {
         let object = NCDBLayoutForView(value: layoutForView)
 
         performRealmWrite { realm in
