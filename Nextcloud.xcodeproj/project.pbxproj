@@ -5955,7 +5955,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 7.1.1;
+				MARKETING_VERSION = 7.2.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-v";
 				OTHER_LDFLAGS = "";
@@ -6018,7 +6018,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 7.1.1;
+				MARKETING_VERSION = 7.2.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-v";
 				OTHER_LDFLAGS = "";
