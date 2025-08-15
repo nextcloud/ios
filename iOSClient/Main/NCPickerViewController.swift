@@ -194,7 +194,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
                             metadatas[index].fileName = newFileName
                             metadatas[index].fileNameView = newFileName
-                            metadatas[index].serverUrlFileName = utilityFileSystem.serverDirectoryDown(serverUrl: metadatas[index].serverUrl, fileNameFolder: newFileName)
+                            metadatas[index].serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: metadatas[index].serverUrl, fileName: newFileName)
 
                             await self.database.addMetadatasAsync(metadatas)
 

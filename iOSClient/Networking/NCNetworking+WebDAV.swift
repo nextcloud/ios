@@ -190,7 +190,7 @@ extension NCNetworking {
                 newFileName()
                 continue
             }
-            let serverUrlFileName = utilityFileSystem.serverDirectoryDown(serverUrl: serverUrl, fileNameFolder: resultFileName)
+            let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: resultFileName)
             let results = await fileExists(serverUrlFileName: serverUrlFileName, account: account)
             if results.exists {
                 newFileName()
@@ -218,7 +218,7 @@ extension NCNetworking {
         if fileNameFolder.isEmpty {
             return (false, NKError(errorCode: global.errorIncorrectFileName, errorDescription: ""))
         }
-        let serverUrlFileName = utilityFileSystem.serverDirectoryDown(serverUrl: serverUrl, fileNameFolder: fileNameFolder)
+        let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileNameFolder)
 
         func writeDirectoryMetadata(_ metadata: tableMetadata) async {
             await self.database.deleteMetadataAsync(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", session.account, fileName, serverUrl))
@@ -760,6 +760,7 @@ extension NCNetworking {
 }
 
 class NCOperationDownloadAvatar: ConcurrentOperation, @unchecked Sendable {
+    let utilityFileSystem = NCUtilityFileSystem()
     var user: String
     var fileName: String
     var etag: String?
@@ -777,10 +778,13 @@ class NCOperationDownloadAvatar: ConcurrentOperation, @unchecked Sendable {
     }
 
     override func start() {
-        guard !isCancelled else { return self.finish() }
+        guard !isCancelled else {
+            return self.finish()
+        }
+        let fileNameLocalPath = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
 
         NextcloudKit.shared.downloadAvatar(user: user,
-                                           fileNameLocalPath: NCUtilityFileSystem().directoryUserData + "/" + fileName,
+                                           fileNameLocalPath: fileNameLocalPath,
                                            sizeImage: NCGlobal.shared.avatarSize,
                                            avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
                                            etagResource: self.etag,

@@ -15,7 +15,7 @@ extension NCShareExtension: UICollectionViewDelegate {
                   let metadata = self.dataSource.getMetadata(indexPath: indexPath) else {
                 return self.showAlert(description: "_invalid_url_")
             }
-            let serverUrl = self.utilityFileSystem.serverDirectoryDown(serverUrl: metadata.serverUrl, fileNameFolder: metadata.fileName)
+            let serverUrl = self.utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
 
             if metadata.e2eEncrypted && !NCPreferences().isEndToEndEnabled(account: tblAccount.account) {
                 self.showAlert(title: "_info_", description: "_e2e_goto_settings_for_enable_")
@@ -150,7 +150,7 @@ extension NCShareExtension: UICollectionViewDataSource {
 
         cell.labelInfo.text = utility.getRelativeDateTitle(metadata.date as Date)
 
-        let lockServerUrl = utilityFileSystem.serverDirectoryDown(serverUrl: metadata.serverUrl, fileNameFolder: metadata.fileName)
+        let lockServerUrl = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
         let tableDirectory = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, lockServerUrl))
 
         // Local image: offline

@@ -175,6 +175,7 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
 
     private var user: String = ""
     private var index = IndexPath()
+    private let utilityFileSystem = NCUtilityFileSystem()
 
     var indexPath: IndexPath {
         get { return index }
@@ -213,10 +214,11 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
 
         if results.image == nil {
             let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
+            let fileNameLocalPath = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
 
             NextcloudKit.shared.downloadAvatar(
                 user: sharee.shareWith,
-                fileNameLocalPath: NCUtilityFileSystem().directoryUserData + "/" + fileName,
+                fileNameLocalPath: fileNameLocalPath,
                 sizeImage: NCGlobal.shared.avatarSize,
                 avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
                 etagResource: etag,

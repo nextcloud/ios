@@ -150,7 +150,7 @@ final class FileProviderExtension: NSFileProviderExtension {
                         return
                     }
 
-                    let serverUrlFileName = utilityFileSystem.serverDirectoryDown(serverUrl: metadata.serverUrl, fileNameFolder: metadata.fileName)
+                    let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
                     let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
                     let account = metadata.account
                     let ocId = metadata.ocId
@@ -219,7 +219,7 @@ final class FileProviderExtension: NSFileProviderExtension {
                           metadata.status == global.metadataStatusNormal else {
                         return
                     }
-                    let serverUrlFileName = utilityFileSystem.serverDirectoryDown(serverUrl: metadata.serverUrl, fileNameFolder: fileName)
+                    let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: fileName)
                     let ocId = metadata.ocId
                     let account = metadata.account
 
@@ -349,7 +349,7 @@ final class FileProviderExtension: NSFileProviderExtension {
                     metadata.status = NCGlobal.shared.metadataStatusUploading
 
                     await database.addMetadataAsync(metadata)
-                    let serverUrlFileName = utilityFileSystem.serverDirectoryDown(serverUrl: tableDirectory.serverUrl, fileNameFolder: fileName)
+                    let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: tableDirectory.serverUrl, fileName: fileName)
                     let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTransfer,
                                                                                               fileName: fileName,
                                                                                               userId: session.userId,

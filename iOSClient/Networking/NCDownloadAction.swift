@@ -375,7 +375,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                                                                              userId: metadata.userId,
                                                                              urlBase: metadata.urlBase)
         let fileNameDestination = utilityFileSystem.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, notUseMask: true)
-        let fileNamePathDestination = utilityFileSystem.directoryScan + "/" + fileNameDestination
+        let fileNamePathDestination = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryScan, fileName: fileNameDestination)
 
         utilityFileSystem.copyFile(atPath: fileNamePath, toPath: fileNamePathDestination)
 
@@ -478,7 +478,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                     continue
                 }
                 let fileName = results.name + "_" + NCPreferences().incrementalNumber + "." + results.ext
-                let serverUrlFileName = utilityFileSystem.serverDirectoryDown(serverUrl: serverUrl, fileNameFolder: fileName)
+                let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileName)
                 let ocIdUpload = UUID().uuidString
                 let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocIdUpload,
                                                                                           fileName: fileName,
@@ -517,8 +517,10 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
 
             while serverUrlPush != serverUrl, !subDirs.isEmpty {
 
-                guard let dir = subDirs.first else { return }
-                serverUrlPush = serverUrlPush + "/" + dir
+                guard let dir = subDirs.first else {
+                    return
+                }
+                serverUrlPush = self.utilityFileSystem.createServerUrl(serverUrl: serverUrlPush, fileName: String(dir))
 
                 if let viewController = controller.navigationCollectionViewCommon.first(where: { $0.navigationController == navigationController && $0.serverUrl == serverUrlPush})?.viewController as? NCFiles, viewController.isViewLoaded {
                     viewController.fileNameBlink = fileNameBlink

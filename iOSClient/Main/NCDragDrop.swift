@@ -63,7 +63,7 @@ class NCDragDrop: NSObject {
                 item.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.data.identifier) { url, error in
                     if error == nil, let url = url {
                         if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
-                            serverUrl = self.utilityFileSystem.serverDirectoryDown(serverUrl: destinationMetadata.serverUrl, fileNameFolder: destinationMetadata.fileName)
+                            serverUrl = self.utilityFileSystem.createServerUrl(serverUrl: destinationMetadata.serverUrl, fileName: destinationMetadata.fileName)
                         }
                         let serverUrl = serverUrl
                         Task {
@@ -84,7 +84,7 @@ class NCDragDrop: NSObject {
                     let alert = UIAlertController.renameFile(fileName: metadata.fileNameView, isDirectory: metadata.directory, capabilities: capabilities, account: metadata.account) { newFileName in
                         metadatas[index].fileName = newFileName
                         metadatas[index].fileNameView = newFileName
-                        metadatas[index].serverUrlFileName = self.utilityFileSystem.serverDirectoryDown(serverUrl: metadatas[index].serverUrl, fileNameFolder: newFileName)
+                        metadatas[index].serverUrlFileName = self.utilityFileSystem.createServerUrl(serverUrl: metadatas[index].serverUrl, fileName: newFileName)
                     }
 
                     controller?.present(alert, animated: true)
@@ -217,7 +217,7 @@ class NCDragDrop: NSObject {
                                                                                       urlBase: metadata.urlBase)
 
             let fileName = await NCNetworking.shared.createFileName(fileNameBase: metadata.fileName, account: session.account, serverUrl: destination)
-            let serverUrlFileName = utilityFileSystem.serverDirectoryDown(serverUrl: destination, fileNameFolder: fileName)
+            let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: destination, fileName: fileName)
 
             let results = await NCNetworking.shared.uploadFile(fileNameLocalPath: fileNameLocalPath,
                                                                serverUrlFileName: serverUrlFileName,

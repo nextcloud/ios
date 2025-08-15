@@ -362,13 +362,13 @@ actor NCNetworkingProcess {
             }
 
             let destination = metadata.destination
-            var serverUrlFileNameDestination = destination + "/" + metadata.fileName
+            var serverUrlFileNameDestination = utilityFileSystem.createServerUrl(serverUrl: destination, fileName: metadata.fileName)
             let overwrite = (metadata.storeFlag as? NSString)?.boolValue ?? false
 
             /// Within same folder
             if metadata.serverUrl == destination {
                 let fileNameCopy = await NCNetworking.shared.createFileName(fileNameBase: metadata.fileName, account: metadata.account, serverUrl: metadata.serverUrl)
-                serverUrlFileNameDestination = destination + "/" + fileNameCopy
+                serverUrlFileNameDestination = utilityFileSystem.createServerUrl(serverUrl: destination, fileName: fileNameCopy)
             }
 
             let resultCopy = await NextcloudKit.shared.copyFileOrFolderAsync(serverUrlFileNameSource: metadata.serverUrlFileName, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
@@ -401,7 +401,7 @@ actor NCNetworkingProcess {
             }
 
             let destination = metadata.destination
-            let serverUrlFileNameDestination = destination + "/" + metadata.fileName
+            let serverUrlFileNameDestination = utilityFileSystem.createServerUrl(serverUrl: destination, fileName: metadata.fileName)
             let overwrite = (metadata.storeFlag as? NSString)?.boolValue ?? false
 
             let resultMove = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: metadata.serverUrlFileName, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
@@ -414,7 +414,7 @@ actor NCNetworkingProcess {
                 if result.error == .success, let metadata = result.metadata {
                     // Remove directory
                     if metadata.directory {
-                        let serverUrl = utilityFileSystem.serverDirectoryDown(serverUrl: metadata.serverUrl, fileNameFolder: metadata.fileName)
+                        let serverUrl = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
                         await self.database.deleteDirectoryAndSubDirectoryAsync(serverUrl: serverUrl,
                                                                                 account: result.account)
                     }
@@ -476,7 +476,7 @@ actor NCNetworkingProcess {
             }
 
             let serverUrlFileNameSource = metadata.serverUrlFileName
-            let serverUrlFileNameDestination = utilityFileSystem.serverDirectoryDown(serverUrl: metadata.serverUrl, fileNameFolder: metadata.fileName)
+            let serverUrlFileNameDestination = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
             let resultRename = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: false, account: metadata.account)
 
             if resultRename.error == .success {
@@ -525,7 +525,7 @@ actor NCNetworkingProcess {
                     await self.database.deleteLocalFileOcIdAsync(metadata.ocId)
 
                     if metadata.directory {
-                        let serverUrl = utilityFileSystem.serverDirectoryDown(serverUrl: metadata.serverUrl, fileNameFolder: metadata.fileName)
+                        let serverUrl = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
                         await self.database.deleteDirectoryAndSubDirectoryAsync(serverUrl: serverUrl,
                                                                                 account: metadata.account)
                     }

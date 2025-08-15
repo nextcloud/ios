@@ -202,7 +202,8 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                         guard let type = values["Type"] as? String else { return }
                         guard let urlString = values["URL"] as? String else { return }
                         guard let url = URL(string: urlString) else { return }
-                        let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + (metadata.fileName as NSString).deletingPathExtension
+                        let fileName = (metadata.fileName as NSString).deletingPathExtension
+                        let fileNameLocalPath = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
 
                         if type == "slideshow" {
                             if let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as? NCBrowserWeb {

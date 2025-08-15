@@ -518,13 +518,13 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         return returnString
     }
 
-    func serverDirectoryDown(serverUrl: String, fileNameFolder: String) -> String {
-        if fileNameFolder.isEmpty {
+    func createServerUrl(serverUrl: String, fileName: String) -> String {
+        if fileName.isEmpty {
             return serverUrl
         } else if serverUrl.last == "/" {
-            return serverUrl + fileNameFolder
+            return serverUrl + fileName
         } else {
-            return serverUrl + "/" + fileNameFolder
+            return serverUrl + "/" + fileName
         }
     }
 

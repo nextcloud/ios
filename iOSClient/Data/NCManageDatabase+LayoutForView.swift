@@ -103,7 +103,7 @@ extension NCManageDatabase {
 
         if let tblAccount {
             let home = utilityFileSystem.getHomeServer(urlBase: tblAccount.urlBase, userId: tblAccount.userId)
-            let defaultServerUrlAutoUpload = utilityFileSystem.serverDirectoryDown(serverUrl: home, fileNameFolder: NCBrandOptions.shared.folderDefaultAutoUpload)
+            let defaultServerUrlAutoUpload = utilityFileSystem.createServerUrl(serverUrl: home, fileName: NCBrandOptions.shared.folderDefaultAutoUpload)
             var serverUrlAutoUpload = tblAccount.autoUploadDirectory.isEmpty ? home : tblAccount.autoUploadDirectory
 
             if tblAccount.autoUploadFileName.isEmpty {

@@ -33,7 +33,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         } else {
             if let metadata = providerUtility.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier),
                let directorySource = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
-                serverUrl = utilityFileSystem.serverDirectoryDown(serverUrl: directorySource.serverUrl, fileNameFolder: metadata.fileName)
+                serverUrl = utilityFileSystem.createServerUrl(serverUrl: directorySource.serverUrl, fileName: metadata.fileName)
             }
         }
     }
@@ -231,7 +231,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             // DIRECTORY
             for metadata in metadatas {
                 if metadata.isDirectory {
-                    let serverUrl = utilityFileSystem.serverDirectoryDown(serverUrl: serverUrl, fileNameFolder: metadata.fileName)
+                    let serverUrl = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: metadata.fileName)
                     await self.database.addDirectoryAsync(serverUrl: serverUrl,
                                                           ocId: metadata.ocId,
                                                           fileId: metadata.fileId,
