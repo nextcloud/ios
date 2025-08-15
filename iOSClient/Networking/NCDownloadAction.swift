@@ -260,11 +260,28 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         let capabilities = NCNetworking.shared.capabilities[metadata.account] ?? NKCapabilities.Capabilities()
 
         NCActivityIndicator.shared.start(backgroundView: viewController.view)
-        NCNetworking.shared.readFile(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account) { _, metadata, error in
-            DispatchQueue.main.async {
+        NCNetworking.shared.readFile(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account) { _, metadata, file, error in
+            Task { @MainActor in
                 NCActivityIndicator.shared.stop()
 
-                if let metadata = metadata, error == .success {
+                if let metadata = metadata, let file = file, error == .success {
+                    // Remove all known download limits from shares related to the given file.
+                    // This avoids obsolete download limit objects to stay around.
+                    // Afterwards create new download limits, should any such be returned for the known shares.
+                    let shares = await self.database.getTableSharesAsync(account: metadata.account,
+                                                                         serverUrl: metadata.serverUrl,
+                                                                         fileName: metadata.fileName)
+                    for share in shares {
+                        await self.database.deleteDownloadLimitAsync(byAccount: metadata.account, shareToken: share.token)
+
+                        if let receivedDownloadLimit = file.downloadLimits.first(where: { $0.token == share.token }) {
+                            await self.database.createDownloadLimitAsync(account: metadata.account,
+                                                                         count: receivedDownloadLimit.count,
+                                                                         limit: receivedDownloadLimit.limit,
+                                                                         token: receivedDownloadLimit.token)
+                        }
+                    }
+
                     var pages: [NCBrandOptions.NCInfoPagingTab] = []
                     let shareNavigationController = UIStoryboard(name: "NCShare", bundle: nil).instantiateInitialViewController() as? UINavigationController
                     let shareViewController = shareNavigationController?.topViewController as? NCSharePaging
