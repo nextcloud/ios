@@ -500,11 +500,11 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         return path
     }
 
-    func deleteLastPath(serverUrlPath: String, home: String? = nil) -> String? {
+    func serverDirectoryUp(serverUrl: String, home: String? = nil) -> String? {
         var returnString: String?
-        if home == serverUrlPath { return serverUrlPath }
+        if home == serverUrl { return serverUrl }
 
-        if let serverUrlPath = serverUrlPath.urlEncoded, let url = URL(string: serverUrlPath) {
+        if let serverUrl = serverUrl.urlEncoded, let url = URL(string: serverUrl) {
             if let path = url.deletingLastPathComponent().absoluteString.removingPercentEncoding {
                 if path.last == "/" {
                     returnString = String(path.dropLast())
@@ -516,13 +516,13 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         return returnString
     }
 
-    func stringAppendServerUrl(_ serverUrl: String, addFileName: String) -> String {
-        if addFileName.isEmpty {
+    func navigateServerPathDown(serverUrl: String, fileNameFolder: String) -> String {
+        if fileNameFolder.isEmpty {
             return serverUrl
         } else if serverUrl.last == "/" {
-            return serverUrl + addFileName
+            return serverUrl + fileNameFolder
         } else {
-            return serverUrl + "/" + addFileName
+            return serverUrl + "/" + fileNameFolder
         }
     }
 

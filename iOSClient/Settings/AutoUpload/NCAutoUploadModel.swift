@@ -217,7 +217,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             if home != serverUrl {
                 let fileName = (serverUrl as NSString).lastPathComponent
                 await self.database.setAccountAutoUploadFileNameAsync(fileName)
-                if let path = NCUtilityFileSystem().deleteLastPath(serverUrlPath: serverUrl, home: home) {
+                if let path = NCUtilityFileSystem().serverDirectoryUp(serverUrl: serverUrl, home: home) {
                     await self.database.setAccountAutoUploadDirectoryAsync(path, session: session)
                 }
             }

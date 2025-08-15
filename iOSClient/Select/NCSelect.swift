@@ -264,7 +264,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
     func pushMetadata(_ metadata: tableMetadata) {
         Task { @MainActor in
-            let serverUrlPush = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
+            let serverUrlPush = utilityFileSystem.navigateServerPathDown(serverUrl: metadata.serverUrl, fileNameFolder: metadata.fileName)
             guard let viewController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect else { return }
             let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
 

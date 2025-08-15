@@ -414,7 +414,7 @@ actor NCNetworkingProcess {
                 if result.error == .success, let metadata = result.metadata {
                     // Remove directory
                     if metadata.directory {
-                        let serverUrl = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
+                        let serverUrl = utilityFileSystem.navigateServerPathDown(serverUrl: metadata.serverUrl, fileNameFolder: metadata.fileName)
                         await self.database.deleteDirectoryAndSubDirectoryAsync(serverUrl: serverUrl,
                                                                                 account: result.account)
                     }
@@ -525,7 +525,7 @@ actor NCNetworkingProcess {
                     await self.database.deleteLocalFileOcIdAsync(metadata.ocId)
 
                     if metadata.directory {
-                        let serverUrl = NCUtilityFileSystem().stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
+                        let serverUrl = NCUtilityFileSystem().navigateServerPathDown(serverUrl: metadata.serverUrl, fileNameFolder: metadata.fileName)
                         await self.database.deleteDirectoryAndSubDirectoryAsync(serverUrl: serverUrl,
                                                                                 account: metadata.account)
                     }

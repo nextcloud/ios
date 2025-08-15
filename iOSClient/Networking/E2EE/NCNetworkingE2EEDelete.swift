@@ -53,7 +53,7 @@ class NCNetworkingE2EEDelete: NSObject {
                     await self.database.deleteLocalFileOcIdAsync(metadataLive.ocId)
                 }
                 if metadata.directory {
-                    await self.database.deleteDirectoryAndSubDirectoryAsync(serverUrl: NCUtilityFileSystem().stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: metadata.account)
+                    await self.database.deleteDirectoryAndSubDirectoryAsync(serverUrl: NCUtilityFileSystem().navigateServerPathDown(serverUrl: metadata.serverUrl, fileNameFolder: metadata.fileName), account: metadata.account)
                 }
             } catch { }
         } else {

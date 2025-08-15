@@ -494,7 +494,7 @@ extension NCManageDatabase {
                 .first {
                 let fileNameView = result.fileNameView
                 let fileIdMOV = result.livePhotoFile
-                let directoryServerUrl = self.utilityFileSystem.stringAppendServerUrl(result.serverUrl, addFileName: fileNameView)
+                let directoryServerUrl = self.utilityFileSystem.navigateServerPathDown(serverUrl: result.serverUrl, fileNameFolder: fileNameView)
 
                 result.fileName = fileNameNew
                 result.fileNameView = fileNameNew
@@ -508,7 +508,7 @@ extension NCManageDatabase {
 
                 if result.directory,
                    let resultDirectory = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", result.account, directoryServerUrl).first {
-                    let serverUrlTo = self.utilityFileSystem.stringAppendServerUrl(result.serverUrl, addFileName: fileNameNew)
+                    let serverUrlTo = self.utilityFileSystem.navigateServerPathDown(serverUrl: result.serverUrl, fileNameFolder: fileNameNew)
 
                     resultDirectory.serverUrl = serverUrlTo
                 } else {
@@ -554,8 +554,8 @@ extension NCManageDatabase {
             metadata.sessionDate = (status == NCGlobal.shared.metadataStatusNormal) ? nil : Date()
 
             if metadata.directory {
-                let oldDirUrl = self.utilityFileSystem.stringAppendServerUrl(originalServerUrl, addFileName: oldFileNameView)
-                let newDirUrl = self.utilityFileSystem.stringAppendServerUrl(originalServerUrl, addFileName: fileNameNew)
+                let oldDirUrl = self.utilityFileSystem.navigateServerPathDown(serverUrl: originalServerUrl, fileNameFolder: oldFileNameView)
+                let newDirUrl = self.utilityFileSystem.navigateServerPathDown(serverUrl: originalServerUrl, fileNameFolder: fileNameNew)
 
                 if let dir = realm.objects(tableDirectory.self)
                     .filter("account == %@ AND serverUrl == %@", account, oldDirUrl)
@@ -601,7 +601,7 @@ extension NCManageDatabase {
                let encodedURLString = result.serverUrlFileName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
                let url = URL(string: encodedURLString) {
                 let fileIdMOV = result.livePhotoFile
-                let directoryServerUrl = self.utilityFileSystem.stringAppendServerUrl(result.serverUrl, addFileName: result.fileNameView)
+                let directoryServerUrl = self.utilityFileSystem.navigateServerPathDown(serverUrl: result.serverUrl, fileNameFolder: result.fileNameView)
                 let lastPathComponent = url.lastPathComponent
                 let fileName = lastPathComponent.removingPercentEncoding ?? lastPathComponent
                 let fileNameView = result.fileNameView
@@ -613,7 +613,7 @@ extension NCManageDatabase {
 
                 if result.directory,
                    let resultDirectory = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", result.account, directoryServerUrl).first {
-                    let serverUrlTo = self.utilityFileSystem.stringAppendServerUrl(result.serverUrl, addFileName: fileName)
+                    let serverUrlTo = self.utilityFileSystem.navigateServerPathDown(serverUrl: result.serverUrl, fileNameFolder: fileName)
 
                     resultDirectory.serverUrl = serverUrlTo
                 } else {
@@ -654,7 +654,7 @@ extension NCManageDatabase {
             }
 
             let fileIdMOV = result.livePhotoFile
-            let directoryServerUrl = self.utilityFileSystem.stringAppendServerUrl(result.serverUrl, addFileName: result.fileNameView)
+            let directoryServerUrl = self.utilityFileSystem.navigateServerPathDown(serverUrl: result.serverUrl, fileNameFolder: result.fileNameView)
             let lastPathComponent = url.lastPathComponent
             let fileName = lastPathComponent.removingPercentEncoding ?? lastPathComponent
             let fileNameView = result.fileNameView
@@ -668,7 +668,7 @@ extension NCManageDatabase {
                let resultDirectory = realm.objects(tableDirectory.self)
                    .filter("account == %@ AND serverUrl == %@", result.account, directoryServerUrl)
                    .first {
-                let serverUrlTo = self.utilityFileSystem.stringAppendServerUrl(result.serverUrl, addFileName: fileName)
+                let serverUrlTo = self.utilityFileSystem.navigateServerPathDown(serverUrl: result.serverUrl, fileNameFolder: fileName)
                 resultDirectory.serverUrl = serverUrlTo
             } else {
                 let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId, userId: result.userId, urlBase: result.urlBase) + "/" + fileNameView
@@ -700,7 +700,7 @@ extension NCManageDatabase {
             if let result = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first {
-                result.serverUrlFileName = self.utilityFileSystem.stringAppendServerUrl(result.serverUrl, addFileName: result.fileName)
+                result.serverUrlFileName = self.utilityFileSystem.navigateServerPathDown(serverUrl: result.serverUrl, fileNameFolder: result.fileName)
                 result.status = NCGlobal.shared.metadataStatusNormal
                 result.sessionDate = nil
             }
@@ -712,7 +712,7 @@ extension NCManageDatabase {
             if let result = realm.objects(tableMetadata.self)
                 .filter("ocId == %@", ocId)
                 .first {
-                result.serverUrlFileName = self.utilityFileSystem.stringAppendServerUrl(result.serverUrl, addFileName: result.fileName)
+                result.serverUrlFileName = self.utilityFileSystem.navigateServerPathDown(serverUrl: result.serverUrl, fileNameFolder: result.fileName)
                 result.status = NCGlobal.shared.metadataStatusNormal
                 result.sessionDate = nil
             }
@@ -1092,7 +1092,7 @@ extension NCManageDatabase {
             fileName = NextcloudKit.shared.nkCommonInstance.rootFileName
         } else {
             fileName = (serverUrl as NSString).lastPathComponent
-            if let path = utilityFileSystem.deleteLastPath(serverUrlPath: serverUrl) {
+            if let path = utilityFileSystem.serverDirectoryUp(serverUrl: serverUrl) {
                 serverUrl = path
             }
         }

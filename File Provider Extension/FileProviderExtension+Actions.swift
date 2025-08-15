@@ -81,7 +81,7 @@ extension FileProviderExtension {
                 }
 
                 if isDirectory {
-                    let dirForDelete = self.utilityFileSystem.stringAppendServerUrl(serverUrl, addFileName: fileName)
+                    let dirForDelete = self.utilityFileSystem.navigateServerPathDown(serverUrl: serverUrl, fileNameFolder: fileName)
                     await self.database.deleteDirectoryAndSubDirectoryAsync(serverUrl: dirForDelete, account: account)
                 }
 

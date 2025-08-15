@@ -87,7 +87,7 @@ extension NCManageDatabase {
             try realm.write {
                 for share in shares {
                     let serverUrlPath = home + share.path
-                    guard let serverUrl = utilityFileSystem.deleteLastPath(serverUrlPath: serverUrlPath, home: home) else { continue }
+                    guard let serverUrl = utilityFileSystem.serverDirectoryUp(serverUrl: serverUrlPath, home: home) else { continue }
                     let object = tableShare()
                     object.account = account
                     if let fileName = share.path.components(separatedBy: "/").last {
@@ -147,8 +147,7 @@ extension NCManageDatabase {
     func addShareAsync(account: String, home: String, shares: [NKShare]) async {
         await performRealmWriteAsync { realm in
             for share in shares {
-                let serverUrlPath = home + share.path
-                guard let serverUrl = self.utilityFileSystem.deleteLastPath(serverUrlPath: serverUrlPath, home: home) else {
+                guard let serverUrl = self.utilityFileSystem.serverDirectoryUp(serverUrl: home + share.path, home: home) else {
                     continue
                 }
                 let object = tableShare()

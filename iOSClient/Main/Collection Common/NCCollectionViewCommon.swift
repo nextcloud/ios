@@ -921,7 +921,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let navigationCollectionViewCommon = self.controller?.navigationCollectionViewCommon else {
             return
         }
-        let serverUrlPush = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
+        let serverUrlPush = utilityFileSystem.navigateServerPathDown(serverUrl: metadata.serverUrl, fileNameFolder: metadata.fileName)
 
         if let viewController = navigationCollectionViewCommon.first(where: { $0.navigationController == self.navigationController && $0.serverUrl == serverUrlPush})?.viewController, viewController.isViewLoaded {
             navigationController?.pushViewController(viewController, animated: true)

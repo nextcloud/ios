@@ -614,7 +614,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             listViewController.insert(vc, at: 0)
 
             if serverUrl != homeUrl {
-                if let path = utilityFileSystem.deleteLastPath(serverUrlPath: serverUrl) {
+                if let path = utilityFileSystem.serverDirectoryUp(serverUrl: serverUrl) {
                     serverUrl = path
                 }
             } else {

@@ -130,7 +130,7 @@ extension NCManageDatabase {
                 return photosLayoutForView
 
             } else if !serverUrl.isEmpty,
-                      let previusServerUrl = NCUtilityFileSystem().deleteLastPath(serverUrlPath: serverUrl, home: homeServer) {
+                      let previusServerUrl = NCUtilityFileSystem().serverDirectoryUp(serverUrl: serverUrl, home: homeServer) {
 
                 // Get previus serverUrl
                 let index = account + " " + previusServerUrl
