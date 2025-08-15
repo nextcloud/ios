@@ -219,7 +219,8 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                             NextcloudKit.shared.download(serverUrlFileName: url, fileNameLocalPath: fileNameLocalPath, account: self.metadata.account, requestHandler: { _ in
                             }, taskHandler: { task in
                                 Task {
-                                    await self.database.setMetadataSessionAsync(ocId: self.metadata.ocId,
+                                    let ocId = self.metadata.ocId
+                                    await self.database.setMetadataSessionAsync(ocId: ocId,
                                                                                 sessionTaskIdentifier: task.taskIdentifier,
                                                                                 status: self.global.metadataStatusDownloading)
                                 }
@@ -227,7 +228,8 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                             }, completionHandler: { account, etag, _, _, headers, _, error in
                                 NCActivityIndicator.shared.stop()
                                 Task {
-                                    await self.database.setMetadataSessionAsync(ocId: self.metadata.ocId,
+                                    let ocId = self.metadata.ocId
+                                    await self.database.setMetadataSessionAsync(ocId: ocId,
                                                                                 session: "",
                                                                                 sessionTaskIdentifier: 0,
                                                                                 sessionError: "",
@@ -240,7 +242,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                                     if let headers {
                                         if let disposition = headers["Content-Disposition"] as? String {
                                             let components = disposition.components(separatedBy: "filename=")
-                                            if let filename = components.last?.replacingOccurrences(of: "\"", with: "") {
+                                            if components.last?.replacingOccurrences(of: "\"", with: "") != nil {
                                                 item = self.utilityFileSystem.createServerUrl(serverUrl: self.utilityFileSystem.directoryUserData, fileName: fileName)
                                                 _ = self.utilityFileSystem.moveFile(atPath: fileNameLocalPath, toPath: item)
                                             }

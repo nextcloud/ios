@@ -469,7 +469,7 @@ extension NCSelect: UICollectionViewDataSource {
             if sections == 1 || section == sections - 1 {
                 let info = self.dataSource.getFooterInformation()
                 footer.setTitleLabel(directories: info.directories, files: info.files, size: info.size)
-            } 
+            }
 
             return footer
         }
