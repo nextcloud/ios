@@ -23,7 +23,7 @@ extension NCNetworking {
               etag: String?,
               date: Date?,
               size: Int64,
-              headers: [AnyHashable: Any]?,
+              response: AFDataResponse<Data>?,
               error: NKError) {
         let options = NKRequestOptions(customHeader: customHeaders, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         let results = await NextcloudKit.shared.uploadAsync(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: creationDate, dateModificationFile: dateModificationFile, account: account, options: options) { request in
