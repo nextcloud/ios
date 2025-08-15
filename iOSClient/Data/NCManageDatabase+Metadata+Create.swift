@@ -475,7 +475,6 @@ extension NCManageDatabase {
         let metadatasFolder = getMetadatas(predicate: predicate)
         let autoUploadServerUrlBase = self.getAccountAutoUploadServerUrlBase(session: session)
         let autoUploadSubfolderGranularity = self.getAccountAutoUploadSubfolderGranularity()
-
         let metadatas = self.createMetadatasFolder(assets: assets,
                                                    useSubFolder: useSubFolder,
                                                    metadatasFolder: metadatasFolder,
@@ -494,7 +493,6 @@ extension NCManageDatabase {
         let metadatasFolder = await getMetadatasAsync(predicate: predicate)
         let autoUploadServerUrlBase = await self.getAccountAutoUploadServerUrlBaseAsync(session: session)
         let autoUploadSubfolderGranularity = await self.getAccountAutoUploadSubfolderGranularityAsync()
-
         let metadatas = self.createMetadatasFolder(assets: assets,
                                                    useSubFolder: useSubFolder,
                                                    metadatasFolder: metadatasFolder,
