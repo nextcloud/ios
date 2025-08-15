@@ -392,20 +392,23 @@ extension NCManageDatabase {
         return metadata
     }
 
-    func createMetadatasFolder(assets: [PHAsset],
-                               useSubFolder: Bool,
-                               session: NCSession.Session, completion: @escaping ([tableMetadata]) -> Void) {
+    private func createMetadatasFolder(assets: [PHAsset],
+                                       useSubFolder: Bool,
+                                       metadatasFolder: [tableMetadata],
+                                       autoUploadDirectory: String,
+                                       autoUploadServerUrlBase: String,
+                                       autoUploadSubfolderGranularity: Int,
+                                       session: NCSession.Session) -> [tableMetadata] {
         var foldersCreated: Set<String> = []
         var metadatas: [tableMetadata] = []
-        let autoUploadDirectory = getAccountAutoUploadDirectory(session: session)
         let autoUploadFileName = getAccountAutoUploadFileName(account: session.account)
-        let predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == true", session.account, autoUploadDirectory)
 
         func createMetadata(serverUrl: String, fileName: String, metadata: tableMetadata?) {
-            guard !foldersCreated.contains(serverUrl + "/" + fileName) else {
+            let folder = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileName)
+            guard !foldersCreated.contains(folder) else {
                 return
             }
-            foldersCreated.insert(serverUrl + "/" + fileName)
+            foldersCreated.insert(folder)
 
             if let metadata {
                 metadata.status = NCGlobal.shared.metadataStatusWaitCreateFolder
@@ -424,11 +427,11 @@ extension NCManageDatabase {
             }
         }
 
-        let metadatasFolder = getMetadatas(predicate: predicate)
         let serverUrlBase = utilityFileSystem.createServerUrl(serverUrl: autoUploadDirectory, fileName: autoUploadFileName)
+        let fileNameBase = getAccountAutoUploadFileName(account: session.account)
         let metadata = metadatasFolder.first(where: { $0.serverUrl + "/" + $0.fileNameView == serverUrlBase })
 
-        createMetadata(serverUrl: autoUploadDirectory, fileName: autoUploadFileName, metadata: metadata)
+        createMetadata(serverUrl: serverUrlBase, fileName: fileNameBase, metadata: metadata)
 
         if useSubFolder {
             let autoUploadServerUrlBase = self.getAccountAutoUploadServerUrlBase(session: session)
@@ -459,86 +462,46 @@ extension NCManageDatabase {
                     }
                 }
             }
-            completion(metadatas)
-        } else {
-            completion(metadatas)
         }
+
+        return metadatas
+    }
+
+    func createMetadatasFolder(assets: [PHAsset],
+                               useSubFolder: Bool,
+                               session: NCSession.Session, completion: @escaping ([tableMetadata]) -> Void) {
+        let autoUploadDirectory = getAccountAutoUploadDirectory(account: session.account, urlBase: session.urlBase, userId: session.userId)
+        let predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == true", session.account, autoUploadDirectory)
+        let metadatasFolder = getMetadatas(predicate: predicate)
+        let autoUploadServerUrlBase = self.getAccountAutoUploadServerUrlBase(session: session)
+        let autoUploadSubfolderGranularity = self.getAccountAutoUploadSubfolderGranularity()
+
+        let metadatas = self.createMetadatasFolder(assets: assets,
+                                                   useSubFolder: useSubFolder,
+                                                   metadatasFolder: metadatasFolder,
+                                                   autoUploadDirectory: autoUploadDirectory,
+                                                   autoUploadServerUrlBase: autoUploadServerUrlBase,
+                                                   autoUploadSubfolderGranularity: autoUploadSubfolderGranularity,
+                                                   session: session)
+        completion(metadatas)
     }
 
     func createMetadatasFolderAsync(assets: [PHAsset],
                                     useSubFolder: Bool,
                                     session: NCSession.Session) async -> [tableMetadata] {
+        let autoUploadDirectory = await getAccountAutoUploadDirectoryAsync(account: session.account, urlBase: session.urlBase, userId: session.userId)
+        let predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == true", session.account, autoUploadDirectory)
+        let metadatasFolder = await getMetadatasAsync(predicate: predicate)
+        let autoUploadServerUrlBase = await self.getAccountAutoUploadServerUrlBaseAsync(session: session)
+        let autoUploadSubfolderGranularity = await self.getAccountAutoUploadSubfolderGranularityAsync()
 
-        var foldersCreated: Set<String> = []
-        var metadatas: [tableMetadata] = []
-        let serverUrlBase = getAccountAutoUploadDirectory(session: session)
-        let fileNameBase = getAccountAutoUploadFileName(account: session.account)
-        let predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == true", session.account, serverUrlBase)
-
-        func createMetadata(serverUrl: String, fileName: String, metadata: tableMetadata?) async {
-            guard !foldersCreated.contains(serverUrl + "/" + fileName) else {
-                return
-            }
-            foldersCreated.insert(serverUrl + "/" + fileName)
-
-            if let metadata {
-                metadata.status = NCGlobal.shared.metadataStatusWaitCreateFolder
-                metadata.sessionSelector = NCGlobal.shared.selectorUploadAutoUpload
-                metadata.sessionDate = Date()
-                metadatas.append(metadata.detachedCopy())
-            } else {
-                let metadata = NCManageDatabase.shared.createMetadataDirectory(fileName: fileName,
-                                                                               ocId: NSUUID().uuidString,
-                                                                               serverUrl: serverUrl,
-                                                                               session: session)
-                metadata.status = NCGlobal.shared.metadataStatusWaitCreateFolder
-                metadata.sessionSelector = NCGlobal.shared.selectorUploadAutoUpload
-                metadata.sessionDate = Date()
-                metadatas.append(metadata)
-            }
-        }
-
-        let metadatasFolder = getMetadatas(predicate: predicate)
-        let targetPath = serverUrlBase + "/" + fileNameBase
-        let metadata = metadatasFolder.first(where: { $0.serverUrl + "/" + $0.fileNameView == targetPath })
-        await createMetadata(serverUrl: serverUrlBase, fileName: fileNameBase, metadata: metadata)
-
-        if useSubFolder {
-            let autoUploadServerUrlBase = await self.getAccountAutoUploadServerUrlBaseAsync(session: session)
-            let autoUploadSubfolderGranularity = await self.getAccountAutoUploadSubfolderGranularityAsync()
-            let folders = Set(assets.map { self.utilityFileSystem.createGranularityPath(asset: $0) }).sorted()
-
-            for folder in folders {
-                let componentsDate = folder.split(separator: "/")
-                let year = componentsDate[0]
-                let serverUrl = autoUploadServerUrlBase
-                let fileName = String(year)
-                let targetPath = serverUrl + "/" + fileName
-                let metadata = metadatasFolder.first(where: { $0.serverUrl + "/" + $0.fileNameView == targetPath })
-
-                await createMetadata(serverUrl: serverUrl, fileName: fileName, metadata: metadata)
-
-                if autoUploadSubfolderGranularity >= NCGlobal.shared.subfolderGranularityMonthly {
-                    let month = componentsDate[1]
-                    let serverUrl = autoUploadServerUrlBase + "/" + year
-                    let fileName = String(month)
-                    let targetPath = serverUrl + "/" + fileName
-                    let metadata = metadatasFolder.first(where: { $0.serverUrl + "/" + $0.fileNameView == targetPath })
-
-                    await createMetadata(serverUrl: serverUrl, fileName: fileName, metadata: metadata)
-
-                    if autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityDaily {
-                        let day = componentsDate[2]
-                        let serverUrl = autoUploadServerUrlBase + "/" + year + "/" + month
-                        let fileName = String(day)
-                        let targetPath = serverUrl + "/" + fileName
-                        let metadata = metadatasFolder.first(where: { $0.serverUrl + "/" + $0.fileNameView == targetPath })
-
-                        await createMetadata(serverUrl: serverUrl, fileName: fileName, metadata: metadata)
-                    }
-                }
-            }
-        }
+        let metadatas = self.createMetadatasFolder(assets: assets,
+                                                   useSubFolder: useSubFolder,
+                                                   metadatasFolder: metadatasFolder,
+                                                   autoUploadDirectory: autoUploadDirectory,
+                                                   autoUploadServerUrlBase: autoUploadServerUrlBase,
+                                                   autoUploadSubfolderGranularity: autoUploadSubfolderGranularity,
+                                                   session: session)
         return metadatas
     }
 }

@@ -461,10 +461,6 @@ extension NCManageDatabase {
         return result ?? NCBrandOptions.shared.folderDefaultAutoUpload
     }
 
-    func getAccountAutoUploadDirectory(session: NCSession.Session) -> String {
-        return getAccountAutoUploadDirectory(account: session.account, urlBase: session.urlBase, userId: session.userId)
-    }
-
     func getAccountAutoUploadDirectory(account: String, urlBase: String, userId: String) -> String {
         let homeServer = utilityFileSystem.getHomeServer(urlBase: urlBase, userId: userId)
 

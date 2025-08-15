@@ -200,7 +200,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     ///
     /// - Returns: The path for auto-upload.
     func returnPath() -> String {
-        let autoUploadPath = self.database.getAccountAutoUploadDirectory(session: session) + "/" + self.database.getAccountAutoUploadFileName(account: session.account)
+        let autoUploadPath = self.database.getAccountAutoUploadDirectory(account: session.account, urlBase: session.urlBase, userId: session.userId) + "/" + self.database.getAccountAutoUploadFileName(account: session.account)
         let homeServer = NCUtilityFileSystem().getHomeServer(session: session)
         let path = autoUploadPath.replacingOccurrences(of: homeServer, with: "")
         return path
