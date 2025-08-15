@@ -260,41 +260,42 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         let capabilities = NCNetworking.shared.capabilities[metadata.account] ?? NKCapabilities.Capabilities()
 
         NCActivityIndicator.shared.start(backgroundView: viewController.view)
-        NCNetworking.shared.readFile(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account, queue: .main) { _, metadata, error in
-            NCActivityIndicator.shared.stop()
+        NCNetworking.shared.readFile(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account) { _, metadata, error in
+            DispatchQueue.main.async {
+                NCActivityIndicator.shared.stop()
 
-            if let metadata = metadata, error == .success {
-                var pages: [NCBrandOptions.NCInfoPagingTab] = []
-                let shareNavigationController = UIStoryboard(name: "NCShare", bundle: nil).instantiateInitialViewController() as? UINavigationController
-                let shareViewController = shareNavigationController?.topViewController as? NCSharePaging
+                if let metadata = metadata, error == .success {
+                    var pages: [NCBrandOptions.NCInfoPagingTab] = []
+                    let shareNavigationController = UIStoryboard(name: "NCShare", bundle: nil).instantiateInitialViewController() as? UINavigationController
+                    let shareViewController = shareNavigationController?.topViewController as? NCSharePaging
 
-                for value in NCBrandOptions.NCInfoPagingTab.allCases {
-                    pages.append(value)
-                }
+                    for value in NCBrandOptions.NCInfoPagingTab.allCases {
+                        pages.append(value)
+                    }
+                    if capabilities.activity.isEmpty, let idx = pages.firstIndex(of: .activity) {
+                        pages.remove(at: idx)
+                    }
+                    if !metadata.isSharable(), let idx = pages.firstIndex(of: .sharing) {
+                        pages.remove(at: idx)
+                    }
 
-                if capabilities.activity.isEmpty, let idx = pages.firstIndex(of: .activity) {
-                    pages.remove(at: idx)
-                }
-                if !metadata.isSharable(), let idx = pages.firstIndex(of: .sharing) {
-                    pages.remove(at: idx)
-                }
+                    (pages, page) = NCApplicationHandle().filterPages(pages: pages, page: page, metadata: metadata)
 
-                (pages, page) = NCApplicationHandle().filterPages(pages: pages, page: page, metadata: metadata)
+                    shareViewController?.pages = pages
+                    shareViewController?.metadata = metadata
 
-                shareViewController?.pages = pages
-                shareViewController?.metadata = metadata
+                    if pages.contains(page) {
+                        shareViewController?.page = page
+                    } else if let page = pages.first {
+                        shareViewController?.page = page
+                    } else {
+                        return
+                    }
 
-                if pages.contains(page) {
-                    shareViewController?.page = page
-                } else if let page = pages.first {
-                    shareViewController?.page = page
-                } else {
-                    return
-                }
-
-                shareNavigationController?.modalPresentationStyle = .formSheet
-                if let shareNavigationController = shareNavigationController {
-                    viewController.present(shareNavigationController, animated: true, completion: nil)
+                    shareNavigationController?.modalPresentationStyle = .formSheet
+                    if let shareNavigationController = shareNavigationController {
+                        viewController.present(shareNavigationController, animated: true, completion: nil)
+                    }
                 }
             }
         }

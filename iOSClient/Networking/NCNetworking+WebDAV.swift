@@ -60,13 +60,11 @@ extension NCNetworking {
 
     func readFile(serverUrlFileName: String,
                   account: String,
-                  queue: DispatchQueue = NextcloudKit.shared.nkCommonInstance.backgroundQueue,
                   taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                   completion: @escaping (_ account: String, _ metadata: tableMetadata?, _ error: NKError) -> Void) {
-        let options = NKRequestOptions(queue: queue)
         let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: account)
 
-        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, account: account, options: options) { task in
+        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, account: account) { task in
             taskHandler(task)
         } completion: { account, files, _, error in
             guard error == .success, files?.count == 1, let file = files?.first else {
@@ -91,31 +89,39 @@ extension NCNetworking {
                                                                      token: receivedDownloadLimit.token)
                     }
                 }
-
-                if queue == .main {
-                    await MainActor.run {
-                        completion(account, metadata, error)
-                    }
-                } else {
-                    completion(account, metadata, error)
-                }
+                completion(account, metadata, error)
             }
         }
     }
 
-    /// Async wrapper for `readFile(...)`, returns a tuple with account, metadata and error.
     func readFileAsync(serverUrlFileName: String,
                        account: String,
-                       queue: DispatchQueue = NextcloudKit.shared.nkCommonInstance.backgroundQueue,
                        taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in }) async -> (account: String, metadata: tableMetadata?, error: NKError) {
-        await withCheckedContinuation { continuation in
-            readFile(serverUrlFileName: serverUrlFileName,
-                     account: account,
-                     queue: queue,
-                     taskHandler: taskHandler) { account, metadata, error in
-                continuation.resume(returning: (account, metadata, error))
+        let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: account)
+        let results = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrlFileName,
+                                                                      depth: "0",
+                                                                      showHiddenFiles: showHiddenFiles,
+                                                                      account: account) { task in
+            taskHandler(task)
+        }
+        guard results.error == .success, results.files?.count == 1, let file = results.files?.first else {
+            return (account, nil, results.error)
+        }
+        let metadata = await self.database.convertFileToMetadataAsync(file)
+        let shares = await self.database.getTableSharesAsync(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+
+        for share in shares {
+            await self.database.deleteDownloadLimitAsync(byAccount: metadata.account, shareToken: share.token)
+
+            if let receivedDownloadLimit = file.downloadLimits.first(where: { $0.token == share.token }) {
+                await self.database.createDownloadLimitAsync(account: metadata.account,
+                                                             count: receivedDownloadLimit.count,
+                                                             limit: receivedDownloadLimit.limit,
+                                                             token: receivedDownloadLimit.token)
             }
         }
+
+        return(account, metadata, results.error)
     }
 
     func fileExists(serverUrlFileName: String,
