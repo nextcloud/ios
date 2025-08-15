@@ -500,9 +500,11 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         return path
     }
 
-    func serverDirectoryUp(serverUrl: String, home: String? = nil) -> String? {
+    func serverDirectoryUp(serverUrl: String, home: String) -> String? {
         var returnString: String?
-        if home == serverUrl { return serverUrl }
+        if home == serverUrl {
+            return serverUrl
+        }
 
         if let serverUrl = serverUrl.urlEncoded, let url = URL(string: serverUrl) {
             if let path = url.deletingLastPathComponent().absoluteString.removingPercentEncoding {

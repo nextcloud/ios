@@ -87,13 +87,13 @@ extension NCManageDatabase {
             try realm.write {
                 for share in shares {
                     let serverUrlPath = home + share.path
-                    guard let serverUrl = utilityFileSystem.serverDirectoryUp(serverUrl: serverUrlPath, home: home) else { continue }
+                    guard let serverDirectoryUp = utilityFileSystem.serverDirectoryUp(serverUrl: serverUrlPath, home: home) else { continue }
                     let object = tableShare()
                     object.account = account
                     if let fileName = share.path.components(separatedBy: "/").last {
                         object.fileName = fileName
                     }
-                    object.serverUrl = serverUrl
+                    object.serverUrl = serverDirectoryUp
                     object.canEdit = share.canEdit
                     object.canDelete = share.canDelete
                     object.date = share.date as? NSDate
@@ -147,7 +147,7 @@ extension NCManageDatabase {
     func addShareAsync(account: String, home: String, shares: [NKShare]) async {
         await performRealmWriteAsync { realm in
             for share in shares {
-                guard let serverUrl = self.utilityFileSystem.serverDirectoryUp(serverUrl: home + share.path, home: home) else {
+                guard let serverDirectoryUp = self.utilityFileSystem.serverDirectoryUp(serverUrl: home + share.path, home: home) else {
                     continue
                 }
                 let object = tableShare()
@@ -155,7 +155,7 @@ extension NCManageDatabase {
                 if let fileName = share.path.components(separatedBy: "/").last {
                     object.fileName = fileName
                 }
-                object.serverUrl = serverUrl
+                object.serverUrl = serverDirectoryUp
                 object.canEdit = share.canEdit
                 object.canDelete = share.canDelete
                 object.date = share.date as? NSDate

@@ -585,7 +585,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             copyItems.append(item)
         }
 
-        let homeUrl = utilityFileSystem.getHomeServer(session: session)
+        let home = utilityFileSystem.getHomeServer(session: session)
         var serverUrl = copyItems[0].serverUrl
 
         // Setup view controllers such that the current view is of the same directory the items to be copied are in
@@ -593,7 +593,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             // If not in the topmost directory, create a new view controller and set correct title.
             // If in the topmost directory, use the default view controller as the base.
             var viewController: NCSelect?
-            if serverUrl != homeUrl {
+            if serverUrl != home {
                 viewController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect
                 if viewController == nil {
                     return
@@ -613,9 +613,9 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             vc.navigationItem.backButtonTitle = vc.titleCurrentFolder
             listViewController.insert(vc, at: 0)
 
-            if serverUrl != homeUrl {
-                if let path = utilityFileSystem.serverDirectoryUp(serverUrl: serverUrl) {
-                    serverUrl = path
+            if serverUrl != home {
+                if let serverDirectoryUp = utilityFileSystem.serverDirectoryUp(serverUrl: serverUrl, home: home) {
+                    serverUrl = serverDirectoryUp
                 }
             } else {
                 break

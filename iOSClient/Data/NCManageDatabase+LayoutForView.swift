@@ -102,9 +102,9 @@ extension NCManageDatabase {
         }
 
         if let tblAccount {
-            let homeServer = utilityFileSystem.getHomeServer(urlBase: tblAccount.urlBase, userId: tblAccount.userId)
-            let defaultServerUrlAutoUpload = homeServer + "/" + NCBrandOptions.shared.folderDefaultAutoUpload
-            var serverUrlAutoUpload = tblAccount.autoUploadDirectory.isEmpty ? homeServer : tblAccount.autoUploadDirectory
+            let home = utilityFileSystem.getHomeServer(urlBase: tblAccount.urlBase, userId: tblAccount.userId)
+            let defaultServerUrlAutoUpload = home + "/" + NCBrandOptions.shared.folderDefaultAutoUpload
+            var serverUrlAutoUpload = tblAccount.autoUploadDirectory.isEmpty ? home : tblAccount.autoUploadDirectory
 
             if tblAccount.autoUploadFileName.isEmpty {
                 serverUrlAutoUpload += "/" + NCBrandOptions.shared.folderDefaultAutoUpload
@@ -130,10 +130,10 @@ extension NCManageDatabase {
                 return photosLayoutForView
 
             } else if !serverUrl.isEmpty,
-                      let previusServerUrl = NCUtilityFileSystem().serverDirectoryUp(serverUrl: serverUrl, home: homeServer) {
+                      let serverDirectoryUp = NCUtilityFileSystem().serverDirectoryUp(serverUrl: serverUrl, home: home) {
 
                 // Get previus serverUrl
-                let index = account + " " + previusServerUrl
+                let index = account + " " + serverDirectoryUp
                 if let previusLayoutForView = performRealmRead({
                     $0.objects(NCDBLayoutForView.self)
                         .filter("index == %@", index)

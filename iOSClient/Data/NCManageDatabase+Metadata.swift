@@ -1086,14 +1086,14 @@ extension NCManageDatabase {
     func getMetadataFolderAsync(session: NCSession.Session, serverUrl: String) async -> tableMetadata? {
         var serverUrl = serverUrl
         var fileName = ""
-        let serverUrlHome = utilityFileSystem.getHomeServer(session: session)
+        let home = utilityFileSystem.getHomeServer(session: session)
 
-        if serverUrlHome == serverUrl {
+        if home == serverUrl {
             fileName = NextcloudKit.shared.nkCommonInstance.rootFileName
         } else {
             fileName = (serverUrl as NSString).lastPathComponent
-            if let path = utilityFileSystem.serverDirectoryUp(serverUrl: serverUrl) {
-                serverUrl = path
+            if let serverDirectoryUp = utilityFileSystem.serverDirectoryUp(serverUrl: serverUrl, home: home) {
+                serverUrl = serverDirectoryUp
             }
         }
 
