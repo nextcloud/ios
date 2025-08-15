@@ -241,7 +241,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                                         if let disposition = headers["Content-Disposition"] as? String {
                                             let components = disposition.components(separatedBy: "filename=")
                                             if let filename = components.last?.replacingOccurrences(of: "\"", with: "") {
-                                                item = self.utilityFileSystem.directoryUserData + "/" + filename
+                                                item = self.utilityFileSystem.createServerUrl(serverUrl: self.utilityFileSystem.directoryUserData, fileName: fileName)
                                                 _ = self.utilityFileSystem.moveFile(atPath: fileNameLocalPath, toPath: item)
                                             }
                                         }

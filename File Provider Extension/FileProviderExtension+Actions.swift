@@ -108,7 +108,7 @@ extension FileProviderExtension {
             }
             let ocIdFrom = metadataFrom.ocId
             let serverUrlFrom = metadataFrom.serverUrl
-            let fileNameFrom = serverUrlFrom + "/" + itemFrom.filename
+            let fileNameFrom = utilityFileSystem.createServerUrl(serverUrl: serverUrlFrom, fileName: itemFrom.filename)
             let account = metadataFrom.account
 
             guard let tableDirectoryTo = await providerUtility.getTableDirectoryFromParentItemIdentifierAsync(parentItemIdentifier, account: account, homeServerUrl: utilityFileSystem.getHomeServer(urlBase: metadataFrom.urlBase, userId: metadataFrom.userId)) else {
@@ -117,9 +117,9 @@ extension FileProviderExtension {
             }
 
             let serverUrlTo = tableDirectoryTo.serverUrl
-            var fileNameTo = serverUrlTo + "/" + itemFrom.filename
+            var fileNameTo = utilityFileSystem.createServerUrl(serverUrl: serverUrlTo, fileName: itemFrom.filename)
             if let newName {
-                fileNameTo = serverUrlTo + "/" + newName
+                fileNameTo = utilityFileSystem.createServerUrl(serverUrl: serverUrlTo, fileName: newName)
             }
 
             let resultsMove = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true, account: metadataFrom.account)
