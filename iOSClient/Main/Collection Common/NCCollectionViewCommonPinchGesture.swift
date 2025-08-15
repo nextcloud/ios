@@ -30,7 +30,7 @@ extension NCCollectionViewCommon {
                     self.collectionView.collectionViewLayout.invalidateLayout()
 
                 } completion: { _ in
-                    self.database.updateLayoutForView(account: self.session.account, key: self.global.layoutViewFiles, serverUrl: self.serverUrl) { layout in
+                    self.database.updatePhotoLayoutForView(account: self.session.account, key: self.global.layoutViewFiles, serverUrl: self.serverUrl) { layout in
                         layout.columnPhoto = self.numberOfColumns
                     }
                 }

@@ -77,8 +77,11 @@ func getDashboardItems(displaySize: CGSize, withButton: Bool) -> Int {
 }
 
 func convertDataToImage(data: Data?, size: CGSize, fileNameToWrite: String?) -> UIImage? {
-    guard let data = data else { return nil }
+    guard let data = data else {
+        return nil
+    }
     var imageData: UIImage?
+    let utilityFileSystem = NCUtilityFileSystem()
 
     if let image = UIImage(data: data), let image = image.resizeImage(size: size) {
         imageData = image
@@ -90,7 +93,7 @@ func convertDataToImage(data: Data?, size: CGSize, fileNameToWrite: String?) -> 
     }
     if let fileName = fileNameToWrite, let image = imageData {
         do {
-            let fileNamePath: String = NCUtilityFileSystem().directoryUserData + "/" + fileName + ".png"
+            let fileNamePath: String = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName + ".png")
             try image.pngData()?.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
         } catch { }
     }
@@ -151,7 +154,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
 
     var imagetmp = UIImage(named: "widget")!
     if let fileName = tableDashboard?.iconClass {
-        let fileNamePath: String = utilityFileSystem.directoryUserData + "/" + fileName + ".png"
+        let fileNamePath: String = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName + ".png")
         if let image = UIImage(contentsOfFile: fileNamePath) {
             imagetmp = image.withTintColor(NCBrandColor.shared.iconImageColor, renderingMode: .alwaysOriginal)
         }
@@ -212,7 +215,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                                     imageColor = UIColor(hex: colorString)
                                     icon = utility.loadImage(named: "circle.fill")
                                 } else if let fileName = iconFileName {
-                                    let fileNamePath: String = utilityFileSystem.directoryUserData + "/" + fileName + ".png"
+                                    let fileNamePath: String = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName + ".png")
                                     if FileManager().fileExists(atPath: fileNamePath), let image = UIImage(contentsOfFile: fileNamePath) {
                                         icon = image
                                     } else {

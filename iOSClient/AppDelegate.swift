@@ -309,7 +309,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             !metadatasWaitCreateFolder.isEmpty {
             var successCountCreateFolder: Int = 0
             for metadata in metadatasWaitCreateFolder {
-                let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+                let serverUrl = NCUtilityFileSystem().createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
                 let resultsCreateFolder = await NCNetworking.shared.createFolder(fileName: metadata.fileName,
                                                                                  serverUrl: metadata.serverUrl,
                                                                                  overwrite: true,

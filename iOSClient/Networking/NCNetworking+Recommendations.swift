@@ -8,8 +8,8 @@ import NextcloudKit
 
 extension NCNetworking {
     func createRecommendations(session: NCSession.Session, serverUrl: String, collectionView: UICollectionView) async {
-        let homeServer = self.utilityFileSystem.getHomeServer(urlBase: session.urlBase, userId: session.userId)
-        guard homeServer == serverUrl else {
+        let home = self.utilityFileSystem.getHomeServer(urlBase: session.urlBase, userId: session.userId)
+        guard home == serverUrl else {
             return
         }
 
@@ -20,11 +20,7 @@ extension NCNetworking {
 
         if results.error == .success, let recommendations = results.recommendations {
             for recommendation in recommendations {
-                if recommendation.directory.last == "/" {
-                    serverUrlFileName = homeServer + recommendation.directory + recommendation.name
-                } else {
-                    serverUrlFileName = homeServer + recommendation.directory + "/" + recommendation.name
-                }
+                serverUrlFileName = self.utilityFileSystem.createServerUrl(serverUrl: home + recommendation.directory, fileName: recommendation.name)
 
                 let results = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, account: session.account)
 

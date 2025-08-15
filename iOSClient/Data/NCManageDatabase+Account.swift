@@ -461,10 +461,6 @@ extension NCManageDatabase {
         return result ?? NCBrandOptions.shared.folderDefaultAutoUpload
     }
 
-    func getAccountAutoUploadDirectory(session: NCSession.Session) -> String {
-        return getAccountAutoUploadDirectory(account: session.account, urlBase: session.urlBase, userId: session.userId)
-    }
-
     func getAccountAutoUploadDirectory(account: String, urlBase: String, userId: String) -> String {
         let homeServer = utilityFileSystem.getHomeServer(urlBase: urlBase, userId: userId)
 
@@ -504,14 +500,14 @@ extension NCManageDatabase {
     func getAccountAutoUploadServerUrlBase(account: String, urlBase: String, userId: String) -> String {
         let cameraFileName = self.getAccountAutoUploadFileName(account: account)
         let cameraDirectory = self.getAccountAutoUploadDirectory(account: account, urlBase: urlBase, userId: userId)
-        let folderPhotos = utilityFileSystem.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)
+        let folderPhotos = utilityFileSystem.createServerUrl(serverUrl: cameraDirectory, fileName: cameraFileName)
         return folderPhotos
     }
 
     func getAccountAutoUploadServerUrlBaseAsync(account: String, urlBase: String, userId: String) async -> String {
         let cameraFileName = await self.getAccountAutoUploadFileNameAsync(account: account)
         let cameraDirectory = await self.getAccountAutoUploadDirectoryAsync(account: account, urlBase: urlBase, userId: userId)
-        let folderPhotos = utilityFileSystem.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)
+        let folderPhotos = utilityFileSystem.createServerUrl(serverUrl: cameraDirectory, fileName: cameraFileName)
         return folderPhotos
     }
 

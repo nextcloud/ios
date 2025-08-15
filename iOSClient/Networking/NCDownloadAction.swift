@@ -260,41 +260,59 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         let capabilities = NCNetworking.shared.capabilities[metadata.account] ?? NKCapabilities.Capabilities()
 
         NCActivityIndicator.shared.start(backgroundView: viewController.view)
-        NCNetworking.shared.readFile(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account, queue: .main) { _, metadata, error in
-            NCActivityIndicator.shared.stop()
+        NCNetworking.shared.readFile(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account) { _, metadata, file, error in
+            Task { @MainActor in
+                NCActivityIndicator.shared.stop()
 
-            if let metadata = metadata, error == .success {
-                var pages: [NCBrandOptions.NCInfoPagingTab] = []
-                let shareNavigationController = UIStoryboard(name: "NCShare", bundle: nil).instantiateInitialViewController() as? UINavigationController
-                let shareViewController = shareNavigationController?.topViewController as? NCSharePaging
+                if let metadata = metadata, let file = file, error == .success {
+                    // Remove all known download limits from shares related to the given file.
+                    // This avoids obsolete download limit objects to stay around.
+                    // Afterwards create new download limits, should any such be returned for the known shares.
+                    let shares = await self.database.getTableSharesAsync(account: metadata.account,
+                                                                         serverUrl: metadata.serverUrl,
+                                                                         fileName: metadata.fileName)
+                    for share in shares {
+                        await self.database.deleteDownloadLimitAsync(byAccount: metadata.account, shareToken: share.token)
 
-                for value in NCBrandOptions.NCInfoPagingTab.allCases {
-                    pages.append(value)
-                }
+                        if let receivedDownloadLimit = file.downloadLimits.first(where: { $0.token == share.token }) {
+                            await self.database.createDownloadLimitAsync(account: metadata.account,
+                                                                         count: receivedDownloadLimit.count,
+                                                                         limit: receivedDownloadLimit.limit,
+                                                                         token: receivedDownloadLimit.token)
+                        }
+                    }
 
-                if capabilities.activity.isEmpty, let idx = pages.firstIndex(of: .activity) {
-                    pages.remove(at: idx)
-                }
-                if !metadata.isSharable(), let idx = pages.firstIndex(of: .sharing) {
-                    pages.remove(at: idx)
-                }
+                    var pages: [NCBrandOptions.NCInfoPagingTab] = []
+                    let shareNavigationController = UIStoryboard(name: "NCShare", bundle: nil).instantiateInitialViewController() as? UINavigationController
+                    let shareViewController = shareNavigationController?.topViewController as? NCSharePaging
 
-                (pages, page) = NCApplicationHandle().filterPages(pages: pages, page: page, metadata: metadata)
+                    for value in NCBrandOptions.NCInfoPagingTab.allCases {
+                        pages.append(value)
+                    }
+                    if capabilities.activity.isEmpty, let idx = pages.firstIndex(of: .activity) {
+                        pages.remove(at: idx)
+                    }
+                    if !metadata.isSharable(), let idx = pages.firstIndex(of: .sharing) {
+                        pages.remove(at: idx)
+                    }
 
-                shareViewController?.pages = pages
-                shareViewController?.metadata = metadata
+                    (pages, page) = NCApplicationHandle().filterPages(pages: pages, page: page, metadata: metadata)
 
-                if pages.contains(page) {
-                    shareViewController?.page = page
-                } else if let page = pages.first {
-                    shareViewController?.page = page
-                } else {
-                    return
-                }
+                    shareViewController?.pages = pages
+                    shareViewController?.metadata = metadata
 
-                shareNavigationController?.modalPresentationStyle = .formSheet
-                if let shareNavigationController = shareNavigationController {
-                    viewController.present(shareNavigationController, animated: true, completion: nil)
+                    if pages.contains(page) {
+                        shareViewController?.page = page
+                    } else if let page = pages.first {
+                        shareViewController?.page = page
+                    } else {
+                        return
+                    }
+
+                    shareNavigationController?.modalPresentationStyle = .formSheet
+                    if let shareNavigationController = shareNavigationController {
+                        viewController.present(shareNavigationController, animated: true, completion: nil)
+                    }
                 }
             }
         }
@@ -375,7 +393,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                                                                              userId: metadata.userId,
                                                                              urlBase: metadata.urlBase)
         let fileNameDestination = utilityFileSystem.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, notUseMask: true)
-        let fileNamePathDestination = utilityFileSystem.directoryScan + "/" + fileNameDestination
+        let fileNamePathDestination = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryScan, fileName: fileNameDestination)
 
         utilityFileSystem.copyFile(atPath: fileNamePath, toPath: fileNamePathDestination)
 
@@ -478,7 +496,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                     continue
                 }
                 let fileName = results.name + "_" + NCPreferences().incrementalNumber + "." + results.ext
-                let serverUrlFileName = serverUrl + "/" + fileName
+                let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileName)
                 let ocIdUpload = UUID().uuidString
                 let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocIdUpload,
                                                                                           fileName: fileName,
@@ -517,8 +535,10 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
 
             while serverUrlPush != serverUrl, !subDirs.isEmpty {
 
-                guard let dir = subDirs.first else { return }
-                serverUrlPush = serverUrlPush + "/" + dir
+                guard let dir = subDirs.first else {
+                    return
+                }
+                serverUrlPush = self.utilityFileSystem.createServerUrl(serverUrl: serverUrlPush, fileName: String(dir))
 
                 if let viewController = controller.navigationCollectionViewCommon.first(where: { $0.navigationController == navigationController && $0.serverUrl == serverUrlPush})?.viewController as? NCFiles, viewController.isViewLoaded {
                     viewController.fileNameBlink = fileNameBlink
@@ -585,7 +605,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             copyItems.append(item)
         }
 
-        let homeUrl = utilityFileSystem.getHomeServer(session: session)
+        let home = utilityFileSystem.getHomeServer(session: session)
         var serverUrl = copyItems[0].serverUrl
 
         // Setup view controllers such that the current view is of the same directory the items to be copied are in
@@ -593,7 +613,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             // If not in the topmost directory, create a new view controller and set correct title.
             // If in the topmost directory, use the default view controller as the base.
             var viewController: NCSelect?
-            if serverUrl != homeUrl {
+            if serverUrl != home {
                 viewController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect
                 if viewController == nil {
                     return
@@ -613,9 +633,9 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             vc.navigationItem.backButtonTitle = vc.titleCurrentFolder
             listViewController.insert(vc, at: 0)
 
-            if serverUrl != homeUrl {
-                if let path = utilityFileSystem.deleteLastPath(serverUrlPath: serverUrl) {
-                    serverUrl = path
+            if serverUrl != home {
+                if let serverDirectoryUp = utilityFileSystem.serverDirectoryUp(serverUrl: serverUrl, home: home) {
+                    serverUrl = serverDirectoryUp
                 }
             } else {
                 break

@@ -28,6 +28,7 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
     var activityPreviews: [tableActivityPreview] = []
     var didSelectItemEnable: Bool = true
     var viewController = NCActivity()
+    let utilityFileSystem = NCUtilityFileSystem()
     var account: String!
 
     let utility = NCUtility()
@@ -145,7 +146,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
                 }
             } else {
                 if let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: activityPreview.account, idActivity: idActivity, id: fileId) {
-                    let fileNamePath = NCUtilityFileSystem().directoryUserData + "/" + activitySubjectRich.name
+                    let fileNamePath = NCUtilityFileSystem().createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: activitySubjectRich.name)
 
                     if FileManager.default.fileExists(atPath: fileNamePath), let image = UIImage(contentsOfFile: fileNamePath) {
                         cell.imageView.image = image

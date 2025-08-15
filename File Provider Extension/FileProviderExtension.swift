@@ -150,7 +150,7 @@ final class FileProviderExtension: NSFileProviderExtension {
                         return
                     }
 
-                    let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+                    let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
                     let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
                     let account = metadata.account
                     let ocId = metadata.ocId
@@ -219,7 +219,7 @@ final class FileProviderExtension: NSFileProviderExtension {
                           metadata.status == global.metadataStatusNormal else {
                         return
                     }
-                    let serverUrlFileName = metadata.serverUrl + "/" + fileName
+                    let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: fileName)
                     let ocId = metadata.ocId
                     let account = metadata.account
 
@@ -348,12 +348,12 @@ final class FileProviderExtension: NSFileProviderExtension {
                     metadata.size = size
                     metadata.status = NCGlobal.shared.metadataStatusUploading
 
-                    await self.database.addMetadataAsync(metadata)
-                    let serverUrlFileName = tableDirectory.serverUrl + "/" + fileName
-                    let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTransfer,
-                                                                                                   fileName: fileName,
-                                                                                                   userId: session.userId,
-                                                                                                   urlBase: session.urlBase)
+                    await database.addMetadataAsync(metadata)
+                    let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: tableDirectory.serverUrl, fileName: fileName)
+                    let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTransfer,
+                                                                                              fileName: fileName,
+                                                                                              userId: session.userId,
+                                                                                              urlBase: session.urlBase)
                     let nkBackground = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance)
 
                     let (task, error) = await nkBackground.uploadAsync(serverUrlFileName: serverUrlFileName,

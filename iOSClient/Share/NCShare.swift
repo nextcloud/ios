@@ -155,10 +155,11 @@ class NCShare: UIViewController, NCSharePagingContent {
 
         if results.image == nil {
             let etag = self.database.getTableAvatar(fileName: fileName)?.etag
+            let fileNameLocalPath = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
 
             NextcloudKit.shared.downloadAvatar(
                 user: metadata.ownerId,
-                fileNameLocalPath: utilityFileSystem.directoryUserData + "/" + fileName,
+                fileNameLocalPath: fileNameLocalPath,
                 sizeImage: NCGlobal.shared.avatarSize,
                 avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
                 etagResource: etag,

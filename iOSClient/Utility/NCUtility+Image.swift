@@ -84,7 +84,7 @@ extension NCUtility {
 
     func loadUserImage(for user: String, displayName: String?, urlBase: String) -> UIImage {
         let fileName = NCSession.shared.getFileName(urlBase: urlBase, user: user)
-        let localFilePath = utilityFileSystem.directoryUserData + "/" + fileName
+        let localFilePath = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
 
         if var localImage = UIImage(contentsOfFile: localFilePath) {
             let rect = CGRect(x: 0, y: 0, width: 30, height: 30)
@@ -290,7 +290,7 @@ extension NCUtility {
         } else {
             fileNamePNG = iconURL.deletingPathExtension().lastPathComponent + ".png"
         }
-        let imageNamePath = utilityFileSystem.directoryUserData + "/" + fileNamePNG
+        let imageNamePath = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileNamePNG)
 
         if !FileManager.default.fileExists(atPath: imageNamePath) || rewrite == true {
             NextcloudKit.shared.downloadContent(serverUrl: iconURL.absoluteString, account: account) { _, responseData, error in

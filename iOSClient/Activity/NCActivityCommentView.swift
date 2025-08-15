@@ -9,6 +9,7 @@ class NCActivityCommentView: UIView, UITextFieldDelegate {
     @IBOutlet weak var newCommentField: UITextField!
 
     var completionHandler: ((String?) -> Void)?
+    let utilityFileSystem = NCUtilityFileSystem()
 
     func setup(account: String, completionHandler: @escaping (String?) -> Void) {
         let session = NCSession.shared.getSession(account: account)
@@ -17,7 +18,7 @@ class NCActivityCommentView: UIView, UITextFieldDelegate {
         newCommentField.delegate = self
 
         let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: session.user)
-        let fileNameLocalPath = NCUtilityFileSystem().directoryUserData + "/" + fileName
+        let fileNameLocalPath = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
         if let image = UIImage(contentsOfFile: fileNameLocalPath) {
             imageItem.image = image
         } else {

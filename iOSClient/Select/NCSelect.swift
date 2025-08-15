@@ -264,7 +264,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
     func pushMetadata(_ metadata: tableMetadata) {
         Task { @MainActor in
-            let serverUrlPush = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
+            let serverUrlPush = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
             guard let viewController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect else { return }
             let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
 
@@ -469,7 +469,7 @@ extension NCSelect: UICollectionViewDataSource {
             if sections == 1 || section == sections - 1 {
                 let info = self.dataSource.getFooterInformation()
                 footer.setTitleLabel(directories: info.directories, files: info.files, size: info.size)
-            } 
+            }
 
             return footer
         }

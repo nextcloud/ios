@@ -29,7 +29,7 @@ extension NCMedia {
 
                 } completion: { _ in
 
-                    self.database.updateLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "") { layout in
+                    self.database.updatePhotoLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "") { layout in
                         layout.columnPhoto = self.numberOfColumns
                     }
 

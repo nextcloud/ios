@@ -11,6 +11,7 @@ class NCAccount: NSObject {
     let database = NCManageDatabase.shared
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let global = NCGlobal.shared
+    let utilityFileSystem = NCUtilityFileSystem()
 
     func createAccount(viewController: UIViewController, urlBase: String, user: String, password: String, controller: NCMainTabBarController?) async {
         nkLog(debug: "Creating account...")
@@ -131,7 +132,7 @@ class NCAccount: NSObject {
         if wipe {
             // Remove user domain directory
             if let tblAccount {
-                let path = NCUtilityFileSystem().getDocumentStorage(userId: tblAccount.userId, urlBase: tblAccount.urlBase)
+                let path = utilityFileSystem.getDocumentStorage(userId: tblAccount.userId, urlBase: tblAccount.urlBase)
                 do {
                     try FileManager.default.removeItem(atPath: path)
                 } catch {
@@ -176,7 +177,7 @@ class NCAccount: NSObject {
         for account in await database.getAllTableAccountAsync() {
             let name = account.alias.isEmpty ? account.displayName : account.alias
             let fileName = NCSession.shared.getFileName(urlBase: account.urlBase, user: account.user)
-            let fileNamePath = NCUtilityFileSystem().directoryUserData + "/" + fileName
+            let fileNamePath = self.utilityFileSystem.createServerUrl(serverUrl: self.utilityFileSystem.directoryUserData, fileName: fileName)
             let image = UIImage(contentsOfFile: fileNamePath)
             accounts.append(NKShareAccounts.DataAccounts(withUrl: account.urlBase, user: account.user, name: name, image: image))
         }

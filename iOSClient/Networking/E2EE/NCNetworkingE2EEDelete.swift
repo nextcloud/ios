@@ -8,6 +8,7 @@ import NextcloudKit
 
 class NCNetworkingE2EEDelete: NSObject {
     let database = NCManageDatabase.shared
+    let utilityFileSystem = NCUtilityFileSystem()
     let networkingE2EE = NCNetworkingE2EE()
 
     func delete(metadata: tableMetadata) async -> NKError {
@@ -33,7 +34,7 @@ class NCNetworkingE2EEDelete: NSObject {
 
         // DELETE FILE
         //
-        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+        let serverUrlFileName = self.utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
         let options = NKRequestOptions(customHeader: ["e2e-token": e2eToken])
         let result = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: serverUrlFileName, account: metadata.account, options: options)
         if result.error == .success || result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
@@ -53,7 +54,7 @@ class NCNetworkingE2EEDelete: NSObject {
                     await self.database.deleteLocalFileOcIdAsync(metadataLive.ocId)
                 }
                 if metadata.directory {
-                    await self.database.deleteDirectoryAndSubDirectoryAsync(serverUrl: NCUtilityFileSystem().stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: metadata.account)
+                    await self.database.deleteDirectoryAndSubDirectoryAsync(serverUrl: self.utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName), account: metadata.account)
                 }
             } catch { }
         } else {
