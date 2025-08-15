@@ -187,7 +187,7 @@ extension NCNetworking {
             taskHandler(task)
 
             if let task, error == .success {
-                nkLog(debug: " Upload file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
+                nkLog(debug: "Upload file \(metadata.fileNameView) with taskIdentifier \(task.taskIdentifier)")
 
                 if let metadata = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
                                                                               sessionTaskIdentifier: task.taskIdentifier,
