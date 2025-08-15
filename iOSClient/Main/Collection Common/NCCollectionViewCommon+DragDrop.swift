@@ -131,7 +131,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
         var destination: String = self.serverUrl
 
         if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
-            destination = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
+            destination = utilityFileSystem.serverDirectoryDown(serverUrl: destinationMetadata.serverUrl, fileNameFolder: destinationMetadata.fileName)
         }
         Task {
             await NCDragDrop().copyFile(metadatas: sourceMetadatas, destination: destination)
@@ -143,7 +143,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
         var destination: String = self.serverUrl
 
         if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
-            destination = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
+            destination = utilityFileSystem.serverDirectoryDown(serverUrl: destinationMetadata.serverUrl, fileNameFolder: destinationMetadata.fileName)
         }
         Task {
             await NCDragDrop().moveFile(metadatas: sourceMetadatas, destination: destination)

@@ -120,7 +120,7 @@ class NCShares: NCCollectionViewCommon {
                         self.ocIdShares.insert(ocId)
                     }
                 } else {
-                    let serverUrlFileName = share.serverUrl + "/" + share.fileName
+                    let serverUrlFileName = NCUtilityFileSystem().serverDirectoryDown(serverUrl: share.serverUrl, fileNameFolder: share.fileName)
                     let resultReadShare = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrlFileName, account: session.account)
                     if resultReadShare.error == .success, let metadata = resultReadShare.metadata {
                         let ocId = metadata.ocId

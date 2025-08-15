@@ -19,7 +19,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         var fileNameFolder = FileAutoRenamer.rename(fileName, isFolderPath: true, capabilities: capabilities)
 
         let fileNameIdentifier = networkingE2EE.generateRandomIdentifier()
-        let serverUrlFileName = serverUrl + "/" + fileNameIdentifier
+        let serverUrlFileName = utilityFileSystem.serverDirectoryDown(serverUrl: serverUrl, fileNameFolder: fileNameIdentifier)
         fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: session.account)
         if fileNameFolder.isEmpty {
             return NKError(errorCode: global.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))

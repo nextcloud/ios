@@ -255,7 +255,7 @@ class NCCreateFormUploadConflict: UIViewController {
 
                 metadata.fileName = newFileName
                 metadata.fileNameView = newFileName
-                metadata.serverUrlFileName = metadata.serverUrl + "/" + newFileName
+                metadata.serverUrlFileName = utilityFileSystem.serverDirectoryDown(serverUrl: metadata.serverUrl, fileNameFolder: newFileName)
 
                 // This is not an asset - [file]
                 if metadata.assetLocalIdentifier.isEmpty || metadata.isExtractFile {

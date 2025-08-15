@@ -178,7 +178,7 @@ final class NCCameraRoll: CameraRollExtractor {
 
         metadata.fileName = fileName
         metadata.fileNameView = fileName
-        metadata.serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+        metadata.serverUrlFileName = utilityFileSystem.serverDirectoryDown(serverUrl: metadata.serverUrl, fileNameFolder: metadata.fileName)
 
         // Safely set the content type if available
         if let type = contentType(for: asset, ext: ext) {

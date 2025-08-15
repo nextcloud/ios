@@ -504,14 +504,14 @@ extension NCManageDatabase {
     func getAccountAutoUploadServerUrlBase(account: String, urlBase: String, userId: String) -> String {
         let cameraFileName = self.getAccountAutoUploadFileName(account: account)
         let cameraDirectory = self.getAccountAutoUploadDirectory(account: account, urlBase: urlBase, userId: userId)
-        let folderPhotos = utilityFileSystem.navigateServerPathDown(serverUrl: cameraDirectory, fileNameFolder: cameraFileName)
+        let folderPhotos = utilityFileSystem.serverDirectoryDown(serverUrl: cameraDirectory, fileNameFolder: cameraFileName)
         return folderPhotos
     }
 
     func getAccountAutoUploadServerUrlBaseAsync(account: String, urlBase: String, userId: String) async -> String {
         let cameraFileName = await self.getAccountAutoUploadFileNameAsync(account: account)
         let cameraDirectory = await self.getAccountAutoUploadDirectoryAsync(account: account, urlBase: urlBase, userId: userId)
-        let folderPhotos = utilityFileSystem.navigateServerPathDown(serverUrl: cameraDirectory, fileNameFolder: cameraFileName)
+        let folderPhotos = utilityFileSystem.serverDirectoryDown(serverUrl: cameraDirectory, fileNameFolder: cameraFileName)
         return folderPhotos
     }
 

@@ -414,7 +414,7 @@ actor NCNetworkingProcess {
                 if result.error == .success, let metadata = result.metadata {
                     // Remove directory
                     if metadata.directory {
-                        let serverUrl = utilityFileSystem.navigateServerPathDown(serverUrl: metadata.serverUrl, fileNameFolder: metadata.fileName)
+                        let serverUrl = utilityFileSystem.serverDirectoryDown(serverUrl: metadata.serverUrl, fileNameFolder: metadata.fileName)
                         await self.database.deleteDirectoryAndSubDirectoryAsync(serverUrl: serverUrl,
                                                                                 account: result.account)
                     }
@@ -476,7 +476,7 @@ actor NCNetworkingProcess {
             }
 
             let serverUrlFileNameSource = metadata.serverUrlFileName
-            let serverUrlFileNameDestination = metadata.serverUrl + "/" + metadata.fileName
+            let serverUrlFileNameDestination = utilityFileSystem.serverDirectoryDown(serverUrl: metadata.serverUrl, fileNameFolder: metadata.fileName)
             let resultRename = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: false, account: metadata.account)
 
             if resultRename.error == .success {
@@ -525,7 +525,7 @@ actor NCNetworkingProcess {
                     await self.database.deleteLocalFileOcIdAsync(metadata.ocId)
 
                     if metadata.directory {
-                        let serverUrl = NCUtilityFileSystem().navigateServerPathDown(serverUrl: metadata.serverUrl, fileNameFolder: metadata.fileName)
+                        let serverUrl = utilityFileSystem.serverDirectoryDown(serverUrl: metadata.serverUrl, fileNameFolder: metadata.fileName)
                         await self.database.deleteDirectoryAndSubDirectoryAsync(serverUrl: serverUrl,
                                                                                 account: metadata.account)
                     }

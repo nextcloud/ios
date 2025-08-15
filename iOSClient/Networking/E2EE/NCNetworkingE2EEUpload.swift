@@ -45,7 +45,7 @@ class NCNetworkingE2EEUpload: NSObject {
         metadata.session = NCNetworking.shared.sessionUpload
         metadata.status = global.metadataStatusUploading
         metadata.sessionError = ""
-        metadata.serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+        metadata.serverUrlFileName = utilityFileSystem.serverDirectoryDown(serverUrl: metadata.serverUrl, fileNameFolder: metadata.fileName)
 
         guard let metadata = await self.database.addAndReturnMetadataAsync(metadata) else {
             return .invalidData

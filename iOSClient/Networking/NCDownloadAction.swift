@@ -478,7 +478,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                     continue
                 }
                 let fileName = results.name + "_" + NCPreferences().incrementalNumber + "." + results.ext
-                let serverUrlFileName = serverUrl + "/" + fileName
+                let serverUrlFileName = utilityFileSystem.serverDirectoryDown(serverUrl: serverUrl, fileNameFolder: fileName)
                 let ocIdUpload = UUID().uuidString
                 let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocIdUpload,
                                                                                           fileName: fileName,

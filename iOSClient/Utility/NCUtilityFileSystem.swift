@@ -518,7 +518,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         return returnString
     }
 
-    func navigateServerPathDown(serverUrl: String, fileNameFolder: String) -> String {
+    func serverDirectoryDown(serverUrl: String, fileNameFolder: String) -> String {
         if fileNameFolder.isEmpty {
             return serverUrl
         } else if serverUrl.last == "/" {

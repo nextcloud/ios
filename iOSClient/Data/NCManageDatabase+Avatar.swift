@@ -60,7 +60,8 @@ extension NCManageDatabase {
 
     @discardableResult
     func setAvatarLoaded(fileName: String, sync: Bool = true) -> UIImage? {
-        let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
+        let directoryUserData = utilityFileSystem.directoryUserData
+        let fileNameLocalPath = utilityFileSystem.serverDirectoryDown(serverUrl: directoryUserData, fileNameFolder: fileName)
         var image: UIImage?
 
         performRealmWrite(sync: sync) { realm in
@@ -83,7 +84,8 @@ extension NCManageDatabase {
     /// - Returns: The `UIImage` if successfully loaded from disk, or `nil` if not found or deleted.
     @discardableResult
     func setAvatarLoadedAsync(fileName: String) async -> UIImage? {
-        let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
+        let directoryUserData = utilityFileSystem.directoryUserData
+        let fileNameLocalPath = utilityFileSystem.serverDirectoryDown(serverUrl: directoryUserData, fileNameFolder: fileName)
         var image: UIImage?
 
         await performRealmWriteAsync { realm in
@@ -142,7 +144,8 @@ extension NCManageDatabase {
     }
 
     func getImageAvatarLoaded(fileName: String) -> (image: UIImage?, tblAvatar: tableAvatar?) {
-        let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
+        let directoryUserData = utilityFileSystem.directoryUserData
+        let fileNameLocalPath = utilityFileSystem.serverDirectoryDown(serverUrl: directoryUserData, fileNameFolder: fileName)
         let image = UIImage(contentsOfFile: fileNameLocalPath)
         var tblAvatar: tableAvatar?
 
@@ -160,7 +163,8 @@ extension NCManageDatabase {
     func getImageAvatarLoaded(fileName: String,
                               dispatchOnMainQueue: Bool = true,
                               completion: @escaping (_ image: UIImage?, _ tblAvatar: tableAvatar?) -> Void) {
-        let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
+        let directoryUserData = utilityFileSystem.directoryUserData
+        let fileNameLocalPath = utilityFileSystem.serverDirectoryDown(serverUrl: directoryUserData, fileNameFolder: fileName)
         let image = UIImage(contentsOfFile: fileNameLocalPath)
 
         performRealmRead({ realm in

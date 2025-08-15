@@ -190,7 +190,8 @@ extension NCNetworking {
                 newFileName()
                 continue
             }
-            let results = await fileExists(serverUrlFileName: serverUrl + "/" + resultFileName, account: account)
+            let serverUrlFileName = utilityFileSystem.serverDirectoryDown(serverUrl: serverUrl, fileNameFolder: resultFileName)
+            let results = await fileExists(serverUrlFileName: serverUrlFileName, account: account)
             if results.exists {
                 newFileName()
             } else {
@@ -217,12 +218,12 @@ extension NCNetworking {
         if fileNameFolder.isEmpty {
             return (false, NKError(errorCode: global.errorIncorrectFileName, errorDescription: ""))
         }
-        let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
+        let serverUrlFileName = utilityFileSystem.serverDirectoryDown(serverUrl: serverUrl, fileNameFolder: fileNameFolder)
 
         func writeDirectoryMetadata(_ metadata: tableMetadata) async {
             await self.database.deleteMetadataAsync(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", session.account, fileName, serverUrl))
             await self.database.addMetadataAsync(metadata)
-            await self.database.addDirectoryAsync(serverUrl: fileNameFolderUrl,
+            await self.database.addDirectoryAsync(serverUrl: serverUrlFileName,
                                                   ocId: metadata.ocId,
                                                   fileId: metadata.fileId,
                                                   permissions: metadata.permissions,
@@ -231,7 +232,7 @@ extension NCNetworking {
         }
 
         /* check exists folder */
-        let resultReadFile = await readFileAsync(serverUrlFileName: fileNameFolderUrl, account: session.account)
+        let resultReadFile = await readFileAsync(serverUrlFileName: serverUrlFileName, account: session.account)
         if resultReadFile.error == .success,
             let metadata = resultReadFile.metadata {
             await writeDirectoryMetadata(metadata)
@@ -239,9 +240,9 @@ extension NCNetworking {
         }
 
         /* create folder */
-        let resultCreateFolder = await NextcloudKit.shared.createFolderAsync(serverUrlFileName: fileNameFolderUrl, account: session.account, options: options)
+        let resultCreateFolder = await NextcloudKit.shared.createFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account, options: options)
         if resultCreateFolder.error == .success {
-            let resultReadFile = await readFileAsync(serverUrlFileName: fileNameFolderUrl, account: session.account)
+            let resultReadFile = await readFileAsync(serverUrlFileName: serverUrlFileName, account: session.account)
             if resultReadFile.error == .success,
                let metadata = resultReadFile.metadata {
                 await writeDirectoryMetadata(metadata)

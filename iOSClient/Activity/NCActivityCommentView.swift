@@ -17,7 +17,8 @@ class NCActivityCommentView: UIView, UITextFieldDelegate {
         newCommentField.delegate = self
 
         let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: session.user)
-        let fileNameLocalPath = NCUtilityFileSystem().directoryUserData + "/" + fileName
+        let directoryUserData = NCUtilityFileSystem().directoryUserData
+        let fileNameLocalPath = NCUtilityFileSystem().serverDirectoryDown(serverUrl: directoryUserData, fileNameFolder: fileName)
         if let image = UIImage(contentsOfFile: fileNameLocalPath) {
             imageItem.image = image
         } else {

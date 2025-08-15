@@ -176,7 +176,8 @@ class NCAccount: NSObject {
         for account in await database.getAllTableAccountAsync() {
             let name = account.alias.isEmpty ? account.displayName : account.alias
             let fileName = NCSession.shared.getFileName(urlBase: account.urlBase, user: account.user)
-            let fileNamePath = NCUtilityFileSystem().directoryUserData + "/" + fileName
+            let directoryUserData = NCUtilityFileSystem().directoryUserData
+            let fileNamePath = NCUtilityFileSystem().serverDirectoryDown(serverUrl: directoryUserData, fileNameFolder: fileName)
             let image = UIImage(contentsOfFile: fileNamePath)
             accounts.append(NKShareAccounts.DataAccounts(withUrl: account.urlBase, user: account.user, name: name, image: image))
         }
