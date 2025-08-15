@@ -39,8 +39,17 @@ class NCContentPresenter: NSObject {
 
     // MARK: - Message
 
-    func showCustomMessage(title: String = "", message: String, priority: EKAttributes.Precedence.Priority = .normal, delay: TimeInterval = NCGlobal.shared.dismissAfterSecond, type: messageType) {
-        self.flatTop(title: NSLocalizedString(title, comment: ""), description: message, delay: delay, type: type, priority: priority, dropEnqueuedEntries: false)
+    func showCustomMessage(title: String = "",
+                           message: String,
+                           priority: EKAttributes.Precedence.Priority = .normal,
+                           delay: TimeInterval = NCGlobal.shared.dismissAfterSecond,
+                           type: messageType) {
+        self.flatTop(title: NSLocalizedString(title, comment: ""),
+                     description: message,
+                     delay: delay,
+                     type: type,
+                     priority: priority,
+                     dropEnqueuedEntries: false)
     }
 
     func showError(error: NKError, priority: EKAttributes.Precedence.Priority = .normal) {
@@ -62,7 +71,11 @@ class NCContentPresenter: NSObject {
     }
 
     func showInfo(title: String = "", description: String = "") {
-        self.flatTop(title: NSLocalizedString(title, comment: ""), description: NSLocalizedString(description, comment: ""), delay: NCGlobal.shared.dismissAfterSecond, type: .info, priority: .normal)
+        self.flatTop(title: NSLocalizedString(title, comment: ""),
+                     description: NSLocalizedString(description, comment: ""),
+                     delay: NCGlobal.shared.dismissAfterSecond,
+                     type: .info,
+                     priority: .normal)
     }
 
     func showWarning(error: NKError, priority: EKAttributes.Precedence.Priority = .normal) {
@@ -75,21 +88,36 @@ class NCContentPresenter: NSObject {
     }
 
     func messageNotification(_ title: String, error: NKError, delay: TimeInterval, type: messageType, afterDelay: TimeInterval = 0) {
-        messageNotification(title, error: error, delay: delay, type: type, priority: .normal, dropEnqueuedEntries: false, afterDelay: afterDelay)
+        messageNotification(title,
+                            error: error,
+                            delay: delay,
+                            type: type,
+                            priority: .normal,
+                            dropEnqueuedEntries: false,
+                            afterDelay: afterDelay)
     }
 
-    func messageNotification(_ title: String, error: NKError, delay: TimeInterval, type: messageType, priority: EKAttributes.Precedence.Priority = .normal, dropEnqueuedEntries: Bool = false, afterDelay: TimeInterval = 0) {
-
-        // No notification message for:
-        if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled { return } else if error == .success && type == messageType.error { return }
-
-        // Hardcode change type
-        var type = type
-        if error.errorCode == NCGlobal.shared.errorE2EEUploadInProgress {
-            type = .info
-        }
-
+    func messageNotification(_ title: String,
+                             error: NKError,
+                             delay: TimeInterval,
+                             type: messageType,
+                             priority: EKAttributes.Precedence.Priority = .normal,
+                             dropEnqueuedEntries: Bool = false,
+                             afterDelay: TimeInterval = 0) {
         DispatchQueue.main.asyncAfter(deadline: .now() + afterDelay) {
+            // No notification message for:
+            if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
+                return
+            } else if error == .success && type == messageType.error {
+                return
+            }
+
+            // Hardcode change type
+            var type = type
+            if error.errorCode == NCGlobal.shared.errorE2EEUploadInProgress {
+                type = .info
+            }
+
             switch error.errorCode {
             case Int(CFNetworkErrors.cfurlErrorNotConnectedToInternet.rawValue):
                 let image = UIImage(named: "InfoNetwork")?.image(color: .white, size: 20)
@@ -146,94 +174,101 @@ class NCContentPresenter: NSObject {
         }
     }
 
-    // MARK: - Flat message
+    func flatTop(title: String,
+                 description: String,
+                 delay: TimeInterval,
+                 type: messageType,
+                 priority: EKAttributes.Precedence.Priority = .normal,
+                 dropEnqueuedEntries: Bool = false) {
+        DispatchQueue.main.async { [self] in
+            if SwiftEntryKit.isCurrentlyDisplaying(entryNamed: title + description) {
+                return
+            }
+            var attributes = EKAttributes.topFloat
 
-    private func flatTop(title: String, description: String, delay: TimeInterval, type: messageType, priority: EKAttributes.Precedence.Priority = .normal, dropEnqueuedEntries: Bool = false) {
-        if SwiftEntryKit.isCurrentlyDisplaying(entryNamed: title + description) { return }
-
-        var attributes = EKAttributes.topFloat
-
-        attributes.windowLevel = .normal
-        attributes.displayDuration = delay
-        attributes.name = title + description
-        attributes.entryBackground = .color(color: EKColor(getBackgroundColorFromType(type)))
-        attributes.popBehavior = .animated(animation: .init(translate: .init(duration: 0.3), scale: .init(from: 1, to: 0.7, duration: 0.7)))
-        attributes.shadow = .active(with: .init(color: .black, opacity: 0.5, radius: 10, offset: .zero))
-        attributes.scroll = .enabled(swipeable: true, pullbackAnimation: .jolt)
-        attributes.precedence = .override(priority: priority, dropEnqueuedEntries: dropEnqueuedEntries)
-
-        let title = EKProperty.LabelContent(text: title, style: .init(font: MainFont.bold.with(size: 16), color: .white))
-        let description = EKProperty.LabelContent(text: description, style: .init(font: MainFont.medium.with(size: 13), color: .white))
-        let imageMessage = EKProperty.ImageContent(image: getImageFromType(type), size: CGSize(width: 35, height: 35))
-
-        let simpleMessage = EKSimpleMessage(image: imageMessage, title: title, description: description)
-        let notificationMessage = EKNotificationMessage(simpleMessage: simpleMessage)
-
-        let contentView = EKNotificationMessageView(with: notificationMessage)
-        DispatchQueue.main.async { SwiftEntryKit.display(entry: contentView, using: attributes) }
-    }
-
-    // MARK: -
-
-    func alertAction(image: UIImage, contentModeImage: UIView.ContentMode = .scaleToFill, sizeImage: CGSize = CGSize(width: 34, height: 34), backgroundColor: UIColor, textColor: UIColor, title: String, description: String, textCancelButton: String, textOkButton: String, attributes: EKAttributes, completion: @escaping (_ identifier: String) -> Void) {
-
-        var buttonAttributes: EKAttributes {
-            var attributes = attributes
-            attributes.hapticFeedbackType = .success
-            attributes.displayDuration = .infinity
-            attributes.entryBackground = .color(color: EKColor(backgroundColor))
-            attributes.shadow = .active(with: .init(color: .black, opacity: 0.3, radius: 8))
-            attributes.screenInteraction = .dismiss
-            attributes.entryInteraction = .absorbTouches
+            attributes.windowLevel = .normal
+            attributes.displayDuration = delay
+            attributes.name = title + description
+            attributes.entryBackground = .color(color: EKColor(self.getBackgroundColorFromType(type)))
+            attributes.popBehavior = .animated(animation: .init(translate: .init(duration: 0.3), scale: .init(from: 1, to: 0.7, duration: 0.7)))
+            attributes.shadow = .active(with: .init(color: .black, opacity: 0.5, radius: 10, offset: .zero))
             attributes.scroll = .enabled(swipeable: true, pullbackAnimation: .jolt)
-            attributes.roundCorners = .all(radius: 25)
-            attributes.entranceAnimation = .init(translate: .init(duration: 0.7, spring: .init(damping: 1, initialVelocity: 0)), scale: .init(from: 1.05, to: 1, duration: 0.4, spring: .init(damping: 1, initialVelocity: 0)))
-            attributes.exitAnimation = .init(translate: .init(duration: 0.2))
-            attributes.popBehavior = .animated(animation: .init(translate: .init(duration: 0.2)))
-            attributes.positionConstraints.verticalOffset = 20
-            attributes.positionConstraints.size = .init(width: .offset(value: 20), height: .intrinsic)
-            attributes.positionConstraints.maxSize = .init(width: .constant(value: min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)), height: .intrinsic)
-            attributes.statusBar = .dark
-            return attributes
+            attributes.precedence = .override(priority: priority, dropEnqueuedEntries: dropEnqueuedEntries)
+
+            let title = EKProperty.LabelContent(text: title, style: .init(font: MainFont.bold.with(size: 16), color: .white))
+            let description = EKProperty.LabelContent(text: description, style: .init(font: MainFont.medium.with(size: 13), color: .white))
+            let imageMessage = EKProperty.ImageContent(image: getImageFromType(type), size: CGSize(width: 35, height: 35))
+            let simpleMessage = EKSimpleMessage(image: imageMessage, title: title, description: description)
+            let notificationMessage = EKNotificationMessage(simpleMessage: simpleMessage)
+            let contentView = EKNotificationMessageView(with: notificationMessage)
+
+            SwiftEntryKit.display(entry: contentView, using: attributes)
         }
-
-        let simpleMessage = EKSimpleMessage(image: EKProperty.ImageContent(image: image, size: sizeImage, contentMode: contentModeImage),
-                                            title: EKProperty.LabelContent(text: NSLocalizedString(title, comment: ""), style: .init(font: MainFont.medium.with(size: 15), color: EKColor(textColor)), accessibilityIdentifier: "title"),
-                                            description: EKProperty.LabelContent(text: NSLocalizedString(description, comment: ""), style: .init( font: MainFont.light.with(size: 13), color: EKColor(textColor)), accessibilityIdentifier: "description"))
-
-        let cancelButton = EKProperty.ButtonContent(
-            label: EKProperty.LabelContent(text: NSLocalizedString(textCancelButton, comment: ""), style: EKProperty.LabelStyle(font: MainFont.medium.with(size: 16), color: EKColor(textColor))),
-            backgroundColor: .clear,
-            highlightedBackgroundColor: EKColor(UIColor.lightGray),
-            accessibilityIdentifier: "close") {
-                SwiftEntryKit.dismiss()
-                completion("close")
-            }
-
-        let okButton = EKProperty.ButtonContent(
-            label: EKProperty.LabelContent(text: NSLocalizedString(textOkButton, comment: ""), style: EKProperty.LabelStyle(font: MainFont.medium.with(size: 16), color: EKColor(textColor))),
-            backgroundColor: .clear,
-            highlightedBackgroundColor: EKColor(UIColor.lightGray),
-            displayMode: EKAttributes.DisplayMode.inferred,
-            accessibilityIdentifier: "ok") {
-                SwiftEntryKit.dismiss()
-                completion("ok")
-            }
-
-        let buttonsBarContent = EKProperty.ButtonBarContent(with: cancelButton, okButton, separatorColor: EKColor(textColor), buttonHeight: 60, expandAnimatedly: true)
-        let alertMessage = EKAlertMessage(simpleMessage: simpleMessage, imagePosition: .left, buttonBarContent: buttonsBarContent)
-        let contentView = EKAlertMessageView(with: alertMessage)
-
-        SwiftEntryKit.display(entry: contentView, using: buttonAttributes)
     }
 
-    // MARK: - Note Message
+    func alertAction(image: UIImage,
+                     contentModeImage: UIView.ContentMode = .scaleToFill,
+                     sizeImage: CGSize = CGSize(width: 34, height: 34),
+                     backgroundColor: UIColor,
+                     textColor: UIColor,
+                     title: String,
+                     description: String,
+                     textCancelButton: String,
+                     textOkButton: String,
+                     attributes: EKAttributes,
+                     completion: @escaping (_ identifier: String) -> Void) {
+        DispatchQueue.main.async {
+            var buttonAttributes: EKAttributes {
+                var attributes = attributes
+
+                attributes.hapticFeedbackType = .success
+                attributes.displayDuration = .infinity
+                attributes.entryBackground = .color(color: EKColor(backgroundColor))
+                attributes.shadow = .active(with: .init(color: .black, opacity: 0.3, radius: 8))
+                attributes.screenInteraction = .dismiss
+                attributes.entryInteraction = .absorbTouches
+                attributes.scroll = .enabled(swipeable: true, pullbackAnimation: .jolt)
+                attributes.roundCorners = .all(radius: 25)
+                attributes.entranceAnimation = .init(translate: .init(duration: 0.7, spring: .init(damping: 1, initialVelocity: 0)), scale: .init(from: 1.05, to: 1, duration: 0.4, spring: .init(damping: 1, initialVelocity: 0)))
+                attributes.exitAnimation = .init(translate: .init(duration: 0.2))
+                attributes.popBehavior = .animated(animation: .init(translate: .init(duration: 0.2)))
+                attributes.positionConstraints.verticalOffset = 20
+                attributes.positionConstraints.size = .init(width: .offset(value: 20), height: .intrinsic)
+                attributes.positionConstraints.maxSize = .init(width: .constant(value: min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)), height: .intrinsic)
+                attributes.statusBar = .dark
+                return attributes
+            }
+            let simpleMessage = EKSimpleMessage(image: EKProperty.ImageContent(image: image, size: sizeImage, contentMode: contentModeImage),
+                                                title: EKProperty.LabelContent(text: NSLocalizedString(title, comment: ""), style: .init(font: MainFont.medium.with(size: 15), color: EKColor(textColor)), accessibilityIdentifier: "title"),
+                                                description: EKProperty.LabelContent(text: NSLocalizedString(description, comment: ""), style: .init( font: MainFont.light.with(size: 13), color: EKColor(textColor)), accessibilityIdentifier: "description"))
+            let cancelButton = EKProperty.ButtonContent(label: EKProperty.LabelContent(text: NSLocalizedString(textCancelButton, comment: ""), style: EKProperty.LabelStyle(font: MainFont.medium.with(size: 16), color: EKColor(textColor))),
+                                                        backgroundColor: .clear,
+                                                        highlightedBackgroundColor: EKColor(UIColor.lightGray),
+                                                        accessibilityIdentifier: "close") {
+                                                            SwiftEntryKit.dismiss()
+                                                            completion("close")
+                }
+            let okButton = EKProperty.ButtonContent(label: EKProperty.LabelContent(text: NSLocalizedString(textOkButton, comment: ""), style: EKProperty.LabelStyle(font: MainFont.medium.with(size: 16), color: EKColor(textColor))),
+                                                    backgroundColor: .clear,
+                                                    highlightedBackgroundColor: EKColor(UIColor.lightGray),
+                                                    displayMode: EKAttributes.DisplayMode.inferred,
+                                                    accessibilityIdentifier: "ok") {
+                                                        SwiftEntryKit.dismiss()
+                                                        completion("ok")
+                }
+            let buttonsBarContent = EKProperty.ButtonBarContent(with: cancelButton, okButton, separatorColor: EKColor(textColor), buttonHeight: 60, expandAnimatedly: true)
+            let alertMessage = EKAlertMessage(simpleMessage: simpleMessage, imagePosition: .left, buttonBarContent: buttonsBarContent)
+            let contentView = EKAlertMessageView(with: alertMessage)
+
+            SwiftEntryKit.display(entry: contentView, using: buttonAttributes)
+        }
+    }
 
     func noteTop(text: String, image: UIImage?, color: UIColor? = nil, type: messageType? = nil, delay: TimeInterval, priority: EKAttributes.Precedence.Priority = .normal, dropEnqueuedEntries: Bool = false) {
-
-        if SwiftEntryKit.isCurrentlyDisplaying(entryNamed: text) { return }
-
         DispatchQueue.main.async {
+            if SwiftEntryKit.isCurrentlyDisplaying(entryNamed: text) {
+                return
+            }
             var attributes = EKAttributes.topNote
 
             attributes.windowLevel = .normal
@@ -246,7 +281,6 @@ class NCContentPresenter: NSObject {
                 attributes.entryBackground = .color(color: EKColor(self.getBackgroundColorFromType(type)))
             }
             attributes.precedence = .override(priority: priority, dropEnqueuedEntries: dropEnqueuedEntries)
-
             let style = EKProperty.LabelStyle(font: MainFont.light.with(size: 14), color: .white, alignment: .center)
             let labelContent = EKProperty.LabelContent(text: text, style: style)
 
@@ -294,5 +328,4 @@ class NCContentPresenter: NSObject {
             return UIImage(named: "iconInfo")!
         }
     }
-
 }
