@@ -185,7 +185,7 @@ class NCContentPresenter: NSObject {
                 return
             }
             var attributes = EKAttributes.topFloat
-            
+
             attributes.windowLevel = .normal
             attributes.displayDuration = delay
             attributes.name = title + description
@@ -194,15 +194,14 @@ class NCContentPresenter: NSObject {
             attributes.shadow = .active(with: .init(color: .black, opacity: 0.5, radius: 10, offset: .zero))
             attributes.scroll = .enabled(swipeable: true, pullbackAnimation: .jolt)
             attributes.precedence = .override(priority: priority, dropEnqueuedEntries: dropEnqueuedEntries)
-            
+
             let title = EKProperty.LabelContent(text: title, style: .init(font: MainFont.bold.with(size: 16), color: .white))
             let description = EKProperty.LabelContent(text: description, style: .init(font: MainFont.medium.with(size: 13), color: .white))
             let imageMessage = EKProperty.ImageContent(image: getImageFromType(type), size: CGSize(width: 35, height: 35))
-            
             let simpleMessage = EKSimpleMessage(image: imageMessage, title: title, description: description)
             let notificationMessage = EKNotificationMessage(simpleMessage: simpleMessage)
-            
             let contentView = EKNotificationMessageView(with: notificationMessage)
+
             SwiftEntryKit.display(entry: contentView, using: attributes)
         }
     }
@@ -221,6 +220,7 @@ class NCContentPresenter: NSObject {
         DispatchQueue.main.async {
             var buttonAttributes: EKAttributes {
                 var attributes = attributes
+
                 attributes.hapticFeedbackType = .success
                 attributes.displayDuration = .infinity
                 attributes.entryBackground = .color(color: EKColor(backgroundColor))
@@ -238,34 +238,28 @@ class NCContentPresenter: NSObject {
                 attributes.statusBar = .dark
                 return attributes
             }
-            
             let simpleMessage = EKSimpleMessage(image: EKProperty.ImageContent(image: image, size: sizeImage, contentMode: contentModeImage),
                                                 title: EKProperty.LabelContent(text: NSLocalizedString(title, comment: ""), style: .init(font: MainFont.medium.with(size: 15), color: EKColor(textColor)), accessibilityIdentifier: "title"),
                                                 description: EKProperty.LabelContent(text: NSLocalizedString(description, comment: ""), style: .init( font: MainFont.light.with(size: 13), color: EKColor(textColor)), accessibilityIdentifier: "description"))
-            
-            let cancelButton = EKProperty.ButtonContent(
-                label: EKProperty.LabelContent(text: NSLocalizedString(textCancelButton, comment: ""), style: EKProperty.LabelStyle(font: MainFont.medium.with(size: 16), color: EKColor(textColor))),
-                backgroundColor: .clear,
-                highlightedBackgroundColor: EKColor(UIColor.lightGray),
-                accessibilityIdentifier: "close") {
-                    SwiftEntryKit.dismiss()
-                    completion("close")
+            let cancelButton = EKProperty.ButtonContent(label: EKProperty.LabelContent(text: NSLocalizedString(textCancelButton, comment: ""), style: EKProperty.LabelStyle(font: MainFont.medium.with(size: 16), color: EKColor(textColor))),
+                                                        backgroundColor: .clear,
+                                                        highlightedBackgroundColor: EKColor(UIColor.lightGray),
+                                                        accessibilityIdentifier: "close") {
+                                                            SwiftEntryKit.dismiss()
+                                                            completion("close")
                 }
-            
-            let okButton = EKProperty.ButtonContent(
-                label: EKProperty.LabelContent(text: NSLocalizedString(textOkButton, comment: ""), style: EKProperty.LabelStyle(font: MainFont.medium.with(size: 16), color: EKColor(textColor))),
-                backgroundColor: .clear,
-                highlightedBackgroundColor: EKColor(UIColor.lightGray),
-                displayMode: EKAttributes.DisplayMode.inferred,
-                accessibilityIdentifier: "ok") {
-                    SwiftEntryKit.dismiss()
-                    completion("ok")
+            let okButton = EKProperty.ButtonContent(label: EKProperty.LabelContent(text: NSLocalizedString(textOkButton, comment: ""), style: EKProperty.LabelStyle(font: MainFont.medium.with(size: 16), color: EKColor(textColor))),
+                                                    backgroundColor: .clear,
+                                                    highlightedBackgroundColor: EKColor(UIColor.lightGray),
+                                                    displayMode: EKAttributes.DisplayMode.inferred,
+                                                    accessibilityIdentifier: "ok") {
+                                                        SwiftEntryKit.dismiss()
+                                                        completion("ok")
                 }
-            
             let buttonsBarContent = EKProperty.ButtonBarContent(with: cancelButton, okButton, separatorColor: EKColor(textColor), buttonHeight: 60, expandAnimatedly: true)
             let alertMessage = EKAlertMessage(simpleMessage: simpleMessage, imagePosition: .left, buttonBarContent: buttonsBarContent)
             let contentView = EKAlertMessageView(with: alertMessage)
-            
+
             SwiftEntryKit.display(entry: contentView, using: buttonAttributes)
         }
     }
@@ -287,7 +281,6 @@ class NCContentPresenter: NSObject {
                 attributes.entryBackground = .color(color: EKColor(self.getBackgroundColorFromType(type)))
             }
             attributes.precedence = .override(priority: priority, dropEnqueuedEntries: dropEnqueuedEntries)
-
             let style = EKProperty.LabelStyle(font: MainFont.light.with(size: 14), color: .white, alignment: .center)
             let labelContent = EKProperty.LabelContent(text: text, style: style)
 
