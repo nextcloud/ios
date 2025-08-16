@@ -250,39 +250,42 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
     }
 
     func tapAction(with notification: NKNotifications, label: String, sender: Any?) {
-        if notification.app == NCGlobal.shared.spreedName,
-           let roomToken = notification.objectId.split(separator: "/").first,
-           let talkUrl = URL(string: "nextcloudtalk://open-conversation?server=\(session.urlBase)&user=\(session.userId)&withRoomToken=\(roomToken)"),
-           UIApplication.shared.canOpenURL(talkUrl) {
-            UIApplication.shared.open(talkUrl)
-        } else if let actions = notification.actions,
-                  let jsonActions = JSON(actions).array,
-                  let action = jsonActions.first(where: { $0["label"].string == label }) {
-                      let serverUrl = action["link"].stringValue
-            let method = action["type"].stringValue
+        guard let actions = notification.actions,
+              let jsonActions = JSON(actions).array,
+              let action = jsonActions.first(where: { $0["label"].string == label })
+        else { return }
 
-            if method == "WEB", let url = action["link"].url {
-                UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                return
+        let serverUrl = action["link"].stringValue
+        let method = action["type"].stringValue
+
+        if method == "WEB", var url = action["link"].url {
+            if notification.app == NCGlobal.shared.spreedName,
+               let roomToken = notification.objectId.split(separator: "/").first,
+               let talkUrl = URL(string: "nextcloudtalk://open-conversation?server=\(session.urlBase)&user=\(session.userId)&withRoomToken=\(roomToken)"),
+               UIApplication.shared.canOpenURL(talkUrl) {
+
+                url = talkUrl
             }
 
-            NextcloudKit.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method, account: session.account) { _, _, error in
-                if error == .success {
-                    if let index = self.notifications.firstIndex(where: { $0.idNotification == notification.idNotification }) {
-                        self.notifications.remove(at: index)
-                    }
-                    self.tableView.reloadData()
-                    if self.navigationController?.presentingViewController != nil, notification.app == NCGlobal.shared.twoFactorNotificatioName {
-                        self.dismiss(animated: true)
-                    }
-                } else if error != .success {
-                    NCContentPresenter().showError(error: error)
-                } else {
-                    print("[Error] The user has been changed during networking process.")
+            UIApplication.shared.open(url)
+            return
+        }
+
+        NextcloudKit.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method, account: session.account) { _, _, error in
+            if error == .success {
+                if let index = self.notifications.firstIndex(where: { $0.idNotification == notification.idNotification }) {
+                    self.notifications.remove(at: index)
                 }
-
+                self.tableView.reloadData()
+                if self.navigationController?.presentingViewController != nil, notification.app == NCGlobal.shared.twoFactorNotificatioName {
+                    self.dismiss(animated: true)
+                }
+            } else if error != .success {
+                NCContentPresenter().showError(error: error)
+            } else {
+                print("[Error] The user has been changed during networking process.")
             }
-        } // else: Action not found
+        }
     }
 
     func tapMore(with notification: NKNotifications, sender: Any?) {
