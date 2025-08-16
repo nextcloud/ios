@@ -44,8 +44,7 @@ class NCPushNotification {
         guard let keyPair = NCPushNotificationEncryption.shared().generatePushNotificationsKeyPair(account),
               let pushKitToken,
               let pushTokenHash = NCEndToEndEncryption.shared().createSHA512(pushKitToken),
-              let pushPublicKey = keychain.getPushNotificationPublicKey(account: account),
-              let pushDevicePublicKey = String(data: pushPublicKey, encoding: .utf8) else {
+              let pushDevicePublicKey = String(data: keyPair.publicKey, encoding: .utf8) else {
             return
         }
 
