@@ -290,7 +290,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
                         await NCCreateDocument().createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "text", creatorId: creator.identifier, templateId: "document", account: session.account)
                     case self.global.actionVoiceMemo:
-                        NCAskAuthorization().askAuthorizationAudioRecord(viewController: controller) { hasPermission in
+                        NCAskAuthorization().askAuthorizationAudioRecord(controller: controller) { hasPermission in
                             if hasPermission {
                                 if let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as? NCAudioRecorderViewController {
                                     viewController.controller = controller
