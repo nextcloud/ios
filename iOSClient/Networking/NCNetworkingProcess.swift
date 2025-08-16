@@ -127,6 +127,8 @@ actor NCNetworkingProcess {
 
                 await runMetadataPipelineAsync()
 
+                //TODO: Check temperature
+                
                 if lastUsedInterval != minInterval {
                     await startTimer(interval: minInterval)
                 }
