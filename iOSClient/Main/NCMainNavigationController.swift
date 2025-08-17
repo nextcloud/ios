@@ -43,7 +43,6 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         item.tag = menuButtonTag
         return item
     }
-
     lazy var assistantButton: UIButton = {
         let button = UIButton(type: .system)
         return button
@@ -170,24 +169,28 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     // MARK: - Right
 
     func setNavigationRightItems() async {
-        if let collectionViewCommon,
-           collectionViewCommon.isEditMode {
-            collectionViewCommon.tabBarSelect?.update(fileSelect: collectionViewCommon.fileSelect, metadatas: collectionViewCommon.getSelectedMetadatas(), userId: session.userId)
+        if let collectionViewCommon, collectionViewCommon.isEditMode {
+            collectionViewCommon.tabBarSelect?.update(fileSelect: collectionViewCommon.fileSelect,
+                                                      metadatas: collectionViewCommon.getSelectedMetadatas(),
+                                                      userId: session.userId)
             collectionViewCommon.tabBarSelect?.show()
 
             let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .plain) {
                 collectionViewCommon.setEditMode(false)
             }
+
             collectionViewCommon.navigationItem.rightBarButtonItems = [select]
-        } else if let trashViewController,
-                    trashViewController.isEditMode {
+
+        } else if let trashViewController, trashViewController.isEditMode {
             trashViewController.tabBarSelect.update(selectOcId: [])
             trashViewController.tabBarSelect.show()
 
             let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .plain) {
                 trashViewController.setEditMode(false)
             }
+
             trashViewController.navigationItem.rightBarButtonItems = [select]
+
         } else {
             trashViewController?.tabBarSelect?.hide()
             collectionViewCommon?.tabBarSelect?.hide()
