@@ -441,14 +441,12 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             return nil
         }
         let layoutForView = await self.database.getLayoutForViewAsync(account: session.account, key: trashViewController.layoutKey, serverUrl: "")
-        var isSelectAvailable: Bool = false
 
-        if let datasource = trashViewController.datasource, !datasource.isEmpty {
-            isSelectAvailable = true
-        }
-
-        let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: utility.loadImage(named: "checkmark.circle", colors: [NCBrandColor.shared.iconImageColor]), attributes: isSelectAvailable ? [] : .disabled) { _ in
+        let select = UIAction(title: NSLocalizedString("_select_", comment: ""),
+                              image: utility.loadImage(named: "checkmark.circle"),
+                              attributes: (trashViewController.datasource?.isEmpty ?? true) ? .disabled : []) { _ in
             trashViewController.setEditMode(true)
+            trashViewController.collectionView.reloadData()
         }
         let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: utility.loadImage(named: "list.bullet", colors: [NCBrandColor.shared.iconImageColor]), state: layoutForView.layout == self.global.layoutList ? .on : .off) { _ in
             Task {
