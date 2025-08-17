@@ -354,12 +354,12 @@ final class NCPreferences: NSObject {
     }
 
     func setPersonalFilesOnly(account: String, value: Bool) {
-        let userDefaultsKey = "personalFilesOnly" + "_\(account)"
+        let userDefaultsKey = "personalfilesonly" + "_\(account)"
         setUserDefaults(value, forKey: userDefaultsKey)
     }
 
     func getPersonalFilesOnly(account: String) -> Bool {
-        return getBoolPreference(key: "personalFilesOnly", account: account, defaultValue: true)
+        return getBoolPreference(key: "personalfilesonly", account: account, defaultValue: false)
     }
 
     func setFavoriteOnTop(account: String, value: Bool) {
