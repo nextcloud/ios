@@ -59,14 +59,12 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
         pageControl.currentPageIndicatorTintColor = textColor
         pageControl.pageIndicatorTintColor = .lightGray
 
-        buttonLogin.layer.cornerRadius = 20
+        buttonLogin.layer.cornerRadius = 8
         buttonLogin.setTitleColor(NCBrandColor.shared.customer, for: .normal)
         buttonLogin.backgroundColor = textColor
         buttonLogin.setTitle(NSLocalizedString("_log_in_", comment: ""), for: .normal)
 
-        buttonSignUp.layer.cornerRadius = 20
-        buttonSignUp.layer.borderColor = textColor.cgColor
-        buttonSignUp.layer.borderWidth = 1.0
+        buttonSignUp.layer.cornerRadius = 8
         buttonSignUp.setTitleColor(textColor, for: .normal)
         buttonSignUp.backgroundColor = NCBrandColor.shared.customer
         buttonSignUp.titleLabel?.adjustsFontSizeToFitWidth = true
