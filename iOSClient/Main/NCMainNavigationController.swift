@@ -283,7 +283,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             return nil
         }
         var showRecommendedFiles: UIAction?
-        let layoutForView = await database.getLayoutForViewAsync(account: session.account, key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl)
+        let layoutForView = database.getLayoutForView(account: session.account, key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl)
         let select = UIAction(title: NSLocalizedString("_select_", comment: ""),
                               image: utility.loadImage(named: "checkmark.circle"),
                               attributes: (collectionViewCommon.dataSource.isEmpty() || NCNetworking.shared.isOffline) ? .disabled : []) { _ in
@@ -440,7 +440,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         guard let trashViewController else {
             return nil
         }
-        let layoutForView = await self.database.getLayoutForViewAsync(account: session.account, key: trashViewController.layoutKey, serverUrl: "")
+        let layoutForView = self.database.getLayoutForView(account: session.account, key: trashViewController.layoutKey, serverUrl: "")
 
         let select = UIAction(title: NSLocalizedString("_select_", comment: ""),
                               image: utility.loadImage(named: "checkmark.circle"),
