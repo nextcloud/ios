@@ -430,7 +430,8 @@ extension NCNetworking {
         } else {
             if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
                 self.uploadCancelFile(metadata: metadata)
-            } else if error.errorCode == self.global.errorBadRequest || error.errorCode == self.global.errorUnsupportedMediaType {
+            } else if (error.errorCode == self.global.errorBadRequest || error.errorCode == self.global.errorUnsupportedMediaType) &&
+                       error.errorDescription.localizedCaseInsensitiveContains("virus") {
                 self.uploadCancelFile(metadata: metadata)
                 NCContentPresenter().showError(error: NKError(errorCode: error.errorCode, errorDescription: "_virus_detect_"))
 
