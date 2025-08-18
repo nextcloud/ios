@@ -40,7 +40,7 @@ extension NCScan: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if collectionView == collectionViewSource {
             let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "cell1", for: indexPath) as? NCScanCell)!
-            let fileNamePath = utilityFileSystem.directoryScan + "/" + itemsSource[indexPath.row]
+            let fileNamePath = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryScan, fileName: itemsSource[indexPath.row])
             guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePath)), var image = UIImage(data: data) else { return cell }
             let imageWidthInPixels = image.size.width * image.scale
             let imageHeightInPixels = image.size.height * image.scale
@@ -56,7 +56,7 @@ extension NCScan: UICollectionViewDataSource {
             cell.delete.action(for: .touchUpInside) { sender in
                 let buttonPosition: CGPoint = (sender as? UIButton)!.convert(.zero, to: self.collectionViewSource)
                 if let indexPath = self.collectionViewSource.indexPathForItem(at: buttonPosition) {
-                    let fileNameAtPath = self.utilityFileSystem.directoryScan + "/" + self.itemsSource[indexPath.row]
+                    let fileNameAtPath = self.utilityFileSystem.createServerUrl(serverUrl: self.utilityFileSystem.directoryScan, fileName: self.itemsSource[indexPath.row])
                     self.utilityFileSystem.removeFile(atPath: fileNameAtPath)
                     self.itemsSource.remove(at: indexPath.row)
                     self.collectionViewSource.deleteItems(at: [indexPath])
@@ -66,7 +66,7 @@ extension NCScan: UICollectionViewDataSource {
                 let buttonPosition: CGPoint = (sender as? UIButton)!.convert(.zero, to: self.collectionViewSource)
                 if let indexPath = self.collectionViewSource.indexPathForItem(at: buttonPosition) {
                     let fileName = self.itemsSource[indexPath.row]
-                    let fileNameAtPath = NCUtilityFileSystem().directoryScan + "/" + fileName
+                    let fileNameAtPath = self.utilityFileSystem.createServerUrl(serverUrl: self.utilityFileSystem.directoryScan, fileName: fileName)
                     let fileNameToPath = NSTemporaryDirectory() + fileName
                     NCUtilityFileSystem().copyFile(atPath: fileNameAtPath, toPath: fileNameToPath)
                     let metadata = tableMetadata()

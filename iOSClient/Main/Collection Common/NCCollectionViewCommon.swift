@@ -537,35 +537,54 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - Layout
 
     func changeLayout(layoutForView: NCDBLayoutForView) {
-        if self.layoutForView?.layout == layoutForView.layout {
-            self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
-            Task {
-                await self.reloadDataSource()
+        let homeServer = utilityFileSystem.getHomeServer(urlBase: session.urlBase, userId: session.userId)
+
+        func changeLayout(withSubFolders: Bool) {
+            if self.layoutForView?.layout == layoutForView.layout {
+                self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView, withSubFolders: withSubFolders)
+                Task {
+                    await self.reloadDataSource()
+                }
+                return
             }
-            return
+
+            self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView, withSubFolders: withSubFolders)
+            layoutForView.layout = layoutForView.layout
+            self.layoutType = layoutForView.layout
+
+            collectionView.reloadData()
+
+            switch layoutForView.layout {
+            case global.layoutList:
+                self.collectionView.setCollectionViewLayout(self.listLayout, animated: true)
+            case global.layoutGrid:
+                self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true)
+            case global.layoutPhotoSquare, global.layoutPhotoRatio:
+                self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true)
+            default:
+                break
+            }
+
+            self.collectionView.collectionViewLayout.invalidateLayout()
+
+            Task {
+                await (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
+            }
         }
 
-        self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
-        layoutForView.layout = layoutForView.layout
-        self.layoutType = layoutForView.layout
+        if serverUrl == homeServer {
+            changeLayout(withSubFolders: false)
+        } else {
+            let alertController = UIAlertController(title: NSLocalizedString("_propagate_layout_", comment: ""), message: nil, preferredStyle: .alert)
 
-        collectionView.reloadData()
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { _ in
+                changeLayout(withSubFolders: true)
+            }))
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { _ in
+                changeLayout(withSubFolders: false)
+            }))
 
-        switch layoutForView.layout {
-        case global.layoutList:
-            self.collectionView.setCollectionViewLayout(self.listLayout, animated: true)
-        case global.layoutGrid:
-            self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true)
-        case global.layoutPhotoSquare, global.layoutPhotoRatio:
-            self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true)
-        default:
-            break
-        }
-
-        self.collectionView.collectionViewLayout.invalidateLayout()
-
-        Task {
-            await (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
+            self.present(alertController, animated: true)
         }
     }
 
@@ -902,7 +921,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let navigationCollectionViewCommon = self.controller?.navigationCollectionViewCommon else {
             return
         }
-        let serverUrlPush = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
+        let serverUrlPush = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
 
         if let viewController = navigationCollectionViewCommon.first(where: { $0.navigationController == self.navigationController && $0.serverUrl == serverUrlPush})?.viewController, viewController.isViewLoaded {
             navigationController?.pushViewController(viewController, animated: true)

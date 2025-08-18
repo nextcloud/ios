@@ -13,6 +13,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     let fileProviderData = FileProviderData.shared
     let providerUtility = fileProviderUtility()
     let database = NCManageDatabase.shared
+    let utilityFileSystem = NCUtilityFileSystem()
     var anchor: UInt64 = 0
     // X-NC-PAGINATE
     var recordsPerPage: Int = 100
@@ -32,7 +33,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         } else {
             if let metadata = providerUtility.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier),
                let directorySource = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
-                serverUrl = directorySource.serverUrl + "/" + metadata.fileName
+                serverUrl = utilityFileSystem.createServerUrl(serverUrl: directorySource.serverUrl, fileName: metadata.fileName)
             }
         }
     }
@@ -230,7 +231,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             // DIRECTORY
             for metadata in metadatas {
                 if metadata.isDirectory {
-                    let serverUrl = serverUrl + "/" + metadata.fileName
+                    let serverUrl = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: metadata.fileName)
                     await self.database.addDirectoryAsync(serverUrl: serverUrl,
                                                           ocId: metadata.ocId,
                                                           fileId: metadata.fileId,

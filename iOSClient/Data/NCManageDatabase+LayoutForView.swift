@@ -15,7 +15,6 @@ class NCDBLayoutForView: Object {
     @Persisted var sort: String = "fileName"
     @Persisted var ascending: Bool = true
     @Persisted var groupBy: String = "none"
-    @Persisted var titleButtonHeader: String = "_sorted_by_name_a_z_"
     @Persisted var columnGrid: Int = 3
     @Persisted var columnPhoto: Int = 3
 }
@@ -24,17 +23,10 @@ extension NCManageDatabase {
 
     // MARK: - Realm write
 
-    @discardableResult
     func setLayoutForView(account: String,
                           key: String,
                           serverUrl: String,
-                          layout: String? = nil,
-                          sort: String? = nil,
-                          ascending: Bool? = nil,
-                          groupBy: String? = nil,
-                          titleButtonHeader: String? = nil,
-                          columnGrid: Int? = nil,
-                          columnPhoto: Int? = nil) -> NCDBLayoutForView? {
+                          layout: String? = nil) {
         let keyStore = serverUrl.isEmpty ? key : serverUrl
         let indexKey = account + " " + keyStore
         var finalObject = NCDBLayoutForView()
@@ -47,27 +39,42 @@ extension NCManageDatabase {
                 finalObject.account = account
                 finalObject.keyStore = keyStore
             }
-
-            if let layout { finalObject.layout = layout }
-            if let sort { finalObject.sort = sort }
-            if let ascending { finalObject.ascending = ascending }
-            if let groupBy { finalObject.groupBy = groupBy }
-            if let titleButtonHeader { finalObject.titleButtonHeader = titleButtonHeader }
-            if let columnGrid { finalObject.columnGrid = columnGrid }
-            if let columnPhoto { finalObject.columnPhoto = columnPhoto }
+            if let layout {
+                finalObject.layout = layout
+            }
 
             realm.add(finalObject, update: .all)
         }
-
-        return finalObject
     }
 
     @discardableResult
-    func setLayoutForView(layoutForView: NCDBLayoutForView) -> NCDBLayoutForView? {
+    func setLayoutForView(layoutForView: NCDBLayoutForView, withSubFolders subFolders: Bool = false) -> NCDBLayoutForView? {
         let object = NCDBLayoutForView(value: layoutForView)
 
-        performRealmWrite { realm in
-            realm.add(object, update: .all)
+        if subFolders {
+            let keyStore = layoutForView.keyStore
+            if let layouts = performRealmRead({
+                $0.objects(NCDBLayoutForView.self)
+                    .filter("keyStore BEGINSWITH %@", keyStore)
+                    .map { NCDBLayoutForView(value: $0) }
+            }) {
+                for layout in layouts {
+                    layout.layout = layoutForView.layout
+                    layout.sort = layoutForView.sort
+                    layout.ascending = layoutForView.ascending
+                    layout.groupBy = layoutForView.groupBy
+                    layout.columnGrid = layoutForView.columnGrid
+                    layout.columnPhoto = layoutForView.columnPhoto
+
+                    performRealmWrite { realm in
+                        realm.add(layout, update: .all)
+                    }
+                }
+            }
+        } else {
+            performRealmWrite { realm in
+                realm.add(object, update: .all)
+            }
         }
 
         return NCDBLayoutForView(value: object)
@@ -88,51 +95,82 @@ extension NCManageDatabase {
             return layout
         }
 
-        DispatchQueue.global(qos: .utility).async {
-            _ = self.setLayoutForView(account: account, key: key, serverUrl: serverUrl, layout: layout)
-        }
-
-        let placeholder = NCDBLayoutForView()
-        placeholder.index = index
-        placeholder.account = account
-        placeholder.keyStore = keyStore
-        if let layout {
-            placeholder.layout = layout
-        }
-        return placeholder
-    }
-
-    /// Returns the stored layout for a given account and key, or creates a placeholder.
-    /// If not found, triggers an async write to persist the layout.
-    func getLayoutForViewAsync(account: String, key: String, serverUrl: String, layout: String? = nil) async -> NCDBLayoutForView {
-        let keyStore = serverUrl.isEmpty ? key : serverUrl
-        let index = account + " " + keyStore
-
-        // Try to read from Realm
-        if let existing = await performRealmReadAsync({ realm in
-            realm.objects(NCDBLayoutForView.self)
-                .filter("index == %@", index)
+        let tblAccount = performRealmRead { realm in
+            realm.objects(tableAccount.self)
+                .filter("account == %@", account)
                 .first
-                .map { NCDBLayoutForView(value: $0) }
-        }) {
-            return existing
         }
 
-        // Return placeholder immediately
+        if let tblAccount {
+            let home = utilityFileSystem.getHomeServer(urlBase: tblAccount.urlBase, userId: tblAccount.userId)
+            let defaultServerUrlAutoUpload = utilityFileSystem.createServerUrl(serverUrl: home, fileName: NCBrandOptions.shared.folderDefaultAutoUpload)
+            var serverUrlAutoUpload = tblAccount.autoUploadDirectory.isEmpty ? home : tblAccount.autoUploadDirectory
+
+            if tblAccount.autoUploadFileName.isEmpty {
+                serverUrlAutoUpload += "/" + NCBrandOptions.shared.folderDefaultAutoUpload
+            } else {
+                serverUrlAutoUpload += "/" + tblAccount.autoUploadFileName
+            }
+
+            if serverUrl == defaultServerUrlAutoUpload || serverUrl == serverUrlAutoUpload {
+
+                // AutoUpload serverUrl / Photo
+                let photosLayoutForView = NCDBLayoutForView()
+                photosLayoutForView.index = index
+                photosLayoutForView.account = account
+                photosLayoutForView.keyStore = keyStore
+                photosLayoutForView.layout = NCGlobal.shared.layoutPhotoSquare
+                photosLayoutForView.sort = "date"
+                photosLayoutForView.ascending = false
+
+                DispatchQueue.global(qos: .utility).async {
+                    self.setLayoutForView(layoutForView: photosLayoutForView)
+                }
+
+                return photosLayoutForView
+
+            } else if !serverUrl.isEmpty,
+                      let serverDirectoryUp = NCUtilityFileSystem().serverDirectoryUp(serverUrl: serverUrl, home: home) {
+
+                // Get previus serverUrl
+                let index = account + " " + serverDirectoryUp
+                if let previusLayoutForView = performRealmRead({
+                    $0.objects(NCDBLayoutForView.self)
+                        .filter("index == %@", index)
+                        .first
+                        .map { NCDBLayoutForView(value: $0) }
+                }) {
+                    previusLayoutForView.index = account + " " + serverUrl
+                    previusLayoutForView.keyStore = serverUrl
+
+                    DispatchQueue.global(qos: .utility).async {
+                        self.setLayoutForView(layoutForView: previusLayoutForView)
+                    }
+
+                    return previusLayoutForView
+                }
+            }
+        }
+
+        // Standatd layout
+        let layout = layout ?? NCGlobal.shared.layoutList
+        DispatchQueue.global(qos: .utility).async {
+            self.setLayoutForView(account: account, key: key, serverUrl: serverUrl, layout: layout)
+        }
+
         let placeholder = NCDBLayoutForView()
         placeholder.index = index
         placeholder.account = account
         placeholder.keyStore = keyStore
-        if let layout {
-            placeholder.layout = layout
-        }
+        placeholder.layout = layout
+
         return placeholder
     }
 
-    func updateLayoutForView(account: String,
-                             key: String,
-                             serverUrl: String,
-                             updateBlock: @escaping (inout NCDBLayoutForView) -> Void) {
+    func updatePhotoLayoutForView(account: String,
+                                  key: String,
+                                  serverUrl: String,
+                                  updateBlock: @escaping (inout NCDBLayoutForView) -> Void) {
         DispatchQueue.global(qos: .utility).async {
             let keyStore = serverUrl.isEmpty ? key : serverUrl
             let index = account + " " + keyStore
@@ -152,7 +190,6 @@ extension NCManageDatabase {
                 layout.keyStore = keyStore
             }
 
-            // Applica la modifica in modo sicuro
             self.performRealmWrite { realm in
                 updateBlock(&layout)
                 realm.add(layout, update: .all)

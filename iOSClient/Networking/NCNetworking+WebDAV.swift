@@ -60,62 +60,40 @@ extension NCNetworking {
 
     func readFile(serverUrlFileName: String,
                   account: String,
-                  queue: DispatchQueue = NextcloudKit.shared.nkCommonInstance.backgroundQueue,
                   taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
-                  completion: @escaping (_ account: String, _ metadata: tableMetadata?, _ error: NKError) -> Void) {
-        let options = NKRequestOptions(queue: queue)
+                  completion: @escaping (_ account: String, _ metadata: tableMetadata?, _ file: NKFile?, _ error: NKError) -> Void) {
         let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: account)
 
-        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, account: account, options: options) { task in
+        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, account: account) { task in
             taskHandler(task)
         } completion: { account, files, _, error in
             guard error == .success, files?.count == 1, let file = files?.first else {
-                return completion(account, nil, error)
+                return completion(account, nil, nil, error)
             }
             Task {
                 let metadata = await self.database.convertFileToMetadataAsync(file)
 
-                // Remove all known download limits from shares related to the given file.
-                // This avoids obsolete download limit objects to stay around.
-                // Afterwards create new download limits, should any such be returned for the known shares.
-
-                let shares = await self.database.getTableSharesAsync(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
-
-                for share in shares {
-                    await self.database.deleteDownloadLimitAsync(byAccount: metadata.account, shareToken: share.token)
-
-                    if let receivedDownloadLimit = file.downloadLimits.first(where: { $0.token == share.token }) {
-                        await self.database.createDownloadLimitAsync(account: metadata.account,
-                                                                     count: receivedDownloadLimit.count,
-                                                                     limit: receivedDownloadLimit.limit,
-                                                                     token: receivedDownloadLimit.token)
-                    }
-                }
-
-                if queue == .main {
-                    await MainActor.run {
-                        completion(account, metadata, error)
-                    }
-                } else {
-                    completion(account, metadata, error)
-                }
+                completion(account, metadata, file, error)
             }
         }
     }
 
-    /// Async wrapper for `readFile(...)`, returns a tuple with account, metadata and error.
     func readFileAsync(serverUrlFileName: String,
                        account: String,
-                       queue: DispatchQueue = NextcloudKit.shared.nkCommonInstance.backgroundQueue,
                        taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in }) async -> (account: String, metadata: tableMetadata?, error: NKError) {
-        await withCheckedContinuation { continuation in
-            readFile(serverUrlFileName: serverUrlFileName,
-                     account: account,
-                     queue: queue,
-                     taskHandler: taskHandler) { account, metadata, error in
-                continuation.resume(returning: (account, metadata, error))
-            }
+        let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: account)
+        let results = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrlFileName,
+                                                                      depth: "0",
+                                                                      showHiddenFiles: showHiddenFiles,
+                                                                      account: account) { task in
+            taskHandler(task)
         }
+        guard results.error == .success, results.files?.count == 1, let file = results.files?.first else {
+            return (account, nil, results.error)
+        }
+        let metadata = await self.database.convertFileToMetadataAsync(file)
+
+        return(account, metadata, results.error)
     }
 
     func fileExists(serverUrlFileName: String,
@@ -190,7 +168,8 @@ extension NCNetworking {
                 newFileName()
                 continue
             }
-            let results = await fileExists(serverUrlFileName: serverUrl + "/" + resultFileName, account: account)
+            let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: resultFileName)
+            let results = await fileExists(serverUrlFileName: serverUrlFileName, account: account)
             if results.exists {
                 newFileName()
             } else {
@@ -217,12 +196,12 @@ extension NCNetworking {
         if fileNameFolder.isEmpty {
             return (false, NKError(errorCode: global.errorIncorrectFileName, errorDescription: ""))
         }
-        let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
+        let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileNameFolder)
 
         func writeDirectoryMetadata(_ metadata: tableMetadata) async {
             await self.database.deleteMetadataAsync(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", session.account, fileName, serverUrl))
             await self.database.addMetadataAsync(metadata)
-            await self.database.addDirectoryAsync(serverUrl: fileNameFolderUrl,
+            await self.database.addDirectoryAsync(serverUrl: serverUrlFileName,
                                                   ocId: metadata.ocId,
                                                   fileId: metadata.fileId,
                                                   permissions: metadata.permissions,
@@ -231,7 +210,7 @@ extension NCNetworking {
         }
 
         /* check exists folder */
-        let resultReadFile = await readFileAsync(serverUrlFileName: fileNameFolderUrl, account: session.account)
+        let resultReadFile = await readFileAsync(serverUrlFileName: serverUrlFileName, account: session.account)
         if resultReadFile.error == .success,
             let metadata = resultReadFile.metadata {
             await writeDirectoryMetadata(metadata)
@@ -239,9 +218,9 @@ extension NCNetworking {
         }
 
         /* create folder */
-        let resultCreateFolder = await NextcloudKit.shared.createFolderAsync(serverUrlFileName: fileNameFolderUrl, account: session.account, options: options)
+        let resultCreateFolder = await NextcloudKit.shared.createFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account, options: options)
         if resultCreateFolder.error == .success {
-            let resultReadFile = await readFileAsync(serverUrlFileName: fileNameFolderUrl, account: session.account)
+            let resultReadFile = await readFileAsync(serverUrlFileName: serverUrlFileName, account: session.account)
             if resultReadFile.error == .success,
                let metadata = resultReadFile.metadata {
                 await writeDirectoryMetadata(metadata)
@@ -501,7 +480,7 @@ extension NCNetworking {
                 NCContentPresenter().messageNotification(metadata.fileName, error: error, delay: self.global.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
                 return
             }
-            self.readFile(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account) { _, metadata, error in
+            self.readFile(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account) { _, metadata, _, error in
                 guard error == .success, let metadata = metadata else { return }
                 self.database.addMetadata(metadata)
 
@@ -748,7 +727,7 @@ extension NCNetworking {
         let urlPath = session.urlBase + "/remote.php/dav/files/" + session.user + filePath
 
         dispatchGroup?.enter()
-        self.readFile(serverUrlFileName: urlPath, account: session.account) { account, metadata, error in
+        self.readFile(serverUrlFileName: urlPath, account: session.account) { account, metadata, _, error in
             defer { dispatchGroup?.leave() }
             guard let metadata else { return }
             let returnMetadata = tableMetadata.init(value: metadata)
@@ -759,6 +738,7 @@ extension NCNetworking {
 }
 
 class NCOperationDownloadAvatar: ConcurrentOperation, @unchecked Sendable {
+    let utilityFileSystem = NCUtilityFileSystem()
     var user: String
     var fileName: String
     var etag: String?
@@ -776,10 +756,13 @@ class NCOperationDownloadAvatar: ConcurrentOperation, @unchecked Sendable {
     }
 
     override func start() {
-        guard !isCancelled else { return self.finish() }
+        guard !isCancelled else {
+            return self.finish()
+        }
+        let fileNameLocalPath = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileName)
 
         NextcloudKit.shared.downloadAvatar(user: user,
-                                           fileNameLocalPath: NCUtilityFileSystem().directoryUserData + "/" + fileName,
+                                           fileNameLocalPath: fileNameLocalPath,
                                            sizeImage: NCGlobal.shared.avatarSize,
                                            avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
                                            etagResource: self.etag,

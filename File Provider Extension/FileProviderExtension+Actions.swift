@@ -14,8 +14,8 @@ extension FileProviderExtension {
                 return completionHandler(nil, NSFileProviderError(.noSuchItem))
             }
             let account = session.account
-            let directoryName = utilityFileSystem.createFileName(directoryName, serverUrl: tableDirectory.serverUrl, account: account)
-            let serverUrlFileName = tableDirectory.serverUrl + "/" + directoryName
+            let fileNameFolder = utilityFileSystem.createFileName(directoryName, serverUrl: tableDirectory.serverUrl, account: account)
+            let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: tableDirectory.serverUrl, fileName: fileNameFolder)
             let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: account)
 
             let resultsCreateFolder = await NextcloudKit.shared.createFolderAsync(serverUrlFileName: serverUrlFileName, account: account)
@@ -63,7 +63,7 @@ extension FileProviderExtension {
                 return
             }
             let ocId = metadata.ocId
-            let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+            let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
             let isDirectory = metadata.directory
             let serverUrl = metadata.serverUrl
             let fileName = metadata.fileName
@@ -81,7 +81,7 @@ extension FileProviderExtension {
                 }
 
                 if isDirectory {
-                    let dirForDelete = self.utilityFileSystem.stringAppendServerUrl(serverUrl, addFileName: fileName)
+                    let dirForDelete = self.utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileName)
                     await self.database.deleteDirectoryAndSubDirectoryAsync(serverUrl: dirForDelete, account: account)
                 }
 
@@ -108,7 +108,7 @@ extension FileProviderExtension {
             }
             let ocIdFrom = metadataFrom.ocId
             let serverUrlFrom = metadataFrom.serverUrl
-            let fileNameFrom = serverUrlFrom + "/" + itemFrom.filename
+            let fileNameFrom = utilityFileSystem.createServerUrl(serverUrl: serverUrlFrom, fileName: itemFrom.filename)
             let account = metadataFrom.account
 
             guard let tableDirectoryTo = await providerUtility.getTableDirectoryFromParentItemIdentifierAsync(parentItemIdentifier, account: account, homeServerUrl: utilityFileSystem.getHomeServer(urlBase: metadataFrom.urlBase, userId: metadataFrom.userId)) else {
@@ -117,9 +117,9 @@ extension FileProviderExtension {
             }
 
             let serverUrlTo = tableDirectoryTo.serverUrl
-            var fileNameTo = serverUrlTo + "/" + itemFrom.filename
+            var fileNameTo = utilityFileSystem.createServerUrl(serverUrl: serverUrlTo, fileName: itemFrom.filename)
             if let newName {
-                fileNameTo = serverUrlTo + "/" + newName
+                fileNameTo = utilityFileSystem.createServerUrl(serverUrl: serverUrlTo, fileName: newName)
             }
 
             let resultsMove = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true, account: metadataFrom.account)
@@ -156,8 +156,8 @@ extension FileProviderExtension {
                 return
             }
             let fileNameFrom = metadata.fileNameView
-            let fileNamePathFrom = metadata.serverUrl + "/" + fileNameFrom
-            let fileNamePathTo = metadata.serverUrl + "/" + itemName
+            let fileNamePathFrom = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: fileNameFrom)
+            let fileNamePathTo = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: itemName)
             let ocId = metadata.ocId
 
             let resultsMove = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: fileNamePathFrom, serverUrlFileNameDestination: fileNamePathTo, overwrite: false, account: metadata.account)

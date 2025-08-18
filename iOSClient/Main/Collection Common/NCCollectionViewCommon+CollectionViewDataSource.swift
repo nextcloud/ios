@@ -14,15 +14,15 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // get auto upload folder
-        self.autoUploadFileName = self.database.getAccountAutoUploadFileName(account: self.session.account)
-        self.autoUploadDirectory = self.database.getAccountAutoUploadDirectory(session: self.session)
+        self.autoUploadFileName = self.database.getAccountAutoUploadFileName(account: session.account)
+        self.autoUploadDirectory = self.database.getAccountAutoUploadDirectory(account: session.account, urlBase: session.urlBase, userId: session.userId)
         // get layout for view
-        self.layoutForView = self.database.getLayoutForView(account: self.session.account, key: self.layoutKey, serverUrl: self.serverUrl)
+        self.layoutForView = self.database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl)
         // is a Directory E2EE
         if isSearchingMode {
             self.isDirectoryE2EE = false
         } else {
-            self.isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: self.serverUrl, urlBase: self.session.urlBase, userId: self.session.userId, account: self.session.account)
+            self.isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account)
         }
         return self.dataSource.numberOfItemsInSection(section)
     }

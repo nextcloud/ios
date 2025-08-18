@@ -67,8 +67,9 @@ extension NCShareExtension: NCAccountRequestDelegate {
                                               groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
             autoUploadFileName = self.database.getAccountAutoUploadFileName(account: account)
-            autoUploadDirectory = self.database.getAccountAutoUploadDirectory(session: session)
-
+            autoUploadDirectory = self.database.getAccountAutoUploadDirectory(account: session.account,
+                                                                              urlBase: session.urlBase,
+                                                                              userId: session.userId)
             serverUrl = utilityFileSystem.getHomeServer(session: session)
 
             setNavigationBar(navigationTitle: NCBrandOptions.shared.brand)

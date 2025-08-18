@@ -260,7 +260,7 @@ extension NCActivity: UITableViewDataSource {
         if !activity.icon.isEmpty {
             activity.icon = activity.icon.replacingOccurrences(of: ".png", with: ".svg")
             let fileNameIcon = (activity.icon as NSString).lastPathComponent
-            let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileNameIcon
+            let fileNameLocalPath = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileNameIcon)
 
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 let image = fileNameIcon.contains(".svg") ? SVGKImage(contentsOfFile: fileNameLocalPath)?.uiImage : UIImage(contentsOfFile: fileNameLocalPath)

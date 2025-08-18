@@ -646,6 +646,7 @@
 "_terms_accept_"            = "I acknowledge that I have read and agree to the above terms of service.";
 "_terms_accepted_"          = "Terms accepted";
 "_recommended_files_"       = "Recommended Files";
+"_propagate_layout_"        = "Apply the following change to all subfolders";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails";
