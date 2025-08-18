@@ -41,9 +41,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     var configPassword: String?
     var configAppPassword: String?
 
-    private var p12Data: Data?
-    private var p12Password: String?
-
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -270,8 +267,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     }
 
     @IBAction func actionButtonLogin(_ sender: Any) {
-        NCNetworking.shared.p12Data = nil
-        NCNetworking.shared.p12Password = nil
         login()
     }
 
@@ -449,13 +444,19 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
         }
     }
 
-    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+    func documentPicker(_: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         let alertEnterPassword = UIAlertController(title: NSLocalizedString("_client_cert_enter_password_", comment: ""), message: "", preferredStyle: .alert)
         alertEnterPassword.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
-        alertEnterPassword.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
-            NCNetworking.shared.p12Data = try? Data(contentsOf: urls[0])
-            NCNetworking.shared.p12Password = alertEnterPassword.textFields?[0].text
-            self.login()
+        alertEnterPassword.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { [self] _ in
+            if let identity = getIdentityFromP12(from: urls[0], password: alertEnterPassword.textFields?[0].text ?? "") {
+                let urlBase = baseUrlTextField.text ?? ""
+                let urlWithoutScheme = urlBase.replacingOccurrences(of: "https://", with: "").replacingOccurrences(of: "http://", with: "")
+                let label = "client_identity_\(urlWithoutScheme)"
+                storeIdentityInKeychain(identity: identity, label: label)
+                self.login()
+            } else {
+                //TODO: Show error if password is incorrect and show alert to reenter password
+            }
         }))
         alertEnterPassword.addTextField { textField in
             textField.isSecureTextEntry = true
@@ -465,9 +466,49 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
         }
     }
 
+    func storeIdentityInKeychain(identity: SecIdentity, label: String) {
+        let addQuery: [String: Any] = [
+            kSecValueRef as String: identity,
+            kSecClass as String: kSecClassIdentity,
+            kSecAttrLabel as String: label,
+            kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock
+        ]
+
+        let classes = [kSecClassIdentity, kSecClassCertificate, kSecClassKey]
+        for secClass in classes {
+            let deleteQuery: [String: Any] = [
+                kSecClass as String: secClass,
+                kSecAttrLabel as String: label,
+                kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock
+            ]
+            let status = SecItemDelete(deleteQuery as CFDictionary)
+            print("Deleting \(secClass): \(status)")
+        }
+
+        let addStatus = SecItemAdd(addQuery as CFDictionary, nil)
+        print("Add status: \(addStatus)")
+
+    }
+
+    func getIdentityFromP12(from url: URL, password: String) -> SecIdentity? {
+        guard let p12Data = try? Data(contentsOf: url) else { return nil }
+
+        let options = [kSecImportExportPassphrase as String: password]
+        var items: CFArray?
+        let status = SecPKCS12Import(p12Data as CFData, options as CFDictionary, &items)
+
+        if status == errSecSuccess,
+           let array = items as? [[String: Any]] {
+            // swiftlint:disable force_cast
+            if let identity = array.first?[kSecImportItemIdentity as String] as! SecIdentity? {
+                // swiftlint:enable force_cast
+                return identity
+            }
+        }
+        return nil
+    }
+
     func onIncorrectPassword() {
-        NCNetworking.shared.p12Data = nil
-        NCNetworking.shared.p12Password = nil
         let alertWrongPassword = UIAlertController(title: NSLocalizedString("_client_cert_wrong_password_", comment: ""), message: "", preferredStyle: .alert)
         alertWrongPassword.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default))
         DispatchQueue.main.async {

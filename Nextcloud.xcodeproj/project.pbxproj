@@ -1352,6 +1352,7 @@
 		C04E2F202A17BB4D001BAD85 /* NextcloudIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NextcloudIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityTableViewCell.swift; sourceTree = "<group>"; };
 		F310B1EE2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCViewerMedia+VisionKit.swift"; sourceTree = "<group>"; };
+		F31D32482E5381960016EB00 /* NextcloudKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = NextcloudKit; path = ../NextcloudKit; sourceTree = SOURCE_ROOT; };
 		F321DA892B71205A00DDA0E6 /* NCTrashSelectTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrashSelectTabBar.swift; sourceTree = "<group>"; };
 		F32FADA82D1176DE007035E2 /* UIButton+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+Extension.swift"; sourceTree = "<group>"; };
 		F3374A802D64AB9E002A38F9 /* StatusInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusInfo.swift; sourceTree = "<group>"; };
@@ -3313,6 +3314,7 @@
 				C04E2F202A17BB4D001BAD85 /* NextcloudIntegrationTests.xctest */,
 				C0046CDA2A17B98400D87C9D /* NextcloudUITests.xctest */,
 				F7F1FBA62E27D13700C79E20 /* Frameworks */,
+				F31D32482E5381960016EB00 /* NextcloudKit */,
 			);
 			sourceTree = "<group>";
 		};
