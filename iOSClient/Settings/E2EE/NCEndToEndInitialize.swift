@@ -123,7 +123,7 @@ class NCEndToEndInitialize: NSObject {
                 let ok = UIAlertAction(title: "OK", style: .default, handler: { _ in
                     let passphrase = passphraseTextField?.text ?? ""
                     let publicKey = NCKeychain().getEndToEndCertificate(account: account)
-                    if let privateKeyData = (NCEndToEndEncryption.shared().decryptPrivateKey(privateKeyChiper, passphrase: passphrase, publicKey: publicKey, iterationCount: 1024)),
+                    if let privateKeyData = (NCEndToEndEncryption.shared().decryptPrivateKey(privateKeyChiper, passphrase: passphrase)),
                        let keyData = Data(base64Encoded: privateKeyData),
                        let privateKey = String(data: keyData, encoding: .utf8) {
                         NCKeychain().setEndToEndPrivateKey(account: account, privateKey: privateKey)
@@ -203,7 +203,7 @@ class NCEndToEndInitialize: NSObject {
 
     private func createNewE2EE(e2ePassphrase: String, error: NKError, copyPassphrase: Bool) {
         var privateKeyString: NSString?
-        guard let privateKeyCipher = NCEndToEndEncryption.shared().encryptPrivateKey(session.userId, directory: utilityFileSystem.directoryUserData, passphrase: e2ePassphrase, privateKey: &privateKeyString, iterationCount: 1024) else {
+        guard let privateKeyCipher = NCEndToEndEncryption.shared().encryptPrivateKey(session.userId, directory: utilityFileSystem.directoryUserData, passphrase: e2ePassphrase, privateKey: &privateKeyString) else {
             let error = NKError(errorCode: error.errorCode, errorDescription: "Error creating private key cipher")
             NCContentPresenter().messageNotification("E2E privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
             return
