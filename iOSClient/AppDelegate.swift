@@ -257,8 +257,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                return
            }
 
-           await NCService().synchronize(account: tblAccount.account)
-           nkLog(tag: self.global.logTagTask, message: "Synchronize for \(tblAccount.account) completed.")
+           //TODO: DISABLE synchronize FOR TEST
+           // await NCService().synchronize(account: tblAccount.account)
+           // nkLog(tag: self.global.logTagTask, message: "Synchronize for \(tblAccount.account) completed.")
 
            let numTransfers = await backgroundSync(tblAccount: tblAccount)
            nkLog(tag: self.global.logTagTask, emoji: .success, message: "Processing task completed with \(numTransfers) transfers of auto upload")
