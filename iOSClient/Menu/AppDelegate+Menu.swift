@@ -98,7 +98,7 @@ extension AppDelegate {
                 icon: utility.loadImage(named: "mic", colors: [NCBrandColor.shared.iconImageColor]),
                 sender: sender,
                 action: { _ in
-                    NCAskAuthorization().askAuthorizationAudioRecord(viewController: controller) { hasPermission in
+                    NCAskAuthorization().askAuthorizationAudioRecord(controller: controller) { hasPermission in
                         if hasPermission {
                             if let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as? NCAudioRecorderViewController {
                                 viewController.controller = controller

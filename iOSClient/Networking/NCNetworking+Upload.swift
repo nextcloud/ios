@@ -23,7 +23,7 @@ extension NCNetworking {
               etag: String?,
               date: Date?,
               size: Int64,
-              headers: [AnyHashable: Any]?,
+              response: AFDataResponse<Data>?,
               error: NKError) {
         let options = NKRequestOptions(customHeader: customHeaders, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         let results = await NextcloudKit.shared.uploadAsync(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: creationDate, dateModificationFile: dateModificationFile, account: account, options: options) { request in
@@ -187,7 +187,7 @@ extension NCNetworking {
             taskHandler(task)
 
             if let task, error == .success {
-                nkLog(debug: " Upload file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
+                nkLog(debug: "Upload file \(metadata.fileNameView) with taskIdentifier \(task.taskIdentifier)")
 
                 if let metadata = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
                                                                               sessionTaskIdentifier: task.taskIdentifier,
