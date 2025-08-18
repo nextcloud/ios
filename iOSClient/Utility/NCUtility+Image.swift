@@ -97,7 +97,7 @@ extension NCUtility {
         } else if let image = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName).image {
             return image
         } else if let displayName, !displayName.isEmpty, let avatarImg = createAvatar(displayName: displayName, size: 30) {
-            return loadImage(named: "person.crop.circle", colors: [NCBrandColor.shared.iconImageColor])
+            return avatarImg
         } else {
             return loadImage(named: "person.crop.circle", colors: [NCBrandColor.shared.iconImageColor])
         }
