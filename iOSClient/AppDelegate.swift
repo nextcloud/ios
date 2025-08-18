@@ -257,7 +257,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                return
            }
 
-           //TODO: DISABLE synchronize FOR TEST
+           // TODO: DISABLE synchronize FOR TEST
            // await NCService().synchronize(account: tblAccount.account)
            // nkLog(tag: self.global.logTagTask, message: "Synchronize for \(tblAccount.account) completed.")
 
