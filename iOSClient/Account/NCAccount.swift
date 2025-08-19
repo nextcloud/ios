@@ -53,7 +53,7 @@ class NCAccount: NSObject {
         await self.database.addAccountAsync(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
 
         // FPE Domains
-        try? await FileProviderDomain().ensureDomainRegistered(userId: userProfile.userId, urlBase: urlBase)
+        try? await FileProviderDomain().ensureDomainRegistered(userId: userProfile.userId, user: "\(user)", urlBase: urlBase)
 
         await changeAccount(account, userProfile: userProfile, controller: controller)
         nkLog(debug: "NCAccount changed user profile to \(userProfile.userId).")

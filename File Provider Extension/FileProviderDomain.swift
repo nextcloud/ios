@@ -14,18 +14,20 @@ class FileProviderDomain: NSObject {
     /// document storage path.
     ///
     /// - Parameters:
-    ///   - userId: The user identifier for the account (e.g. `"user"`).
+    ///   - userId: The user identifier for the account.
+    ///   - user: The user for the account.
     ///   - urlBase: The base URL of the Nextcloud server (e.g. `"https://cloud.nextcloud.com"`).
     ///
     /// - Throws: An error if the domain list cannot be retrieved or if the registration of the new domain fails.
     ///
     /// - Note: If the domain is already registered, the function does nothing.
-    func ensureDomainRegistered(userId: String, urlBase: String) async throws {
+    func ensureDomainRegistered(userId: String, user: String, urlBase: String) async throws {
         guard let urlBase = NSURL(string: urlBase),
               let host = urlBase.host else {
             return
         }
         let domainIdentifier = userId + " (" + host + ")"
+        let displayName = user + " (" + host + ")"
         let relativePath = NCUtilityFileSystem().getPathDomain(userId: userId, host: host)
         let domains = try await NSFileProviderManager.domains()
 
@@ -35,7 +37,7 @@ class FileProviderDomain: NSObject {
 
         let newDomain = NSFileProviderDomain(
             identifier: NSFileProviderDomainIdentifier(rawValue: domainIdentifier),
-            displayName: domainIdentifier,
+            displayName: displayName,
             pathRelativeToDocumentStorage: relativePath
         )
 

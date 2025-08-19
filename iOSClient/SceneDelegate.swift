@@ -98,7 +98,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             // Perform async setup: restore capabilities and ensure file provider domain
             Task {
                 await self.database.getCapabilities(account: tblAccount.account)
-                try? await FileProviderDomain().ensureDomainRegistered(userId: tblAccount.userId, urlBase: tblAccount.urlBase)
+                try? await FileProviderDomain().ensureDomainRegistered(userId: tblAccount.userId, user: tblAccount.user, urlBase: tblAccount.urlBase)
             }
 
             // Append session to internal session manager
