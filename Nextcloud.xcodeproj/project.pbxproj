@@ -6172,7 +6172,7 @@
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 8.9.0;
+				minimumVersion = 12.0.0;
 			};
 		};
 		F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */ = {
@@ -6212,7 +6212,7 @@
 			repositoryURL = "https://github.com/huri000/SwiftEntryKit";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.2.7;
+				minimumVersion = 2.0.0;
 			};
 		};
 		F753BA91281FD8010015BFB6 /* XCRemoteSwiftPackageReference "EasyTipView" */ = {
@@ -6251,8 +6251,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nicklockwood/LRUCache";
 			requirement = {
-				kind = exactVersion;
-				version = 1.0.7;
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.7;
 			};
 		};
 		F76DA961277B760E0082465B /* XCRemoteSwiftPackageReference "Queuer" */ = {
@@ -6275,8 +6275,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/scenee/FloatingPanel";
 			requirement = {
-				kind = exactVersion;
-				version = 3.0.0;
+				kind = upToNextMinorVersion;
+				minimumVersion = 3.0.0;
 			};
 		};
 		F77333862927A72100466E35 /* XCRemoteSwiftPackageReference "OpenSSL" */ = {
