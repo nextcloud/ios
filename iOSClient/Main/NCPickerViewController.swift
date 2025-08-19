@@ -21,24 +21,24 @@ class NCPhotosPickerViewController: NSObject {
     init(controller: NCMainTabBarController, maxSelectedAssets: Int, singleSelectedMode: Bool) {
         self.controller = controller
         super.init()
-
         self.maxSelectedAssets = maxSelectedAssets
         self.singleSelectedMode = singleSelectedMode
 
-        self.openPhotosPickerViewController { assets in
-            if !assets.isEmpty {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    let model = NCUploadAssetsModel(assets: assets, serverUrl: controller.currentServerUrl(), controller: controller)
-                    let view = NCUploadAssetsView(model: model)
-                    let viewController = UIHostingController(rootView: view)
-                    controller.present(viewController, animated: true, completion: nil)
-                }
+        openPhotosPickerViewController { assets in
+            guard !assets.isEmpty else {
+                return
             }
+            let model = NCUploadAssetsModel(assets: assets, serverUrl: controller.currentServerUrl(), controller: controller)
+            let view = NCUploadAssetsView(model: model)
+            let viewController = UIHostingController(rootView: view)
+
+            controller.present(viewController, animated: true, completion: nil)
         }
     }
 
     private func openPhotosPickerViewController(completition: @escaping ([TLPHAsset]) -> Void) {
         var configure = TLPhotosPickerConfigure()
+        var pickerVC: TLPhotosPickerViewController?
 
         configure.cancelTitle = NSLocalizedString("_cancel_", comment: "")
         configure.doneTitle = NSLocalizedString("_done_", comment: "")
@@ -52,24 +52,33 @@ class NCPhotosPickerViewController: NSObject {
         configure.singleSelectedMode = singleSelectedMode
         configure.allowedAlbumCloudShared = true
 
-        let viewController = customPhotoPickerViewController(withTLPHAssets: { assets in
-            completition(assets)
+        pickerVC = customPhotoPickerViewController(withTLPHAssets: { assets in
+            pickerVC?.dismiss(animated: true) {
+                completition(assets)
+            }
         }, didCancel: nil)
-        viewController.didExceedMaximumNumberOfSelection = { _ in
+
+        pickerVC?.didExceedMaximumNumberOfSelection = { _ in
             let error = NKError(errorCode: self.global.errorInternalError, errorDescription: "_limited_dimension_")
             NCContentPresenter().showError(error: error)
         }
-        viewController.handleNoAlbumPermissions = { _ in
+
+        pickerVC?.handleNoAlbumPermissions = { _ in
             let error = NKError(errorCode: self.global.errorInternalError, errorDescription: "_denied_album_")
             NCContentPresenter().showError(error: error)
         }
-        viewController.handleNoCameraPermissions = { _ in
+
+        pickerVC?.handleNoCameraPermissions = { _ in
             let error = NKError(errorCode: self.global.errorInternalError, errorDescription: "_denied_camera_")
             NCContentPresenter().showError(error: error)
         }
-        viewController.configure = configure
 
-        controller.present(viewController, animated: true, completion: nil)
+        pickerVC?.configure = configure
+        guard let pickerVC else {
+            return
+        }
+
+        controller.present(pickerVC, animated: true, completion: nil)
     }
 }
 
