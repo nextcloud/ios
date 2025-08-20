@@ -292,7 +292,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             }
         }
 
-        let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: utility.loadImage(named: "list.bullet"), state: layoutForView.layout == global.layoutList ? .on : .off) { _ in
+        let list = UIAction(title: NSLocalizedString("_list_", comment: ""),
+                            image: utility.loadImage(named: "list.bullet"),
+                            state: layoutForView.layout == global.layoutList ? .on : .off) { _ in
             Task {
                 layoutForView.layout = self.global.layoutList
                 collectionViewCommon.changeLayout(layoutForView: layoutForView)
@@ -300,7 +302,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             }
         }
 
-        let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: utility.loadImage(named: "square.grid.2x2"), state: layoutForView.layout == global.layoutGrid ? .on : .off) { _ in
+        let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""),
+                            image: utility.loadImage(named: "square.grid.2x2"),
+                            state: layoutForView.layout == global.layoutGrid ? .on : .off) { _ in
             Task {
                 layoutForView.layout = self.global.layoutGrid
                 collectionViewCommon.changeLayout(layoutForView: layoutForView)
@@ -308,7 +312,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             }
         }
 
-        let mediaSquare = UIAction(title: NSLocalizedString("_media_square_", comment: ""), image: utility.loadImage(named: "square.grid.3x3"), state: layoutForView.layout == global.layoutPhotoSquare ? .on : .off) { _ in
+        let mediaSquare = UIAction(title: NSLocalizedString("_media_square_", comment: ""),
+                                   image: utility.loadImage(named: "square.grid.3x3"),
+                                   state: layoutForView.layout == global.layoutPhotoSquare ? .on : .off) { _ in
             Task {
                 layoutForView.layout = self.global.layoutPhotoSquare
                 collectionViewCommon.changeLayout(layoutForView: layoutForView)
@@ -316,7 +322,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             }
         }
 
-        let mediaRatio = UIAction(title: NSLocalizedString("_media_ratio_", comment: ""), image: utility.loadImage(named: "rectangle.grid.3x2"), state: layoutForView.layout == self.global.layoutPhotoRatio ? .on : .off) { _ in
+        let mediaRatio = UIAction(title: NSLocalizedString("_media_ratio_", comment: ""),
+                                  image: utility.loadImage(named: "rectangle.grid.3x2"),
+                                  state: layoutForView.layout == self.global.layoutPhotoRatio ? .on : .off) { _ in
             Task {
                 layoutForView.layout = self.global.layoutPhotoRatio
                 collectionViewCommon.changeLayout(layoutForView: layoutForView)
@@ -332,7 +340,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         let isDate = layoutForView.sort == "date"
         let isSize = layoutForView.sort == "size"
 
-        let byName = UIAction(title: NSLocalizedString("_name_", comment: ""), image: isName ? ascendingChevronImage : nil, state: isName ? .on : .off) { _ in
+        let byName = UIAction(title: NSLocalizedString("_name_", comment: ""),
+                              image: isName ? ascendingChevronImage : nil,
+                              state: isName ? .on : .off) { _ in
             Task {
                 if isName {
                     layoutForView.ascending = !layoutForView.ascending
@@ -343,7 +353,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             }
         }
 
-        let byNewest = UIAction(title: NSLocalizedString("_date_", comment: ""), image: isDate ? ascendingChevronImage : nil, state: isDate ? .on : .off) { _ in
+        let byNewest = UIAction(title: NSLocalizedString("_date_", comment: ""),
+                                image: isDate ? ascendingChevronImage : nil,
+                                state: isDate ? .on : .off) { _ in
             Task {
                 if isDate {
                     layoutForView.ascending = !layoutForView.ascending
@@ -354,7 +366,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             }
         }
 
-        let byLargest = UIAction(title: NSLocalizedString("_size_", comment: ""), image: isSize ? ascendingChevronImage : nil, state: isSize ? .on : .off) { _ in
+        let byLargest = UIAction(title: NSLocalizedString("_size_", comment: ""),
+                                 image: isSize ? ascendingChevronImage : nil,
+                                 state: isSize ? .on : .off) { _ in
             Task {
                 if isSize {
                     layoutForView.ascending = !layoutForView.ascending
@@ -365,10 +379,13 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             }
         }
 
-        let sortSubmenu = UIMenu(title: NSLocalizedString("_order_by_", comment: ""), options: .displayInline, children: [byName, byNewest, byLargest])
+        let sortSubmenu = UIMenu(title: NSLocalizedString("_order_by_", comment: ""),
+                                 options: .displayInline,
+                                 children: [byName, byNewest, byLargest])
 
         let favoriteOnTop = NCPreferences().getFavoriteOnTop(account: self.session.account)
-        let favoriteOnTopAction = UIAction(title: NSLocalizedString("_favorite_on_top_", comment: ""), state: favoriteOnTop ? .on : .off) { _ in
+        let favoriteOnTopAction = UIAction(title: NSLocalizedString("_favorite_on_top_", comment: ""),
+                                           state: favoriteOnTop ? .on : .off) { _ in
             Task {
                 NCPreferences().setFavoriteOnTop(account: self.session.account, value: !favoriteOnTop)
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
@@ -379,7 +396,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
 
         let directoryOnTop = NCPreferences().getDirectoryOnTop(account: self.session.account)
-        let directoryOnTopAction = UIAction(title: NSLocalizedString("_directory_on_top_", comment: ""), state: directoryOnTop ? .on : .off) { _ in
+        let directoryOnTopAction = UIAction(title: NSLocalizedString("_directory_on_top_", comment: ""),
+                                            state: directoryOnTop ? .on : .off) { _ in
             Task {
                 NCPreferences().setDirectoryOnTop(account: self.session.account, value: !directoryOnTop)
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
@@ -390,7 +408,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
 
         let hiddenFiles = NCPreferences().getShowHiddenFiles(account: self.session.account)
-        let hiddenFilesAction = UIAction(title: NSLocalizedString("_show_hidden_files_", comment: ""), state: hiddenFiles ? .on : .off) { _ in
+        let hiddenFilesAction = UIAction(title: NSLocalizedString("_show_hidden_files_", comment: ""),
+                                         state: hiddenFiles ? .on : .off) { _ in
             Task {
                 NCPreferences().setShowHiddenFiles(account: self.session.account, value: !hiddenFiles)
                 await self.collectionViewCommon?.getServerData(forced: true)
@@ -399,7 +418,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
 
         let personalFilesOnly = NCPreferences().getPersonalFilesOnly(account: self.session.account)
-        let personalFilesOnlyAction = UIAction(title: NSLocalizedString("_personal_files_only_", comment: ""), image: utility.loadImage(named: "folder.badge.person.crop", colors: NCBrandColor.shared.iconImageMultiColors), state: personalFilesOnly ? .on : .off) { _ in
+        let personalFilesOnlyAction = UIAction(title: NSLocalizedString("_personal_files_only_", comment: ""),
+                                               image: utility.loadImage(named: "folder.badge.person.crop", colors: NCBrandColor.shared.iconImageMultiColors),
+                                               state: personalFilesOnly ? .on : .off) { _ in
             Task {
                 NCPreferences().setPersonalFilesOnly(account: self.session.account, value: !personalFilesOnly)
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
@@ -410,7 +431,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
 
         let showDescriptionKeychain = NCPreferences().showDescription
-        let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), state: showDescriptionKeychain ? .on : .off) { _ in
+        let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""),
+                                       state: showDescriptionKeychain ? .on : .off) { _ in
             NCPreferences().showDescription = !showDescriptionKeychain
             Task {
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
@@ -425,7 +447,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         let capabilityRecommendations = capabilities.recommendations
 
         if capabilityRecommendations {
-            showRecommendedFiles = UIAction(title: NSLocalizedString("_show_recommended_files_", comment: ""), state: showRecommendedFilesKeychain ? .on : .off) { _ in
+            showRecommendedFiles = UIAction(title: NSLocalizedString("_show_recommended_files_", comment: ""),
+                                            state: showRecommendedFilesKeychain ? .on : .off) { _ in
                 Task {
                     NCPreferences().showRecommendedFiles = !showRecommendedFilesKeychain
                     collectionViewCommon.collectionView.reloadData()
@@ -451,20 +474,25 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 trashViewController.collectionView.reloadData()
             }
         }
-        let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: utility.loadImage(named: "list.bullet", colors: [NCBrandColor.shared.iconImageColor]), state: layoutForView.layout == self.global.layoutList ? .on : .off) { _ in
+        let list = UIAction(title: NSLocalizedString("_list_", comment: ""),
+                            image: utility.loadImage(named: "list.bullet", colors: [NCBrandColor.shared.iconImageColor]),
+                            state: layoutForView.layout == self.global.layoutList ? .on : .off) { _ in
             Task {
                 trashViewController.onListSelected()
                 await self.updateRightMenu()
             }
         }
-        let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: utility.loadImage(named: "square.grid.2x2", colors: [NCBrandColor.shared.iconImageColor]), state: layoutForView.layout == self.global.layoutGrid ? .on : .off) { _ in
+        let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""),
+                            image: utility.loadImage(named: "square.grid.2x2", colors: [NCBrandColor.shared.iconImageColor]),
+                            state: layoutForView.layout == self.global.layoutGrid ? .on : .off) { _ in
             Task {
                 trashViewController.onGridSelected()
                 await self.updateRightMenu()
             }
         }
 
-        let emptyTrash = UIAction(title: NSLocalizedString("_empty_trash_", comment: ""), image: utility.loadImage(named: "trash", colors: [NCBrandColor.shared.iconImageColor])) { _ in
+        let emptyTrash = UIAction(title: NSLocalizedString("_empty_trash_", comment: ""),
+                                  image: utility.loadImage(named: "trash", colors: [NCBrandColor.shared.iconImageColor])) { _ in
             Task {
                 await trashViewController.emptyTrash()
             }
