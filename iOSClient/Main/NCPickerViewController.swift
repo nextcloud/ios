@@ -78,7 +78,9 @@ class NCPhotosPickerViewController: NSObject {
             return
         }
 
-        controller.present(pickerVC, animated: true, completion: nil)
+        DispatchQueue.main.async {
+            self.controller.present(pickerVC, animated: true, completion: nil)
+        }
     }
 }
 
