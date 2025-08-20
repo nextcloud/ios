@@ -285,10 +285,11 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         var showRecommendedFiles: UIAction?
         let layoutForView = database.getLayoutForView(account: session.account, key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl)
         let select = UIAction(title: NSLocalizedString("_select_", comment: ""),
-                              image: utility.loadImage(named: "checkmark.circle"),
-                              attributes: (collectionViewCommon.dataSource.isEmpty() || NCNetworking.shared.isOffline) ? .disabled : []) { _ in
-            collectionViewCommon.setEditMode(true)
-            collectionViewCommon.collectionView.reloadData()
+                              image: utility.loadImage(named: "checkmark.circle")) { _ in
+            if !collectionViewCommon.dataSource.isEmpty() {
+                collectionViewCommon.setEditMode(true)
+                collectionViewCommon.collectionView.reloadData()
+            }
         }
 
         let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: utility.loadImage(named: "list.bullet"), state: layoutForView.layout == global.layoutList ? .on : .off) { _ in
@@ -443,10 +444,12 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         let layoutForView = self.database.getLayoutForView(account: session.account, key: trashViewController.layoutKey, serverUrl: "")
 
         let select = UIAction(title: NSLocalizedString("_select_", comment: ""),
-                              image: utility.loadImage(named: "checkmark.circle"),
-                              attributes: (trashViewController.datasource?.isEmpty ?? true) ? .disabled : []) { _ in
-            trashViewController.setEditMode(true)
-            trashViewController.collectionView.reloadData()
+                              image: utility.loadImage(named: "checkmark.circle")) { _ in
+            if let datasource = trashViewController.datasource,
+               !datasource.isEmpty {
+                trashViewController.setEditMode(true)
+                trashViewController.collectionView.reloadData()
+            }
         }
         let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: utility.loadImage(named: "list.bullet", colors: [NCBrandColor.shared.iconImageColor]), state: layoutForView.layout == self.global.layoutList ? .on : .off) { _ in
             Task {
