@@ -168,10 +168,15 @@ class FileProviderData: NSObject {
             }
         }
 
-        downloadPendingCompletionHandlers[taskIdentifier]?(nil)
+        if let completion = downloadPendingCompletionHandlers[taskIdentifier] {
+            await MainActor.run {
+                completion(nil)
+            }
+        }
+
         downloadPendingCompletionHandlers.removeValue(forKey: taskIdentifier)
 
-        await signalEnumerator(ocId: ocId, type: .update)
+        // await signalEnumerator(ocId: ocId, type: .update)
     }
 
     // MARK: - UPLOAD
