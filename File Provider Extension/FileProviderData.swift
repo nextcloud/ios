@@ -173,7 +173,6 @@ class FileProviderData: NSObject {
                 completion(nil)
             }
         }
-
         downloadPendingCompletionHandlers.removeValue(forKey: taskIdentifier)
 
         await signalEnumerator(ocId: ocId, type: .update)
