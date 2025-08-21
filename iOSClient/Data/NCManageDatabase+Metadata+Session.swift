@@ -203,30 +203,6 @@ extension NCManageDatabase {
 
     // MARK: - Realm Read
 
-    func getMetadataAsync(from url: URL?, sessionTaskIdentifier: Int) async -> tableMetadata? {
-        guard let url,
-              var serverUrl = url.deletingLastPathComponent().absoluteString.removingPercentEncoding
-        else {
-            return nil
-        }
-        let fileName = url.lastPathComponent
-
-        if serverUrl.hasSuffix("/") {
-            serverUrl = String(serverUrl.dropLast())
-        }
-        let predicate = NSPredicate(format: "serverUrl == %@ AND fileName == %@ AND sessionTaskIdentifier == %d",
-                                    serverUrl,
-                                    fileName,
-                                    sessionTaskIdentifier)
-
-        return await performRealmReadAsync { realm in
-            realm.objects(tableMetadata.self)
-                .filter(predicate)
-                .first
-                .map { $0.detachedCopy() }
-        }
-    }
-
     func updateBadge() async {
         #if !EXTENSION
         let num = await performRealmReadAsync { realm in

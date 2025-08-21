@@ -175,6 +175,9 @@ final class FileProviderExtension: NSFileProviderExtension {
 
                     await fileProviderData.signalEnumerator(ocId: metadata.ocId, type: .update)
 
+
+                    print("[START download] \(serverUrlFileName)")
+
                     let (task, error) = backgroundSession.download(serverUrlFileName: serverUrlFileName,
                                                                    fileNameLocalPath: fileNameLocalPath,
                                                                    account: account,

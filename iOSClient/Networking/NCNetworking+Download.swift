@@ -159,18 +159,27 @@ extension NCNetworking {
                           length: Int64,
                           task: URLSessionTask,
                           error: NKError) {
+
+        #if EXTENSION_FILE_PROVIDER_EXTENSION
         Task {
-            guard let url = task.currentRequest?.url,
-                  let metadata = await self.database.getMetadataAsync(from: url, sessionTaskIdentifier: task.taskIdentifier) else {
+            await FileProviderData.shared.downloadComplete(fileName: fileName,
+                                                           serverUrl: serverUrl,
+                                                           etag: etag,
+                                                           date: date,
+                                                           dateLastModified: dateLastModified,
+                                                           length: length,
+                                                           task: task,
+                                                           error: error)
+            return
+        }
+        #endif
+
+        Task {
+            guard let metadata = await self.database.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) else {
                 return
             }
 
             await NextcloudKit.shared.nkCommonInstance.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
-
-            #if EXTENSION_FILE_PROVIDER_EXTENSION
-            await FileProviderData.shared.downloadComplete(metadata: metadata, task: task, etag: etag, error: error)
-            return
-            #endif
 
             if error == .success {
                 nkLog(success: "Downloaded file: " + metadata.serverUrlFileName)
