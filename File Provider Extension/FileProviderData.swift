@@ -176,7 +176,7 @@ class FileProviderData: NSObject {
 
         downloadPendingCompletionHandlers.removeValue(forKey: taskIdentifier)
 
-        // await signalEnumerator(ocId: ocId, type: .update)
+        await signalEnumerator(ocId: ocId, type: .update)
     }
 
     // MARK: - UPLOAD
