@@ -216,7 +216,7 @@ extension UIAlertController {
 
         let oldExtension = fileName.fileExtension
 
-        let text = alertController.textFields?.first?.text ?? ""
+        let text = alertController.textFields?.first?.text?.trimmingCharacters(in: .whitespaces) ?? ""
         let textCheck = FileNameValidator.checkFileName(text, account: account, capabilities: capabilities)
         var message = textCheck?.error.localizedDescription ?? ""
         var messageColor = UIColor.red
