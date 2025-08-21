@@ -163,20 +163,7 @@ final class FileProviderExtension: NSFileProviderExtension {
                         return
                     }
 
-                    guard let metadata = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                                                     session: NCNetworking.shared.sessionDownload,
-                                                                                     sessionTaskIdentifier: 0,
-                                                                                     sessionError: "",
-                                                                                     selector: "",
-                                                                                     status: NCGlobal.shared.metadataStatusDownloading) else {
-                        completionHandler(NSFileProviderError(.noSuchItem))
-                        return
-                    }
-
-                    await fileProviderData.signalEnumerator(ocId: metadata.ocId, type: .update)
-
-
-                    print("[START download] \(serverUrlFileName)")
+                    await fileProviderData.signalEnumerator(ocId: ocId, type: .update)
 
                     let (task, error) = backgroundSession.download(serverUrlFileName: serverUrlFileName,
                                                                    fileNameLocalPath: fileNameLocalPath,
@@ -185,9 +172,12 @@ final class FileProviderExtension: NSFileProviderExtension {
                                                                    sessionIdentifier: NCNetworking.shared.sessionDownloadBackgroundExt)
 
                     if let task, error == .success {
-                        await self.database.setMetadataSessionAsync(ocId: ocId,
-                                                                    sessionTaskIdentifier: task.taskIdentifier)
-
+                        await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                    session: NCNetworking.shared.sessionDownload,
+                                                                    sessionTaskIdentifier: task.taskIdentifier,
+                                                                    sessionError: "",
+                                                                    selector: "",
+                                                                    status: NCGlobal.shared.metadataStatusDownloading)
                         do {
                             if let domain = self.domain,
                                let manager = NSFileProviderManager(for: domain) {
