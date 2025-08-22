@@ -134,9 +134,26 @@ class FileProviderData: NSObject {
 
     // MARK: - DOWNLOAD
 
-    func downloadComplete(metadata: tableMetadata, task: URLSessionTask, etag: String?, error: NKError) async {
-        let ocId = metadata.ocId
+    func downloadComplete(fileName: String,
+                          serverUrl: String,
+                          etag: String?,
+                          date: Date?,
+                          dateLastModified: Date?,
+                          length: Int64,
+                          task: URLSessionTask,
+                          error: NKError) async {
         let taskIdentifier = task.taskIdentifier
+        let metadata = await self.database.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName))
+
+        guard let metadata else {
+            downloadPendingCompletionHandlers[taskIdentifier]?(nil)
+            downloadPendingCompletionHandlers.removeValue(forKey: taskIdentifier)
+
+            await signalEnumerator(ocId: "", type: .update)
+            return
+        }
+
+        let ocId = metadata.ocId
 
         await self.database.setMetadataSessionAsync(ocId: ocId,
                                                     session: "",
@@ -151,7 +168,11 @@ class FileProviderData: NSObject {
             }
         }
 
-        downloadPendingCompletionHandlers[taskIdentifier]?(nil)
+        if let completion = downloadPendingCompletionHandlers[taskIdentifier] {
+            await MainActor.run {
+                completion(nil)
+            }
+        }
         downloadPendingCompletionHandlers.removeValue(forKey: taskIdentifier)
 
         await signalEnumerator(ocId: ocId, type: .update)
@@ -167,8 +188,7 @@ class FileProviderData: NSObject {
                         size: Int64,
                         task: URLSessionTask,
                         error: NKError) async {
-        guard let url = task.currentRequest?.url,
-              let metadata = await self.database.getMetadataAsync(from: url, sessionTaskIdentifier: task.taskIdentifier) else {
+        guard let metadata = await self.database.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) else {
             let predicate = NSPredicate(format: "fileName == %@ AND serverUrl == %@", fileName, serverUrl)
             await self.database.deleteMetadataAsync(predicate: predicate)
 

@@ -434,8 +434,8 @@ extension NCNetworking {
                         size: Int64,
                         task: URLSessionTask,
                         error: NKError) {
+        #if EXTENSION_FILE_PROVIDER_EXTENSION
         Task {
-            #if EXTENSION_FILE_PROVIDER_EXTENSION
             await FileProviderData.shared.uploadComplete(fileName: fileName,
                                                          serverUrl: serverUrl,
                                                          ocId: ocId,
@@ -444,15 +444,17 @@ extension NCNetworking {
                                                          size: size,
                                                          task: task,
                                                          error: error)
-            #else
-            if let url = task.currentRequest?.url,
-               let metadata = await self.database.getMetadataAsync(from: url, sessionTaskIdentifier: task.taskIdentifier) {
+            return
+        }
+        #endif
+
+        Task {
+            if let metadata = await self.database.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) {
                 await uploadComplete(withMetadata: metadata, ocId: ocId, etag: etag, date: date, size: size, error: error)
             } else {
                 let predicate = NSPredicate(format: "fileName == %@ AND serverUrl == %@", fileName, serverUrl)
                 await self.database.deleteMetadataAsync(predicate: predicate)
             }
-            #endif
         }
     }
 
