@@ -140,7 +140,7 @@ class NCAccount: NSObject {
                 }
             }
             // Remove account in all database
-            database.clearDatabase(account: account, removeAccount: true, removeAutoUpload: true)
+            database.clearDatabase(account: account)
         } else {
             // Remove account
             await database.clearTableAsync(tableAccount.self, account: account)

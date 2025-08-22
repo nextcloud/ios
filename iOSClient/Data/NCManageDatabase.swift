@@ -373,18 +373,24 @@ final class NCManageDatabase: @unchecked Sendable {
         }
     }
 
-    func clearDatabase(account: String? = nil, removeAccount: Bool = false, removeAutoUpload: Bool = false) {
-        if removeAccount {
-            self.clearTable(tableAccount.self, account: account)
-        }
-        if removeAutoUpload {
-            self.clearTable(tableAutoUploadTransfer.self, account: account)
-        }
+    func clearDBCache() {
+        self.clearTable(tableAvatar.self)
+        self.clearTable(tableChunk.self)
+        self.clearTable(tableDirectory.self)
+        self.clearTable(TableDownloadLimit.self)
+        self.clearTable(tableLocalFile.self)
+        self.clearTable(tableMetadata.self)
+        self.clearTable(tableRecommendedFiles.self)
+        self.clearTable(tableShare.self)
+    }
 
+    func clearDatabase(account: String) {
+        self.clearTable(tableAccount.self, account: account)
         self.clearTable(tableActivity.self, account: account)
         self.clearTable(tableActivityLatestId.self, account: account)
         self.clearTable(tableActivityPreview.self, account: account)
         self.clearTable(tableActivitySubjectRich.self, account: account)
+        self.clearTable(tableAutoUploadTransfer.self, account: account)
         self.clearTable(tableAvatar.self)
         self.clearTable(tableCapabilities.self, account: account)
         self.clearTable(tableChunk.self, account: account)
@@ -407,9 +413,7 @@ final class NCManageDatabase: @unchecked Sendable {
         self.clearTable(tableTag.self, account: account)
         self.clearTable(tableTrash.self, account: account)
         self.clearTable(tableVideo.self, account: account)
-        if account == nil {
-            self.clearTable(NCKeyValue.self)
-        }
+        self.clearTable(NCKeyValue.self)
     }
 
     func clearTablesE2EE(account: String?) {

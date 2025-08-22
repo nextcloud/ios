@@ -116,7 +116,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
             try? await Task.sleep(nanoseconds: 1_000_000_000)
 
             NCNetworking.shared.removeServerErrorAccount(self.session.account)
-            NCManageDatabase.shared.clearDatabase()
+            NCManageDatabase.shared.clearDBCache()
 
             let ufs = NCUtilityFileSystem()
             ufs.removeGroupDirectoryProviderStorage()
@@ -136,7 +136,6 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     }
 
     /// Asynchronously calculates the size of cache directory and updates the footer title.
-    @MainActor
     func calculateSize() async {
         let ufs = NCUtilityFileSystem()
         let directory = ufs.getDirectoryProviderStorage()
