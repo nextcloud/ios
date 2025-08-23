@@ -5,6 +5,7 @@
 import Foundation
 import SwiftUI
 import RealmSwift
+import NextcloudKit
 
 /// A modal SwiftUI view responsible for maintenance database
 struct Maintenance: View {
@@ -46,11 +47,9 @@ struct Maintenance: View {
     ///
     private func startMaintenance() async {
         do {
-
-
-            try await Task.sleep(nanoseconds: 500_000_000)
+            try NCManageDatabase.shared.forceCompactRealm()
         } catch {
-            print("Migration failed: \(error.localizedDescription)")
+            nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm compaction failed: \(error.localizedDescription)")
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {

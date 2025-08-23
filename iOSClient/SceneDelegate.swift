@@ -40,7 +40,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }))
             window?.makeKeyAndVisible()
 
-        } else if let activeTblAccount, lastVersion != versionApp {
+        } else if let activeTblAccount, lastVersion != "versionApp" {
 
             window?.rootViewController = UIHostingController(rootView: Maintenance(onCompleted: {
                 self.launchMainInterface(scene: scene, activeTblAccount: activeTblAccount)
