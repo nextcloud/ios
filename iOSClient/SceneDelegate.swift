@@ -15,7 +15,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private let appDelegate = UIApplication.shared.delegate as? AppDelegate
     private var privacyProtectionWindow: UIWindow?
     private var isFirstScene: Bool = true
-    private let database = NCManageDatabase.shared
     private let global = NCGlobal.shared
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -28,35 +27,66 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if !NCPreferences().appearanceAutomatic {
             self.window?.overrideUserInterfaceStyle = NCPreferences().appearanceInterfaceStyle
         }
-        let alreadyMigratedMultiDomains = UserDefaults.standard.bool(forKey: global.udMigrationMultiDomains)
         let lastVersion = UserDefaults.standard.string(forKey: global.udLastVersion)
         let versionApp = NCUtility().getVersionApp()
-        let activeTblAccount = self.database.getActiveTableAccount()
 
-        if let activeTblAccount, !alreadyMigratedMultiDomains {
-
-            window?.rootViewController = UIHostingController(rootView: MigrationMultiDomains(onCompleted: {
-                self.launchMainInterface(scene: scene, activeTblAccount: activeTblAccount)
+        if lastVersion != versionApp {
+            // Set appSuppending true for blocked the realm access
+            isAppSuspending = true
+            window?.rootViewController = UIHostingController(rootView: Maintenance(onCompleted: {
+                // Set appSuppending false for the realm access
+                isAppSuspending = false
+                // Start App
+                self.startNextcloud(scene: scene)
             }))
             window?.makeKeyAndVisible()
+        } else {
+            self.startNextcloud(scene: scene)
+        }
+    }
 
-        } else if let activeTblAccount, lastVersion != "versionApp" {
+    private func startNextcloud(scene: UIScene) {
+        // Open Realm
+        NCManageDatabase.shared.openRealm()
 
-            window?.rootViewController = UIHostingController(rootView: Maintenance(onCompleted: {
+        var activeTblAccount = NCManageDatabase.shared.getActiveTableAccount()
+        let alreadyMigratedMultiDomains = UserDefaults.standard.bool(forKey: global.udMigrationMultiDomains)
+
+        // Try to restore accounts
+        if activeTblAccount == nil {
+            NCManageDatabase.shared.restoreTableAccountFromFile()
+            activeTblAccount = NCManageDatabase.shared.getActiveTableAccount()
+        }
+
+        if let activeTblAccount, !alreadyMigratedMultiDomains {
+            //
+            // Migration Multi Domains
+            //
+            window?.rootViewController = UIHostingController(rootView: MigrationMultiDomains(onCompleted: {
+                //
+                // Start Main
+                //
                 self.launchMainInterface(scene: scene, activeTblAccount: activeTblAccount)
             }))
             window?.makeKeyAndVisible()
 
         } else if let activeTblAccount {
-
+            //
+            // Start Main
+            //
             self.launchMainInterface(scene: scene, activeTblAccount: activeTblAccount)
 
         } else {
+            //
+            // NO account found, start with the Login
+            //
+
             NCPreferences().removeAll()
+
             // Migration done.
             UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
             // Save actual version
-            UserDefaults.standard.set(versionApp, forKey: global.udLastVersion)
+            UserDefaults.standard.set(NCUtility().getVersionApp(), forKey: global.udLastVersion)
 
             if let bundleID = Bundle.main.bundleIdentifier {
                 UserDefaults.standard.removePersistentDomain(forName: bundleID)
@@ -84,8 +114,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Save actual version
         UserDefaults.standard.set(NCUtility().getVersionApp(), forKey: global.udLastVersion)
 
+        // Networking Certificate
+        NCNetworking.shared.activeAccountCertificate(account: activeTblAccount.account)
+
         Task {
-            if let capabilities = await self.database.getCapabilities(account: activeTblAccount.account) {
+            if let capabilities = await NCManageDatabase.shared.getCapabilities(account: activeTblAccount.account) {
                 // set theming color
                 NCBrandColor.shared.settingThemingColor(account: activeTblAccount.account, capabilities: capabilities)
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeTheming, userInfo: ["account": activeTblAccount.account])
@@ -96,7 +129,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
 
         // Set up networking session for all configured accounts
-        for tblAccount in self.database.getAllTableAccount() {
+        for tblAccount in NCManageDatabase.shared.getAllTableAccount() {
             // Append account to NextcloudKit shared session
             NextcloudKit.shared.appendSession(account: tblAccount.account,
                                               urlBase: tblAccount.urlBase,
@@ -111,7 +144,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
             // Perform async setup: restore capabilities and ensure file provider domain
             Task {
-                await self.database.getCapabilities(account: tblAccount.account)
+                await NCManageDatabase.shared.getCapabilities(account: tblAccount.account)
                 try? await FileProviderDomain().ensureDomainRegistered(userId: tblAccount.userId, user: tblAccount.user, urlBase: tblAccount.urlBase)
             }
 
@@ -140,6 +173,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneWillEnterForeground(_ scene: UIScene) {
+        return
+        
         let session = SceneManager.shared.getSession(scene: scene)
         let controller = SceneManager.shared.getController(scene: scene)
         guard !session.account.isEmpty else { return }
@@ -159,7 +194,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         Task {
             try? await Task.sleep(nanoseconds: 1_000_000_000)
-            if let tblAccount = await self.database.getTableAccountAsync(account: session.account) {
+            if let tblAccount = await NCManageDatabase.shared.getTableAccountAsync(account: session.account) {
                 let num = await NCAutoUpload.shared.initAutoUpload(tblAccount: tblAccount)
                 nkLog(start: "Auto upload with \(num) photo")
             }
@@ -180,6 +215,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
+        return
+        
         let session = SceneManager.shared.getSession(scene: scene)
         guard !session.account.isEmpty else { return }
 
@@ -208,11 +245,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneDidEnterBackground(_ scene: UIScene) {
         // Must be outside the Task otherwise isAppSuspending suspends it
         let session = SceneManager.shared.getSession(scene: scene)
-        guard let tblAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
+        guard let tblAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
             return
         }
         Task { @MainActor in
-            await database.backupTableAccountToFileAsync()
+            await NCManageDatabase.shared.backupTableAccountToFileAsync()
 
             nkLog(info: "Auto upload in background: \(tblAccount.autoUploadStart)")
             nkLog(info: "Update in background: \(UIApplication.shared.backgroundRefreshStatus == .available)")
@@ -234,7 +271,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
 
             // Clear older files
-            await self.database.cleanTablesOcIds(account: tblAccount.account, userId: tblAccount.userId, urlBase: tblAccount.urlBase)
+            await NCManageDatabase.shared.cleanTablesOcIds(account: tblAccount.account, userId: tblAccount.userId, urlBase: tblAccount.urlBase)
             await NCUtilityFileSystem().cleanUpAsync()
         }
     }
@@ -246,7 +283,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let action = url.host
 
         func getMatchedAccount(userId: String, url: String) async -> tableAccount? {
-            let tblAccounts = await self.database.getAllTableAccountAsync()
+            let tblAccounts = await NCManageDatabase.shared.getAllTableAccountAsync()
 
             for tblAccount in tblAccounts {
                 let urlBase = URL(string: tblAccount.urlBase)
@@ -413,7 +450,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 extension SceneDelegate: NCPasscodeDelegate {
     func requestedAccount(controller: UIViewController?) {
-        let tblAccounts = self.database.getAllTableAccount()
+        let tblAccounts = NCManageDatabase.shared.getAllTableAccount()
         if tblAccounts.count > 1, let accountRequestVC = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
             accountRequestVC.controller = controller
             accountRequestVC.activeAccount = (controller as? NCMainTabBarController)?.account

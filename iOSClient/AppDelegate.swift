@@ -115,6 +115,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // Activation singleton
         _ = NCAppStateManager.shared
+
+
+        // MOVE TO Scene
         _ = NCNetworking.shared
         _ = NCDownloadAction.shared
         _ = NCNetworkingProcess.shared
