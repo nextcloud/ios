@@ -143,7 +143,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
-    let database = NCManageDatabase.shared
     let global = NCGlobal.shared
     let backgroundSession = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance)
 
@@ -178,17 +177,9 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     // MARK: - init
 
     init() {
-        if let account = database.getActiveTableAccount()?.account {
-            getActiveAccountCertificate(account: account)
-        }
-
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: global.notificationCenterChangeUser), object: nil, queue: .main) { notification in
-            if let userInfo = notification.userInfo {
-                if let account = userInfo["account"] as? String {
-                    self.getActiveAccountCertificate(account: account)
-                }
-            }
-        }
+        //if let account = database.getActiveTableAccount()?.account {
+        //    getActiveAccountCertificate(account: account)
+        //}
     }
 
     // MARK: - Communication Delegate
@@ -366,7 +357,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         }
     }
 
-    private func getActiveAccountCertificate(account: String) {
+    func activeAccountCertificate(account: String) {
         (self.p12Data, self.p12Password) = NCPreferences().getClientCertificate(account: account)
     }
 }
