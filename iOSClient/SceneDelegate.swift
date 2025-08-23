@@ -29,11 +29,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             self.window?.overrideUserInterfaceStyle = NCPreferences().appearanceInterfaceStyle
         }
         let alreadyMigratedMultiDomains = UserDefaults.standard.bool(forKey: global.udMigrationMultiDomains)
+        let lastVersion = UserDefaults.standard.string(forKey: global.udLastVersion)
+        let versionApp = NCUtility().getVersionApp()
         let activeTblAccount = self.database.getActiveTableAccount()
 
         if let activeTblAccount, !alreadyMigratedMultiDomains {
 
             window?.rootViewController = UIHostingController(rootView: MigrationMultiDomains(onCompleted: {
+                self.launchMainInterface(scene: scene, activeTblAccount: activeTblAccount)
+            }))
+            window?.makeKeyAndVisible()
+
+        } else if let activeTblAccount, lastVersion != versionApp {
+
+            window?.rootViewController = UIHostingController(rootView: Maintenance(onCompleted: {
                 self.launchMainInterface(scene: scene, activeTblAccount: activeTblAccount)
             }))
             window?.makeKeyAndVisible()
@@ -44,7 +53,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         } else {
             NCPreferences().removeAll()
+            // Migration done.
             UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
+            // Save actual version
+            UserDefaults.standard.set(versionApp, forKey: global.udLastVersion)
 
             if let bundleID = Bundle.main.bundleIdentifier {
                 UserDefaults.standard.removePersistentDomain(forName: bundleID)
@@ -69,6 +81,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         // Save migration state
         UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
+        // Save actual version
+        UserDefaults.standard.set(NCUtility().getVersionApp(), forKey: global.udLastVersion)
 
         Task {
             if let capabilities = await self.database.getCapabilities(account: activeTblAccount.account) {

@@ -388,4 +388,5 @@ final class NCGlobal: Sendable {
 
     // USER DEFAULTS
     let udMigrationMultiDomains             = "migrationMultiDomains"
+    let udLastVersion                       = "lastVersion"
 }
