@@ -28,7 +28,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var loginFlowV2Login = ""
 
     let backgroundQueue = DispatchQueue(label: "com.nextcloud.bgTaskQueue")
-
     let global = NCGlobal.shared
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -41,8 +40,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let utility = NCUtility()
 
         utilityFileSystem.createDirectoryStandard()
-        //database.openRealm()
-
         utilityFileSystem.emptyTemporaryDirectory()
         utilityFileSystem.clearCacheDirectory("com.limit-point.LivePhoto")
 
@@ -68,13 +65,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         nkLog(start: "Start session with level \(NCPreferences().log) " + versionNextcloudiOS)
 
-        /*
-        // Try to restore accounts
-        if self.database.getActiveTableAccount() == nil {
-            self.database.restoreTableAccountFromFile()
-        }
-        */
-
         // Push Notification & display notification
         UNUserNotificationCenter.current().getNotificationSettings { settings in
             self.notificationSettings = settings
@@ -90,7 +80,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 #endif
 
         // BACKGROUND TASK
-
+        //
         BGTaskScheduler.shared.register(forTaskWithIdentifier: global.refreshTask, using: backgroundQueue) { task in
             guard let appRefreshTask = task as? BGAppRefreshTask else {
                 task.setTaskCompleted(success: false)
@@ -115,7 +105,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // Activation singleton
         _ = NCAppStateManager.shared
-
 
         // MOVE TO Scene
         _ = NCNetworking.shared

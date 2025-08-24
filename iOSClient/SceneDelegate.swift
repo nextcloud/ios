@@ -82,14 +82,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             //
             NCPreferences().removeAll()
 
+            if let bundleID = Bundle.main.bundleIdentifier {
+                UserDefaults.standard.removePersistentDomain(forName: bundleID)
+            }
+
             // Migration done.
             UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
             // Save actual version
             UserDefaults.standard.set(NCUtility().getVersionApp(), forKey: global.udLastVersion)
 
-            if let bundleID = Bundle.main.bundleIdentifier {
-                UserDefaults.standard.removePersistentDomain(forName: bundleID)
-            }
             if NCBrandOptions.shared.disable_intro {
                 if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin {
                     let navigationController = UINavigationController(rootViewController: viewController)
