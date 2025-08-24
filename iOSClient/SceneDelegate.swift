@@ -48,9 +48,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private func startNextcloud(scene: UIScene, withActivateSceneForAccount activateSceneForAccount: Bool) {
         // Open Realm
         NCManageDatabase.shared.openRealm()
-
+        // Table account
         var activeTblAccount = NCManageDatabase.shared.getActiveTableAccount()
-        let alreadyMigratedMultiDomains = UserDefaults.standard.bool(forKey: global.udMigrationMultiDomains)
 
         // Try to restore accounts
         if activeTblAccount == nil {
@@ -58,6 +57,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             activeTblAccount = NCManageDatabase.shared.getActiveTableAccount()
         }
 
+        // Activation singleton
+        _ = NCAppStateManager.shared
+        _ = NCNetworking.shared
+        _ = NCDownloadAction.shared
+        _ = NCNetworkingProcess.shared
+
+        let alreadyMigratedMultiDomains = UserDefaults.standard.bool(forKey: global.udMigrationMultiDomains)
         if let activeTblAccount, !alreadyMigratedMultiDomains {
             //
             // Migration Multi Domains
@@ -106,7 +112,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
 
-    private func launchMainInterface(scene: UIScene, activeTblAccount: tableAccount, withActivateSceneForAccount activateSceneForAccount: Bool) {
+    private func launchMainInterface(scene: UIScene,
+                                     activeTblAccount: tableAccount,
+                                     withActivateSceneForAccount activateSceneForAccount: Bool) {
         nkLog(debug: "Account active \(activeTblAccount.account)")
 
         // Save migration state
@@ -418,7 +426,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         privacyProtectionWindow = nil
     }
 
-    private func activateSceneForAccount(_ scene: UIScene, account: String, controller: NCMainTabBarController?) {
+    private func activateSceneForAccount(_ scene: UIScene,
+                                         account: String,
+                                         controller: NCMainTabBarController?) {
         guard !account.isEmpty else {
             return
         }

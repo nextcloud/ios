@@ -103,14 +103,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NCPreferences().requestPasscodeAtStart = true
         }
 
-        // Activation singleton
-        _ = NCAppStateManager.shared
-
-        // MOVE TO Scene
-        _ = NCNetworking.shared
-        _ = NCDownloadAction.shared
-        _ = NCNetworkingProcess.shared
-
         return true
     }
 
