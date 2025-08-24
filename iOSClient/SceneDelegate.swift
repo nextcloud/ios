@@ -210,7 +210,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         NotificationCenter.default.postOnMainThread(name: global.notificationCenterRichdocumentGrabFocus)
     }
 
-    func sceneDidBecomeActive(_ scene: UIScene) { }
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        hidePrivacyProtectionWindow()
+    }
 
     func sceneWillResignActive(_ scene: UIScene) {
         nkLog(debug: "Scene will resign active")
