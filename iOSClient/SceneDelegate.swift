@@ -30,7 +30,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let lastVersion = UserDefaults.standard.string(forKey: global.udLastVersion)
         let versionApp = NCUtility().getVersionApp()
 
-        if lastVersion != versionApp {
+        if lastVersion != "VersionApp" {
             // Set appSuppending true for blocked the realm access
             isAppSuspending = true
             window?.rootViewController = UIHostingController(rootView: Maintenance(onCompleted: {
@@ -173,11 +173,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneWillEnterForeground(_ scene: UIScene) {
-        return
-        
         let session = SceneManager.shared.getSession(scene: scene)
         let controller = SceneManager.shared.getController(scene: scene)
-        guard !session.account.isEmpty else { return }
+        guard !session.account.isEmpty else {
+            return
+        }
 
         hidePrivacyProtectionWindow()
 
@@ -198,25 +198,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 let num = await NCAutoUpload.shared.initAutoUpload(tblAccount: tblAccount)
                 nkLog(start: "Auto upload with \(num) photo")
             }
-        }
 
-        Task(priority: .utility) {
             try? await Task.sleep(nanoseconds: 1_500_000_000)
             await NCService().startRequestServicesServer(account: session.account, controller: controller)
-        }
 
-        Task {
             try? await Task.sleep(nanoseconds: 2_000_000_000)
             await NCNetworking.shared.verifyZombie()
         }
 
         NotificationCenter.default.postOnMainThread(name: global.notificationCenterRichdocumentGrabFocus)
-
     }
 
-    func sceneDidBecomeActive(_ scene: UIScene) {        
+    func sceneDidBecomeActive(_ scene: UIScene) {
         let session = SceneManager.shared.getSession(scene: scene)
-        guard !session.account.isEmpty else { return }
+        guard !session.account.isEmpty else {
+            return
+        }
 
         hidePrivacyProtectionWindow()
     }
@@ -224,10 +221,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneWillResignActive(_ scene: UIScene) {
         nkLog(debug: "Scene will resign active")
 
-        WidgetCenter.shared.reloadAllTimelines()
-
         let session = SceneManager.shared.getSession(scene: scene)
-        guard !session.account.isEmpty else { return }
+        guard !session.account.isEmpty else {
+            return
+        }
+
+        WidgetCenter.shared.reloadAllTimelines()
 
         if NCPreferences().privacyScreenEnabled {
             if SwiftEntryKit.isCurrentlyDisplaying {
