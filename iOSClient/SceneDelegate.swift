@@ -173,13 +173,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneWillEnterForeground(_ scene: UIScene) {
+        hidePrivacyProtectionWindow()
+
         let session = SceneManager.shared.getSession(scene: scene)
         let controller = SceneManager.shared.getController(scene: scene)
         guard !session.account.isEmpty else {
             return
         }
-
-        hidePrivacyProtectionWindow()
 
         if let window = SceneManager.shared.getWindow(scene: scene), let controller = SceneManager.shared.getController(scene: scene) {
             window.rootViewController = controller
