@@ -177,11 +177,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 
     // MARK: - init
 
-    init() {
-        //if let account = database.getActiveTableAccount()?.account {
-        //    getActiveAccountCertificate(account: account)
-        //}
-    }
+    init() { }
 
     // MARK: - Communication Delegate
 
