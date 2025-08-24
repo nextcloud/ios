@@ -214,9 +214,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     }
 
-    func sceneDidBecomeActive(_ scene: UIScene) {
-        return
-        
+    func sceneDidBecomeActive(_ scene: UIScene) {        
         let session = SceneManager.shared.getSession(scene: scene)
         guard !session.account.isEmpty else { return }
 
