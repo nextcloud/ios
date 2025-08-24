@@ -15,6 +15,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private let appDelegate = UIApplication.shared.delegate as? AppDelegate
     private var privacyProtectionWindow: UIWindow?
     private let global = NCGlobal.shared
+    private let versionApp = NCUtility().getVersionApp(withBuild: false)
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene)
@@ -27,7 +28,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             self.window?.overrideUserInterfaceStyle = NCPreferences().appearanceInterfaceStyle
         }
         let lastVersion = UserDefaults.standard.string(forKey: global.udLastVersion)
-        let versionApp = NCUtility().getVersionApp()
 
         if let lastVersion,
            lastVersion != versionApp {
@@ -95,7 +95,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             // Migration done.
             UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
             // Save actual version
-            UserDefaults.standard.set(NCUtility().getVersionApp(), forKey: global.udLastVersion)
+            UserDefaults.standard.set(versionApp, forKey: global.udLastVersion)
 
             if NCBrandOptions.shared.disable_intro {
                 if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin {
@@ -120,7 +120,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Save migration state
         UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
         // Save actual version
-        UserDefaults.standard.set(NCUtility().getVersionApp(), forKey: global.udLastVersion)
+        UserDefaults.standard.set(versionApp, forKey: global.udLastVersion)
 
         // Networking Certificate
         NCNetworking.shared.activeAccountCertificate(account: activeTblAccount.account)
