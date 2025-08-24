@@ -80,7 +80,7 @@ class NCAskAuthorization: NSObject {
                     completion(false)
                 }))
 
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     controller?.present(alert, animated: true, completion: nil)
                 }
 
