@@ -36,15 +36,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 // Set appSuppending false for the realm access
                 isAppSuspending = false
                 // Start App
-                self.startNextcloud(scene: scene)
+                self.startNextcloud(scene: scene, withActivateSceneForAccount: true)
             }))
             window?.makeKeyAndVisible()
         } else {
-            self.startNextcloud(scene: scene)
+            self.startNextcloud(scene: scene, withActivateSceneForAccount: false)
         }
     }
 
-    private func startNextcloud(scene: UIScene) {
+    private func startNextcloud(scene: UIScene, withActivateSceneForAccount activateSceneForAccount: Bool) {
         // Open Realm
         NCManageDatabase.shared.openRealm()
 
@@ -65,7 +65,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 //
                 // Start Main
                 //
-                self.launchMainInterface(scene: scene, activeTblAccount: activeTblAccount)
+                self.launchMainInterface(scene: scene, activeTblAccount: activeTblAccount, withActivateSceneForAccount: activateSceneForAccount)
             }))
             window?.makeKeyAndVisible()
 
@@ -73,7 +73,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             //
             // Start Main
             //
-            self.launchMainInterface(scene: scene, activeTblAccount: activeTblAccount)
+            self.launchMainInterface(scene: scene, activeTblAccount: activeTblAccount, withActivateSceneForAccount: activateSceneForAccount)
 
         } else {
             //
@@ -104,7 +104,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
 
-    private func launchMainInterface(scene: UIScene, activeTblAccount: tableAccount) {
+    private func launchMainInterface(scene: UIScene, activeTblAccount: tableAccount, withActivateSceneForAccount activateSceneForAccount: Bool) {
         nkLog(debug: "Account active \(activeTblAccount.account)")
 
         // Save migration state
@@ -158,6 +158,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             //
             window?.rootViewController = controller
             window?.makeKeyAndVisible()
+            //
+            if activateSceneForAccount {
+                self.activateSceneForAccount(scene, account: activeTblAccount.account, controller: controller)
+            }
         }
 
         // Clean orphaned FP Domains
