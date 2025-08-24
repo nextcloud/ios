@@ -210,14 +210,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         NotificationCenter.default.postOnMainThread(name: global.notificationCenterRichdocumentGrabFocus)
     }
 
-    func sceneDidBecomeActive(_ scene: UIScene) {
-        let session = SceneManager.shared.getSession(scene: scene)
-        guard !session.account.isEmpty else {
-            return
-        }
-
-        hidePrivacyProtectionWindow()
-    }
+    func sceneDidBecomeActive(_ scene: UIScene) { }
 
     func sceneWillResignActive(_ scene: UIScene) {
         nkLog(debug: "Scene will resign active")
