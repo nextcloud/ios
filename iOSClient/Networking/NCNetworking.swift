@@ -153,6 +153,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     var p12Data: Data?
     var p12Password: String?
     var tapHudStopDelete = false
+    var controller: UIViewController?
 
     var isOffline: Bool {
         return networkReachability == NKTypeReachability.notReachable || networkReachability == NKTypeReachability.unknown

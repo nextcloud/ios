@@ -17,6 +17,7 @@ class NCMainTabBarController: UITabBarController {
     var account: String = "" {
         didSet {
             NCImageCache.shared.controller = self
+            NCNetworking.shared.controller = self
         }
     }
     var availableNotifications: Bool = false
