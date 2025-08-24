@@ -79,7 +79,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             //
             // NO account found, start with the Login
             //
-
             NCPreferences().removeAll()
 
             // Migration done.
@@ -174,39 +173,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneWillEnterForeground(_ scene: UIScene) {
         hidePrivacyProtectionWindow()
 
+        if let rootHostingController = scene.rootHostingController() {
+            if rootHostingController.anyRootView is Maintenance {
+                return
+            }
+        }
         let session = SceneManager.shared.getSession(scene: scene)
         let controller = SceneManager.shared.getController(scene: scene)
-        guard !session.account.isEmpty else {
-            return
-        }
 
-        if let window = SceneManager.shared.getWindow(scene: scene),
-           let controller = SceneManager.shared.getController(scene: scene) {
-            window.rootViewController = controller
-            if NCPreferences().presentPasscode {
-                NCPasscode.shared.presentPasscode(viewController: controller, delegate: self) {
-                    NCPasscode.shared.enableTouchFaceID()
-                }
-            } else if NCPreferences().accountRequest {
-                requestedAccount(controller: controller)
-            }
-        }
-
-        Task {
-            try? await Task.sleep(nanoseconds: 1_000_000_000)
-            if let tblAccount = await NCManageDatabase.shared.getTableAccountAsync(account: session.account) {
-                let num = await NCAutoUpload.shared.initAutoUpload(tblAccount: tblAccount)
-                nkLog(start: "Auto upload with \(num) photo")
-            }
-
-            try? await Task.sleep(nanoseconds: 1_500_000_000)
-            await NCService().startRequestServicesServer(account: session.account, controller: controller)
-
-            try? await Task.sleep(nanoseconds: 2_000_000_000)
-            await NCNetworking.shared.verifyZombie()
-        }
-
-        NotificationCenter.default.postOnMainThread(name: global.notificationCenterRichdocumentGrabFocus)
+        activateSceneForAccount(scene, account: session.account, controller: controller)
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
@@ -435,6 +410,40 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private func hidePrivacyProtectionWindow() {
         privacyProtectionWindow?.isHidden = true
         privacyProtectionWindow = nil
+    }
+
+    private func activateSceneForAccount(_ scene: UIScene, account: String, controller: NCMainTabBarController?) {
+        guard !account.isEmpty else {
+            return
+        }
+
+        if let window = SceneManager.shared.getWindow(scene: scene),
+           let controller = SceneManager.shared.getController(scene: scene) {
+            window.rootViewController = controller
+            if NCPreferences().presentPasscode {
+                NCPasscode.shared.presentPasscode(viewController: controller, delegate: self) {
+                    NCPasscode.shared.enableTouchFaceID()
+                }
+            } else if NCPreferences().accountRequest {
+                requestedAccount(controller: controller)
+            }
+        }
+
+        Task {
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
+            if let tblAccount = await NCManageDatabase.shared.getTableAccountAsync(account: account) {
+                let num = await NCAutoUpload.shared.initAutoUpload(tblAccount: tblAccount)
+                nkLog(start: "Auto upload with \(num) photo")
+            }
+
+            try? await Task.sleep(nanoseconds: 1_500_000_000)
+            await NCService().startRequestServicesServer(account: account, controller: controller)
+
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            await NCNetworking.shared.verifyZombie()
+        }
+
+        NotificationCenter.default.postOnMainThread(name: global.notificationCenterRichdocumentGrabFocus)
     }
 }
 
