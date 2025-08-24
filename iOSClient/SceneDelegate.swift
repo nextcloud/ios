@@ -29,7 +29,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let lastVersion = UserDefaults.standard.string(forKey: global.udLastVersion)
         let versionApp = NCUtility().getVersionApp()
 
-        if lastVersion != "VersionApp" {
+        if let lastVersion,
+           lastVersion != versionApp {
             // Set appSuppending true for blocked the realm access
             isAppSuspending = true
             window?.rootViewController = UIHostingController(rootView: Maintenance(onCompleted: {
