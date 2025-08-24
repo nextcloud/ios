@@ -181,7 +181,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
 
-        if let window = SceneManager.shared.getWindow(scene: scene), let controller = SceneManager.shared.getController(scene: scene) {
+        if let window = SceneManager.shared.getWindow(scene: scene),
+           let controller = SceneManager.shared.getController(scene: scene) {
             window.rootViewController = controller
             if NCPreferences().presentPasscode {
                 NCPasscode.shared.presentPasscode(viewController: controller, delegate: self) {
