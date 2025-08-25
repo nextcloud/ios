@@ -40,6 +40,13 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
     let utilityFileSystem = NCUtilityFileSystem()
     var activeTableAccount: tableAccount?
     var quotaRelative: Float = 0
+    let versionApp = NCUtility().getVersionApp(withBuild: false)
+
+    if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup),
+          let lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion),
+          lastVersion != versionApp {
+        return completion(LockscreenData(date: Date(), isPlaceholder: true, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: false))
+    }
 
     if isPreview {
         return completion(LockscreenData(date: Date(), isPlaceholder: true, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: false))
@@ -53,7 +60,7 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
     }
 
     guard let activeTableAccount else {
-            return completion(LockscreenData(date: Date(), isPlaceholder: true, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: false))
+        return completion(LockscreenData(date: Date(), isPlaceholder: true, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: false))
     }
 
     // NETWORKING

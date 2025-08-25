@@ -91,6 +91,13 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
     let filesItems = getFilesItems(displaySize: displaySize)
     let datasPlaceholder = Array(filesDatasTest[0...filesItems - 1])
     var activeTableAccount: tableAccount?
+    let versionApp = NCUtility().getVersionApp(withBuild: false)
+
+    if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup),
+          let lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion),
+          lastVersion != versionApp {
+        return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: "", url: "", account: "", tile: getTitleFilesWidget(tableAccount: nil), footerImage: "checkmark.icloud", footerText: NSLocalizedString("_version_mismatch_error_", comment: "")))
+    }
 
     if isPreview {
         return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: "", url: "", account: "", tile: getTitleFilesWidget(tableAccount: nil), footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " files"))

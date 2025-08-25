@@ -52,7 +52,7 @@ final class FileProviderExtension: NSFileProviderExtension {
         if containerItemIdentifier != .workingSet {
 
             // Verify version
-            if let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier) {
+            if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) {
                 let lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion)
                 let versionApp = NCUtility().getVersionApp(withBuild: false)
                 if lastVersion != versionApp {

@@ -96,7 +96,7 @@ class NCShareExtension: UIViewController {
 
         // Verify version
         let versionApp = NCUtility().getVersionApp(withBuild: false)
-        guard let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier),
+        guard let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup),
               let lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion),
               lastVersion == versionApp else {
             maintenanceMode = true

@@ -23,6 +23,7 @@
 
 import UIKit
 import WidgetKit
+import NextcloudKit
 
 struct ToolbarDataEntry: TimelineEntry {
     let date: Date
@@ -38,15 +39,22 @@ func getToolbarDataEntry(isPreview: Bool, completion: @escaping (_ entry: Toolba
     var userId = ""
     var url = ""
     var account = ""
+    let versionApp = NCUtility().getVersionApp(withBuild: false)
+
+    if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup),
+          let lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion),
+          lastVersion != versionApp {
+        return completion(ToolbarDataEntry(date: Date(), isPlaceholder: true, userId: userId, url: url, account: account, footerImage: "xmark.icloud", footerText: NSLocalizedString("_version_mismatch_error_", comment: "")))
+    }
+
+    if isPreview {
+        return completion(ToolbarDataEntry(date: Date(), isPlaceholder: true, userId: userId, url: url, account: account, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " toolbar"))
+    }
 
     if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
         userId = activeTableAccount.userId
         url = activeTableAccount.urlBase
         account = activeTableAccount.account
-    }
-
-    if isPreview {
-        return completion(ToolbarDataEntry(date: Date(), isPlaceholder: true, userId: userId, url: url, account: account, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " toolbar"))
     }
 
     if NCManageDatabase.shared.getActiveTableAccount() == nil {
