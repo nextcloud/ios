@@ -16,20 +16,33 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private var privacyProtectionWindow: UIWindow?
     private let global = NCGlobal.shared
     private let versionApp = NCUtility().getVersionApp(withBuild: false)
+    // Get last versio App, migration multi domains state
+    let lastVersion = UserDefaults.standard.string(forKey: NCGlobal.shared.udLastVersion)
+    let alreadyMigratedMultiDomains = UserDefaults.standard.bool(forKey: NCGlobal.shared.udMigrationMultiDomains)
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else {
             return
         }
 
+        // Save actual version App, migration multi domains state
+        UserDefaults.standard.set(versionApp, forKey: global.udLastVersion)
+        UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
+
         self.window = UIWindow(windowScene: windowScene)
         if !NCPreferences().appearanceAutomatic {
             self.window?.overrideUserInterfaceStyle = NCPreferences().appearanceInterfaceStyle
         }
-        // Get last versio App
-        let lastVersion = UserDefaults.standard.string(forKey: global.udLastVersion)
-        // Save actual version App
-        UserDefaults.standard.set(versionApp, forKey: global.udLastVersion)
+
+        // in Debug write all UserDefaults.standard
+        #if DEBUG
+        print("UserDefaults : ---------------------")
+        let defaults = UserDefaults.standard
+        for (key, value) in defaults.dictionaryRepresentation() {
+            print("\(key) = \(value)")
+        }
+        print("------------------------------------")
+        #endif
 
         if let lastVersion,
            lastVersion != versionApp {
@@ -65,7 +78,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         _ = NCDownloadAction.shared
         _ = NCNetworkingProcess.shared
 
-        let alreadyMigratedMultiDomains = UserDefaults.standard.bool(forKey: global.udMigrationMultiDomains)
         if let activeTblAccount, !alreadyMigratedMultiDomains {
             //
             // Migration Multi Domains
@@ -94,9 +106,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 UserDefaults.standard.removePersistentDomain(forName: bundleID)
             }
 
-            // Migration done.
-            UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
-
             if NCBrandOptions.shared.disable_intro {
                 if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin {
                     let navigationController = UINavigationController(rootViewController: viewController)
@@ -116,9 +125,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                                      activeTblAccount: tableAccount,
                                      withActivateSceneForAccount activateSceneForAccount: Bool) {
         nkLog(debug: "Account active \(activeTblAccount.account)")
-
-        // Save migration state
-        UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
 
         // Networking Certificate
         NCNetworking.shared.activeAccountCertificate(account: activeTblAccount.account)
