@@ -385,7 +385,9 @@ final class NCGlobal: Sendable {
     let logTagPN                            = "PUSH NOTIF"
     let logTagSync                          = "SYNC"
     let logTagServiceProficer               = "SERVICE PROVIDER"
+    let logTagDatabase                      = "DB"
 
     // USER DEFAULTS
     let udMigrationMultiDomains             = "migrationMultiDomains"
+    let udLastVersion                       = "lastVersion"
 }

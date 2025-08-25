@@ -45,7 +45,9 @@ class NCAskAuthorization: NSObject {
                     completion(false)
                 }))
 
-                controller?.present(alert, animated: true, completion: nil)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    controller?.present(alert, animated: true, completion: nil)
+                }
 
             case .undetermined:
                 AVAudioApplication.requestRecordPermission { granted in
@@ -78,7 +80,9 @@ class NCAskAuthorization: NSObject {
                     completion(false)
                 }))
 
-                controller?.present(alert, animated: true, completion: nil)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    controller?.present(alert, animated: true, completion: nil)
+                }
 
             case PHAuthorizationStatus.notDetermined:
                 self.isRequesting = true

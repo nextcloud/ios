@@ -119,7 +119,7 @@ final class NCUtility: NSObject, Sendable {
         return String(intFileId)
     }
 
-    @objc func getVersionApp(withBuild: Bool = true) -> String {
+    func getVersionApp(withBuild: Bool = true) -> String {
         if let dictionary = Bundle.main.infoDictionary {
             if let version = dictionary["CFBundleShortVersionString"], let build = dictionary["CFBundleVersion"] {
                 if withBuild {

@@ -16,7 +16,7 @@ class NCMainTabBarController: UITabBarController {
     var sceneIdentifier: String = UUID().uuidString
     var account: String = "" {
         didSet {
-            NCImageCache.shared.controller = self
+            // NCImageCache.shared.controller = self
         }
     }
     var availableNotifications: Bool = false
@@ -34,6 +34,9 @@ class NCMainTabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         delegate = self
+
+        NCNetworking.shared.controller = self
+        NCImageCache.shared.controller = self
 
         NCDownloadAction.shared.setup(sceneIdentifier: sceneIdentifier)
 

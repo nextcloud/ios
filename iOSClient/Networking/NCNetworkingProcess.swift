@@ -11,7 +11,6 @@ actor NCNetworkingProcess {
     static let shared = NCNetworkingProcess()
 
     private let utilityFileSystem = NCUtilityFileSystem()
-    private let database = NCManageDatabase.shared
     private let global = NCGlobal.shared
     private let networking = NCNetworking.shared
 
@@ -115,7 +114,7 @@ actor NCNetworkingProcess {
                 return
             }
 
-            let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal))
+            let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal))
             if !metadatas.isEmpty {
                 let tasks = await networking.getAllDataTask()
                 let hasSyncTask = tasks.contains { $0.taskDescription == global.taskDescriptionSynchronization }
@@ -143,7 +142,7 @@ actor NCNetworkingProcess {
 
     private func removeUploadedAssetsIfNeeded() async {
         guard NCPreferences().removePhotoCameraRoll,
-              let localIdentifiers = await self.database.getAssetLocalIdentifiersUploadedAsync(),
+              let localIdentifiers = await NCManageDatabase.shared.getAssetLocalIdentifiersUploadedAsync(),
               !localIdentifiers.isEmpty else {
             return
         }
@@ -158,11 +157,12 @@ actor NCNetworkingProcess {
             })
         }
 
-        await self.database.clearAssetLocalIdentifiersAsync(localIdentifiers)
+        await NCManageDatabase.shared.clearAssetLocalIdentifiersAsync(localIdentifiers)
     }
 
     private func runMetadataPipelineAsync() async {
-        let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal))
+        let database = NCManageDatabase.shared
+        let metadatas = await database.getMetadatasAsync(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal))
         guard !metadatas.isEmpty else {
             return
         }
@@ -224,7 +224,7 @@ actor NCNetworkingProcess {
 
                 // no extract photo
                 if metadatas.isEmpty {
-                    await self.database.deleteMetadataOcIdAsync(metadata.ocId)
+                    await database.deleteMetadataOcIdAsync(metadata.ocId)
                 }
 
                 for metadata in metadatas {
@@ -234,7 +234,7 @@ actor NCNetworkingProcess {
                     /// NO WiFi
                     if !isWiFi && metadata.session == networking.sessionUploadBackgroundWWan { continue }
 
-                    await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                    await database.setMetadataSessionAsync(ocId: metadata.ocId,
                                                                 status: global.metadataStatusUploading)
 
                     /// find controller
@@ -301,16 +301,16 @@ actor NCNetworkingProcess {
                 if metadata.sessionError.contains("\(global.errorQuota)") {
                     let results = await NextcloudKit.shared.getUserMetadataAsync(account: metadata.account, userId: metadata.userId)
                     if results.error == .success, let userProfile = results.userProfile, userProfile.quotaFree > 0, userProfile.quotaFree > metadata.size {
-                        await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                                    session: self.networking.sessionUploadBackground,
-                                                                    sessionError: "",
-                                                                    status: self.global.metadataStatusWaitUpload)
+                        await database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                               session: self.networking.sessionUploadBackground,
+                                                               sessionError: "",
+                                                               status: self.global.metadataStatusWaitUpload)
                     }
                 } else {
-                    await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                                session: self.networking.sessionUploadBackground,
-                                                                sessionError: "",
-                                                                status: global.metadataStatusWaitUpload)
+                    await database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                           session: self.networking.sessionUploadBackground,
+                                                           sessionError: "",
+                                                           status: global.metadataStatusWaitUpload)
                 }
             }
         }
@@ -320,6 +320,7 @@ actor NCNetworkingProcess {
 
     private func metadataStatusWaitWebDav(metadatas: [tableMetadata]) async -> (status: Int?, error: NKError) {
         let networking = NCNetworking.shared
+        let database = NCManageDatabase.shared
 
         /// ------------------------ CREATE FOLDER
         ///
@@ -375,13 +376,13 @@ actor NCNetworkingProcess {
 
             let resultCopy = await NextcloudKit.shared.copyFileOrFolderAsync(serverUrlFileNameSource: metadata.serverUrlFileName, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
 
-            await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                        status: global.metadataStatusNormal)
+            await database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                   status: global.metadataStatusNormal)
 
             if resultCopy.error == .success {
                 let result = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrlFileNameDestination, account: metadata.account)
                 if result.error == .success, let metadata = result.metadata {
-                    await self.database.addMetadataAsync(metadata)
+                    await database.addMetadataAsync(metadata)
                 }
             }
 
@@ -408,8 +409,8 @@ actor NCNetworkingProcess {
 
             let resultMove = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: metadata.serverUrlFileName, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
 
-            await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                        status: global.metadataStatusNormal)
+            await database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                   status: global.metadataStatusNormal)
 
             if resultMove.error == .success {
                 let result = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrlFileNameDestination, account: metadata.account)
@@ -417,10 +418,10 @@ actor NCNetworkingProcess {
                     // Remove directory
                     if metadata.directory {
                         let serverUrl = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
-                        await self.database.deleteDirectoryAndSubDirectoryAsync(serverUrl: serverUrl,
-                                                                                account: result.account)
+                        await database.deleteDirectoryAndSubDirectoryAsync(serverUrl: serverUrl,
+                                                                           account: result.account)
                     }
-                    await self.database.addMetadataAsync(metadata)
+                    await database.addMetadataAsync(metadata)
                 }
             }
 
@@ -446,16 +447,16 @@ actor NCNetworkingProcess {
             let resultsFavorite = await NextcloudKit.shared.setFavoriteAsync(fileName: fileName, favorite: metadata.favorite, account: metadata.account)
 
             if resultsFavorite.error == .success {
-                await self.database.setMetadataFavoriteAsync(ocId: metadata.ocId,
-                                                             favorite: nil,
-                                                             saveOldFavorite: nil,
-                                                             status: global.metadataStatusNormal)
+                await database.setMetadataFavoriteAsync(ocId: metadata.ocId,
+                                                        favorite: nil,
+                                                        saveOldFavorite: nil,
+                                                        status: global.metadataStatusNormal)
             } else {
                 let favorite = (metadata.storeFlag as? NSString)?.boolValue ?? false
-                await self.database.setMetadataFavoriteAsync(ocId: metadata.ocId,
-                                                             favorite: favorite,
-                                                             saveOldFavorite: nil,
-                                                             status: global.metadataStatusNormal)
+                await database.setMetadataFavoriteAsync(ocId: metadata.ocId,
+                                                        favorite: favorite,
+                                                        saveOldFavorite: nil,
+                                                        status: global.metadataStatusNormal)
             }
 
             await networking.transferDispatcher.notifyAllDelegates { delegate in
@@ -482,9 +483,9 @@ actor NCNetworkingProcess {
             let resultRename = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: false, account: metadata.account)
 
             if resultRename.error == .success {
-                await self.database.setMetadataServerUrlFileNameStatusNormalAsync(ocId: metadata.ocId)
+                await database.setMetadataServerUrlFileNameStatusNormalAsync(ocId: metadata.ocId)
             } else {
-                await self.database.restoreMetadataFileNameAsync(ocId: metadata.ocId)
+                await database.restoreMetadataFileNameAsync(ocId: metadata.ocId)
             }
 
             await networking.transferDispatcher.notifyAllDelegates { delegate in
@@ -512,8 +513,8 @@ actor NCNetworkingProcess {
 
                 let resultDelete = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
 
-                await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                            status: global.metadataStatusNormal)
+                await database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                       status: global.metadataStatusNormal)
 
                 if resultDelete.error == .success || resultDelete.error.errorCode == NCGlobal.shared.errorResourceNotFound {
                     do {
@@ -522,14 +523,14 @@ actor NCNetworkingProcess {
 
                     NCImageCache.shared.removeImageCache(ocIdPlusEtag: metadata.ocId + metadata.etag)
 
-                    await self.database.deleteVideoAsync(metadata.ocId)
-                    await self.database.deleteMetadataOcIdAsync(metadata.ocId)
-                    await self.database.deleteLocalFileOcIdAsync(metadata.ocId)
+                    await database.deleteVideoAsync(metadata.ocId)
+                    await database.deleteMetadataOcIdAsync(metadata.ocId)
+                    await database.deleteLocalFileOcIdAsync(metadata.ocId)
 
                     if metadata.directory {
                         let serverUrl = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
-                        await self.database.deleteDirectoryAndSubDirectoryAsync(serverUrl: serverUrl,
-                                                                                account: metadata.account)
+                        await database.deleteDirectoryAndSubDirectoryAsync(serverUrl: serverUrl,
+                                                                           account: metadata.account)
                     }
 
                     metadatasError[metadata] = .success

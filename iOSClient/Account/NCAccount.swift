@@ -91,6 +91,8 @@ class NCAccount: NSObject {
             if let userProfile {
                 await database.setAccountUserProfileAsync(account: account, userProfile: userProfile)
             }
+            // Networking Certificate
+            NCNetworking.shared.activeAccountCertificate(account: account)
             // Subscribing Push Notification
             appDelegate.subscribingPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user)
             // Start the service
@@ -107,6 +109,7 @@ class NCAccount: NSObject {
             nkLog(start: "Auto upload with \(num) photo")
             // Networking Process
             await NCNetworkingProcess.shared.setCurrentAccount(account)
+
             // Color
             NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeTheming, userInfo: ["account": account])
             // Notification
@@ -140,7 +143,7 @@ class NCAccount: NSObject {
                 }
             }
             // Remove account in all database
-            database.clearDatabase(account: account, removeAccount: true, removeAutoUpload: true)
+            database.clearDatabase(account: account)
         } else {
             // Remove account
             await database.clearTableAsync(tableAccount.self, account: account)

@@ -42,18 +42,18 @@ extension NCNetworking {
         guard resultsReadFolder.error == .success, let files = resultsReadFolder.files else {
             return(account, nil, nil, resultsReadFolder.error)
         }
-        let (metadataFolder, metadatas) = await self.database.convertFilesToMetadatasAsync(files, serverUrlMetadataFolder: serverUrl)
+        let (metadataFolder, metadatas) = await NCManageDatabase.shared.convertFilesToMetadatasAsync(files, serverUrlMetadataFolder: serverUrl)
 
-        await self.database.addMetadataAsync(metadataFolder)
-        await self.database.addDirectoryAsync(serverUrl: serverUrl,
-                                              ocId: metadataFolder.ocId,
-                                              fileId: metadataFolder.fileId,
-                                              etag: metadataFolder.etag,
-                                              permissions: metadataFolder.permissions,
-                                              richWorkspace: metadataFolder.richWorkspace,
-                                              favorite: metadataFolder.favorite,
-                                              account: metadataFolder.account)
-        await self.database.updateMetadatasFilesAsync(metadatas, serverUrl: serverUrl, account: account)
+        await NCManageDatabase.shared.addMetadataAsync(metadataFolder)
+        await NCManageDatabase.shared.addDirectoryAsync(serverUrl: serverUrl,
+                                                        ocId: metadataFolder.ocId,
+                                                        fileId: metadataFolder.fileId,
+                                                        etag: metadataFolder.etag,
+                                                        permissions: metadataFolder.permissions,
+                                                        richWorkspace: metadataFolder.richWorkspace,
+                                                        favorite: metadataFolder.favorite,
+                                                        account: metadataFolder.account)
+        await NCManageDatabase.shared.updateMetadatasFilesAsync(metadatas, serverUrl: serverUrl, account: account)
 
         return (account, metadataFolder, metadatas, .success)
     }
@@ -71,7 +71,7 @@ extension NCNetworking {
                 return completion(account, nil, nil, error)
             }
             Task {
-                let metadata = await self.database.convertFileToMetadataAsync(file)
+                let metadata = await NCManageDatabase.shared.convertFileToMetadataAsync(file)
 
                 completion(account, metadata, file, error)
             }
@@ -91,7 +91,7 @@ extension NCNetworking {
         guard results.error == .success, results.files?.count == 1, let file = results.files?.first else {
             return (account, nil, results.error)
         }
-        let metadata = await self.database.convertFileToMetadataAsync(file)
+        let metadata = await NCManageDatabase.shared.convertFileToMetadataAsync(file)
 
         return(account, metadata, results.error)
     }
@@ -164,7 +164,7 @@ extension NCNetworking {
         }
 
         while !exitLoop {
-            if self.database.getMetadata(predicate: NSPredicate(format: "fileNameView == %@ AND serverUrl == %@ AND account == %@", resultFileName, serverUrl, account)) != nil {
+            if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "fileNameView == %@ AND serverUrl == %@ AND account == %@", resultFileName, serverUrl, account)) != nil {
                 newFileName()
                 continue
             }
@@ -199,14 +199,14 @@ extension NCNetworking {
         let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileNameFolder)
 
         func writeDirectoryMetadata(_ metadata: tableMetadata) async {
-            await self.database.deleteMetadataAsync(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", session.account, fileName, serverUrl))
-            await self.database.addMetadataAsync(metadata)
-            await self.database.addDirectoryAsync(serverUrl: serverUrlFileName,
-                                                  ocId: metadata.ocId,
-                                                  fileId: metadata.fileId,
-                                                  permissions: metadata.permissions,
-                                                  favorite: metadata.favorite,
-                                                  account: session.account)
+            await NCManageDatabase.shared.deleteMetadataAsync(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", session.account, fileName, serverUrl))
+            await NCManageDatabase.shared.addMetadataAsync(metadata)
+            await NCManageDatabase.shared.addDirectoryAsync(serverUrl: serverUrlFileName,
+                                                            ocId: metadata.ocId,
+                                                            fileId: metadata.fileId,
+                                                            permissions: metadata.permissions,
+                                                            favorite: metadata.favorite,
+                                                            account: session.account)
         }
 
         /* check exists folder */
@@ -248,12 +248,12 @@ extension NCNetworking {
         }
 
         func deleteLocalFile(metadata: tableMetadata) async {
-            if let metadataLive = await self.database.getMetadataLivePhotoAsync(metadata: metadata) {
-                await self.database.deleteLocalFileOcIdAsync(metadataLive.ocId)
+            if let metadataLive = await NCManageDatabase.shared.getMetadataLivePhotoAsync(metadata: metadata) {
+                await NCManageDatabase.shared.deleteLocalFileOcIdAsync(metadataLive.ocId)
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
             }
-            await self.database.deleteVideoAsync(metadata.ocId)
-            await self.database.deleteLocalFileOcIdAsync(metadata.ocId)
+            await NCManageDatabase.shared.deleteVideoAsync(metadata.ocId)
+            await NCManageDatabase.shared.deleteLocalFileOcIdAsync(metadata.ocId)
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
 
             NCImageCache.shared.removeImageCache(ocIdPlusEtag: metadata.ocId + metadata.etag)
@@ -261,7 +261,7 @@ extension NCNetworking {
 
         self.tapHudStopDelete = false
 
-        await database.cleanTablesOcIds(account: metadata.account, userId: metadata.userId, urlBase: metadata.urlBase)
+        await NCManageDatabase.shared.cleanTablesOcIds(account: metadata.account, userId: metadata.userId, urlBase: metadata.urlBase)
 
         if metadata.directory {
             if let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
@@ -269,7 +269,7 @@ extension NCNetworking {
                     ncHud.ringProgress(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDelete)
                 }
             }
-            if let metadatas = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, metadata.serverUrlFileName)) {
+            if let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, metadata.serverUrlFileName)) {
                 let total = Float(metadatas.count)
                 for metadata in metadatas {
                     await deleteLocalFile(metadata: metadata)
@@ -357,9 +357,9 @@ extension NCNetworking {
                 }
 
                 if metadata.status == global.metadataStatusWaitCreateFolder {
-                    let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", metadata.account, metadata.serverUrl))
+                    let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", metadata.account, metadata.serverUrl))
                     for metadata in metadatas {
-                        database.deleteMetadataOcId(metadata.ocId)
+                        NCManageDatabase.shared.deleteMetadataOcId(metadata.ocId)
                         utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
                     }
                     return
@@ -372,8 +372,8 @@ extension NCNetworking {
             Task {
                 await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
                     for ocId in ocIds {
-                        await self.database.setMetadataSessionAsync(ocId: ocId,
-                                                                    status: self.global.metadataStatusWaitDelete)
+                        await NCManageDatabase.shared.setMetadataSessionAsync(ocId: ocId,
+                                                                              status: self.global.metadataStatusWaitDelete)
                     }
                     serverUrls.forEach { serverUrl in
                         delegate.transferReloadData(serverUrl: serverUrl, status: self.global.metadataStatusWaitDelete)
@@ -408,7 +408,7 @@ extension NCNetworking {
             Task {
                 await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
                     let status = self.global.metadataStatusWaitRename
-                    await self.database.renameMetadataAsync(fileNameNew: fileNameNew, ocId: metadata.ocId, status: status)
+                    await NCManageDatabase.shared.renameMetadataAsync(fileNameNew: fileNameNew, ocId: metadata.ocId, status: status)
                     delegate.transferReloadData(serverUrl: metadata.serverUrl, status: status)
                 }
             }
@@ -428,7 +428,7 @@ extension NCNetworking {
         Task {
             await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
                 let status = self.global.metadataStatusWaitMove
-                await self.database.setMetadataCopyMoveAsync(ocId: metadata.ocId, destination: destination, overwrite: overwrite.description, status: status)
+                await NCManageDatabase.shared.setMetadataCopyMoveAsync(ocId: metadata.ocId, destination: destination, overwrite: overwrite.description, status: status)
                 delegate.transferReloadData(serverUrl: metadata.serverUrl, status: status)
             }
         }
@@ -447,7 +447,7 @@ extension NCNetworking {
         Task {
             await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
                 let status = self.global.metadataStatusWaitCopy
-                await self.database.setMetadataCopyMoveAsync(ocId: metadata.ocId, destination: destination, overwrite: overwrite.description, status: status)
+                await NCManageDatabase.shared.setMetadataCopyMoveAsync(ocId: metadata.ocId, destination: destination, overwrite: overwrite.description, status: status)
                 delegate.transferReloadData(serverUrl: metadata.serverUrl, status: status)
             }
         }
@@ -464,7 +464,7 @@ extension NCNetworking {
         Task {
             await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
                 let status = self.global.metadataStatusWaitFavorite
-                await self.database.setMetadataFavoriteAsync(ocId: metadata.ocId, favorite: !metadata.favorite, saveOldFavorite: metadata.favorite.description, status: status)
+                await NCManageDatabase.shared.setMetadataFavoriteAsync(ocId: metadata.ocId, favorite: !metadata.favorite, saveOldFavorite: metadata.favorite.description, status: status)
                 delegate.transferReloadData(serverUrl: metadata.serverUrl, status: status)
             }
         }
@@ -482,7 +482,7 @@ extension NCNetworking {
             }
             self.readFile(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account) { _, metadata, _, error in
                 guard error == .success, let metadata = metadata else { return }
-                self.database.addMetadata(metadata)
+                NCManageDatabase.shared.addMetadata(metadata)
 
                 Task {
                     await self.transferDispatcher.notifyAllDelegates { delegate in
@@ -540,8 +540,8 @@ extension NCNetworking {
             guard error == .success, let files else { return completion(nil, error) }
 
             Task {
-                let (_, metadatas) = await self.database.convertFilesToMetadatasAsync(files)
-                self.database.addMetadatas(metadatas)
+                let (_, metadatas) = await NCManageDatabase.shared.convertFilesToMetadatasAsync(files)
+                NCManageDatabase.shared.addMetadatas(metadatas)
                 completion(metadatas, error)
             }
         }
@@ -601,10 +601,10 @@ extension NCNetworking {
                 partialResult.entries.forEach({ entry in
                     let url = URLComponents(string: entry.resourceURL)
                     guard let dir = url?.queryItems?["dir"]?.value, let filename = url?.queryItems?["scrollto"]?.value else { return }
-                    if let metadata = self.database.getMetadata(predicate: NSPredicate(format: "account == %@ && path == %@ && fileName == %@",
-                                                                                       session.account,
-                                                                                       "/remote.php/dav/files/" + session.user + dir,
-                                                                                       filename)) {
+                    if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && path == %@ && fileName == %@",
+                                                                                                 session.account,
+                                                                                                 "/remote.php/dav/files/" + session.user + dir,
+                                                                                                 filename)) {
                         metadatas.append(metadata)
                     } else {
                         let semaphore = DispatchSemaphore(value: 0)
@@ -619,16 +619,16 @@ extension NCNetworking {
             default:
                 Task {
                     for entry in partialResult.entries {
-                        let metadata = await self.database.createMetadataAsync(fileName: entry.title,
-                                                                               ocId: NSUUID().uuidString,
-                                                                               serverUrl: session.urlBase,
-                                                                               url: entry.resourceURL,
-                                                                               isUrl: true,
-                                                                               name: partialResult.id,
-                                                                               subline: entry.subline,
-                                                                               iconUrl: entry.thumbnailURL,
-                                                                               session: session,
-                                                                               sceneIdentifier: nil)
+                        let metadata = await NCManageDatabase.shared.createMetadataAsync(fileName: entry.title,
+                                                                                         ocId: NSUUID().uuidString,
+                                                                                         serverUrl: session.urlBase,
+                                                                                         url: entry.resourceURL,
+                                                                                         isUrl: true,
+                                                                                         name: partialResult.id,
+                                                                                         subline: entry.subline,
+                                                                                         iconUrl: entry.thumbnailURL,
+                                                                                         session: session,
+                                                                                         sceneIdentifier: nil)
                         metadatas.append(metadata)
                     }
                     update(account, provider.id, partialResult, metadatas)
@@ -657,7 +657,7 @@ extension NCNetworking {
             switch id {
             case "files":
                 searchResult.entries.forEach({ entry in
-                    if let fileId = entry.fileId, let metadata = self.database.getMetadata(predicate: NSPredicate(format: "account == %@ && fileId == %@", session.account, String(fileId))) {
+                    if let fileId = entry.fileId, let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && fileId == %@", session.account, String(fileId))) {
                         metadatas.append(metadata)
                     } else if let filePath = entry.filePath {
                         let semaphore = DispatchSemaphore(value: 0)
@@ -675,9 +675,9 @@ extension NCNetworking {
                 searchResult.entries.forEach({ entry in
                     let url = URLComponents(string: entry.resourceURL)
                     guard let dir = url?.queryItems?["dir"]?.value, let filename = url?.queryItems?["scrollto"]?.value else { return }
-                    if let metadata = self.database.getMetadata(predicate: NSPredicate(format: "account == %@ && path == %@ && fileName == %@",
-                                                                                       session.account,
-                                                                                       "/remote.php/dav/files/" + session.user + dir, filename)) {
+                    if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && path == %@ && fileName == %@",
+                                                                                                 session.account,
+                                                                                                 "/remote.php/dav/files/" + session.user + dir, filename)) {
                         metadatas.append(metadata)
                     } else {
                         let semaphore = DispatchSemaphore(value: 0)
@@ -692,16 +692,16 @@ extension NCNetworking {
             default:
                 Task {
                     for entry in searchResult.entries {
-                        let metadata = await self.database.createMetadataAsync(fileName: entry.title,
-                                                                               ocId: NSUUID().uuidString,
-                                                                               serverUrl: session.urlBase,
-                                                                               url: entry.resourceURL,
-                                                                               isUrl: true,
-                                                                               name: searchResult.name.lowercased(),
-                                                                               subline: entry.subline,
-                                                                               iconUrl: entry.thumbnailURL,
-                                                                               session: session,
-                                                                               sceneIdentifier: nil)
+                        let metadata = await NCManageDatabase.shared.createMetadataAsync(fileName: entry.title,
+                                                                                         ocId: NSUUID().uuidString,
+                                                                                         serverUrl: session.urlBase,
+                                                                                         url: entry.resourceURL,
+                                                                                         isUrl: true,
+                                                                                         name: searchResult.name.lowercased(),
+                                                                                         subline: entry.subline,
+                                                                                         iconUrl: entry.thumbnailURL,
+                                                                                         session: session,
+                                                                                         sceneIdentifier: nil)
                         metadatas.append(metadata)
                     }
                     completion(account, searchResult, metadatas, error)
@@ -731,7 +731,7 @@ extension NCNetworking {
             defer { dispatchGroup?.leave() }
             guard let metadata else { return }
             let returnMetadata = tableMetadata.init(value: metadata)
-            self.database.addMetadata(metadata)
+            NCManageDatabase.shared.addMetadata(metadata)
             completion(account, returnMetadata, error)
         }
     }

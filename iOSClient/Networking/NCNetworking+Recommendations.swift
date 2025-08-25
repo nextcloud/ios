@@ -25,8 +25,8 @@ extension NCNetworking {
                 let results = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, account: session.account)
 
                 if results.error == .success, let file = results.files?.first {
-                    let metadata = await self.database.convertFileToMetadataAsync(file)
-                    self.database.addMetadataIfNeededAsync(metadata, sync: false)
+                    let metadata = await NCManageDatabase.shared.convertFileToMetadataAsync(file)
+                    NCManageDatabase.shared.addMetadataIfNeededAsync(metadata, sync: false)
 
                     if metadata.isLivePhoto, metadata.isVideo {
                         continue
@@ -36,7 +36,7 @@ extension NCNetworking {
                 }
             }
 
-            await self.database.createRecommendedFilesAsync(account: session.account, recommendations: recommendationsToInsert)
+            await NCManageDatabase.shared.createRecommendedFilesAsync(account: session.account, recommendations: recommendationsToInsert)
             await collectionView.reloadData()
         }
     }

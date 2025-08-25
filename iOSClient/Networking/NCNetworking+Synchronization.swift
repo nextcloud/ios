@@ -38,19 +38,19 @@ extension NCNetworking {
 
             for file in files {
                 if file.directory {
-                    let metadata = await self.database.convertFileToMetadataAsync(file)
-                    await self.database.addMetadataAsync(metadata)
-                    await self.database.addDirectoryAsync(serverUrl: metadata.serverUrlFileName,
-                                                          ocId: metadata.ocId,
-                                                          fileId: metadata.fileId,
-                                                          etag: metadata.etag,
-                                                          permissions: metadata.permissions,
-                                                          richWorkspace: metadata.richWorkspace,
-                                                          favorite: metadata.favorite,
-                                                          account: metadata.account)
+                    let metadata = await NCManageDatabase.shared.convertFileToMetadataAsync(file)
+                    await NCManageDatabase.shared.addMetadataAsync(metadata)
+                    await NCManageDatabase.shared.addDirectoryAsync(serverUrl: metadata.serverUrlFileName,
+                                                                    ocId: metadata.ocId,
+                                                                    fileId: metadata.fileId,
+                                                                    etag: metadata.etag,
+                                                                    permissions: metadata.permissions,
+                                                                    richWorkspace: metadata.richWorkspace,
+                                                                    favorite: metadata.favorite,
+                                                                    account: metadata.account)
                 } else {
                     if await isFileDifferent(ocId: file.ocId, fileName: file.fileName, etag: file.etag, metadatasInDownload: metadatasInDownload, userId: userId, urlBase: urlBase) {
-                        let metadata = await self.database.convertFileToMetadataAsync(file)
+                        let metadata = await NCManageDatabase.shared.convertFileToMetadataAsync(file)
                         metadata.session = self.sessionDownloadBackground
                         metadata.sessionSelector = NCGlobal.shared.selectorSynchronizationOffline
                         metadata.sessionTaskIdentifier = 0
@@ -58,14 +58,14 @@ extension NCNetworking {
                         metadata.status = NCGlobal.shared.metadataStatusWaitDownload
                         metadata.sessionDate = Date()
 
-                        await self.database.addMetadataAsync(metadata)
+                        await NCManageDatabase.shared.addMetadataAsync(metadata)
 
                         nkLog(tag: self.global.logTagSync, emoji: .start, message: "File download: \(file.serverUrl)/\(file.fileName)")
                     }
                 }
             }
 
-            await self.database.setDirectorySynchronizationDateAsync(serverUrl: serverUrl, account: account)
+            await NCManageDatabase.shared.setDirectorySynchronizationDateAsync(serverUrl: serverUrl, account: account)
         } else {
             nkLog(tag: self.global.logTagSync, emoji: .error, message: "Read infinite folder: \(serverUrl), error: \(results.error.errorCode)")
         }
@@ -84,7 +84,7 @@ extension NCNetworking {
             return false
         }
 
-        guard let localFile = await self.database.getTableLocalFileAsync(predicate: NSPredicate(format: "ocId == %@", ocId)) else {
+        guard let localFile = await NCManageDatabase.shared.getTableLocalFileAsync(predicate: NSPredicate(format: "ocId == %@", ocId)) else {
             return true
         }
         let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileName: fileName, userId: userId, urlBase: urlBase)

@@ -37,7 +37,7 @@ final class NCManageDatabase: @unchecked Sendable {
             do {
                 try FileManager.default.setAttributes([FileAttributeKey.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication], ofItemAtPath: folderPath)
             } catch {
-                nkLog(error: "Realm directory setAttributes error: \(error)")
+                nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm directory setAttributes error: \(error)")
             }
         }
 
@@ -62,10 +62,10 @@ final class NCManageDatabase: @unchecked Sendable {
         do {
             let realm = try Realm()
             if let url = realm.configuration.fileURL {
-                nkLog(start: "Realm is located at: \(url.path)")
+                nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .start, message: "Realm is located at: \(url.path)")
             }
         } catch let error {
-            nkLog(error: "Realm open failed: \(error)")
+            nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm open failed: \(error)")
             if let realmURL = databaseFileUrl {
                 let filesToDelete = [
                     realmURL,
@@ -84,12 +84,50 @@ final class NCManageDatabase: @unchecked Sendable {
             do {
                 let realm = try Realm()
                 if let url = realm.configuration.fileURL {
-                    nkLog(start: "Realm is located at: \(url.path)")
+                    nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .start, message: "Realm is located at: \(url.path)")
                 }
             } catch {
-                nkLog(error: "Realm error: \(error)")
+                nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm error: \(error)")
             }
         }
+    }
+
+    /// Force compacts the Realm database by writing a compacted copy and replacing the original.
+    /// Must be called when no Realm instances are open.
+    func forceCompactRealm() throws {
+        nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .start, message: "Start Compact Realm")
+
+        guard let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup) else {
+            throw NSError(domain: "RealmMaintenance", code: 1, userInfo: [NSLocalizedDescriptionKey: "App Group container URL not found"])
+        }
+        let url = dirGroup.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
+        let fileManager = FileManager.default
+        let compactedURL = url.deletingLastPathComponent()
+            .appendingPathComponent(url.lastPathComponent + ".compact.realm")
+        let backupURL = url.appendingPathExtension("bak")
+
+        // Write a compacted copy inside an autoreleasepool to ensure file handles are closed
+        try autoreleasepool {
+            let configuration = Realm.Configuration(fileURL: url,
+                                                    schemaVersion: databaseSchemaVersion,
+                                                    migrationBlock: { migration, oldSchemaVersion in
+                self.migrationSchema(migration, oldSchemaVersion)
+            })
+
+            // Writes a compacted copy of the Realm to the given destination
+            let realm = try Realm(configuration: configuration)
+            try realm.writeCopy(toFile: compactedURL)
+        }
+
+        // Atomic-ish swap: old → .bak, compacted → original path
+        if fileManager.fileExists(atPath: backupURL.path) {
+            try? fileManager.removeItem(at: backupURL)
+        }
+        if fileManager.fileExists(atPath: url.path) {
+            try fileManager.moveItem(at: url, to: backupURL)
+        }
+        try fileManager.moveItem(at: compactedURL, to: url)
+        try? fileManager.removeItem(at: backupURL)
     }
 
     func openRealmBackground() -> Bool {
@@ -110,11 +148,11 @@ final class NCManageDatabase: @unchecked Sendable {
         do {
             let realm = try Realm()
             if let url = realm.configuration.fileURL {
-                nkLog(start: "Realm is located at: \(url.path)")
+                nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .start, message: "Realm is located at: \(url.path)")
             }
             return true
         } catch {
-            nkLog(error: "Realm error: \(error)")
+            nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm error: \(error)")
             return false
         }
     }
@@ -149,10 +187,10 @@ final class NCManageDatabase: @unchecked Sendable {
                 Realm.Configuration.defaultConfiguration = configuration
                 let realm = try Realm()
                 if let url = realm.configuration.fileURL {
-                    print("Realm is located at: \(url)")
+                    nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .start, message: "Realm is located at: \(url.path)")
                 }
             } catch let error {
-                nkLog(error: "Realm: \(error)")
+                nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm error: \(error)")
                 exit(1)
             }
         }
@@ -228,7 +266,7 @@ final class NCManageDatabase: @unchecked Sendable {
                     let realm = try Realm()
                     return try block(realm)
                 } catch {
-                    nkLog(error: "Realm read error (sync, reentrant): \(error)")
+                    nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm read error (sync, reentrant): \(error)")
                     return nil
                 }
             } else {
@@ -237,7 +275,7 @@ final class NCManageDatabase: @unchecked Sendable {
                         let realm = try Realm()
                         return try block(realm)
                     } catch {
-                        nkLog(error: "Realm read error (sync): \(error)")
+                        nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm read error (sync): \(error)")
                         return nil
                     }
                 }
@@ -250,7 +288,7 @@ final class NCManageDatabase: @unchecked Sendable {
                         let result = try block(realm)
                         completion?(result)
                     } catch {
-                        nkLog(error: "Realm read error (async): \(error)")
+                        nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm read error (async): \(error)")
                         completion?(nil)
                     }
                 }
@@ -277,7 +315,7 @@ final class NCManageDatabase: @unchecked Sendable {
                         try block(realm)
                     }
                 } catch {
-                    nkLog(error: "Realm write error: \(error)")
+                    nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm write error: \(error)")
                 }
             }
         }
@@ -312,7 +350,7 @@ final class NCManageDatabase: @unchecked Sendable {
                         let result = try block(realm)
                         continuation.resume(returning: result)
                     } catch {
-                        nkLog(error: "Realm read async error: \(error)")
+                        nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm read async error: \(error)")
                         continuation.resume(returning: nil)
                     }
                 }
@@ -337,7 +375,7 @@ final class NCManageDatabase: @unchecked Sendable {
                             try block(realm)
                         }
                     } catch {
-                        nkLog(error: "Realm write async error: \(error)")
+                        nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm write async error: \(error)")
                     }
                     continuation.resume()
                 }
@@ -373,18 +411,24 @@ final class NCManageDatabase: @unchecked Sendable {
         }
     }
 
-    func clearDatabase(account: String? = nil, removeAccount: Bool = false, removeAutoUpload: Bool = false) {
-        if removeAccount {
-            self.clearTable(tableAccount.self, account: account)
-        }
-        if removeAutoUpload {
-            self.clearTable(tableAutoUploadTransfer.self, account: account)
-        }
+    func clearDBCache() {
+        self.clearTable(tableAvatar.self)
+        self.clearTable(tableChunk.self)
+        self.clearTable(tableDirectory.self)
+        self.clearTable(TableDownloadLimit.self)
+        self.clearTable(tableLocalFile.self)
+        self.clearTable(tableMetadata.self)
+        self.clearTable(tableRecommendedFiles.self)
+        self.clearTable(tableShare.self)
+    }
 
+    func clearDatabase(account: String) {
+        self.clearTable(tableAccount.self, account: account)
         self.clearTable(tableActivity.self, account: account)
         self.clearTable(tableActivityLatestId.self, account: account)
         self.clearTable(tableActivityPreview.self, account: account)
         self.clearTable(tableActivitySubjectRich.self, account: account)
+        self.clearTable(tableAutoUploadTransfer.self, account: account)
         self.clearTable(tableAvatar.self)
         self.clearTable(tableCapabilities.self, account: account)
         self.clearTable(tableChunk.self, account: account)
@@ -407,9 +451,7 @@ final class NCManageDatabase: @unchecked Sendable {
         self.clearTable(tableTag.self, account: account)
         self.clearTable(tableTrash.self, account: account)
         self.clearTable(tableVideo.self, account: account)
-        if account == nil {
-            self.clearTable(NCKeyValue.self)
-        }
+        self.clearTable(NCKeyValue.self)
     }
 
     func clearTablesE2EE(account: String?) {
@@ -460,7 +502,7 @@ final class NCManageDatabase: @unchecked Sendable {
             let realm = try Realm()
             return realm.resolve(tableRef)
         } catch let error as NSError {
-            nkLog(error: "Realm could not write to database: \(error)")
+            nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm could not write to database: \(error)")
         }
         return nil
     }
@@ -471,7 +513,7 @@ final class NCManageDatabase: @unchecked Sendable {
                 let realm = try Realm()
                 realm.refresh()
             } catch let error as NSError {
-                nkLog(error: "Realm could not refresh database: \(error)")
+                nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm could not refresh database: \(error)")
             }
         }
     }

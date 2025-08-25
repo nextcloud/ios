@@ -14,41 +14,100 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     private let appDelegate = UIApplication.shared.delegate as? AppDelegate
     private var privacyProtectionWindow: UIWindow?
-    private var isFirstScene: Bool = true
-    private let database = NCManageDatabase.shared
     private let global = NCGlobal.shared
+    private let versionApp = NCUtility().getVersionApp(withBuild: false)
+    // Get last versio App, migration multi domains state
+    let lastVersion = UserDefaults.standard.string(forKey: NCGlobal.shared.udLastVersion)
+    let alreadyMigratedMultiDomains = UserDefaults.standard.bool(forKey: NCGlobal.shared.udMigrationMultiDomains)
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        guard let windowScene = (scene as? UIWindowScene)
-        else {
+        guard let windowScene = (scene as? UIWindowScene) else {
             return
         }
+
+        // Save actual version App, migration multi domains state
+        UserDefaults.standard.set(versionApp, forKey: global.udLastVersion)
+        UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
 
         self.window = UIWindow(windowScene: windowScene)
         if !NCPreferences().appearanceAutomatic {
             self.window?.overrideUserInterfaceStyle = NCPreferences().appearanceInterfaceStyle
         }
-        let alreadyMigratedMultiDomains = UserDefaults.standard.bool(forKey: global.udMigrationMultiDomains)
-        let activeTblAccount = self.database.getActiveTableAccount()
+
+        // in Debug write all UserDefaults.standard
+        #if DEBUG
+        print("UserDefaults : ---------------------")
+        let defaults = UserDefaults.standard
+        for (key, value) in defaults.dictionaryRepresentation() {
+            print("\(key) = \(value)")
+        }
+        print("------------------------------------")
+        #endif
+
+        if let lastVersion,
+           lastVersion != versionApp {
+            // Set appSuppending true for blocked the realm access
+            isAppSuspending = true
+            maintenanceMode = true
+            window?.rootViewController = UIHostingController(rootView: Maintenance(onCompleted: {
+                // Set appSuppending false for the realm access
+                isAppSuspending = false
+                maintenanceMode = false
+                // Start App
+                self.startNextcloud(scene: scene, withActivateSceneForAccount: true)
+            }))
+            window?.makeKeyAndVisible()
+        } else {
+            self.startNextcloud(scene: scene, withActivateSceneForAccount: false)
+        }
+    }
+
+    private func startNextcloud(scene: UIScene, withActivateSceneForAccount activateSceneForAccount: Bool) {
+        // Open Realm
+        NCManageDatabase.shared.openRealm()
+        // Table account
+        var activeTblAccount = NCManageDatabase.shared.getActiveTableAccount()
+
+        // Try to restore accounts
+        if activeTblAccount == nil {
+            NCManageDatabase.shared.restoreTableAccountFromFile()
+            activeTblAccount = NCManageDatabase.shared.getActiveTableAccount()
+        }
+
+        // Activation singleton
+        _ = NCAppStateManager.shared
+        _ = NCNetworking.shared
+        _ = NCDownloadAction.shared
+        _ = NCNetworkingProcess.shared
 
         if let activeTblAccount, !alreadyMigratedMultiDomains {
-
+            //
+            // Migration Multi Domains
+            //
             window?.rootViewController = UIHostingController(rootView: MigrationMultiDomains(onCompleted: {
-                self.launchMainInterface(scene: scene, activeTblAccount: activeTblAccount)
+                //
+                // Start Main
+                //
+                self.launchMainInterface(scene: scene, activeTblAccount: activeTblAccount, withActivateSceneForAccount: activateSceneForAccount)
             }))
             window?.makeKeyAndVisible()
 
         } else if let activeTblAccount {
-
-            self.launchMainInterface(scene: scene, activeTblAccount: activeTblAccount)
+            //
+            // Start Main
+            //
+            self.launchMainInterface(scene: scene, activeTblAccount: activeTblAccount, withActivateSceneForAccount: activateSceneForAccount)
 
         } else {
+            //
+            // NO account found, start with the Login
+            //
             NCPreferences().removeAll()
-            UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
 
             if let bundleID = Bundle.main.bundleIdentifier {
                 UserDefaults.standard.removePersistentDomain(forName: bundleID)
             }
+
             if NCBrandOptions.shared.disable_intro {
                 if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin {
                     let navigationController = UINavigationController(rootViewController: viewController)
@@ -64,14 +123,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
 
-    private func launchMainInterface(scene: UIScene, activeTblAccount: tableAccount) {
+    private func launchMainInterface(scene: UIScene,
+                                     activeTblAccount: tableAccount,
+                                     withActivateSceneForAccount activateSceneForAccount: Bool) {
         nkLog(debug: "Account active \(activeTblAccount.account)")
 
-        // Save migration state
-        UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
+        // Networking Certificate
+        NCNetworking.shared.activeAccountCertificate(account: activeTblAccount.account)
 
         Task {
-            if let capabilities = await self.database.getCapabilities(account: activeTblAccount.account) {
+            if let capabilities = await NCManageDatabase.shared.getCapabilities(account: activeTblAccount.account) {
                 // set theming color
                 NCBrandColor.shared.settingThemingColor(account: activeTblAccount.account, capabilities: capabilities)
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeTheming, userInfo: ["account": activeTblAccount.account])
@@ -82,7 +143,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
 
         // Set up networking session for all configured accounts
-        for tblAccount in self.database.getAllTableAccount() {
+        for tblAccount in NCManageDatabase.shared.getAllTableAccount() {
             // Append account to NextcloudKit shared session
             NextcloudKit.shared.appendSession(account: tblAccount.account,
                                               urlBase: tblAccount.urlBase,
@@ -97,7 +158,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
             // Perform async setup: restore capabilities and ensure file provider domain
             Task {
-                await self.database.getCapabilities(account: tblAccount.account)
+                await NCManageDatabase.shared.getCapabilities(account: tblAccount.account)
                 try? await FileProviderDomain().ensureDomainRegistered(userId: tblAccount.userId, user: tblAccount.user, urlBase: tblAccount.urlBase)
             }
 
@@ -113,6 +174,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             //
             window?.rootViewController = controller
             window?.makeKeyAndVisible()
+            //
+            if activateSceneForAccount {
+                self.activateSceneForAccount(scene, account: activeTblAccount.account, controller: controller)
+            }
         }
 
         // Clean orphaned FP Domains
@@ -126,59 +191,32 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneWillEnterForeground(_ scene: UIScene) {
-        let session = SceneManager.shared.getSession(scene: scene)
-        let controller = SceneManager.shared.getController(scene: scene)
-        guard !session.account.isEmpty else { return }
-
         hidePrivacyProtectionWindow()
 
-        if let window = SceneManager.shared.getWindow(scene: scene), let controller = SceneManager.shared.getController(scene: scene) {
-            window.rootViewController = controller
-            if NCPreferences().presentPasscode {
-                NCPasscode.shared.presentPasscode(viewController: controller, delegate: self) {
-                    NCPasscode.shared.enableTouchFaceID()
-                }
-            } else if NCPreferences().accountRequest {
-                requestedAccount(controller: controller)
+        if let rootHostingController = scene.rootHostingController() {
+            if rootHostingController.anyRootView is Maintenance {
+                return
             }
         }
+        let session = SceneManager.shared.getSession(scene: scene)
+        let controller = SceneManager.shared.getController(scene: scene)
 
-        Task {
-            try? await Task.sleep(nanoseconds: 1_000_000_000)
-            if let tblAccount = await self.database.getTableAccountAsync(account: session.account) {
-                let num = await NCAutoUpload.shared.initAutoUpload(tblAccount: tblAccount)
-                nkLog(start: "Auto upload with \(num) photo")
-            }
-        }
-
-        Task(priority: .utility) {
-            try? await Task.sleep(nanoseconds: 1_500_000_000)
-            await NCService().startRequestServicesServer(account: session.account, controller: controller)
-        }
-
-        Task {
-            try? await Task.sleep(nanoseconds: 2_000_000_000)
-            await NCNetworking.shared.verifyZombie()
-        }
-
-        NotificationCenter.default.postOnMainThread(name: global.notificationCenterRichdocumentGrabFocus)
-
+        activateSceneForAccount(scene, account: session.account, controller: controller)
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
-        let session = SceneManager.shared.getSession(scene: scene)
-        guard !session.account.isEmpty else { return }
-
         hidePrivacyProtectionWindow()
     }
 
     func sceneWillResignActive(_ scene: UIScene) {
         nkLog(debug: "Scene will resign active")
 
-        WidgetCenter.shared.reloadAllTimelines()
-
         let session = SceneManager.shared.getSession(scene: scene)
-        guard !session.account.isEmpty else { return }
+        guard !session.account.isEmpty else {
+            return
+        }
+
+        WidgetCenter.shared.reloadAllTimelines()
 
         if NCPreferences().privacyScreenEnabled {
             if SwiftEntryKit.isCurrentlyDisplaying {
@@ -194,11 +232,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneDidEnterBackground(_ scene: UIScene) {
         // Must be outside the Task otherwise isAppSuspending suspends it
         let session = SceneManager.shared.getSession(scene: scene)
-        guard let tblAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
+        guard let tblAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
             return
         }
         Task { @MainActor in
-            await database.backupTableAccountToFileAsync()
+            await NCManageDatabase.shared.backupTableAccountToFileAsync()
 
             nkLog(info: "Auto upload in background: \(tblAccount.autoUploadStart)")
             nkLog(info: "Update in background: \(UIApplication.shared.backgroundRefreshStatus == .available)")
@@ -220,7 +258,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
 
             // Clear older files
-            await self.database.cleanTablesOcIds(account: tblAccount.account, userId: tblAccount.userId, urlBase: tblAccount.urlBase)
+            await NCManageDatabase.shared.cleanTablesOcIds(account: tblAccount.account, userId: tblAccount.userId, urlBase: tblAccount.urlBase)
             await NCUtilityFileSystem().cleanUpAsync()
         }
     }
@@ -232,7 +270,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let action = url.host
 
         func getMatchedAccount(userId: String, url: String) async -> tableAccount? {
-            let tblAccounts = await self.database.getAllTableAccountAsync()
+            let tblAccounts = await NCManageDatabase.shared.getAllTableAccountAsync()
 
             for tblAccount in tblAccounts {
                 let urlBase = URL(string: tblAccount.urlBase)
@@ -393,13 +431,49 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         privacyProtectionWindow?.isHidden = true
         privacyProtectionWindow = nil
     }
+
+    private func activateSceneForAccount(_ scene: UIScene,
+                                         account: String,
+                                         controller: NCMainTabBarController?) {
+        guard !account.isEmpty else {
+            return
+        }
+
+        if let window = SceneManager.shared.getWindow(scene: scene),
+           let controller = SceneManager.shared.getController(scene: scene) {
+            window.rootViewController = controller
+            if NCPreferences().presentPasscode {
+                NCPasscode.shared.presentPasscode(viewController: controller, delegate: self) {
+                    NCPasscode.shared.enableTouchFaceID()
+                }
+            } else if NCPreferences().accountRequest {
+                requestedAccount(controller: controller)
+            }
+        }
+
+        Task {
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
+            if let tblAccount = await NCManageDatabase.shared.getTableAccountAsync(account: account) {
+                let num = await NCAutoUpload.shared.initAutoUpload(tblAccount: tblAccount)
+                nkLog(start: "Auto upload with \(num) photo")
+            }
+
+            try? await Task.sleep(nanoseconds: 1_500_000_000)
+            await NCService().startRequestServicesServer(account: account, controller: controller)
+
+            try? await Task.sleep(nanoseconds: 2_000_000_000)
+            await NCNetworking.shared.verifyZombie()
+        }
+
+        NotificationCenter.default.postOnMainThread(name: global.notificationCenterRichdocumentGrabFocus)
+    }
 }
 
 // MARK: - Extension
 
 extension SceneDelegate: NCPasscodeDelegate {
     func requestedAccount(controller: UIViewController?) {
-        let tblAccounts = self.database.getAllTableAccount()
+        let tblAccounts = NCManageDatabase.shared.getAllTableAccount()
         if tblAccounts.count > 1, let accountRequestVC = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
             accountRequestVC.controller = controller
             accountRequestVC.activeAccount = (controller as? NCMainTabBarController)?.account
