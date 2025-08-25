@@ -17,16 +17,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private let global = NCGlobal.shared
     private let versionApp = NCUtility().getVersionApp(withBuild: false)
     // Get last versio App, migration multi domains state
-    let lastVersion = UserDefaults.standard.string(forKey: NCGlobal.shared.udLastVersion)
-    let alreadyMigratedMultiDomains = UserDefaults.standard.bool(forKey: NCGlobal.shared.udMigrationMultiDomains)
+    private var lastVersion: String?
+    private let alreadyMigratedMultiDomains = UserDefaults.standard.bool(forKey: NCGlobal.shared.udMigrationMultiDomains)
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else {
             return
         }
 
-        // Save actual version App, migration multi domains state
-        UserDefaults.standard.set(versionApp, forKey: global.udLastVersion)
+        if let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier) {
+            lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion)
+            groupDefaults.set(versionApp, forKey: global.udLastVersion)
+        }
         UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
 
         self.window = UIWindow(windowScene: windowScene)
@@ -44,8 +46,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         print("------------------------------------")
         #endif
 
-        if let lastVersion,
-           lastVersion != versionApp {
+        if lastVersion != versionApp {
             // Set appSuppending true for blocked the realm access
             isAppSuspending = true
             maintenanceMode = true

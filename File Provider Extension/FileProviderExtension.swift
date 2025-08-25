@@ -50,6 +50,16 @@ final class FileProviderExtension: NSFileProviderExtension {
     override func enumerator(for containerItemIdentifier: NSFileProviderItemIdentifier) throws -> NSFileProviderEnumerator {
         // Skip authentication checks for the working set container
         if containerItemIdentifier != .workingSet {
+            // Verify version
+            if let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier) {
+                let lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion)
+                let versionApp = NCUtility().getVersionApp(withBuild: false)
+                if lastVersion != versionApp {
+                    let userInfo: [String: Any] = [NSLocalizedDescriptionKey: NSLocalizedString("_version_mismatch_error_", comment: "Version change: please open the main app to update the data.")]
+                    throw NSError(domain: NSFileProviderErrorDomain, code: 1, userInfo: userInfo)
+                }
+            }
+
             // Ensure a valid account is configured for the extension
             guard fileProviderData.setupAccount(domain: self.domain, providerExtension: self) != nil else {
                 throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo: [:])
