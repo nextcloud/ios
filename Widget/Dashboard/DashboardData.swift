@@ -106,7 +106,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     let dashboardItems = getDashboardItems(displaySize: displaySize, withButton: false)
     let datasPlaceholder = Array(dashboardDatasTest[0...dashboardItems - 1])
     var activeTableAccount: tableAccount?
-    let versionApp = NCUtility().getVersionApp(withBuild: false)
+    let versionApp = NCUtility().getVersionMaintenance()
 
     if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup),
           let lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion),
@@ -149,7 +149,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                                       groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
     // LOG
-    let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
+    let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionBuild())
 
     NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCPreferences().log))
 

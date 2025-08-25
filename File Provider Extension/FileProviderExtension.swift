@@ -50,11 +50,11 @@ final class FileProviderExtension: NSFileProviderExtension {
     override func enumerator(for containerItemIdentifier: NSFileProviderItemIdentifier) throws -> NSFileProviderEnumerator {
         // Skip authentication checks for the working set container
         if containerItemIdentifier != .workingSet {
+            let versionApp = NCUtility().getVersionMaintenance()
 
             // Verify version
             if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) {
                 let lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion)
-                let versionApp = NCUtility().getVersionApp(withBuild: false)
                 if lastVersion != versionApp {
                     throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo: ["code": NSNumber(value: NCGlobal.shared.errorVersionMismatch)])
                 }

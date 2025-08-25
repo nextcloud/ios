@@ -39,7 +39,7 @@ func getToolbarDataEntry(isPreview: Bool, completion: @escaping (_ entry: Toolba
     var userId = ""
     var url = ""
     var account = ""
-    let versionApp = NCUtility().getVersionApp(withBuild: false)
+    let versionApp = NCUtility().getVersionMaintenance()
 
     if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup),
           let lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion),

@@ -45,7 +45,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         utilityFileSystem.emptyTemporaryDirectory()
         utilityFileSystem.clearCacheDirectory("com.limit-point.LivePhoto")
 
-        let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
+        let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionBuild())
 
         NCAppVersionManager.shared.checkAndUpdateInstallState()
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0)

@@ -91,7 +91,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
     let filesItems = getFilesItems(displaySize: displaySize)
     let datasPlaceholder = Array(filesDatasTest[0...filesItems - 1])
     var activeTableAccount: tableAccount?
-    let versionApp = NCUtility().getVersionApp(withBuild: false)
+    let versionApp = NCUtility().getVersionMaintenance()
 
     if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup),
           let lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion),
@@ -188,7 +188,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
     let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: activeTableAccount.account)
 
     // LOG
-    let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
+    let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionBuild())
 
     NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCPreferences().log))
 

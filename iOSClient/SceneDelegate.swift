@@ -15,8 +15,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private let appDelegate = UIApplication.shared.delegate as? AppDelegate
     private var privacyProtectionWindow: UIWindow?
     private let global = NCGlobal.shared
-    private let versionApp = NCUtility().getVersionApp(withBuild: false)
-    // Get last versio App, migration multi domains state
+    private let versionApp = NCUtility().getVersionMaintenance()
     private var lastVersion: String?
     private let alreadyMigratedMultiDomains = UserDefaults.standard.bool(forKey: NCGlobal.shared.udMigrationMultiDomains)
 
@@ -27,7 +26,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) {
             lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion)
-            groupDefaults.set("versionApp", forKey: global.udLastVersion)
+            groupDefaults.set(versionApp, forKey: global.udLastVersion)
         }
         UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
 

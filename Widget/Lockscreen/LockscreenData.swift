@@ -40,7 +40,7 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
     let utilityFileSystem = NCUtilityFileSystem()
     var activeTableAccount: tableAccount?
     var quotaRelative: Float = 0
-    let versionApp = NCUtility().getVersionApp(withBuild: false)
+    let versionApp = NCUtility().getVersionMaintenance()
 
     if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup),
           let lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion),

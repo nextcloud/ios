@@ -79,7 +79,7 @@ class NCShareExtension: UIViewController {
         let uploadGesture = UITapGestureRecognizer(target: self, action: #selector(actionUpload(_:)))
         uploadView.addGestureRecognizer(uploadGesture)
 
-        let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
+        let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionBuild())
         NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCPreferences().log))
 
         nkLog(start: "Start Share session " + versionNextcloudiOS)
@@ -95,12 +95,13 @@ class NCShareExtension: UIViewController {
         }
 
         // Verify version
-        let versionApp = NCUtility().getVersionApp(withBuild: false)
-        guard let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup),
-              let lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion),
-              lastVersion == versionApp else {
-            maintenanceMode = true
-            return
+        let versionApp = NCUtility().getVersionMaintenance()
+        if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) {
+            let lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion)
+            if lastVersion != versionApp {
+                maintenanceMode = true
+                return
+            }
         }
 
         if let account = NCShareExtensionData.shared.getTblAccoun()?.account {
