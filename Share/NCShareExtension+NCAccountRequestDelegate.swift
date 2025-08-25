@@ -12,8 +12,8 @@ extension NCShareExtension: NCAccountRequestDelegate {
 
     func showAccountPicker() {
         Task {
-            let accounts = await self.database.getAllAccountOrderAliasAsync()
-            let session = self.extensionData.getSession()
+            let accounts = await NCManageDatabase.shared.getAllAccountOrderAliasAsync()
+            let session = NCShareExtensionData.shared.getSession()
 
             guard accounts.count > 1,
                   let vcAccountRequest = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest else {
@@ -48,8 +48,8 @@ extension NCShareExtension: NCAccountRequestDelegate {
 
     func accountRequestChangeAccount(account: String, controller: UIViewController?) {
         Task {
-            let session = await self.extensionData.setSessionAccount(account)
-            guard let tblAccount = self.extensionData.getTblAccoun() else {
+            let session = await NCShareExtensionData.shared.setSessionAccount(account)
+            guard let tblAccount = NCShareExtensionData.shared.getTblAccoun() else {
                 cancel(with: NCShareExtensionError.noAccount)
                 return
             }
@@ -66,8 +66,8 @@ extension NCShareExtension: NCAccountRequestDelegate {
                                               httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
                                               groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
-            autoUploadFileName = self.database.getAccountAutoUploadFileName(account: account)
-            autoUploadDirectory = self.database.getAccountAutoUploadDirectory(account: session.account,
+            autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName(account: account)
+            autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(account: session.account,
                                                                               urlBase: session.urlBase,
                                                                               userId: session.userId)
             serverUrl = utilityFileSystem.getHomeServer(session: session)
