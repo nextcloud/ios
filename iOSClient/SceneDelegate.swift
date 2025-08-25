@@ -15,14 +15,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private let appDelegate = UIApplication.shared.delegate as? AppDelegate
     private var privacyProtectionWindow: UIWindow?
     private let global = NCGlobal.shared
-    private let versionApp = NCUtility().getVersionMaintenance()
-    private var lastVersion: String?
     private let alreadyMigratedMultiDomains = UserDefaults.standard.bool(forKey: NCGlobal.shared.udMigrationMultiDomains)
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else {
             return
         }
+        let versionApp = NCUtility().getVersionMaintenance()
+        var lastVersion: String?
 
         if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) {
             lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion)
@@ -268,6 +268,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
               let url = URLContexts.first?.url else { return }
         let scheme = url.scheme
         let action = url.host
+        let versionApp = NCUtility().getVersionMaintenance()
+
+        // Test version
+        guard let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup),
+              let lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion),
+              lastVersion == versionApp else {
+            return
+        }
 
         func getMatchedAccount(userId: String, url: String) async -> tableAccount? {
             let tblAccounts = await NCManageDatabase.shared.getAllTableAccountAsync()
