@@ -37,20 +37,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         // in Debug write all UserDefaults.standard
         #if DEBUG
-        print("UserDefaults : ---------------------")
-        let defaults = UserDefaults.standard
-        for (key, value) in defaults.dictionaryRepresentation() {
+        print("UserDefaults: ---------------------------")
+        for (key, value) in UserDefaults.standard.dictionaryRepresentation() {
             print("\(key) = \(value)")
         }
-        print("------------------------------------")
+        print("UserDefaults Group: ---------------------")
+        if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) {
+            for (key, value) in groupDefaults.dictionaryRepresentation() {
+                print("\(key) = \(value)")
+            }
+        }
+        print("-----------------------------------------")
         #endif
 
         if lastVersion != versionApp {
-            // Set appSuppending true for blocked the realm access
+            // Suspending Database for blocked the realm access (better be sure 100%)
             isSuspendingDatabaseOperation = true
             maintenanceMode = true
             window?.rootViewController = UIHostingController(rootView: Maintenance(onCompleted: {
-                // Set appSuppending false for the realm access
                 isSuspendingDatabaseOperation = false
                 maintenanceMode = false
                 // Start App

@@ -28,7 +28,6 @@ var maintenanceMode: Bool = false
 /// Additionally, it logs lifecycle transitions using `nkLog(debug:)`.
 final class NCAppStateManager {
     static let shared = NCAppStateManager()
-    private let appDelegate = UIApplication.shared.delegate as? AppDelegate
 
     private init() {
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { _ in
@@ -44,13 +43,15 @@ final class NCAppStateManager {
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
+            let appDelegate = UIApplication.shared.delegate as? AppDelegate
+
             isSuspendingDatabaseOperation = true
             isAppInBackground = true
             //
             // Cancel here the task, if is in execution mode
             //
-            self.appDelegate?.pushSubscriptionTask?.cancel()
-            self.appDelegate?.pushSubscriptionTask = nil
+            appDelegate?.pushSubscriptionTask?.cancel()
+            appDelegate?.pushSubscriptionTask = nil
 
             nkLog(debug: "Application did enter in background")
         }
