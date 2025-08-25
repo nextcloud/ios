@@ -27,7 +27,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         if let groupDefaults = UserDefaults(suiteName: NextcloudKit.shared.nkCommonInstance.groupIdentifier) {
             lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion)
-            groupDefaults.set(versionApp, forKey: global.udLastVersion)
+            groupDefaults.set("versionApp", forKey: global.udLastVersion)
         }
         UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
 
