@@ -56,10 +56,7 @@ final class FileProviderExtension: NSFileProviderExtension {
                 let lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion)
                 let versionApp = NCUtility().getVersionApp(withBuild: false)
                 if lastVersion != versionApp {
-                    let userInfo: [String: Any] = [NSLocalizedDescriptionKey: NSLocalizedString("_version_mismatch_error_", comment: "Version change: please open the main app to update the data.")]
-                    throw NSError(domain: NSFileProviderErrorDomain,
-                                  code: NCGlobal.shared.errorVersionMismatch,
-                                  userInfo: userInfo)
+                    throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo: ["code": NSNumber(value: NCGlobal.shared.errorVersionMismatch)])
                 }
             }
 
