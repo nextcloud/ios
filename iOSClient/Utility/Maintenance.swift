@@ -52,6 +52,10 @@ struct Maintenance: View {
             nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm compaction failed: \(error.localizedDescription)")
         }
 
+        #if !DEBUG
+        try? await Task.sleep(nanoseconds: 1_000_000_000)
+        #endif
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             onCompleted()
         }

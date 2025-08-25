@@ -130,10 +130,9 @@ final class NCUtility: NSObject, Sendable {
 
     func getVersionMaintenance() -> String {
         if let dictionary = Bundle.main.infoDictionary,
-           let version = dictionary["CFBundleShortVersionString"],
-           let build = dictionary["CFBundleVersion"] {
+           let version = dictionary["CFBundleShortVersionString"] {
             #if DEBUG
-            return "\(version).\(build)"
+            return UUID().uuidString
             #else
             return "\(version)"
             #endif
