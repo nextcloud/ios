@@ -69,6 +69,7 @@ final class NCAppStateManager {
             } // respect cancellation
             try? await Task.sleep(nanoseconds: pollNs)
             waitedNs += pollNs
+            print("[Polling Maintenance state]")
             if !maintenanceMode {
                 return true
             }
