@@ -27,7 +27,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if !NCPreferences().appearanceAutomatic {
             self.window?.overrideUserInterfaceStyle = NCPreferences().appearanceInterfaceStyle
         }
+        // Get last versio App
         let lastVersion = UserDefaults.standard.string(forKey: global.udLastVersion)
+        // Save actual version App
+        UserDefaults.standard.set(versionApp, forKey: global.udLastVersion)
 
         if let lastVersion,
            lastVersion != versionApp {
@@ -94,8 +97,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
             // Migration done.
             UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
-            // Save actual version
-            UserDefaults.standard.set(versionApp, forKey: global.udLastVersion)
 
             if NCBrandOptions.shared.disable_intro {
                 if let viewController = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin {
@@ -119,8 +120,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         // Save migration state
         UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
-        // Save actual version
-        UserDefaults.standard.set(versionApp, forKey: global.udLastVersion)
 
         // Networking Certificate
         NCNetworking.shared.activeAccountCertificate(account: activeTblAccount.account)

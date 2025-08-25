@@ -114,6 +114,7 @@ final class NCManageDatabase: @unchecked Sendable {
                 self.migrationSchema(migration, oldSchemaVersion)
             })
 
+            // Writes a compacted copy of the Realm to the given destination
             let realm = try Realm(configuration: configuration)
             try realm.writeCopy(toFile: compactedURL)
         }
