@@ -242,10 +242,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                return
            }
 
-           // TODO: DISABLE synchronize FOR TEST
-           // await NCService().synchronize(account: tblAccount.account)
-           // nkLog(tag: self.global.logTagTask, message: "Synchronize for \(tblAccount.account) completed.")
-
            let numTransfers = await backgroundSync(tblAccount: tblAccount)
            nkLog(tag: self.global.logTagTask, emoji: .success, message: "Processing task completed with \(numTransfers) transfers of auto upload")
        }
@@ -383,8 +379,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         if let pushKitToken = NCPushNotificationEncryption.shared().string(withDeviceToken: deviceToken) {
             self.pushKitToken = pushKitToken
-            Task.detached {
-                try? await Task.sleep(nanoseconds: 3_000_000_000)
+            Task.detached { [weak self] in
+                guard let self else { return }
+
+                // Wait bounded time for maintenance to be OFF
+                let canProceed = await NCAppStateManager.shared.waitForMaintenanceOffAsync()
+                guard canProceed else {
+                    nkLog(error: "[PUSH] Skipping subscription: maintenance mode still ON after timeout")
+                    return
+                }
+
                 let tblAccounts = await NCManageDatabase.shared.getAllTableAccountAsync()
                 for tblAccount in tblAccounts {
                     await self.subscribingPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user)

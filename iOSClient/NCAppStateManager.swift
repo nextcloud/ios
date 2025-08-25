@@ -14,6 +14,9 @@ var isAppSuspending: Bool = false
 // Global flag indicating whether the app is currently in background mode.
 var isAppInBackground: Bool = true
 
+// Global flag indicating whether the app is in maintenanceMode.
+var maintenanceMode: Bool = false
+
 /// Singleton responsible for monitoring and managing app state transitions.
 ///
 /// This class observes system notifications related to app lifecycle events and updates global flags accordingly:
@@ -45,5 +48,31 @@ final class NCAppStateManager {
 
             nkLog(debug: "Application did enter in background")
         }
+    }
+
+    /// Waits for `maintenanceMode` to become false with a bounded timeout.
+    /// Returns `true` if maintenance is OFF within the timeout, otherwise `false`.
+    /// Total max wait 10 sec.
+    func waitForMaintenanceOffAsync(maxWaitSeconds: UInt64 = 10, pollIntervalMilliseconds: UInt64 = 250) async -> Bool {
+        // Fast-path: immediately proceed if maintenance is already OFF
+        if !maintenanceMode {
+            return true
+        }
+
+        var waitedNs: UInt64 = 0
+        let maxWaitNs = maxWaitSeconds * 1_000_000_000
+        let pollNs = pollIntervalMilliseconds * 1_000_000
+
+        while waitedNs < maxWaitNs {
+            if Task.isCancelled {
+                return false
+            } // respect cancellation
+            try? await Task.sleep(nanoseconds: pollNs)
+            waitedNs += pollNs
+            if !maintenanceMode {
+                return true
+            }
+        }
+        return false
     }
 }

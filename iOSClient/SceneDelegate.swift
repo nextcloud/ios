@@ -48,9 +48,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
            lastVersion != versionApp {
             // Set appSuppending true for blocked the realm access
             isAppSuspending = true
+            maintenanceMode = true
             window?.rootViewController = UIHostingController(rootView: Maintenance(onCompleted: {
                 // Set appSuppending false for the realm access
                 isAppSuspending = false
+                maintenanceMode = false
                 // Start App
                 self.startNextcloud(scene: scene, withActivateSceneForAccount: true)
             }))
