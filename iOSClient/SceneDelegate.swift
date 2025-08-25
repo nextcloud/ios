@@ -47,11 +47,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         if lastVersion != versionApp {
             // Set appSuppending true for blocked the realm access
-            isAppSuspending = true
+            isSuspendingDatabaseOperation = true
             maintenanceMode = true
             window?.rootViewController = UIHostingController(rootView: Maintenance(onCompleted: {
                 // Set appSuppending false for the realm access
-                isAppSuspending = false
+                isSuspendingDatabaseOperation = false
                 maintenanceMode = false
                 // Start App
                 self.startNextcloud(scene: scene, withActivateSceneForAccount: true)
@@ -230,7 +230,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
-        // Must be outside the Task otherwise isAppSuspending suspends it
+        // Must be outside the Task otherwise isSuspendingDatabaseOperation suspends it
         let session = SceneManager.shared.getSession(scene: scene)
         guard let tblAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
             return

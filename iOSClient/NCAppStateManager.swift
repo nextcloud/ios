@@ -9,7 +9,7 @@ import NextcloudKit
 var hasBecomeActiveOnce: Bool = false
 
 // Global flag used to control Realm write/read operations during app suspension.
-var isAppSuspending: Bool = false
+var isSuspendingDatabaseOperation: Bool = false
 
 // Global flag indicating whether the app is currently in background mode.
 var isAppInBackground: Bool = true
@@ -22,7 +22,7 @@ var maintenanceMode: Bool = false
 /// This class observes system notifications related to app lifecycle events and updates global flags accordingly:
 ///
 /// - `hasBecomeActiveOnce`: set to `true` the first time the app enters foreground.
-/// - `isAppSuspending`: set to `true` when the app enters background (useful to safely close Realm writes).
+/// - `isSuspendingDatabaseOperation`: set to `true` when the app enters background (useful to safely close Realm writes).
 /// - `isAppInBackground`: indicates whether the app is currently running in background.
 ///
 /// Additionally, it logs lifecycle transitions using `nkLog(debug:)`.
@@ -33,7 +33,7 @@ final class NCAppStateManager {
     private init() {
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { _ in
             hasBecomeActiveOnce = true
-            isAppSuspending = false
+            isSuspendingDatabaseOperation = false
             isAppInBackground = false
 
             nkLog(debug: "Application will enter in foreground")
@@ -44,7 +44,7 @@ final class NCAppStateManager {
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
-            isAppSuspending = true
+            isSuspendingDatabaseOperation = true
             isAppInBackground = true
             //
             // Cancel here the task, if is in execution mode

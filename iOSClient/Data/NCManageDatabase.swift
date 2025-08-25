@@ -136,7 +136,7 @@ final class NCManageDatabase: @unchecked Sendable {
 
         // now you can read/write in Realm
         #if !EXTENSION
-        isAppSuspending = false
+        isSuspendingDatabaseOperation = false
         #endif
 
         Realm.Configuration.defaultConfiguration = Realm.Configuration(fileURL: databaseFileUrl,
@@ -252,7 +252,7 @@ final class NCManageDatabase: @unchecked Sendable {
     func performRealmRead<T>(_ block: @escaping (Realm) throws -> T?, sync: Bool = true, completion: ((T?) -> Void)? = nil) -> T? {
         // Skip execution if app is suspending
         #if !EXTENSION
-        guard !isAppSuspending else {
+        guard !isSuspendingDatabaseOperation else {
             completion?(nil)
             return nil
         }
@@ -300,8 +300,7 @@ final class NCManageDatabase: @unchecked Sendable {
     func performRealmWrite(sync: Bool = true, _ block: @escaping (Realm) throws -> Void) {
         // Skip execution if app is suspending
         #if !EXTENSION
-        guard !isAppSuspending
-        else {
+        guard !isSuspendingDatabaseOperation else {
             return
         }
         #endif
@@ -337,7 +336,7 @@ final class NCManageDatabase: @unchecked Sendable {
     func performRealmReadAsync<T>(_ block: @escaping (Realm) throws -> T?) async -> T? {
         // Skip execution if app is suspending
         #if !EXTENSION
-        guard !isAppSuspending else {
+        guard !isSuspendingDatabaseOperation else {
             return nil
         }
         #endif
@@ -361,7 +360,7 @@ final class NCManageDatabase: @unchecked Sendable {
     func performRealmWriteAsync(_ block: @escaping (Realm) throws -> Void) async {
         // Skip execution if app is suspending
         #if !EXTENSION
-        if isAppSuspending {
+        if isSuspendingDatabaseOperation {
             return
         }
         #endif
