@@ -15,18 +15,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private let appDelegate = UIApplication.shared.delegate as? AppDelegate
     private var privacyProtectionWindow: UIWindow?
     private let global = NCGlobal.shared
-    private let versionApp = NCUtility().getVersionApp(withBuild: false)
-    // Get last versio App, migration multi domains state
-    let lastVersion = UserDefaults.standard.string(forKey: NCGlobal.shared.udLastVersion)
-    let alreadyMigratedMultiDomains = UserDefaults.standard.bool(forKey: NCGlobal.shared.udMigrationMultiDomains)
+    private let alreadyMigratedMultiDomains = UserDefaults.standard.bool(forKey: NCGlobal.shared.udMigrationMultiDomains)
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else {
             return
         }
+        let versionApp = NCUtility().getVersionMaintenance()
+        var lastVersion: String?
 
-        // Save actual version App, migration multi domains state
-        UserDefaults.standard.set(versionApp, forKey: global.udLastVersion)
+        if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) {
+            lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion)
+            groupDefaults.set(versionApp, forKey: global.udLastVersion)
+        }
         UserDefaults.standard.set(true, forKey: global.udMigrationMultiDomains)
 
         self.window = UIWindow(windowScene: windowScene)
@@ -44,14 +45,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         print("------------------------------------")
         #endif
 
-        if let lastVersion,
-           lastVersion != versionApp {
+        if lastVersion != versionApp {
             // Set appSuppending true for blocked the realm access
-            isAppSuspending = true
+            isSuspendingDatabaseOperation = true
             maintenanceMode = true
             window?.rootViewController = UIHostingController(rootView: Maintenance(onCompleted: {
                 // Set appSuppending false for the realm access
-                isAppSuspending = false
+                isSuspendingDatabaseOperation = false
                 maintenanceMode = false
                 // Start App
                 self.startNextcloud(scene: scene, withActivateSceneForAccount: true)
@@ -230,7 +230,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
-        // Must be outside the Task otherwise isAppSuspending suspends it
+        // Must be outside the Task otherwise isSuspendingDatabaseOperation suspends it
         let session = SceneManager.shared.getSession(scene: scene)
         guard let tblAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
             return
@@ -268,6 +268,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
               let url = URLContexts.first?.url else { return }
         let scheme = url.scheme
         let action = url.host
+        let versionApp = NCUtility().getVersionMaintenance()
+
+        // Test version
+        guard let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup),
+              let lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion),
+              lastVersion == versionApp else {
+            return
+        }
 
         func getMatchedAccount(userId: String, url: String) async -> tableAccount? {
             let tblAccounts = await NCManageDatabase.shared.getAllTableAccountAsync()

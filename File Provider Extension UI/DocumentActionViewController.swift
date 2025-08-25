@@ -48,6 +48,8 @@ class DocumentActionViewController: FPUIActionExtensionViewController {
                 titleError?.text = NSLocalizedString("_unauthorizedFilesPasscode_", comment: "")
             } else if code == NCGlobal.shared.errorDisableFilesApp {
                 titleError?.text = NSLocalizedString("_disableFilesApp_", comment: "")
+            } else if code == NCGlobal.shared.errorVersionMismatch {
+                titleError?.text = NSLocalizedString("_version_mismatch_error_", comment: "")
             }
         } else {
             titleError?.text = error.localizedDescription
