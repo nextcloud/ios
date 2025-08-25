@@ -82,6 +82,13 @@ extension NCManageDatabase {
 
     // MARK: - Realm read
 
+    func getLayoutsForView(keyStore: String) -> Results<NCDBLayoutForView>? {
+        return performRealmRead({
+            $0.objects(NCDBLayoutForView.self)
+                .filter("keyStore BEGINSWITH %@", keyStore)
+        })
+    }
+
     func getLayoutForView(account: String, key: String, serverUrl: String, layout: String? = nil) -> NCDBLayoutForView {
         let keyStore = serverUrl.isEmpty ? key : serverUrl
         let index = account + " " + keyStore

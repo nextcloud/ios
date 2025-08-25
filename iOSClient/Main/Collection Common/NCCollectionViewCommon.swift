@@ -538,6 +538,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func changeLayout(layoutForView: NCDBLayoutForView) {
         let homeServer = utilityFileSystem.getHomeServer(urlBase: session.urlBase, userId: session.userId)
+        let numFoldersLayoutsForView = self.database.getLayoutsForView(keyStore: layoutForView.keyStore)?.count ?? 1
 
         func changeLayout(withSubFolders: Bool) {
             if self.layoutForView?.layout == layoutForView.layout {
@@ -572,7 +573,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
         }
 
-        if serverUrl == homeServer {
+        if serverUrl == homeServer || numFoldersLayoutsForView == 1 {
             changeLayout(withSubFolders: false)
         } else {
             let alertController = UIAlertController(title: NSLocalizedString("_propagate_layout_", comment: ""), message: nil, preferredStyle: .alert)
