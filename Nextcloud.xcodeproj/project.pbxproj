@@ -528,6 +528,7 @@
 		F75379202AE2AD9400C0250E /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F753791F2AE2AD9400C0250E /* JGProgressHUD */; };
 		F75379222AE2ADA100C0250E /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F75379212AE2ADA100C0250E /* JGProgressHUD */; };
 		F753BA93281FD8020015BFB6 /* EasyTipView in Frameworks */ = {isa = PBXBuildFile; productRef = F753BA92281FD8020015BFB6 /* EasyTipView */; };
+		F753DBDF2E5D99C300A1AF91 /* NCFiles+SpeedUpSyncMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = F753DBDE2E5D99B700A1AF91 /* NCFiles+SpeedUpSyncMetadata.swift */; };
 		F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F755BD9A20594AC7008C5FBB /* NCService.swift */; };
 		F755CB402B8CB13C00CE27E9 /* NCMediaLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F755CB3F2B8CB13C00CE27E9 /* NCMediaLayout.swift */; };
 		F757CC8229E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */ = {isa = PBXBuildFile; fileRef = F757CC8129E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift */; };
@@ -1515,6 +1516,7 @@
 		F753701822723D620041C76C /* gl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = gl; path = gl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F753701922723E0D0041C76C /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F753701A22723EC80041C76C /* da */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F753DBDE2E5D99B700A1AF91 /* NCFiles+SpeedUpSyncMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCFiles+SpeedUpSyncMetadata.swift"; sourceTree = "<group>"; };
 		F755BD9A20594AC7008C5FBB /* NCService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCService.swift; sourceTree = "<group>"; };
 		F755CB3F2B8CB13C00CE27E9 /* NCMediaLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCMediaLayout.swift; sourceTree = "<group>"; };
 		F757CC8129E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+Groupfolders.swift"; sourceTree = "<group>"; };
@@ -2767,6 +2769,7 @@
 			children = (
 				F7725A5F251F33BB00D125E0 /* NCFiles.storyboard */,
 				F7725A5E251F33BB00D125E0 /* NCFiles.swift */,
+				F753DBDE2E5D99B700A1AF91 /* NCFiles+SpeedUpSyncMetadata.swift */,
 				F73EFF9A2DB11EB900FD434C /* NCFiles+UIScrollViewDelegate.swift */,
 				F722133A2D40EF8C002F7438 /* NCFilesNavigationController.swift */,
 			);
@@ -4719,6 +4722,7 @@
 				F785EE9D246196DF00B3F945 /* NCNetworkingE2EE.swift in Sources */,
 				F724377B2C10B83E00C7C68D /* NCSharePermissions.swift in Sources */,
 				F794E13D2BBBFF2E003693D7 /* NCMainTabBarController.swift in Sources */,
+				F753DBDF2E5D99C300A1AF91 /* NCFiles+SpeedUpSyncMetadata.swift in Sources */,
 				F7CBC1252BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.swift in Sources */,
 				F7D4BF3D2CA2E8D800A5E746 /* TOPasscodeKeypadView.m in Sources */,
 				F7D4BF3E2CA2E8D800A5E746 /* TOPasscodeSettingsKeypadView.m in Sources */,

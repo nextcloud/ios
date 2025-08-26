@@ -17,6 +17,9 @@ class NCFiles: NCCollectionViewCommon {
     internal var lastScrollTime: TimeInterval = 0
     internal var accumulatedScrollDown: CGFloat = 0
 
+    internal var syncMetadatasTask: Task<Void, Never>?
+    internal let readTasks = ReadTasks()
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
@@ -138,6 +141,8 @@ class NCFiles: NCCollectionViewCommon {
 
         fileNameBlink = nil
         fileNameOpen = nil
+
+        stopSyncMetadata()
     }
 
     // MARK: - Action
@@ -209,6 +214,8 @@ class NCFiles: NCCollectionViewCommon {
         await super.reloadDataSource()
 
         cachingAsync(metadatas: metadatas)
+
+        startSyncMetadata(metadatas: metadatas)
     }
 
     override func getServerData(forced: Bool = false) async {
