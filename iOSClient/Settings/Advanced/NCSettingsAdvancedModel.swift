@@ -146,7 +146,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
             }
         }
 
-        self.footerTitle = "\(NSLocalizedString("_clear_cache_footer_", comment: "")). (\(NSLocalizedString("_used_space_", comment: "")) \(NCUtilityFileSystem().transformedSize(totalSize))"
+        self.footerTitle = "\(NSLocalizedString("_clear_cache_footer_", comment: "")). (\(NSLocalizedString("_used_space_", comment: "")) \(NCUtilityFileSystem().transformedSize(totalSize)))"
     }
 
     /// Removes all accounts & exits the Nextcloud application if specified.
