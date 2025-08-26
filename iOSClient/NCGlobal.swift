@@ -175,6 +175,7 @@ final class NCGlobal: Sendable {
     let errorDisableFilesApp: Int               = -99992
     let errorUnexpectedResponseFromDB: Int      = -99991
     let errorIncorrectFileName: Int             = -99990
+    let errorVersionMismatch: Int               = -99989
 
     // E2EE
     let errorE2EENotEnabled: Int                = -98000
@@ -386,6 +387,7 @@ final class NCGlobal: Sendable {
     let logTagSync                          = "SYNC"
     let logTagServiceProficer               = "SERVICE PROVIDER"
     let logTagDatabase                      = "DB"
+    let logSpeedUpSyncMetadata              = "SYNC METADATA"
 
     // USER DEFAULTS
     let udMigrationMultiDomains             = "migrationMultiDomains"

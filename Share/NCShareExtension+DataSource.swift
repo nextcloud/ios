@@ -11,7 +11,7 @@ import NextcloudKit
 extension NCShareExtension: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         Task {
-            guard let tblAccount = self.extensionData.getTblAccoun(),
+            guard let tblAccount = NCShareExtensionData.shared.getTblAccoun(),
                   let metadata = self.dataSource.getMetadata(indexPath: indexPath) else {
                 return self.showAlert(description: "_invalid_url_")
             }
@@ -38,7 +38,7 @@ extension NCShareExtension: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == UICollectionView.elementKindSectionHeader {
-            let session = self.extensionData.getSession()
+            let session = NCShareExtensionData.shared.getSession()
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData else { return NCSectionFirstHeaderEmptyData() }
             if self.dataSourceTask?.state == .running {
                 header.emptyImage.image = utility.loadImage(named: "wifi", colors: [NCBrandColor.shared.getElement(account: session.account)])
@@ -123,7 +123,7 @@ extension NCShareExtension: UICollectionViewDataSource {
     func setupDirectoryCell(_ cell: NCListCell, indexPath: IndexPath, with metadata: tableMetadata) {
         var isShare = false
         var isMounted = false
-        let session = self.extensionData.getSession()
+        let session = NCShareExtensionData.shared.getSession()
 
         if let metadataFolder = metadataFolder {
             isShare = metadata.permissions.contains(NCMetadataPermissions.permissionShared) && !metadataFolder.permissions.contains(NCMetadataPermissions.permissionShared)
@@ -151,7 +151,7 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.labelInfo.text = utility.getRelativeDateTitle(metadata.date as Date)
 
         let lockServerUrl = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
-        let tableDirectory = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, lockServerUrl))
+        let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, lockServerUrl))
 
         // Local image: offline
         if tableDirectory != nil && tableDirectory!.offline {
@@ -169,7 +169,7 @@ extension NCShareExtension: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let fileName = filesName[indexPath.row]
-        let session = self.extensionData.getSession()
+        let session = NCShareExtensionData.shared.getSession()
 
         showRenameFileDialog(named: fileName, account: session.account)
     }
@@ -186,7 +186,7 @@ extension NCShareExtension: UITableViewDataSource {
         }
 
         let fileName = filesName[indexPath.row]
-        let session = self.extensionData.getSession()
+        let session = NCShareExtensionData.shared.getSession()
 
         cell.setup(fileName: fileName, iconName: "", account: session.account)
         cell.delegate = self

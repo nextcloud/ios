@@ -64,8 +64,6 @@ extension NCNetworking {
                     }
                 }
             }
-
-            await NCManageDatabase.shared.setDirectorySynchronizationDateAsync(serverUrl: serverUrl, account: account)
         } else {
             nkLog(tag: self.global.logTagSync, emoji: .error, message: "Read infinite folder: \(serverUrl), error: \(results.error.errorCode)")
         }
