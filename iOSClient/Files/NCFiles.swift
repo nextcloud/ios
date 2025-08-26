@@ -136,13 +136,17 @@ class NCFiles: NCCollectionViewCommon {
         }
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        stopSyncMetadata()
+    }
+
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
         fileNameBlink = nil
         fileNameOpen = nil
-
-        stopSyncMetadata()
     }
 
     // MARK: - Action
