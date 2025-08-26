@@ -238,14 +238,6 @@ final class NCManageDatabase: @unchecked Sendable {
         }
     }
 
-    private func compactDB(_ totalBytes: Int, _ usedBytes: Int) -> Bool {
-        let usedPercentage = (Double(usedBytes) / Double(totalBytes)) * 100
-        // Compact the database if more than 25% of the space is free
-        let shouldCompact = (usedPercentage < 75.0) && (totalBytes > 100 * 1024 * 1024)
-
-        return shouldCompact
-    }
-
     // MARK: - performRealmRead, performRealmWrite
 
     @discardableResult
