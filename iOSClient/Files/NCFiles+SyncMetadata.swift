@@ -70,7 +70,7 @@ extension NCFiles {
         // Create a detached task and keep reference for manual cancellation
         syncMetadatasTask = Task.detached { [weak self] in
             guard let self else { return }
-            await self.speedUpSyncMetadata(metadatas: metadatas)
+            await self.networkSyncMetadata(metadatas: metadatas)
             // Once finished, clear the reference
             await MainActor.run {
                 self.syncMetadatasTask = nil
@@ -103,7 +103,7 @@ extension NCFiles {
     /// all tracked `URLSessionTask` are cancelled on any exit path via `defer`.
     ///
     /// - Parameter metadatas: The list of `tableMetadata` entries to scan and refresh.
-    func speedUpSyncMetadata(metadatas: [tableMetadata]) async {
+    func networkSyncMetadata(metadatas: [tableMetadata]) async {
         nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .start, message: "Start Sync Metadata for \(self.serverUrl)")
 
         // Fast exit if cancellation was requested before starting
