@@ -15,7 +15,6 @@ class tableDirectory: Object {
     @objc dynamic var fileId = ""
     @objc dynamic var ocId = ""
     @objc dynamic var offline: Bool = false
-    @objc dynamic var offlineDate: Date?
     @objc dynamic var permissions = ""
     @objc dynamic var richWorkspace: String?
     @objc dynamic var serverUrl = ""
@@ -220,15 +219,6 @@ extension NCManageDatabase {
 
                 realm.add(directory, update: .all)
             }
-        }
-    }
-
-    func setDirectorySynchronizationDateAsync(serverUrl: String, account: String) async {
-        await performRealmWriteAsync { realm in
-            realm.objects(tableDirectory.self)
-                .filter("account == %@ AND serverUrl == %@", account, serverUrl)
-                .first?
-                .offlineDate = Date()
         }
     }
 
