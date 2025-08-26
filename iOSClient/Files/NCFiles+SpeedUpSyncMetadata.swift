@@ -63,7 +63,7 @@ extension NCFiles {
         // If a sync task is already running, do not start a new one
         if let task = syncMetadatasTask,
            !task.isCancelled {
-            nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .info, message: "Exit: Another sync is already running. Skipping this one.")
+            nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .info, message: "Exit: Another sync is already running. Skipping this one.", consoleOnly: true)
             return
         }
 
@@ -82,7 +82,13 @@ extension NCFiles {
     ///
     /// Use this when the page/screen is about to disappear or the user navigates away.
     func stopSyncMetadata() {
-        nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .stop, message: "Forced stop Sync Metadata for \(self.serverUrl)")
+        if let task = syncMetadatasTask {
+            if task.isCancelled {
+                nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .stop, message: "Sync Metadata for \(self.serverUrl) was already cancelled.", consoleOnly: true)
+            } else {
+                nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .stop, message: "Stopping active Sync Metadata for \(self.serverUrl).", consoleOnly: true)
+            }
+        }
 
         syncMetadatasTask?.cancel()
         syncMetadatasTask = nil
@@ -107,14 +113,14 @@ extension NCFiles {
 
         // If a readFile for this serverUrl is already in-flight, do nothing
         if await readTasks.isReading(serverUrl) {
-            nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .debug, message: "ReadFile for this \(self.serverUrl) is already in-flight.")
+            nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .debug, message: "ReadFile for this \(self.serverUrl) is already in-flight.", consoleOnly: true)
             return
         }
 
         // Always cancel and clear all tracked URLSessionTask on any exit path
         defer {
             Task {
-                nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .stop, message: "Stop Sync Metadata for \(self.serverUrl)")
+                nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .stop, message: "Stop Sync Metadata for \(self.serverUrl)", consoleOnly: true)
                 await readTasks.cancelAll()
             }
         }
@@ -130,7 +136,7 @@ extension NCFiles {
         guard resultsReadFile.error == .success,
               let metadata = resultsReadFile.metadata,
               !metadata.e2eEncrypted else {
-            nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .info, message: "Exit: result error or e2ee directory. Skipping this one.")
+            nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .info, message: "Exit: result error \(resultsReadFile.error.errorDescription) or e2ee directory \(resultsReadFile.metadata?.e2eEncrypted ?? false). Skipping this one.")
             return
         }
 
@@ -158,8 +164,10 @@ extension NCFiles {
             }
 
             // If this folder failed, skip it but keep processing others
-            if resultsReadFolder.error != .success {
-                nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .error, message: "Read folder failed for \(serverUrl) with error: \(resultsReadFolder.error.errorDescription)")
+            if resultsReadFolder.error == .success {
+                nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .info, message: "Read correctly: \(serverUrl)", consoleOnly: true)
+            } else {
+                nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .error, message: "Read failed for \(serverUrl) with error: \(resultsReadFolder.error.errorDescription)")
                 return
             }
 
