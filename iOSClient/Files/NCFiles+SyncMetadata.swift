@@ -120,7 +120,7 @@ extension NCFiles {
         // Always cancel and clear all tracked URLSessionTask on any exit path
         defer {
             Task {
-                nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .stop, message: "Stop Sync Metadata for \(self.serverUrl)", consoleOnly: true)
+                nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .end, message: "End Sync Metadata for \(self.serverUrl)", consoleOnly: true)
                 await readTasks.cancelAll()
             }
         }
@@ -165,7 +165,7 @@ extension NCFiles {
 
             // If this folder failed, skip it but keep processing others
             if resultsReadFolder.error == .success {
-                nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .info, message: "Read correctly: \(serverUrl)", consoleOnly: true)
+                nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .network, message: "Read correctly: \(serverUrl)", consoleOnly: true)
             } else {
                 nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .error, message: "Read failed for \(serverUrl) with error: \(resultsReadFolder.error.errorDescription)")
                 return
