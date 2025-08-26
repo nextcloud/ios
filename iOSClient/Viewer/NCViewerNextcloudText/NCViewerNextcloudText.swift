@@ -34,7 +34,8 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     var imageIcon: UIImage?
     let utility = NCUtility()
     var items: [UIBarButtonItem] = []
-    let ncViewer = NCViewer()
+    let ncViewerContextMenu = NCViewerContextMenu()
+    var moreButton: UIBarButtonItem?
 
     var sceneIdentifier: String {
         (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
@@ -50,28 +51,21 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         super.viewDidLoad()
 
         if !metadata.ocId.hasPrefix("TEMP") {
-            let moreButton = UIBarButtonItem(
-                image: NCImageCache.shared.getImageButtonMore(),
-                style: .plain,
-                target: self,
-                action: nil
+            if let menu = ncViewerContextMenu.makeContextMenu(controller: (self.tabBarController as? NCMainTabBarController), metadata: self.metadata, webView: false, sender: self) {
+//                moreButton = UIBarButtonItem(image: NCImageCache.shared.getImageButtonMore(), style: .plain, target: self, action: nil, menu: menu)
 
-//                action: #selector(self.openMenuMore)
-            )
-            // build the menu from your toggleMenu/makeContextMenu logic
-
-            let ncViewer = NCViewer()
-            ncViewer.contextMenuDelegate = self
-            if let menu = ncViewer.makeContextMenu(controller: (self.tabBarController as? NCMainTabBarController),
-                                                     metadata: self.metadata,
-                                                      webView: false,
-                                                      sender: self) {
-                moreButton.menu = menu
+                moreButton = UIBarButtonItem(
+                        image: NCImageCache.shared.getImageButtonMore(),
+                        primaryAction: nil,
+                        menu: menu)
             }
 
-//            let interaction = UIContextMenuInteraction(delegate: self)
-//            moreButton.customView?.addInteraction(interaction)
-            items.append(moreButton)
+            ncViewerContextMenu.delegate = self
+            refreshMenu()
+
+            if let moreButton {
+                items.append(moreButton)
+            }
         }
 
         navigationItem.rightBarButtonItems = items
@@ -174,16 +168,13 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         bottomConstraint?.constant = 0
     }
 
-    // MARK: - Action
-
-    @objc private func openMenuMore(_ sender: Any?) {
-//        let interaction = UIContextMenuInteraction(delegate: self)
-//        myViewaddInteraction(interaction)
-
-//
-    }
-
     // MARK: -
+
+    private func refreshMenu() {
+        if let menu = ncViewerContextMenu.makeContextMenu(controller: (self.tabBarController as? NCMainTabBarController), metadata: self.metadata, webView: false, sender: self) {
+            moreButton?.menu = menu
+        }
+    }
 
     public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         if message.name == "DirectEditingMobileInterface" {
@@ -276,8 +267,6 @@ extension NCViewerNextcloudText: NCTransferDelegate {
 
 extension NCViewerNextcloudText: ContextMenuDelegate {
     func onContextMenuItemSelected() {
-        <#code#>
+        refreshMenu()
     }
-    
-
 }

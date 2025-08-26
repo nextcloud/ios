@@ -163,8 +163,8 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     // MARK: - Action
 
     @objc private func openMenuMore(_ sender: Any?) {
-        if imageIcon == nil { imageIcon = NCUtility().loadImage(named: "doc.text", colors: [NCBrandColor.shared.iconImageColor]) }
-        NCViewer().toggleMenu(controller: self.tabBarController as? NCMainTabBarController, metadata: metadata, webView: true, imageIcon: imageIcon, sender: nil)
+//        if imageIcon == nil { imageIcon = NCUtility().loadImage(named: "doc.text", colors: [NCBrandColor.shared.iconImageColor]) }
+//        NCViewer().toggleMenu(controller: self.tabBarController as? NCMainTabBarController, metadata: metadata, webView: true, imageIcon: imageIcon, sender: nil)
     }
 
     // MARK: -

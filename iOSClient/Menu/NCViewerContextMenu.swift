@@ -26,6 +26,9 @@ import FloatingPanel
 import NextcloudKit
 
 class NCViewerContextMenu {
+    let database = NCManageDatabase.shared
+    weak var delegate: ContextMenuDelegate?
+
     func makeContextMenu(controller: NCMainTabBarController?, metadata: tableMetadata, webView: Bool, sender: Any?) -> UIMenu? {
 
            guard let metadata = self.database.getMetadataFromOcId(metadata.ocId),
@@ -49,7 +52,7 @@ class NCViewerContextMenu {
                    NCDownloadAction.shared.openShare(viewController: controller,
                                                      metadata: metadata,
                                                      page: .activity)
-                   self.contextMenuDelegate?.onContextMenuItemSelected()
+                   self.delegate?.onContextMenuItemSelected()
                }
                menuElements.append(action)
            }
@@ -67,7 +70,7 @@ class NCViewerContextMenu {
                                                                 fileNameOpen: nil,
                                                                 sceneIdentifier: controller.sceneIdentifier)
 
-                   self.contextMenuDelegate?.onContextMenuItemSelected()
+                   self.delegate?.onContextMenuItemSelected()
                }
                menuElements.append(action)
            }
@@ -87,7 +90,8 @@ class NCViewerContextMenu {
                            NCContentPresenter().showError(error: error)
                        }
                    }
-                   self.contextMenuDelegate?.onContextMenuItemSelected()
+
+                   self.delegate?.onContextMenuItemSelected()
                }
                menuElements.append(action)
            }
@@ -97,7 +101,7 @@ class NCViewerContextMenu {
            //
            if !webView, metadata.canSetAsAvailableOffline {
                menuElements.append(ContextMenuActions.setAvailableOffline(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: controller) {
-                   self.contextMenuDelegate?.onContextMenuItemSelected()
+                   self.delegate?.onContextMenuItemSelected()
                })
            }
 
@@ -106,7 +110,7 @@ class NCViewerContextMenu {
            //
            if !webView, metadata.canShare {
                menuElements.append(ContextMenuActions.share(selectedMetadatas: [metadata], controller: controller, sender: sender) {
-                   self.contextMenuDelegate?.onContextMenuItemSelected()
+                   self.delegate?.onContextMenuItemSelected()
                })
            }
 
@@ -121,7 +125,7 @@ class NCViewerContextMenu {
                            name: NCGlobal.shared.notificationCenterMenuSearchTextPDF
                        )
 
-                       self.contextMenuDelegate?.onContextMenuItemSelected()
+                       self.delegate?.onContextMenuItemSelected()
                    })
 
                menuElements.append(UIAction(
@@ -131,7 +135,7 @@ class NCViewerContextMenu {
                            name: NCGlobal.shared.notificationCenterMenuGotToPageInPDF
                        )
 
-                       self.contextMenuDelegate?.onContextMenuItemSelected()
+                       self.delegate?.onContextMenuItemSelected()
                    })
            }
 
@@ -140,242 +144,14 @@ class NCViewerContextMenu {
            //
            if !webView, metadata.isDeletable {
                menuElements.append(ContextMenuActions.deleteOrUnshare(selectedMetadatas: [metadata], controller: controller) {
-                   self.contextMenuDelegate?.onContextMenuItemSelected()
+                   self.delegate?.onContextMenuItemSelected()
                })
            }
 
            return UIMenu(title: "", children: menuElements)
        }
+}
 
-    func toggleMenu(controller: NCMainTabBarController?, metadata: tableMetadata, webView: Bool, imageIcon: UIImage?, indexPath: IndexPath = IndexPath(), sender: Any?) {
-        guard let metadata = self.database.getMetadataFromOcId(metadata.ocId),
-              let controller,
-              let capabilities = NCNetworking.shared.capabilities[metadata.account] else {
-            return
-        }
-        var actions = [NCMenuAction]()
-        let localFile = self.database.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-        let isOffline = localFile?.offline == true
-
-        //
-        // DETAIL
-        //
-        if !(!capabilities.fileSharingApiEnabled && !capabilities.filesComments && capabilities.activity.isEmpty) {
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_details_", comment: ""),
-                    icon: utility.loadImage(named: "info.circle", colors: [NCBrandColor.shared.iconImageColor]),
-                    sender: sender,
-                    action: { _ in
-                        NCDownloadAction.shared.openShare(viewController: controller, metadata: metadata, page: .activity)
-                    }
-                )
-            )
-        }
-
-        //
-        // VIEW IN FOLDER
-        //
-        if !webView {
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_view_in_folder_", comment: ""),
-                    icon: utility.loadImage(named: "questionmark.folder", colors: [NCBrandColor.shared.iconImageColor]),
-                    sender: sender,
-                    action: { _ in
-                        NCDownloadAction.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil, sceneIdentifier: controller.sceneIdentifier)
-                    }
-                )
-            )
-        }
-
-        //
-        // FAVORITE
-        // Workaround: PROPPATCH doesn't work
-        // https://github.com/nextcloud/files_lock/issues/68
-        if !metadata.lock {
-            actions.append(
-                NCMenuAction(
-                    title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
-                    icon: utility.loadImage(named: metadata.favorite ? "star.slash" : "star", colors: [NCBrandColor.shared.yellowFavorite]),
-                    sender: sender,
-                    action: { _ in
-                        NCNetworking.shared.favoriteMetadata(metadata) { error in
-                            if error != .success {
-                                NCContentPresenter().showError(error: error)
-                            }
-                        }
-                    }
-                )
-            )
-        }
-
-        //
-        // OFFLINE
-        //
-        if !webView, metadata.canSetAsAvailableOffline {
-            actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: controller, sender: sender))
-        }
-
-        //
-        // SHARE
-        //
-        if !webView, metadata.canShare {
-            actions.append(.share(selectedMetadatas: [metadata],
-                                  controller: controller,
-                                  sender: sender))
-        }
-
-        //
-        // SAVE LIVE PHOTO
-        //
-        if let metadataMOV = self.database.getMetadataLivePhoto(metadata: metadata),
-           let hudView = controller.view {
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_livephoto_save_", comment: ""),
-                    icon: NCUtility().loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor]),
-                    sender: sender,
-                    action: { _ in
-                        NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, hudView: hudView))
-                    }
-                )
-            )
-        }
-
-        //
-        // SAVE AS SCAN
-        //
-        if !webView, metadata.isSavebleAsImage {
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_save_as_scan_", comment: ""),
-                    icon: utility.loadImage(named: "doc.viewfinder", colors: [NCBrandColor.shared.iconImageColor]),
-                    sender: sender,
-                    action: { _ in
-                        Task {
-                            if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                                await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                                    let metadata = metadata.detachedCopy()
-                                    metadata.sessionSelector = NCGlobal.shared.selectorSaveAsScan
-                                    delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
-                                                            metadata: metadata,
-                                                            error: .success)
-                                }
-                            } else {
-                                if let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
-                                                                                                            session: NCNetworking.shared.sessionDownload,
-                                                                                                            selector: NCGlobal.shared.selectorSaveAsScan,
-                                                                                                            sceneIdentifier: controller.sceneIdentifier) {
-                                    await NCNetworking.shared.downloadFile(metadata: metadata)
-                                }
-                            }
-                        }
-                    }
-                )
-            )
-        }
-
-        //
-        // DOWNLOAD - LOCAL
-        //
-        if !webView, metadata.session.isEmpty, !self.utilityFileSystem.fileProviderStorageExists(metadata) {
-            var title = ""
-            if metadata.isImage {
-                title = NSLocalizedString("_try_download_full_resolution_", comment: "")
-            } else if metadata.isVideo {
-                title = NSLocalizedString("_download_video_", comment: "")
-            } else if metadata.isAudio {
-                title = NSLocalizedString("_download_audio_", comment: "")
-            } else {
-                title = NSLocalizedString("_download_file_", comment: "")
-            }
-            actions.append(
-                NCMenuAction(
-                    title: title,
-                    icon: utility.loadImage(named: "iphone.circle", colors: [NCBrandColor.shared.iconImageColor]),
-                    sender: sender,
-                    action: { _ in
-                        Task {
-                            if let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
-                                                                                                        session: NCNetworking.shared.sessionDownload,
-                                                                                                        selector: "",
-                                                                                                        sceneIdentifier: controller.sceneIdentifier) {
-                                await NCNetworking.shared.downloadFile(metadata: metadata)
-                            }
-                        }
-                    }
-                )
-            )
-        }
-
-        //
-        // PDF
-        //
-        if metadata.isPDF {
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_search_", comment: ""),
-                    icon: utility.loadImage(named: "magnifyingglass", colors: [NCBrandColor.shared.iconImageColor]),
-                    sender: sender,
-                    action: { _ in
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMenuSearchTextPDF)
-                    }
-                )
-            )
-
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_go_to_page_", comment: ""),
-                    icon: utility.loadImage(named: "number.circle", colors: [NCBrandColor.shared.iconImageColor]),
-                    sender: sender,
-                    action: { _ in
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMenuGotToPageInPDF)
-                    }
-                )
-            )
-        }
-
-        //
-        // MODIFY WITH QUICK LOOK
-        //
-        if !webView, metadata.isModifiableWithQuickLook {
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_modify_", comment: ""),
-                    icon: utility.loadImage(named: "pencil.tip.crop.circle", colors: [NCBrandColor.shared.iconImageColor]),
-                    sender: sender,
-                    action: { _ in
-                        Task {
-                            if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                                await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                                    let metadata = metadata.detachedCopy()
-                                    metadata.sessionSelector = NCGlobal.shared.selectorLoadFileQuickLook
-                                    delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
-                                                            metadata: metadata,
-                                                            error: .success)
-                                }
-                            } else {
-                                if let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
-                                                                                                            session: NCNetworking.shared.sessionDownload,
-                                                                                                            selector: NCGlobal.shared.selectorLoadFileQuickLook,
-                                                                                                            sceneIdentifier: controller.sceneIdentifier) {
-                                    await NCNetworking.shared.downloadFile(metadata: metadata)
-                                }
-                            }
-                        }
-                    }
-                )
-            )
-        }
-
-        //
-        // DELETE
-        //
-        if !webView, metadata.isDeletable {
-            actions.append(.deleteOrUnshareAction(selectedMetadatas: [metadata], metadataFolder: nil, controller: controller, sender: sender))
-        }
-
-        controller.presentMenu(with: actions, sender: sender)
-    }
+protocol ContextMenuDelegate: AnyObject {
+    func onContextMenuItemSelected()
 }

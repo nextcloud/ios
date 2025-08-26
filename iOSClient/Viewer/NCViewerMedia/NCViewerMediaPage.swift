@@ -232,7 +232,7 @@ class NCViewerMediaPage: UIViewController {
                                              userId: currentViewController.metadata.userId,
                                              urlBase: currentViewController.metadata.urlBase)
 
-        NCViewer().toggleMenu(controller: self.tabBarController as? NCMainTabBarController, metadata: currentViewController.metadata, webView: false, imageIcon: imageIcon, sender: sender)
+//        NCViewer().toggleMenu(controller: self.tabBarController as? NCMainTabBarController, metadata: currentViewController.metadata, webView: false, imageIcon: imageIcon, sender: sender)
     }
 
     @objc private func toggleDetail(_ sender: Any?) {
