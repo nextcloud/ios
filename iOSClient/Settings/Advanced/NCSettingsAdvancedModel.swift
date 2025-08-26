@@ -145,9 +145,8 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
                 continuation.resume(returning: size)
             }
         }
-        let sizeMB = Double(totalSize / (1024 * 1024))
 
-        self.footerTitle = "\(NSLocalizedString("_clear_cache_footer_", comment: "")). (\(NSLocalizedString("_used_space_", comment: "")) \(sizeMB))"
+        self.footerTitle = "\(NSLocalizedString("_clear_cache_footer_", comment: "")). (\(NSLocalizedString("_used_space_", comment: "")) \(NCUtilityFileSystem().transformedSize(totalSize))"
     }
 
     /// Removes all accounts & exits the Nextcloud application if specified.
