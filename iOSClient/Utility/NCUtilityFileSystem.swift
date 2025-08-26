@@ -702,22 +702,30 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         }
     }
 
-    func getDirectorySize(directory: String) -> Int64 {
-        let url = URL(fileURLWithPath: directory)
-        let manager = FileManager.default
-        var totalSize: Int64 = 0
+    /// Helper that calculates app
+    func getAppSize() -> Int64 {
+        let fileManager = FileManager.default
+        var total: Int64 = 0
+        let url = NSHomeDirectory()
 
-        if let enumerator = manager.enumerator(at: url, includingPropertiesForKeys: [.isRegularFileKey], options: []) {
+        let directoryURL = URL(fileURLWithPath: url, isDirectory: true)
+        if let enumerator = fileManager.enumerator(at: directoryURL,
+                                                   includingPropertiesForKeys: [.isRegularFileKey, .fileSizeKey],
+                                                   options: [.skipsHiddenFiles]
+        ) {
             for case let fileURL as URL in enumerator {
-                if let attributes = try? manager.attributesOfItem(atPath: fileURL.path) {
-                    if let size = attributes[.size] as? Int64 {
-                        totalSize += size
+                do {
+                    let values = try fileURL.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey])
+                    if values.isRegularFile == true, let fileSize = values.fileSize {
+                        total += Int64(fileSize)
                     }
+                } catch {
+                    // ignore unreadable files
                 }
             }
         }
 
-        return totalSize
+        return total
     }
 
     func transformedSize(_ bytes: Int64) -> String {
