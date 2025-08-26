@@ -34,6 +34,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     var imageIcon: UIImage?
     let utility = NCUtility()
     var items: [UIBarButtonItem] = []
+    let ncViewer = NCViewer()
 
     var sceneIdentifier: String {
         (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
@@ -53,8 +54,23 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
                 image: NCImageCache.shared.getImageButtonMore(),
                 style: .plain,
                 target: self,
-                action: #selector(self.openMenuMore)
+                action: nil
+
+//                action: #selector(self.openMenuMore)
             )
+            // build the menu from your toggleMenu/makeContextMenu logic
+
+            let ncViewer = NCViewer()
+            ncViewer.contextMenuDelegate = self
+            if let menu = ncViewer.makeContextMenu(controller: (self.tabBarController as? NCMainTabBarController),
+                                                     metadata: self.metadata,
+                                                      webView: false,
+                                                      sender: self) {
+                moreButton.menu = menu
+            }
+
+//            let interaction = UIContextMenuInteraction(delegate: self)
+//            moreButton.customView?.addInteraction(interaction)
             items.append(moreButton)
         }
 
@@ -161,8 +177,10 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     // MARK: - Action
 
     @objc private func openMenuMore(_ sender: Any?) {
-        if imageIcon == nil { imageIcon = NCUtility().loadImage(named: "doc.text", colors: [NCBrandColor.shared.iconImageColor]) }
-        NCViewer().toggleMenu(controller: (self.tabBarController as? NCMainTabBarController), metadata: metadata, webView: true, imageIcon: imageIcon, sender: nil)
+//        let interaction = UIContextMenuInteraction(delegate: self)
+//        myViewaddInteraction(interaction)
+
+//
     }
 
     // MARK: -
@@ -254,4 +272,12 @@ extension NCViewerNextcloudText: NCTransferDelegate {
             }
         }
     }
+}
+
+extension NCViewerNextcloudText: ContextMenuDelegate {
+    func onContextMenuItemSelected() {
+        <#code#>
+    }
+    
+
 }

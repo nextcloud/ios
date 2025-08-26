@@ -31,6 +31,8 @@ class NCViewer: NSObject {
     let database = NCManageDatabase.shared
     private var viewerQuickLook: NCViewerQuickLook?
 
+    weak var contextMenuDelegate: ContextMenuDelegate?
+
     @MainActor
     func getViewerController(metadata: tableMetadata, ocIds: [String]? = nil, image: UIImage? = nil, delegate: UIViewController? = nil) async -> UIViewController? {
         let session = NCSession.shared.getSession(account: metadata.account)
@@ -193,4 +195,8 @@ class NCViewer: NSObject {
         }
         return nil
     }
+}
+
+protocol ContextMenuDelegate: AnyObject {
+    func onContextMenuItemSelected()
 }

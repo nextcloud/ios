@@ -89,6 +89,11 @@ class NCMenuPanelController: FloatingPanelController {
         self.surfaceView.layer.cornerRadius = 16
         self.surfaceView.clipsToBounds = true
 
+        surfaceView.appearance = {
+            let appearance = SurfaceAppearance.transparent()
+            return appearance
+        }()
+
         surfaceView.grabberHandle.accessibilityLabel = NSLocalizedString("_cart_controller_", comment: "")
 
         let collapseName = NSLocalizedString("_dismiss_menu_", comment: "")
