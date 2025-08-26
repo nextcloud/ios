@@ -63,6 +63,7 @@ extension NCFiles {
         // If a sync task is already running, do not start a new one
         if let task = syncMetadatasTask,
            !task.isCancelled {
+            nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .info, message: "Exit: Another sync is already running. Skipping this one.")
             return
         }
 
@@ -129,6 +130,7 @@ extension NCFiles {
         guard resultsReadFile.error == .success,
               let metadata = resultsReadFile.metadata,
               !metadata.e2eEncrypted else {
+            nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .info, message: "Exit: result error or e2ee directory. Skipping this one.")
             return
         }
 
