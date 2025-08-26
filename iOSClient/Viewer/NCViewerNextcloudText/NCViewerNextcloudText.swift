@@ -51,17 +51,34 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         super.viewDidLoad()
 
         if !metadata.ocId.hasPrefix("TEMP") {
-            if let menu = ncViewerContextMenu.makeContextMenu(controller: (self.tabBarController as? NCMainTabBarController), metadata: self.metadata, webView: false, sender: self) {
-//                moreButton = UIBarButtonItem(image: NCImageCache.shared.getImageButtonMore(), style: .plain, target: self, action: nil, menu: menu)
+            let button = UIButton(type: .system)
+            button.setImage(NCImageCache.shared.getImageButtonMore(), for: .normal)
+            button.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
+            button.showsMenuAsPrimaryAction = true
 
-                moreButton = UIBarButtonItem(
-                        image: NCImageCache.shared.getImageButtonMore(),
-                        primaryAction: nil,
-                        menu: menu)
-            }
+            // Assign a dynamic, deferred menu
+            button.menu = UIMenu(title: "", children: [
+                UIDeferredMenuElement.uncached { [weak self] completion in
+                    guard let self = self else { return }
+
+                    // Build the menu dynamically every tap
+                    if let menu = self.ncViewerContextMenu.makeContextMenu(
+                        controller: self.tabBarController as? NCMainTabBarController,
+                        metadata: self.metadata,
+                        webView: false,
+                        sender: self
+                    ) {
+                        // Convert the NCMenuAction items to UIMenuElement if needed
+                        completion(menu.children)
+                    } else {
+                        completion([]) // empty menu if nil
+                    }
+                }
+            ])
+
+            moreButton = UIBarButtonItem(customView: button)
 
             ncViewerContextMenu.delegate = self
-            refreshMenu()
 
             if let moreButton {
                 items.append(moreButton)
@@ -267,6 +284,6 @@ extension NCViewerNextcloudText: NCTransferDelegate {
 
 extension NCViewerNextcloudText: ContextMenuDelegate {
     func onContextMenuItemSelected() {
-        refreshMenu()
+//        refreshMenu()
     }
 }
