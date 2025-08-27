@@ -380,7 +380,15 @@ final class NCGlobal: Sendable {
 
     // TASK IDENTIFIER
     //
-    let taskIdentifierSyncMetadata          = "syncMetadataID"
+    let taskIdentifierCapabilities          = "IdCapabilities"
+    let taskIdentifierUserMetadata          = "IdUserMetadata"
+    let taskIdentifierDownloadAvatar        = "IdDownloadAvatar"
+    let taskIdentifierTextEditorDetails     = "IdTextEditorDetails"
+    let taskIdentifierUserStatus            = "IdUserStatus"
+    let taskIdentifierListingFavorites      = "IdListingFavorites"
+    let taskIdentifierDashboardWidget       = "IdDashboardWidget"
+    let taskIdentifierDiagnosticsRemote     = "IdDiagnosticsRemote"
+    let taskIdentifierSyncMetadata          = "IdSyncMetadata"
 
     // LOG TAG
     let logTagTask                          = "BGT"
