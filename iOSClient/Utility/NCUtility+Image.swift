@@ -293,7 +293,12 @@ extension NCUtility {
         let imageNamePath = utilityFileSystem.createServerUrl(serverUrl: utilityFileSystem.directoryUserData, fileName: fileNamePNG)
 
         if !FileManager.default.fileExists(atPath: imageNamePath) || rewrite == true {
-            NextcloudKit.shared.downloadContent(serverUrl: iconURL.absoluteString, account: account) { _, responseData, error in
+            NextcloudKit.shared.downloadContent(serverUrl: iconURL.absoluteString, account: account) { task in
+                Task {
+                    let identifier = account + iconURL.absoluteString + self.global.taskIdentifierDownloadContent
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
+            } completion: { _, responseData, error in
                 if error == .success, let data = responseData?.data {
                     if let image = UIImage(data: data) {
                         var newImage: UIImage = image

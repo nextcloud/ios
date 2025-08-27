@@ -469,6 +469,9 @@ extension NCPlayerToolBar: NCSelectDelegate {
                         await self.database.setMetadataSessionAsync(ocId: ocId,
                                                                     sessionTaskIdentifier: task.taskIdentifier,
                                                                     status: self.global.metadataStatusDownloading)
+
+                        let identifier = metadata.serverUrlFileName + NCGlobal.shared.taskIdentifierDownload
+                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                     }
                 }, progressHandler: { progress in
                     self.hud.progress(progress.fractionCompleted)

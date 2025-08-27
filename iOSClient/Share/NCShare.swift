@@ -163,7 +163,12 @@ class NCShare: UIViewController, NCSharePagingContent {
                 sizeImage: NCGlobal.shared.avatarSize,
                 avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
                 etagResource: etag,
-                account: metadata.account) { _, imageAvatar, _, etag, _, error in
+                account: metadata.account) { task in
+                    Task {
+                        let identifier = self.metadata.ownerId + NCGlobal.shared.taskIdentifierDownloadAvatar
+                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                    }
+                } completion: { _, imageAvatar, _, etag, _, error in
                     if error == .success, let etag = etag, let imageAvatar = imageAvatar {
                         self.database.addAvatar(fileName: fileName, etag: etag)
                         self.sharedWithYouByImage.image = imageAvatar

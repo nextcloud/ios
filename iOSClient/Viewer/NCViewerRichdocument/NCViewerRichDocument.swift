@@ -223,6 +223,9 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                                     await self.database.setMetadataSessionAsync(ocId: ocId,
                                                                                 sessionTaskIdentifier: task.taskIdentifier,
                                                                                 status: self.global.metadataStatusDownloading)
+
+                                    let identifier = url.absoluteString + NCGlobal.shared.taskIdentifierDownload
+                                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                                 }
                             }, progressHandler: { _ in
                             }, completionHandler: { account, etag, _, _, headers, _, error in
@@ -313,7 +316,12 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
         if let serverUrl, let metadata {
             let path = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: serverUrl, session: session)
 
-            NextcloudKit.shared.createAssetRichdocuments(path: path, account: metadata.account) { _, url, _, error in
+            NextcloudKit.shared.createAssetRichdocuments(path: path, account: metadata.account) { task in
+                Task {
+                    let identifier = metadata.account + path + self.global.taskIdentifierCreateRichdocuments
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
+            } completion: { _, url, _, error in
                 if error == .success, let url {
                     let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url)')"
                     self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })
@@ -327,7 +335,12 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     func select(_ metadata: tableMetadata!, serverUrl: String!) {
         let path = utilityFileSystem.getFileNamePath(metadata!.fileName, serverUrl: serverUrl!, session: session)
 
-        NextcloudKit.shared.createAssetRichdocuments(path: path, account: metadata.account) { _, url, _, error in
+        NextcloudKit.shared.createAssetRichdocuments(path: path, account: metadata.account) { task in
+            Task {
+                let identifier = metadata.account + path + self.global.taskIdentifierCreateRichdocuments
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        } completion: { _, url, _, error in
             if error == .success, let url {
                 let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url)')"
                 self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })

@@ -160,6 +160,10 @@ class NCRecent: NCCollectionViewCommon {
             if self.dataSource.isEmpty() {
                 self.collectionView.reloadData()
             }
+            Task {
+                let identifier = self.session.account + self.session.urlBase + requestBody + NCGlobal.shared.taskIdentifierSearch
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
         }
 
         guard resultsSearch.error == .success, let files = resultsSearch.files else {

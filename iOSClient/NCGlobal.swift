@@ -392,11 +392,24 @@ final class NCGlobal: Sendable {
     let taskIdentifierSyncMetadata          = "IdSyncMetadata"
     let taskIdentifierDownloadPreview       = "IdDownloadPreview"
     let taskIdentifierTextCreateFile        = "IdTextCreateFile"
-    let taskIdentifierCreateRichdocuments   = "IdCreateRichdocuments"
     let taskIdentifierListOfTemplates       = "IdListOfTemplates"
+    let taskIdentifierCreateRichdocuments   = "IdCreateRichdocuments"
     let taskIdentifierTemplatesRichdocuments = "IdTemplatesRichdocuments"
     let taskIdentifierNotifications         = "IdNotifications"
     let taskIdentifierRemoteWipeStatus      = "IdRemoteWipeStatus"
+    let taskIdentifierDownload              = "IdDownload"
+    let taskIdentifierTextOpenFile          = "IdTextOpenFile"
+    let taskIdentifierDownloadContent       = "IdTextDownloadContent"
+    let taskIdentifierLivePhoto             = "IdLivePhoto"
+    let taskIdentifierClearStatusMessage    = "IdClearStatusMessage"
+    let taskIdentifierCustomMessageUser     = "IdCustomMessageUser"
+    let taskIdentifierShare                 = "IdShare"
+    let taskIdentifierGroupfolders          = "IdGroupfolders"
+    let taskIdentifierE2EECertificate       = "IdE2EECertificate"
+    let taskIdentifierE2EEKey               = "IdE2EEKey"
+    let taskIdentifierSearch                = "IdSearch"
+
+
 
     // LOG TAG
     let logTagTask                          = "BGT"

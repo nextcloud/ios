@@ -472,11 +472,21 @@ extension NCLivePhoto {
 
             if metadata1.livePhotoFile.isEmpty {
                 let serverUrlfileNamePath = metadata1.urlBase + metadata1.path + metadata1.fileName
-                _ = await NextcloudKit.shared.setLivephotoAsync(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata2.fileName, account: metadata2.account)
+                _ = await NextcloudKit.shared.setLivephotoAsync(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata2.fileName, account: metadata2.account) { task in
+                    Task {
+                        let identifier = metadata2.account + serverUrlfileNamePath + NCGlobal.shared.taskIdentifierLivePhoto
+                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                    }
+                }
             }
             if metadata2.livePhotoFile.isEmpty {
                 let serverUrlfileNamePath = metadata2.urlBase + metadata2.path + metadata2.fileName
-                _ = await NextcloudKit.shared.setLivephotoAsync(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata1.fileName, account: metadata1.account)
+                _ = await NextcloudKit.shared.setLivephotoAsync(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata1.fileName, account: metadata1.account) { task in
+                    Task {
+                        let identifier = metadata1.account + serverUrlfileNamePath + NCGlobal.shared.taskIdentifierLivePhoto
+                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                    }
+                }
             }
         }
     }
