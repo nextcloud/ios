@@ -180,7 +180,8 @@ class NCService: NSObject {
         if capabilities.externalSites {
             let results = await NextcloudKit.shared.getExternalSiteAsync(account: account) { task in
                 Task {
-                    let identifier = account + "_" + NCGlobal.shared.taskIdentifierExternalSite
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierExternalSite)
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
@@ -198,7 +199,8 @@ class NCService: NSObject {
         if capabilities.userStatusEnabled {
             let results = await NextcloudKit.shared.getUserStatusAsync(account: account) { task in
                 Task {
-                    let identifier = account + self.global.taskIdentifierUserStatus
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierUserStatus)
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }

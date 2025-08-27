@@ -465,13 +465,13 @@ extension NCPlayerToolBar: NCSelectDelegate {
                     downloadRequest = request
                 }, taskHandler: { task in
                     Task {
+                        let identifier = metadata.account + "_" + metadata.serverUrlFileName + NCGlobal.shared.taskIdentifierDownload
+                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+
                         let ocId = metadata.ocId
                         await self.database.setMetadataSessionAsync(ocId: ocId,
                                                                     sessionTaskIdentifier: task.taskIdentifier,
                                                                     status: self.global.metadataStatusDownloading)
-
-                        let identifier = metadata.account + "_" + metadata.serverUrlFileName + NCGlobal.shared.taskIdentifierDownload
-                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                     }
                 }, progressHandler: { progress in
                     self.hud.progress(progress.fractionCompleted)

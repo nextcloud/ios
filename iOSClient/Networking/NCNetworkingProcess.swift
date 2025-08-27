@@ -381,7 +381,9 @@ actor NCNetworkingProcess {
 
             let resultCopy = await NextcloudKit.shared.copyFileOrFolderAsync(serverUrlFileNameSource: metadata.serverUrlFileName, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account) { task in
                 Task {
-                    let identifier = metadata.account + "_" + serverUrlFileNameDestination + NCGlobal.shared.taskIdentifierCopyFileOrFolder
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                                title: serverUrlFileNameDestination,
+                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierCopyFileOrFolder)
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
@@ -419,7 +421,9 @@ actor NCNetworkingProcess {
 
             let resultMove = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: metadata.serverUrlFileName, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account) { task in
                 Task {
-                    let identifier = metadata.account + "_" + serverUrlFileNameDestination + NCGlobal.shared.taskIdentifierMoveFileOrFolder
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                                title: serverUrlFileNameDestination,
+                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierMoveFileOrFolder)
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
@@ -461,7 +465,9 @@ actor NCNetworkingProcess {
             let fileName = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
             let resultsFavorite = await NextcloudKit.shared.setFavoriteAsync(fileName: fileName, favorite: metadata.favorite, account: metadata.account) { task in
                 Task {
-                    let identifier = metadata.account + "_" + fileName + NCGlobal.shared.taskIdentifierE2EEFavorite
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                                title: fileName,
+                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierFavorite)
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
@@ -502,7 +508,9 @@ actor NCNetworkingProcess {
             let serverUrlFileNameDestination = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
             let resultRename = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: false, account: metadata.account) { task in
                 Task {
-                    let identifier = metadata.account + "_" + serverUrlFileNameSource + NCGlobal.shared.taskIdentifierMoveFileOrFolder
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                                title: serverUrlFileNameSource,
+                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierMoveFileOrFolder)
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }

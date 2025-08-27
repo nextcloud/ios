@@ -536,7 +536,9 @@ extension NCNetworking {
         } else {
             NextcloudKit.shared.getDirectDownload(fileId: metadata.fileId, account: metadata.account) { task in
                 Task {
-                    let identifier = metadata.account + "_" + metadata.fileId + NCGlobal.shared.taskIdentifierDirectDownload
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                                title: metadata.fileId,
+                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierDirectDownload)
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             } completion: { _, url, _, error in

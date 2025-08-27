@@ -578,7 +578,9 @@ extension NCUserStatus: UITableViewDelegate {
         if let messageId = status.id {
             NextcloudKit.shared.setCustomMessagePredefined(messageId: messageId, clearAt: 0, account: account) { task in
                 Task {
-                    let identifier = self.account + "_" + messageId + NCGlobal.shared.taskIdentifierCustomMessageUser
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account,
+                                                                                                title: messageId,
+                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierCustomMessageUser)
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             } completion: { _, _, error in

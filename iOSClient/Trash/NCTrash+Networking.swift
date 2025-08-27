@@ -91,7 +91,9 @@ extension NCTrash {
             let serverUrlFileName = result.filePath + result.fileName
             let response = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account) { task in
                 Task {
-                    let identifier = self.session.account + "_" + serverUrlFileName + NCGlobal.shared.taskIdentifierDeleteFileOrFolder
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
+                                                                                                title: serverUrlFileName,
+                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierDeleteFileOrFolder)
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }

@@ -167,7 +167,9 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
                     Task {
                         let resultsPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: metadata.fileId, etag: metadata.etag, account: metadata.account) { task in
                             Task {
-                                let identifier = metadata.account + "_" + metadata.fileId + NCGlobal.shared.taskIdentifierDownloadPreview
+                                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                                            title: metadata.fileId,
+                                                                                                            taskIdentifier: self.global.taskIdentifierDownloadPreview)
                                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                             }
                         }

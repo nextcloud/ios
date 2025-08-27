@@ -49,7 +49,9 @@ class NCCreateDocument: NSObject {
             }
             let results = await NextcloudKit.shared.textCreateFileAsync(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateId, account: account, options: options) { task in
                 Task {
-                    let identifier = account + "_" + fileNamePath + self.global.taskIdentifierTextCreateFile
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                                title: fileNamePath,
+                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierTextCreateFile)
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
@@ -70,7 +72,9 @@ class NCCreateDocument: NSObject {
 
             let results = await NextcloudKit.shared.createRichdocumentsAsync(path: fileNamePath, templateId: templateId, account: account) { task in
                 Task {
-                    let identifier = account + "_" + fileNamePath + self.global.taskIdentifierCreateRichdocuments
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                                title: fileNamePath,
+                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierCreateRichdocuments)
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
@@ -106,7 +110,8 @@ class NCCreateDocument: NSObject {
 
             let results = await NextcloudKit.shared.textGetListOfTemplatesAsync(account: account, options: options) { task in
                 Task {
-                    let identifier = account + self.global.taskIdentifierListOfTemplates
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierListOfTemplates)
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
@@ -149,7 +154,9 @@ class NCCreateDocument: NSObject {
         if editorId == "collabora" {
             let results = await NextcloudKit.shared.getTemplatesRichdocumentsAsync(typeTemplate: templateId, account: account) { task in
                 Task {
-                    let identifier = account + "_" + templateId + self.global.taskIdentifierTemplatesRichdocuments
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                                title: templateId,
+                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierTemplatesRichdocuments)
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }

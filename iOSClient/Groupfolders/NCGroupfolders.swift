@@ -126,7 +126,9 @@ class NCGroupfolders: NCCollectionViewCommon {
                                                                                   depth: "0", showHiddenFiles: showHiddenFiles,
                                                                                   account: session.account) { task in
                 Task {
-                    let identifier = self.session.account + "_" + serverUrlFileName + NCGlobal.shared.taskIdentifierReadFileOrFolder
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
+                                                                                                title: serverUrlFileName,
+                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierReadFileOrFolder)
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }

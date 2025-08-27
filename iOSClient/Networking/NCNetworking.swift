@@ -170,6 +170,19 @@ actor NetworkingTasks {
         nkLog(tag: NCGlobal.shared.logNetworkingTasks, emoji: .start, message: "Start task for identifier: \(identifier)", consoleOnly: true)
     }
 
+    /// create a Identifier
+    /// 
+    func createIdentifier(account: String? = nil, title: String? = nil, taskIdentifier: String) -> String {
+        if let account,
+           let title {
+            return account + "_" + title + "_" + taskIdentifier
+        } else if let title {
+            return title + "_" + taskIdentifier
+        } else {
+            return taskIdentifier
+        }
+    }
+
     /// Cancels and removes all tasks associated with the given id.
     ///
     /// - Parameter identifier: The identifier whose tasks should be canceled.

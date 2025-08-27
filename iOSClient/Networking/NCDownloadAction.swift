@@ -471,7 +471,9 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: account) { _ in
             } taskHandler: { task in
                 Task {
-                    let identifier = account + "_" + serverUrlFileName + NCGlobal.shared.taskIdentifierUpload
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                                title: serverUrlFileName,
+                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierUpload)
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             } progressHandler: { progress in
