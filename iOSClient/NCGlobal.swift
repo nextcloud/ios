@@ -378,17 +378,8 @@ final class NCGlobal: Sendable {
     let taskDescriptionRetrievesProperties  = "retrievesProperties"
     let taskDescriptionSynchronization      = "synchronization"
 
-    // TASK IDENTIFIER for track NetworkingTasks
-    //
-    let taskIdentifierTemplatesRichdocuments = "IdTemplatesRichdocuments"
-    let taskIdentifierTermsOfService        = "IdTermsOfService"
-    let taskIdentifierTextCreateFile        = "IdTextCreateFile"
-    let taskIdentifierTextEditorDetails     = "IdTextEditorDetails"
-    let taskIdentifierTextOpenFile          = "IdTextOpenFile"
-    let taskIdentifierUserProfile           = "IdUserProfile"
-    let taskIdentifierUserStatus            = "IdUserStatus"
-
     // LOG TAG
+    //
     let logTagTask                          = "BGT"
     let logTagLocation                      = "LOCATION"
     let logTagBgSync                        = "BGSYNC"
@@ -401,6 +392,7 @@ final class NCGlobal: Sendable {
     let logNetworkingTasks                  = "NETWORKING TASKS"
 
     // USER DEFAULTS
+    //
     let udMigrationMultiDomains             = "migrationMultiDomains"
     let udLastVersion                       = "lastVersion"
 }

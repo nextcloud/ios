@@ -384,7 +384,8 @@ extension NCNetworking {
         let options = NKRequestOptions(checkInterceptor: false, queue: .main)
         let results = await NextcloudKit.shared.getTermsOfServiceAsync(account: metadata.account, options: options, taskHandler: { task in
             Task {
-                let identifier = metadata.account + NCGlobal.shared.taskIdentifierTermsOfService
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                            name: "getTermsOfService")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         })

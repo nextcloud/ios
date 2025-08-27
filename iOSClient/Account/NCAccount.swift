@@ -36,7 +36,8 @@ class NCAccount: NSObject {
 
         let resultsGetUserProfile = await NextcloudKit.shared.getUserProfileAsync(account: account) { task in
             Task {
-                let identifier = account + self.global.taskIdentifierUserProfile
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            name: "getUserProfile")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }

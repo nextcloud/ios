@@ -51,7 +51,7 @@ class NCCreateDocument: NSObject {
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
                                                                                                 path: fileNamePath,
-                                                                                                name: NCGlobal.shared.taskIdentifierTextCreateFile)
+                                                                                                name: "textCreateFile")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
@@ -156,7 +156,7 @@ class NCCreateDocument: NSObject {
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
                                                                                                 path: templateId,
-                                                                                                name: NCGlobal.shared.taskIdentifierTemplatesRichdocuments)
+                                                                                                name: "getTemplatesRichdocuments")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }

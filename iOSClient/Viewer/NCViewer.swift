@@ -149,7 +149,9 @@ class NCViewer: NSObject {
                     NCActivityIndicator.shared.start(backgroundView: delegate?.view)
                     let results = await NextcloudKit.shared.textOpenFileAsync(fileNamePath: fileNamePath, editor: editor, account: metadata.account, options: options) { task in
                         Task {
-                            let identifier = metadata.account + "_" + fileNamePath + NCGlobal.shared.taskIdentifierTextOpenFile
+                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                                        path: fileNamePath,
+                                                                                                        name: "textOpenFile")
                             await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                         }
                     }

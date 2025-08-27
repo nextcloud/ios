@@ -158,7 +158,8 @@ class NCService: NSObject {
         // Text direct editor (Nextcloud Text, Office, Collabora)
         let resultsTextEditor = await NextcloudKit.shared.textObtainEditorDetailsAsync(account: account) { task in
             Task {
-                let identifier = account + self.global.taskIdentifierTextEditorDetails
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            name: "textObtainEditorDetails")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }

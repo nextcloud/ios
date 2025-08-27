@@ -24,7 +24,8 @@ extension NCNetworking {
 
         let resultsGetToS = await NextcloudKit.shared.getTermsOfServiceAsync(account: account, options: options, taskHandler: { task in
             Task {
-                let identifier = account + NCGlobal.shared.taskIdentifierTermsOfService
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            name: "getTermsOfService")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         })
@@ -53,7 +54,9 @@ extension NCNetworking {
 
         let resultsSignToS = await  NextcloudKit.shared.signTermsOfServiceAsync(termId: "\(termId)", account: account, options: options) { task in
             Task {
-                let identifier = account + "_" + "\(termId)" + NCGlobal.shared.taskIdentifierTermsOfService
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: "\(termId)",
+                                                                                            name: "signTermsOfService")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }

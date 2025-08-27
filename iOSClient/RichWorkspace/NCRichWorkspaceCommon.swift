@@ -25,7 +25,9 @@ class NCRichWorkspaceCommon: NSObject {
         let fileNamePath = utilityFileSystem.getFileNamePath(NCGlobal.shared.fileNameRichWorkspace, serverUrl: serverUrl, session: session)
         NextcloudKit.shared.textCreateFile(fileNamePath: fileNamePath, editorId: textCreators.editor, creatorId: textCreators.identifier, templateId: "", account: session.account) { task in
             Task {
-                let identifier = session.account + "_" + fileNamePath + NCGlobal.shared.taskIdentifierTextCreateFile
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: session.account,
+                                                                                            path: fileNamePath,
+                                                                                            name: "textCreateFile")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { _, url, _, error in
@@ -59,7 +61,9 @@ class NCRichWorkspaceCommon: NSObject {
                 let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
                 NextcloudKit.shared.textOpenFile(fileNamePath: fileNamePath, editor: "text", account: metadata.account) { task in
                     Task {
-                        let identifier = metadata.account + "_" + fileNamePath + NCGlobal.shared.taskIdentifierTextOpenFile
+                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                                    path: fileNamePath,
+                                                                                                    name: "textOpenFile")
                         await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                     }
                 } completion: { _, url, _, error in
