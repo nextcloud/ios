@@ -33,7 +33,6 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     var filePath = ""
     var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
     var blinkFileId: String?
-    var dataSourceTask: URLSessionTask?
     let utilityFileSystem = NCUtilityFileSystem()
     let database = NCManageDatabase.shared
     let utility = NCUtility()
@@ -55,6 +54,10 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     var controller: NCMainTabBarController? {
         self.tabBarController as? NCMainTabBarController
     }
+
+    lazy var networkingTasksIdentifier: String = {
+        return self.session.account + NCGlobal.shared.taskIdentifierListingTrash
+    }()
 
     // MARK: - View Life Cycle
 
@@ -118,7 +121,10 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
         // Cancel Queue & Retrieves Properties
         NCNetworking.shared.downloadThumbnailTrashQueue.cancelAll()
-        dataSourceTask?.cancel()
+
+        Task {
+            await NCNetworking.shared.networkingTasks.cancel(identifier: self.networkingTasksIdentifier)
+        }
     }
 
     // MARK: TAP EVENT

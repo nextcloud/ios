@@ -31,12 +31,10 @@ extension NCTrash {
         }
 
         let resultsListingTrash = await NextcloudKit.shared.listingTrashAsync(filename: filename, showHiddenFiles: false, account: session.account) { task in
-            self.dataSourceTask = task
-            self.collectionView.reloadData()
             Task {
-                let identifier = self.session.account + NCGlobal.shared.taskIdentifierListingTrash
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                await NCNetworking.shared.networkingTasks.track(identifier: self.networkingTasksIdentifier, task: task)
             }
+            self.collectionView.reloadData()
         }
 
         if let items = resultsListingTrash.items {
