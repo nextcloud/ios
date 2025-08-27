@@ -380,16 +380,6 @@ final class NCGlobal: Sendable {
 
     // TASK IDENTIFIER for track NetworkingTasks
     //
-    let taskIdentifierExternalSite          = "IdExternalSite"
-    let taskIdentifierFavorite              = "IdFavorite"
-    let taskIdentifierGroupfolders          = "IdGroupfolders"
-    let taskIdentifierHovercard             = "IdHovercard"
-    let taskIdentifierListingFavorites      = "IdListingFavorites"
-    let taskIdentifierListingTrash          = "IdListingTrash"
-    let taskIdentifierListOfTemplates       = "IdListOfTemplates"
-    let taskIdentifierLivePhoto             = "IdLivePhoto"
-    let taskIdentifierLockUnlockFile        = "IdLockUnlockFile"
-    let taskIdentifierMoveFileOrFolder      = "IdMoveFileOrFolder"
     let taskIdentifierNotifications         = "IdNotifications"
     let taskIdentifierReadFileOrFolder      = "IdReadFileOrFolder"
     let taskIdentifierReadShares            = "IdReadShares"

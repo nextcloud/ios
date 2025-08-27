@@ -184,7 +184,7 @@ class NCService: NSObject {
             let results = await NextcloudKit.shared.getExternalSiteAsync(account: account) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                                name: NCGlobal.shared.taskIdentifierExternalSite)
+                                                                                                name: "getExternalSite")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
@@ -236,7 +236,8 @@ class NCService: NSObject {
 
         let resultsFavorite = await NextcloudKit.shared.listingFavoritesAsync(showHiddenFiles: showHiddenFiles, account: account) { task in
             Task {
-                let identifier = account + self.global.taskIdentifierListingFavorites
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            name: "listingFavorites")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }

@@ -67,7 +67,9 @@ extension UIViewController {
 
         NextcloudKit.shared.getHovercard(for: userId, account: session.account) { task in
             Task {
-                let identifier = session.account + "_" + userId + NCGlobal.shared.taskIdentifierHovercard
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: session.account,
+                                                                                            path: userId,
+                                                                                            name: "getHovercard")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { account, card, _, _ in

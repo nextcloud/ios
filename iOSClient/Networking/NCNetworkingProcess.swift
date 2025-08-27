@@ -423,7 +423,7 @@ actor NCNetworkingProcess {
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
                                                                                                 path: serverUrlFileNameDestination,
-                                                                                                name: NCGlobal.shared.taskIdentifierMoveFileOrFolder)
+                                                                                                name: "moveFileOrFolder")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
@@ -467,7 +467,7 @@ actor NCNetworkingProcess {
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
                                                                                                 path: fileName,
-                                                                                                name: NCGlobal.shared.taskIdentifierFavorite)
+                                                                                                name: "setFavorite")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
@@ -510,7 +510,7 @@ actor NCNetworkingProcess {
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
                                                                                                 path: serverUrlFileNameSource,
-                                                                                                name: NCGlobal.shared.taskIdentifierMoveFileOrFolder)
+                                                                                                name: "moveFileOrFolder")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }

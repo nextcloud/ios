@@ -500,7 +500,9 @@ extension NCNetworking {
     func lockUnlockFile(_ metadata: tableMetadata, shoulLock: Bool) {
         NextcloudKit.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrlFileName, shouldLock: shoulLock, account: metadata.account) { task in
             Task {
-                let identifier = metadata.account + "_" + metadata.serverUrlFileName + NCGlobal.shared.taskIdentifierLockUnlockFile
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                            path: metadata.serverUrlFileName,
+                                                                                            name: "lockUnlockFile")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { _, _, error in

@@ -82,7 +82,8 @@ class NCShareNetworking: NSObject {
 
                 NextcloudKit.shared.getGroupfolders(account: account) { task in
                     Task {
-                        let identifier = account + NCGlobal.shared.taskIdentifierGroupfolders
+                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                                    name: "getGroupfolders")
                         await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                     }
                 } completion: { account, results, _, error in

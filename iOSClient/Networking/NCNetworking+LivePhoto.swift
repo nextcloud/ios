@@ -64,7 +64,9 @@ extension NCNetworking {
         }
         let resultsMetadataFirst = await NextcloudKit.shared.setLivephotoAsync(serverUrlfileNamePath: serverUrlfileNamePathFirst, livePhotoFile: livePhotoFileId, account: metadataFirst.account) { task in
             Task {
-                let identifier = metadataFirst.account + "_" + serverUrlfileNamePathFirst + NCGlobal.shared.taskIdentifierLivePhoto
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadataFirst.account,
+                                                                                            path: serverUrlfileNamePathFirst,
+                                                                                            name: "setLivephoto")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }
@@ -79,7 +81,9 @@ extension NCNetworking {
         }
         let resultsMetadataLast = await NextcloudKit.shared.setLivephotoAsync(serverUrlfileNamePath: serverUrlfileNamePathLast, livePhotoFile: livePhotoFileId, account: metadataLast.account) { task in
             Task {
-                let identifier = metadataLast.account + "_" + serverUrlfileNamePathLast + NCGlobal.shared.taskIdentifierLivePhoto
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadataLast.account,
+                                                                                            path: serverUrlfileNamePathLast,
+                                                                                            name: "setLivephoto")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }

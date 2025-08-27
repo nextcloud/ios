@@ -111,7 +111,7 @@ class NCCreateDocument: NSObject {
             let results = await NextcloudKit.shared.textGetListOfTemplatesAsync(account: account, options: options) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                                name: NCGlobal.shared.taskIdentifierListOfTemplates)
+                                                                                                name: "textGetListOfTemplates")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
