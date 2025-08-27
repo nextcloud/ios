@@ -174,6 +174,9 @@ actor NetworkingTasks {
     ///
     /// - Parameter identifier: The identifier whose tasks should be canceled.
     func cancel(identifier: String) {
+        // Drop finished/canceling tasks globally
+        cleanup()
+
         for element in active where element.identifier == identifier {
             element.task.cancel()
             nkLog(tag: NCGlobal.shared.logNetworkingTasks, emoji: .cancel, message: "Cancel task for identifier: \(identifier)", consoleOnly: true)
