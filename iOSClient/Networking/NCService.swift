@@ -277,7 +277,12 @@ class NCService: NSObject {
             for widget in dashboardWidgets {
                 if let url = URL(string: widget.iconUrl),
                    let fileName = widget.iconClass {
-                    let results = await NextcloudKit.shared.downloadPreviewAsync(url: url, account: account)
+                    let results = await NextcloudKit.shared.downloadPreviewAsync(url: url, account: account) { task in
+                        Task {
+                            let identifier = url.absoluteString + NCGlobal.shared.taskIdentifierDownloadPreview
+                            await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                        }
+                    }
                     if results.error == .success,
                        let data = results.responseData?.data {
                         let size = CGSize(width: 256, height: 256)

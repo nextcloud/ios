@@ -165,7 +165,12 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
                 cell.image.contentMode = .scaleAspectFit
                 if recommendedFiles.hasPreview {
                     Task {
-                        let resultsPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: metadata.fileId, etag: metadata.etag, account: metadata.account)
+                        let resultsPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: metadata.fileId, etag: metadata.etag, account: metadata.account) { task in
+                            Task {
+                                let identifier = metadata.fileId + NCGlobal.shared.taskIdentifierDownloadPreview
+                                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                            }
+                        }
                         if resultsPreview.error == .success, let data = resultsPreview.responseData?.data {
                             self.utility.createImageFileFrom(data: data, ocId: metadata.ocId, etag: metadata.etag, userId: metadata.userId, urlBase: metadata.urlBase)
                             if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt512, userId: metadata.userId, urlBase: metadata.urlBase) {

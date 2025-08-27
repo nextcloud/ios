@@ -378,7 +378,7 @@ final class NCGlobal: Sendable {
     let taskDescriptionRetrievesProperties  = "retrievesProperties"
     let taskDescriptionSynchronization      = "synchronization"
 
-    // TASK IDENTIFIER
+    // TASK IDENTIFIER for track NetworkingTasks
     //
     let taskIdentifierCapabilities          = "IdCapabilities"
     let taskIdentifierUserMetadata          = "IdUserMetadata"
@@ -389,6 +389,7 @@ final class NCGlobal: Sendable {
     let taskIdentifierDashboardWidget       = "IdDashboardWidget"
     let taskIdentifierDiagnosticsRemote     = "IdDiagnosticsRemote"
     let taskIdentifierSyncMetadata          = "IdSyncMetadata"
+    let taskIdentifierDownloadPreview       = "IdDownloadPreview"
 
     // LOG TAG
     let logTagTask                          = "BGT"
