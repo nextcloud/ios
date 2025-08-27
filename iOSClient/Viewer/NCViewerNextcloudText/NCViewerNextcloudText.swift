@@ -34,7 +34,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     var imageIcon: UIImage?
     let utility = NCUtility()
     var items: [UIBarButtonItem] = []
-    var moreButton: UIBarButtonItem?
 
     var sceneIdentifier: String {
         (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
@@ -50,7 +49,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         super.viewDidLoad()
 
         if !metadata.ocId.hasPrefix("TEMP") {
-            moreButton = UIBarButtonItem(
+            let moreButton = UIBarButtonItem(
                 image: NCImageCache.shared.getImageButtonMore(),
                 primaryAction: nil,
                 menu: UIMenu(title: "", children: [
@@ -61,9 +60,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
                     }
                 ]))
 
-            if let moreButton {
-                items.append(moreButton)
-            }
+            items.append(moreButton)
         }
 
         navigationItem.rightBarButtonItems = items
@@ -245,7 +242,7 @@ extension NCViewerNextcloudText: NCTransferDelegate {
     func transferChange(status: String, metadata: tableMetadata, error: NKError) {
         DispatchQueue.main.async {
             switch status {
-                // FAVORITE
+            // FAVORITE
             case NCGlobal.shared.networkingStatusFavorite:
                 if self.metadata.ocId == metadata.ocId {
                     self.metadata = metadata

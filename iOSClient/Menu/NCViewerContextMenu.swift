@@ -25,6 +25,9 @@ import UIKit
 import FloatingPanel
 import NextcloudKit
 
+/**
+ A context menu created to be used universally with the different `NCViewer`s
+ */
 enum NCViewerContextMenu {
     static func makeContextMenu(controller: NCMainTabBarController?, metadata: tableMetadata, webView: Bool, sender: Any?) -> UIMenu? {
         let database = NCManageDatabase.shared

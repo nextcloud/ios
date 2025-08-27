@@ -8,6 +8,7 @@
 
 import NextcloudKit
 
+/// A collection of default UI actions used throughout the app
 enum ContextMenuActions {
     static func deleteOrUnshare(selectedMetadatas: [tableMetadata], metadataFolder: tableMetadata? = nil, controller: NCMainTabBarController?, completion: (() -> Void)? = nil) -> UIAction {
 
