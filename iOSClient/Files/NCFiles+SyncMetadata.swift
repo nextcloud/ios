@@ -5,54 +5,6 @@
 import UIKit
 import NextcloudKit
 
-// Thread-safe store for tasks
-actor ReadTasks {
-    private var active: [(serverUrl: String, task: URLSessionTask)] = []
-
-    /// Returns whether there is an in-flight task for the given URL.
-    ///
-    /// A task is considered in-flight if its `state` is `.running` or `.suspended`.
-    /// - Parameter serverUrl: The server URL to check.
-    /// - Returns: `true` if a matching in-flight task exists; otherwise `false`.
-    func isReading(_ serverUrl: String) -> Bool {
-        active.contains {
-            $0.serverUrl == serverUrl && ($0.task.state == .running || $0.task.state == .suspended)
-        }
-    }
-
-    /// Tracks a newly created `URLSessionTask` for the given URL.
-    ///
-    /// If a running entry for the same URL exists, it is removed before appending the new one.
-    /// - Parameters:
-    ///   - serverUrl: The server URL associated with the task.
-    ///   - task: The `URLSessionTask` to track.
-    func track(serverUrl: String, task: URLSessionTask) {
-        active.removeAll {
-            $0.serverUrl == serverUrl && $0.task.state == .running
-        }
-        active.append((serverUrl, task))
-    }
-
-    /// Cancels all tracked `URLSessionTask` and clears the registry.
-    ///
-    /// Call this when leaving the page/screen or when the operation must be forcefully stopped.
-    func cancelAll() {
-        active.forEach {
-            $0.task.cancel()
-        }
-        active.removeAll()
-    }
-
-    /// Removes tasks that have completed from the registry.
-    ///
-    /// Useful to keep the in-memory list compact during long-running operations.
-    func cleanupCompleted() {
-        active.removeAll {
-            $0.task.state == .completed
-        }
-    }
-}
-
 extension NCFiles {
     /// Starts a detached task that accelerates metadata synchronization for the provided items.
     ///
@@ -104,6 +56,8 @@ extension NCFiles {
     ///
     /// - Parameter metadatas: The list of `tableMetadata` entries to scan and refresh.
     func networkSyncMetadata(metadatas: [tableMetadata]) async {
+        let identifier = self.serverUrl + global.taskDescriptionSyncMetadata
+
         nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .start, message: "Start Sync Metadata for \(self.serverUrl)")
 
         // Fast exit if cancellation was requested before starting
@@ -112,7 +66,7 @@ extension NCFiles {
         }
 
         // If a readFile for this serverUrl is already in-flight, do nothing
-        if await readTasks.isReading(serverUrl) {
+        if await networking.networkingTasks.isReading(identifier: identifier) {
             nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .debug, message: "ReadFile for this \(self.serverUrl) is already in-flight.", consoleOnly: true)
             return
         }
@@ -120,15 +74,14 @@ extension NCFiles {
         // Always cancel and clear all tracked URLSessionTask on any exit path
         defer {
             Task {
-                nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .end, message: "End Sync Metadata for \(self.serverUrl)", consoleOnly: true)
-                await readTasks.cancelAll()
+                await networking.networkingTasks.cancel(identifier: identifier)
             }
         }
 
         // Skip error or e2ee
         let resultsReadFile = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrl, account: session.account) { task in
             Task {
-                await self.readTasks.track(serverUrl: self.serverUrl, task: task)
+                await self.networking.networkingTasks.track(identifier: identifier, task: task)
             }
         }
 
@@ -159,7 +112,7 @@ extension NCFiles {
 
             let resultsReadFolder = await NCNetworking.shared.readFolderAsync(serverUrl: serverUrl, account: session.account) { task in
                 Task {
-                    await self.readTasks.track(serverUrl: serverUrl, task: task)
+                    await self.networking.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
 
@@ -172,7 +125,7 @@ extension NCFiles {
             }
 
             // Keep the in-memory list tight by removing completed tasks
-            await readTasks.cleanupCompleted()
+            await networking.networkingTasks.cleanupCompleted()
         }
     }
 }

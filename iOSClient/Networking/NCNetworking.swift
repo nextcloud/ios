@@ -124,6 +124,80 @@ actor NCTransferDelegateDispatcher {
     }
 }
 
+/// A thread-safe registry for tracking in-flight `URLSessionTask` instances.
+///
+/// Each task is associated with a string identifier (`identifier`) that you define,
+/// allowing you to check whether a request is already running, avoid duplicates,
+/// and cancel all active tasks at once. The registry automatically removes
+/// completed tasks via `cleanupCompleted()` to keep memory usage compact.
+///
+/// Typical use cases:
+/// - Ensure only one task per identifier is active at a time.
+/// - Query whether a specific request is still running (`isReading`).
+/// - Forcefully stop a specific request (`cancel`).
+/// - Forcefully stop all tasks when leaving a screen (`cancelAll`).
+actor NetworkingTasks {
+    private var active: [(identifier: String, task: URLSessionTask)] = []
+
+    /// Returns whether there is an in-flight task for the given URL.
+    ///
+    /// A task is considered in-flight if its `state` is `.running` or `.suspended`.
+    /// - Parameter identifier: The identifier to check.
+    /// - Returns: `true` if a matching in-flight task exists; otherwise `false`.
+    func isReading(identifier: String) -> Bool {
+        active.contains {
+            $0.identifier == identifier && ($0.task.state == .running || $0.task.state == .suspended)
+        }
+    }
+
+    /// Tracks a newly created `URLSessionTask` for the given identifier.
+    ///
+    /// If a running entry for the same identifier exists, it is removed before appending the new one.
+    /// - Parameters:
+    ///   - identifier: The identifier associated with the task.
+    ///   - task: The `URLSessionTask` to track.
+    func track(identifier: String, task: URLSessionTask) {
+        active.removeAll {
+            $0.identifier == identifier && $0.task.state == .running
+        }
+        active.append((identifier, task))
+        nkLog(tag: NCGlobal.shared.logNetworkingTasks, emoji: .start, message: "Start Task for identifier: \(identifier)", consoleOnly: true)
+    }
+
+    /// Cancels and removes all tasks associated with the given id.
+    ///
+    /// - Parameter identifier: The identifier whose tasks should be canceled.
+    func cancel(identifier: String) {
+        for element in active where element.identifier == identifier {
+            element.task.cancel()
+            nkLog(tag: NCGlobal.shared.logNetworkingTasks, emoji: .cancel, message: "Cancel Task for identifier: \(identifier)", consoleOnly: true)
+        }
+        active.removeAll {
+            $0.identifier == identifier
+        }
+    }
+
+    /// Cancels all tracked `URLSessionTask` and clears the registry.
+    ///
+    /// Call this when leaving the page/screen or when the operation must be forcefully stopped.
+    func cancelAll() {
+        active.forEach {
+            $0.task.cancel()
+            nkLog(tag: NCGlobal.shared.logNetworkingTasks, emoji: .cancel, message: "Cancel all Tasks with identifier: \($0.identifier)", consoleOnly: true)
+        }
+        active.removeAll()
+    }
+
+    /// Removes tasks that have completed from the registry.
+    ///
+    /// Useful to keep the in-memory list compact during long-running operations.
+    func cleanupCompleted() {
+        active.removeAll {
+            $0.task.state == .completed
+        }
+    }
+}
+
 class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     static let shared = NCNetworking()
 
@@ -131,6 +205,8 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         var fileName: String
         var serverUrl: String
     }
+
+    let networkingTasks = NetworkingTasks()
 
     let sessionDownload = NextcloudKit.shared.nkCommonInstance.identifierSessionDownload
     let sessionDownloadBackground = NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground

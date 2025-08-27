@@ -18,7 +18,6 @@ class NCFiles: NCCollectionViewCommon {
     internal var accumulatedScrollDown: CGFloat = 0
 
     internal var syncMetadatasTask: Task<Void, Never>?
-    internal let readTasks = ReadTasks()
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)

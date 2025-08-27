@@ -29,12 +29,12 @@ final class NCImageCache: @unchecked Sendable {
 
     init() {
         NotificationCenter.default.addObserver(forName: LRUCacheMemoryWarningNotification, object: nil, queue: nil) { _ in
-            self.cache.removeAllValues()
+            self.cache.removeAll()
             self.cache = LRUCache<String, UIImage>(countLimit: self.countLimit)
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
-            self.cache.removeAllValues()
+            self.cache.removeAll()
             self.cache = LRUCache<String, UIImage>(countLimit: self.countLimit)
         }
 
