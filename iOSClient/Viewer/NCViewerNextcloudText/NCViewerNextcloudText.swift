@@ -34,7 +34,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     var imageIcon: UIImage?
     let utility = NCUtility()
     var items: [UIBarButtonItem] = []
-    let ncViewerContextMenu = NCViewerContextMenu()
     var moreButton: UIBarButtonItem?
 
     var sceneIdentifier: String {
@@ -55,8 +54,8 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
                 image: NCImageCache.shared.getImageButtonMore(),
                 primaryAction: nil,
                 menu: UIMenu(title: "", children: [
-                    UIDeferredMenuElement.uncached { [weak self] completion in
-                        if let menu = ncViewerContextMenu.makeContextMenu(controller: self.tabBarController as? NCMainTabBarController, metadata: self.metadata, webView: false, sender: self) {
+                    UIDeferredMenuElement.uncached { [self] completion in
+                        if let menu = NCViewerContextMenu.makeContextMenu(controller: self.tabBarController as? NCMainTabBarController, metadata: self.metadata, webView: true, sender: self) {
                             completion(menu.children)
                         }
                     }
@@ -169,12 +168,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
 
     // MARK: -
 
-    private func refreshMenu() {
-        if let menu = ncViewerContextMenu.makeContextMenu(controller: (self.tabBarController as? NCMainTabBarController), metadata: self.metadata, webView: false, sender: self) {
-            moreButton?.menu = menu
-        }
-    }
-
     public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         if message.name == "DirectEditingMobileInterface" {
 
@@ -261,11 +254,5 @@ extension NCViewerNextcloudText: NCTransferDelegate {
                 break
             }
         }
-    }
-}
-
-extension NCViewerNextcloudText: ContextMenuDelegate {
-    func onContextMenuItemSelected() {
-//        refreshMenu()
     }
 }

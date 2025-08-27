@@ -25,20 +25,18 @@ import UIKit
 import FloatingPanel
 import NextcloudKit
 
-class NCViewerContextMenu {
-    let database = NCManageDatabase.shared
-    weak var delegate: ContextMenuDelegate?
+enum NCViewerContextMenu {
+    static func makeContextMenu(controller: NCMainTabBarController?, metadata: tableMetadata, webView: Bool, sender: Any?) -> UIMenu? {
+        let database = NCManageDatabase.shared
 
-    func makeContextMenu(controller: NCMainTabBarController?, metadata: tableMetadata, webView: Bool, sender: Any?) -> UIMenu? {
-
-           guard let metadata = self.database.getMetadataFromOcId(metadata.ocId),
+           guard let metadata = database.getMetadataFromOcId(metadata.ocId),
                  let controller,
                  let capabilities = NCNetworking.shared.capabilities[metadata.account] else {
                return nil
            }
 
            var menuElements: [UIMenuElement] = []
-           let localFile = self.database.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+           let localFile = database.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
            let isOffline = localFile?.offline == true
 
            //
@@ -47,12 +45,11 @@ class NCViewerContextMenu {
            if !(!capabilities.fileSharingApiEnabled && !capabilities.filesComments && capabilities.activity.isEmpty) {
                let action = UIAction(
                    title: NSLocalizedString("_details_", comment: ""),
-                   image: UIImage(systemName: "info.circle")
+                   image: UIImage(systemName: "info")
                ) { _ in
                    NCDownloadAction.shared.openShare(viewController: controller,
                                                      metadata: metadata,
                                                      page: .activity)
-                   self.delegate?.onContextMenuItemSelected()
                }
                menuElements.append(action)
            }
@@ -69,8 +66,6 @@ class NCViewerContextMenu {
                                                                 fileNameBlink: metadata.fileName,
                                                                 fileNameOpen: nil,
                                                                 sceneIdentifier: controller.sceneIdentifier)
-
-                   self.delegate?.onContextMenuItemSelected()
                }
                menuElements.append(action)
            }
@@ -90,8 +85,6 @@ class NCViewerContextMenu {
                            NCContentPresenter().showError(error: error)
                        }
                    }
-
-                   self.delegate?.onContextMenuItemSelected()
                }
                menuElements.append(action)
            }
@@ -100,18 +93,14 @@ class NCViewerContextMenu {
            // OFFLINE
            //
            if !webView, metadata.canSetAsAvailableOffline {
-               menuElements.append(ContextMenuActions.setAvailableOffline(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: controller) {
-                   self.delegate?.onContextMenuItemSelected()
-               })
+               menuElements.append(ContextMenuActions.setAvailableOffline(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: controller))
            }
 
            //
            // SHARE
            //
            if !webView, metadata.canShare {
-               menuElements.append(ContextMenuActions.share(selectedMetadatas: [metadata], controller: controller, sender: sender) {
-                   self.delegate?.onContextMenuItemSelected()
-               })
+               menuElements.append(ContextMenuActions.share(selectedMetadatas: [metadata], controller: controller, sender: sender))
            }
 
            //
@@ -124,8 +113,6 @@ class NCViewerContextMenu {
                        NotificationCenter.default.postOnMainThread(
                            name: NCGlobal.shared.notificationCenterMenuSearchTextPDF
                        )
-
-                       self.delegate?.onContextMenuItemSelected()
                    })
 
                menuElements.append(UIAction(
@@ -134,8 +121,6 @@ class NCViewerContextMenu {
                        NotificationCenter.default.postOnMainThread(
                            name: NCGlobal.shared.notificationCenterMenuGotToPageInPDF
                        )
-
-                       self.delegate?.onContextMenuItemSelected()
                    })
            }
 
@@ -143,15 +128,9 @@ class NCViewerContextMenu {
            // DELETE
            //
            if !webView, metadata.isDeletable {
-               menuElements.append(ContextMenuActions.deleteOrUnshare(selectedMetadatas: [metadata], controller: controller) {
-                   self.delegate?.onContextMenuItemSelected()
-               })
+               menuElements.append(ContextMenuActions.deleteOrUnshare(selectedMetadatas: [metadata], controller: controller))
            }
 
            return UIMenu(title: "", children: menuElements)
        }
-}
-
-protocol ContextMenuDelegate: AnyObject {
-    func onContextMenuItemSelected()
 }

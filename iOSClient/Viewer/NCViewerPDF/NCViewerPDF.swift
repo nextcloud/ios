@@ -79,7 +79,19 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
                                                                              userId: metadata.userId,
                                                                              urlBase: metadata.urlBase)
             pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
-            navigationItem.rightBarButtonItem = UIBarButtonItem(image: NCImageCache.shared.getImageButtonMore(), style: .plain, target: self, action: #selector(openMenuMore(_:)))
+            
+            navigationItem.rightBarButtonItem = UIBarButtonItem(
+                image: NCImageCache.shared.getImageButtonMore(),
+                primaryAction: nil,
+                menu: UIMenu(title: "", children: [
+                    UIDeferredMenuElement.uncached { [self] completion in
+                        guard let metadata = self.metadata else { return }
+
+                        if let menu = NCViewerContextMenu.makeContextMenu(controller: self.tabBarController as? NCMainTabBarController, metadata: metadata, webView: false, sender: self) {
+                            completion(menu.children)
+                        }
+                    }
+                ]))
         }
         defaultBackgroundColor = pdfView.backgroundColor
         view.backgroundColor = defaultBackgroundColor
@@ -321,17 +333,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         }))
 
         self.present(alertController, animated: true)
-    }
-
-    // MARK: - Action
-
-    @objc private func openMenuMore(_ sender: Any?) {
-        guard let metadata = self.metadata else { return }
-        if imageIcon == nil {
-            imageIcon = UIImage(named: "file_pdf")
-        }
-
-//        NCViewer().toggleMenu(controller: (self.tabBarController as? NCMainTabBarController), metadata: metadata, webView: false, imageIcon: imageIcon, sender: sender)
     }
 
     // MARK: - Gesture Recognizer

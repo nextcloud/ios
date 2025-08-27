@@ -8,7 +8,7 @@
 
 import NextcloudKit
 
-class ContextMenuActions {
+enum ContextMenuActions {
     static func deleteOrUnshare(selectedMetadatas: [tableMetadata], metadataFolder: tableMetadata? = nil, controller: NCMainTabBarController?, completion: (() -> Void)? = nil) -> UIAction {
 
          var titleDelete = NSLocalizedString("_delete_", comment: "")
