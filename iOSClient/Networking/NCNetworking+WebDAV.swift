@@ -583,7 +583,9 @@ extension NCNetworking {
                                           account: account,
                                           options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
             Task {
-                let identifier = account + "_" + serverUrl + NCGlobal.shared.taskIdentifierSearch
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: serverUrl,
+                                                                                            name: "searchLiteral")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
             taskHandler(task)
@@ -623,7 +625,9 @@ extension NCNetworking {
             }
         } taskHandler: { task in
             Task {
-                let identifier = account + "_" + literal + NCGlobal.shared.taskIdentifierUnifiedSearch
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: literal,
+                                                                                            name: "unifiedSearch")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
             taskHandler(task)
@@ -704,7 +708,9 @@ extension NCNetworking {
         let session = NCSession.shared.getSession(account: account)
         let request = NextcloudKit.shared.searchProvider(id, term: term, limit: limit, cursor: cursor, timeout: 60, account: session.account) { task in
             Task {
-                let identifier = account + "_" + term + NCGlobal.shared.taskIdentifierSearchProvider
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: term,
+                                                                                            name: "searchProvider")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
             taskHandler(task)

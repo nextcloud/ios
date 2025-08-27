@@ -301,7 +301,9 @@ actor NCNetworkingProcess {
                 if metadata.sessionError.contains("\(global.errorQuota)") {
                     let results = await NextcloudKit.shared.getUserMetadataAsync(account: metadata.account, userId: metadata.userId) { task in
                         Task {
-                            let identifier = metadata.account + "_" + metadata.userId + NCGlobal.shared.taskIdentifierUserMetadata
+                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                                        path: metadata.userId,
+                                                                                                        name: "getUserMetadata")
                             await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                         }
                     }

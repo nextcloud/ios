@@ -201,7 +201,9 @@ class NCAccount: NSObject {
 
         let resultsWipe = await NextcloudKit.shared.getRemoteWipeStatusAsync(serverUrl: tblAccount.urlBase, token: token, account: account) { task in
             Task {
-                let identifier = tblAccount.account + "_" + token + self.global.taskIdentifierRemoteWipeStatus
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: tblAccount.urlBase,
+                                                                                            name: "getRemoteWipeStatus")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }
@@ -212,7 +214,8 @@ class NCAccount: NSObject {
             let resultsSetWipe = await NextcloudKit.shared.setRemoteWipeCompletitionAsync(serverUrl: tblAccount.urlBase, token: token, account: tblAccount.account) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: tblAccount.account,
-                                                                                                name: NCGlobal.shared.taskIdentifierRemoteWipeStatus)
+                                                                                                path: tblAccount.urlBase,
+                                                                                                name: "setRemoteWipeCompletition")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }

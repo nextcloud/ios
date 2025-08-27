@@ -145,7 +145,9 @@ extension NCMedia {
                                                                 account: self.session.account,
                                                                 options: options) { task in
             Task {
-                let identifier = self.session.account + "_" + tblAccount.mediaPath + NCGlobal.shared.taskIdentifierSearch
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
+                                                                                            path: tblAccount.mediaPath,
+                                                                                            name: "searchMedia")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }

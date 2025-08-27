@@ -477,7 +477,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
                                                                                                 path: serverUrlFileName,
-                                                                                                name: NCGlobal.shared.taskIdentifierUpload)
+                                                                                                name: "upload")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             } progressHandler: { progress in

@@ -56,7 +56,7 @@ extension NCFiles {
     ///
     /// - Parameter metadatas: The list of `tableMetadata` entries to scan and refresh.
     func networkSyncMetadata(metadatas: [tableMetadata]) async {
-        let identifier = self.serverUrl + global.taskIdentifierSyncMetadata
+        let identifier = self.serverUrl + "_syncMetadata"
 
         nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .start, message: "Start Sync Metadata for \(self.serverUrl)")
 

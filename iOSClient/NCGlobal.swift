@@ -380,22 +380,11 @@ final class NCGlobal: Sendable {
 
     // TASK IDENTIFIER for track NetworkingTasks
     //
-    let taskIdentifierReadShares            = "IdReadShares"
-    let taskIdentifierRecommendedFiles      = "IdRecommendedFiles"
-    let taskIdentifierRemoteWipeStatus      = "IdRemoteWipeStatus"
-    let taskIdentifierSearch                = "IdSearch"
-    let taskIdentifierSearchProvider        = "IdSearchProvider"
-    let taskIdentifierServerStatus          = "IdServerStatus"
-    let taskIdentifierShare                 = "IdShare"
-    let taskIdentifierSyncMetadata          = "IdSyncMetadata"
     let taskIdentifierTemplatesRichdocuments = "IdTemplatesRichdocuments"
     let taskIdentifierTermsOfService        = "IdTermsOfService"
     let taskIdentifierTextCreateFile        = "IdTextCreateFile"
     let taskIdentifierTextEditorDetails     = "IdTextEditorDetails"
     let taskIdentifierTextOpenFile          = "IdTextOpenFile"
-    let taskIdentifierUnifiedSearch         = "IdUnifiedSearch"
-    let taskIdentifierUpload                = "IdUpload"
-    let taskIdentifierUserMetadata          = "IdUserMetadata"
     let taskIdentifierUserProfile           = "IdUserProfile"
     let taskIdentifierUserStatus            = "IdUserStatus"
 

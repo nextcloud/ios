@@ -71,7 +71,9 @@ class NCShareNetworking: NSObject {
 
         NextcloudKit.shared.readShares(parameters: parameter, account: metadata.account) { task in
             Task {
-                let identifier = self.metadata.account + "_" + filenamePath + NCGlobal.shared.taskIdentifierShare
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.metadata.account,
+                                                                                            path: filenamePath,
+                                                                                            name: "readShares")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { account, shares, _, error in
@@ -131,7 +133,9 @@ class NCShareNetworking: NSObject {
                                         attributes: template.attributes,
                                         account: metadata.account) { task in
             Task {
-                let identifier = self.metadata.account + "_" + filenamePath + NCGlobal.shared.taskIdentifierShare
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.metadata.account,
+                                                                                            path: filenamePath,
+                                                                                            name: "createShare")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { _, share, _, error in
@@ -169,7 +173,9 @@ class NCShareNetworking: NSObject {
         NCActivityIndicator.shared.start(backgroundView: view)
         NextcloudKit.shared.deleteShare(idShare: idShare, account: metadata.account) { task in
             Task {
-                let identifier = self.metadata.account + "_\(idShare)" + NCGlobal.shared.taskIdentifierShare
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.metadata.account,
+                                                                                            path: "_\(idShare)",
+                                                                                            name: "deleteShare")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { account, _, error in
@@ -194,7 +200,9 @@ class NCShareNetworking: NSObject {
         NCActivityIndicator.shared.start(backgroundView: view)
         NextcloudKit.shared.updateShare(idShare: option.idShare, password: option.password, expireDate: option.formattedDateString, permissions: option.permissions, note: option.note, label: option.label, hideDownload: option.hideDownload, attributes: option.attributes, account: metadata.account) { task in
             Task {
-                let identifier = self.metadata.account + "_\(option.idShare)" + NCGlobal.shared.taskIdentifierShare
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.metadata.account,
+                                                                                            path: "_\(option.idShare)",
+                                                                                            name: "updateShare")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { _, share, _, error in
@@ -231,7 +239,9 @@ class NCShareNetworking: NSObject {
         NCActivityIndicator.shared.start(backgroundView: view)
         NextcloudKit.shared.searchSharees(search: searchString, account: metadata.account) { task in
             Task {
-                let identifier = self.metadata.account + "_" + searchString + NCGlobal.shared.taskIdentifierShare
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.metadata.account,
+                                                                                            path: searchString,
+                                                                                            name: "searchSharees")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { _, sharees, _, error in

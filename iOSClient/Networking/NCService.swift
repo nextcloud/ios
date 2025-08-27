@@ -74,7 +74,7 @@ class NCService: NSObject {
         let userId = NCSession.shared.getSession(account: account).userId
         let resultServerStatus = await NextcloudKit.shared.getServerStatusAsync(serverUrl: serverUrl) { task in
             Task {
-                let identifier = serverUrl + NCGlobal.shared.taskIdentifierServerStatus
+                let identifier = serverUrl + "_getServerStatus"
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }
@@ -96,7 +96,9 @@ class NCService: NSObject {
 
         let resultUserProfile = await NextcloudKit.shared.getUserMetadataAsync(account: account, userId: userId, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
             Task {
-                let identifier = account + "_" + userId + self.global.taskIdentifierUserMetadata
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: userId,
+                                                                                            name: "getUserMetadata")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }

@@ -30,7 +30,9 @@ extension NCNetworking {
             requestHandler(request)
         } taskHandler: { task in
             Task {
-                let identifier = account + "_" + serverUrlFileName + NCGlobal.shared.taskIdentifierUpload
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: serverUrlFileName,
+                                                                                            name: "upload")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
 
                 if let metadata,
@@ -123,7 +125,9 @@ extension NCNetworking {
         } taskHandler: { task in
             Task {
                 let url = task.originalRequest?.url?.absoluteString ?? ""
-                let identifier = metadata.account + "_" + url + NCGlobal.shared.taskIdentifierUpload
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                            path: url,
+                                                                                            name: "upload")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
 
                 let ocId = metadata.ocId

@@ -17,7 +17,8 @@ extension NCNetworking {
         var recommendationsToInsert: [NKRecommendation] = []
         let results = await NextcloudKit.shared.getRecommendedFilesAsync(account: session.account, taskHandler: { task in
             Task {
-                let identifier = session.account + NCGlobal.shared.taskIdentifierRecommendedFiles
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: session.account,
+                                                                                            name: "getRecommendedFiles")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         })
