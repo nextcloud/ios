@@ -224,7 +224,7 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
                 etagResource: etag,
                 account: session.account) { task in
                     Task {
-                        let identifier = sharee.shareWith + NCGlobal.shared.taskIdentifierDownloadAvatar
+                        let identifier = session.account + "_" + sharee.shareWith + NCGlobal.shared.taskIdentifierDownloadAvatar
                         await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                     }
                 } completion: { _, imageAvatar, _, etag, _, error in

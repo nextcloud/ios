@@ -95,7 +95,7 @@ class NCViewer: NSObject {
                     NCActivityIndicator.shared.start(backgroundView: delegate?.view)
                     let results = await NextcloudKit.shared.createUrlRichdocumentsAsync(fileID: metadata.fileId, account: metadata.account) { task in
                         Task {
-                            let identifier = metadata.account + metadata.fileId + NCGlobal.shared.taskIdentifierCreateRichdocuments
+                            let identifier = metadata.account + "_" + metadata.fileId + NCGlobal.shared.taskIdentifierCreateRichdocuments
                             await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                         }
                     }
@@ -147,7 +147,7 @@ class NCViewer: NSObject {
                     NCActivityIndicator.shared.start(backgroundView: delegate?.view)
                     let results = await NextcloudKit.shared.textOpenFileAsync(fileNamePath: fileNamePath, editor: editor, account: metadata.account, options: options) { task in
                         Task {
-                            let identifier = metadata.account + fileNamePath + NCGlobal.shared.taskIdentifierTextOpenFile
+                            let identifier = metadata.account + "_" + fileNamePath + NCGlobal.shared.taskIdentifierTextOpenFile
                             await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                         }
                     }

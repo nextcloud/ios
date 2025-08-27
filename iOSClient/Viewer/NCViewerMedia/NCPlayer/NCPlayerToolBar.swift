@@ -470,7 +470,7 @@ extension NCPlayerToolBar: NCSelectDelegate {
                                                                     sessionTaskIdentifier: task.taskIdentifier,
                                                                     status: self.global.metadataStatusDownloading)
 
-                        let identifier = metadata.serverUrlFileName + NCGlobal.shared.taskIdentifierDownload
+                        let identifier = metadata.account + "_" + metadata.serverUrlFileName + NCGlobal.shared.taskIdentifierDownload
                         await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                     }
                 }, progressHandler: { progress in

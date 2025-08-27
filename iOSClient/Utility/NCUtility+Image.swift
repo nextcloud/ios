@@ -295,7 +295,7 @@ extension NCUtility {
         if !FileManager.default.fileExists(atPath: imageNamePath) || rewrite == true {
             NextcloudKit.shared.downloadContent(serverUrl: iconURL.absoluteString, account: account) { task in
                 Task {
-                    let identifier = account + iconURL.absoluteString + self.global.taskIdentifierDownloadContent
+                    let identifier = account + "_" + iconURL.absoluteString + self.global.taskIdentifierDownloadContent
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             } completion: { _, responseData, error in

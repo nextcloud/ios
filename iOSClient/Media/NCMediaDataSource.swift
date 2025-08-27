@@ -143,7 +143,12 @@ extension NCMedia {
                                                                 elementDate: elementDate,
                                                                 limit: limit,
                                                                 account: self.session.account,
-                                                                options: options)
+                                                                options: options) { task in
+            Task {
+                let identifier = self.session.account + "_" + tblAccount.mediaPath + NCGlobal.shared.taskIdentifierSearch
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        }
 
         guard result.error == .success, let files = result.files, !self.showOnlyImages, !self.showOnlyVideos else {
             nkLog(error: "Media search failed: \(result.error.errorDescription)")

@@ -224,7 +224,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                                                                                 sessionTaskIdentifier: task.taskIdentifier,
                                                                                 status: self.global.metadataStatusDownloading)
 
-                                    let identifier = url.absoluteString + NCGlobal.shared.taskIdentifierDownload
+                                    let identifier = self.metadata.account + "_" + url.absoluteString + NCGlobal.shared.taskIdentifierDownload
                                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                                 }
                             }, progressHandler: { _ in
@@ -318,7 +318,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
             NextcloudKit.shared.createAssetRichdocuments(path: path, account: metadata.account) { task in
                 Task {
-                    let identifier = metadata.account + path + self.global.taskIdentifierCreateRichdocuments
+                    let identifier = metadata.account + "_" + path + self.global.taskIdentifierCreateRichdocuments
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             } completion: { _, url, _, error in
@@ -337,7 +337,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
         NextcloudKit.shared.createAssetRichdocuments(path: path, account: metadata.account) { task in
             Task {
-                let identifier = metadata.account + path + self.global.taskIdentifierCreateRichdocuments
+                let identifier = metadata.account + "_" + path + self.global.taskIdentifierCreateRichdocuments
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { _, url, _, error in

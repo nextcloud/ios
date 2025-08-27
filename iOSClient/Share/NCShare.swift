@@ -165,7 +165,7 @@ class NCShare: UIViewController, NCSharePagingContent {
                 etagResource: etag,
                 account: metadata.account) { task in
                     Task {
-                        let identifier = self.metadata.ownerId + NCGlobal.shared.taskIdentifierDownloadAvatar
+                        let identifier = self.metadata.account + "_" + self.metadata.ownerId + NCGlobal.shared.taskIdentifierDownloadAvatar
                         await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                     }
                 } completion: { _, imageAvatar, _, etag, _, error in

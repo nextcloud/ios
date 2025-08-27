@@ -29,7 +29,7 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
 
            let resultsDownloadPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: tblMetadata.fileId, etag: tblMetadata.etag, account: tblMetadata.account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
                Task {
-                   let identifier = tblMetadata.fileId + NCGlobal.shared.taskIdentifierDownloadPreview
+                   let identifier = tblMetadata.account + "_" + tblMetadata.fileId + NCGlobal.shared.taskIdentifierDownloadPreview
                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                }
            }

@@ -91,7 +91,7 @@ class NCService: NSObject {
 
         let resultUserProfile = await NextcloudKit.shared.getUserMetadataAsync(account: account, userId: userId, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
             Task {
-                let identifier = account + self.global.taskIdentifierUserMetadata
+                let identifier = account + "_" + userId + self.global.taskIdentifierUserMetadata
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }
@@ -116,7 +116,7 @@ class NCService: NSObject {
                                                                             etagResource: tblAvatar?.etag,
                                                                             account: account) { task in
             Task {
-                let identifier = account + self.global.taskIdentifierDownloadAvatar
+                let identifier = account + "_" + session.userId + self.global.taskIdentifierDownloadAvatar
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }
@@ -265,7 +265,7 @@ class NCService: NSObject {
     // MARK: -
 
     private func requestDashboardWidget(account: String) async {
-        let results = await NextcloudKit.shared.getDashboardWidgetAsync(account: account, taskHandler:  { task in
+        let results = await NextcloudKit.shared.getDashboardWidgetAsync(account: account, taskHandler: { task in
             Task {
                 let identifier = account + self.global.taskIdentifierDashboardWidget
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
@@ -279,7 +279,7 @@ class NCService: NSObject {
                    let fileName = widget.iconClass {
                     let results = await NextcloudKit.shared.downloadPreviewAsync(url: url, account: account) { task in
                         Task {
-                            let identifier = url.absoluteString + NCGlobal.shared.taskIdentifierDownloadPreview
+                            let identifier = account + "_" + url.absoluteString + NCGlobal.shared.taskIdentifierDownloadPreview
                             await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                         }
                     }

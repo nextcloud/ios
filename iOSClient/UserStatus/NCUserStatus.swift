@@ -220,9 +220,10 @@ class NCUserStatus: UIViewController {
         self.invisibleButton.layer.borderWidth = 0
         self.invisibleButton.layer.borderColor = nil
 
-        NextcloudKit.shared.setUserStatus(status: "online", account: account) { task in
+        let status = "online"
+        NextcloudKit.shared.setUserStatus(status: status, account: account) { task in
             Task {
-                let identifier = self.account + NCGlobal.shared.taskIdentifierUserStatus
+                let identifier = self.account + "_" + status + NCGlobal.shared.taskIdentifierUserStatus
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { _, _, error in
@@ -240,9 +241,10 @@ class NCUserStatus: UIViewController {
         self.invisibleButton.layer.borderWidth = 0
         self.invisibleButton.layer.borderColor = nil
 
-        NextcloudKit.shared.setUserStatus(status: "away", account: account) { task in
+        let status = "away"
+        NextcloudKit.shared.setUserStatus(status: status, account: account) { task in
             Task {
-                let identifier = self.account + NCGlobal.shared.taskIdentifierUserStatus
+                let identifier = self.account + "_" + status + NCGlobal.shared.taskIdentifierUserStatus
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { _, _, error in
@@ -260,9 +262,10 @@ class NCUserStatus: UIViewController {
         self.invisibleButton.layer.borderWidth = 0
         self.invisibleButton.layer.borderColor = nil
 
-        NextcloudKit.shared.setUserStatus(status: "dnd", account: account) { task in
+        let status = "dnd"
+        NextcloudKit.shared.setUserStatus(status: status, account: account) { task in
             Task {
-                let identifier = self.account + NCGlobal.shared.taskIdentifierUserStatus
+                let identifier = self.account + "_" + status + NCGlobal.shared.taskIdentifierUserStatus
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { _, _, error in
@@ -280,9 +283,10 @@ class NCUserStatus: UIViewController {
         self.invisibleButton.layer.borderWidth = self.borderWidthButton
         self.invisibleButton.layer.borderColor = self.borderColorButton
 
-        NextcloudKit.shared.setUserStatus(status: "invisible", account: account) { task in
+        let status = "invisible"
+        NextcloudKit.shared.setUserStatus(status: status, account: account) { task in
             Task {
-                let identifier = self.account + NCGlobal.shared.taskIdentifierUserStatus
+                let identifier = self.account + "_" + status + NCGlobal.shared.taskIdentifierUserStatus
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { _, _, error in
@@ -574,7 +578,7 @@ extension NCUserStatus: UITableViewDelegate {
         if let messageId = status.id {
             NextcloudKit.shared.setCustomMessagePredefined(messageId: messageId, clearAt: 0, account: account) { task in
                 Task {
-                    let identifier = self.account + NCGlobal.shared.taskIdentifierCustomMessageUser
+                    let identifier = self.account + "_" + messageId + NCGlobal.shared.taskIdentifierCustomMessageUser
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             } completion: { _, _, error in
