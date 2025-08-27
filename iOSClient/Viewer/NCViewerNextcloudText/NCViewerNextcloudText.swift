@@ -56,9 +56,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
                 primaryAction: nil,
                 menu: UIMenu(title: "", children: [
                     UIDeferredMenuElement.uncached { [weak self] completion in
-                        guard let self = self else { return }
-
-                        if let menu = self.ncViewerContextMenu.makeContextMenu(controller: self.tabBarController as? NCMainTabBarController, metadata: self.metadata, webView: false, sender: self) {
+                        if let menu = ncViewerContextMenu.makeContextMenu(controller: self.tabBarController as? NCMainTabBarController, metadata: self.metadata, webView: false, sender: self) {
                             completion(menu.children)
                         }
                     }
