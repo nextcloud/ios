@@ -138,7 +138,9 @@ class NCNetworkingE2EECreateFolder: NSObject {
         //
         let resultsReadFileOrFolder = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrlFileName, depth: "0", account: session.account) { task in
             Task {
-                let identifier = session.account + "_" + serverUrlFileName + NCGlobal.shared.taskIdentifierReadFileOrFolder
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: session.account,
+                                                                                            path: serverUrlFileName,
+                                                                                            name: "readFileOrFolder")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }

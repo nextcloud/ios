@@ -202,7 +202,9 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
 
         let resultsFile = await NextcloudKit.shared.getFileFromFileIdAsync(fileId: fileId, account: account) { task in
             Task {
-                let identifier = account + "_" + fileId + NCGlobal.shared.taskIdentifierReadFileOrFolder
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: fileId,
+                                                                                            name: "getFileFromFileId")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }

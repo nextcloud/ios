@@ -39,7 +39,9 @@ extension NCNetworking {
 
         let resultsReadFolder = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: showHiddenFiles, account: account, options: options) { task in
             Task {
-                let identifier = account + "_" + serverUrl + NCGlobal.shared.taskIdentifierReadFileOrFolder
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: serverUrl,
+                                                                                            name: "readFileOrFolder")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }
@@ -71,7 +73,9 @@ extension NCNetworking {
 
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, account: account) { task in
             Task {
-                let identifier = account + "_" + serverUrlFileName + NCGlobal.shared.taskIdentifierReadFileOrFolder
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: serverUrlFileName,
+                                                                                            name: "readFileOrFolder")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
             taskHandler(task)
@@ -96,7 +100,9 @@ extension NCNetworking {
                                                                       showHiddenFiles: showHiddenFiles,
                                                                       account: account) { task in
             Task {
-                let identifier = account + "_" + serverUrlFileName + NCGlobal.shared.taskIdentifierReadFileOrFolder
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: serverUrlFileName,
+                                                                                            name: "readFileOrFolder")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
             taskHandler(task)
@@ -121,7 +127,9 @@ extension NCNetworking {
                                              account: account,
                                              options: options) { task in
             Task {
-                let identifier = account + "_" + serverUrlFileName + NCGlobal.shared.taskIdentifierReadFileOrFolder
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: serverUrlFileName,
+                                                                                            name: "readFileOrFolder")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { account, files, _, error in

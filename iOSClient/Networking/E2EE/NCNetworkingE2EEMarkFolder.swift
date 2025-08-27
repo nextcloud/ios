@@ -12,7 +12,9 @@ class NCNetworkingE2EEMarkFolder: NSObject {
     func markFolderE2ee(account: String, serverUrlFileName: String, userId: String) async -> NKError {
         let resultsReadFileOrFolder = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrlFileName, depth: "0", account: account) { task in
             Task {
-                let identifier = account + "_" + serverUrlFileName + NCGlobal.shared.taskIdentifierReadFileOrFolder
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: serverUrlFileName,
+                                                                                            name: "readFileOrFolder")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }
