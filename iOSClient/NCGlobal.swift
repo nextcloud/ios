@@ -382,6 +382,7 @@ final class NCGlobal: Sendable {
     //
     let taskIdentifierCapabilities          = "IdCapabilities"
     let taskIdentifierUserMetadata          = "IdUserMetadata"
+    let taskIdentifierUserProfile           = "IdUserProfile"
     let taskIdentifierDownloadAvatar        = "IdDownloadAvatar"
     let taskIdentifierTextEditorDetails     = "IdTextEditorDetails"
     let taskIdentifierUserStatus            = "IdUserStatus"
@@ -390,6 +391,12 @@ final class NCGlobal: Sendable {
     let taskIdentifierDiagnosticsRemote     = "IdDiagnosticsRemote"
     let taskIdentifierSyncMetadata          = "IdSyncMetadata"
     let taskIdentifierDownloadPreview       = "IdDownloadPreview"
+    let taskIdentifierTextCreateFile        = "IdTextCreateFile"
+    let taskIdentifierCreateRichdocuments   = "IdCreateRichdocuments"
+    let taskIdentifierListOfTemplates       = "IdListOfTemplates"
+    let taskIdentifierTemplatesRichdocuments = "IdTemplatesRichdocuments"
+    let taskIdentifierNotifications         = "IdNotifications"
+    let taskIdentifierRemoteWipeStatus      = "IdRemoteWipeStatus"
 
     // LOG TAG
     let logTagTask                          = "BGT"
