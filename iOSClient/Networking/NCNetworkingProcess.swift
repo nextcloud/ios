@@ -299,7 +299,12 @@ actor NCNetworkingProcess {
             for metadata in uploadError {
                 /// Check QUOTA
                 if metadata.sessionError.contains("\(global.errorQuota)") {
-                    let results = await NextcloudKit.shared.getUserMetadataAsync(account: metadata.account, userId: metadata.userId)
+                    let results = await NextcloudKit.shared.getUserMetadataAsync(account: metadata.account, userId: metadata.userId) { task in
+                        Task {
+                            let identifier = metadata.account + "_" + metadata.userId + NCGlobal.shared.taskIdentifierUserMetadata
+                            await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                        }
+                    }
                     if results.error == .success, let userProfile = results.userProfile, userProfile.quotaFree > 0, userProfile.quotaFree > metadata.size {
                         await database.setMetadataSessionAsync(ocId: metadata.ocId,
                                                                session: self.networking.sessionUploadBackground,
@@ -374,7 +379,12 @@ actor NCNetworkingProcess {
                 serverUrlFileNameDestination = utilityFileSystem.createServerUrl(serverUrl: destination, fileName: fileNameCopy)
             }
 
-            let resultCopy = await NextcloudKit.shared.copyFileOrFolderAsync(serverUrlFileNameSource: metadata.serverUrlFileName, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
+            let resultCopy = await NextcloudKit.shared.copyFileOrFolderAsync(serverUrlFileNameSource: metadata.serverUrlFileName, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account) { task in
+                Task {
+                    let identifier = metadata.account + "_" + serverUrlFileNameDestination + NCGlobal.shared.taskIdentifierCopyFileOrFolder
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
+            }
 
             await database.setMetadataSessionAsync(ocId: metadata.ocId,
                                                    status: global.metadataStatusNormal)
@@ -407,7 +417,12 @@ actor NCNetworkingProcess {
             let serverUrlFileNameDestination = utilityFileSystem.createServerUrl(serverUrl: destination, fileName: metadata.fileName)
             let overwrite = (metadata.storeFlag as? NSString)?.boolValue ?? false
 
-            let resultMove = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: metadata.serverUrlFileName, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
+            let resultMove = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: metadata.serverUrlFileName, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account) { task in
+                Task {
+                    let identifier = metadata.account + "_" + serverUrlFileNameDestination + NCGlobal.shared.taskIdentifierMoveFileOrFolder
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
+            }
 
             await database.setMetadataSessionAsync(ocId: metadata.ocId,
                                                    status: global.metadataStatusNormal)
@@ -444,7 +459,12 @@ actor NCNetworkingProcess {
 
             let session = NCSession.Session(account: metadata.account, urlBase: metadata.urlBase, user: metadata.user, userId: metadata.userId)
             let fileName = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
-            let resultsFavorite = await NextcloudKit.shared.setFavoriteAsync(fileName: fileName, favorite: metadata.favorite, account: metadata.account)
+            let resultsFavorite = await NextcloudKit.shared.setFavoriteAsync(fileName: fileName, favorite: metadata.favorite, account: metadata.account) { task in
+                Task {
+                    let identifier = metadata.account + "_" + fileName + NCGlobal.shared.taskIdentifierE2EEFavorite
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
+            }
 
             if resultsFavorite.error == .success {
                 await database.setMetadataFavoriteAsync(ocId: metadata.ocId,
@@ -480,7 +500,12 @@ actor NCNetworkingProcess {
 
             let serverUrlFileNameSource = metadata.serverUrlFileName
             let serverUrlFileNameDestination = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
-            let resultRename = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: false, account: metadata.account)
+            let resultRename = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: false, account: metadata.account) { task in
+                Task {
+                    let identifier = metadata.account + "_" + serverUrlFileNameSource + NCGlobal.shared.taskIdentifierMoveFileOrFolder
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
+            }
 
             if resultRename.error == .success {
                 await database.setMetadataServerUrlFileNameStatusNormalAsync(ocId: metadata.ocId)
@@ -511,7 +536,12 @@ actor NCNetworkingProcess {
                     return (global.metadataStatusWaitDelete, .cancelled)
                 }
 
-                let resultDelete = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
+                let resultDelete = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account) { task in
+                    Task {
+                        let identifier = metadata.account + "_" + metadata.serverUrlFileName + NCGlobal.shared.taskIdentifierDeleteFileOrFolder
+                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                    }
+                }
 
                 await database.setMetadataSessionAsync(ocId: metadata.ocId,
                                                        status: global.metadataStatusNormal)

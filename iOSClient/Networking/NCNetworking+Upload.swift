@@ -30,6 +30,9 @@ extension NCNetworking {
             requestHandler(request)
         } taskHandler: { task in
             Task {
+                let identifier = account + "_" + serverUrlFileName + NCGlobal.shared.taskIdentifierUpload
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+
                 if let metadata,
                    let metadata = await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
                                                                                         sessionTaskIdentifier: task.taskIdentifier,
@@ -119,10 +122,14 @@ extension NCNetworking {
             requestHandler(request)
         } taskHandler: { task in
             Task {
+                let url = task.originalRequest?.url?.absoluteString ?? ""
+                let identifier = metadata.account + "_" + url + NCGlobal.shared.taskIdentifierUpload
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+
                 let ocId = metadata.ocId
                 await NCManageDatabase.shared.setMetadataSessionAsync(ocId: ocId,
-                                                            sessionTaskIdentifier: task.taskIdentifier,
-                                                            status: self.global.metadataStatusUploading)
+                                                                      sessionTaskIdentifier: task.taskIdentifier,
+                                                                      status: self.global.metadataStatusUploading)
             }
             taskHandler(task)
         } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
@@ -371,7 +378,12 @@ extension NCNetworking {
     @MainActor
     func termsOfService(metadata: tableMetadata) async {
         let options = NKRequestOptions(checkInterceptor: false, queue: .main)
-        let results = await NextcloudKit.shared.getTermsOfServiceAsync(account: metadata.account, options: options)
+        let results = await NextcloudKit.shared.getTermsOfServiceAsync(account: metadata.account, options: options, taskHandler: { task in
+            Task {
+                let identifier = metadata.account + NCGlobal.shared.taskIdentifierTermsOfService
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        })
 
         if results.error == .success, let tos = results.tos, !tos.hasUserSigned() {
             await self.uploadCancelFile(metadata: metadata)

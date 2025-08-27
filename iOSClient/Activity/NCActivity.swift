@@ -22,7 +22,6 @@ class NCActivity: UIViewController, NCSharePagingContent {
     let database = NCManageDatabase.shared
     var allItems: [DateCompareable] = []
     var sectionDates: [Date] = []
-    var dataSourceTask: URLSessionTask?
 
     var insets = UIEdgeInsets(top: 8, left: 0, bottom: 0, right: 0)
     var didSelectItemEnable: Bool = true
@@ -42,6 +41,10 @@ class NCActivity: UIViewController, NCSharePagingContent {
             NCSession.shared.getSession(account: account)
         }
     }
+
+    lazy var networkingTasksIdentifier: String = {
+        return self.session.account + NCGlobal.shared.taskIdentifierActivity
+    }()
 
     // MARK: - View Life Cycle
 
@@ -69,7 +72,12 @@ class NCActivity: UIViewController, NCSharePagingContent {
         commentView = Bundle.main.loadNibNamed("NCActivityCommentView", owner: self, options: nil)?.first as? NCActivityCommentView
         commentView?.setup(account: metadata.account) { newComment in
             guard let newComment = newComment, !newComment.isEmpty, let metadata = self.metadata else { return }
-            NextcloudKit.shared.putComments(fileId: metadata.fileId, message: newComment, account: metadata.account) { _, _, error in
+            NextcloudKit.shared.putComments(fileId: metadata.fileId, message: newComment, account: metadata.account) { task in
+                Task {
+                    let identifier = self.account + "_" + metadata.fileId + NCGlobal.shared.taskIdentifierComments
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
+            } completion: { _, _, error in
                 if error == .success {
                     self.commentView?.newCommentField.text?.removeAll()
                     self.loadComments()
@@ -89,9 +97,12 @@ class NCActivity: UIViewController, NCSharePagingContent {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
+        Task {
+            await NCNetworking.shared.networkingTasks.cancel(identifier: self.networkingTasksIdentifier)
+        }
+
         // Cancel Queue & Retrieves Properties
         NCNetworking.shared.downloadThumbnailActivityQueue.cancelAll()
-        dataSourceTask?.cancel()
     }
 
     override func viewWillLayoutSubviews() {
@@ -269,7 +280,12 @@ extension NCActivity: UITableViewDataSource {
                     cell.icon.image = image.withTintColor(NCBrandColor.shared.textColor, renderingMode: .alwaysOriginal)
                 }
             } else {
-                NextcloudKit.shared.downloadContent(serverUrl: activity.icon, account: activity.account) { _, responseData, error in
+                NextcloudKit.shared.downloadContent(serverUrl: activity.icon, account: activity.account) { task in
+                    Task {
+                        let identifier = self.account + "_" + activity.icon + NCGlobal.shared.taskIdentifierDownloadContent
+                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                    }
+                } completion: { _, responseData, error in
                     if error == .success, let data = responseData?.data {
                         do {
                             try data.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
@@ -406,7 +422,12 @@ extension NCActivity {
         guard showComments, let metadata = metadata else { return }
         disptachGroup?.enter()
 
-        NextcloudKit.shared.getComments(fileId: metadata.fileId, account: metadata.account) { _, comments, _, error in
+        NextcloudKit.shared.getComments(fileId: metadata.fileId, account: metadata.account) { task in
+            Task {
+                let identifier = metadata.account + "_" + metadata.fileId + NCGlobal.shared.taskIdentifierComments
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        } completion: { _, comments, _, error in
             if error == .success, let comments = comments {
                 self.database.addComments(comments, account: metadata.account, objectId: metadata.fileId)
             } else if error.errorCode != NCGlobal.shared.errorResourceNotFound {
@@ -437,7 +458,9 @@ extension NCActivity {
             objectType: objectType,
             previews: true,
             account: session.account) { task in
-                self.dataSourceTask = task
+                Task {
+                    await NCNetworking.shared.networkingTasks.track(identifier: self.networkingTasksIdentifier, task: task)
+                }
             } completion: { account, _, activityFirstKnown, activityLastGiven, _, error in
                 defer { disptachGroup.leave() }
 
@@ -455,7 +478,9 @@ extension NCActivity {
     }
 
     func loadActivity(idActivity: Int, limit: Int = 200, disptachGroup: DispatchGroup) {
-        guard hasActivityToLoad else { return }
+        guard hasActivityToLoad else {
+            return
+        }
         var resultActivityId = 0
 
         disptachGroup.enter()
@@ -466,7 +491,9 @@ extension NCActivity {
             objectType: objectType,
             previews: true,
             account: session.account) { task in
-                self.dataSourceTask = task
+                Task {
+                    await NCNetworking.shared.networkingTasks.track(identifier: self.networkingTasksIdentifier, task: task)
+                }
             } completion: { account, activities, activityFirstKnown, activityLastGiven, _, error in
                 defer { disptachGroup.leave() }
                 guard error == .success,
@@ -511,7 +538,10 @@ extension NCActivity: NCShareCommentsCellDelegate {
                 icon: utility.loadImage(named: "pencil", colors: [NCBrandColor.shared.iconImageColor]),
                 sender: sender,
                 action: { _ in
-                    guard let metadata = self.metadata, let tableComments = tableComments else { return }
+                    guard let metadata = self.metadata,
+                          let tableComments = tableComments else {
+                        return
+                    }
 
                     let alert = UIAlertController(title: NSLocalizedString("_edit_comment_", comment: ""), message: nil, preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
@@ -523,7 +553,12 @@ extension NCActivity: NCShareCommentsCellDelegate {
                     alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
                         guard let message = alert.textFields?.first?.text, !message.isEmpty else { return }
 
-                        NextcloudKit.shared.updateComments(fileId: metadata.fileId, messageId: tableComments.messageId, message: message, account: metadata.account) { _, _, error in
+                        NextcloudKit.shared.updateComments(fileId: metadata.fileId, messageId: tableComments.messageId, message: message, account: metadata.account) { task in
+                            Task {
+                                let identifier = metadata.account + "_" + metadata.fileId + NCGlobal.shared.taskIdentifierComments
+                                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                            }
+                        } completion: { _, _, error in
                             if error == .success {
                                 self.loadComments()
                             } else {
@@ -546,7 +581,12 @@ extension NCActivity: NCShareCommentsCellDelegate {
                 action: { _ in
                     guard let metadata = self.metadata, let tableComments = tableComments else { return }
 
-                    NextcloudKit.shared.deleteComments(fileId: metadata.fileId, messageId: tableComments.messageId, account: metadata.account) { _, _, error in
+                    NextcloudKit.shared.deleteComments(fileId: metadata.fileId, messageId: tableComments.messageId, account: metadata.account) { task in
+                        Task {
+                            let identifier = metadata.account + "_" + metadata.fileId + NCGlobal.shared.taskIdentifierComments
+                            await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                        }
+                    } completion: { _, _, error in
                         if error == .success {
                             self.loadComments()
                         } else {

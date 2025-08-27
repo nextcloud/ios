@@ -58,11 +58,11 @@ final class NCImageCache: @unchecked Sendable {
                     let predicate = self.getMediaPredicateAsync(filterLivePhotoFile: true, session: session, mediaPath: tblAccount.mediaPath, showOnlyImages: false, showOnlyVideos: false)
                     if let metadatas = await self.database.getMetadatasAsync(predicate: predicate, sortedByKeyPath: "datePhotosOriginal", limit: self.countLimit) {
                         autoreleasepool {
-                            self.cache.removeAllValues()
+                            self.cache.removeAll()
 
                             for metadata in metadatas {
                                 guard !isAppInBackground else {
-                                    self.cache.removeAllValues()
+                                    self.cache.removeAll()
                                     break
                                 }
                                 if let image = self.utility.getImage(ocId: metadata.ocId,
@@ -116,7 +116,7 @@ final class NCImageCache: @unchecked Sendable {
     }
 
     func removeAll() {
-        cache.removeAllValues()
+        cache.removeAll()
     }
 
     // MARK: - MEDIA -

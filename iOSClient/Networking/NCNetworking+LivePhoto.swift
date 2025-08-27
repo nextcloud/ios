@@ -62,7 +62,12 @@ extension NCNetworking {
         if livePhoto {
             livePhotoFileId = metadataLast.fileId
         }
-        let resultsMetadataFirst = await NextcloudKit.shared.setLivephotoAsync(serverUrlfileNamePath: serverUrlfileNamePathFirst, livePhotoFile: livePhotoFileId, account: metadataFirst.account)
+        let resultsMetadataFirst = await NextcloudKit.shared.setLivephotoAsync(serverUrlfileNamePath: serverUrlfileNamePathFirst, livePhotoFile: livePhotoFileId, account: metadataFirst.account) { task in
+            Task {
+                let identifier = metadataFirst.account + "_" + serverUrlfileNamePathFirst + NCGlobal.shared.taskIdentifierLivePhoto
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        }
         if resultsMetadataFirst.error == .success {
             await NCManageDatabase.shared.setMetadataLivePhotoByServerAsync(account: metadataFirst.account, ocId: metadataFirst.ocId, livePhotoFile: livePhotoFileId)
         }
@@ -72,7 +77,12 @@ extension NCNetworking {
         if livePhoto {
             livePhotoFileId = metadataFirst.fileId
         }
-        let resultsMetadataLast = await NextcloudKit.shared.setLivephotoAsync(serverUrlfileNamePath: serverUrlfileNamePathLast, livePhotoFile: livePhotoFileId, account: metadataLast.account)
+        let resultsMetadataLast = await NextcloudKit.shared.setLivephotoAsync(serverUrlfileNamePath: serverUrlfileNamePathLast, livePhotoFile: livePhotoFileId, account: metadataLast.account) { task in
+            Task {
+                let identifier = metadataLast.account + "_" + serverUrlfileNamePathLast + NCGlobal.shared.taskIdentifierLivePhoto
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        }
         if resultsMetadataLast.error == .success {
             await NCManageDatabase.shared.setMetadataLivePhotoByServerAsync(account: metadataLast.account, ocId: metadataLast.ocId, livePhotoFile: livePhotoFileId)
         }

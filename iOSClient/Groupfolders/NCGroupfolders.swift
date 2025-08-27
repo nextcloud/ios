@@ -124,7 +124,12 @@ class NCGroupfolders: NCCollectionViewCommon {
             let serverUrlFileName = homeServerUrl + mountPoint
             let resultsReadFile = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrlFileName,
                                                                                   depth: "0", showHiddenFiles: showHiddenFiles,
-                                                                                  account: session.account)
+                                                                                  account: session.account) { task in
+                Task {
+                    let identifier = self.session.account + "_" + serverUrlFileName + NCGlobal.shared.taskIdentifierReadFileOrFolder
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
+            }
 
             guard resultsReadFile.error == .success, let file = resultsReadFile.files?.first else {
                 return

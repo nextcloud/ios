@@ -36,7 +36,12 @@ class NCNetworkingE2EEDelete: NSObject {
         //
         let serverUrlFileName = self.utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
         let options = NKRequestOptions(customHeader: ["e2e-token": e2eToken])
-        let result = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: serverUrlFileName, account: metadata.account, options: options)
+        let result = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: serverUrlFileName, account: metadata.account, options: options) { task in
+            Task {
+                let identifier = metadata.account + "_" + serverUrlFileName + NCGlobal.shared.taskIdentifierDeleteFileOrFolder
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        }
         if result.error == .success || result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
             do {
                 try FileManager.default.removeItem(atPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))

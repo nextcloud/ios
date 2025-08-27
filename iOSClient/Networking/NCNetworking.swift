@@ -407,7 +407,12 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
             return
         }
 
-        NextcloudKit.shared.checkServer(serverUrl: NCBrandOptions.shared.pushNotificationServerProxy) { _, error in
+        NextcloudKit.shared.checkServer(serverUrl: NCBrandOptions.shared.pushNotificationServerProxy) { task in
+            Task {
+                let identifier = NCBrandOptions.shared.pushNotificationServerProxy + NCGlobal.shared.taskIdentifierCheckServer
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        } completion: { _, error in
             guard error == .success else {
                 completion(.success)
                 return

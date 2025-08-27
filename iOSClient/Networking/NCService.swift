@@ -72,7 +72,12 @@ class NCService: NSObject {
     private func requestServerStatus(account: String, controller: NCMainTabBarController?) async -> Bool {
         let serverUrl = NCSession.shared.getSession(account: account).urlBase
         let userId = NCSession.shared.getSession(account: account).userId
-        let resultServerStatus = await NextcloudKit.shared.getServerStatusAsync(serverUrl: serverUrl)
+        let resultServerStatus = await NextcloudKit.shared.getServerStatusAsync(serverUrl: serverUrl) { task in
+            Task {
+                let identifier = serverUrl + NCGlobal.shared.taskIdentifierServerStatus
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        }
         switch resultServerStatus.result {
         case .success(let serverInfo):
             if serverInfo.maintenance {
@@ -173,7 +178,12 @@ class NCService: NSObject {
 
         // External file Server
         if capabilities.externalSites {
-            let results = await NextcloudKit.shared.getExternalSiteAsync(account: account)
+            let results = await NextcloudKit.shared.getExternalSiteAsync(account: account) { task in
+                Task {
+                    let identifier = account + "_" + NCGlobal.shared.taskIdentifierExternalSite
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
+            }
             if results.error == .success {
                 await self.database.deleteExternalSitesAsync(account: account)
                 for site in results.externalSite {

@@ -65,7 +65,12 @@ extension UIViewController {
             return
         }
 
-        NextcloudKit.shared.getHovercard(for: userId, account: session.account) { account, card, _, _ in
+        NextcloudKit.shared.getHovercard(for: userId, account: session.account) { task in
+            Task {
+                let identifier = session.account + "_" + userId + NCGlobal.shared.taskIdentifierHovercard
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        } completion: { account, card, _, _ in
             guard let card = card, account == session.account else { return }
 
             let personHeader = NCMenuAction(
