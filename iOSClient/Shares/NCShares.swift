@@ -29,7 +29,7 @@ class NCShares: NCCollectionViewCommon {
 
     private var backgroundTask: Task<Void, Never>?
     lazy var networkingTasksIdentifier: String = {
-        return self.session.account + NCGlobal.shared.taskIdentifierReadShares
+        return self.session.account + "ReadShares"
     }()
 
     required init?(coder aDecoder: NSCoder) {

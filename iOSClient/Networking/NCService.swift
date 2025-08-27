@@ -121,7 +121,9 @@ class NCService: NSObject {
                                                                             etagResource: tblAvatar?.etag,
                                                                             account: account) { task in
             Task {
-                let identifier = account + "_" + session.userId + self.global.taskIdentifierDownloadAvatar
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: session.userId,
+                                                                                            name: "downloadAvatar")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }
@@ -139,7 +141,8 @@ class NCService: NSObject {
     private func requestServerCapabilities(account: String, controller: NCMainTabBarController?) async {
         let resultsCapabilities = await NextcloudKit.shared.getCapabilitiesAsync(account: account) { task in
             Task {
-                let identifier = account + self.global.taskIdentifierCapabilities
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            name: "getCapabilities")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }
@@ -181,7 +184,7 @@ class NCService: NSObject {
             let results = await NextcloudKit.shared.getExternalSiteAsync(account: account) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierExternalSite)
+                                                                                                name: NCGlobal.shared.taskIdentifierExternalSite)
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
@@ -200,7 +203,7 @@ class NCService: NSObject {
             let results = await NextcloudKit.shared.getUserStatusAsync(account: account) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierUserStatus)
+                                                                                                name: NCGlobal.shared.taskIdentifierUserStatus)
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
@@ -279,7 +282,8 @@ class NCService: NSObject {
     private func requestDashboardWidget(account: String) async {
         let results = await NextcloudKit.shared.getDashboardWidgetAsync(account: account, taskHandler: { task in
             Task {
-                let identifier = account + self.global.taskIdentifierDashboardWidget
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            name: "getDashboardWidget")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         })
@@ -291,7 +295,9 @@ class NCService: NSObject {
                    let fileName = widget.iconClass {
                     let results = await NextcloudKit.shared.downloadPreviewAsync(url: url, account: account) { task in
                         Task {
-                            let identifier = account + "_" + url.absoluteString + NCGlobal.shared.taskIdentifierDownloadPreview
+                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                                        path: url.absoluteString,
+                                                                                                        name: "DownloadPreview")
                             await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                         }
                     }
@@ -429,7 +435,8 @@ class NCService: NSObject {
                 data.printJson()
                 let results = await NextcloudKit.shared.sendClientDiagnosticsRemoteOperationAsync(data: data, account: account) { task in
                     Task {
-                        let identifier = account + self.global.taskIdentifierDiagnosticsRemote
+                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                                    name: "sendClientDiagnosticsRemoteOperation")
                         await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                     }
                 }

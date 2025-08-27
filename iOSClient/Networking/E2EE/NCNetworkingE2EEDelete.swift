@@ -38,7 +38,9 @@ class NCNetworkingE2EEDelete: NSObject {
         let options = NKRequestOptions(customHeader: ["e2e-token": e2eToken])
         let result = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: serverUrlFileName, account: metadata.account, options: options) { task in
             Task {
-                let identifier = metadata.account + "_" + serverUrlFileName + NCGlobal.shared.taskIdentifierDeleteFileOrFolder
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                            path: serverUrlFileName,
+                                                                                            name: "deleteFileOrFolder")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }

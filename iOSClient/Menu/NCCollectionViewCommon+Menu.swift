@@ -195,7 +195,9 @@ extension NCCollectionViewCommon {
                         Task {
                             let results = await NextcloudKit.shared.markE2EEFolderAsync(fileId: metadata.fileId, delete: true, account: metadata.account) { task in
                                 Task {
-                                    let identifier = metadata.account + "_" + metadata.fileId + NCGlobal.shared.taskIdentifierE2EEMarkFolder
+                                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                                                path: metadata.fileId,
+                                                                                                                name: "markE2EEFolder")
                                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                                 }
                             }

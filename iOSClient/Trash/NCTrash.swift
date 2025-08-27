@@ -56,7 +56,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     }
 
     lazy var networkingTasksIdentifier: String = {
-        return self.session.account + NCGlobal.shared.taskIdentifierListingTrash
+        return self.session.account + "ListingTrash"
     }()
 
     // MARK: - View Life Cycle

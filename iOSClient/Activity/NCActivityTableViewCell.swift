@@ -201,7 +201,9 @@ class NCOperationDownloadThumbnailActivity: ConcurrentOperation, @unchecked Send
         guard !isCancelled else { return self.finish() }
         NextcloudKit.shared.downloadPreview(fileId: fileId, etag: etag, account: account) { task in
             Task {
-                let identifier = self.account + "_" + self.fileId + NCGlobal.shared.taskIdentifierDownloadPreview
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account,
+                                                                                            path: self.fileId,
+                                                                                            name: "DownloadPreview")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { _, _, _, _, responseData, error in

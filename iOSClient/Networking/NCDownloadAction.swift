@@ -232,7 +232,9 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             downloadRequest = request
         } taskHandler: { task in
             Task {
-                let identifier = account + "_" + metadata.serverUrlFileName + NCGlobal.shared.taskIdentifierDownload
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                            path: metadata.serverUrlFileName,
+                                                                                            name: "download")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
 
                 let ocId = metadata.ocId
@@ -472,8 +474,8 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             } taskHandler: { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                                title: serverUrlFileName,
-                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierUpload)
+                                                                                                path: serverUrlFileName,
+                                                                                                name: NCGlobal.shared.taskIdentifierUpload)
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             } progressHandler: { progress in

@@ -230,7 +230,9 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
 
         let resultsDeleteFileOrFolder = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account) { task in
             Task {
-                let identifier = metadata.account + "_" + metadata.serverUrlFileName + NCGlobal.shared.taskIdentifierDeleteFileOrFolder
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                            path: metadata.serverUrlFileName,
+                                                                                            name: "deleteFileOrFolder")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }

@@ -27,7 +27,7 @@ import RealmSwift
 
 class NCGroupfolders: NCCollectionViewCommon {
     lazy var networkingTasksIdentifier: String = {
-        return self.session.account + NCGlobal.shared.taskIdentifierGroupfolders
+        return self.session.account + "Groupfolders"
     }()
 
     required init?(coder aDecoder: NSCoder) {
@@ -127,8 +127,8 @@ class NCGroupfolders: NCCollectionViewCommon {
                                                                                   account: session.account) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
-                                                                                                title: serverUrlFileName,
-                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierReadFileOrFolder)
+                                                                                                path: serverUrlFileName,
+                                                                                                name: NCGlobal.shared.taskIdentifierReadFileOrFolder)
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }

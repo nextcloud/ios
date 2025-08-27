@@ -353,8 +353,8 @@ class NCViewerMedia: UIViewController {
                                                 options: NKRequestOptions(queue: .main)) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                title: metadata.fileId,
-                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierDownloadPreview)
+                                                                                                path: metadata.fileId,
+                                                                                                name: "DownloadPreview")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             } completion: { _, _, _, _, responseData, error in

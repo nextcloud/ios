@@ -35,7 +35,8 @@ class NCEndToEndInitialize: NSObject {
     func statusOfService(session: NCSession.Session, completion: @escaping (_ error: NKError?) -> Void) {
         NextcloudKit.shared.getE2EECertificate(account: session.account) { task in
             Task {
-                let identifier = session.account + NCGlobal.shared.taskIdentifierE2EECertificate
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: session.account,
+                                                                                            name: "getE2EECertificate")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { _, _, _, _, error in
@@ -46,7 +47,8 @@ class NCEndToEndInitialize: NSObject {
     private func getPublicKey() {
         NextcloudKit.shared.getE2EECertificate(account: session.account) { task in
             Task {
-                let identifier = self.session.account + NCGlobal.shared.taskIdentifierE2EECertificate
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
+                                                                                            name: "getE2EECertificate")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { account, certificate, _, _, error in
@@ -70,7 +72,8 @@ class NCEndToEndInitialize: NSObject {
 
                     NextcloudKit.shared.signE2EECertificate(certificate: csr, account: account) {task in
                         Task {
-                            let identifier = account + NCGlobal.shared.taskIdentifierE2EECertificate
+                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                                        name: "signE2EECertificate")
                             await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                         }
                     } completion: { account, certificate, _, error in
@@ -130,7 +133,8 @@ class NCEndToEndInitialize: NSObject {
         // Request PrivateKey chiper to Server
         NextcloudKit.shared.getE2EEPrivateKey(account: session.account) { task in
             Task {
-                let identifier = self.session.account + NCGlobal.shared.taskIdentifierE2EEKey
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
+                                                                                            name: "getE2EEPrivateKey")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { account, privateKeyChiper, _, error in
@@ -155,7 +159,8 @@ class NCEndToEndInitialize: NSObject {
                     // request server publicKey
                     NextcloudKit.shared.getE2EEPublicKey(account: account) { task in
                         Task {
-                            let identifier = account + NCGlobal.shared.taskIdentifierE2EEKey
+                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
+                                                                                                        name: "getE2EEPublicKey")
                             await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                         }
                     } completion: { account, publicKey, _, error in
@@ -234,7 +239,8 @@ class NCEndToEndInitialize: NSObject {
 
         NextcloudKit.shared.storeE2EEPrivateKey(privateKey: privateKeyCipher, account: session.account) { task in
             Task {
-                let identifier = self.session.account + NCGlobal.shared.taskIdentifierE2EEKey
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
+                                                                                            name: "storeE2EEPrivateKey")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { account, _, _, error in
@@ -246,7 +252,8 @@ class NCEndToEndInitialize: NSObject {
                 // request server publicKey
                 NextcloudKit.shared.getE2EEPublicKey(account: account) { task in
                     Task {
-                        let identifier = self.session.account + NCGlobal.shared.taskIdentifierE2EEKey
+                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
+                                                                                                    name: "getE2EEPublicKey")
                         await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                     }
                 } completion: { account, publicKey, _, error in

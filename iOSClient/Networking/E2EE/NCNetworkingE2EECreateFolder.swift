@@ -104,7 +104,9 @@ class NCNetworkingE2EECreateFolder: NSObject {
         //
         let resultsCreateFolder = await NextcloudKit.shared.createFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account, options: NKRequestOptions(customHeader: ["e2e-token": e2eToken])) { task in
             Task {
-                let identifier = session.account + "_" + serverUrlFileName + NCGlobal.shared.taskIdentifierCreateFolder
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: session.account,
+                                                                                            path: serverUrlFileName,
+                                                                                            name: "createFolder")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }
@@ -117,7 +119,9 @@ class NCNetworkingE2EECreateFolder: NSObject {
         //
         let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolderAsync(fileId: fileId, delete: false, account: session.account, options: NCNetworkingE2EE().getOptions(account: session.account, capabilities: capabilities)) { task in
             Task {
-                let identifier = session.account + "_" + fileId + NCGlobal.shared.taskIdentifierE2EEMarkFolder
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: session.account,
+                                                                                            path: fileId,
+                                                                                            name: "markE2EEFolder")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }

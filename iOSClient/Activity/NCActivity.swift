@@ -43,7 +43,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
     }
 
     lazy var networkingTasksIdentifier: String = {
-        return self.session.account + NCGlobal.shared.taskIdentifierActivity
+        return self.session.account + "Activity"
     }()
 
     // MARK: - View Life Cycle
@@ -75,8 +75,8 @@ class NCActivity: UIViewController, NCSharePagingContent {
             NextcloudKit.shared.putComments(fileId: metadata.fileId, message: newComment, account: metadata.account) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account,
-                                                                                                title: metadata.fileId,
-                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierComments)
+                                                                                                path: metadata.fileId,
+                                                                                                name: NCGlobal.shared.taskIdentifierComments)
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             } completion: { _, _, error in
@@ -284,7 +284,9 @@ extension NCActivity: UITableViewDataSource {
             } else {
                 NextcloudKit.shared.downloadContent(serverUrl: activity.icon, account: activity.account) { task in
                     Task {
-                        let identifier = self.account + "_" + activity.icon + NCGlobal.shared.taskIdentifierDownloadContent
+                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account,
+                                                                                                    path: activity.icon,
+                                                                                                    name: "downloadContent")
                         await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                     }
                 } completion: { _, responseData, error in
@@ -426,7 +428,9 @@ extension NCActivity {
 
         NextcloudKit.shared.getComments(fileId: metadata.fileId, account: metadata.account) { task in
             Task {
-                let identifier = metadata.account + "_" + metadata.fileId + NCGlobal.shared.taskIdentifierComments
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                            path: metadata.fileId,
+                                                                                            name: "getComments")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { _, comments, _, error in
@@ -557,7 +561,9 @@ extension NCActivity: NCShareCommentsCellDelegate {
 
                         NextcloudKit.shared.updateComments(fileId: metadata.fileId, messageId: tableComments.messageId, message: message, account: metadata.account) { task in
                             Task {
-                                let identifier = metadata.account + "_" + metadata.fileId + NCGlobal.shared.taskIdentifierComments
+                                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                                            path: metadata.fileId,
+                                                                                                            name: "updateComments")
                                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                             }
                         } completion: { _, _, error in
@@ -585,7 +591,9 @@ extension NCActivity: NCShareCommentsCellDelegate {
 
                     NextcloudKit.shared.deleteComments(fileId: metadata.fileId, messageId: tableComments.messageId, account: metadata.account) { task in
                         Task {
-                            let identifier = metadata.account + "_" + metadata.fileId + NCGlobal.shared.taskIdentifierComments
+                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                                        path: metadata.fileId,
+                                                                                                        name: "deleteComments")
                             await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                         }
                     } completion: { _, _, error in

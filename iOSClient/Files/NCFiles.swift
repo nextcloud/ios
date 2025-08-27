@@ -20,7 +20,7 @@ class NCFiles: NCCollectionViewCommon {
     internal var syncMetadatasTask: Task<Void, Never>?
 
     lazy var networkingTasksIdentifier: String = {
-        return self.session.account + self.serverUrl + NCGlobal.shared.taskIdentifierReadFileOrFolder
+        return self.session.account + "ReadFileOrFolder"
     }()
 
     required init?(coder aDecoder: NSCoder) {

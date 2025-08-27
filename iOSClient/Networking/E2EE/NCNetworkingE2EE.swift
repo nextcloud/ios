@@ -49,8 +49,8 @@ class NCNetworkingE2EE: NSObject {
             let results = await NextcloudKit.shared.getE2EEMetadataAsync(fileId: fileId, e2eToken: e2eToken, account: account, options: options) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                                title: fileId,
-                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierE2EEMetadata)
+                                                                                                path: fileId,
+                                                                                                name: "getE2EEMetadata")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
@@ -60,8 +60,8 @@ class NCNetworkingE2EE: NSObject {
             let results = await NextcloudKit.shared.getE2EEMetadataAsync(fileId: fileId, e2eToken: e2eToken, account: account, options: options) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                                title: fileId,
-                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierE2EEMetadata)
+                                                                                                path: fileId,
+                                                                                                name: "getE2EEMetadata")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
@@ -71,7 +71,9 @@ class NCNetworkingE2EE: NSObject {
                 options = NKRequestOptions(version: self.e2EEApiVersion1)
                 let results = await NextcloudKit.shared.getE2EEMetadataAsync(fileId: fileId, e2eToken: e2eToken, account: account, options: options) { task in
                     Task {
-                        let identifier = account + "_" + fileId + NCGlobal.shared.taskIdentifierE2EEMetadata
+                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                                    path: fileId,
+                                                                                                    name: "getE2EEMetadata")
                         await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                     }
                 }
@@ -81,7 +83,9 @@ class NCNetworkingE2EE: NSObject {
                     options = NKRequestOptions(version: self.e2EEApiVersion1)
                     let results = await NextcloudKit.shared.getE2EEMetadataAsync(fileId: fileId, e2eToken: e2eToken, account: account, options: options) { task in
                         Task {
-                            let identifier = account + "_" + fileId + NCGlobal.shared.taskIdentifierE2EEMetadata
+                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                                        path: fileId,
+                                                                                                        name: "getE2EEMetadata")
                             await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                         }
                     }
@@ -112,8 +116,8 @@ class NCNetworkingE2EE: NSObject {
             let results = await NextcloudKit.shared.getE2EECertificateAsync(user: addUserId, account: session.account, options: NCNetworkingE2EE().getOptions(account: account, capabilities: capabilities)) {task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                                title: addUserId,
-                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierE2EECertificate)
+                                                                                                path: addUserId,
+                                                                                                name: "getE2EECertificate")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
@@ -188,7 +192,9 @@ class NCNetworkingE2EE: NSObject {
 
         let putE2EEMetadataResults = await NextcloudKit.shared.putE2EEMetadataAsync(fileId: fileId, e2eToken: e2eToken, e2eMetadata: e2eMetadata, signature: resultsEncodeMetadata.signature, method: method, account: session.account, options: NCNetworkingE2EE().getOptions(account: session.account, capabilities: capabilities)) { task in
             Task {
-                let identifier = session.account + "_" + fileId + NCGlobal.shared.taskIdentifierE2EEMetadata
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: session.account,
+                                                                                            path: fileId,
+                                                                                            name: "putE2EEMetadata")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }
@@ -249,7 +255,9 @@ class NCNetworkingE2EE: NSObject {
 
         let resultsLockE2EEFolder = await NextcloudKit.shared.lockE2EEFolderAsync(fileId: directory.fileId, e2eToken: e2eToken, e2eCounter: e2eCounter, method: "POST", account: account, options: NCNetworkingE2EE().getOptions(account: account, capabilities: capabilities)) { task in
             Task {
-                let identifier = account + "_" + directory.fileId + NCGlobal.shared.taskIdentifierE2EELock
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: directory.fileId,
+                                                                                            name: "lockE2EEFolder")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }
@@ -267,7 +275,9 @@ class NCNetworkingE2EE: NSObject {
         let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
         let resultsLockE2EEFolder = await NextcloudKit.shared.lockE2EEFolderAsync(fileId: tableLock.fileId, e2eToken: tableLock.e2eToken, e2eCounter: nil, method: "DELETE", account: account, options: NCNetworkingE2EE().getOptions(account: account, capabilities: capabilities)) { task in
             Task {
-                let identifier = account + "_" + tableLock.fileId + NCGlobal.shared.taskIdentifierE2EELock
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: tableLock.fileId,
+                                                                                            name: "lockE2EEFolder")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }
@@ -286,8 +296,8 @@ class NCNetworkingE2EE: NSObject {
             let resultsLockE2EEFolder = await NextcloudKit.shared.lockE2EEFolderAsync(fileId: result.fileId, e2eToken: result.e2eToken, e2eCounter: nil, method: "DELETE", account: account, options: NCNetworkingE2EE().getOptions(account: account, capabilities: capabilities)) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                                title: result.fileId,
-                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierE2EELock)
+                                                                                                path: result.fileId,
+                                                                                                name: "lockE2EEFolder")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }

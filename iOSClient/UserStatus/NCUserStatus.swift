@@ -342,7 +342,8 @@ class NCUserStatus: UIViewController {
     @IBAction func actionClearStatusMessage(_ sender: UIButton) {
         NextcloudKit.shared.clearMessage(account: account) { task in
             Task {
-                let identifier = self.account + NCGlobal.shared.taskIdentifierClearStatusMessage
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account,
+                                                                                            name: "clearMessage")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { _, _, error in
@@ -359,7 +360,8 @@ class NCUserStatus: UIViewController {
 
         NextcloudKit.shared.setCustomMessageUserDefined(statusIcon: statusMessageEmojiTextField.text, message: message, clearAt: clearAtTimestamp, account: account) { task in
             Task {
-                let identifier = self.account + NCGlobal.shared.taskIdentifierCustomMessageUser
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account,
+                                                                                            name: "setCustomMessageUserDefined")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { _, _, error in
@@ -579,8 +581,8 @@ extension NCUserStatus: UITableViewDelegate {
             NextcloudKit.shared.setCustomMessagePredefined(messageId: messageId, clearAt: 0, account: account) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account,
-                                                                                                title: messageId,
-                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierCustomMessageUser)
+                                                                                                path: messageId,
+                                                                                                name: "setCustomMessagePredefined")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             } completion: { _, _, error in

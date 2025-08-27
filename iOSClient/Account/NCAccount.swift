@@ -212,7 +212,7 @@ class NCAccount: NSObject {
             let resultsSetWipe = await NextcloudKit.shared.setRemoteWipeCompletitionAsync(serverUrl: tblAccount.urlBase, token: token, account: tblAccount.account) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: tblAccount.account,
-                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierRemoteWipeStatus)
+                                                                                                name: NCGlobal.shared.taskIdentifierRemoteWipeStatus)
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }

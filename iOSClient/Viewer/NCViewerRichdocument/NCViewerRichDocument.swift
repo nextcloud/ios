@@ -219,7 +219,9 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                             NextcloudKit.shared.download(serverUrlFileName: url, fileNameLocalPath: fileNameLocalPath, account: self.metadata.account, requestHandler: { _ in
                             }, taskHandler: { task in
                                 Task {
-                                    let identifier = self.metadata.account + "_" + url.absoluteString + NCGlobal.shared.taskIdentifierDownload
+                                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.metadata.account,
+                                                                                                                path: url.absoluteString,
+                                                                                                                name: "download")
                                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
 
                                     let ocId = self.metadata.ocId
@@ -319,8 +321,8 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
             NextcloudKit.shared.createAssetRichdocuments(path: path, account: metadata.account) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                title: path,
-                                                                                                taskIdentifier: self.global.taskIdentifierCreateRichdocuments)
+                                                                                                path: path,
+                                                                                                name: "createAssetRichdocuments")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             } completion: { _, url, _, error in
@@ -340,8 +342,8 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
         NextcloudKit.shared.createAssetRichdocuments(path: path, account: metadata.account) { task in
             Task {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                            title: path,
-                                                                                            taskIdentifier: self.global.taskIdentifierCreateRichdocuments)
+                                                                                            path: path,
+                                                                                            name: "createAssetRichdocuments")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { _, url, _, error in

@@ -26,7 +26,7 @@ import NextcloudKit
 
 class NCRecent: NCCollectionViewCommon {
     lazy var networkingTasksIdentifier: String = {
-        return self.session.account + session.urlBase + NCGlobal.shared.taskIdentifierSearch
+        return self.session.account + "Search"
     }()
 
     required init?(coder aDecoder: NSCoder) {

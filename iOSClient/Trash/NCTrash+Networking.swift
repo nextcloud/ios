@@ -71,7 +71,9 @@ extension NCTrash {
         let serverUrlFileName = session.urlBase + "/remote.php/dav/trashbin/" + session.userId + "/trash"
         let response = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account) { task in
             Task {
-                let identifier = self.session.account + "_" + serverUrlFileName + NCGlobal.shared.taskIdentifierDeleteFileOrFolder
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
+                                                                                            path: serverUrlFileName,
+                                                                                            name: "deleteFileOrFolder")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }
@@ -92,8 +94,8 @@ extension NCTrash {
             let response = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
-                                                                                                title: serverUrlFileName,
-                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierDeleteFileOrFolder)
+                                                                                                path: serverUrlFileName,
+                                                                                                name: "deleteFileOrFolder")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
@@ -124,7 +126,9 @@ class NCOperationDownloadThumbnailTrash: ConcurrentOperation, @unchecked Sendabl
 
         NextcloudKit.shared.downloadTrashPreview(fileId: fileId, account: session.account) { task in
             Task {
-                let identifier = self.session.account + "_" + self.fileId + NCGlobal.shared.taskIdentifierDownloadPreview
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
+                                                                                            path: self.fileId,
+                                                                                            name: "DownloadPreview")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { _, _, _, responseData, error in

@@ -238,7 +238,9 @@ extension NCNetworking {
         /* create folder */
         let resultCreateFolder = await NextcloudKit.shared.createFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account, options: options) { task in
             Task {
-                let identifier = session.account + "_" + serverUrlFileName + NCGlobal.shared.taskIdentifierCreateFolder
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: session.account,
+                                                                                            path: serverUrlFileName,
+                                                                                            name: "createFolder")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }
@@ -537,8 +539,8 @@ extension NCNetworking {
             NextcloudKit.shared.getDirectDownload(fileId: metadata.fileId, account: metadata.account) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                title: metadata.fileId,
-                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierDirectDownload)
+                                                                                                path: metadata.fileId,
+                                                                                                name: "getDirectDownload")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             } completion: { _, url, _, error in
@@ -816,7 +818,9 @@ class NCOperationDownloadAvatar: ConcurrentOperation, @unchecked Sendable {
                                            account: account,
                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
             Task {
-                let identifier = self.account + "_" + self.user + NCGlobal.shared.taskIdentifierDownloadAvatar
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account,
+                                                                                            path: self.user,
+                                                                                            name: "downloadAvatar")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { _, image, _, etag, _, error in

@@ -59,7 +59,9 @@ extension NCNetworking {
             requestHandler(request)
         } taskHandler: { task in
             Task {
-                let identifier = metadata.account + "_" + metadata.serverUrlFileName + NCGlobal.shared.taskIdentifierDownload
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                            path: metadata.serverUrlFileName,
+                                                                                            name: "download")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
 
                 if let metadata = await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,

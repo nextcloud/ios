@@ -52,7 +52,9 @@ extension UIAlertController {
                     let serverUrlFileName = NCUtilityFileSystem().createServerUrl(serverUrl: serverUrl, fileName: fileNameFolder)
                     let createFolderResults = await NextcloudKit.shared.createFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account) { task in
                         Task {
-                            let identifier = session.account + "_" + serverUrlFileName + NCGlobal.shared.taskIdentifierCreateFolder
+                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: session.account,
+                                                                                                        path: serverUrlFileName,
+                                                                                                        name: "createFolder")
                             await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                         }
                     }

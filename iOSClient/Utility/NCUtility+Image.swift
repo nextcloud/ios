@@ -296,8 +296,8 @@ extension NCUtility {
             NextcloudKit.shared.downloadContent(serverUrl: iconURL.absoluteString, account: account) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                                title: iconURL.absoluteString,
-                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierDownloadContent)
+                                                                                                path: iconURL.absoluteString,
+                                                                                                name: "downloadContent")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             } completion: { _, responseData, error in

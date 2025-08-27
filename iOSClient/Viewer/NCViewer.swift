@@ -95,7 +95,9 @@ class NCViewer: NSObject {
                     NCActivityIndicator.shared.start(backgroundView: delegate?.view)
                     let results = await NextcloudKit.shared.createUrlRichdocumentsAsync(fileID: metadata.fileId, account: metadata.account) { task in
                         Task {
-                            let identifier = metadata.account + "_" + metadata.fileId + NCGlobal.shared.taskIdentifierCreateRichdocuments
+                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                                        path: metadata.fileId,
+                                                                                                        name: "createUrlRichdocuments")
                             await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                         }
                     }

@@ -7,7 +7,7 @@ import NextcloudKit
 
 class NCFavorite: NCCollectionViewCommon {
     lazy var networkingTasksIdentifier: String = {
-        return self.session.account + NCGlobal.shared.taskIdentifierListingFavorites
+        return self.session.account + "ListingFavorites"
     }()
 
     required init?(coder aDecoder: NSCoder) {

@@ -172,14 +172,14 @@ actor NetworkingTasks {
 
     /// create a Identifier
     /// 
-    func createIdentifier(account: String? = nil, title: String? = nil, taskIdentifier: String) -> String {
+    func createIdentifier(account: String? = nil, path: String? = nil, name: String) -> String {
         if let account,
-           let title {
-            return account + "_" + title + "_" + taskIdentifier
-        } else if let title {
-            return title + "_" + taskIdentifier
+           let path {
+            return account + "_" + path + "_" + name
+        } else if let path {
+            return path + "_" + name
         } else {
-            return taskIdentifier
+            return name
         }
     }
 
@@ -422,7 +422,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 
         NextcloudKit.shared.checkServer(serverUrl: NCBrandOptions.shared.pushNotificationServerProxy) { task in
             Task {
-                let identifier = NCBrandOptions.shared.pushNotificationServerProxy + NCGlobal.shared.taskIdentifierCheckServer
+                let identifier = NCBrandOptions.shared.pushNotificationServerProxy + "_checkServer"
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { _, error in

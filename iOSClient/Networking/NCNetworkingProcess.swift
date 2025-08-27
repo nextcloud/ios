@@ -382,8 +382,8 @@ actor NCNetworkingProcess {
             let resultCopy = await NextcloudKit.shared.copyFileOrFolderAsync(serverUrlFileNameSource: metadata.serverUrlFileName, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                title: serverUrlFileNameDestination,
-                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierCopyFileOrFolder)
+                                                                                                path: serverUrlFileNameDestination,
+                                                                                                name: "copyFileOrFolder")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
@@ -422,8 +422,8 @@ actor NCNetworkingProcess {
             let resultMove = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: metadata.serverUrlFileName, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                title: serverUrlFileNameDestination,
-                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierMoveFileOrFolder)
+                                                                                                path: serverUrlFileNameDestination,
+                                                                                                name: NCGlobal.shared.taskIdentifierMoveFileOrFolder)
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
@@ -466,8 +466,8 @@ actor NCNetworkingProcess {
             let resultsFavorite = await NextcloudKit.shared.setFavoriteAsync(fileName: fileName, favorite: metadata.favorite, account: metadata.account) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                title: fileName,
-                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierFavorite)
+                                                                                                path: fileName,
+                                                                                                name: NCGlobal.shared.taskIdentifierFavorite)
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
@@ -509,8 +509,8 @@ actor NCNetworkingProcess {
             let resultRename = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: false, account: metadata.account) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                title: serverUrlFileNameSource,
-                                                                                                taskIdentifier: NCGlobal.shared.taskIdentifierMoveFileOrFolder)
+                                                                                                path: serverUrlFileNameSource,
+                                                                                                name: NCGlobal.shared.taskIdentifierMoveFileOrFolder)
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
@@ -546,7 +546,9 @@ actor NCNetworkingProcess {
 
                 let resultDelete = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account) { task in
                     Task {
-                        let identifier = metadata.account + "_" + metadata.serverUrlFileName + NCGlobal.shared.taskIdentifierDeleteFileOrFolder
+                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                                    path: metadata.serverUrlFileName,
+                                                                                                    name: "deleteFileOrFolder")
                         await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                     }
                 }

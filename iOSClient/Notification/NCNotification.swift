@@ -33,7 +33,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
     var session: NCSession.Session!
 
     lazy var networkingTasksIdentifier: String = {
-        return self.session.account + NCGlobal.shared.taskIdentifierNotifications
+        return self.session.account + "Notifications"
     }()
 
     var controller: NCMainTabBarController? {

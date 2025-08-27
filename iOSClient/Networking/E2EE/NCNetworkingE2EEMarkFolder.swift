@@ -23,7 +23,9 @@ class NCNetworkingE2EEMarkFolder: NSObject {
         let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
         let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolderAsync(fileId: file.fileId, delete: false, account: account, options: NCNetworkingE2EE().getOptions(account: account, capabilities: capabilities)) { task in
             Task {
-                let identifier = account + "_" + file.fileId + NCGlobal.shared.taskIdentifierE2EEMarkFolder
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: file.fileId,
+                                                                                            name: "markE2EEFolder")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }
