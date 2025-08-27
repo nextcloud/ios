@@ -240,7 +240,9 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
     func tapRemove(with notification: NKNotifications, sender: Any?) {
         NextcloudKit.shared.setNotification(serverUrl: nil, idNotification: notification.idNotification, method: "DELETE", account: session.account) { task in
             Task {
-                let identifier = self.session.account + "_" + "\(notification.idNotification)" + NCGlobal.shared.taskIdentifierNotifications
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
+                                                                                            path: "\(notification.idNotification)",
+                                                                                            name: "setNotification")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { _, _, error in
@@ -282,7 +284,8 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
 
         NextcloudKit.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method, account: session.account) { task in
             Task {
-                let identifier = self.session.account + "_" + serverUrl + NCGlobal.shared.taskIdentifierNotifications
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
+                                                                                            name: "setNotification")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         } completion: { _, _, error in

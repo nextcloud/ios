@@ -74,9 +74,9 @@ class NCActivity: UIViewController, NCSharePagingContent {
             guard let newComment = newComment, !newComment.isEmpty, let metadata = self.metadata else { return }
             NextcloudKit.shared.putComments(fileId: metadata.fileId, message: newComment, account: metadata.account) { task in
                 Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account,
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
                                                                                                 path: metadata.fileId,
-                                                                                                name: NCGlobal.shared.taskIdentifierComments)
+                                                                                                name: "putComments")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             } completion: { _, _, error in

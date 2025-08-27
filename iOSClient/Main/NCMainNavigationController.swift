@@ -131,7 +131,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
                 let resultsNotification = await NextcloudKit.shared.getNotificationsAsync(account: self.session.account) { task in
                     Task {
-                        let identifier = self.session.account + self.global.taskIdentifierNotifications
+                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
+                                                                                                    name: "getNotifications")
                         await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                     }
                 }
