@@ -400,6 +400,8 @@ final class NCGlobal: Sendable {
     let taskIdentifierLivePhoto             = "_IdLivePhoto"
     let taskIdentifierMoveFileOrFolder      = "_IdMoveFileOrFolder"
     let taskIdentifierNotifications         = "_IdNotifications"
+    let taskIdentifierReadFileOrFolder      = "_IdReadFileOrFolder"
+    let taskIdentifierReadShares            = "_IdReadShares"
     let taskIdentifierRemoteWipeStatus      = "_IdRemoteWipeStatus"
     let taskIdentifierSearch                = "_IdSearch"
     let taskIdentifierShare                 = "_IdShare"

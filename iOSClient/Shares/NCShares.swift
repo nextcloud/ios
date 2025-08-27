@@ -25,9 +25,12 @@ import UIKit
 import NextcloudKit
 
 class NCShares: NCCollectionViewCommon {
-    private var backgroundTask: Task<Void, Never>?
-
     @MainActor private var ocIdShares: Set<String> = []
+
+    private var backgroundTask: Task<Void, Never>?
+    lazy var networkingTasksIdentifier: String = {
+        return self.session.account + NCGlobal.shared.taskIdentifierReadShares
+    }()
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -62,7 +65,10 @@ class NCShares: NCCollectionViewCommon {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        backgroundTask?.cancel()
+        Task {
+            await NCNetworking.shared.networkingTasks.cancel(identifier: self.networkingTasksIdentifier)
+            backgroundTask?.cancel()
+        }
     }
 
     // MARK: - DataSource
@@ -82,12 +88,16 @@ class NCShares: NCCollectionViewCommon {
     }
 
     override func getServerData(forced: Bool = false) async {
-        await super.getServerData()
+        Task {
+            await networking.networkingTasks.cancel(identifier: self.networkingTasksIdentifier)
+        }
 
         showLoadingTitle()
 
         let resultsReadShares = await NextcloudKit.shared.readSharesAsync(parameters: NKShareParameter(), account: session.account) { task in
-            self.dataSourceTask = task
+            Task {
+                await NCNetworking.shared.networkingTasks.track(identifier: self.networkingTasksIdentifier, task: task)
+            }
             if self.dataSource.isEmpty() {
                 self.collectionView.reloadData()
             }

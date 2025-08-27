@@ -119,12 +119,12 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        // Cancel Queue & Retrieves Properties
-        NCNetworking.shared.downloadThumbnailTrashQueue.cancelAll()
-
         Task {
             await NCNetworking.shared.networkingTasks.cancel(identifier: self.networkingTasksIdentifier)
         }
+
+        // Cancel Queue & Retrieves Properties
+        NCNetworking.shared.downloadThumbnailTrashQueue.cancelAll()
     }
 
     // MARK: TAP EVENT
