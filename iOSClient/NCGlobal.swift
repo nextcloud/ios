@@ -408,6 +408,10 @@ final class NCGlobal: Sendable {
     let taskIdentifierE2EECertificate       = "IdE2EECertificate"
     let taskIdentifierE2EEKey               = "IdE2EEKey"
     let taskIdentifierSearch                = "IdSearch"
+    let taskIdentifierListingTrash          = "IdListingTrash"
+    let taskIdentifierMoveFileOrFolder      = "IdMoveFileOrFolder"
+    let taskIdentifierDeleteFileOrFolder    = "IdDeleteFileOrFolder"
+
 
 
 
