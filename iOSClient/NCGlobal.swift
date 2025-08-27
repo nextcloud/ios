@@ -377,7 +377,10 @@ final class NCGlobal: Sendable {
     //
     let taskDescriptionRetrievesProperties  = "retrievesProperties"
     let taskDescriptionSynchronization      = "synchronization"
-    let taskDescriptionSyncMetadata         = "syncMetadata"
+
+    // TASK IDENTIFIER
+    //
+    let taskIdentifierSyncMetadata          = "syncMetadataID"
 
     // LOG TAG
     let logTagTask                          = "BGT"
