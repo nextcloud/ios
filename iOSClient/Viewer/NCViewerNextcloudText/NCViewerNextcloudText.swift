@@ -51,34 +51,18 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         super.viewDidLoad()
 
         if !metadata.ocId.hasPrefix("TEMP") {
-            let button = UIButton(type: .system)
-            button.setImage(NCImageCache.shared.getImageButtonMore(), for: .normal)
-            button.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
-            button.showsMenuAsPrimaryAction = true
+            moreButton = UIBarButtonItem(
+                image: NCImageCache.shared.getImageButtonMore(),
+                primaryAction: nil,
+                menu: UIMenu(title: "", children: [
+                    UIDeferredMenuElement.uncached { [weak self] completion in
+                        guard let self = self else { return }
 
-            // Assign a dynamic, deferred menu
-            button.menu = UIMenu(title: "", children: [
-                UIDeferredMenuElement.uncached { [weak self] completion in
-                    guard let self = self else { return }
-
-                    // Build the menu dynamically every tap
-                    if let menu = self.ncViewerContextMenu.makeContextMenu(
-                        controller: self.tabBarController as? NCMainTabBarController,
-                        metadata: self.metadata,
-                        webView: false,
-                        sender: self
-                    ) {
-                        // Convert the NCMenuAction items to UIMenuElement if needed
-                        completion(menu.children)
-                    } else {
-                        completion([]) // empty menu if nil
+                        if let menu = self.ncViewerContextMenu.makeContextMenu(controller: self.tabBarController as? NCMainTabBarController, metadata: self.metadata, webView: false, sender: self) {
+                            completion(menu.children)
+                        }
                     }
-                }
-            ])
-
-            moreButton = UIBarButtonItem(customView: button)
-
-            ncViewerContextMenu.delegate = self
+                ]))
 
             if let moreButton {
                 items.append(moreButton)
@@ -245,7 +229,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     public func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
         if navigationAction.targetFrame == nil {
             if let url = navigationAction.request.url, UIApplication.shared.canOpenURL(url) {
-               UIApplication.shared.open(url)
+                UIApplication.shared.open(url)
             }
         }
         return nil
@@ -270,7 +254,7 @@ extension NCViewerNextcloudText: NCTransferDelegate {
     func transferChange(status: String, metadata: tableMetadata, error: NKError) {
         DispatchQueue.main.async {
             switch status {
-            // FAVORITE
+                // FAVORITE
             case NCGlobal.shared.networkingStatusFavorite:
                 if self.metadata.ocId == metadata.ocId {
                     self.metadata = metadata
