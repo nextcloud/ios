@@ -145,7 +145,10 @@ actor NetworkingTasks {
     /// - Parameter identifier: The identifier to check.
     /// - Returns: `true` if a matching in-flight task exists; otherwise `false`.
     func isReading(identifier: String) -> Bool {
-        active.contains {
+        // Drop finished/canceling tasks globally
+        cleanup()
+
+        return active.contains {
             $0.identifier == identifier && ($0.task.state == .running || $0.task.state == .suspended)
         }
     }
@@ -157,6 +160,9 @@ actor NetworkingTasks {
     ///   - identifier: The identifier associated with the task.
     ///   - task: The `URLSessionTask` to track.
     func track(identifier: String, task: URLSessionTask) {
+        // Drop finished/canceling tasks globally
+        cleanup()
+
         active.removeAll {
             $0.identifier == identifier && $0.task.state == .running
         }
@@ -191,9 +197,9 @@ actor NetworkingTasks {
     /// Removes tasks that have completed from the registry.
     ///
     /// Useful to keep the in-memory list compact during long-running operations.
-    func cleanupCompleted() {
+    func cleanup() {
         active.removeAll {
-            $0.task.state == .completed
+            $0.task.state == .completed || $0.task.state == .canceling
         }
     }
 }

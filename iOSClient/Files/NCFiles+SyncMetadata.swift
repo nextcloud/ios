@@ -125,7 +125,7 @@ extension NCFiles {
             }
 
             // Keep the in-memory list tight by removing completed tasks
-            await networking.networkingTasks.cleanupCompleted()
+            await networking.networkingTasks.cleanup()
         }
     }
 }
