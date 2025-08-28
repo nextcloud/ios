@@ -457,13 +457,12 @@ extension NCActivity {
 
         disptachGroup.enter()
 
-        NextcloudKit.shared.getActivity(
-            since: 0,
-            limit: 1,
-            objectId: nil,
-            objectType: objectType,
-            previews: true,
-            account: session.account) { task in
+        NextcloudKit.shared.getActivity(since: 0,
+                                        limit: 1,
+                                        objectId: nil,
+                                        objectType: objectType,
+                                        previews: true,
+                                        account: session.account) { task in
                 Task {
                     await NCNetworking.shared.networkingTasks.track(identifier: self.networkingTasksIdentifier, task: task)
                 }
@@ -490,13 +489,12 @@ extension NCActivity {
         var resultActivityId = 0
 
         disptachGroup.enter()
-        NextcloudKit.shared.getActivity(
-            since: idActivity,
-            limit: min(limit, 200),
-            objectId: metadata?.fileId,
-            objectType: objectType,
-            previews: true,
-            account: session.account) { task in
+        NextcloudKit.shared.getActivity(since: idActivity,
+                                        limit: min(limit, 200),
+                                        objectId: metadata?.fileId,
+                                        objectType: objectType,
+                                        previews: true,
+                                        account: session.account) { task in
                 Task {
                     await NCNetworking.shared.networkingTasks.track(identifier: self.networkingTasksIdentifier, task: task)
                 }

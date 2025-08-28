@@ -117,7 +117,7 @@ class NCPushNotification {
                 NextcloudKit.shared.unsubscribingPushProxy(proxyServerUrl: NCBrandOptions.shared.pushNotificationServerProxy, deviceIdentifier: deviceIdentifier, signature: signature, publicKey: publicKey, account: account, options: options) { task in
                     Task {
                         let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                                    path:  NCBrandOptions.shared.pushNotificationServerProxy,
+                                                                                                    path: NCBrandOptions.shared.pushNotificationServerProxy,
                                                                                                     name: "unsubscribingPushProxy")
                         await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                     }
