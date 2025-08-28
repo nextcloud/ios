@@ -17,7 +17,7 @@ on:
 
 env:
   PROJECT: Nextcloud.xcodeproj
-  DESTINATION: platform=iOS Simulator,name=iPhone 16,OS=26
+  DESTINATION: platform=iOS Simulator,name=iPhone 16,OS=26.0
   SCHEME: Nextcloud
   SERVER_BRANCH: stable30
   PHP_VERSION: 8.3
@@ -33,6 +33,11 @@ jobs:
 
     - name: Download GoogleService-Info.plist
       run: wget "https://raw.githubusercontent.com/firebase/quickstart-ios/master/mock-GoogleService-Info.plist" -O GoogleService-Info.plist
+
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest
 
     - name: Run Xcode Build
       run: |
