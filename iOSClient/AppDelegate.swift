@@ -66,13 +66,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCPreferences().log))
 
         #if DEBUG
-        var black: [String] = []
-        black.append(NCGlobal.shared.logNetworkingTasks)
-        NextcloudKit.configureLoggerBlacklist(blacklist: black)
+//      For the tags look NCGlobal LOG TAG
 
-        // var white: [String] = []
-        // white.append(NCGlobal.shared.logSpeedUpSyncMetadata)
-        // NextcloudKit.configureLoggerWhitelist(whitelist: white)
+//      var black: [String] = []
+//      black.append("NETWORKING TASKS")
+//      NextcloudKit.configureLoggerBlacklist(blacklist: black)
+
+//      var white: [String] = []
+//      white.append("SYNC METADATA")
+//      NextcloudKit.configureLoggerWhitelist(whitelist: white)
         #endif
 
         nkLog(start: "Start session with level \(NCPreferences().log) " + versionNextcloudiOS)
