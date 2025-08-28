@@ -74,6 +74,10 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
     var sceneIdentifier: String = ""
 
+    lazy var networkingTasksIdentifier: String = {
+        return self.session.account + "readFolder"
+    }()
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -168,6 +172,14 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         Task {
             await NCNetworking.shared.transferDispatcher.addDelegate(self)
             await getServerData()
+        }
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        Task {
+            await NCNetworking.shared.networkingTasks.cancel(identifier: self.networkingTasksIdentifier)
         }
     }
 
@@ -526,7 +538,11 @@ extension NCSelect {
     }
 
     func getServerData() async {
-        let resultsReadFolder = await NCNetworking.shared.readFolderAsync(serverUrl: serverUrl, account: session.account)
+        let resultsReadFolder = await NCNetworking.shared.readFolderAsync(serverUrl: serverUrl, account: session.account) { task in
+            Task {
+                await NCNetworking.shared.networkingTasks.track(identifier: self.networkingTasksIdentifier, task: task)
+            }
+        }
         if resultsReadFolder.error == .success {
             await reloadDataSource()
         }

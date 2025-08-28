@@ -206,7 +206,7 @@ class NCService: NSObject {
             let results = await NextcloudKit.shared.getUserStatusAsync(account: account) { task in
                 Task {
                     let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                                name: NCGlobal.shared.taskIdentifierUserStatus)
+                                                                                                name: "getUserStatus")
                     await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                 }
             }
