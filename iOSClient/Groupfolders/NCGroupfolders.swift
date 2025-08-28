@@ -26,10 +26,6 @@ import NextcloudKit
 import RealmSwift
 
 class NCGroupfolders: NCCollectionViewCommon {
-    lazy var networkingTasksIdentifier: String = {
-        return self.session.account + "Groupfolders"
-    }()
-
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
@@ -64,7 +60,7 @@ class NCGroupfolders: NCCollectionViewCommon {
         super.viewWillDisappear(animated)
 
         Task {
-            await NCNetworking.shared.networkingTasks.cancel(identifier: self.networkingTasksIdentifier)
+            await NCNetworking.shared.networkingTasks.cancel(identifier: "NCGroupfolders")
         }
     }
 
@@ -95,8 +91,9 @@ class NCGroupfolders: NCCollectionViewCommon {
             restoreDefaultTitle()
         }
 
-        Task {
-            await networking.networkingTasks.cancel(identifier: self.networkingTasksIdentifier)
+        // If is already in-flight, do nothing
+        if await NCNetworking.shared.networkingTasks.isReading(identifier: "NCGroupfolders") {
+            return
         }
 
         showLoadingTitle()
@@ -106,7 +103,7 @@ class NCGroupfolders: NCCollectionViewCommon {
 
         let resultsGroupfolders = await NextcloudKit.shared.getGroupfoldersAsync(account: session.account) { task in
             Task {
-                await NCNetworking.shared.networkingTasks.track(identifier: self.networkingTasksIdentifier, task: task)
+                await NCNetworking.shared.networkingTasks.track(identifier: "NCGroupfolders", task: task)
             }
             if self.dataSource.isEmpty() {
                 self.collectionView.reloadData()

@@ -19,10 +19,6 @@ class NCFiles: NCCollectionViewCommon {
 
     internal var syncMetadatasTask: Task<Void, Never>?
 
-    lazy var networkingTasksIdentifier: String = {
-        return self.session.account + "ReadFileOrFolder"
-    }()
-
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
@@ -148,7 +144,7 @@ class NCFiles: NCCollectionViewCommon {
 
         stopSyncMetadata()
         Task {
-            await NCNetworking.shared.networkingTasks.cancel(identifier: self.networkingTasksIdentifier)
+            await NCNetworking.shared.networkingTasks.cancel(identifier: "\(self.serverUrl)_NCFiles")
         }
     }
 
@@ -238,7 +234,7 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         Task {
-            await networking.networkingTasks.cancel(identifier: self.networkingTasksIdentifier)
+            await networking.networkingTasks.cancel(identifier: "\(self.serverUrl)_NCFiles")
         }
 
         guard !isSearchingMode else {
@@ -285,7 +281,7 @@ class NCFiles: NCCollectionViewCommon {
     private func networkReadFolderAsync(serverUrl: String, forced: Bool) async -> (metadatas: [tableMetadata]?, error: NKError, reloadRequired: Bool) {
         let resultsReadFile = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrl, account: session.account) { task in
             Task {
-                await NCNetworking.shared.networkingTasks.track(identifier: self.networkingTasksIdentifier, task: task)
+                await NCNetworking.shared.networkingTasks.track(identifier: "\(self.serverUrl)_NCFiles", task: task)
             }
             if self.dataSource.isEmpty() {
                 self.collectionView.reloadData()
@@ -318,7 +314,7 @@ class NCFiles: NCCollectionViewCommon {
                                                                                                     account: session.account,
                                                                                                     options: options) { task in
             Task {
-                await NCNetworking.shared.networkingTasks.track(identifier: self.networkingTasksIdentifier, task: task)
+                await NCNetworking.shared.networkingTasks.track(identifier: "\(self.serverUrl)_NCFiles", task: task)
             }
             if self.dataSource.isEmpty() {
                 self.collectionView.reloadData()

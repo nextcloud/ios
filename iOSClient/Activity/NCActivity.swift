@@ -30,7 +30,9 @@ class NCActivity: UIViewController, NCSharePagingContent {
 
     var isFetchingActivity = false
     var hasActivityToLoad = true {
-        didSet { tableView.tableFooterView?.isHidden = hasActivityToLoad }
+        didSet {
+            tableView.tableFooterView?.isHidden = hasActivityToLoad
+        }
     }
     var dateAutomaticFetch: Date?
 
@@ -41,10 +43,6 @@ class NCActivity: UIViewController, NCSharePagingContent {
             NCSession.shared.getSession(account: account)
         }
     }
-
-    lazy var networkingTasksIdentifier: String = {
-        return self.session.account + "Activity"
-    }()
 
     // MARK: - View Life Cycle
 
@@ -100,7 +98,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
         super.viewWillDisappear(animated)
 
         Task {
-            await NCNetworking.shared.networkingTasks.cancel(identifier: self.networkingTasksIdentifier)
+            await NCNetworking.shared.networkingTasks.cancel(identifier: "NCActivity")
         }
 
         // Cancel Queue & Retrieves Properties
@@ -450,6 +448,13 @@ extension NCActivity {
 
     /// Check if most recent activivities are loaded, if not trigger reload
     func checkRecentActivity(disptachGroup: DispatchGroup) {
+        Task {
+            // If is already in-flight, do nothing
+            if await NCNetworking.shared.networkingTasks.isReading(identifier: "NCActivity") {
+                return
+            }
+        }
+
         guard let result = database.getLatestActivityId(account: session.account), metadata == nil, hasActivityToLoad else {
             return self.loadActivity(idActivity: 0, disptachGroup: disptachGroup)
         }
@@ -464,7 +469,7 @@ extension NCActivity {
                                         previews: true,
                                         account: session.account) { task in
                 Task {
-                    await NCNetworking.shared.networkingTasks.track(identifier: self.networkingTasksIdentifier, task: task)
+                    await NCNetworking.shared.networkingTasks.track(identifier: "NCActivity", task: task)
                 }
             } completion: { account, _, activityFirstKnown, activityLastGiven, _, error in
                 defer { disptachGroup.leave() }
@@ -496,7 +501,7 @@ extension NCActivity {
                                         previews: true,
                                         account: session.account) { task in
                 Task {
-                    await NCNetworking.shared.networkingTasks.track(identifier: self.networkingTasksIdentifier, task: task)
+                    await NCNetworking.shared.networkingTasks.track(identifier: "NCActivity", task: task)
                 }
             } completion: { account, activities, activityFirstKnown, activityLastGiven, _, error in
                 defer { disptachGroup.leave() }
