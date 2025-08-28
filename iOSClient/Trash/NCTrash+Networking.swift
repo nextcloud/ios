@@ -30,9 +30,14 @@ extension NCTrash {
             self.refreshControl.endRefreshing()
         }
 
+        // If is already in-flight, do nothing
+        if await NCNetworking.shared.networkingTasks.isReading(identifier: "NCTrash") {
+            return
+        }
+
         let resultsListingTrash = await NextcloudKit.shared.listingTrashAsync(filename: filename, showHiddenFiles: false, account: session.account) { task in
             Task {
-                await NCNetworking.shared.networkingTasks.track(identifier: self.networkingTasksIdentifier, task: task)
+                await NCNetworking.shared.networkingTasks.track(identifier: "NCTrash", task: task)
             }
             self.collectionView.reloadData()
         }

@@ -55,10 +55,6 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         self.tabBarController as? NCMainTabBarController
     }
 
-    lazy var networkingTasksIdentifier: String = {
-        return self.session.account + "ListingTrash"
-    }()
-
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -120,7 +116,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         super.viewWillDisappear(animated)
 
         Task {
-            await NCNetworking.shared.networkingTasks.cancel(identifier: self.networkingTasksIdentifier)
+            await NCNetworking.shared.networkingTasks.cancel(identifier: "NCTrash")
         }
 
         // Cancel Queue & Retrieves Properties

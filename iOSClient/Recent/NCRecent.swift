@@ -25,10 +25,6 @@ import UIKit
 import NextcloudKit
 
 class NCRecent: NCCollectionViewCommon {
-    lazy var networkingTasksIdentifier: String = {
-        return self.session.account + "Search"
-    }()
-
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
@@ -63,7 +59,7 @@ class NCRecent: NCCollectionViewCommon {
         super.viewWillDisappear(animated)
 
         Task {
-            await NCNetworking.shared.networkingTasks.cancel(identifier: self.networkingTasksIdentifier)
+            await NCNetworking.shared.networkingTasks.cancel(identifier: "NCRecent")
         }
     }
 
@@ -90,8 +86,9 @@ class NCRecent: NCCollectionViewCommon {
             restoreDefaultTitle()
         }
 
-        Task {
-            await networking.networkingTasks.cancel(identifier: self.networkingTasksIdentifier)
+        // If is already in-flight, do nothing
+        if await NCNetworking.shared.networkingTasks.isReading(identifier: "NCRecent") {
+            return
         }
 
         let requestBodyRecent =
@@ -170,7 +167,7 @@ class NCRecent: NCCollectionViewCommon {
                                                                              showHiddenFiles: showHiddenFiles,
                                                                              account: session.account) { task in
             Task {
-                await NCNetworking.shared.networkingTasks.track(identifier: self.networkingTasksIdentifier, task: task)
+                await NCNetworking.shared.networkingTasks.track(identifier: "NCRecent", task: task)
             }
             if self.dataSource.isEmpty() {
                 self.collectionView.reloadData()
