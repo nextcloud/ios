@@ -193,7 +193,14 @@ extension NCCollectionViewCommon {
                     sender: sender,
                     action: { _ in
                         Task {
-                            let results = await NextcloudKit.shared.markE2EEFolderAsync(fileId: metadata.fileId, delete: true, account: metadata.account)
+                            let results = await NextcloudKit.shared.markE2EEFolderAsync(fileId: metadata.fileId, delete: true, account: metadata.account) { task in
+                                Task {
+                                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                                                path: metadata.fileId,
+                                                                                                                name: "markE2EEFolder")
+                                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                                }
+                            }
                             if results.error == .success {
                                 await self.database.deleteE2eEncryptionAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrlFileName))
                                 await self.database.setMetadataEncryptedAsync(ocId: metadata.ocId, encrypted: false)

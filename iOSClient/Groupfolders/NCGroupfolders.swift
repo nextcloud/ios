@@ -26,6 +26,10 @@ import NextcloudKit
 import RealmSwift
 
 class NCGroupfolders: NCCollectionViewCommon {
+    lazy var networkingTasksIdentifier: String = {
+        return self.session.account + "Groupfolders"
+    }()
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
@@ -56,6 +60,14 @@ class NCGroupfolders: NCCollectionViewCommon {
         }
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        Task {
+            await NCNetworking.shared.networkingTasks.cancel(identifier: self.networkingTasksIdentifier)
+        }
+    }
+
     // MARK: - DataSource
 
     override func reloadDataSource() async {
@@ -79,10 +91,12 @@ class NCGroupfolders: NCCollectionViewCommon {
     }
 
     override func getServerData(forced: Bool = false) async {
-        await super.getServerData()
-
         defer {
             restoreDefaultTitle()
+        }
+
+        Task {
+            await networking.networkingTasks.cancel(identifier: self.networkingTasksIdentifier)
         }
 
         showLoadingTitle()
@@ -91,7 +105,9 @@ class NCGroupfolders: NCCollectionViewCommon {
         let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: session.account)
 
         let resultsGroupfolders = await NextcloudKit.shared.getGroupfoldersAsync(account: session.account) { task in
-            self.dataSourceTask = task
+            Task {
+                await NCNetworking.shared.networkingTasks.track(identifier: self.networkingTasksIdentifier, task: task)
+            }
             if self.dataSource.isEmpty() {
                 self.collectionView.reloadData()
             }
@@ -108,7 +124,14 @@ class NCGroupfolders: NCCollectionViewCommon {
             let serverUrlFileName = homeServerUrl + mountPoint
             let resultsReadFile = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrlFileName,
                                                                                   depth: "0", showHiddenFiles: showHiddenFiles,
-                                                                                  account: session.account)
+                                                                                  account: session.account) { task in
+                Task {
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
+                                                                                                path: serverUrlFileName,
+                                                                                                name: "readFileOrFolder")
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
+            }
 
             guard resultsReadFile.error == .success, let file = resultsReadFile.files?.first else {
                 return

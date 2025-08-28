@@ -25,6 +25,9 @@ import UIKit
 import NextcloudKit
 
 class NCRecent: NCCollectionViewCommon {
+    lazy var networkingTasksIdentifier: String = {
+        return self.session.account + "Search"
+    }()
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -56,6 +59,14 @@ class NCRecent: NCCollectionViewCommon {
         }
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        Task {
+            await NCNetworking.shared.networkingTasks.cancel(identifier: self.networkingTasksIdentifier)
+        }
+    }
+
     // MARK: - DataSource
 
     override func reloadDataSource() async {
@@ -75,10 +86,12 @@ class NCRecent: NCCollectionViewCommon {
     }
 
     override func getServerData(forced: Bool = false) async {
-        await super.getServerData()
-
         defer {
             restoreDefaultTitle()
+        }
+
+        Task {
+            await networking.networkingTasks.cancel(identifier: self.networkingTasksIdentifier)
         }
 
         let requestBodyRecent =
@@ -156,7 +169,9 @@ class NCRecent: NCCollectionViewCommon {
                                                                              requestBody: requestBody,
                                                                              showHiddenFiles: showHiddenFiles,
                                                                              account: session.account) { task in
-            self.dataSourceTask = task
+            Task {
+                await NCNetworking.shared.networkingTasks.track(identifier: self.networkingTasksIdentifier, task: task)
+            }
             if self.dataSource.isEmpty() {
                 self.collectionView.reloadData()
             }

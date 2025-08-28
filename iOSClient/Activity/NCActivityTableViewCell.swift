@@ -199,10 +199,14 @@ class NCOperationDownloadThumbnailActivity: ConcurrentOperation, @unchecked Send
 
     override func start() {
         guard !isCancelled else { return self.finish() }
-
-        NextcloudKit.shared.downloadPreview(fileId: fileId,
-                                            etag: etag,
-                                            account: account) { _, _, _, _, responseData, error in
+        NextcloudKit.shared.downloadPreview(fileId: fileId, etag: etag, account: account) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account,
+                                                                                            path: self.fileId,
+                                                                                            name: "DownloadPreview")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        } completion: { _, _, _, _, responseData, error in
             if error == .success, let data = responseData?.data, let collectionView = self.collectionView {
                 for case let cell as NCActivityCollectionViewCell in collectionView.visibleCells {
                     if self.fileId == cell.fileId {

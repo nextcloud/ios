@@ -10,13 +10,27 @@ class NCNetworkingE2EEMarkFolder: NSObject {
     let database = NCManageDatabase.shared
 
     func markFolderE2ee(account: String, serverUrlFileName: String, userId: String) async -> NKError {
-        let resultsReadFileOrFolder = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrlFileName, depth: "0", account: account)
+        let resultsReadFileOrFolder = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrlFileName, depth: "0", account: account) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: serverUrlFileName,
+                                                                                            name: "readFileOrFolder")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        }
         guard resultsReadFileOrFolder.error == .success,
               var file = resultsReadFileOrFolder.files?.first else {
             return resultsReadFileOrFolder.error
         }
         let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
-        let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolderAsync(fileId: file.fileId, delete: false, account: account, options: NCNetworkingE2EE().getOptions(account: account, capabilities: capabilities))
+        let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolderAsync(fileId: file.fileId, delete: false, account: account, options: NCNetworkingE2EE().getOptions(account: account, capabilities: capabilities)) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: file.fileId,
+                                                                                            name: "markE2EEFolder")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        }
         guard resultsMarkE2EEFolder.error == .success else {
             return resultsMarkE2EEFolder.error
         }

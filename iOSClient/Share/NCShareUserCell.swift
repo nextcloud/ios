@@ -222,7 +222,14 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
                 sizeImage: NCGlobal.shared.avatarSize,
                 avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
                 etagResource: etag,
-                account: session.account) { _, imageAvatar, _, etag, _, error in
+                account: session.account) { task in
+                    Task {
+                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: session.account,
+                                                                                                    path: sharee.shareWith,
+                                                                                                    name: "downloadAvatar")
+                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                    }
+                } completion: { _, imageAvatar, _, etag, _, error in
                     if error == .success, let etag = etag, let imageAvatar = imageAvatar {
                         NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                         self.imageItem.image = imageAvatar

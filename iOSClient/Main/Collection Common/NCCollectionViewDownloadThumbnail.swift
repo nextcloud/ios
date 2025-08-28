@@ -27,7 +27,14 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation, @unchecked Sendabl
         }
 
         Task {
-            let resultsPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: metadata.fileId, etag: metadata.etag, account: metadata.account)
+            let resultsPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: metadata.fileId, etag: metadata.etag, account: metadata.account) { task in
+                Task {
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.metadata.account,
+                                                                                                path: self.metadata.fileId,
+                                                                                                name: "DownloadPreview")
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
+            }
             if resultsPreview.error == .success,
                let data = resultsPreview.responseData?.data,
                let collectionView = self.collectionView {

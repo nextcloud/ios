@@ -6,6 +6,10 @@ import UIKit
 import NextcloudKit
 
 class NCFavorite: NCCollectionViewCommon {
+    lazy var networkingTasksIdentifier: String = {
+        return self.session.account + "ListingFavorites"
+    }()
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
@@ -37,6 +41,14 @@ class NCFavorite: NCCollectionViewCommon {
         }
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        Task {
+            await NCNetworking.shared.networkingTasks.cancel(identifier: self.networkingTasksIdentifier)
+        }
+    }
+
     // MARK: - DataSource
 
     override func reloadDataSource() async {
@@ -59,10 +71,12 @@ class NCFavorite: NCCollectionViewCommon {
     }
 
     override func getServerData(forced: Bool = false) async {
-        await super.getServerData()
-
         defer {
             restoreDefaultTitle()
+        }
+
+        Task {
+            await networking.networkingTasks.cancel(identifier: self.networkingTasksIdentifier)
         }
 
         showLoadingTitle()
@@ -70,7 +84,9 @@ class NCFavorite: NCCollectionViewCommon {
         let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: session.account)
         let resultsListingFavorites = await NextcloudKit.shared.listingFavoritesAsync(showHiddenFiles: showHiddenFiles,
                                                                                       account: session.account) { task in
-            self.dataSourceTask = task
+            Task {
+                await NCNetworking.shared.networkingTasks.track(identifier: self.networkingTasksIdentifier, task: task)
+            }
             if self.dataSource.isEmpty() {
                 self.collectionView.reloadData()
             }

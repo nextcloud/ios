@@ -48,6 +48,13 @@ final class NCAppStateManager {
             isSuspendingDatabaseOperation = true
             isAppInBackground = true
             //
+            // Cancel all task
+            //
+            Task {
+                await NCNetworking.shared.networkingTasks.cancelAll()
+            }
+
+            //
             // Cancel here the task, if is in execution mode
             //
             appDelegate?.pushSubscriptionTask?.cancel()

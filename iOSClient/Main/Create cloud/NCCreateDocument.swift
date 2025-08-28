@@ -47,7 +47,14 @@ class NCCreateDocument: NSObject {
             } else if editorId == "text" {
                 options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
             }
-            let results = await NextcloudKit.shared.textCreateFileAsync(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateId, account: account, options: options)
+            let results = await NextcloudKit.shared.textCreateFileAsync(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateId, account: account, options: options) { task in
+                Task {
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                                path: fileNamePath,
+                                                                                                name: "textCreateFile")
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
+            }
             guard results.error == .success, let url = results.url else {
                 return NCContentPresenter().showError(error: results.error)
             }
@@ -63,7 +70,14 @@ class NCCreateDocument: NSObject {
 
         } else if editorId == "collabora" {
 
-            let results = await NextcloudKit.shared.createRichdocumentsAsync(path: fileNamePath, templateId: templateId, account: account)
+            let results = await NextcloudKit.shared.createRichdocumentsAsync(path: fileNamePath, templateId: templateId, account: account) { task in
+                Task {
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                                path: fileNamePath,
+                                                                                                name: "CreateRichdocuments")
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
+            }
             guard results.error == .success, let url = results.url else {
                 return NCContentPresenter().showError(error: results.error)
             }
@@ -94,7 +108,13 @@ class NCCreateDocument: NSObject {
                 options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
             }
 
-            let results = await NextcloudKit.shared.textGetListOfTemplatesAsync(account: account, options: options)
+            let results = await NextcloudKit.shared.textGetListOfTemplatesAsync(account: account, options: options) { task in
+                Task {
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                                name: "textGetListOfTemplates")
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
+            }
             if results.error == .success, let resultTemplates = results.templates {
                 for template in resultTemplates {
                     var temp = NKEditorTemplate()
@@ -132,7 +152,14 @@ class NCCreateDocument: NSObject {
         }
 
         if editorId == "collabora" {
-            let results = await NextcloudKit.shared.getTemplatesRichdocumentsAsync(typeTemplate: templateId, account: account)
+            let results = await NextcloudKit.shared.getTemplatesRichdocumentsAsync(typeTemplate: templateId, account: account) { task in
+                Task {
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                                path: templateId,
+                                                                                                name: "getTemplatesRichdocuments")
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
+            }
             if results.error == .success {
                 for template in results.templates! {
                     var temp = NKEditorTemplate()

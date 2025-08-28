@@ -22,7 +22,13 @@ extension NCNetworking {
         var tosArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
         let options = NKRequestOptions(checkInterceptor: false)
 
-        let resultsGetToS = await NextcloudKit.shared.getTermsOfServiceAsync(account: account, options: options)
+        let resultsGetToS = await NextcloudKit.shared.getTermsOfServiceAsync(account: account, options: options, taskHandler: { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            name: "getTermsOfService")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        })
         guard resultsGetToS.error == .success, let tos = resultsGetToS.tos, !tos.hasUserSigned() else {
             tosArray.removeAll { $0 == account }
             groupDefaults.set(tosArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS)
@@ -46,7 +52,14 @@ extension NCNetworking {
         var tosArray = groupDefaults.array(forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS) as? [String] ?? []
         let options = NKRequestOptions(checkInterceptor: false)
 
-        let resultsSignToS = await  NextcloudKit.shared.signTermsOfServiceAsync(termId: "\(termId)", account: account, options: options)
+        let resultsSignToS = await  NextcloudKit.shared.signTermsOfServiceAsync(termId: "\(termId)", account: account, options: options) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: "\(termId)",
+                                                                                            name: "signTermsOfService")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        }
         if resultsSignToS.error == .success {
             tosArray.removeAll { $0 == account }
             groupDefaults.set(tosArray, forKey: NextcloudKit.shared.nkCommonInstance.groupDefaultsToS)

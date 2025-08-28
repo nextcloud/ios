@@ -38,7 +38,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var isSearchingMode: Bool = false
     var networkSearchInProgress: Bool = false
     var layoutForView: NCDBLayoutForView?
-    var dataSourceTask: URLSessionTask?
+    var searchDataSourceTask: URLSessionTask?
     var providers: [NKSearchProvider]?
     var searchResults: [NKSearchResult]?
     var listLayout = NCListLayout()
@@ -302,7 +302,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // Cancel Queue & Retrieves Properties
         self.networking.downloadThumbnailQueue.cancelAll()
         self.networking.unifiedSearchQueue.cancelAll()
-        dataSourceTask?.cancel()
+        searchDataSourceTask?.cancel()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -813,9 +813,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         await (self.navigationController as? NCMainNavigationController)?.updateRightMenu()
     }
 
-    func getServerData(forced: Bool = false) async {
-        dataSourceTask?.cancel()
-    }
+    func getServerData(forced: Bool = false) async { }
 
     @objc func networkSearch() {
         guard !networkSearchInProgress else {
@@ -836,7 +834,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if capabilities.serverVersionMajor >= global.nextcloudVersion20 {
             self.networking.unifiedSearchFiles(literal: literalSearch, account: session.account) { task in
-                self.dataSourceTask = task
+                self.searchDataSourceTask = task
                 Task {
                     await self.reloadDataSource()
                 }
@@ -859,7 +857,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
         } else {
             self.networking.searchFiles(literal: literalSearch, account: session.account) { task in
-                self.dataSourceTask = task
+                self.searchDataSourceTask = task
                 Task {
                     await self.reloadDataSource()
                 }
@@ -897,7 +895,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.collectionView?.reloadData()
 
         self.networking.unifiedSearchFilesProvider(id: lastSearchResult.id, term: term, limit: 5, cursor: cursor, account: session.account) { task in
-            self.dataSourceTask = task
+            self.searchDataSourceTask = task
             Task {
                 await self.reloadDataSource()
             }

@@ -37,7 +37,14 @@ extension NCNetworking {
 
         let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: account)
 
-        let resultsReadFolder = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: showHiddenFiles, account: account, options: options)
+        let resultsReadFolder = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: showHiddenFiles, account: account, options: options) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: serverUrl,
+                                                                                            name: "readFileOrFolder")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        }
 
         guard resultsReadFolder.error == .success, let files = resultsReadFolder.files else {
             return(account, nil, nil, resultsReadFolder.error)
@@ -65,6 +72,12 @@ extension NCNetworking {
         let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: account)
 
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, account: account) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: serverUrlFileName,
+                                                                                            name: "readFileOrFolder")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
             taskHandler(task)
         } completion: { account, files, _, error in
             guard error == .success, files?.count == 1, let file = files?.first else {
@@ -86,6 +99,12 @@ extension NCNetworking {
                                                                       depth: "0",
                                                                       showHiddenFiles: showHiddenFiles,
                                                                       account: account) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: serverUrlFileName,
+                                                                                            name: "readFileOrFolder")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
             taskHandler(task)
         }
         guard results.error == .success, results.files?.count == 1, let file = results.files?.first else {
@@ -106,7 +125,14 @@ extension NCNetworking {
                                              depth: "0",
                                              requestBody: requestBody,
                                              account: account,
-                                             options: options) { account, files, _, error in
+                                             options: options) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: serverUrlFileName,
+                                                                                            name: "readFileOrFolder")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        } completion: { account, files, _, error in
             if error == .success, let file = files?.first {
                 completion(account, true, file, error)
             } else if error.errorCode == self.global.errorResourceNotFound {
@@ -218,7 +244,14 @@ extension NCNetworking {
         }
 
         /* create folder */
-        let resultCreateFolder = await NextcloudKit.shared.createFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account, options: options)
+        let resultCreateFolder = await NextcloudKit.shared.createFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account, options: options) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: session.account,
+                                                                                            path: serverUrlFileName,
+                                                                                            name: "createFolder")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        }
         if resultCreateFolder.error == .success {
             let resultReadFile = await readFileAsync(serverUrlFileName: serverUrlFileName, account: session.account)
             if resultReadFile.error == .success,
@@ -473,7 +506,14 @@ extension NCNetworking {
     // MARK: - Lock Files
 
     func lockUnlockFile(_ metadata: tableMetadata, shoulLock: Bool) {
-        NextcloudKit.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrlFileName, shouldLock: shoulLock, account: metadata.account) { _, _, error in
+        NextcloudKit.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrlFileName, shouldLock: shoulLock, account: metadata.account) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                            path: metadata.serverUrlFileName,
+                                                                                            name: "lockUnlockFile")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        } completion: { _, _, error in
             // 0: lock was successful; 412: lock did not change, no error, refresh
             guard error == .success || error.errorCode == self.global.errorPreconditionFailed else {
                 let error = NKError(errorCode: error.errorCode, errorDescription: "_files_lock_error_")
@@ -506,7 +546,14 @@ extension NCNetworking {
         } else if utilityFileSystem.fileProviderStorageExists(metadata) {
             completition(URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)), false, .success)
         } else {
-            NextcloudKit.shared.getDirectDownload(fileId: metadata.fileId, account: metadata.account) { _, url, _, error in
+            NextcloudKit.shared.getDirectDownload(fileId: metadata.fileId, account: metadata.account) { task in
+                Task {
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                                path: metadata.fileId,
+                                                                                                name: "getDirectDownload")
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
+            } completion: { _, url, _, error in
                 if error == .success && url != nil {
                     if let url = URL(string: url!) {
                         completition(url, false, error)
@@ -528,13 +575,19 @@ extension NCNetworking {
                      taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                      completion: @escaping (_ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
         let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: account)
-
-        NextcloudKit.shared.searchLiteral(serverUrl: NCSession.shared.getSession(account: account).urlBase,
+        let serverUrl = NCSession.shared.getSession(account: account).urlBase
+        NextcloudKit.shared.searchLiteral(serverUrl: serverUrl,
                                           depth: "infinity",
                                           literal: literal,
                                           showHiddenFiles: showHiddenFiles,
                                           account: account,
                                           options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: serverUrl,
+                                                                                            name: "searchLiteral")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
             taskHandler(task)
         } completion: { _, files, _, error in
             guard error == .success, let files else { return completion(nil, error) }
@@ -571,6 +624,12 @@ extension NCNetworking {
                 self.requestsUnifiedSearch.append(request)
             }
         } taskHandler: { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: literal,
+                                                                                            name: "unifiedSearch")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
             taskHandler(task)
         } providers: { account, searchProviders in
             providers(account, searchProviders)
@@ -648,6 +707,12 @@ extension NCNetworking {
         var metadatas: [tableMetadata] = []
         let session = NCSession.shared.getSession(account: account)
         let request = NextcloudKit.shared.searchProvider(id, term: term, limit: limit, cursor: cursor, timeout: 60, account: session.account) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: term,
+                                                                                            name: "searchProvider")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
             taskHandler(task)
         } completion: { account, searchResult, _, error in
             guard let searchResult = searchResult else {
@@ -767,7 +832,14 @@ class NCOperationDownloadAvatar: ConcurrentOperation, @unchecked Sendable {
                                            avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
                                            etagResource: self.etag,
                                            account: account,
-                                           options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, image, _, etag, _, error in
+                                           options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account,
+                                                                                            path: self.user,
+                                                                                            name: "downloadAvatar")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        } completion: { _, image, _, etag, _, error in
 
             if error == .success, let image {
                 NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag ?? "")

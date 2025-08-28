@@ -93,7 +93,14 @@ class NCViewer: NSObject {
                 if metadata.url.isEmpty {
 
                     NCActivityIndicator.shared.start(backgroundView: delegate?.view)
-                    let results = await NextcloudKit.shared.createUrlRichdocumentsAsync(fileID: metadata.fileId, account: metadata.account)
+                    let results = await NextcloudKit.shared.createUrlRichdocumentsAsync(fileID: metadata.fileId, account: metadata.account) { task in
+                        Task {
+                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                                        path: metadata.fileId,
+                                                                                                        name: "createUrlRichdocuments")
+                            await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                        }
+                    }
                     NCActivityIndicator.shared.stop()
 
                     guard results.error == .success, let url = results.url else {
@@ -140,7 +147,14 @@ class NCViewer: NSObject {
                     let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
 
                     NCActivityIndicator.shared.start(backgroundView: delegate?.view)
-                    let results = await NextcloudKit.shared.textOpenFileAsync(fileNamePath: fileNamePath, editor: editor, account: metadata.account, options: options)
+                    let results = await NextcloudKit.shared.textOpenFileAsync(fileNamePath: fileNamePath, editor: editor, account: metadata.account, options: options) { task in
+                        Task {
+                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                                        path: fileNamePath,
+                                                                                                        name: "textOpenFile")
+                            await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                        }
+                    }
                     NCActivityIndicator.shared.stop()
 
                     guard results.error == .success, let url = results.url else {

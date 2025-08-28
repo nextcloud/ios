@@ -373,12 +373,13 @@ final class NCGlobal: Sendable {
     //
     let groupAdmin                          = "admin"
 
-    // DATA TASK DESCRIPTION
+    // TASK DESCRIPTION
     //
     let taskDescriptionRetrievesProperties  = "retrievesProperties"
     let taskDescriptionSynchronization      = "synchronization"
 
     // LOG TAG
+    //
     let logTagTask                          = "BGT"
     let logTagLocation                      = "LOCATION"
     let logTagBgSync                        = "BGSYNC"
@@ -388,8 +389,10 @@ final class NCGlobal: Sendable {
     let logTagServiceProficer               = "SERVICE PROVIDER"
     let logTagDatabase                      = "DB"
     let logSpeedUpSyncMetadata              = "SYNC METADATA"
+    let logNetworkingTasks                  = "NETWORKING TASKS"
 
     // USER DEFAULTS
+    //
     let udMigrationMultiDomains             = "migrationMultiDomains"
     let udLastVersion                       = "lastVersion"
 }

@@ -200,7 +200,14 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             }
         }
 
-        let resultsFile = await NextcloudKit.shared.getFileFromFileIdAsync(fileId: fileId, account: account)
+        let resultsFile = await NextcloudKit.shared.getFileFromFileIdAsync(fileId: fileId, account: account) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: fileId,
+                                                                                            name: "getFileFromFileId")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        }
         hud.dismiss()
         guard resultsFile.error == .success, let file = resultsFile.file else {
             NCContentPresenter().showError(error: resultsFile.error)
@@ -227,6 +234,11 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             downloadRequest = request
         } taskHandler: { task in
             Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                            path: metadata.serverUrlFileName,
+                                                                                            name: "download")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+
                 let ocId = metadata.ocId
                 await NCManageDatabase.shared.setMetadataSessionAsync(ocId: ocId,
                                                                       sessionTaskIdentifier: task.taskIdentifier,
@@ -461,6 +473,13 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
 
         func uploadPastePasteboard(fileName: String, serverUrlFileName: String, fileNameLocalPath: String, serverUrl: String, completion: @escaping () -> Void) {
             NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: account) { _ in
+            } taskHandler: { task in
+                Task {
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                                path: serverUrlFileName,
+                                                                                                name: "upload")
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
             } progressHandler: { progress in
                 if Float(progress.fractionCompleted) > fractionCompleted || fractionCompleted == 0 {
                     processor.hud.progress(progress.fractionCompleted)

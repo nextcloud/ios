@@ -18,7 +18,10 @@ class NCFiles: NCCollectionViewCommon {
     internal var accumulatedScrollDown: CGFloat = 0
 
     internal var syncMetadatasTask: Task<Void, Never>?
-    internal let readTasks = ReadTasks()
+
+    lazy var networkingTasksIdentifier: String = {
+        return self.session.account + "ReadFileOrFolder"
+    }()
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -60,6 +63,10 @@ class NCFiles: NCCollectionViewCommon {
                 let color = NCBrandColor.shared.getElement(account: account)
                 self.plusButton.backgroundColor = color
             }
+        }
+
+        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
+            self.stopSyncMetadata()
         }
 
         if self.serverUrl.isEmpty {
@@ -140,6 +147,9 @@ class NCFiles: NCCollectionViewCommon {
         super.viewWillDisappear(animated)
 
         stopSyncMetadata()
+        Task {
+            await NCNetworking.shared.networkingTasks.cancel(identifier: self.networkingTasksIdentifier)
+        }
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -223,10 +233,12 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     override func getServerData(forced: Bool = false) async {
-        await super.getServerData()
-
         defer {
             restoreDefaultTitle()
+        }
+
+        Task {
+            await networking.networkingTasks.cancel(identifier: self.networkingTasksIdentifier)
         }
 
         guard !isSearchingMode else {
@@ -272,7 +284,9 @@ class NCFiles: NCCollectionViewCommon {
 
     private func networkReadFolderAsync(serverUrl: String, forced: Bool) async -> (metadatas: [tableMetadata]?, error: NKError, reloadRequired: Bool) {
         let resultsReadFile = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrl, account: session.account) { task in
-            self.dataSourceTask = task
+            Task {
+                await NCNetworking.shared.networkingTasks.track(identifier: self.networkingTasksIdentifier, task: task)
+            }
             if self.dataSource.isEmpty() {
                 self.collectionView.reloadData()
             }
@@ -303,7 +317,9 @@ class NCFiles: NCCollectionViewCommon {
         let (account, metadataFolder, metadatas, error) = await NCNetworking.shared.readFolderAsync(serverUrl: serverUrl,
                                                                                                     account: session.account,
                                                                                                     options: options) { task in
-            self.dataSourceTask = task
+            Task {
+                await NCNetworking.shared.networkingTasks.track(identifier: self.networkingTasksIdentifier, task: task)
+            }
             if self.dataSource.isEmpty() {
                 self.collectionView.reloadData()
             }
