@@ -57,7 +57,6 @@ extension NCFiles {
     /// - Parameter metadatas: The list of `tableMetadata` entries to scan and refresh.
     func networkSyncMetadata(metadatas: [tableMetadata]) async {
         let identifier = self.serverUrl + "_syncMetadata"
-
         nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .start, message: "Start Sync Metadata for \(self.serverUrl)")
 
         // Fast exit if cancellation was requested before starting
@@ -93,15 +92,15 @@ extension NCFiles {
             return
         }
 
+        // Filter: not e2ee & only directory, order by date
+        let metadatas = metadatas
+            .filter { $0.directory && !$0.e2eEncrypted }
+            .sorted { ($0.date as Date) > ($1.date as Date)}
+
         // Iterate directories and fetch only when ETag changed
         for metadata in metadatas {
             if Task.isCancelled {
                 break
-            }
-
-            // Directory only
-            if !metadata.directory {
-                continue
             }
 
             let directory = database.getTableDirectory(ocId: metadata.ocId)
