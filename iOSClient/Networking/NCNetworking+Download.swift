@@ -266,7 +266,14 @@ extension NCNetworking {
                 if serverUrl.hasSuffix("/") { serverUrl = String(serverUrl.dropLast()) }
                 if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) {
                     let destinationFilePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
-                    utilityFileSystem.copyFile(at: location, to: NSURL.fileURL(withPath: destinationFilePath))
+                    do {
+                        if FileManager.default.fileExists(atPath: destinationFilePath) {
+                            try FileManager.default.removeItem(atPath: destinationFilePath)
+                        }
+                        try FileManager.default.copyItem(at: location, to: NSURL.fileURL(withPath: destinationFilePath))
+                    } catch {
+                        print(error)
+                    }
                 }
             }
         }

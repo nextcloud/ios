@@ -251,14 +251,14 @@ extension NCNetworking {
             await NCManageDatabase.shared.deleteMetadataAsync(predicate: NSPredicate(format: "ocIdTransfer == %@", metadata.ocIdTransfer))
             await NCManageDatabase.shared.addMetadataAsync(metadata)
 
+            let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase)
+
             if selector == self.global.selectorUploadFileNODelete {
-                self.utilityFileSystem.moveFile(
-                    atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase),
-                    toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, userId: metadata.userId, urlBase: metadata.urlBase)
-                )
+                await self.utilityFileSystem.moveFileAsync(atPath: fileNamePath,
+                                                           toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, userId: metadata.userId, urlBase: metadata.urlBase))
                 await NCManageDatabase.shared.addLocalFileAsync(metadata: metadata)
             } else {
-                self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase))
+                self.utilityFileSystem.removeFile(atPath: fileNamePath)
             }
 
             // Update the auto upload data
@@ -356,7 +356,7 @@ extension NCNetworking {
             Task {
                 let atpath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase) + "/" + metadata.fileName
                 let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase) + "/" + newFileName
-                self.utilityFileSystem.moveFile(atPath: atpath, toPath: toPath)
+                await self.utilityFileSystem.moveFileAsync(atPath: atpath, toPath: toPath)
                 await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
                                                                       newFileName: newFileName,
                                                                       sessionTaskIdentifier: 0,
@@ -403,7 +403,7 @@ extension NCNetworking {
             Task {
                 let atpath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase) + "/" + metadata.fileName
                 let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase) + "/" + newFileName
-                self.utilityFileSystem.moveFile(atPath: atpath, toPath: toPath)
+                await self.utilityFileSystem.moveFileAsync(atPath: atpath, toPath: toPath)
                 await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
                                                                       newFileName: newFileName,
                                                                       sessionTaskIdentifier: 0,
