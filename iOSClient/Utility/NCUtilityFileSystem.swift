@@ -383,77 +383,72 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     }
 
     func removeFile(atPath: String) {
-        do {
-            try FileManager.default.removeItem(atPath: atPath)
-        } catch {
-            print(error)
+        DispatchQueue.global(qos: .utility).async {
+            do {
+                try FileManager.default.removeItem(atPath: atPath)
+            } catch {
+                print(error)
+            }
+        }
+    }
+
+    /// Moves a file from one path to another, overwriting the destination if it exists.
+    /// - Parameters:
+    ///   - atPath: The source file path.
+    ///   - toPath: The destination file path.
+    func moveFileAsync(atPath: String, toPath: String) async {
+        if atPath == toPath {
+            return
+        }
+
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .utility).async {
+                do {
+                    if FileManager.default.fileExists(atPath: toPath) {
+                        try FileManager.default.removeItem(atPath: toPath)
+                    }
+                    try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
+                } catch {
+                    print("Error moving \(atPath) → \(toPath): \(error)")
+                }
+                continuation.resume()
+            }
         }
     }
 
     @discardableResult
     func moveFile(atPath: String, toPath: String) -> Bool {
-        if atPath == toPath { return true }
-
-        do {
-            try FileManager.default.removeItem(atPath: toPath)
-        } catch {
-            print(error)
+        if atPath == toPath {
+            return true
         }
 
         do {
-            try FileManager.default.copyItem(atPath: atPath, toPath: toPath)
-            try FileManager.default.removeItem(atPath: atPath)
-            return true
+            if FileManager.default.fileExists(atPath: toPath) {
+                try FileManager.default.removeItem(atPath: toPath)
+            }
+            try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
         } catch {
             print(error)
             return false
         }
+        return true
     }
 
     @discardableResult
     func copyFile(atPath: String, toPath: String) -> Bool {
-        if atPath == toPath { return true }
-
-        do {
-            try FileManager.default.removeItem(atPath: toPath)
-        } catch {
-            print(error)
+        if atPath == toPath {
+            return true
         }
 
         do {
+            if FileManager.default.fileExists(atPath: toPath) {
+                try FileManager.default.removeItem(atPath: toPath)
+            }
             try FileManager.default.copyItem(atPath: atPath, toPath: toPath)
             return true
         } catch {
             print(error)
             return false
-        }
-    }
-
-    @discardableResult
-    func copyFile(at: URL, to: URL) -> Bool {
-        if at == to { return true }
-
-        do {
-            try FileManager.default.removeItem(at: to)
-        } catch {
-            print(error)
-        }
-
-        do {
-            try FileManager.default.copyItem(at: at, to: to)
-            return true
-        } catch {
-            print(error)
-            return false
-        }
-    }
-
-    func moveFileInBackground(atPath: String, toPath: String) {
-        if atPath == toPath { return }
-        DispatchQueue.global().async {
-            try? FileManager.default.removeItem(atPath: toPath)
-            try? FileManager.default.copyItem(atPath: atPath, toPath: toPath)
-            try? FileManager.default.removeItem(atPath: atPath)
         }
     }
 
