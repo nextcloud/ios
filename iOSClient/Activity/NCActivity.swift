@@ -36,6 +36,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
     }
     var dateAutomaticFetch: Date?
 
+    @MainActor
     var session: NCSession.Session {
         if account.isEmpty {
             NCSession.shared.getSession(controller: tabBarController)

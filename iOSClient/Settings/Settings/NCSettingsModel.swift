@@ -31,6 +31,7 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
     var footerServer = ""
     var footerSlogan = ""
     // Get session
+    @MainActor
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
     }

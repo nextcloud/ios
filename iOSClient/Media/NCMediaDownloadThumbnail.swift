@@ -13,6 +13,7 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
     let media: NCMedia
     var session: NCSession.Session
 
+    @MainActor
     init(metadata: NCMediaDataSource.Metadata, media: NCMedia) {
         self.metadata = metadata
         self.media = media
