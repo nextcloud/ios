@@ -25,6 +25,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         topViewController as? NCTrash
     }
 
+    @MainActor
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
     }

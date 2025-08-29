@@ -23,6 +23,8 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
     var fileName: String = ""
     var controller: NCMainTabBarController!
     let database = NCManageDatabase.shared
+
+    @MainActor
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
     }

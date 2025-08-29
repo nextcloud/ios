@@ -18,6 +18,7 @@ import Photos
         getSavedAlbumIds()
     }
 
+    @MainActor
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
     }

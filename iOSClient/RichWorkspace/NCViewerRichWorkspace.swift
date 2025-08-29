@@ -18,6 +18,7 @@ import MarkdownKit
     var serverUrl: String = ""
     var delegate: NCCollectionViewCommon?
 
+    @MainActor
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: self.delegate?.tabBarController)
     }

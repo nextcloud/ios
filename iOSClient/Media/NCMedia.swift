@@ -60,6 +60,7 @@ class NCMedia: UIViewController {
 
     let debouncer = NCDebouncer(delay: 1)
 
+    @MainActor
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)
     }

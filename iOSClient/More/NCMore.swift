@@ -54,6 +54,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     }
     private var sections: [Section] = []
 
+    @MainActor
     private var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)
     }
