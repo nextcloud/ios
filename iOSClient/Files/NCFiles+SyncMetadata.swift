@@ -12,6 +12,14 @@ extension NCFiles {
     /// The spawned task clears its reference upon completion.
     /// - Parameter metadatas: The list of `tableMetadata` to evaluate and possibly sync.
     func startSyncMetadata(metadatas: [tableMetadata]) {
+        // Filter: not e2ee & only directory
+        let filteredMetadatas = metadatas.filter { $0.directory && !$0.e2eEncrypted }
+        guard !filteredMetadatas.isEmpty else {
+            return
+        }
+        // Order by date (descending)
+        let metadatas = filteredMetadatas.sorted { ($0.date as Date) > ($1.date as Date) }
+
         // If a sync task is already running, do not start a new one
         if let task = syncMetadatasTask,
            !task.isCancelled {
@@ -56,25 +64,24 @@ extension NCFiles {
     ///
     /// - Parameter metadatas: The list of `tableMetadata` entries to scan and refresh.
     func networkSyncMetadata(metadatas: [tableMetadata]) async {
-        let identifier = self.serverUrl + "_syncMetadata"
-        nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .start, message: "Start Sync Metadata for \(self.serverUrl)")
-
         // Fast exit if cancellation was requested before starting
         if Task.isCancelled {
             return
         }
-
-        // If a readFile for this serverUrl is already in-flight, do nothing
-        if await networking.networkingTasks.isReading(identifier: identifier) {
-            nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .debug, message: "ReadFile for this \(self.serverUrl) is already in-flight.", consoleOnly: true)
-            return
-        }
+        let identifier = self.serverUrl + "_syncMetadata"
+        nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .start, message: "Start Sync Metadata for \(self.serverUrl)")
 
         // Always cancel and clear all tracked URLSessionTask on any exit path
         defer {
             Task {
                 await networking.networkingTasks.cancel(identifier: identifier)
             }
+        }
+
+        // If a readFile for this serverUrl is already in-flight, do nothing
+        if await networking.networkingTasks.isReading(identifier: identifier) {
+            nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .debug, message: "ReadFile for this \(self.serverUrl) is already in-flight.", consoleOnly: true)
+            return
         }
 
         // Skip error or e2ee
@@ -91,11 +98,6 @@ extension NCFiles {
             nkLog(tag: global.logSpeedUpSyncMetadata, emoji: .info, message: "Exit: result error \(resultsReadFile.error.errorDescription) or e2ee directory \(resultsReadFile.metadata?.e2eEncrypted ?? false). Skipping this one.")
             return
         }
-
-        // Filter: not e2ee & only directory, order by date
-        let metadatas = metadatas
-            .filter { $0.directory && !$0.e2eEncrypted }
-            .sorted { ($0.date as Date) > ($1.date as Date)}
 
         // Iterate directories and fetch only when ETag changed
         for metadata in metadatas {

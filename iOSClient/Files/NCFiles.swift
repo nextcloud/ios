@@ -224,13 +224,12 @@ class NCFiles: NCCollectionViewCommon {
         await super.reloadDataSource()
 
         cachingAsync(metadatas: metadatas)
-
-        startSyncMetadata(metadatas: metadatas)
     }
 
     override func getServerData(forced: Bool = false) async {
         defer {
             restoreDefaultTitle()
+            startSyncMetadata(metadatas: self.dataSource.getMetadatas())
         }
 
         Task {
