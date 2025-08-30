@@ -475,6 +475,16 @@ final class NCPreferences: NSObject {
         keychain[data: key] = data
     }
 
+    func getPushNotificationPublicKey(account: String) -> Data? {
+        let key = "PNPublicKey" + account
+        return try? keychain.getData(key)
+    }
+
+    func setPushNotificationPublicKey(account: String, data: Data?) {
+        let key = "PNPublicKey" + account
+        keychain[data: key] = data
+    }
+
     func getPushNotificationSubscribingPublicKey(account: String) -> String? {
         let key = "PNSubscribingPublicKey" + account
         return try? keychain.get(key)
@@ -506,8 +516,9 @@ final class NCPreferences: NSObject {
     }
 
     func clearAllKeysPushNotification(account: String) {
-        setPushNotificationSubscribingPublicKey(account: account, publicKey: nil)
         setPushNotificationPrivateKey(account: account, data: nil)
+        setPushNotificationPublicKey(account: account, data: nil)
+        setPushNotificationSubscribingPublicKey(account: account, publicKey: nil)
         setPushNotificationDeviceIdentifier(account: account, deviceIdentifier: nil)
         setPushNotificationDeviceIdentifierSignature(account: account, deviceIdentifierSignature: nil)
     }

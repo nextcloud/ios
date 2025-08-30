@@ -416,16 +416,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
-    /*
-    func subscribingPushNotification(account: String, urlBase: String, user: String) {
-#if !targetEnvironment(simulator)
-        Task {
-            await NCPushNotification.shared.subscribingNextcloudServerPushNotification(account: account, urlBase: urlBase, pushKitToken: self.pushKitToken)
-        }
-#endif
-    }
-    */
-
     func nextcloudPushNotificationAction(data: [String: AnyObject]) {
         guard let data = NCApplicationHandle().nextcloudPushNotificationAction(data: data)
         else {
