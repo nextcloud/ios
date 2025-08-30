@@ -466,48 +466,59 @@ final class NCPreferences: NSObject {
     // MARK: - PUSH NOTIFICATION
 
     func getPushNotificationPrivateKey(account: String) -> Data? {
-        let key = "PNPrivateKey" + account
+        let key = "PushPrivateKey" + account
         return try? keychain.getData(key)
     }
 
     func setPushNotificationPrivateKey(account: String, data: Data?) {
-        let key = "PNPrivateKey" + account
+        let key = "PushPrivateKey" + account
+        keychain[data: key] = data
+    }
+
+    func getPushNotificationPublicKey(account: String) -> Data? {
+        let key = "PushPublicKey" + account
+        return try? keychain.getData(key)
+    }
+
+    func setPushNotificationPublicKey(account: String, data: Data?) {
+        let key = "PushPublicKey" + account
         keychain[data: key] = data
     }
 
     func getPushNotificationSubscribingPublicKey(account: String) -> String? {
-        let key = "PNSubscribingPublicKey" + account
+        let key = "PushSubscribingPublicKey" + account
         return try? keychain.get(key)
     }
 
     func setPushNotificationSubscribingPublicKey(account: String, publicKey: String?) {
-        let key = "PNSubscribingPublicKey" + account
+        let key = "PushSubscribingPublicKey" + account
         keychain[key] = publicKey
     }
 
     func getPushNotificationDeviceIdentifier(account: String) -> String? {
-        let value = getStringPreference(key: "PNDeviceIdentifier", account: account, defaultValue: "")
+        let value = getStringPreference(key: "PushDeviceIdentifier", account: account, defaultValue: "")
         return value
     }
 
     func setPushNotificationDeviceIdentifier(account: String, deviceIdentifier: String?) {
-        let userDefaultsKey = "PNDeviceIdentifier" + "_\(account)"
+        let userDefaultsKey = "PushDeviceIdentifier" + "_\(account)"
         setUserDefaults(deviceIdentifier, forKey: userDefaultsKey)
     }
 
     func getPushNotificationDeviceIdentifierSignature(account: String) -> String? {
-        let key = "PNDeviceIdentifierSignature" + account
+        let key = "PushDeviceIdentifierSignature" + account
         return try? keychain.get(key)
     }
 
     func setPushNotificationDeviceIdentifierSignature(account: String, deviceIdentifierSignature: String?) {
-        let key = "PNDeviceIdentifierSignature" + account
+        let key = "PushDeviceIdentifierSignature" + account
         keychain[key] = deviceIdentifierSignature
     }
 
     func clearAllKeysPushNotification(account: String) {
-        setPushNotificationSubscribingPublicKey(account: account, publicKey: nil)
         setPushNotificationPrivateKey(account: account, data: nil)
+        setPushNotificationPublicKey(account: account, data: nil)
+        setPushNotificationSubscribingPublicKey(account: account, publicKey: nil)
         setPushNotificationDeviceIdentifier(account: account, deviceIdentifier: nil)
         setPushNotificationDeviceIdentifierSignature(account: account, deviceIdentifierSignature: nil)
     }
