@@ -48,7 +48,6 @@ class NCPushNotification {
             return
         }
 
-        NCPreferences().setPushNotificationPublicKey(account: account, data: keyPair.publicKey)
         NCPreferences().setPushNotificationPrivateKey(account: account, data: keyPair.privateKey)
 
         let proxyServerPath = NCBrandOptions.shared.pushNotificationServerProxy
@@ -81,7 +80,6 @@ class NCPushNotification {
                     if error == .success {
                         nkLog(tag: self.global.logTagPN, emoji: .info, message: "Subscribed to Push Notification Server Proxy \(account)")
 
-                        self.keychain.setPushNotificationToken(account: account, token: pushKitToken)
                         self.keychain.setPushNotificationDeviceIdentifier(account: account, deviceIdentifier: deviceIdentifier)
                         self.keychain.setPushNotificationDeviceIdentifierSignature(account: account, deviceIdentifierSignature: signature)
                         self.keychain.setPushNotificationSubscribingPublicKey(account: account, publicKey: publicKey)
