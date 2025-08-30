@@ -40,13 +40,14 @@ class NCPushNotification {
     }
 
     func subscribingNextcloudServerPushNotification(account: String, urlBase: String) async {
-        guard let keyPair = NCPushNotificationEncryption.shared().generatePushNotificationsKeyPair(account),
-              let pushTokenHash = NCEndToEndEncryption.shared().createSHA512(NCPreferences().deviceTokenPushNotification),
+        let preferences = NCPreferences()
+        let proxyServerUrl = NCBrandOptions.shared.pushNotificationServerProxy
+        guard !proxyServerUrl.isEmpty,
+              let keyPair = NCPushNotificationEncryption.shared().generatePushNotificationsKeyPair(account),
+              let pushTokenHash = NCEndToEndEncryption.shared().createSHA512(preferences.deviceTokenPushNotification),
               let devicePublicKey = String(data: keyPair.publicKey, encoding: .utf8) else {
             return
         }
-        let preferences = NCPreferences()
-        let proxyServerUrl = NCBrandOptions.shared.pushNotificationServerProxy
 
         let responsePN = await NextcloudKit.shared.subscribingPushNotificationAsync(serverUrl: urlBase,
                                                                                     pushTokenHash: pushTokenHash,
