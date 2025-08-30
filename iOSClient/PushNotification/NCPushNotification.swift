@@ -14,10 +14,8 @@ class NCPushNotification {
     func subscribingNextcloudServerPushNotification(account: String, urlBase: String) async {
         let preferences = NCPreferences()
         let proxyServerUrl = NCBrandOptions.shared.pushNotificationServerProxy
-        guard !proxyServerUrl.isEmpty else {
-            return
-        }
-        guard let pushTokenHash = NCEndToEndEncryption.shared().createSHA512(preferences.deviceTokenPushNotification) else {
+        guard !proxyServerUrl.isEmpty,
+              let pushTokenHash = NCEndToEndEncryption.shared().createSHA512(preferences.deviceTokenPushNotification) else {
             return
         }
 
