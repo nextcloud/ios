@@ -99,7 +99,7 @@ class NCAccount: NSObject {
             // Networking Certificate
             NCNetworking.shared.activeAccountCertificate(account: account)
             // Subscribing Push Notification
-            appDelegate.subscribingPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user)
+            await NCPushNotification.shared.subscribingNextcloudServerPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase)
             // Start the service
             Task(priority: .utility) {
                 await NCService().startRequestServicesServer(account: account, controller: controller)
@@ -132,7 +132,7 @@ class NCAccount: NSObject {
 
         // Unsubscribing Push Notification & Domain
         if let tblAccount {
-            NCPushNotification.shared.unsubscribingNextcloudServerPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user)
+            await NCPushNotification.shared.unsubscribingNextcloudServerPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase)
             try? await FileProviderDomain().ensureDomainRemoved(userId: tblAccount.userId, urlBase: tblAccount.urlBase)
         }
 

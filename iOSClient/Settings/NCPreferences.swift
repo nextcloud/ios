@@ -339,6 +339,15 @@ final class NCPreferences: NSObject {
         }
     }
 
+    var deviceTokenPushNotification: String {
+        get {
+            return getStringPreference(key: "deviceTokenPushNotification", defaultValue: "")
+        }
+        set {
+            setUserDefaults(newValue, forKey: "deviceTokenPushNotification")
+        }
+    }
+
     // MARK: -
 
     func getPassword(account: String) -> String {
@@ -454,17 +463,7 @@ final class NCPreferences: NSObject {
         setEndToEndPassphrase(account: account, passphrase: nil)
     }
 
-    // MARK: - PUSHNOTIFICATION
-
-    func getPushNotificationPublicKey(account: String) -> Data? {
-        let key = "PNPublicKey" + account
-        return try? keychain.getData(key)
-    }
-
-    func setPushNotificationPublicKey(account: String, data: Data?) {
-        let key = "PNPublicKey" + account
-        keychain[data: key] = data
-    }
+    // MARK: - PUSH NOTIFICATION
 
     func getPushNotificationPrivateKey(account: String) -> Data? {
         let key = "PNPrivateKey" + account
@@ -486,24 +485,14 @@ final class NCPreferences: NSObject {
         keychain[key] = publicKey
     }
 
-    func getPushNotificationToken(account: String) -> String? {
-        let key = "PNToken" + account
-        return try? keychain.get(key)
-    }
-
-    func setPushNotificationToken(account: String, token: String?) {
-        let key = "PNToken" + account
-        keychain[key] = token
-    }
-
     func getPushNotificationDeviceIdentifier(account: String) -> String? {
-        let key = "PNDeviceIdentifier" + account
-        return try? keychain.get(key)
+        let value = getStringPreference(key: "PNDeviceIdentifier", account: account, defaultValue: "")
+        return value
     }
 
     func setPushNotificationDeviceIdentifier(account: String, deviceIdentifier: String?) {
-        let key = "PNDeviceIdentifier" + account
-        keychain[key] = deviceIdentifier
+        let userDefaultsKey = "PNDeviceIdentifier" + "_\(account)"
+        setUserDefaults(deviceIdentifier, forKey: userDefaultsKey)
     }
 
     func getPushNotificationDeviceIdentifierSignature(account: String) -> String? {
@@ -517,10 +506,8 @@ final class NCPreferences: NSObject {
     }
 
     func clearAllKeysPushNotification(account: String) {
-        setPushNotificationPublicKey(account: account, data: nil)
         setPushNotificationSubscribingPublicKey(account: account, publicKey: nil)
         setPushNotificationPrivateKey(account: account, data: nil)
-        setPushNotificationToken(account: account, token: nil)
         setPushNotificationDeviceIdentifier(account: account, deviceIdentifier: nil)
         setPushNotificationDeviceIdentifierSignature(account: account, deviceIdentifierSignature: nil)
     }
