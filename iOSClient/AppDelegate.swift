@@ -21,7 +21,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
     }
     var notificationSettings: UNNotificationSettings?
-    var pushKitToken: String?
 
     var loginFlowV2Token = ""
     var loginFlowV2Endpoint = ""
@@ -29,6 +28,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     let backgroundQueue = DispatchQueue(label: "com.nextcloud.bgTaskQueue")
     let global = NCGlobal.shared
+
+    var pushSubscriptionTask: Task<Void, Never>?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         if isUiTestingEnabled {
@@ -389,11 +390,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        if let pushKitToken = NCPushNotificationEncryption.shared().string(withDeviceToken: deviceToken) {
-            self.pushKitToken = pushKitToken
-            Task.detached { [weak self] in
-                guard let self else { return }
-
+        if let deviceToken = NCPushNotificationEncryption.shared().string(withDeviceToken: deviceToken) {
+            NCPreferences().deviceTokenPushNotification = deviceToken
+            pushSubscriptionTask = Task.detached {
                 // Wait bounded time for maintenance to be OFF
                 let canProceed = await NCAppStateManager.shared.waitForMaintenanceOffAsync()
                 guard canProceed else {
@@ -405,7 +404,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
                 let tblAccounts = await NCManageDatabase.shared.getAllTableAccountAsync()
                 for tblAccount in tblAccounts {
-                    await self.subscribingPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user)
+                    await NCPushNotification.shared.subscribingNextcloudServerPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase)
                 }
             }
         }
@@ -417,6 +416,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
+    /*
     func subscribingPushNotification(account: String, urlBase: String, user: String) {
 #if !targetEnvironment(simulator)
         Task {
@@ -424,6 +424,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 #endif
     }
+    */
 
     func nextcloudPushNotificationAction(data: [String: AnyObject]) {
         guard let data = NCApplicationHandle().nextcloudPushNotificationAction(data: data)

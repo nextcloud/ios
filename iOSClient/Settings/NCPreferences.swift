@@ -339,6 +339,15 @@ final class NCPreferences: NSObject {
         }
     }
 
+    var deviceTokenPushNotification: String {
+        get {
+            return getStringPreference(key: "deviceTokenPushNotification", defaultValue: "")
+        }
+        set {
+            setUserDefaults(newValue, forKey: "deviceTokenPushNotification")
+        }
+    }
+
     // MARK: -
 
     func getPassword(account: String) -> String {
@@ -454,7 +463,7 @@ final class NCPreferences: NSObject {
         setEndToEndPassphrase(account: account, passphrase: nil)
     }
 
-    // MARK: - PUSHNOTIFICATION
+    // MARK: - PUSH NOTIFICATION
 
     func getPushNotificationPrivateKey(account: String) -> Data? {
         let key = "PNPrivateKey" + account

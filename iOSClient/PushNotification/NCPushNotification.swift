@@ -9,13 +9,12 @@ import NextcloudKit
 
 class NCPushNotification {
     static let shared = NCPushNotification()
-    let keychain = NCPreferences()
     let global = NCGlobal.shared
 
     func applicationdidReceiveRemoteNotification(userInfo: [AnyHashable: Any], completion: @escaping (_ result: UIBackgroundFetchResult) -> Void) {
         if let message = userInfo["subject"] as? String {
             for tblAccount in NCManageDatabase.shared.getAllTableAccount() {
-                if let privateKey = keychain.getPushNotificationPrivateKey(account: tblAccount.account),
+                if let privateKey = NCPreferences().getPushNotificationPrivateKey(account: tblAccount.account),
                    let decryptedMessage = NCPushNotificationEncryption.shared().decryptPushNotification(message, withDevicePrivateKey: privateKey),
                    let jsonData = decryptedMessage.data(using: .utf8) {
                     do {
@@ -40,16 +39,15 @@ class NCPushNotification {
         completion(UIBackgroundFetchResult.noData)
     }
 
-    func subscribingNextcloudServerPushNotification(account: String, urlBase: String, pushKitToken: String?) async {
+    func subscribingNextcloudServerPushNotification(account: String, urlBase: String) async {
         guard let keyPair = NCPushNotificationEncryption.shared().generatePushNotificationsKeyPair(account),
-              let pushKitToken,
-              let pushTokenHash = NCEndToEndEncryption.shared().createSHA512(pushKitToken),
+              let pushTokenHash = NCEndToEndEncryption.shared().createSHA512(NCPreferences().deviceTokenPushNotification),
               let devicePublicKey = String(data: keyPair.publicKey, encoding: .utf8) else {
             return
         }
-        NCPreferences().setPushNotificationPrivateKey(account: account, data: keyPair.privateKey)
-
+        let preferences = NCPreferences()
         let proxyServerUrl = NCBrandOptions.shared.pushNotificationServerProxy
+
         let responsePN = await NextcloudKit.shared.subscribingPushNotificationAsync(serverUrl: urlBase,
                                                                                     pushTokenHash: pushTokenHash,
                                                                                     devicePublicKey: devicePublicKey,
@@ -75,7 +73,7 @@ class NCPushNotification {
         let options = NKRequestOptions(customUserAgent: userAgent)
 
         let responsePushProxy = await NextcloudKit.shared.subscribingPushProxyAsync(proxyServerUrl: proxyServerUrl,
-                                                                                    pushToken: pushKitToken,
+                                                                                    pushToken: preferences.deviceTokenPushNotification,
                                                                                     deviceIdentifier: deviceIdentifier,
                                                                                     signature: signature,
                                                                                     publicKey: publicKey,
@@ -94,15 +92,17 @@ class NCPushNotification {
             return
         }
 
-        self.keychain.setPushNotificationDeviceIdentifier(account: account, deviceIdentifier: deviceIdentifier)
-        self.keychain.setPushNotificationDeviceIdentifierSignature(account: account, deviceIdentifierSignature: signature)
-        self.keychain.setPushNotificationSubscribingPublicKey(account: account, publicKey: publicKey)
+        preferences.setPushNotificationPrivateKey(account: account, data: keyPair.privateKey)
+        preferences.setPushNotificationDeviceIdentifier(account: account, deviceIdentifier: deviceIdentifier)
+        preferences.setPushNotificationDeviceIdentifierSignature(account: account, deviceIdentifierSignature: signature)
+        preferences.setPushNotificationSubscribingPublicKey(account: account, publicKey: publicKey)
     }
 
     func unsubscribingNextcloudServerPushNotification(account: String, urlBase: String) async {
-        guard let deviceIdentifier = keychain.getPushNotificationDeviceIdentifier(account: account),
-              let signature = keychain.getPushNotificationDeviceIdentifierSignature(account: account),
-              let publicKey = keychain.getPushNotificationSubscribingPublicKey(account: account) else {
+        let preferences = NCPreferences()
+        guard let deviceIdentifier = preferences.getPushNotificationDeviceIdentifier(account: account),
+              let signature = preferences.getPushNotificationDeviceIdentifierSignature(account: account),
+              let publicKey = preferences.getPushNotificationSubscribingPublicKey(account: account) else {
             return
         }
 

@@ -48,6 +48,12 @@ final class NCAppStateManager {
             isSuspendingDatabaseOperation = true
             isAppInBackground = true
 
+            //
+            // Cancel here the task, if is in execution mode
+            //
+            appDelegate?.pushSubscriptionTask?.cancel()
+            appDelegate?.pushSubscriptionTask = nil
+
             nkLog(debug: "Application did enter in background")
         }
     }
