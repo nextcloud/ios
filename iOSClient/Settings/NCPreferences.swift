@@ -477,13 +477,13 @@ final class NCPreferences: NSObject {
     }
 
     func getPushNotificationDeviceIdentifier(account: String) -> String? {
-        let key = "PNDeviceIdentifier" + account
-        return try? keychain.get(key)
+        let value = getStringPreference(key: "PNDeviceIdentifier", account: account, defaultValue: "")
+        return value
     }
 
     func setPushNotificationDeviceIdentifier(account: String, deviceIdentifier: String?) {
-        let key = "PNDeviceIdentifier" + account
-        keychain[key] = deviceIdentifier
+        let userDefaultsKey = "PNDeviceIdentifier" + "_\(account)"
+        setUserDefaults(deviceIdentifier, forKey: userDefaultsKey)
     }
 
     func getPushNotificationDeviceIdentifierSignature(account: String) -> String? {

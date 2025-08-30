@@ -419,10 +419,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func subscribingPushNotification(account: String, urlBase: String, user: String) {
 #if !targetEnvironment(simulator)
-        NCNetworking.shared.checkPushNotificationServerProxyCertificateUntrusted(viewController: UIApplication.shared.firstWindow?.rootViewController) { error in
-            if error == .success {
-                NCPushNotification.shared.subscribingNextcloudServerPushNotification(account: account, urlBase: urlBase, user: user, pushKitToken: self.pushKitToken)
-            }
+        Task {
+            await NCPushNotification.shared.subscribingNextcloudServerPushNotification(account: account, urlBase: urlBase, pushKitToken: self.pushKitToken)
         }
 #endif
     }

@@ -414,49 +414,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         BIO_free(mem)
     }
 
-    func checkPushNotificationServerProxyCertificateUntrusted(viewController: UIViewController?,
-                                                              completion: @escaping (_ error: NKError) -> Void) {
-        guard let host = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host else {
-            return
-        }
-
-        NextcloudKit.shared.checkServer(serverUrl: NCBrandOptions.shared.pushNotificationServerProxy) { task in
-            Task {
-                let identifier = NCBrandOptions.shared.pushNotificationServerProxy + "_checkServer"
-                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-            }
-        } completion: { _, error in
-            guard error == .success else {
-                completion(.success)
-                return
-            }
-
-            if error == .success {
-                self.writeCertificate(host: host)
-                completion(error)
-            } else if error.errorCode == NSURLErrorServerCertificateUntrusted {
-                let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { _ in
-                    self.writeCertificate(host: host)
-                    completion(.success)
-                }))
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { _ in
-                    completion(error)
-                }))
-                #if !EXTENSION
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { _ in
-                    if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() as? UINavigationController,
-                       let vcCertificateDetails = navigationController.topViewController as? NCViewCertificateDetails {
-                        vcCertificateDetails.host = host
-                        viewController?.present(navigationController, animated: true)
-                    }
-                }))
-                #endif
-                viewController?.present(alertController, animated: true)
-            }
-        }
-    }
-
     func activeAccountCertificate(account: String) {
         (self.p12Data, self.p12Password) = NCPreferences().getClientCertificate(account: account)
     }

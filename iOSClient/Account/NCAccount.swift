@@ -132,7 +132,7 @@ class NCAccount: NSObject {
 
         // Unsubscribing Push Notification & Domain
         if let tblAccount {
-            NCPushNotification.shared.unsubscribingNextcloudServerPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user)
+            await NCPushNotification.shared.unsubscribingNextcloudServerPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase)
             try? await FileProviderDomain().ensureDomainRemoved(userId: tblAccount.userId, urlBase: tblAccount.urlBase)
         }
 
