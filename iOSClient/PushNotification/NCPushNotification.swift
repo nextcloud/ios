@@ -11,34 +11,6 @@ class NCPushNotification {
     static let shared = NCPushNotification()
     let global = NCGlobal.shared
 
-    func applicationdidReceiveRemoteNotification(userInfo: [AnyHashable: Any], completion: @escaping (_ result: UIBackgroundFetchResult) -> Void) {
-        if let message = userInfo["subject"] as? String {
-            for tblAccount in NCManageDatabase.shared.getAllTableAccount() {
-                if let privateKey = NCPreferences().getPushNotificationPrivateKey(account: tblAccount.account),
-                   let decryptedMessage = NCPushNotificationEncryption.shared().decryptPushNotification(message, withDevicePrivateKey: privateKey),
-                   let jsonData = decryptedMessage.data(using: .utf8) {
-                    do {
-                        if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
-                            let nid = jsonObject["nid"] as? Int
-                            let delete = jsonObject["delete"] as? Bool
-                            let deleteAll = jsonObject["delete-all"] as? Bool
-                            if let delete, delete, let nid {
-                                removeNotificationWithNotificationId(nid, usingDecryptionKey: privateKey)
-                            } else if let deleteAll, deleteAll {
-                                cleanAllNotifications()
-                            }
-                        } else {
-                            nkLog(tag: self.global.logTagPN, emoji: .error, message: "Failed to convert JSON data dictionary.")
-                        }
-                    } catch {
-                        nkLog(tag: self.global.logTagPN, emoji: .error, message: "Failed to parsing JSON data dictionary.")
-                    }
-                }
-            }
-        }
-        completion(UIBackgroundFetchResult.noData)
-    }
-
     func subscribingNextcloudServerPushNotification(account: String, urlBase: String) async {
         let preferences = NCPreferences()
         let proxyServerUrl = NCBrandOptions.shared.pushNotificationServerProxy
@@ -136,6 +108,34 @@ class NCPushNotification {
 
         nkLog(tag: self.global.logTagPN, emoji: .info, message: "Unsubscribed to Push Notification Server \(urlBase) with error \(responsePN.error.errorDescription)")
         nkLog(tag: self.global.logTagPN, emoji: .info, message: "Unsubscribed to Push Notification Server Proxy \(proxyServerUrl) with error \(responseProxy.error.errorDescription)")
+    }
+
+    func applicationdidReceiveRemoteNotification(userInfo: [AnyHashable: Any], completion: @escaping (_ result: UIBackgroundFetchResult) -> Void) {
+        if let message = userInfo["subject"] as? String {
+            for tblAccount in NCManageDatabase.shared.getAllTableAccount() {
+                if let privateKey = NCPreferences().getPushNotificationPrivateKey(account: tblAccount.account),
+                   let decryptedMessage = NCPushNotificationEncryption.shared().decryptPushNotification(message, withDevicePrivateKey: privateKey),
+                   let jsonData = decryptedMessage.data(using: .utf8) {
+                    do {
+                        if let jsonObject = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
+                            let nid = jsonObject["nid"] as? Int
+                            let delete = jsonObject["delete"] as? Bool
+                            let deleteAll = jsonObject["delete-all"] as? Bool
+                            if let delete, delete, let nid {
+                                removeNotificationWithNotificationId(nid, usingDecryptionKey: privateKey)
+                            } else if let deleteAll, deleteAll {
+                                cleanAllNotifications()
+                            }
+                        } else {
+                            nkLog(tag: self.global.logTagPN, emoji: .error, message: "Failed to convert JSON data dictionary.")
+                        }
+                    } catch {
+                        nkLog(tag: self.global.logTagPN, emoji: .error, message: "Failed to parsing JSON data dictionary.")
+                    }
+                }
+            }
+        }
+        completion(UIBackgroundFetchResult.noData)
     }
 
     func removeNotificationWithNotificationId(_ notificationId: Int, usingDecryptionKey key: Data) {
