@@ -208,40 +208,19 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
             // FOLDER
             if serverUrlMetadataFolder != nil {
-                await self.database.addMetadataAsync(metadataFolder)
-                await self.database.addDirectoryAsync(serverUrl: serverUrl,
-                                                      ocId: metadataFolder.ocId,
-                                                      fileId: metadataFolder.fileId,
-                                                      etag: metadataFolder.etag,
-                                                      permissions: metadataFolder.permissions,
-                                                      richWorkspace: metadataFolder.richWorkspace,
-                                                      favorite: metadataFolder.favorite,
-                                                      account: metadataFolder.account)
+                await self.database.createDirectory(metadata: metadataFolder)
             }
 
             // METADATA
             var metadataToInsert: [tableMetadata] = []
             for metadata in metadatas {
-                if await self.database.getMetadataFromOcIdAsync(metadata.ocId) == nil {
+                if metadata.directory {
+                    await self.database.createDirectory(metadata: metadata)
+                } else {
                     metadataToInsert.append(metadata)
                 }
             }
             await self.database.addMetadatasAsync(metadataToInsert)
-
-            // DIRECTORY
-            for metadata in metadatas {
-                if metadata.isDirectory {
-                    let serverUrl = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: metadata.fileName)
-                    await self.database.addDirectoryAsync(serverUrl: serverUrl,
-                                                          ocId: metadata.ocId,
-                                                          fileId: metadata.fileId,
-                                                          etag: metadata.etag,
-                                                          permissions: metadata.permissions,
-                                                          richWorkspace: metadata.richWorkspace,
-                                                          favorite: metadata.favorite,
-                                                          account: metadata.account)
-                }
-            }
 
             return(metadatas, isPaginated)
 

@@ -149,13 +149,8 @@ class NCNetworkingE2EECreateFolder: NSObject {
             return resultsReadFileOrFolder.error
         }
         let metadata = await self.database.convertFileToMetadataAsync(file)
-        await self.database.addMetadataAsync(metadata)
-        await self.database.addDirectoryAsync(serverUrl: serverUrlFileName,
-                                              ocId: metadata.ocId,
-                                              fileId: metadata.fileId,
-                                              permissions: metadata.permissions,
-                                              favorite: metadata.favorite,
-                                              account: metadata.account)
+
+        await self.database.createDirectory(metadata: metadata)
 
         await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferChange(status: self.global.networkingStatusCreateFolder,

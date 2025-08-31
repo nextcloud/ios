@@ -51,15 +51,7 @@ extension NCNetworking {
         }
         let (metadataFolder, metadatas) = await NCManageDatabase.shared.convertFilesToMetadatasAsync(files, serverUrlMetadataFolder: serverUrl)
 
-        await NCManageDatabase.shared.addMetadataAsync(metadataFolder)
-        await NCManageDatabase.shared.addDirectoryAsync(serverUrl: serverUrl,
-                                                        ocId: metadataFolder.ocId,
-                                                        fileId: metadataFolder.fileId,
-                                                        etag: metadataFolder.etag,
-                                                        permissions: metadataFolder.permissions,
-                                                        richWorkspace: metadataFolder.richWorkspace,
-                                                        favorite: metadataFolder.favorite,
-                                                        account: metadataFolder.account)
+        await NCManageDatabase.shared.createDirectory(metadata: metadataFolder)
         await NCManageDatabase.shared.updateMetadatasFilesAsync(metadatas, serverUrl: serverUrl, account: account)
 
         return (account, metadataFolder, metadatas, .success)
@@ -224,22 +216,11 @@ extension NCNetworking {
         }
         let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileNameFolder)
 
-        func writeDirectoryMetadata(_ metadata: tableMetadata) async {
-            await NCManageDatabase.shared.deleteMetadataAsync(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", session.account, fileName, serverUrl))
-            await NCManageDatabase.shared.addMetadataAsync(metadata)
-            await NCManageDatabase.shared.addDirectoryAsync(serverUrl: serverUrlFileName,
-                                                            ocId: metadata.ocId,
-                                                            fileId: metadata.fileId,
-                                                            permissions: metadata.permissions,
-                                                            favorite: metadata.favorite,
-                                                            account: session.account)
-        }
-
         /* check exists folder */
         let resultReadFile = await readFileAsync(serverUrlFileName: serverUrlFileName, account: session.account)
         if resultReadFile.error == .success,
             let metadata = resultReadFile.metadata {
-            await writeDirectoryMetadata(metadata)
+            await NCManageDatabase.shared.createDirectory(metadata: metadata)
             return (true, .success)
         }
 
@@ -256,7 +237,7 @@ extension NCNetworking {
             let resultReadFile = await readFileAsync(serverUrlFileName: serverUrlFileName, account: session.account)
             if resultReadFile.error == .success,
                let metadata = resultReadFile.metadata {
-                await writeDirectoryMetadata(metadata)
+                await NCManageDatabase.shared.createDirectory(metadata: metadata)
             }
         }
 

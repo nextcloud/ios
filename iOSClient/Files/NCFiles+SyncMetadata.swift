@@ -105,7 +105,7 @@ extension NCFiles {
                 break
             }
 
-            let directory = database.getTableDirectory(ocId: metadata.ocId)
+            let directory = await database.getTableDirectoryAsync(ocId: metadata.ocId)
             guard directory?.etag != metadata.etag else {
                 continue
             }

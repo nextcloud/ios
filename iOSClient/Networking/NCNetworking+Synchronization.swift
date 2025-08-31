@@ -46,15 +46,7 @@ extension NCNetworking {
             for file in files {
                 if file.directory {
                     let metadata = await NCManageDatabase.shared.convertFileToMetadataAsync(file)
-                    await NCManageDatabase.shared.addMetadataAsync(metadata)
-                    await NCManageDatabase.shared.addDirectoryAsync(serverUrl: metadata.serverUrlFileName,
-                                                                    ocId: metadata.ocId,
-                                                                    fileId: metadata.fileId,
-                                                                    etag: metadata.etag,
-                                                                    permissions: metadata.permissions,
-                                                                    richWorkspace: metadata.richWorkspace,
-                                                                    favorite: metadata.favorite,
-                                                                    account: metadata.account)
+                    await NCManageDatabase.shared.createDirectory(metadata: metadata)
                 } else {
                     if await isFileDifferent(ocId: file.ocId, fileName: file.fileName, etag: file.etag, metadatasInDownload: metadatasInDownload, userId: userId, urlBase: urlBase) {
                         let metadata = await NCManageDatabase.shared.convertFileToMetadataAsync(file)
