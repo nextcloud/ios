@@ -13,6 +13,7 @@ class tableDirectory: Object {
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileId = ""
+    @objc dynamic var lastOpeningDate = NSDate()
     @objc dynamic var ocId = ""
     @objc dynamic var offline: Bool = false
     @objc dynamic var permissions = ""
@@ -235,6 +236,16 @@ extension NCManageDatabase {
                 directory.serverUrl = serverUrl
 
                 realm.add(directory, update: .all)
+            }
+        }
+    }
+
+    func setDirectoryLastOpeningDateAsync(ocId: String) async {
+        await performRealmWriteAsync { realm in
+            if let result = realm.objects(tableDirectory.self)
+                .filter("ocId == %@", ocId)
+                .first {
+                result.lastOpeningDate = NSDate()
             }
         }
     }

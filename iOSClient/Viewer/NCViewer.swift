@@ -35,7 +35,7 @@ class NCViewer: NSObject {
     func getViewerController(metadata: tableMetadata, ocIds: [String]? = nil, image: UIImage? = nil, delegate: UIViewController? = nil) async -> UIViewController? {
         let session = NCSession.shared.getSession(account: metadata.account)
         // Set Last Opening Date
-        await self.database.setLastOpeningDateAsync(metadata: metadata)
+        await self.database.setLocalFileLastOpeningDateAsync(metadata: metadata)
 
         // URL
         if metadata.classFile == NKTypeClassFile.url.rawValue,

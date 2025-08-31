@@ -110,7 +110,7 @@ extension NCManageDatabase {
         }
     }
 
-    func setLastOpeningDateAsync(metadata: tableMetadata) async {
+    func setLocalFileLastOpeningDateAsync(metadata: tableMetadata) async {
         await performRealmWriteAsync { realm in
             if let result = realm.objects(tableLocalFile.self)
                 .filter("ocId == %@", metadata.ocId)
