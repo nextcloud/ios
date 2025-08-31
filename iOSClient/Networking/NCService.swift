@@ -265,7 +265,7 @@ class NCService: NSObject {
         }
 
         // Synchronize Files
-        let files = await self.database.getTableLocalFilesAsync(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "fileName", ascending: true)
+        let files = await self.database.getTableLocalFilesAsync(predicate: NSPredicate(format: "account == %@ AND offline == true", account))
         for file in files {
             if let metadata = await self.database.getMetadataFromOcIdAsync(file.ocId),
                await NCNetworking.shared.isFileDifferent(ocId: metadata.ocId,

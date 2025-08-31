@@ -132,10 +132,11 @@ extension NCManageDatabase {
 
     // MARK: - Realm Read
 
-    func getTableLocalFilesAsyncs(predicate: NSPredicate) async -> [tableLocalFile] {
+    func getTableLocalFilesAsync(predicate: NSPredicate, sorted: String = "fileName", ascending: Bool = true) async -> [tableLocalFile] {
         await performRealmReadAsync { realm in
             realm.objects(tableLocalFile.self)
                 .filter(predicate)
+                .sorted(byKeyPath: sorted, ascending: ascending)
                 .map { tableLocalFile(value: $0) }
         } ?? []
     }
@@ -159,7 +160,6 @@ extension NCManageDatabase {
     }
 
     func getTableLocal(predicate: NSPredicate,
-                       dispatchOnMainQueue: Bool = true,
                        completion: @escaping (_ localFile: tableLocalFile?) -> Void) {
         performRealmRead({ realm in
             return realm.objects(tableLocalFile.self)
@@ -171,32 +171,8 @@ extension NCManageDatabase {
                 completion(detachedResult)
             }
 
-            if dispatchOnMainQueue {
-                DispatchQueue.main.async(execute: deliver)
-            } else {
-                deliver()
-            }
+            DispatchQueue.main.async(execute: deliver)
         }
-    }
-
-    func getTableLocalFiles(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableLocalFile] {
-        return performRealmRead { realm in
-            Array(
-                realm.objects(tableLocalFile.self)
-                    .filter(predicate)
-                    .sorted(byKeyPath: sorted, ascending: ascending)
-                    .map { tableLocalFile(value: $0) }
-            )
-        } ?? []
-    }
-
-    func getTableLocalFilesAsync(predicate: NSPredicate, sorted: String, ascending: Bool) async -> [tableLocalFile] {
-        await performRealmReadAsync { realm in
-            realm.objects(tableLocalFile.self)
-                .filter(predicate)
-                .sorted(byKeyPath: sorted, ascending: ascending)
-                .map { tableLocalFile(value: $0) }
-        } ?? []
     }
 
     func getResultTableLocalFile(ocId: String) -> tableLocalFile? {
@@ -204,15 +180,6 @@ extension NCManageDatabase {
             realm.objects(tableLocalFile.self)
                 .filter("ocId == %@", ocId)
                 .first
-        }
-    }
-
-    func getTableLocalFileAsync(ocId: String) async -> tableLocalFile? {
-        await performRealmReadAsync { realm in
-            realm.objects(tableLocalFile.self)
-                .filter("ocId == %@", ocId)
-                .first
-                .map { tableLocalFile(value: $0) }
         }
     }
 }

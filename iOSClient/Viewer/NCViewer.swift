@@ -34,6 +34,8 @@ class NCViewer: NSObject {
     @MainActor
     func getViewerController(metadata: tableMetadata, ocIds: [String]? = nil, image: UIImage? = nil, delegate: UIViewController? = nil) async -> UIViewController? {
         let session = NCSession.shared.getSession(account: metadata.account)
+        // Set Last Opening Date
+        await self.database.setLastOpeningDateAsync(metadata: metadata)
 
         // URL
         if metadata.classFile == NKTypeClassFile.url.rawValue,
@@ -75,9 +77,6 @@ class NCViewer: NSObject {
         // DOCUMENTS
         else if metadata.classFile == NKTypeClassFile.document.rawValue,
                 !NCUtilityFileSystem().isDirectoryE2EE(serverUrl: metadata.serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account) {
-            // Set Last Opening Date
-            await self.database.setLastOpeningDateAsync(metadata: metadata)
-
             // PDF
             if metadata.isPDF {
                 let vc = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateInitialViewController() as? NCViewerPDF

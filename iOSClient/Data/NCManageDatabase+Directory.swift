@@ -268,14 +268,6 @@ extension NCManageDatabase {
         } ?? []
     }
 
-    func getTableLocalFilesAsync(predicate: NSPredicate) async -> [tableLocalFile] {
-        await performRealmReadAsync { realm in
-            realm.objects(tableLocalFile.self)
-                .filter(predicate)
-                .map { tableLocalFile(value: $0) }
-        } ?? []
-    }
-
     /// Asynchronously retrieves a detached copy of `tableDirectory` by ocId.
     /// - Parameter ocId: The identifier to query.
     /// - Returns: A detached copy of the matching `tableDirectory`, or `nil` if not found.
