@@ -84,7 +84,7 @@ enum NCShareCommon {
         case NCShareCommon.shareTypeFederated:
             return UIImage(named: "shareTypeUser")?.withTintColor(NCBrandColor.shared.textColor, renderingMode: .alwaysOriginal)
         case NCShareCommon.shareTypeTeam:
-            return UIImage(named: "shareTypeCircles")?.withTintColor(NCBrandColor.shared.textColor, renderingMode: .alwaysOriginal)
+            return UIImage(named: "shareTypeTeam")?.withTintColor(NCBrandColor.shared.textColor, renderingMode: .alwaysOriginal)
         case NCShareCommon.shareTypeGuest:
             return UIImage(named: "shareTypeUser")?.withTintColor(NCBrandColor.shared.textColor, renderingMode: .alwaysOriginal)
         case NCShareCommon.shareTypeFederatedGroup:
