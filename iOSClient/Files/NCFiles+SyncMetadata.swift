@@ -13,12 +13,10 @@ extension NCFiles {
     /// - Parameter metadatas: The list of `tableMetadata` to evaluate and possibly sync.
     func startSyncMetadata(metadatas: [tableMetadata]) {
         // Filter: not e2ee & only directory
-        let filteredMetadatas = metadatas.filter { $0.directory && !$0.e2eEncrypted }
-        guard !filteredMetadatas.isEmpty else {
+        let metadatas = metadatas.filter { $0.directory && !$0.e2eEncrypted }
+        guard !metadatas.isEmpty else {
             return
         }
-        // Order by date (descending)
-        let metadatas = filteredMetadatas.sorted { ($0.date as Date) > ($1.date as Date) }
 
         // If a sync task is already running, do not start a new one
         if let task = syncMetadatasTask,
@@ -64,6 +62,10 @@ extension NCFiles {
     ///
     /// - Parameter metadatas: The list of `tableMetadata` entries to scan and refresh.
     func networkSyncMetadata(metadatas: [tableMetadata]) async {
+        // Order by date (descending)
+        let metadatas = metadatas.sorted {
+            ($0.date as Date) > ($1.date as Date)
+        }
         // Fast exit if cancellation was requested before starting
         if Task.isCancelled {
             return
