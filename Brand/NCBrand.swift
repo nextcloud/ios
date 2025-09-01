@@ -128,7 +128,7 @@ final class NCBrandColor: @unchecked Sendable {
     static let shared = NCBrandColor()
 
     // This is rewrited from customet theme, default is Nextcloud color
-    let customer: UIColor = UIColor(red: 0.0 / 255.0, green: 103.0 / 255.0, blue: 158.0 / 255.0, alpha: 1.0)         // BLU NC : #00679e
+    let customer: UIColor = UIColor(red: 0.0 / 255.0, green: 103.0 / 255.0, blue: 158.0 / 255.0, alpha: 1.0)         // Nextcloud : #00679e
     var customerText: UIColor = .white
 
     // INTERNAL DEFINE COLORS
@@ -137,7 +137,6 @@ final class NCBrandColor: @unchecked Sendable {
     private var themingColorText = ThreadSafeDictionary<String, UIColor>()
 
     var userColors: [CGColor] = []
-    let nextcloud: UIColor = UIColor(red: 0.0 / 255.0, green: 130.0 / 255.0, blue: 201.0 / 255.0, alpha: 1.0)
     let yellowFavorite: UIColor = UIColor(red: 248.0 / 255.0, green: 205.0 / 255.0, blue: 70.0 / 255.0, alpha: 1.0)
     let iconImageColor: UIColor = .label
     let iconImageColor2: UIColor = .secondaryLabel
