@@ -115,9 +115,6 @@ class NCShareNetworking: NSObject {
     }
 
     func createShare(_ shareable: Shareable, downloadLimit: DownloadLimitViewModel) {
-        // NOTE: Permissions don't work for creating with file drop!
-        // https://github.com/nextcloud/server/issues/17504
-
         NCActivityIndicator.shared.start(backgroundView: view)
         let filenamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
         let capabilities = NCNetworking.shared.capabilities[self.metadata.account] ?? NKCapabilities.Capabilities()
