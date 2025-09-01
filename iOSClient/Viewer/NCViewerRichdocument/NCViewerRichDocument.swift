@@ -54,7 +54,16 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
         super.viewDidLoad()
 
         if !metadata.ocId.hasPrefix("TEMP") {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(image: NCImageCache.shared.getImageButtonMore(), style: .plain, target: self, action: #selector(openMenuMore(_:)))
+            navigationItem.rightBarButtonItem = UIBarButtonItem(
+                image: NCImageCache.shared.getImageButtonMore(),
+                primaryAction: nil,
+                menu: UIMenu(title: "", children: [
+                    UIDeferredMenuElement.uncached { [self] completion in
+                        if let menu = NCViewerContextMenu.makeContextMenu(controller: self.tabBarController as? NCMainTabBarController, metadata: self.metadata, webView: true, sender: self) {
+                            completion(menu.children)
+                        }
+                    }
+                ]))
         }
         navigationItem.hidesBackButton = true
 
@@ -158,13 +167,6 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
     @objc func keyboardWillHide(notification: Notification) {
         bottomConstraint?.constant = 0
-    }
-
-    // MARK: - Action
-
-    @objc private func openMenuMore(_ sender: Any?) {
-        if imageIcon == nil { imageIcon = NCUtility().loadImage(named: "doc.text", colors: [NCBrandColor.shared.iconImageColor]) }
-        NCViewer().toggleMenu(controller: self.tabBarController as? NCMainTabBarController, metadata: metadata, webView: true, imageIcon: imageIcon, sender: nil)
     }
 
     // MARK: -

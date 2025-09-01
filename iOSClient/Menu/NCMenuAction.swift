@@ -26,6 +26,7 @@ import Foundation
 import UIKit
 import NextcloudKit
 
+@available(*, deprecated, message: "Change to using iOS native context menus, as well as using ContextMenuActions and NCViewerContextMenu")
 class NCMenuAction {
     let accessibilityIdentifier: String?
     let title: String

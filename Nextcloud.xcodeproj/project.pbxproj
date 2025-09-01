@@ -186,6 +186,7 @@
 		F37208C62BAB63F0006B5430 /* LRUCache in Frameworks */ = {isa = PBXBuildFile; productRef = F37208C52BAB63F0006B5430 /* LRUCache */; };
 		F37208C82BAB63F1006B5430 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = F37208C72BAB63F1006B5430 /* KeychainAccess */; };
 		F3754A7D2CF87D600009312E /* SetupPasscodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3754A7C2CF87D600009312E /* SetupPasscodeView.swift */; };
+		F376A3742E5CC6030067EE25 /* ContextMenuActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F376A3732E5CC5FF0067EE25 /* ContextMenuActions.swift */; };
 		F389C9F52CEE383300049762 /* SelectAlbumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F389C9F42CEE383300049762 /* SelectAlbumView.swift */; };
 		F38F71252B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F38F71242B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift */; };
 		F39170A92CB82024006127BC /* FileAutoRenamer+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F39170A82CB8201B006127BC /* FileAutoRenamer+Extensions.swift */; };
@@ -263,7 +264,7 @@
 		F70D7C3725FFBF82002B9E34 /* NCCollectionViewCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70D7C3525FFBF81002B9E34 /* NCCollectionViewCommon.swift */; };
 		F70D8D8124A4A9BF000A5756 /* NCNetworkingProcess.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70D8D8024A4A9BF000A5756 /* NCNetworkingProcess.swift */; };
 		F710D1F52405770F00A6033D /* NCViewerPDF.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D1F42405770F00A6033D /* NCViewerPDF.swift */; };
-		F710D2022405826100A6033D /* NCViewer+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D2012405826100A6033D /* NCViewer+Menu.swift */; };
+		F710D2022405826100A6033D /* NCViewerContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F710D2012405826100A6033D /* NCViewerContextMenu.swift */; };
 		F710FC80277B7D2700AA9FBF /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F710FC7F277B7D2700AA9FBF /* RealmSwift */; };
 		F710FC84277B7D3500AA9FBF /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F710FC83277B7D3500AA9FBF /* RealmSwift */; };
 		F710FC88277B7D3F00AA9FBF /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F710FC87277B7D3F00AA9FBF /* RealmSwift */; };
@@ -1371,6 +1372,7 @@
 		F36E64F62B9245210085ABB5 /* NCCollectionViewCommon+SelectTabBarDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCCollectionViewCommon+SelectTabBarDelegate.swift"; sourceTree = "<group>"; };
 		F37208742BAB4AB0006B5430 /* TestConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestConstants.swift; sourceTree = "<group>"; };
 		F3754A7C2CF87D600009312E /* SetupPasscodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupPasscodeView.swift; sourceTree = "<group>"; };
+		F376A3732E5CC5FF0067EE25 /* ContextMenuActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextMenuActions.swift; sourceTree = "<group>"; };
 		F389C9F42CEE383300049762 /* SelectAlbumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectAlbumView.swift; sourceTree = "<group>"; };
 		F38F71242B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectionViewCommonSelectTabBar.swift; sourceTree = "<group>"; };
 		F39170A82CB8201B006127BC /* FileAutoRenamer+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileAutoRenamer+Extensions.swift"; sourceTree = "<group>"; };
@@ -1421,7 +1423,7 @@
 		F70D8D8024A4A9BF000A5756 /* NCNetworkingProcess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNetworkingProcess.swift; sourceTree = "<group>"; };
 		F70F96AF2874394B006C8379 /* Nextcloud-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Nextcloud-Bridging-Header.h"; sourceTree = "<group>"; };
 		F710D1F42405770F00A6033D /* NCViewerPDF.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerPDF.swift; sourceTree = "<group>"; };
-		F710D2012405826100A6033D /* NCViewer+Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCViewer+Menu.swift"; sourceTree = "<group>"; };
+		F710D2012405826100A6033D /* NCViewerContextMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerContextMenu.swift; sourceTree = "<group>"; };
 		F711A4DB2AF92CAD00095DD8 /* NCUtility+Date.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCUtility+Date.swift"; sourceTree = "<group>"; };
 		F7132C6B2D085AD200B42D6A /* NCTermOfServiceModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTermOfServiceModel.swift; sourceTree = "<group>"; };
 		F7132C6C2D085AD200B42D6A /* NCTermOfServiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTermOfServiceView.swift; sourceTree = "<group>"; };
@@ -2109,6 +2111,7 @@
 		371B5A2F23D0B04B00FAFAE9 /* Menu */ = {
 			isa = PBXGroup;
 			children = (
+				F376A3732E5CC5FF0067EE25 /* ContextMenuActions.swift */,
 				3704EB2923D5A58400455C5B /* NCMenu.storyboard */,
 				371B5A2D23D0B04500FAFAE9 /* NCMenu.swift */,
 				AF68326927BE65A90010BF0B /* NCMenuAction.swift */,
@@ -2119,7 +2122,7 @@
 				F77A697C250A0FBC00FF1708 /* NCCollectionViewCommon+Menu.swift */,
 				F75D19E225EFE09000D74598 /* NCTrash+Menu.swift */,
 				AF93471127E2341B002537EE /* NCShare+Menu.swift */,
-				F710D2012405826100A6033D /* NCViewer+Menu.swift */,
+				F710D2012405826100A6033D /* NCViewerContextMenu.swift */,
 				F78C6FDD296D677300C952C3 /* NCContextMenu.swift */,
 				F7A560412AE1593700BE8FD6 /* NCOperationSaveLivePhoto.swift */,
 			);
@@ -4695,7 +4698,7 @@
 				F78ACD52219046DC0088454D /* NCSectionFirstHeader.swift in Sources */,
 				F743C89E2E5B25A1000173A9 /* UIScene+Extension.swift in Sources */,
 				F72944F52A8424F800246839 /* NCEndToEndMetadataV1.swift in Sources */,
-				F710D2022405826100A6033D /* NCViewer+Menu.swift in Sources */,
+				F710D2022405826100A6033D /* NCViewerContextMenu.swift in Sources */,
 				F765E9CD295C585800A09ED8 /* NCUploadScanDocument.swift in Sources */,
 				F741C2242B6B9FD600E849BB /* NCMediaSelectTabBar.swift in Sources */,
 				F77A697D250A0FBC00FF1708 /* NCCollectionViewCommon+Menu.swift in Sources */,
@@ -4839,6 +4842,7 @@
 				AF93471227E2341B002537EE /* NCShare+Menu.swift in Sources */,
 				F7EFA47825ADBA500083159A /* NCViewerProviderContextMenu.swift in Sources */,
 				F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */,
+				F376A3742E5CC6030067EE25 /* ContextMenuActions.swift in Sources */,
 				F7E8A391295DC5E0006CB2D0 /* View+Extension.swift in Sources */,
 				F79B869B265E19D40085C0E0 /* NSMutableAttributedString+Extension.swift in Sources */,
 				F7B7504B2397D38F004E13EC /* UIImage+Extension.swift in Sources */,
@@ -5797,6 +5801,7 @@
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/iOSClient.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5819,6 +5824,7 @@
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/iOSClient.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
