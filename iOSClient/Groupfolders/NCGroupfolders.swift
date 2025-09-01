@@ -135,14 +135,8 @@ class NCGroupfolders: NCCollectionViewCommon {
             }
 
             let metadata = await self.database.convertFileToMetadataAsync(file)
+            await self.database.createDirectory(metadata: metadata)
 
-            await self.database.addMetadataAsync(metadata)
-            await self.database.addDirectoryAsync(serverUrl: serverUrlFileName,
-                                                  ocId: metadata.ocId,
-                                                  fileId: metadata.fileId,
-                                                  permissions: metadata.permissions,
-                                                  favorite: metadata.favorite,
-                                                  account: metadata.account)
             await self.reloadDataSource()
         }
     }

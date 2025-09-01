@@ -63,7 +63,7 @@ class NCOffline: NCCollectionViewCommon {
                 ocIds.append(directory.ocId)
             }
 
-            let files = await self.database.getTableLocalFilesAsync(predicate: NSPredicate(format: "account == %@ AND offline == true", session.account), sorted: "fileName", ascending: true)
+            let files = await self.database.getTableLocalFilesAsync(predicate: NSPredicate(format: "account == %@ AND offline == true", session.account))
             for file in files {
                 ocIds.append(file.ocId)
             }
