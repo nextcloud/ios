@@ -18,7 +18,7 @@ class NCShareDateCell: UITableViewCell {
         super.init(style: .value1, reuseIdentifier: "shareExpDate")
 
         picker.datePickerMode = .date
-        picker.minimumDate = Calendar.current.date(byAdding: .day, value: 1, to: Date())
+        picker.minimumDate = Date()
         picker.preferredDatePickerStyle = .wheels
         picker.action(for: .valueChanged) { datePicker in
             guard let datePicker = datePicker as? UIDatePicker else { return }
