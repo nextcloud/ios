@@ -265,7 +265,7 @@ class NCShareNetworking: NSObject {
     func removeShareDownloadLimit(token: String) {
         let capabilities = NCNetworking.shared.capabilities[self.metadata.account] ?? NKCapabilities.Capabilities()
 
-        if !capabilities.fileSharingDownloadLimit {
+        if !capabilities.fileSharingDownloadLimit || token.isEmpty {
             return
         }
 
@@ -290,7 +290,7 @@ class NCShareNetworking: NSObject {
     func setShareDownloadLimit(_ limit: Int, token: String) {
         let capabilities = NCNetworking.shared.capabilities[self.metadata.account] ?? NKCapabilities.Capabilities()
 
-        if !capabilities.fileSharingDownloadLimit {
+        if !capabilities.fileSharingDownloadLimit || token.isEmpty {
             return
         }
 
