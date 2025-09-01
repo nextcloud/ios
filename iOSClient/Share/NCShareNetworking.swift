@@ -114,7 +114,7 @@ class NCShareNetworking: NSObject {
         }
     }
 
-    func createShare(_ template: Shareable, downloadLimit: DownloadLimitViewModel) {
+    func createShare(_ shareable: Shareable, downloadLimit: DownloadLimitViewModel) {
         // NOTE: Permissions don't work for creating with file drop!
         // https://github.com/nextcloud/server/issues/17504
 
@@ -123,14 +123,14 @@ class NCShareNetworking: NSObject {
         let capabilities = NCNetworking.shared.capabilities[self.metadata.account] ?? NKCapabilities.Capabilities()
 
         NextcloudKit.shared.createShare(path: filenamePath,
-                                        shareType: template.shareType,
-                                        shareWith: template.shareWith,
+                                        shareType: shareable.shareType,
+                                        shareWith: shareable.shareWith,
                                         publicUpload: false,
-                                        note: template.note,
+                                        note: shareable.note,
                                         hideDownload: false,
-                                        password: template.password,
-                                        permissions: template.permissions,
-                                        attributes: template.attributes,
+                                        password: shareable.password,
+                                        permissions: shareable.permissions,
+                                        attributes: shareable.attributes,
                                         account: metadata.account) { task in
             Task {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.metadata.account,
@@ -142,16 +142,18 @@ class NCShareNetworking: NSObject {
             NCActivityIndicator.shared.stop()
 
             if error == .success, let share = share {
-                template.idShare = share.idShare
+                shareable.idShare = share.idShare
                 let home = self.utilityFileSystem.getHomeServer(session: self.session)
                 self.database.addShare(account: self.metadata.account, home: home, shares: [share])
 
-                if template.hasChanges(comparedTo: share) {
-                    self.updateShare(template, downloadLimit: downloadLimit)
+                if shareable.hasChanges(comparedTo: share) {
+                    self.updateShare(shareable, downloadLimit: downloadLimit)
                     // Download limit update should happen implicitly on share update.
                 } else {
                     if case let .limited(limit, _) = downloadLimit,
-                        capabilities.fileSharingDownloadLimit {
+                       capabilities.fileSharingDownloadLimit,
+                       shareable.shareType == NCShareCommon.shareTypeLink,
+                       shareable.itemType == NCShareCommon.itemTypeFile {
                         self.setShareDownloadLimit(limit, token: share.token)
                     }
                 }
@@ -196,12 +198,12 @@ class NCShareNetworking: NSObject {
         }
     }
 
-    func updateShare(_ option: Shareable, downloadLimit: DownloadLimitViewModel) {
+    func updateShare(_ shareable: Shareable, downloadLimit: DownloadLimitViewModel) {
         NCActivityIndicator.shared.start(backgroundView: view)
-        NextcloudKit.shared.updateShare(idShare: option.idShare, password: option.password, expireDate: option.formattedDateString, permissions: option.permissions, note: option.note, label: option.label, hideDownload: option.hideDownload, attributes: option.attributes, account: metadata.account) { task in
+        NextcloudKit.shared.updateShare(idShare: shareable.idShare, password: shareable.password, expireDate: shareable.formattedDateString, permissions: shareable.permissions, note: shareable.note, label: shareable.label, hideDownload: shareable.hideDownload, attributes: shareable.attributes, account: metadata.account) { task in
             Task {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.metadata.account,
-                                                                                            path: "_\(option.idShare)",
+                                                                                            path: "_\(shareable.idShare)",
                                                                                             name: "updateShare")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
@@ -215,7 +217,9 @@ class NCShareNetworking: NSObject {
                 self.database.addShare(account: self.metadata.account, home: home, shares: [share])
                 self.delegate?.readShareCompleted()
 
-                if capabilities.fileSharingDownloadLimit {
+                if capabilities.fileSharingDownloadLimit,
+                   shareable.shareType == NCShareCommon.shareTypeLink,
+                   shareable.itemType == NCShareCommon.itemTypeFile {
                     if case let .limited(limit, _) = downloadLimit {
                         self.setShareDownloadLimit(limit, token: share.token)
                     } else {
@@ -230,7 +234,7 @@ class NCShareNetworking: NSObject {
                 }
             } else {
                 NCContentPresenter().showError(error: error)
-                self.delegate?.updateShareWithError(idShare: option.idShare)
+                self.delegate?.updateShareWithError(idShare: shareable.idShare)
             }
         }
     }
