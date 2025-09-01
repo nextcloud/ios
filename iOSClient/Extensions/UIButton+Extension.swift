@@ -1,10 +1,6 @@
-//
-//  UIButton+Extension.swift
-//  Nextcloud
-//
-//  Created by Milen Pivchev on 17.12.24.
-//  Copyright © 2024 Marino Faggiana. All rights reserved.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2024 Milen Pivchev
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 extension UIButton {
     func hideButtonAndShowSpinner(tint: UIColor = .white) {

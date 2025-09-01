@@ -1,10 +1,7 @@
-//
-//  NCMetadataPermissions.swift
-//  Nextcloud
-//
-//  Created by Milen Pivchev on 21.05.25.
-//  Copyright © 2025 Marino Faggiana. All rights reserved.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2025 Milen Pivchev
+// SPDX-FileCopyrightText: 2025 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
 

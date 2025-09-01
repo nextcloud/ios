@@ -1,10 +1,6 @@
-//
-//  ContextMenuActions.swift
-//  Nextcloud
-//
-//  Created by Milen Pivchev on 25.08.25.
-//  Copyright © 2025 Marino Faggiana. All rights reserved.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2025 Milen Pivchev
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import NextcloudKit
 
