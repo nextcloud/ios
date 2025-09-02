@@ -51,16 +51,21 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         if !metadata.ocId.hasPrefix("TEMP") {
             let moreButton = UIBarButtonItem(
                 image: NCImageCache.shared.getImageButtonMore(),
-                style: .plain,
-                target: self,
-                action: #selector(self.openMenuMore)
-            )
+                primaryAction: nil,
+                menu: UIMenu(title: "", children: [
+                    UIDeferredMenuElement.uncached { [self] completion in
+                        if let menu = NCViewerContextMenu.makeContextMenu(controller: self.tabBarController as? NCMainTabBarController, metadata: self.metadata, webView: true, sender: self) {
+                            completion(menu.children)
+                        }
+                    }
+                ]))
+
             items.append(moreButton)
         }
 
         navigationItem.rightBarButtonItems = items
         navigationItem.leftBarButtonItems = nil
-        if editor == "Nextcloud Text" {
+        if editor == "nextcloud text" {
             navigationItem.hidesBackButton = true
         }
 
@@ -88,7 +93,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
 
         if editor == "onlyoffice" {
             webView.customUserAgent = utility.getCustomUserAgentOnlyOffice()
-        } else if editor == "Nextcloud Text" {
+        } else if editor == "nextcloud text" {
             webView.customUserAgent = utility.getCustomUserAgentNCText()
         } // else: use default
 
@@ -158,13 +163,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         bottomConstraint?.constant = 0
     }
 
-    // MARK: - Action
-
-    @objc private func openMenuMore(_ sender: Any?) {
-        if imageIcon == nil { imageIcon = NCUtility().loadImage(named: "doc.text", colors: [NCBrandColor.shared.iconImageColor]) }
-        NCViewer().toggleMenu(controller: (self.tabBarController as? NCMainTabBarController), metadata: metadata, webView: true, imageIcon: imageIcon, sender: nil)
-    }
-
     // MARK: -
 
     public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
@@ -219,7 +217,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     public func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
         if navigationAction.targetFrame == nil {
             if let url = navigationAction.request.url, UIApplication.shared.canOpenURL(url) {
-               UIApplication.shared.open(url)
+                UIApplication.shared.open(url)
             }
         }
         return nil

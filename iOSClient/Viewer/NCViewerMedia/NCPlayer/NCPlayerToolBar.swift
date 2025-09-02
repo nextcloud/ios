@@ -465,6 +465,11 @@ extension NCPlayerToolBar: NCSelectDelegate {
                     downloadRequest = request
                 }, taskHandler: { task in
                     Task {
+                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                                    path: metadata.serverUrlFileName,
+                                                                                                    name: "download")
+                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+
                         let ocId = metadata.ocId
                         await self.database.setMetadataSessionAsync(ocId: ocId,
                                                                     sessionTaskIdentifier: task.taskIdentifier,

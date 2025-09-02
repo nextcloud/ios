@@ -13,7 +13,7 @@ class NCSettingsBundleHelper: NSObject {
     }
 
     class func setVersionAndBuildNumber() {
-        let version = NCUtility().getVersionApp() as String
+        let version = NCUtility().getVersionBuild() as String
         UserDefaults.standard.set(version, forKey: SettingsBundleKeys.BuildVersionKey)
     }
 

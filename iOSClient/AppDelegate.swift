@@ -21,16 +21,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
     }
     var notificationSettings: UNNotificationSettings?
-    var pushKitToken: String?
 
     var loginFlowV2Token = ""
     var loginFlowV2Endpoint = ""
     var loginFlowV2Login = ""
 
     let backgroundQueue = DispatchQueue(label: "com.nextcloud.bgTaskQueue")
-
     let global = NCGlobal.shared
-    let database = NCManageDatabase.shared
+
+    var pushSubscriptionTask: Task<Void, Never>?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         if isUiTestingEnabled {
@@ -42,12 +41,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let utility = NCUtility()
 
         utilityFileSystem.createDirectoryStandard()
-        database.openRealm()
-
         utilityFileSystem.emptyTemporaryDirectory()
         utilityFileSystem.clearCacheDirectory("com.limit-point.LivePhoto")
 
-        let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
+        let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionBuild())
 
         NCAppVersionManager.shared.checkAndUpdateInstallState()
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0)
@@ -67,12 +64,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCPreferences().log))
 
-        nkLog(start: "Start session with level \(NCPreferences().log) " + versionNextcloudiOS)
+        #if DEBUG
+//      For the tags look NCGlobal LOG TAG
 
-        // Try to restore accounts
-        if self.database.getActiveTableAccount() == nil {
-            self.database.restoreTableAccountFromFile()
-        }
+//      var black: [String] = []
+//      black.append("NETWORKING TASKS")
+//      NextcloudKit.configureLoggerBlacklist(blacklist: black)
+
+//      var white: [String] = []
+//      white.append("SYNC METADATA")
+//      NextcloudKit.configureLoggerWhitelist(whitelist: white)
+        #endif
+
+        nkLog(start: "Start session with level \(NCPreferences().log) " + versionNextcloudiOS)
 
         // Push Notification & display notification
         UNUserNotificationCenter.current().getNotificationSettings { settings in
@@ -89,7 +93,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 #endif
 
         // BACKGROUND TASK
-
+        //
         BGTaskScheduler.shared.register(forTaskWithIdentifier: global.refreshTask, using: backgroundQueue) { task in
             guard let appRefreshTask = task as? BGAppRefreshTask else {
                 task.setTaskCompleted(success: false)
@@ -111,12 +115,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if NCBrandOptions.shared.enforce_passcode_lock {
             NCPreferences().requestPasscodeAtStart = true
         }
-
-        // Activation singleton
-        _ = NCAppStateManager.shared
-        _ = NCNetworking.shared
-        _ = NCDownloadAction.shared
-        _ = NCNetworkingProcess.shared
 
         return true
     }
@@ -195,7 +193,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
 
-        guard database.openRealmBackground() else {
+        guard NCManageDatabase.shared.openRealmBackground() else {
             nkLog(tag: self.global.logTagTask, emoji: .error, message: "Failed to open Realm in background")
             task.setTaskCompleted(success: false)
             return
@@ -212,7 +210,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 }
             }
 
-            guard let tblAccount = await self.database.getActiveTableAccountAsync() else {
+            guard let tblAccount = await NCManageDatabase.shared.getActiveTableAccountAsync() else {
                 nkLog(tag: self.global.logTagTask, emoji: .info, message: "No active account or background task already running")
                 return
             }
@@ -235,7 +233,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
 
-        guard database.openRealmBackground() else {
+        guard NCManageDatabase.shared.openRealmBackground() else {
             nkLog(tag: self.global.logTagTask, emoji: .error, message: "Failed to open Realm in background")
             task.setTaskCompleted(success: false)
             return
@@ -252,13 +250,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                }
            }
 
-           guard let tblAccount = await self.database.getActiveTableAccountAsync() else {
+           guard let tblAccount = await NCManageDatabase.shared.getActiveTableAccountAsync() else {
                nkLog(tag: self.global.logTagTask, emoji: .info, message: "No active account or background task already running")
                return
            }
-
-           await NCService().synchronize(account: tblAccount.account)
-           nkLog(tag: self.global.logTagTask, message: "Synchronize for \(tblAccount.account) completed.")
 
            let numTransfers = await backgroundSync(tblAccount: tblAccount)
            nkLog(tag: self.global.logTagTask, emoji: .success, message: "Processing task completed with \(numTransfers) transfers of auto upload")
@@ -273,9 +268,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // DOWNLOAD
         let predicateDownload = NSPredicate(format: "status == %d", self.global.metadataStatusWaitDownload)
-        let metadatasWaitDownlod = await self.database.getMetadatasAsync(predicate: predicateDownload,
-                                                                         withSort: sortDescriptors,
-                                                                         withLimit: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload)
+        let metadatasWaitDownlod = await NCManageDatabase.shared.getMetadatasAsync(predicate: predicateDownload,
+                                                                                   withSort: sortDescriptors,
+                                                                                   withLimit: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload)
 
         if let metadatasWaitDownlod,
            !metadatasWaitDownlod.isEmpty {
@@ -296,55 +291,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return numTransfers
         }
 
-        // AUTO UPLOAD  for get new photo
+        // AUTO UPLOAD for get new photo
         let num = await NCAutoUpload.shared.initAutoUpload(tblAccount: tblAccount)
         nkLog(tag: self.global.logTagBgSync, emoji: .start, message: "Auto upload with \(num) new photo for \(tblAccount.account)")
 
         // CREATION FOLDERS
         let predicateCreateFolder = NSPredicate(format: "status == %d AND sessionSelector == %@", self.global.metadataStatusWaitCreateFolder, self.global.selectorUploadAutoUpload)
-        let metadatasWaitCreateFolder = await self.database.getMetadatasAsync(predicate: predicateCreateFolder,
-                                                                              withLimit: NCBrandOptions.shared.httpMaximumConnectionsPerHost)
+        let metadatasWaitCreateFolder = await NCManageDatabase.shared.getMetadatasAsync(predicate: predicateCreateFolder,
+                                                                                        withLimit: NCBrandOptions.shared.httpMaximumConnectionsPerHost) ?? []
 
-        if let metadatasWaitCreateFolder,
-            !metadatasWaitCreateFolder.isEmpty {
-            var successCountCreateFolder: Int = 0
-            for metadata in metadatasWaitCreateFolder {
-                let serverUrl = NCUtilityFileSystem().createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
-                let resultsCreateFolder = await NCNetworking.shared.createFolder(fileName: metadata.fileName,
-                                                                                 serverUrl: metadata.serverUrl,
-                                                                                 overwrite: true,
-                                                                                 session: NCSession.shared.getSession(account: metadata.account),
-                                                                                 selector: metadata.sessionSelector)
-
-                guard resultsCreateFolder.error == .success else {
-                    nkLog(tag: self.global.logTagBgSync, emoji: .error, message: "Auto upload create folder \(serverUrl) with error: \(resultsCreateFolder.error.errorCode)")
-
-                    return numTransfers
-                }
-
-                nkLog(tag: self.global.logTagBgSync, message: "Auto upload create folder \(serverUrl)")
-
-                if resultsCreateFolder.serverExists == false {
-                    numTransfers += 1
-                    successCountCreateFolder += 1
-                }
-            }
-
-            // Exit until there are no more folders to create
-            if successCountCreateFolder == metadatasWaitCreateFolder.count {
+        for metadata in metadatasWaitCreateFolder {
+            let error = await NCNetworking.shared.createFolderForAutoUpload(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
+            guard error == .success else {
+                nkLog(tag: self.global.logTagBgSync, emoji: .error, message: "Auto upload create folder \(metadata.serverUrlFileName) with error: \(error.errorCode)")
                 return numTransfers
             }
         }
 
-        if numTransfers >= NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload {
-            return numTransfers
-        }
-
         // UPLOAD
         let predicateUpload = NSPredicate(format: "status == %d AND sessionSelector == %@ AND chunk == 0", self.global.metadataStatusWaitUpload, self.global.selectorUploadAutoUpload)
-        let metadatasWaitUpload = await self.database.getMetadatasAsync(predicate: predicateUpload,
-                                                                        withSort: sortDescriptors,
-                                                                        withLimit: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload)
+        let metadatasWaitUpload = await NCManageDatabase.shared.getMetadatasAsync(predicate: predicateUpload,
+                                                                                  withSort: sortDescriptors,
+                                                                                  withLimit: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload)
 
         if let metadatasWaitUpload,
            !metadatasWaitUpload.isEmpty {
@@ -371,7 +339,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
         nkLog(debug: "Handle events For background URLSession: \(identifier)")
 
-        if database.openRealmBackground() {
+        if NCManageDatabase.shared.openRealmBackground() {
             WidgetCenter.shared.reloadAllTimelines()
         }
 
@@ -395,12 +363,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        if let pushKitToken = NCPushNotificationEncryption.shared().string(withDeviceToken: deviceToken) {
-            self.pushKitToken = pushKitToken
-            Task.detached {
-                let tblAccounts = await self.database.getAllTableAccountAsync()
+        if let deviceToken = NCPushNotificationEncryption.shared().string(withDeviceToken: deviceToken) {
+            NCPreferences().deviceTokenPushNotification = deviceToken
+            pushSubscriptionTask = Task.detached {
+                // Wait bounded time for maintenance to be OFF
+                let canProceed = await NCAppStateManager.shared.waitForMaintenanceOffAsync()
+                guard canProceed else {
+                    nkLog(error: "[PUSH] Skipping subscription: maintenance mode still ON after timeout")
+                    return
+                }
+
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+
+                let tblAccounts = await NCManageDatabase.shared.getAllTableAccountAsync()
                 for tblAccount in tblAccounts {
-                    await self.subscribingPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user)
+                    await NCPushNotification.shared.subscribingNextcloudServerPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase)
                 }
             }
         }
@@ -410,16 +387,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCPushNotification.shared.applicationdidReceiveRemoteNotification(userInfo: userInfo) { result in
             completionHandler(result)
         }
-    }
-
-    func subscribingPushNotification(account: String, urlBase: String, user: String) {
-#if !targetEnvironment(simulator)
-        NCNetworking.shared.checkPushNotificationServerProxyCertificateUntrusted(viewController: UIApplication.shared.firstWindow?.rootViewController) { error in
-            if error == .success {
-                NCPushNotification.shared.subscribingNextcloudServerPushNotification(account: account, urlBase: urlBase, user: user, pushKitToken: self.pushKitToken)
-            }
-        }
-#endif
     }
 
     func nextcloudPushNotificationAction(data: [String: AnyObject]) {
@@ -539,7 +506,7 @@ extension AppDelegate: NCCreateFormUploadConflictDelegate {
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
         if let metadatas {
             Task {
-                await self.database.addMetadatasAsync(metadatas)
+                await NCManageDatabase.shared.addMetadatasAsync(metadatas)
             }
         }
     }

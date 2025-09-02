@@ -30,7 +30,6 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     var notifications: [NKNotifications] = []
-    var dataSourceTask: URLSessionTask?
     var session: NCSession.Session!
 
     var controller: NCMainTabBarController? {
@@ -52,7 +51,11 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
         tableView.estimatedRowHeight = 50.0
         tableView.backgroundColor = .systemBackground
 
-        refreshControl?.addTarget(self, action: #selector(getNetwokingNotification(_:)), for: .valueChanged)
+        refreshControl?.action(for: .valueChanged) { _ in
+            Task {
+                await self.getNetwokingNotification()
+            }
+        }
 
         let close = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .plain) {
             self.dismiss(animated: true)
@@ -64,16 +67,19 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        getNetwokingNotification(nil)
+        Task {
+            await getNetwokingNotification()
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateNotification)
+        Task {
+            await NCNetworking.shared.networkingTasks.cancel(identifier: "NCNotification")
+        }
 
-        // Cancel Queue & Retrieves Properties
-        dataSourceTask?.cancel()
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateNotification)
     }
 
     @objc func viewClose() {
@@ -234,7 +240,14 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
     // MARK: - tap Action
 
     func tapRemove(with notification: NKNotifications, sender: Any?) {
-        NextcloudKit.shared.setNotification(serverUrl: nil, idNotification: notification.idNotification, method: "DELETE", account: session.account) { _, _, error in
+        NextcloudKit.shared.setNotification(serverUrl: nil, idNotification: notification.idNotification, method: "DELETE", account: session.account) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
+                                                                                            path: "\(notification.idNotification)",
+                                                                                            name: "setNotification")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        } completion: { _, _, error in
             if error == .success {
                 if let index = self.notifications
                     .firstIndex(where: { $0.idNotification == notification.idNotification }) {
@@ -271,7 +284,13 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
             return
         }
 
-        NextcloudKit.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method, account: session.account) { _, _, error in
+        NextcloudKit.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method, account: session.account) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
+                                                                                            name: "setNotification")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        } completion: { _, _, error in
             if error == .success {
                 if let index = self.notifications.firstIndex(where: { $0.idNotification == notification.idNotification }) {
                     self.notifications.remove(at: index)
@@ -294,28 +313,36 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
 
     // MARK: - Load notification networking
 
-   @objc func getNetwokingNotification(_ sender: Any?) {
+    @MainActor
+    func getNetwokingNotification() async {
+        // If is already in-flight, do nothing
+        if await NCNetworking.shared.networkingTasks.isReading(identifier: "NCNotification") {
+            return
+        }
 
-       self.tableView.reloadData()
-       NextcloudKit.shared.getNotifications(account: session.account) { task in
-           self.dataSourceTask = task
-           self.tableView.reloadData()
-       } completion: { account, notifications, _, error in
-           if error == .success, let notifications = notifications {
-               self.notifications.removeAll()
-               let sortedNotifications = notifications.sorted { $0.date > $1.date }
-               for notification in sortedNotifications {
-                   if let icon = notification.icon {
-                       self.utility.convertSVGtoPNGWriteToUserData(svgUrlString: icon, width: 25, rewrite: false, account: account) { _, _ in
-                           self.tableView.reloadData()
-                       }
-                   }
-                   self.notifications.append(notification)
-               }
-               self.refreshControl?.endRefreshing()
-               self.tableView.reloadData()
-           }
-       }
+        self.tableView.reloadData()
+
+        let results = await NextcloudKit.shared.getNotificationsAsync(account: session.account) { task in
+            Task {
+                await NCNetworking.shared.networkingTasks.track(identifier: "NCNotification", task: task)
+            }
+        }
+        guard results.error == .success, let notifications = results.notifications else {
+            return
+        }
+
+        self.notifications.removeAll()
+        let sortedNotifications = notifications.sorted { $0.date > $1.date }
+        for notification in sortedNotifications {
+            if let icon = notification.icon {
+                self.utility.convertSVGtoPNGWriteToUserData(svgUrlString: icon, width: 25, rewrite: false, account: session.account) { _, _ in
+                    self.tableView.reloadData()
+                }
+            }
+            self.notifications.append(notification)
+        }
+        self.refreshControl?.endRefreshing()
+        self.tableView.reloadData()
     }
 }
 

@@ -56,6 +56,14 @@ class NCGroupfolders: NCCollectionViewCommon {
         }
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        Task {
+            await NCNetworking.shared.networkingTasks.cancel(identifier: "NCGroupfolders")
+        }
+    }
+
     // MARK: - DataSource
 
     override func reloadDataSource() async {
@@ -79,10 +87,13 @@ class NCGroupfolders: NCCollectionViewCommon {
     }
 
     override func getServerData(forced: Bool = false) async {
-        await super.getServerData()
-
         defer {
             restoreDefaultTitle()
+        }
+
+        // If is already in-flight, do nothing
+        if await NCNetworking.shared.networkingTasks.isReading(identifier: "NCGroupfolders") {
+            return
         }
 
         showLoadingTitle()
@@ -91,7 +102,9 @@ class NCGroupfolders: NCCollectionViewCommon {
         let showHiddenFiles = NCPreferences().getShowHiddenFiles(account: session.account)
 
         let resultsGroupfolders = await NextcloudKit.shared.getGroupfoldersAsync(account: session.account) { task in
-            self.dataSourceTask = task
+            Task {
+                await NCNetworking.shared.networkingTasks.track(identifier: "NCGroupfolders", task: task)
+            }
             if self.dataSource.isEmpty() {
                 self.collectionView.reloadData()
             }
@@ -108,21 +121,22 @@ class NCGroupfolders: NCCollectionViewCommon {
             let serverUrlFileName = homeServerUrl + mountPoint
             let resultsReadFile = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrlFileName,
                                                                                   depth: "0", showHiddenFiles: showHiddenFiles,
-                                                                                  account: session.account)
+                                                                                  account: session.account) { task in
+                Task {
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
+                                                                                                path: serverUrlFileName,
+                                                                                                name: "readFileOrFolder")
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
+            }
 
             guard resultsReadFile.error == .success, let file = resultsReadFile.files?.first else {
                 return
             }
 
             let metadata = await self.database.convertFileToMetadataAsync(file)
+            await self.database.createDirectory(metadata: metadata)
 
-            await self.database.addMetadataAsync(metadata)
-            await self.database.addDirectoryAsync(serverUrl: serverUrlFileName,
-                                                  ocId: metadata.ocId,
-                                                  fileId: metadata.fileId,
-                                                  permissions: metadata.permissions,
-                                                  favorite: metadata.favorite,
-                                                  account: metadata.account)
             await self.reloadDataSource()
         }
     }

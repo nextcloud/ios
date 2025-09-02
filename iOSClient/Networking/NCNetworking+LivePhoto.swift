@@ -33,7 +33,7 @@ extension NCNetworking {
                                     metadata.path,
                                     metadata.livePhotoFile)
 
-        let metadataLast = await self.database.getMetadataAsync(predicate: predicate)
+        let metadataLast = await NCManageDatabase.shared.getMetadataAsync(predicate: predicate)
 
         if let metadataLast {
             if metadataLast.status != self.global.metadataStatusNormal {
@@ -44,7 +44,7 @@ extension NCNetworking {
 
         } else {
             metadata.livePhotoFile = ""
-            await self.database.addMetadataAsync(metadata)
+            await NCManageDatabase.shared.addMetadataAsync(metadata)
             await self.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferChange(status: self.global.networkingStatusUploadedLivePhoto,
                                         metadata: metadata,
@@ -62,9 +62,16 @@ extension NCNetworking {
         if livePhoto {
             livePhotoFileId = metadataLast.fileId
         }
-        let resultsMetadataFirst = await NextcloudKit.shared.setLivephotoAsync(serverUrlfileNamePath: serverUrlfileNamePathFirst, livePhotoFile: livePhotoFileId, account: metadataFirst.account)
+        let resultsMetadataFirst = await NextcloudKit.shared.setLivephotoAsync(serverUrlfileNamePath: serverUrlfileNamePathFirst, livePhotoFile: livePhotoFileId, account: metadataFirst.account) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadataFirst.account,
+                                                                                            path: serverUrlfileNamePathFirst,
+                                                                                            name: "setLivephoto")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        }
         if resultsMetadataFirst.error == .success {
-            await database.setMetadataLivePhotoByServerAsync(account: metadataFirst.account, ocId: metadataFirst.ocId, livePhotoFile: livePhotoFileId)
+            await NCManageDatabase.shared.setMetadataLivePhotoByServerAsync(account: metadataFirst.account, ocId: metadataFirst.ocId, livePhotoFile: livePhotoFileId)
         }
 
         ///  METADATA LAST
@@ -72,9 +79,16 @@ extension NCNetworking {
         if livePhoto {
             livePhotoFileId = metadataFirst.fileId
         }
-        let resultsMetadataLast = await NextcloudKit.shared.setLivephotoAsync(serverUrlfileNamePath: serverUrlfileNamePathLast, livePhotoFile: livePhotoFileId, account: metadataLast.account)
+        let resultsMetadataLast = await NextcloudKit.shared.setLivephotoAsync(serverUrlfileNamePath: serverUrlfileNamePathLast, livePhotoFile: livePhotoFileId, account: metadataLast.account) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadataLast.account,
+                                                                                            path: serverUrlfileNamePathLast,
+                                                                                            name: "setLivephoto")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        }
         if resultsMetadataLast.error == .success {
-            await database.setMetadataLivePhotoByServerAsync(account: metadataLast.account, ocId: metadataLast.ocId, livePhotoFile: livePhotoFileId)
+            await NCManageDatabase.shared.setMetadataLivePhotoByServerAsync(account: metadataLast.account, ocId: metadataLast.ocId, livePhotoFile: livePhotoFileId)
         }
 
         if resultsMetadataFirst.error == .success, resultsMetadataLast.error == .success {

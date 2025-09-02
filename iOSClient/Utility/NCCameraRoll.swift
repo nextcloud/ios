@@ -116,7 +116,7 @@ final class NCCameraRoll: CameraRollExtractor {
                                                                                 fileName: result.metadata.fileNameView,
                                                                                 userId: result.metadata.userId,
                                                                                 urlBase: result.metadata.urlBase)
-            self.utilityFileSystem.moveFile(atPath: result.filePath, toPath: toPath)
+            await self.utilityFileSystem.moveFileAsync(atPath: result.filePath, toPath: toPath)
             metadatas.append(result.metadata)
 
             let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadataSource.assetLocalIdentifier], options: nil)

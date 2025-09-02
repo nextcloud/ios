@@ -339,6 +339,15 @@ final class NCPreferences: NSObject {
         }
     }
 
+    var deviceTokenPushNotification: String {
+        get {
+            return getStringPreference(key: "deviceTokenPushNotification", defaultValue: "")
+        }
+        set {
+            setUserDefaults(newValue, forKey: "deviceTokenPushNotification")
+        }
+    }
+
     // MARK: -
 
     func getPassword(account: String) -> String {
@@ -454,73 +463,62 @@ final class NCPreferences: NSObject {
         setEndToEndPassphrase(account: account, passphrase: nil)
     }
 
-    // MARK: - PUSHNOTIFICATION
-
-    func getPushNotificationPublicKey(account: String) -> Data? {
-        let key = "PNPublicKey" + account
-        return try? keychain.getData(key)
-    }
-
-    func setPushNotificationPublicKey(account: String, data: Data?) {
-        let key = "PNPublicKey" + account
-        keychain[data: key] = data
-    }
+    // MARK: - PUSH NOTIFICATION
 
     func getPushNotificationPrivateKey(account: String) -> Data? {
-        let key = "PNPrivateKey" + account
+        let key = "PushPrivateKey" + account
         return try? keychain.getData(key)
     }
 
     func setPushNotificationPrivateKey(account: String, data: Data?) {
-        let key = "PNPrivateKey" + account
+        let key = "PushPrivateKey" + account
+        keychain[data: key] = data
+    }
+
+    func getPushNotificationPublicKey(account: String) -> Data? {
+        let key = "PushPublicKey" + account
+        return try? keychain.getData(key)
+    }
+
+    func setPushNotificationPublicKey(account: String, data: Data?) {
+        let key = "PushPublicKey" + account
         keychain[data: key] = data
     }
 
     func getPushNotificationSubscribingPublicKey(account: String) -> String? {
-        let key = "PNSubscribingPublicKey" + account
+        let key = "PushSubscribingPublicKey" + account
         return try? keychain.get(key)
     }
 
     func setPushNotificationSubscribingPublicKey(account: String, publicKey: String?) {
-        let key = "PNSubscribingPublicKey" + account
+        let key = "PushSubscribingPublicKey" + account
         keychain[key] = publicKey
     }
 
-    func getPushNotificationToken(account: String) -> String? {
-        let key = "PNToken" + account
-        return try? keychain.get(key)
-    }
-
-    func setPushNotificationToken(account: String, token: String?) {
-        let key = "PNToken" + account
-        keychain[key] = token
-    }
-
     func getPushNotificationDeviceIdentifier(account: String) -> String? {
-        let key = "PNDeviceIdentifier" + account
-        return try? keychain.get(key)
+        let value = getStringPreference(key: "PushDeviceIdentifier", account: account, defaultValue: "")
+        return value
     }
 
     func setPushNotificationDeviceIdentifier(account: String, deviceIdentifier: String?) {
-        let key = "PNDeviceIdentifier" + account
-        keychain[key] = deviceIdentifier
+        let userDefaultsKey = "PushDeviceIdentifier" + "_\(account)"
+        setUserDefaults(deviceIdentifier, forKey: userDefaultsKey)
     }
 
     func getPushNotificationDeviceIdentifierSignature(account: String) -> String? {
-        let key = "PNDeviceIdentifierSignature" + account
+        let key = "PushDeviceIdentifierSignature" + account
         return try? keychain.get(key)
     }
 
     func setPushNotificationDeviceIdentifierSignature(account: String, deviceIdentifierSignature: String?) {
-        let key = "PNDeviceIdentifierSignature" + account
+        let key = "PushDeviceIdentifierSignature" + account
         keychain[key] = deviceIdentifierSignature
     }
 
     func clearAllKeysPushNotification(account: String) {
+        setPushNotificationPrivateKey(account: account, data: nil)
         setPushNotificationPublicKey(account: account, data: nil)
         setPushNotificationSubscribingPublicKey(account: account, publicKey: nil)
-        setPushNotificationPrivateKey(account: account, data: nil)
-        setPushNotificationToken(account: account, token: nil)
         setPushNotificationDeviceIdentifier(account: account, deviceIdentifier: nil)
         setPushNotificationDeviceIdentifierSignature(account: account, deviceIdentifierSignature: nil)
     }

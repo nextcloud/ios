@@ -52,6 +52,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     internal let utility = NCUtility()
     internal let database = NCManageDatabase.shared
     internal var filter: NCGlobal.TypeFilterScanDocument = NCPreferences().typeFilterScanDocument
+    @MainActor
     internal var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
     }

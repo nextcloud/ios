@@ -35,7 +35,7 @@
     return shared;
 }
 
-- (NCPushKeyPair *)generatePushNotificationsKeyPair:(NSString *)account
+- (NCPushKeyPair *)generatePushNotificationsKeyPair
 {
     EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, NULL);
     if (!ctx) {

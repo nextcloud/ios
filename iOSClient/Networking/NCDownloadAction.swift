@@ -16,7 +16,6 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
     var documentController: UIDocumentInteractionController?
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
-    let database = NCManageDatabase.shared
     let global = NCGlobal.shared
     var sceneIdentifier: String = ""
 
@@ -143,29 +142,29 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
     func setMetadataAvalableOffline(_ metadata: tableMetadata, isOffline: Bool) async {
         if isOffline {
             if metadata.directory {
-                await self.database.setDirectoryAsync(serverUrl: metadata.serverUrlFileName, offline: false, metadata: metadata)
+                await NCManageDatabase.shared.setDirectoryAsync(serverUrl: metadata.serverUrlFileName, offline: false, metadata: metadata)
                 let predicate = NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND sessionSelector == %@ AND status == %d", metadata.account, metadata.serverUrlFileName, NCGlobal.shared.selectorSynchronizationOffline, NCGlobal.shared.metadataStatusWaitDownload)
-                if let metadatas = await database.getMetadatasAsync(predicate: predicate) {
-                    await database.clearMetadatasSessionAsync(metadatas: metadatas)
+                if let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: predicate) {
+                    await NCManageDatabase.shared.clearMetadatasSessionAsync(metadatas: metadatas)
                 }
             } else {
-                await database.setOffLocalFileAsync(ocId: metadata.ocId)
+                await NCManageDatabase.shared.setOffLocalFileAsync(ocId: metadata.ocId)
             }
         } else if metadata.directory {
-            await database.setDirectoryAsync(serverUrl: metadata.serverUrlFileName, offline: true, metadata: metadata)
-            await self.database.cleanTablesOcIds(account: metadata.account, userId: metadata.userId, urlBase: metadata.urlBase)
+            await NCManageDatabase.shared.setDirectoryAsync(serverUrl: metadata.serverUrlFileName, offline: true, metadata: metadata)
+            await NCManageDatabase.shared.cleanTablesOcIds(account: metadata.account, userId: metadata.userId, urlBase: metadata.urlBase)
             await NCNetworking.shared.synchronization(account: metadata.account, serverUrl: metadata.serverUrlFileName, userId: metadata.userId, urlBase: metadata.urlBase, metadatasInDownload: nil)
         } else {
             var metadatasSynchronizationOffline: [tableMetadata] = []
             metadatasSynchronizationOffline.append(metadata)
-            if let metadata = await database.getMetadataLivePhotoAsync(metadata: metadata) {
+            if let metadata = await NCManageDatabase.shared.getMetadataLivePhotoAsync(metadata: metadata) {
                 metadatasSynchronizationOffline.append(metadata)
             }
-            await database.addLocalFileAsync(metadata: metadata, offline: true)
+            await NCManageDatabase.shared.addLocalFileAsync(metadata: metadata, offline: true)
             for metadata in metadatasSynchronizationOffline {
-                await database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
-                                                                     session: NCNetworking.shared.sessionDownloadBackground,
-                                                                     selector: NCGlobal.shared.selectorSynchronizationOffline)
+                await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
+                                                                                    session: NCNetworking.shared.sessionDownloadBackground,
+                                                                                    selector: NCGlobal.shared.selectorSynchronizationOffline)
             }
         }
     }
@@ -177,7 +176,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         var downloadRequest: DownloadRequest?
         let hud = NCHud(viewController.tabBarController?.view)
 
-        if let metadata = await database.getMetadataFromFileIdAsync(fileId) {
+        if let metadata = await NCManageDatabase.shared.getMetadataFromFileIdAsync(fileId) {
             do {
                 let attr = try FileManager.default.attributesOfItem(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
                                                                                                                               fileName: metadata.fileNameView,
@@ -201,15 +200,22 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             }
         }
 
-        let resultsFile = await NextcloudKit.shared.getFileFromFileIdAsync(fileId: fileId, account: account)
+        let resultsFile = await NextcloudKit.shared.getFileFromFileIdAsync(fileId: fileId, account: account) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: fileId,
+                                                                                            name: "getFileFromFileId")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        }
         hud.dismiss()
         guard resultsFile.error == .success, let file = resultsFile.file else {
             NCContentPresenter().showError(error: resultsFile.error)
             return
         }
 
-        let metadata = await self.database.convertFileToMetadataAsync(file)
-        await self.database.addMetadataAsync(metadata)
+        let metadata = await NCManageDatabase.shared.convertFileToMetadataAsync(file)
+        await NCManageDatabase.shared.addMetadataAsync(metadata)
 
         let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
                                                                                        fileName: metadata.fileNameView,
@@ -228,25 +234,30 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             downloadRequest = request
         } taskHandler: { task in
             Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                            path: metadata.serverUrlFileName,
+                                                                                            name: "download")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+
                 let ocId = metadata.ocId
-                await self.database.setMetadataSessionAsync(ocId: ocId,
-                                                            sessionTaskIdentifier: task.taskIdentifier,
-                                                            status: self.global.metadataStatusDownloading)
+                await NCManageDatabase.shared.setMetadataSessionAsync(ocId: ocId,
+                                                                      sessionTaskIdentifier: task.taskIdentifier,
+                                                                      status: self.global.metadataStatusDownloading)
             }
         } progressHandler: { progress in
             hud.progress(progress.fractionCompleted)
         }
 
         hud.dismiss()
-        await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                    session: "",
-                                                    sessionTaskIdentifier: 0,
-                                                    sessionError: "",
-                                                    status: self.global.metadataStatusNormal,
-                                                    etag: download.etag)
+        await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                              session: "",
+                                                              sessionTaskIdentifier: 0,
+                                                              sessionError: "",
+                                                              status: self.global.metadataStatusNormal,
+                                                              etag: download.etag)
 
         if download.nkError == .success {
-            await self.database.addLocalFileAsync(metadata: metadata)
+            await NCManageDatabase.shared.addLocalFileAsync(metadata: metadata)
             if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController) {
                 viewController.navigationController?.pushViewController(vc, animated: true)
             }
@@ -268,17 +279,17 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                     // Remove all known download limits from shares related to the given file.
                     // This avoids obsolete download limit objects to stay around.
                     // Afterwards create new download limits, should any such be returned for the known shares.
-                    let shares = await self.database.getTableSharesAsync(account: metadata.account,
-                                                                         serverUrl: metadata.serverUrl,
-                                                                         fileName: metadata.fileName)
+                    let shares = await NCManageDatabase.shared.getTableSharesAsync(account: metadata.account,
+                                                                                   serverUrl: metadata.serverUrl,
+                                                                                   fileName: metadata.fileName)
                     for share in shares {
-                        await self.database.deleteDownloadLimitAsync(byAccount: metadata.account, shareToken: share.token)
+                        await NCManageDatabase.shared.deleteDownloadLimitAsync(byAccount: metadata.account, shareToken: share.token)
 
                         if let receivedDownloadLimit = file.downloadLimits.first(where: { $0.token == share.token }) {
-                            await self.database.createDownloadLimitAsync(account: metadata.account,
-                                                                         count: receivedDownloadLimit.count,
-                                                                         limit: receivedDownloadLimit.limit,
-                                                                         token: receivedDownloadLimit.token)
+                            await NCManageDatabase.shared.createDownloadLimitAsync(account: metadata.account,
+                                                                                   count: receivedDownloadLimit.count,
+                                                                                   limit: receivedDownloadLimit.limit,
+                                                                                   token: receivedDownloadLimit.token)
                         }
                     }
 
@@ -342,10 +353,10 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
         for (metadata, url) in downloadMetadata {
             processor.execute { completion in
                 Task {
-                    guard let metadata = await self.database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
-                                                                                                   session: NCNetworking.shared.sessionDownload,
-                                                                                                   selector: "",
-                                                                                                   sceneIdentifier: controller.sceneIdentifier) else {
+                    guard let metadata = await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
+                                                                                                             session: NCNetworking.shared.sessionDownload,
+                                                                                                             selector: "",
+                                                                                                             sceneIdentifier: controller.sceneIdentifier) else {
                         return completion()
                     }
 
@@ -456,12 +467,19 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
     func pastePasteboard(serverUrl: String, account: String, controller: NCMainTabBarController?) async {
         var fractionCompleted: Float = 0
         let processor = ParallelWorker(n: 5, titleKey: "_status_uploading_", totalTasks: nil, controller: controller)
-        guard let tblAccount = await self.database.getTableAccountAsync(account: account) else {
+        guard let tblAccount = await NCManageDatabase.shared.getTableAccountAsync(account: account) else {
             return
         }
 
         func uploadPastePasteboard(fileName: String, serverUrlFileName: String, fileNameLocalPath: String, serverUrl: String, completion: @escaping () -> Void) {
             NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: account) { _ in
+            } taskHandler: { task in
+                Task {
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                                path: serverUrlFileName,
+                                                                                                name: "upload")
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
             } progressHandler: { progress in
                 if Float(progress.fractionCompleted) > fractionCompleted || fractionCompleted == 0 {
                     processor.hud.progress(progress.fractionCompleted)
@@ -474,7 +492,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                                                                                         userId: tblAccount.userId,
                                                                                         urlBase: tblAccount.urlBase)
                     self.utilityFileSystem.moveFile(atPath: fileNameLocalPath, toPath: toPath)
-                    self.database.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
+                    NCManageDatabase.shared.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
                     Task {
                         await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                             delegate.transferRequestData(serverUrl: serverUrl)

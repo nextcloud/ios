@@ -7,7 +7,7 @@ import UIKit
 import NextcloudKit
 
 enum NCShareExtensionError: Error {
-    case cancel, fileUpload, noAccount, noFiles
+    case cancel, fileUpload, noAccount, noFiles, versionMismatch
 }
 
 class NCShareExtension: UIViewController {
@@ -46,8 +46,7 @@ class NCShareExtension: UIViewController {
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     let global = NCGlobal.shared
-    let database = NCManageDatabase.shared
-    let extensionData = NCShareExtensionData.shared
+    var maintenanceMode: Bool = false
 
     // MARK: - View Life Cycle
 
@@ -80,7 +79,7 @@ class NCShareExtension: UIViewController {
         let uploadGesture = UITapGestureRecognizer(target: self, action: #selector(actionUpload(_:)))
         uploadView.addGestureRecognizer(uploadGesture)
 
-        let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
+        let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionBuild())
         NextcloudKit.configureLogger(logLevel: (NCBrandOptions.shared.disable_log ? .disabled : NCPreferences().log))
 
         nkLog(start: "Start Share session " + versionNextcloudiOS)
@@ -95,7 +94,17 @@ class NCShareExtension: UIViewController {
             }
         }
 
-        if let account = extensionData.getTblAccoun()?.account {
+        // Verify version
+        let versionApp = NCUtility().getVersionMaintenance()
+        if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) {
+            let lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion)
+            if lastVersion != versionApp {
+                maintenanceMode = true
+                return
+            }
+        }
+
+        if let account = NCShareExtensionData.shared.getTblAccoun()?.account {
             accountRequestChangeAccount(account: account, controller: nil)
         }
     }
@@ -103,7 +112,14 @@ class NCShareExtension: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        guard extensionData.getTblAccoun() != nil,
+        // Verify version
+        guard !maintenanceMode else {
+            return showAlert(description: "_version_mismatch_error_") {
+                self.cancel(with: .versionMismatch)
+            }
+        }
+
+        guard NCShareExtensionData.shared.getTblAccoun() != nil,
                   !NCPasscode.shared.isPasscodeReset else {
             return showAlert(description: "_no_active_account_") {
                 self.cancel(with: .noAccount)
@@ -142,8 +158,10 @@ class NCShareExtension: UIViewController {
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
-        collectionView.reloadData()
-        tableView.reloadData()
+        if !maintenanceMode {
+            collectionView.reloadData()
+            tableView.reloadData()
+        }
     }
 
     // MARK: -
@@ -163,10 +181,10 @@ class NCShareExtension: UIViewController {
     }
 
     func setNavigationBar(navigationTitle: String) {
-        guard let tblAccount = self.extensionData.getTblAccoun() else {
+        guard let tblAccount = NCShareExtensionData.shared.getTblAccoun() else {
             return
         }
-        let session = self.extensionData.getSession()
+        let session = NCShareExtensionData.shared.getSession()
 
         navigationItem.title = navigationTitle
         cancelButton.title = NSLocalizedString("_cancel_", comment: "")
@@ -243,7 +261,7 @@ class NCShareExtension: UIViewController {
     }
 
     @objc func actionCreateFolder(_ sender: Any?) {
-        let session = self.extensionData.getSession()
+        let session = NCShareExtensionData.shared.getSession()
         guard let capabilities = NCNetworking.shared.capabilities[session.account] else {
             return
         }
@@ -264,12 +282,12 @@ class NCShareExtension: UIViewController {
 extension NCShareExtension {
     @objc func actionUpload(_ sender: Any?) {
         Task { @MainActor in
-            guard let tblAccount = self.extensionData.getTblAccoun(),
+            guard let tblAccount = NCShareExtensionData.shared.getTblAccoun(),
                   let capabilities = NCNetworking.shared.capabilities[tblAccount.account] else {
                 return
             }
             guard !filesName.isEmpty else { return showAlert(description: "_files_no_files_") }
-            let session = self.extensionData.getSession()
+            let session = NCShareExtensionData.shared.getSession()
 
             var conflicts: [tableMetadata] = []
             var invalidNameIndexes: [Int] = []
@@ -304,18 +322,18 @@ extension NCShareExtension {
                 guard utilityFileSystem.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath) else {
                     continue
                 }
-                let metadataForUpload = await self.database.createMetadataAsync(fileName: fileName,
-                                                                                ocId: ocId,
-                                                                                serverUrl: serverUrl,
-                                                                                session: session,
-                                                                                sceneIdentifier: nil)
+                let metadataForUpload = await NCManageDatabase.shared.createMetadataAsync(fileName: fileName,
+                                                                                          ocId: ocId,
+                                                                                          serverUrl: serverUrl,
+                                                                                          session: session,
+                                                                                          sceneIdentifier: nil)
 
                 metadataForUpload.session = NCNetworking.shared.sessionUpload
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFileShareExtension
                 metadataForUpload.size = utilityFileSystem.getFileSize(filePath: toPath)
                 metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
                 metadataForUpload.sessionDate = Date()
-                if self.database.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName, nativeFormat: metadataForUpload.nativeFormat) != nil {
+                if NCManageDatabase.shared.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName, nativeFormat: metadataForUpload.nativeFormat) != nil {
                     conflicts.append(metadataForUpload)
                 } else {
                     uploadMetadata.append(metadataForUpload)
@@ -362,7 +380,7 @@ extension NCShareExtension {
 
     @MainActor
     func upload(metadata: tableMetadata) async -> NKError? {
-        let session = self.extensionData.getSession()
+        let session = NCShareExtensionData.shared.getSession()
         var error: NKError = .success
 
         let results = await NKTypeIdentifiers.shared.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false, account: session.account)

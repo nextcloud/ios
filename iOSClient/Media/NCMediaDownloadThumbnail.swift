@@ -13,6 +13,7 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
     let media: NCMedia
     var session: NCSession.Session
 
+    @MainActor
     init(metadata: NCMediaDataSource.Metadata, media: NCMedia) {
         self.metadata = metadata
         self.media = media
@@ -27,7 +28,14 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
            }
            var image: UIImage?
 
-           let resultsDownloadPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: tblMetadata.fileId, etag: tblMetadata.etag, account: tblMetadata.account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue))
+           let resultsDownloadPreview = await NextcloudKit.shared.downloadPreviewAsync(fileId: tblMetadata.fileId, etag: tblMetadata.etag, account: tblMetadata.account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
+               Task {
+                   let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: tblMetadata.account,
+                                                                                               path: tblMetadata.fileId,
+                                                                                               name: "DownloadPreview")
+                   await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+               }
+           }
 
            if resultsDownloadPreview.error == .success, let data = resultsDownloadPreview.responseData?.data {
                NCUtility().createImageFileFrom(data: data, metadata: tblMetadata)

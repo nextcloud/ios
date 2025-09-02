@@ -34,6 +34,8 @@ class NCViewer: NSObject {
     @MainActor
     func getViewerController(metadata: tableMetadata, ocIds: [String]? = nil, image: UIImage? = nil, delegate: UIViewController? = nil) async -> UIViewController? {
         let session = NCSession.shared.getSession(account: metadata.account)
+        // Set Last Opening Date
+        await self.database.setLocalFileLastOpeningDateAsync(metadata: metadata)
 
         // URL
         if metadata.classFile == NKTypeClassFile.url.rawValue,
@@ -75,9 +77,6 @@ class NCViewer: NSObject {
         // DOCUMENTS
         else if metadata.classFile == NKTypeClassFile.document.rawValue,
                 !NCUtilityFileSystem().isDirectoryE2EE(serverUrl: metadata.serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account) {
-            // Set Last Opening Date
-            await self.database.setLastOpeningDateAsync(metadata: metadata)
-
             // PDF
             if metadata.isPDF {
                 let vc = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateInitialViewController() as? NCViewerPDF
@@ -93,7 +92,14 @@ class NCViewer: NSObject {
                 if metadata.url.isEmpty {
 
                     NCActivityIndicator.shared.start(backgroundView: delegate?.view)
-                    let results = await NextcloudKit.shared.createUrlRichdocumentsAsync(fileID: metadata.fileId, account: metadata.account)
+                    let results = await NextcloudKit.shared.createUrlRichdocumentsAsync(fileID: metadata.fileId, account: metadata.account) { task in
+                        Task {
+                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                                        path: metadata.fileId,
+                                                                                                        name: "createUrlRichdocuments")
+                            await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                        }
+                    }
                     NCActivityIndicator.shared.stop()
 
                     guard results.error == .success, let url = results.url else {
@@ -126,12 +132,12 @@ class NCViewer: NSObject {
                 var options = NKRequestOptions()
                 var editor = ""
                 var editorViewController = ""
-                let editors = utility.editorsDirectEditing(account: metadata.account, contentType: metadata.contentType)
-                if editors.contains("Nextcloud Text") {
+                let editors = utility.editorsDirectEditing(account: metadata.account, contentType: metadata.contentType).map { $0.lowercased() }
+                if editors.contains("nextcloud text") {
                     editor = "text"
-                    editorViewController = "Nextcloud Text"
+                    editorViewController = "nextcloud text"
                     options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentNCText())
-                } else if editors.contains("ONLYOFFICE") {
+                } else if editors.contains("onlyoffice") {
                     editor = "onlyoffice"
                     editorViewController = "onlyoffice"
                     options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentOnlyOffice())
@@ -140,7 +146,14 @@ class NCViewer: NSObject {
                     let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
 
                     NCActivityIndicator.shared.start(backgroundView: delegate?.view)
-                    let results = await NextcloudKit.shared.textOpenFileAsync(fileNamePath: fileNamePath, editor: editor, account: metadata.account, options: options)
+                    let results = await NextcloudKit.shared.textOpenFileAsync(fileNamePath: fileNamePath, editor: editor, account: metadata.account, options: options) { task in
+                        Task {
+                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                                        path: fileNamePath,
+                                                                                                        name: "textOpenFile")
+                            await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                        }
+                    }
                     NCActivityIndicator.shared.stop()
 
                     guard results.error == .success, let url = results.url else {

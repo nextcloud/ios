@@ -647,6 +647,7 @@
 "_terms_accepted_"          = "Terms accepted";
 "_recommended_files_"       = "Recommended Files";
 "_propagate_layout_"        = "Apply the following change to all subfolders";
+"_version_mismatch_error_"  = "Version change: please open the main app to update the data.";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails";
@@ -703,6 +704,7 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_file_name_validator_error_invalid_character_" = "Name contains an invalid character: \"%@\".";
 "_file_name_validator_error_space_" = "Name must not contain spaces at the beginning or end.";
 "_file_name_new_extension_" = "Changing the extension might cause this file to open in a different application.";
+"_file_name_empty_" = "File name cannot be empty.";
 "_please_rename_file_" = "Please rename the file or folder.";
 "hidden_file_name_warning" = "Name will result in a hidden file.";
 

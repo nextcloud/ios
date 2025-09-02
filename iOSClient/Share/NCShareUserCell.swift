@@ -108,8 +108,7 @@ class NCShareUserCell: UITableViewCell, NCCellProtocol {
         imageItem.contentMode = .scaleAspectFill
 
         if tableShare.shareType == NCShareCommon.shareTypeTeam {
-            imageItem.image = utility.loadImage(named: "person.3.fill", colors: [NCBrandColor.shared.iconImageColor])
-            imageItem.contentMode = .scaleAspectFit
+            imageItem.image = utility.loadImage(named: "custom.person.3.circle.fill", colors: [NCBrandColor.shared.iconImageColor2])
         } else if results.image == nil {
             imageItem.image = utility.loadUserImage(for: tableShare.shareWith, displayName: tableShare.shareWithDisplayname, urlBase: metadata.urlBase)
         } else {
@@ -222,7 +221,14 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
                 sizeImage: NCGlobal.shared.avatarSize,
                 avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
                 etagResource: etag,
-                account: session.account) { _, imageAvatar, _, etag, _, error in
+                account: session.account) { task in
+                    Task {
+                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: session.account,
+                                                                                                    path: sharee.shareWith,
+                                                                                                    name: "downloadAvatar")
+                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                    }
+                } completion: { _, imageAvatar, _, etag, _, error in
                     if error == .success, let etag = etag, let imageAvatar = imageAvatar {
                         NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                         self.imageItem.image = imageAvatar

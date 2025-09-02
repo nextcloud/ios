@@ -116,7 +116,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
             try? await Task.sleep(nanoseconds: 1_000_000_000)
 
             NCNetworking.shared.removeServerErrorAccount(self.session.account)
-            NCManageDatabase.shared.clearDatabase()
+            NCManageDatabase.shared.clearDBCache()
 
             let ufs = NCUtilityFileSystem()
             ufs.removeGroupDirectoryProviderStorage()
@@ -138,11 +138,15 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     /// Asynchronously calculates the size of cache directory and updates the footer title.
     @MainActor
     func calculateSize() async {
-        let ufs = NCUtilityFileSystem()
-        let directory = ufs.getDirectoryProviderStorage()
-        let totalSize = ufs.getDirectorySize(directory: directory)
+        // Run the heavy calculation off the main thread
+        let totalSize = await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .utility).async {
+                let size = NCUtilityFileSystem().getAppSize()
+                continuation.resume(returning: size)
+            }
+        }
 
-        self.footerTitle = "\(NSLocalizedString("_clear_cache_footer_", comment: "")). (\(NSLocalizedString("_used_space_", comment: "")) \(ufs.transformedSize(totalSize)))"
+        self.footerTitle = "\(NSLocalizedString("_clear_cache_footer_", comment: "")). (\(NSLocalizedString("_used_space_", comment: "")) \(NCUtilityFileSystem().transformedSize(totalSize)))"
     }
 
     /// Removes all accounts & exits the Nextcloud application if specified.

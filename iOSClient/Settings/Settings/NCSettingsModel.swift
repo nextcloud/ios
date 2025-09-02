@@ -31,6 +31,7 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
     var footerServer = ""
     var footerSlogan = ""
     // Get session
+    @MainActor
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
     }
@@ -52,7 +53,7 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
         privacyScreen = keychain.privacyScreenEnabled
         resetWrongAttempts = keychain.resetAppCounterFail
         accountRequest = keychain.accountRequest
-        footerApp = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility().getVersionApp(withBuild: true)) + "\n\n"
+        footerApp = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility().getVersionBuild()) + "\n\n"
         footerServer = String(format: NCBrandOptions.shared.textCopyrightNextcloudServer, capabilities.serverVersion) + "\n"
         footerSlogan = capabilities.themingName + " - " + capabilities.themingSlogan + "\n\n"
     }

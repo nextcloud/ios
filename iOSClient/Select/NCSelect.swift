@@ -171,6 +171,14 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         }
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        Task {
+            await NCNetworking.shared.networkingTasks.cancel(identifier: "NCSelect")
+        }
+    }
+
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
@@ -265,8 +273,13 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     func pushMetadata(_ metadata: tableMetadata) {
         Task { @MainActor in
             let serverUrlPush = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
-            guard let viewController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect else { return }
+            guard let viewController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect else {
+                return
+            }
             let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
+
+            // Set Last Opening Date
+            await database.setDirectoryLastOpeningDateAsync(ocId: metadata.ocId)
 
             self.serverUrlPush = serverUrlPush
 
@@ -526,7 +539,16 @@ extension NCSelect {
     }
 
     func getServerData() async {
-        let resultsReadFolder = await NCNetworking.shared.readFolderAsync(serverUrl: serverUrl, account: session.account)
+        // If is already in-flight, do nothing
+        if await NCNetworking.shared.networkingTasks.isReading(identifier: "NCSelect") {
+            return
+        }
+
+        let resultsReadFolder = await NCNetworking.shared.readFolderAsync(serverUrl: serverUrl, account: session.account) { task in
+            Task {
+                await NCNetworking.shared.networkingTasks.track(identifier: "NCSelect", task: task)
+            }
+        }
         if resultsReadFolder.error == .success {
             await reloadDataSource()
         }

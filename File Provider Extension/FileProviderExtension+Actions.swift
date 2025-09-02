@@ -25,16 +25,7 @@ extension FileProviderExtension {
 
                 if resultsReadFile.error == .success, let file = resultsReadFile.files?.first {
                     let metadata = await self.database.convertFileToMetadataAsync(file)
-
-                    await self.database.addDirectoryAsync(serverUrl: serverUrlFileName,
-                                                          ocId: file.ocId,
-                                                          fileId: metadata.fileId,
-                                                          etag: metadata.etag,
-                                                          permissions: metadata.permissions,
-                                                          favorite: false,
-                                                          account: metadata.account)
-
-                    await self.database.addMetadataAsync(metadata)
+                    await self.database.createDirectory(metadata: metadata)
 
                     let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
 

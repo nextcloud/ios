@@ -50,6 +50,16 @@ final class FileProviderExtension: NSFileProviderExtension {
     override func enumerator(for containerItemIdentifier: NSFileProviderItemIdentifier) throws -> NSFileProviderEnumerator {
         // Skip authentication checks for the working set container
         if containerItemIdentifier != .workingSet {
+            let versionApp = NCUtility().getVersionMaintenance()
+
+            // Verify version
+            if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) {
+                let lastVersion = groupDefaults.string(forKey: NCGlobal.shared.udLastVersion)
+                if lastVersion != versionApp {
+                    throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo: ["code": NSNumber(value: NCGlobal.shared.errorVersionMismatch)])
+                }
+            }
+
             // Ensure a valid account is configured for the extension
             guard fileProviderData.setupAccount(domain: self.domain, providerExtension: self) != nil else {
                 throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo: [:])
@@ -163,17 +173,7 @@ final class FileProviderExtension: NSFileProviderExtension {
                         return
                     }
 
-                    guard let metadata = await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                                                     session: NCNetworking.shared.sessionDownload,
-                                                                                     sessionTaskIdentifier: 0,
-                                                                                     sessionError: "",
-                                                                                     selector: "",
-                                                                                     status: NCGlobal.shared.metadataStatusDownloading) else {
-                        completionHandler(NSFileProviderError(.noSuchItem))
-                        return
-                    }
-
-                    await fileProviderData.signalEnumerator(ocId: metadata.ocId, type: .update)
+                    await fileProviderData.signalEnumerator(ocId: ocId, type: .update)
 
                     let (task, error) = backgroundSession.download(serverUrlFileName: serverUrlFileName,
                                                                    fileNameLocalPath: fileNameLocalPath,
@@ -182,9 +182,12 @@ final class FileProviderExtension: NSFileProviderExtension {
                                                                    sessionIdentifier: NCNetworking.shared.sessionDownloadBackgroundExt)
 
                     if let task, error == .success {
-                        await self.database.setMetadataSessionAsync(ocId: ocId,
-                                                                    sessionTaskIdentifier: task.taskIdentifier)
-
+                        await self.database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                    session: NCNetworking.shared.sessionDownload,
+                                                                    sessionTaskIdentifier: task.taskIdentifier,
+                                                                    sessionError: "",
+                                                                    selector: "",
+                                                                    status: NCGlobal.shared.metadataStatusDownloading)
                         do {
                             if let domain = self.domain,
                                let manager = NSFileProviderManager(for: domain) {
