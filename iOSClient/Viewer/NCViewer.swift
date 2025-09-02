@@ -132,12 +132,12 @@ class NCViewer: NSObject {
                 var options = NKRequestOptions()
                 var editor = ""
                 var editorViewController = ""
-                let editors = utility.editorsDirectEditing(account: metadata.account, contentType: metadata.contentType)
-                if editors.contains("Nextcloud Text") {
+                let editors = utility.editorsDirectEditing(account: metadata.account, contentType: metadata.contentType).map { $0.lowercased() }
+                if editors.contains("nextcloud text") {
                     editor = "text"
-                    editorViewController = "Nextcloud Text"
+                    editorViewController = "nextcloud text"
                     options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentNCText())
-                } else if editors.contains("ONLYOFFICE") {
+                } else if editors.contains("onlyoffice") {
                     editor = "onlyoffice"
                     editorViewController = "onlyoffice"
                     options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentOnlyOffice())
