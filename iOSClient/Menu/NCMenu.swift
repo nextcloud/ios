@@ -110,9 +110,9 @@ class NCMenu: UITableViewController {
             actionNameLabel?.lineBreakMode = .byTruncatingMiddle
 
             if action.boldTitle {
-                actionNameLabel?.font = .systemFont(ofSize: 18, weight: .medium)
+                actionNameLabel?.font = .systemFont(ofSize: 16, weight: .medium)
             } else {
-                actionNameLabel?.font = .systemFont(ofSize: 18, weight: .regular)
+                actionNameLabel?.font = .systemFont(ofSize: 16, weight: .regular)
             }
         }
 

@@ -564,9 +564,6 @@ actor NCNetworkingProcess {
                     }
                 }
 
-                await database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                       status: global.metadataStatusNormal)
-
                 if resultDelete.error == .success || resultDelete.error.errorCode == NCGlobal.shared.errorResourceNotFound {
                     do {
                         try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
@@ -586,6 +583,9 @@ actor NCNetworkingProcess {
 
                     metadatasError[metadata] = .success
                 } else {
+                    await database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                           status: global.metadataStatusNormal)
+                    
                     metadatasError[metadata] = resultDelete.error
                     returnError = resultDelete.error
                 }

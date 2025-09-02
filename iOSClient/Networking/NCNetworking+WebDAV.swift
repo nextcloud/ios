@@ -197,7 +197,7 @@ extension NCNetworking {
         }
         let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileNameFolder)
 
-        /* check exists folder */
+        // Fast path: directory already exists → createDirectory DB + success
         let resultReadFile = await readFileAsync(serverUrlFileName: serverUrlFileName, account: session.account)
         if resultReadFile.error == .success,
             let metadata = resultReadFile.metadata {
@@ -205,7 +205,7 @@ extension NCNetworking {
             return .success
         }
 
-        /* create folder */
+        // Try to create the directory
         let resultCreateFolder = await NextcloudKit.shared.createFolderAsync(serverUrlFileName: serverUrlFileName, account: session.account, options: options) { task in
             Task {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: session.account,
@@ -214,6 +214,8 @@ extension NCNetworking {
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
         }
+
+        // If creation reported success → read new files -> createDirectory DB + success
         if resultCreateFolder.error == .success {
             let resultReadFile = await readFileAsync(serverUrlFileName: serverUrlFileName, account: session.account)
             if resultReadFile.error == .success,
@@ -221,6 +223,7 @@ extension NCNetworking {
                 await NCManageDatabase.shared.createDirectory(metadata: metadata)
             }
         } else {
+        // set error
             await NCManageDatabase.shared.setMetadataSessionAsync(account: session.account,
                                                                   serverUrlFileName: serverUrlFileName,
                                                                   sessionError: resultCreateFolder.error.errorDescription,
