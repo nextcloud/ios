@@ -170,8 +170,8 @@ actor NCNetworkingProcess {
         /// ------------------------ WEBDAV
         let waitWebDav = metadatas.filter { self.global.metadataStatusWaitWebDav.contains($0.status) }
         if !waitWebDav.isEmpty {
-            let (status, error) = await metadataStatusWaitWebDav(metadatas: Array(waitWebDav))
-            if  (error == .cancelled) || (status == global.metadataStatusWaitDelete && error != .success) {
+            let (_, error) = await metadataStatusWaitWebDav(metadatas: Array(waitWebDav))
+            if error != .success {
                 return
             }
         }
@@ -337,29 +337,37 @@ actor NCNetworkingProcess {
                 return (global.metadataStatusWaitCreateFolder, .cancelled)
             }
 
-            let resultsCreateFolder = await networking.createFolder(fileName: metadata.fileName,
-                                                                    serverUrl: metadata.serverUrl,
-                                                                    overwrite: true,
-                                                                    session: NCSession.shared.getSession(account: metadata.account),
-                                                                    selector: metadata.sessionSelector)
-            if let sceneIdentifier = metadata.sceneIdentifier {
-                await networking.transferDispatcher.notifyDelegates(forScene: sceneIdentifier) { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusCreateFolder,
-                                            metadata: metadata,
-                                            error: resultsCreateFolder.error)
-                } others: { delegate in
-                    delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
+            if metadata.sessionSelector == self.global.selectorUploadAutoUpload {
+                let error = await networking.createFolderForAutoUpload(serverUrlFileName: metadata.serverUrlFileName, ocId: metadata.ocId, account: metadata.account)
+                if error != .success {
+                    return (global.metadataStatusWaitCreateFolder, error)
                 }
             } else {
-                await networking.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusCreateFolder,
-                                            metadata: metadata,
-                                            error: resultsCreateFolder.error)
-                }
-            }
+                let results = await networking.createFolder(fileName: metadata.fileName,
+                                                            serverUrl: metadata.serverUrl,
+                                                            overwrite: true,
+                                                            session: NCSession.shared.getSession(account: metadata.account),
+                                                            selector: metadata.sessionSelector)
 
-            if resultsCreateFolder.error != .success {
-                return (global.metadataStatusWaitCreateFolder, resultsCreateFolder.error)
+                if let sceneIdentifier = metadata.sceneIdentifier {
+                    await networking.transferDispatcher.notifyDelegates(forScene: sceneIdentifier) { delegate in
+                        delegate.transferChange(status: self.global.networkingStatusCreateFolder,
+                                                metadata: metadata,
+                                                error: results.error)
+                    } others: { delegate in
+                        delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
+                    }
+                } else {
+                    await networking.transferDispatcher.notifyAllDelegates { delegate in
+                        delegate.transferChange(status: self.global.networkingStatusCreateFolder,
+                                                metadata: metadata,
+                                                error: results.error)
+                    }
+                }
+
+                if results.error != .success {
+                    return (global.metadataStatusWaitCreateFolder, results.error)
+                }
             }
         }
 

@@ -247,8 +247,13 @@ extension NCNetworking {
         }
 
         // If creation reported success → cleanup
-        if error == .success {
+        if results.error == .success {
             await NCManageDatabase.shared.deleteMetadataOcIdAsync(ocId)
+        } else {
+        // set error
+            await NCManageDatabase.shared.setMetadataSessionAsync(ocId: ocId,
+                                                                  sessionError: results.error.errorDescription,
+                                                                  errorCode: results.error.errorCode)
         }
 
         return results.error
