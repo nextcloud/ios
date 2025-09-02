@@ -107,40 +107,22 @@ extension NCNetworking {
         return(account, metadata, results.error)
     }
 
-    func fileExists(serverUrlFileName: String,
-                    account: String,
-                    completion: @escaping (_ account: String, _ exists: Bool, _ file: NKFile?, _ error: NKError) -> Void) {
-        let options = NKRequestOptions(timeout: 10, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+    func fileExists(serverUrlFileName: String, account: String) async -> NKError? {
         let requestBody = NKDataFileXML(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).getRequestBodyFileExists().data(using: .utf8)
 
-        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName,
-                                             depth: "0",
-                                             requestBody: requestBody,
-                                             account: account,
-                                             options: options) { task in
+        let results = await NextcloudKit.shared.readFileOrFolderAsync(serverUrlFileName: serverUrlFileName,
+                                                                      depth: "0",
+                                                                      requestBody: requestBody,
+                                                                      account: account) { task in
             Task {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
                                                                                             path: serverUrlFileName,
                                                                                             name: "readFileOrFolder")
                 await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
             }
-        } completion: { account, files, _, error in
-            if error == .success, let file = files?.first {
-                completion(account, true, file, error)
-            } else if error.errorCode == self.global.errorResourceNotFound {
-                completion(account, false, nil, error)
-            } else {
-                completion(account, false, nil, error)
-            }
         }
-    }
 
-    func fileExists(serverUrlFileName: String, account: String) async -> (account: String, exists: Bool, file: NKFile?, error: NKError) {
-        await withUnsafeContinuation({ continuation in
-            fileExists(serverUrlFileName: serverUrlFileName, account: account) { account, exists, file, error in
-                continuation.resume(returning: (account, exists, file, error))
-            }
-        })
+        return results.error
     }
 
     // MARK: - Create Filename
@@ -187,8 +169,8 @@ extension NCNetworking {
                 continue
             }
             let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: resultFileName)
-            let results = await fileExists(serverUrlFileName: serverUrlFileName, account: account)
-            if results.exists {
+            let error = await fileExists(serverUrlFileName: serverUrlFileName, account: account)
+            if error == .success {
                 newFileName()
             } else {
                 exitLoop = true
@@ -204,15 +186,14 @@ extension NCNetworking {
                       overwrite: Bool,
                       session: NCSession.Session,
                       selector: String? = nil,
-                      options: NKRequestOptions = NKRequestOptions()) async -> (serverExists: Bool, error: NKError) {
-
+                      options: NKRequestOptions = NKRequestOptions()) async -> NKError {
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
         var fileNameFolder = FileAutoRenamer.rename(fileName, isFolderPath: true, capabilities: capabilities)
         if !overwrite {
             fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: session.account)
         }
         if fileNameFolder.isEmpty {
-            return (false, NKError(errorCode: global.errorIncorrectFileName, errorDescription: ""))
+            return NKError(errorCode: global.errorIncorrectFileName, errorDescription: "")
         }
         let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileNameFolder)
 
@@ -221,7 +202,7 @@ extension NCNetworking {
         if resultReadFile.error == .success,
             let metadata = resultReadFile.metadata {
             await NCManageDatabase.shared.createDirectory(metadata: metadata)
-            return (true, .success)
+            return .success
         }
 
         /* create folder */
@@ -239,9 +220,47 @@ extension NCNetworking {
                let metadata = resultReadFile.metadata {
                 await NCManageDatabase.shared.createDirectory(metadata: metadata)
             }
+        } else {
+            await NCManageDatabase.shared.setMetadataSessionAsync(account: session.account,
+                                                                  serverUrlFileName: serverUrlFileName,
+                                                                  sessionError: resultCreateFolder.error.errorDescription,
+                                                                  errorCode: resultCreateFolder.error.errorCode)
         }
 
-        return (false, resultCreateFolder.error)
+        return resultCreateFolder.error
+    }
+
+    func createFolderForAutoUpload(serverUrlFileName: String,
+                                   account: String) async -> NKError {
+        // Fast path: directory already exists → cleanup + success
+        let error = await fileExists(serverUrlFileName: serverUrlFileName, account: account)
+        if error == .success {
+            await NCManageDatabase.shared.deleteMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrlFileName == %@", account, serverUrlFileName))
+            return (.success)
+        }
+
+        // Try to create the directory
+        let results = await NextcloudKit.shared.createFolderAsync(serverUrlFileName: serverUrlFileName, account: account) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: serverUrlFileName,
+                                                                                            name: "createFolder")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        }
+
+        // If creation reported success → cleanup
+        if results.error == .success {
+            await NCManageDatabase.shared.deleteMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrlFileName == %@", account, serverUrlFileName))
+        } else {
+        // set error
+            await NCManageDatabase.shared.setMetadataSessionAsync(account: account,
+                                                                  serverUrlFileName: serverUrlFileName,
+                                                                  sessionError: results.error.errorDescription,
+                                                                  errorCode: results.error.errorCode)
+        }
+
+        return results.error
     }
 
     // MARK: - Delete

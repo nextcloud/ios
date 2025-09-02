@@ -170,8 +170,8 @@ actor NCNetworkingProcess {
         /// ------------------------ WEBDAV
         let waitWebDav = metadatas.filter { self.global.metadataStatusWaitWebDav.contains($0.status) }
         if !waitWebDav.isEmpty {
-            let (status, error) = await metadataStatusWaitWebDav(metadatas: Array(waitWebDav))
-            if  (error == .cancelled) || (status == global.metadataStatusWaitDelete && error != .success) {
+            let (_, error) = await metadataStatusWaitWebDav(metadatas: Array(waitWebDav))
+            if error != .success {
                 return
             }
         }
@@ -336,17 +336,26 @@ actor NCNetworkingProcess {
             guard timer != nil else {
                 return (global.metadataStatusWaitCreateFolder, .cancelled)
             }
+            var error: NKError = .success
 
-            let resultsCreateFolder = await networking.createFolder(fileName: metadata.fileName,
-                                                                    serverUrl: metadata.serverUrl,
-                                                                    overwrite: true,
-                                                                    session: NCSession.shared.getSession(account: metadata.account),
-                                                                    selector: metadata.sessionSelector)
+            if metadata.sessionSelector == self.global.selectorUploadAutoUpload {
+                error = await networking.createFolderForAutoUpload(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
+                if error != .success {
+                    return (global.metadataStatusWaitCreateFolder, error)
+                }
+            } else {
+                error = await networking.createFolder(fileName: metadata.fileName,
+                                                      serverUrl: metadata.serverUrl,
+                                                      overwrite: true,
+                                                      session: NCSession.shared.getSession(account: metadata.account),
+                                                      selector: metadata.sessionSelector)
+            }
+
             if let sceneIdentifier = metadata.sceneIdentifier {
                 await networking.transferDispatcher.notifyDelegates(forScene: sceneIdentifier) { delegate in
                     delegate.transferChange(status: self.global.networkingStatusCreateFolder,
                                             metadata: metadata,
-                                            error: resultsCreateFolder.error)
+                                            error: error)
                 } others: { delegate in
                     delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
                 }
@@ -354,12 +363,12 @@ actor NCNetworkingProcess {
                 await networking.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusCreateFolder,
                                             metadata: metadata,
-                                            error: resultsCreateFolder.error)
+                                            error: error)
                 }
             }
 
-            if resultsCreateFolder.error != .success {
-                return (global.metadataStatusWaitCreateFolder, resultsCreateFolder.error)
+            if error != .success {
+                return (global.metadataStatusWaitCreateFolder, error)
             }
         }
 

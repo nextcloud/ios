@@ -291,48 +291,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return numTransfers
         }
 
-        // AUTO UPLOAD  for get new photo
+        // AUTO UPLOAD for get new photo
         let num = await NCAutoUpload.shared.initAutoUpload(tblAccount: tblAccount)
         nkLog(tag: self.global.logTagBgSync, emoji: .start, message: "Auto upload with \(num) new photo for \(tblAccount.account)")
 
         // CREATION FOLDERS
         let predicateCreateFolder = NSPredicate(format: "status == %d AND sessionSelector == %@", self.global.metadataStatusWaitCreateFolder, self.global.selectorUploadAutoUpload)
         let metadatasWaitCreateFolder = await NCManageDatabase.shared.getMetadatasAsync(predicate: predicateCreateFolder,
-                                                                                        withLimit: NCBrandOptions.shared.httpMaximumConnectionsPerHost)
+                                                                                        withLimit: NCBrandOptions.shared.httpMaximumConnectionsPerHost) ?? []
 
-        if let metadatasWaitCreateFolder,
-            !metadatasWaitCreateFolder.isEmpty {
-            var successCountCreateFolder: Int = 0
-            for metadata in metadatasWaitCreateFolder {
-                let serverUrl = NCUtilityFileSystem().createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
-                let resultsCreateFolder = await NCNetworking.shared.createFolder(fileName: metadata.fileName,
-                                                                                 serverUrl: metadata.serverUrl,
-                                                                                 overwrite: true,
-                                                                                 session: NCSession.shared.getSession(account: metadata.account),
-                                                                                 selector: metadata.sessionSelector)
-
-                guard resultsCreateFolder.error == .success else {
-                    nkLog(tag: self.global.logTagBgSync, emoji: .error, message: "Auto upload create folder \(serverUrl) with error: \(resultsCreateFolder.error.errorCode)")
-
-                    return numTransfers
-                }
-
-                nkLog(tag: self.global.logTagBgSync, message: "Auto upload create folder \(serverUrl)")
-
-                if resultsCreateFolder.serverExists == false {
-                    numTransfers += 1
-                    successCountCreateFolder += 1
-                }
-            }
-
-            // Exit until there are no more folders to create
-            if successCountCreateFolder == metadatasWaitCreateFolder.count {
+        for metadata in metadatasWaitCreateFolder {
+            let error = await NCNetworking.shared.createFolderForAutoUpload(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
+            guard error == .success else {
+                nkLog(tag: self.global.logTagBgSync, emoji: .error, message: "Auto upload create folder \(metadata.serverUrlFileName) with error: \(error.errorCode)")
                 return numTransfers
             }
-        }
-
-        if numTransfers >= NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload {
-            return numTransfers
         }
 
         // UPLOAD
