@@ -336,38 +336,39 @@ actor NCNetworkingProcess {
             guard timer != nil else {
                 return (global.metadataStatusWaitCreateFolder, .cancelled)
             }
+            var error: NKError = .success
 
             if metadata.sessionSelector == self.global.selectorUploadAutoUpload {
-                let error = await networking.createFolderForAutoUpload(serverUrlFileName: metadata.serverUrlFileName, ocId: metadata.ocId, account: metadata.account)
+                error = await networking.createFolderForAutoUpload(serverUrlFileName: metadata.serverUrlFileName, ocId: metadata.ocId, account: metadata.account)
                 if error != .success {
                     return (global.metadataStatusWaitCreateFolder, error)
                 }
             } else {
-                let results = await networking.createFolder(fileName: metadata.fileName,
-                                                            serverUrl: metadata.serverUrl,
-                                                            overwrite: true,
-                                                            session: NCSession.shared.getSession(account: metadata.account),
-                                                            selector: metadata.sessionSelector)
+                error = await networking.createFolder(fileName: metadata.fileName,
+                                                      serverUrl: metadata.serverUrl,
+                                                      overwrite: true,
+                                                      session: NCSession.shared.getSession(account: metadata.account),
+                                                      selector: metadata.sessionSelector)
+            }
 
-                if let sceneIdentifier = metadata.sceneIdentifier {
-                    await networking.transferDispatcher.notifyDelegates(forScene: sceneIdentifier) { delegate in
-                        delegate.transferChange(status: self.global.networkingStatusCreateFolder,
-                                                metadata: metadata,
-                                                error: results.error)
-                    } others: { delegate in
-                        delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
-                    }
-                } else {
-                    await networking.transferDispatcher.notifyAllDelegates { delegate in
-                        delegate.transferChange(status: self.global.networkingStatusCreateFolder,
-                                                metadata: metadata,
-                                                error: results.error)
-                    }
+            if let sceneIdentifier = metadata.sceneIdentifier {
+                await networking.transferDispatcher.notifyDelegates(forScene: sceneIdentifier) { delegate in
+                    delegate.transferChange(status: self.global.networkingStatusCreateFolder,
+                                            metadata: metadata,
+                                            error: error)
+                } others: { delegate in
+                    delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
                 }
+            } else {
+                await networking.transferDispatcher.notifyAllDelegates { delegate in
+                    delegate.transferChange(status: self.global.networkingStatusCreateFolder,
+                                            metadata: metadata,
+                                            error: error)
+                }
+            }
 
-                if results.error != .success {
-                    return (global.metadataStatusWaitCreateFolder, results.error)
-                }
+            if error != .success {
+                return (global.metadataStatusWaitCreateFolder, error)
             }
         }
 

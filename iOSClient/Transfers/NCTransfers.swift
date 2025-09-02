@@ -218,7 +218,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             cell.labelStatus.text = NSLocalizedString("_status_uploading_", comment: "") + user
             cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size)
         case NCGlobal.shared.metadataStatusDownloadError, NCGlobal.shared.metadataStatusUploadError:
-            cell.imageStatus?.image = utility.loadImage(named: "exclamationmark.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.imageStatus?.image = utility.loadImage(named: "exclamationmark.circle", colors: [.red, .label])
             cell.labelStatus.text = NSLocalizedString("_status_upload_error_", comment: "") + user
             cell.labelInfo.text = metadata.sessionError
         default:
@@ -231,6 +231,12 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             cell.labelInfo.text = NSLocalizedString("_waiting_for_", comment: "") + " " + NSLocalizedString("_reachable_wifi_", comment: "")
         }
         cell.accessibilityLabel = metadata.fileNameView + ", " + (cell.labelInfo.text ?? "")
+
+        // Error
+        if (metadata.errorCode != 0 || !metadata.sessionError.isEmpty) && cell.labelInfo.text?.isEmpty == true {
+            cell.imageStatus?.image = utility.loadImage(named: "exclamationmark.circle", colors: [.red, .label])
+            cell.labelInfo.text = metadata.sessionError + " cod. \(metadata.errorCode)"
+        }
 
         // Remove last separator
         if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 {

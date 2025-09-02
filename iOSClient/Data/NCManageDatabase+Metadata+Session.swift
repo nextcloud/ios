@@ -25,7 +25,9 @@ extension NCManageDatabase {
     ///   - errorCode: Optional error code to persist.
     /// - Returns: A detached copy of the updated `tableMetadata` object, or `nil` if not found.
     @discardableResult
-    func setMetadataSessionAsync(ocId: String,
+    func setMetadataSessionAsync(account: String? = nil,
+                                 ocId: String? = nil,
+                                 serverUrlFileName: String? = nil,
                                  newFileName: String? = nil,
                                  session: String? = nil,
                                  sessionTaskIdentifier: Int? = nil,
@@ -35,9 +37,19 @@ extension NCManageDatabase {
                                  etag: String? = nil,
                                  errorCode: Int? = nil,
                                  progress: Double? = nil) async -> tableMetadata? {
+        var query: String = ""
+        if let ocId {
+            query = String(format: "ocId == %@", ocId)
+        } else if let account, let serverUrlFileName {
+            query = String(format: "account == %@ AND serverUrlFileName == %@", account, serverUrlFileName)
+        }
+        guard query.isEmpty else {
+            return nil
+        }
+
         await performRealmWriteAsync { realm in
             guard let metadata = realm.objects(tableMetadata.self)
-                .filter("ocId == %@", ocId)
+                .filter(query)
                 .first else {
                     return
             }
