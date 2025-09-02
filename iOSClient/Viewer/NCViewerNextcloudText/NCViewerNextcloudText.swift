@@ -65,7 +65,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
 
         navigationItem.rightBarButtonItems = items
         navigationItem.leftBarButtonItems = nil
-        if editor == "Nextcloud Text" {
+        if editor == "nextcloud text" {
             navigationItem.hidesBackButton = true
         }
 
@@ -93,7 +93,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
 
         if editor == "onlyoffice" {
             webView.customUserAgent = utility.getCustomUserAgentOnlyOffice()
-        } else if editor == "Nextcloud Text" {
+        } else if editor == "nextcloud text" {
             webView.customUserAgent = utility.getCustomUserAgentNCText()
         } // else: use default
 
