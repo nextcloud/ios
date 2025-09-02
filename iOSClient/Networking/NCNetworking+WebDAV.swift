@@ -244,6 +244,30 @@ extension NCNetworking {
         return (false, resultCreateFolder.error)
     }
 
+    func createFolderForAutoUpload(fileName: String,
+                                   serverUrl: String,
+                                   account: String) async -> NKError {
+        let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileName)
+
+        // Check if exists folder
+        let resultReadFile = await readFileAsync(serverUrlFileName: serverUrlFileName, account: account)
+        if resultReadFile.error == .success {
+            return (.success)
+        }
+
+        // Create folder
+        let results = await NextcloudKit.shared.createFolderAsync(serverUrlFileName: serverUrlFileName, account: account) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                            path: serverUrlFileName,
+                                                                                            name: "createFolder")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        }
+
+        return results.error
+    }
+
     // MARK: - Delete
 
     #if !EXTENSION
