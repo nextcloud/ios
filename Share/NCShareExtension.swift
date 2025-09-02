@@ -66,6 +66,8 @@ class NCShareExtension: UIViewController {
         tableView.tableFooterView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 0, height: 1)))
         commandViewHeightConstraint.constant = heightCommandView
 
+        cancelButton.title = NSLocalizedString("_cancel_", comment: "")
+
         createFolderView.layer.cornerRadius = 10
         createFolderImage.image = utility.loadImage(named: "folder.badge.plus", colors: [NCBrandColor.shared.iconImageColor])
         createFolderLabel.text = NSLocalizedString("_create_folder_", comment: "")
