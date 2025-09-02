@@ -235,7 +235,7 @@ actor NCNetworkingProcess {
                     if !isWiFi && metadata.session == networking.sessionUploadBackgroundWWan { continue }
 
                     await database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                                status: global.metadataStatusUploading)
+                                                           status: global.metadataStatusUploading)
 
                     /// find controller
                     var controller: NCMainTabBarController?

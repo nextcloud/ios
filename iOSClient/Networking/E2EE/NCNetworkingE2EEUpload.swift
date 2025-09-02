@@ -18,11 +18,19 @@ class NCNetworkingE2EEUpload: NSObject {
 
     @discardableResult
     @MainActor
-    func upload(metadata: tableMetadata, controller: UIViewController? = nil) async -> NKError {
+    func upload(metadata: tableMetadata, session: NCSession.Session? = nil, controller: UIViewController? = nil) async -> NKError {
         var finalError: NKError = .success
-        let session = NCSession.shared.getSession(account: metadata.account)
+        var session = session
         let hud = NCHud(controller?.view)
         let ocId = metadata.ocIdTransfer
+
+        if session == nil {
+            session = NCSession.shared.getSession(account: metadata.account)
+        }
+        guard let session,
+              !session.account.isEmpty else {
+            return NKError(errorCode: NCGlobal.shared.errorNCSessionNotFound, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+        }
 
         // HUD ENCRYPTION
         //

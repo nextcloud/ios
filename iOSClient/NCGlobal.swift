@@ -176,6 +176,7 @@ final class NCGlobal: Sendable {
     let errorUnexpectedResponseFromDB: Int      = -99991
     let errorIncorrectFileName: Int             = -99990
     let errorVersionMismatch: Int               = -99989
+    let errorNCSessionNotFound: Int             = -99988
 
     // E2EE
     let errorE2EENotEnabled: Int                = -98000
