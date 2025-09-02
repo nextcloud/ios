@@ -37,13 +37,12 @@ extension NCManageDatabase {
                                  etag: String? = nil,
                                  errorCode: Int? = nil,
                                  progress: Double? = nil) async -> tableMetadata? {
-        var query: String = ""
+        var query: NSPredicate = NSPredicate()
         if let ocId {
-            query = String(format: "ocId == %@", ocId)
+            query = NSPredicate(format: "ocId == %@", ocId)
         } else if let account, let serverUrlFileName {
-            query = String(format: "account == %@ AND serverUrlFileName == %@", account, serverUrlFileName)
-        }
-        guard query.isEmpty else {
+            query = NSPredicate(format: "account == %@ AND serverUrlFileName == %@", account, serverUrlFileName)
+        } else {
             return nil
         }
 
@@ -105,7 +104,7 @@ extension NCManageDatabase {
 
         return await performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
-                .filter("ocId == %@", ocId)
+                .filter(query)
                 .first?
                 .detachedCopy()
         }

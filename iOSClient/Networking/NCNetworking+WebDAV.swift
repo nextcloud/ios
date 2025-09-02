@@ -186,15 +186,14 @@ extension NCNetworking {
                       overwrite: Bool,
                       session: NCSession.Session,
                       selector: String? = nil,
-                      options: NKRequestOptions = NKRequestOptions()) async -> (serverExists: Bool, error: NKError) {
-
+                      options: NKRequestOptions = NKRequestOptions()) async -> NKError {
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
         var fileNameFolder = FileAutoRenamer.rename(fileName, isFolderPath: true, capabilities: capabilities)
         if !overwrite {
             fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: session.account)
         }
         if fileNameFolder.isEmpty {
-            return (false, NKError(errorCode: global.errorIncorrectFileName, errorDescription: ""))
+            return NKError(errorCode: global.errorIncorrectFileName, errorDescription: "")
         }
         let serverUrlFileName = utilityFileSystem.createServerUrl(serverUrl: serverUrl, fileName: fileNameFolder)
 
@@ -203,7 +202,7 @@ extension NCNetworking {
         if resultReadFile.error == .success,
             let metadata = resultReadFile.metadata {
             await NCManageDatabase.shared.createDirectory(metadata: metadata)
-            return (true, .success)
+            return .success
         }
 
         /* create folder */
@@ -221,18 +220,22 @@ extension NCNetworking {
                let metadata = resultReadFile.metadata {
                 await NCManageDatabase.shared.createDirectory(metadata: metadata)
             }
+        } else {
+            await NCManageDatabase.shared.setMetadataSessionAsync(account: session.account,
+                                                                  serverUrlFileName: serverUrlFileName,
+                                                                  sessionError: resultCreateFolder.error.errorDescription,
+                                                                  errorCode: resultCreateFolder.error.errorCode)
         }
 
-        return (false, resultCreateFolder.error)
+        return resultCreateFolder.error
     }
 
     func createFolderForAutoUpload(serverUrlFileName: String,
-                                   ocId: String,
                                    account: String) async -> NKError {
         // Fast path: directory already exists → cleanup + success
         let error = await fileExists(serverUrlFileName: serverUrlFileName, account: account)
         if error == .success {
-            await NCManageDatabase.shared.deleteMetadataOcIdAsync(ocId)
+            await NCManageDatabase.shared.deleteMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrlFileName == %@", account, serverUrlFileName))
             return (.success)
         }
 
@@ -248,10 +251,11 @@ extension NCNetworking {
 
         // If creation reported success → cleanup
         if results.error == .success {
-            await NCManageDatabase.shared.deleteMetadataOcIdAsync(ocId)
+            await NCManageDatabase.shared.deleteMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrlFileName == %@", account, serverUrlFileName))
         } else {
         // set error
-            await NCManageDatabase.shared.setMetadataSessionAsync(ocId: ocId,
+            await NCManageDatabase.shared.setMetadataSessionAsync(account: account,
+                                                                  serverUrlFileName: serverUrlFileName,
                                                                   sessionError: results.error.errorDescription,
                                                                   errorCode: results.error.errorCode)
         }

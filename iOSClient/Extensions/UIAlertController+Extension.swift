@@ -77,8 +77,8 @@ extension UIAlertController {
             } else {
                 #if EXTENSION
                 Task {
-                    let results = await NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, overwrite: false, session: session)
-                    completion?(results.error)
+                    let error = await NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, overwrite: false, session: session)
+                    completion?(error)
                 }
                 #else
                 var metadata = tableMetadata()

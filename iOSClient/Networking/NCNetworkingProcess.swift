@@ -339,7 +339,7 @@ actor NCNetworkingProcess {
             var error: NKError = .success
 
             if metadata.sessionSelector == self.global.selectorUploadAutoUpload {
-                error = await networking.createFolderForAutoUpload(serverUrlFileName: metadata.serverUrlFileName, ocId: metadata.ocId, account: metadata.account)
+                error = await networking.createFolderForAutoUpload(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
                 if error != .success {
                     return (global.metadataStatusWaitCreateFolder, error)
                 }

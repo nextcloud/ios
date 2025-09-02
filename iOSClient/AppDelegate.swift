@@ -301,7 +301,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                                                                                         withLimit: NCBrandOptions.shared.httpMaximumConnectionsPerHost) ?? []
 
         for metadata in metadatasWaitCreateFolder {
-            let error = await NCNetworking.shared.createFolderForAutoUpload(serverUrlFileName: metadata.serverUrlFileName, ocId: metadata.ocId, account: metadata.account)
+            let error = await NCNetworking.shared.createFolderForAutoUpload(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
             guard error == .success else {
                 nkLog(tag: self.global.logTagBgSync, emoji: .error, message: "Auto upload create folder \(metadata.serverUrlFileName) with error: \(error.errorCode)")
                 return numTransfers
