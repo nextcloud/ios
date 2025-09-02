@@ -94,8 +94,6 @@ class NCAccount: NSObject {
             if let userProfile {
                 await database.setAccountUserProfileAsync(account: account, userProfile: userProfile)
             }
-            // Networking Certificate
-            NCNetworking.shared.activeAccountCertificate(account: account)
             // Subscribing Push Notification
             await NCPushNotification.shared.subscribingNextcloudServerPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase)
             // Start the service
