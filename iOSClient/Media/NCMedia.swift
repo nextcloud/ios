@@ -28,7 +28,6 @@ class NCMedia: UIViewController {
     let imageCache = NCImageCache.shared
     let networking = NCNetworking.shared
     var dataSource = NCMediaDataSource()
-    var isTop: Bool = true
     var isEditMode = false
     var fileSelect: [String] = []
     var searchMediaInProgress: Bool = false
@@ -202,6 +201,7 @@ class NCMedia: UIViewController {
 
         searchNewMedia()
         createMenu()
+        setColor()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -213,16 +213,6 @@ class NCMedia: UIViewController {
         }
 
         NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
-    }
-
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        if self.traitCollection.userInterfaceStyle == .dark {
-            return .lightContent
-        } else if isTop {
-            return .darkContent
-        } else {
-            return .lightContent
-        }
     }
 
     override func viewWillLayoutSubviews() {
@@ -283,7 +273,6 @@ class NCMedia: UIViewController {
 extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if !dataSource.metadatas.isEmpty {
-            isTop = scrollView.contentOffset.y <= -view.safeAreaInsets.top
             setColor()
             setTitleDate()
             setNeedsStatusBarAppearanceUpdate()

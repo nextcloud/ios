@@ -69,7 +69,9 @@ extension NCMedia {
     }
 
     func setColor() {
-        if isTop {
+        let isOver = self.collectionView.contentOffset.y <= -view.safeAreaInsets.top
+
+        if isOver {
             UIView.animate(withDuration: 0.3) { [self] in
                 gradientView.alpha = 0
                 titleDate?.textColor = NCBrandColor.shared.textColor
