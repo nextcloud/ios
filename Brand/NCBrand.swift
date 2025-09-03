@@ -8,7 +8,8 @@ import NextcloudKit
 let userAgent: String = {
     let appVersion: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
     // Original Nextcloud useragent "Mozilla/5.0 (iOS) Nextcloud-iOS/\(appVersion)-Nextcloud"
-    return "Mozilla/5.0 (iOS) Nextcloud-iOS/\(appVersion)-\(NCBrandOptions.shared.brandUserAgent)"
+    let suffixBrand = NCBrandOptions.shared.brandUserAgent.isEmpty ? "" : "-\(NCBrandOptions.shared.brandUserAgent)"
+    return "Mozilla/5.0 (iOS) Nextcloud-iOS/\(appVersion)\(suffixBrand)"
 }()
 
  /*
