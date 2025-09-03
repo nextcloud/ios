@@ -39,7 +39,6 @@ class NCMedia: UIViewController {
     var showOnlyVideos = false
     var timeIntervalSearchNewMedia: TimeInterval = 2.0
     var timerSearchNewMedia: Timer?
-    let insetsTop: CGFloat = 65
     let livePhotoImage = NCUtility().loadImage(named: "livephoto", colors: [.white])
     let playImage = NCUtility().loadImage(named: "play.fill", colors: [.white])
     var photoImage = UIImage()
@@ -92,13 +91,14 @@ class NCMedia: UIViewController {
         collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: mediaSectionFooter, withReuseIdentifier: "sectionFooter")
         collectionView.register(UINib(nibName: "NCMediaCell", bundle: nil), forCellWithReuseIdentifier: "mediaCell")
         collectionView.alwaysBounceVertical = true
-        collectionView.contentInset = UIEdgeInsets(top: insetsTop, left: 0, bottom: 50, right: 0)
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         collectionView.backgroundColor = .systemBackground
         collectionView.prefetchDataSource = self
         collectionView.dragInteractionEnabled = true
         collectionView.dragDelegate = self
         collectionView.dropDelegate = self
         collectionView.accessibilityIdentifier = "NCMedia"
+        collectionView.contentInsetAdjustmentBehavior = .never
 
         layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
         collectionView.collectionViewLayout = layout
@@ -113,6 +113,7 @@ class NCMedia: UIViewController {
         menuButton.configuration = UIButton.Configuration.plain()
         menuButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
         if #available(iOS 26.0, *) {
+            menuButton.addBlur(style: .systemUltraThinMaterial, alpha: 0.7)
         } else {
             menuButton.addBlur(style: .systemUltraThinMaterial)
         }
@@ -123,6 +124,7 @@ class NCMedia: UIViewController {
         assistantButton.configuration = UIButton.Configuration.plain()
         assistantButton.setImage(UIImage(systemName: "sparkles"), for: .normal)
         if #available(iOS 26.0, *) {
+            assistantButton.addBlur(style: .systemUltraThinMaterial, alpha: 0.7)
         } else {
             assistantButton.addBlur(style: .systemUltraThinMaterial)
         }
@@ -132,6 +134,7 @@ class NCMedia: UIViewController {
         selectOrCancelButton.layer.masksToBounds = true
         selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
         if #available(iOS 26.0, *) {
+           selectOrCancelButton.addBlurBackground(style: .systemUltraThinMaterial, alpha: 0.7)
         } else {
             selectOrCancelButton.addBlur(style: .systemUltraThinMaterial)
         }
@@ -276,7 +279,7 @@ class NCMedia: UIViewController {
 extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if !dataSource.metadatas.isEmpty {
-            isTop = scrollView.contentOffset.y <= -(insetsTop + view.safeAreaInsets.top - 25)
+            isTop = scrollView.contentOffset.y <= -view.safeAreaInsets.top
             setColor()
             setTitleDate()
             setNeedsStatusBarAppearanceUpdate()
@@ -300,10 +303,7 @@ extension NCMedia: UIScrollViewDelegate {
         searchNewMedia()
     }
 
-    func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
-        let y = view.safeAreaInsets.top
-        scrollView.contentOffset.y = -(insetsTop + y)
-    }
+    func scrollViewDidScrollToTop(_ scrollView: UIScrollView) { }
 }
 
 // MARK: -
