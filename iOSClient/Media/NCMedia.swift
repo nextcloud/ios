@@ -11,9 +11,6 @@ class NCMedia: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var titleDate: UILabel!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    @IBOutlet weak var selectOrCancelButton: UIButton!
-    @IBOutlet weak var menuButton: UIButton!
-    @IBOutlet weak var assistantButton: UIButton!
     @IBOutlet weak var gradientView: UIView!
     @IBOutlet weak var stackView: UIStackView!
 
@@ -108,40 +105,6 @@ class NCMedia: UIViewController {
 
         activityIndicator.color = .white
 
-        menuButton.backgroundColor = .clear
-        menuButton.layer.cornerRadius = 15
-        menuButton.layer.masksToBounds = true
-        menuButton.showsMenuAsPrimaryAction = true
-        menuButton.configuration = UIButton.Configuration.plain()
-        menuButton.setImage(NCUtility().loadImage(named: "ellipsis", colors: [.white]), for: .normal)
-        if #available(iOS 26.0, *) {
-            menuButton.addBlur(style: .systemUltraThinMaterial, alpha: 0.7)
-        } else {
-            menuButton.addBlur(style: .systemUltraThinMaterial)
-        }
-
-        assistantButton.backgroundColor = .clear
-        assistantButton.layer.cornerRadius = 15
-        assistantButton.layer.masksToBounds = true
-        assistantButton.configuration = UIButton.Configuration.plain()
-        assistantButton.setImage(NCUtility().loadImage(named: "sparkles", colors: [.white]), for: .normal)
-        if #available(iOS 26.0, *) {
-            assistantButton.addBlur(style: .systemUltraThinMaterial, alpha: 0.7)
-        } else {
-            assistantButton.addBlur(style: .systemUltraThinMaterial)
-        }
-
-        selectOrCancelButton.backgroundColor = .clear
-        selectOrCancelButton.layer.cornerRadius = 15
-        selectOrCancelButton.layer.masksToBounds = true
-        selectOrCancelButton.setTitleColor(.white, for: .normal)
-        selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
-        if #available(iOS 26.0, *) {
-           selectOrCancelButton.addBlurBackground(style: .systemUltraThinMaterial, alpha: 0.7)
-        } else {
-            selectOrCancelButton.addBlur(style: .systemUltraThinMaterial)
-        }
-
         gradient.startPoint = CGPoint(x: 0, y: 0.1)
         gradient.endPoint = CGPoint(x: 0, y: 1)
         gradient.colors = [UIColor.black.withAlphaComponent(UIAccessibility.isReduceTransparencyEnabled ? 0.8 : 0.4).cgColor, UIColor.clear.cgColor]
@@ -181,8 +144,6 @@ class NCMedia: UIViewController {
             tabBarSelect = NCMediaSelectTabBar(controller: self.tabBarController, viewController: self, delegate: self)
         }
 
-        navigationController?.setNavigationBarHidden(true, animated: false)
-
         if dataSource.metadatas.isEmpty {
             Task {
                 await loadDataSource()
@@ -200,7 +161,7 @@ class NCMedia: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(enterForeground(_:)), name: UIApplication.willEnterForegroundNotification, object: nil)
 
         searchNewMedia()
-        createMenu()
+        // createMenu()
         setColor()
     }
 
