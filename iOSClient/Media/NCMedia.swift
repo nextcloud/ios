@@ -105,13 +105,16 @@ class NCMedia: UIViewController {
         layoutType = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "", layout: global.mediaLayoutRatio).layout
 
         titleDate.text = ""
+        titleDate?.textColor = .white
+
+        activityIndicator.color = .white
 
         menuButton.backgroundColor = .clear
         menuButton.layer.cornerRadius = 15
         menuButton.layer.masksToBounds = true
         menuButton.showsMenuAsPrimaryAction = true
         menuButton.configuration = UIButton.Configuration.plain()
-        menuButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
+        menuButton.setImage(NCUtility().loadImage(named: "ellipsis", colors: [.white]), for: .normal)
         if #available(iOS 26.0, *) {
             menuButton.addBlur(style: .systemUltraThinMaterial, alpha: 0.7)
         } else {
@@ -122,7 +125,7 @@ class NCMedia: UIViewController {
         assistantButton.layer.cornerRadius = 15
         assistantButton.layer.masksToBounds = true
         assistantButton.configuration = UIButton.Configuration.plain()
-        assistantButton.setImage(UIImage(systemName: "sparkles"), for: .normal)
+        assistantButton.setImage(NCUtility().loadImage(named: "sparkles", colors: [.white]), for: .normal)
         if #available(iOS 26.0, *) {
             assistantButton.addBlur(style: .systemUltraThinMaterial, alpha: 0.7)
         } else {
@@ -132,6 +135,7 @@ class NCMedia: UIViewController {
         selectOrCancelButton.backgroundColor = .clear
         selectOrCancelButton.layer.cornerRadius = 15
         selectOrCancelButton.layer.masksToBounds = true
+        selectOrCancelButton.setTitleColor(.white, for: .normal)
         selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
         if #available(iOS 26.0, *) {
            selectOrCancelButton.addBlurBackground(style: .systemUltraThinMaterial, alpha: 0.7)
