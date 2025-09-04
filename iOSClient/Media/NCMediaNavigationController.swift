@@ -8,24 +8,40 @@ class NCMediaNavigationController: NCMainNavigationController {
 
     // MARK: - Right
 
+    override func setNavigationRightItems() async {
+        guard let media = topViewController as? NCMedia else {
+            return
+        }
+
+        if media.isEditMode {
+            let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .plain) {
+                media.setEditMode(false)
+            }
+            media.navigationItem.rightBarButtonItems = [select]
+            media.tabBarSelect.show()
+        } else {
+            media.tabBarSelect.hide()
+            await self.updateRightBarButtonItems()
+        }
+    }
+
     override func createRightMenu() async -> UIMenu? {
         guard let media = topViewController as? NCMedia else {
             return nil
         }
         let layoutForView = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "", layout: global.mediaLayoutRatio)
         var layout = layoutForView.layout
-        /// Overwrite default value
+        // Overwrite default value
         if layout == global.layoutList {
             layout = global.mediaLayoutRatio
         }
-        ///
+        //
         let layoutTitle = (layout == global.mediaLayoutRatio) ? NSLocalizedString("_media_square_", comment: "") : NSLocalizedString("_media_ratio_", comment: "")
         let layoutImage = (layout == global.mediaLayoutRatio) ? utility.loadImage(named: "square.grid.3x3") : utility.loadImage(named: "rectangle.grid.3x2")
 
         let select = UIAction(title: NSLocalizedString("_select_", comment: ""),
                               image: utility.loadImage(named: "checkmark.circle")) { _ in
-            media.isEditMode = !media.isEditMode
-            media.setSelectcancelButton()
+            media.setEditMode(true)
         }
 
         let viewFilterMenu = UIMenu(title: "", options: .displayInline, children: [
@@ -117,24 +133,5 @@ class NCMediaNavigationController: NCMainNavigationController {
         }
 
         return UIMenu(title: "", children: [select, viewFilterMenu, viewLayoutMenu, viewFolderMedia, playFile, playURL])
-
-        /*
-        guard let items = await self.createRightMenuActions(),
-              let collectionViewCommon
-        else {
-            return nil
-        }
-
-        if collectionViewCommon.layoutKey == global.layoutViewFavorite {
-            let fileSettings = UIMenu(title: "", options: .displayInline, children: [items.directoryOnTop, items.hiddenFiles])
-
-            return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, fileSettings])
-        } else {
-            let fileSettings = UIMenu(title: "", options: .displayInline, children: [items.directoryOnTop, items.hiddenFiles])
-            let additionalSettings = UIMenu(title: "", options: .displayInline, children: [items.showDescription])
-
-            return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, fileSettings, additionalSettings])
-        }
-        */
     }
 }

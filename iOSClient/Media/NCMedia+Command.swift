@@ -8,33 +8,22 @@ import NextcloudKit
 import SwiftUI
 
 extension NCMedia {
-    func setSelectcancelButton() {
-        let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
-        let assistantEnabled = capabilities.assistantEnabled
-
-        //assistantButton.isHidden = true
+    func setEditMode(_ editMode: Bool) {
+        isEditMode = editMode
         fileSelect.removeAll()
         tabBarSelect.selectCount = fileSelect.count
 
-        if let visibleCells = self.collectionView?.indexPathsForVisibleItems.compactMap({ self.collectionView?.cellForItem(at: $0) }) {
+        if let visibleCells = collectionView?.indexPathsForVisibleItems.compactMap({ collectionView?.cellForItem(at: $0) }) {
             for case let cell as NCMediaCell in visibleCells {
                 cell.selected(false)
             }
         }
 
-        if isEditMode {
-            // selectOrCancelButton.setTitle( NSLocalizedString("_cancel_", comment: ""), for: .normal)
-            // selectOrCancelButton.isHidden = false
-            // menuButton.isHidden = true
-            tabBarSelect.show()
-        } else {
-            // selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
-            // selectOrCancelButton.isHidden = false
-            // menuButton.isHidden = false
-            // if assistantEnabled {
-               // assistantButton.isHidden = false
-            // }
-            tabBarSelect.hide()
+        self.collectionView.reloadData()
+
+        Task {
+            await (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
+            await (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
         }
     }
 
@@ -50,30 +39,6 @@ extension NCMedia {
 
         titleDate?.text = ""
     }
-
-    func setColor() {
-        let isOver = self.collectionView.contentOffset.y <= -view.safeAreaInsets.top
-
-        if isOver {
-            UIView.animate(withDuration: 0.3) { [self] in
-                gradientView.alpha = 0
-                titleDate?.textColor = NCBrandColor.shared.textColor
-                activityIndicator.color = NCBrandColor.shared.textColor
-                // selectOrCancelButton.setTitleColor(NCBrandColor.shared.textColor, for: .normal)
-                // menuButton.setImage(NCUtility().loadImage(named: "ellipsis", colors: [NCBrandColor.shared.textColor]), for: .normal)
-                // assistantButton.setImage(NCUtility().loadImage(named: "sparkles", colors: [NCBrandColor.shared.textColor]), for: .normal)
-            }
-        } else {
-            UIView.animate(withDuration: 0.3) { [self] in
-                gradientView.alpha = 1
-                titleDate?.textColor = .white
-                activityIndicator.color = .white
-                // selectOrCancelButton.setTitleColor(.white, for: .normal)
-                // menuButton.setImage(NCUtility().loadImage(named: "ellipsis", colors: [.white]), for: .normal)
-                // assistantButton.setImage(NCUtility().loadImage(named: "sparkles", colors: [.white]), for: .normal)
-            }
-        }
-    }
 }
 
 extension NCMedia: NCMediaSelectTabBarDelegate {
@@ -81,16 +46,18 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
         let ocIds = self.fileSelect.map { $0 }
         var alertStyle = UIAlertController.Style.actionSheet
 
-        if UIDevice.current.userInterfaceIdiom == .pad { alertStyle = .alert }
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            alertStyle = .alert
+        }
 
         if !ocIds.isEmpty {
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: alertStyle)
 
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_selected_photos_", comment: ""), style: .destructive) { (_: UIAlertAction) in
                 self.isEditMode = false
-                self.setSelectcancelButton()
-
                 Task {
+                    await (self.navigationController as? NCMediaNavigationController)?.setNavigationRightItems()
+
                     for ocId in ocIds {
                         await self.deleteImage(with: ocId)
                     }

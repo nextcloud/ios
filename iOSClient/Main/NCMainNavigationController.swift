@@ -25,6 +25,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         topViewController as? NCTrash
     }
 
+    var mediaViewController: NCMedia? {
+        topViewController as? NCMedia
+    }
+
     @MainActor
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
@@ -210,6 +214,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     func updateRightBarButtonItems(_ fileItem: UITabBarItem? = nil) async -> Int {
         guard !(collectionViewCommon?.isEditMode ?? false),
               !(trashViewController?.isEditMode ?? false),
+              !(mediaViewController?.isEditMode ?? false),
               !(topViewController is NCViewerMediaPage),
               !(topViewController is NCViewerPDF),
               !(topViewController is NCViewerRichDocument),

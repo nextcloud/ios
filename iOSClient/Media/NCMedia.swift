@@ -11,8 +11,7 @@ class NCMedia: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var titleDate: UILabel!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    @IBOutlet weak var gradientView: UIView!
-    @IBOutlet weak var stackView: UIStackView!
+    @IBOutlet weak var titleConstraint: NSLayoutConstraint!
 
     let layout = NCMediaLayout()
     var layoutType = NCGlobal.shared.mediaLayoutRatio
@@ -30,7 +29,6 @@ class NCMedia: UIViewController {
     var searchMediaInProgress: Bool = false
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
-    let gradient: CAGradientLayer = CAGradientLayer()
     var showOnlyImages = false
     var showOnlyVideos = false
     var timeIntervalSearchNewMedia: TimeInterval = 2.0
@@ -100,15 +98,15 @@ class NCMedia: UIViewController {
         collectionView.collectionViewLayout = layout
         layoutType = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "", layout: global.mediaLayoutRatio).layout
 
+        // Title + Activity indicator
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            titleConstraint.constant = 0
+        } else {
+            titleConstraint.constant = -45
+        }
         titleDate.text = ""
         titleDate?.textColor = .white
-
         activityIndicator.color = .white
-
-        gradient.startPoint = CGPoint(x: 0, y: 0.1)
-        gradient.endPoint = CGPoint(x: 0, y: 1)
-        gradient.colors = [UIColor.black.withAlphaComponent(UIAccessibility.isReduceTransparencyEnabled ? 0.8 : 0.4).cgColor, UIColor.clear.cgColor]
-        gradientView.layer.insertSublayer(gradient, at: 0)
 
         pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
         collectionView.addGestureRecognizer(pinchGesture)
@@ -144,6 +142,11 @@ class NCMedia: UIViewController {
             tabBarSelect = NCMediaSelectTabBar(controller: self.tabBarController, viewController: self, delegate: self)
         }
 
+        Task {
+            await (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
+            await (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
+        }
+
         if dataSource.metadatas.isEmpty {
             Task {
                 await loadDataSource()
@@ -161,8 +164,6 @@ class NCMedia: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(enterForeground(_:)), name: UIApplication.willEnterForegroundNotification, object: nil)
 
         searchNewMedia()
-        // createMenu()
-        setColor()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -178,8 +179,6 @@ class NCMedia: UIViewController {
 
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-
-        gradient.frame = gradientView.bounds
     }
 
     func searchNewMedia() {
@@ -234,11 +233,8 @@ class NCMedia: UIViewController {
 extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if !dataSource.metadatas.isEmpty {
-            setColor()
             setTitleDate()
             setNeedsStatusBarAppearanceUpdate()
-        } else {
-            setColor()
         }
     }
 

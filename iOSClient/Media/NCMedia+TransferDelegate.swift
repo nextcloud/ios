@@ -18,8 +18,6 @@ extension NCMedia: NCTransferDelegate {
     }
 
     func transferCopy(metadata: tableMetadata, destination: String, error: NKError) {
-        setEditMode(false)
-
         Task {
             await self.loadDataSource()
             await self.searchMediaUI()
@@ -27,8 +25,6 @@ extension NCMedia: NCTransferDelegate {
     }
 
     func transferMove(metadata: tableMetadata, destination: String, error: NKError) {
-        setEditMode(false)
-
         Task {
             await self.loadDataSource()
             await self.searchMediaUI()
