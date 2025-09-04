@@ -177,10 +177,6 @@ class NCMedia: UIViewController {
         NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
     }
 
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-    }
-
     func searchNewMedia() {
         timerSearchNewMedia?.invalidate()
         timerSearchNewMedia = Timer.scheduledTimer(withTimeInterval: timeIntervalSearchNewMedia, repeats: false) { [weak self] _ in
@@ -236,6 +232,7 @@ extension NCMedia: UIScrollViewDelegate {
             setTitleDate()
             setNeedsStatusBarAppearanceUpdate()
         }
+        setColor()
     }
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {

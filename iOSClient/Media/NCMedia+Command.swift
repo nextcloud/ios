@@ -9,7 +9,12 @@ import SwiftUI
 
 extension NCMedia {
     func setEditMode(_ editMode: Bool) {
-        isEditMode = editMode
+        if dataSource.metadatas.isEmpty {
+            isEditMode = false
+        } else {
+            isEditMode = editMode
+        }
+
         fileSelect.removeAll()
         tabBarSelect.selectCount = fileSelect.count
 
@@ -38,6 +43,22 @@ extension NCMedia {
         }
 
         titleDate?.text = ""
+    }
+
+    func setColor() {
+        let isOver = self.collectionView.contentOffset.y <= -view.safeAreaInsets.top - titleConstraint.constant
+
+        if isOver || dataSource.metadatas.isEmpty {
+            UIView.animate(withDuration: 0.3) { [self] in
+                titleDate?.textColor = NCBrandColor.shared.textColor
+                activityIndicator.color = NCBrandColor.shared.textColor
+            }
+        } else {
+            UIView.animate(withDuration: 0.3) { [self] in
+                titleDate?.textColor = .white
+                activityIndicator.color = .white
+            }
+        }
     }
 }
 

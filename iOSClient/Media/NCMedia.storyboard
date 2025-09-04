@@ -32,13 +32,13 @@
                                 </connections>
                             </collectionView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rSH-l2-T1a">
-                                <rect key="frame" x="10.000000000000004" y="54.999999999999993" width="61.333333333333343" height="28.666666666666664"/>
+                                <rect key="frame" x="10.000000000000004" y="100" width="61.333333333333343" height="28.666666666666657"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="9bK-ms-LxX">
-                                <rect key="frame" x="81.333333333333329" y="59.333333333333343" width="20" height="20"/>
+                                <rect key="frame" x="81.333333333333329" y="104.33333333333333" width="20" height="20"/>
                                 <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </activityIndicatorView>
                         </subviews>
@@ -51,7 +51,7 @@
                             <constraint firstAttribute="bottom" secondItem="Zaz-Cl-qpZ" secondAttribute="bottom" id="aNr-tf-2AH"/>
                             <constraint firstItem="Zaz-Cl-qpZ" firstAttribute="top" secondItem="QEs-gO-Cmp" secondAttribute="top" id="nIB-3t-o2I"/>
                             <constraint firstItem="9bK-ms-LxX" firstAttribute="centerY" secondItem="rSH-l2-T1a" secondAttribute="centerY" id="vOm-Ut-Muh"/>
-                            <constraint firstItem="rSH-l2-T1a" firstAttribute="top" secondItem="Meh-VD-wWh" secondAttribute="top" constant="-45" id="viX-PV-uTj"/>
+                            <constraint firstItem="rSH-l2-T1a" firstAttribute="top" secondItem="Meh-VD-wWh" secondAttribute="top" id="viX-PV-uTj"/>
                         </constraints>
                     </view>
                     <connections>
