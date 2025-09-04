@@ -102,7 +102,11 @@ class NCMedia: UIViewController {
         if UIDevice.current.userInterfaceIdiom == .pad {
             titleConstraint.constant = 0
         } else {
-            titleConstraint.constant = -45
+            if #available(iOS 26.0, *) {
+                titleConstraint.constant = -44
+            } else {
+                titleConstraint.constant = -34
+            }
         }
         titleDate.text = ""
         titleDate?.textColor = .white

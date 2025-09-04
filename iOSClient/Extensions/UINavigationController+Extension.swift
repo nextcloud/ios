@@ -38,8 +38,11 @@ extension UINavigationController {
             appearance.configureWithDefaultBackground()
         } else {
             appearance.configureWithTransparentBackground()
-            appearance.backgroundColor = backgroundColor
-
+            if topViewController is NCMedia {
+                // transparent
+            } else {
+                appearance.backgroundColor = backgroundColor
+            }
             appearance.shadowColor = .clear
             appearance.shadowImage = UIImage()
         }
