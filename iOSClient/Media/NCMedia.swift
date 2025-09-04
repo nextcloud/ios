@@ -112,6 +112,7 @@ class NCMedia: UIViewController {
         ]
 
         gradientLayer.locations = [0.0, 0.25, 0.55, 1.0]
+        gradientView.layer.insertSublayer(gradientLayer, at: 0)
 
         // Title + Activity indicator
         if UIDevice.current.userInterfaceIdiom == .pad {
@@ -196,6 +197,12 @@ class NCMedia: UIViewController {
         }
 
         NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
+    }
+
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+
+        gradientLayer.frame = gradientView.bounds
     }
 
     func searchNewMedia() {
