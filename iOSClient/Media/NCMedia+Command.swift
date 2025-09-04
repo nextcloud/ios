@@ -53,12 +53,20 @@ extension NCMedia {
                 gradientView.alpha = dataSource.metadatas.isEmpty ? 0 : 1
                 titleDate?.textColor = NCBrandColor.shared.textColor
                 activityIndicator.color = NCBrandColor.shared.textColor
+
+                if #unavailable(iOS 26.0) {
+                    (self.navigationController as? NCMediaNavigationController)?.updateRightBarButtonsTint(to: NCBrandColor.shared.textColor)
+                }
             }
         } else {
             UIView.animate(withDuration: 0.3) { [self] in
                 gradientView.alpha = dataSource.metadatas.isEmpty ? 0 : 1
                 titleDate?.textColor = .white
                 activityIndicator.color = .white
+
+                if #unavailable(iOS 26.0) {
+                    (self.navigationController as? NCMediaNavigationController)?.updateRightBarButtonsTint(to: .white)
+                }
             }
         }
         setTitleDate()

@@ -156,8 +156,10 @@ class NCMedia: UIViewController {
         }
 
         Task {
-            await (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
-            await (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
+            await (self.navigationController as? NCMediaNavigationController)?.setNavigationRightItems()
+            if #unavailable(iOS 26.0) {
+                (self.navigationController as? NCMediaNavigationController)?.updateRightBarButtonsTint(to: .white)
+            }
         }
 
         if dataSource.metadatas.isEmpty {
