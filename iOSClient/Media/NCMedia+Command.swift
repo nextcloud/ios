@@ -50,11 +50,13 @@ extension NCMedia {
 
         if isOver || dataSource.metadatas.isEmpty {
             UIView.animate(withDuration: 0.3) { [self] in
+                gradientView.alpha = dataSource.metadatas.isEmpty ? 0 : 1
                 titleDate?.textColor = NCBrandColor.shared.textColor
                 activityIndicator.color = NCBrandColor.shared.textColor
             }
         } else {
             UIView.animate(withDuration: 0.3) { [self] in
+                gradientView.alpha = dataSource.metadatas.isEmpty ? 0 : 1
                 titleDate?.textColor = .white
                 activityIndicator.color = .white
             }

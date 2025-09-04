@@ -12,7 +12,9 @@ class NCMedia: UIViewController {
     @IBOutlet weak var titleDate: UILabel!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var titleConstraint: NSLayoutConstraint!
+    @IBOutlet weak var gradientView: UIView!
 
+    let gradient: CAGradientLayer = CAGradientLayer()
     let layout = NCMediaLayout()
     var layoutType = NCGlobal.shared.mediaLayoutRatio
     var documentPickerViewController: NCDocumentPickerViewController?
@@ -98,6 +100,13 @@ class NCMedia: UIViewController {
         collectionView.collectionViewLayout = layout
         layoutType = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "", layout: global.mediaLayoutRatio).layout
 
+        // gradient
+        gradient.startPoint = CGPoint(x: 0, y: 0.1)
+        gradient.endPoint = CGPoint(x: 0, y: 1)
+        gradient.colors = [UIColor.black.withAlphaComponent(UIAccessibility.isReduceTransparencyEnabled ? 0.8 : 0.4).cgColor, UIColor.clear.cgColor]
+        gradientView.layer.insertSublayer(gradient, at: 0)
+        gradientView.alpha = 1
+
         // Title + Activity indicator
         if UIDevice.current.userInterfaceIdiom == .pad {
             titleConstraint.constant = 0
@@ -179,6 +188,12 @@ class NCMedia: UIViewController {
         }
 
         NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
+    }
+
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+
+        gradient.frame = gradientView.bounds
     }
 
     func searchNewMedia() {

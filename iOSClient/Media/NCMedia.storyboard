@@ -37,6 +37,13 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <view userInteractionEnabled="NO" alpha="0.0" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="j5r-Rn-Fcf">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="180"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="180" id="vHc-Kv-Q8h"/>
+                                </constraints>
+                            </view>
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="white" translatesAutoresizingMaskIntoConstraints="NO" id="9bK-ms-LxX">
                                 <rect key="frame" x="81.333333333333329" y="104.33333333333333" width="20" height="20"/>
                                 <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -46,10 +53,13 @@
                         <constraints>
                             <constraint firstItem="Zaz-Cl-qpZ" firstAttribute="leading" secondItem="QEs-gO-Cmp" secondAttribute="leading" id="1bp-sm-u0X"/>
                             <constraint firstItem="rSH-l2-T1a" firstAttribute="leading" secondItem="Meh-VD-wWh" secondAttribute="leading" constant="10" id="NW7-9w-Ydj"/>
+                            <constraint firstItem="j5r-Rn-Fcf" firstAttribute="leading" secondItem="QEs-gO-Cmp" secondAttribute="leading" id="P9X-dE-aZ9"/>
                             <constraint firstItem="9bK-ms-LxX" firstAttribute="leading" secondItem="rSH-l2-T1a" secondAttribute="trailing" constant="10" id="Skf-0o-oeE"/>
+                            <constraint firstAttribute="trailing" secondItem="j5r-Rn-Fcf" secondAttribute="trailing" id="V7I-TU-9SS"/>
                             <constraint firstAttribute="trailing" secondItem="Zaz-Cl-qpZ" secondAttribute="trailing" id="aNd-UL-hmu"/>
                             <constraint firstAttribute="bottom" secondItem="Zaz-Cl-qpZ" secondAttribute="bottom" id="aNr-tf-2AH"/>
                             <constraint firstItem="Zaz-Cl-qpZ" firstAttribute="top" secondItem="QEs-gO-Cmp" secondAttribute="top" id="nIB-3t-o2I"/>
+                            <constraint firstItem="j5r-Rn-Fcf" firstAttribute="top" secondItem="QEs-gO-Cmp" secondAttribute="top" id="uEo-1J-sZ1"/>
                             <constraint firstItem="9bK-ms-LxX" firstAttribute="centerY" secondItem="rSH-l2-T1a" secondAttribute="centerY" id="vOm-Ut-Muh"/>
                             <constraint firstItem="rSH-l2-T1a" firstAttribute="top" secondItem="Meh-VD-wWh" secondAttribute="top" id="viX-PV-uTj"/>
                         </constraints>
@@ -57,6 +67,7 @@
                     <connections>
                         <outlet property="activityIndicator" destination="9bK-ms-LxX" id="dpp-13-6UO"/>
                         <outlet property="collectionView" destination="Zaz-Cl-qpZ" id="8oA-Gx-z7T"/>
+                        <outlet property="gradientView" destination="j5r-Rn-Fcf" id="rJD-yb-zV2"/>
                         <outlet property="titleConstraint" destination="viX-PV-uTj" id="wGD-hQ-i90"/>
                         <outlet property="titleDate" destination="rSH-l2-T1a" id="sRl-Sr-fph"/>
                     </connections>
