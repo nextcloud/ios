@@ -32,10 +32,7 @@ extension NCMedia: UICollectionViewDataSource {
         let numberOfItemsInSection = dataSource.metadatas.count
         self.numberOfColumns = getColumnCount()
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            self.setTitleDate()
-        }
-        setColor()
+        setElements()
 
         return numberOfItemsInSection
     }

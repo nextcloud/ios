@@ -251,7 +251,7 @@ extension NCMedia: UIScrollViewDelegate {
             setTitleDate()
             setNeedsStatusBarAppearanceUpdate()
         }
-        setColor()
+        setElements()
     }
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {

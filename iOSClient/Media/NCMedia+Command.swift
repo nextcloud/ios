@@ -45,7 +45,7 @@ extension NCMedia {
         titleDate?.text = ""
     }
 
-    func setColor() {
+    func setElements() {
         let isOver = self.collectionView.contentOffset.y <= -view.safeAreaInsets.top - titleConstraint.constant
 
         if isOver || dataSource.metadatas.isEmpty {
@@ -61,6 +61,7 @@ extension NCMedia {
                 activityIndicator.color = .white
             }
         }
+        setTitleDate()
     }
 }
 
