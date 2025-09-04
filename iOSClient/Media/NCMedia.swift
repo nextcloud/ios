@@ -105,13 +105,17 @@ class NCMedia: UIViewController {
         gradientLayer.endPoint   = CGPoint(x: 0, y: 1)
 
         gradientLayer.colors = [
-            UIColor.black.withAlphaComponent(0.65).cgColor,
-            UIColor.black.withAlphaComponent(0.45).cgColor,
-            UIColor.black.withAlphaComponent(0.20).cgColor,
+            UIColor.black.withAlphaComponent(0.55).cgColor,
+            UIColor.black.withAlphaComponent(0.40).cgColor,
+            UIColor.black.withAlphaComponent(0.25).cgColor,
+            UIColor.black.withAlphaComponent(0.15).cgColor,
+            UIColor.black.withAlphaComponent(0.08).cgColor,
+            UIColor.black.withAlphaComponent(0.04).cgColor,
+            UIColor.black.withAlphaComponent(0.015).cgColor,
             UIColor.clear.cgColor
         ]
 
-        gradientLayer.locations = [0.0, 0.25, 0.55, 1.0]
+        gradientLayer.locations = [0.0, 0.20, 0.40, 0.60, 0.75, 0.85, 0.95, 1.0]
         gradientView.layer.insertSublayer(gradientLayer, at: 0)
 
         // Title + Activity indicator
