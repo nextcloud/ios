@@ -14,8 +14,8 @@ class NCMedia: UIViewController {
     @IBOutlet weak var titleConstraint: NSLayoutConstraint!
     @IBOutlet weak var gradientView: UIView!
 
-    let gradient: CAGradientLayer = CAGradientLayer()
     let layout = NCMediaLayout()
+    let gradientLayer = CAGradientLayer()
     var layoutType = NCGlobal.shared.mediaLayoutRatio
     var documentPickerViewController: NCDocumentPickerViewController?
     var tabBarSelect: NCMediaSelectTabBar!
@@ -100,12 +100,18 @@ class NCMedia: UIViewController {
         collectionView.collectionViewLayout = layout
         layoutType = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "", layout: global.mediaLayoutRatio).layout
 
-        // gradient
-        gradient.startPoint = CGPoint(x: 0, y: 0.1)
-        gradient.endPoint = CGPoint(x: 0, y: 1)
-        gradient.colors = [UIColor.black.withAlphaComponent(UIAccessibility.isReduceTransparencyEnabled ? 0.8 : 0.4).cgColor, UIColor.clear.cgColor]
-        gradientView.layer.insertSublayer(gradient, at: 0)
-        gradientView.alpha = 1
+        // Gradient Layer
+        gradientLayer.startPoint = CGPoint(x: 0, y: 0)
+        gradientLayer.endPoint   = CGPoint(x: 0, y: 1)
+
+        gradientLayer.colors = [
+            UIColor.black.withAlphaComponent(0.65).cgColor,
+            UIColor.black.withAlphaComponent(0.45).cgColor,
+            UIColor.black.withAlphaComponent(0.20).cgColor,
+            UIColor.clear.cgColor
+        ]
+
+        gradientLayer.locations = [0.0, 0.25, 0.55, 1.0]
 
         // Title + Activity indicator
         if UIDevice.current.userInterfaceIdiom == .pad {
@@ -190,12 +196,6 @@ class NCMedia: UIViewController {
         }
 
         NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
-    }
-
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-
-        gradient.frame = gradientView.bounds
     }
 
     func searchNewMedia() {
