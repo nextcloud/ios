@@ -94,7 +94,7 @@ class NCMedia: UIViewController {
         collectionView.dragDelegate = self
         collectionView.dropDelegate = self
         collectionView.accessibilityIdentifier = "NCMedia"
-        collectionView.contentInsetAdjustmentBehavior = .never
+        // collectionView.contentInsetAdjustmentBehavior = .never
 
         layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
         collectionView.collectionViewLayout = layout
