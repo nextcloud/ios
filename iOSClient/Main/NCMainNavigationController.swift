@@ -25,6 +25,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         topViewController as? NCTrash
     }
 
+    var mediaViewController: NCMedia? {
+        topViewController as? NCMedia
+    }
+
     @MainActor
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
@@ -210,6 +214,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     func updateRightBarButtonItems(_ fileItem: UITabBarItem? = nil) async -> Int {
         guard !(collectionViewCommon?.isEditMode ?? false),
               !(trashViewController?.isEditMode ?? false),
+              !(mediaViewController?.isEditMode ?? false),
               !(topViewController is NCViewerMediaPage),
               !(topViewController is NCViewerPDF),
               !(topViewController is NCViewerRichDocument),
@@ -524,7 +529,118 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         return false
     }
 
+    /// Changes the tint color of a specific right bar button item identified by tag.
+    /// - Parameters:
+    ///   - tag: The tag used to identify the UIBarButtonItem.
+    ///   - color: The UIColor to be applied.
+    @MainActor
+    func setRightItemColor(tag: Int, to color: UIColor) {
+        guard
+            let items = topViewController?.navigationItem.rightBarButtonItems,
+            let item = items.first(where: { $0.tag == tag }),
+            let button = item.customView as? UIButton
+        else { return }
+
+        applyTint(button, color: color)
+    }
+
+    /// Changes the tint color of all right bar button items currently visible
+    /// in the topViewController's navigation item.
+    /// - Parameter color: The UIColor to be applied.
+    @MainActor
+    func setAllRightItemsColor(_ color: UIColor) {
+        guard let items = topViewController?.navigationItem.rightBarButtonItems else { return }
+
+        for item in items {
+            if let button = item.customView as? UIButton {
+                applyTint(button, color: color)
+            }
+        }
+    }
+
     // MARK: - Left
 
     func setNavigationLeftItems() async { }
+
+    /// Changes the tint color of a specific left bar button item identified by tag.
+    /// - Parameters:
+    ///   - tag: The tag used to identify the UIBarButtonItem.
+    ///   - color: The UIColor to be applied.
+    @MainActor
+    func setLeftItemColor(tag: Int, to color: UIColor) {
+        guard
+            let items = topViewController?.navigationItem.leftBarButtonItems,
+            let item = items.first(where: { $0.tag == tag }),
+            let button = item.customView as? UIButton
+        else { return }
+
+        applyTint(button, color: color)
+    }
+
+    /// Changes the tint color of all left bar button items currently visible
+    /// in the topViewController's navigation item.
+    /// - Parameter color: The UIColor to be applied.
+    @MainActor
+    func setAllLeftItemsColor(_ color: UIColor) {
+        guard let items = topViewController?.navigationItem.leftBarButtonItems else { return }
+
+        for item in items {
+            if let button = item.customView as? UIButton {
+                applyTint(button, color: color)
+            }
+        }
+    }
+
+    // MARK: - Tint helpers
+
+    /// Applies a tint color to a given UIButton, handling both UIButton.Configuration
+    /// and legacy setup with SF Symbols or titles.
+    /// - Parameters:
+    ///   - button: The UIButton to apply the color.
+    ///   - color: The UIColor to be applied.
+    @MainActor
+    private func applyTint(_ button: UIButton, color: UIColor) {
+        if var cfg = button.configuration {
+            // Se in futuro userai UIButton.Configuration, tieni il colore allineato qui
+            cfg.baseForegroundColor = color
+            button.configuration = cfg
+        } else {
+            // Config attuale (nessuna configuration): SF Symbols sono template, quindi basta tintColor
+            button.tintColor = color
+            button.setTitleColor(color, for: .normal)
+        }
+    }
+
+    /// Updates the tint color of all preloaded and currently visible right bar buttons.
+    /// - Parameter color: The UIColor to be applied to all right bar button items.
+    @MainActor
+    func updateRightBarButtonsTint(to color: UIColor) {
+        let rightButtons: [UIButton] = [
+            menuButton,
+            assistantButton,
+            notificationsButton,
+            transfersButton
+        ]
+
+        // Apply color to preloaded button instances
+        for button in rightButtons {
+            if var cfg = button.configuration {
+                cfg.baseForegroundColor = color
+                button.configuration = cfg
+            } else {
+                button.tintColor = color
+                button.setTitleColor(color, for: .normal)
+            }
+        }
+
+        // Update also those already visible in the navigation bar
+        if let rightItems = topViewController?.navigationItem.rightBarButtonItems {
+            for item in rightItems {
+                if let button = item.customView as? UIButton {
+                    button.tintColor = color
+                    button.setTitleColor(color, for: .normal)
+                }
+            }
+        }
+    }
 }

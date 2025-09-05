@@ -28,8 +28,7 @@ extension NCMedia {
 
     @MainActor
     func collectionViewReloadData() {
-        self.collectionView.reloadData()
-        self.setTitleDate()
+        collectionView.reloadData()
     }
 
     // MARK: - Search media

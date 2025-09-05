@@ -30,29 +30,10 @@ extension NCMedia: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let numberOfItemsInSection = dataSource.metadatas.count
-        let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
-        let assistantEnabled = capabilities.assistantEnabled
-        if assistantEnabled {
-            assistantButton.isHidden = false
-        } else {
-            assistantButton.isHidden = true
-        }
-
         self.numberOfColumns = getColumnCount()
 
-        if numberOfItemsInSection == 0 || networking.isOffline {
-            selectOrCancelButton.isHidden = true
-            menuButton.isHidden = false
-            gradientView.alpha = 0
-        } else if isEditMode {
-            selectOrCancelButton.isHidden = false
-        } else {
-            selectOrCancelButton.isHidden = false
-            menuButton.isHidden = false
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            self.setTitleDate()
-        }
+        setElements()
+
         return numberOfItemsInSection
     }
 

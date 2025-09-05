@@ -11,13 +11,11 @@ class NCMedia: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var titleDate: UILabel!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    @IBOutlet weak var selectOrCancelButton: UIButton!
-    @IBOutlet weak var menuButton: UIButton!
-    @IBOutlet weak var assistantButton: UIButton!
+    @IBOutlet weak var titleConstraint: NSLayoutConstraint!
     @IBOutlet weak var gradientView: UIView!
-    @IBOutlet weak var stackView: UIStackView!
 
     let layout = NCMediaLayout()
+    let gradientLayer = CAGradientLayer()
     var layoutType = NCGlobal.shared.mediaLayoutRatio
     var documentPickerViewController: NCDocumentPickerViewController?
     var tabBarSelect: NCMediaSelectTabBar!
@@ -28,18 +26,15 @@ class NCMedia: UIViewController {
     let imageCache = NCImageCache.shared
     let networking = NCNetworking.shared
     var dataSource = NCMediaDataSource()
-    var isTop: Bool = true
     var isEditMode = false
     var fileSelect: [String] = []
     var searchMediaInProgress: Bool = false
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
-    let gradient: CAGradientLayer = CAGradientLayer()
     var showOnlyImages = false
     var showOnlyVideos = false
     var timeIntervalSearchNewMedia: TimeInterval = 2.0
     var timerSearchNewMedia: Timer?
-    let insetsTop: CGFloat = 65
     let livePhotoImage = NCUtility().loadImage(named: "livephoto", colors: [.white])
     let playImage = NCUtility().loadImage(named: "play.fill", colors: [.white])
     var photoImage = UIImage()
@@ -92,54 +87,50 @@ class NCMedia: UIViewController {
         collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: mediaSectionFooter, withReuseIdentifier: "sectionFooter")
         collectionView.register(UINib(nibName: "NCMediaCell", bundle: nil), forCellWithReuseIdentifier: "mediaCell")
         collectionView.alwaysBounceVertical = true
-        collectionView.contentInset = UIEdgeInsets(top: insetsTop, left: 0, bottom: 50, right: 0)
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         collectionView.backgroundColor = .systemBackground
         collectionView.prefetchDataSource = self
         collectionView.dragInteractionEnabled = true
         collectionView.dragDelegate = self
         collectionView.dropDelegate = self
         collectionView.accessibilityIdentifier = "NCMedia"
+        collectionView.contentInsetAdjustmentBehavior = .never
 
         layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
         collectionView.collectionViewLayout = layout
         layoutType = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "", layout: global.mediaLayoutRatio).layout
 
+        // Gradient Layer
+        gradientLayer.startPoint = CGPoint(x: 0, y: 0)
+        gradientLayer.endPoint   = CGPoint(x: 0, y: 1)
+
+        gradientLayer.colors = [
+            UIColor.black.withAlphaComponent(0.55).cgColor,
+            UIColor.black.withAlphaComponent(0.40).cgColor,
+            UIColor.black.withAlphaComponent(0.25).cgColor,
+            UIColor.black.withAlphaComponent(0.15).cgColor,
+            UIColor.black.withAlphaComponent(0.08).cgColor,
+            UIColor.black.withAlphaComponent(0.04).cgColor,
+            UIColor.black.withAlphaComponent(0.015).cgColor,
+            UIColor.clear.cgColor
+        ]
+
+        gradientLayer.locations = [0.0, 0.20, 0.40, 0.60, 0.75, 0.85, 0.95, 1.0]
+        gradientView.layer.insertSublayer(gradientLayer, at: 0)
+
+        // Title + Activity indicator
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            titleConstraint.constant = 0
+        } else {
+            if #available(iOS 26.0, *) {
+                titleConstraint.constant = -44
+            } else {
+                titleConstraint.constant = -34
+            }
+        }
         titleDate.text = ""
-
-        menuButton.backgroundColor = .clear
-        menuButton.layer.cornerRadius = 15
-        menuButton.layer.masksToBounds = true
-        menuButton.showsMenuAsPrimaryAction = true
-        menuButton.configuration = UIButton.Configuration.plain()
-        menuButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
-        if #available(iOS 26.0, *) {
-        } else {
-            menuButton.addBlur(style: .systemUltraThinMaterial)
-        }
-
-        assistantButton.backgroundColor = .clear
-        assistantButton.layer.cornerRadius = 15
-        assistantButton.layer.masksToBounds = true
-        assistantButton.configuration = UIButton.Configuration.plain()
-        assistantButton.setImage(UIImage(systemName: "sparkles"), for: .normal)
-        if #available(iOS 26.0, *) {
-        } else {
-            assistantButton.addBlur(style: .systemUltraThinMaterial)
-        }
-
-        selectOrCancelButton.backgroundColor = .clear
-        selectOrCancelButton.layer.cornerRadius = 15
-        selectOrCancelButton.layer.masksToBounds = true
-        selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
-        if #available(iOS 26.0, *) {
-        } else {
-            selectOrCancelButton.addBlur(style: .systemUltraThinMaterial)
-        }
-
-        gradient.startPoint = CGPoint(x: 0, y: 0.1)
-        gradient.endPoint = CGPoint(x: 0, y: 1)
-        gradient.colors = [UIColor.black.withAlphaComponent(UIAccessibility.isReduceTransparencyEnabled ? 0.8 : 0.4).cgColor, UIColor.clear.cgColor]
-        gradientView.layer.insertSublayer(gradient, at: 0)
+        titleDate?.textColor = .white
+        activityIndicator.color = .white
 
         pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
         collectionView.addGestureRecognizer(pinchGesture)
@@ -175,7 +166,12 @@ class NCMedia: UIViewController {
             tabBarSelect = NCMediaSelectTabBar(controller: self.tabBarController, viewController: self, delegate: self)
         }
 
-        navigationController?.setNavigationBarHidden(true, animated: false)
+        Task {
+            await (self.navigationController as? NCMediaNavigationController)?.setNavigationRightItems()
+            if #unavailable(iOS 26.0) {
+                (self.navigationController as? NCMediaNavigationController)?.updateRightBarButtonsTint(to: .white)
+            }
+        }
 
         if dataSource.metadatas.isEmpty {
             Task {
@@ -194,7 +190,6 @@ class NCMedia: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(enterForeground(_:)), name: UIApplication.willEnterForegroundNotification, object: nil)
 
         searchNewMedia()
-        createMenu()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -208,20 +203,10 @@ class NCMedia: UIViewController {
         NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
     }
 
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        if self.traitCollection.userInterfaceStyle == .dark {
-            return .lightContent
-        } else if isTop {
-            return .darkContent
-        } else {
-            return .lightContent
-        }
-    }
-
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
 
-        gradient.frame = gradientView.bounds
+        gradientLayer.frame = gradientView.bounds
     }
 
     func searchNewMedia() {
@@ -276,13 +261,10 @@ class NCMedia: UIViewController {
 extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         if !dataSource.metadatas.isEmpty {
-            isTop = scrollView.contentOffset.y <= -(insetsTop + view.safeAreaInsets.top - 25)
-            setColor()
             setTitleDate()
             setNeedsStatusBarAppearanceUpdate()
-        } else {
-            setColor()
         }
+        setElements()
     }
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
@@ -300,10 +282,7 @@ extension NCMedia: UIScrollViewDelegate {
         searchNewMedia()
     }
 
-    func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
-        let y = view.safeAreaInsets.top
-        scrollView.contentOffset.y = -(insetsTop + y)
-    }
+    func scrollViewDidScrollToTop(_ scrollView: UIScrollView) { }
 }
 
 // MARK: -
