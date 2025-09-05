@@ -62,6 +62,10 @@ extension NCFiles {
     ///
     /// - Parameter metadatas: The list of `tableMetadata` entries to scan and refresh.
     func networkSyncMetadata(metadatas: [tableMetadata]) async {
+        // Get account for the first metadata, to be safe, it is better to take the account here and not from the session since it can cause problems if you change users in the meantime
+        guard let account = metadatas.first?.account else {
+            return
+        }
         // Order by date (descending)
         let metadatas = metadatas.sorted {
             ($0.date as Date) > ($1.date as Date)
@@ -87,7 +91,7 @@ extension NCFiles {
         }
 
         // Skip error or e2ee
-        let resultsReadFile = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrl, account: session.account) { task in
+        let resultsReadFile = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrl, account: account) { task in
             Task {
                 await self.networking.networkingTasks.track(identifier: identifier, task: task)
             }
@@ -113,7 +117,7 @@ extension NCFiles {
             }
             let serverUrl = metadata.serverUrlFileName
 
-            let resultsReadFolder = await NCNetworking.shared.readFolderAsync(serverUrl: serverUrl, account: session.account) { task in
+            let resultsReadFolder = await NCNetworking.shared.readFolderAsync(serverUrl: serverUrl, account: account) { task in
                 Task {
                     await self.networking.networkingTasks.track(identifier: identifier, task: task)
                 }
