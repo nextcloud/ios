@@ -166,9 +166,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             view.addSubview(menuToolbar)
             menuToolbar.translatesAutoresizingMaskIntoConstraints = false
             NSLayoutConstraint.activate([
-                menuToolbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                menuToolbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                menuToolbar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+                menuToolbar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10),
+                menuToolbar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
+                menuToolbar.widthAnchor.constraint(equalToConstant: 44)
             ])
 
             let config = UIImage.SymbolConfiguration(pointSize: 25, weight: .thin)
@@ -178,8 +178,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             plusItem?.tintColor = NCBrandColor.shared.customer
 
             guard let plusItem else { return }
-            //plusItem.menu = plusMenu
+            // plusItem.menu = plusMenu
             menuToolbar.setItems([plusItem], animated: false)
+            menuToolbar.sizeToFit()
         }
     }
 

@@ -191,7 +191,7 @@ class NCFiles: NCCollectionViewCommon {
 
             // disable + button if no create permission
             let color = NCBrandColor.shared.getElement(account: self.session.account)
-            
+
             self.mainNavigationController?.plusItem?.isEnabled = metadataFolder.isCreatable
             self.mainNavigationController?.plusItem?.tintColor = metadataFolder.isCreatable ? color : .lightGray
 
