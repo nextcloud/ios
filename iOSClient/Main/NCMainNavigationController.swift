@@ -165,11 +165,20 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         if topViewController is NCFiles {
             view.addSubview(menuToolbar)
             menuToolbar.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-                menuToolbar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10),
-                menuToolbar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
-                menuToolbar.widthAnchor.constraint(equalToConstant: 44)
-            ])
+
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                NSLayoutConstraint.activate([
+                    menuToolbar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+                    menuToolbar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+                    menuToolbar.widthAnchor.constraint(equalToConstant: 44)
+                ])
+            } else {
+                NSLayoutConstraint.activate([
+                    menuToolbar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10),
+                    menuToolbar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
+                    menuToolbar.widthAnchor.constraint(equalToConstant: 44)
+                ])
+            }
 
             let config = UIImage.SymbolConfiguration(pointSize: 25, weight: .thin)
             let plusImage = UIImage(systemName: "plus.circle.fill", withConfiguration: config)
