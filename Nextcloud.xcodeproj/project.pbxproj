@@ -1027,6 +1027,7 @@
 		F7FA7FFC2C0F4EE40072FC60 /* NCViewerQuickLookView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FA7FFB2C0F4EE40072FC60 /* NCViewerQuickLookView.swift */; };
 		F7FA80002C0F4F3B0072FC60 /* NCUploadAssetsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FA7FFE2C0F4F3B0072FC60 /* NCUploadAssetsModel.swift */; };
 		F7FA80012C0F4F3B0072FC60 /* NCUploadAssetsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FA7FFF2C0F4F3B0072FC60 /* NCUploadAssetsView.swift */; };
+		F7FAEDA22E6D59720042DD33 /* NCMainNavigationControllerMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FAEDA12E6D59650042DD33 /* NCMainNavigationControllerMenu.swift */; };
 		F7FAFD3A28BFA948000777FE /* NCNotification+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FAFD3928BFA947000777FE /* NCNotification+Menu.swift */; };
 		F7FDFF692E437E55000D7688 /* NCAccountRequest.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7FDFF512E437E55000D7688 /* NCAccountRequest.storyboard */; };
 		F7FDFF6A2E437E55000D7688 /* NCShareAccounts.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7FDFF532E437E55000D7688 /* NCShareAccounts.storyboard */; };
@@ -1906,6 +1907,7 @@
 		F7FA7FFB2C0F4EE40072FC60 /* NCViewerQuickLookView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCViewerQuickLookView.swift; sourceTree = "<group>"; };
 		F7FA7FFE2C0F4F3B0072FC60 /* NCUploadAssetsModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCUploadAssetsModel.swift; sourceTree = "<group>"; };
 		F7FA7FFF2C0F4F3B0072FC60 /* NCUploadAssetsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCUploadAssetsView.swift; sourceTree = "<group>"; };
+		F7FAEDA12E6D59650042DD33 /* NCMainNavigationControllerMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMainNavigationControllerMenu.swift; sourceTree = "<group>"; };
 		F7FAFD3928BFA947000777FE /* NCNotification+Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCNotification+Menu.swift"; sourceTree = "<group>"; };
 		F7FDFF512E437E55000D7688 /* NCAccountRequest.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCAccountRequest.storyboard; sourceTree = "<group>"; };
 		F7FDFF522E437E55000D7688 /* NCAccountRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAccountRequest.swift; sourceTree = "<group>"; };
@@ -2113,20 +2115,21 @@
 		371B5A2F23D0B04B00FAFAE9 /* Menu */ = {
 			isa = PBXGroup;
 			children = (
+				3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */,
 				F376A3732E5CC5FF0067EE25 /* ContextMenuActions.swift */,
+				F77A697C250A0FBC00FF1708 /* NCCollectionViewCommon+Menu.swift */,
+				F78C6FDD296D677300C952C3 /* NCContextMenu.swift */,
+				F7FAEDA12E6D59650042DD33 /* NCMainNavigationControllerMenu.swift */,
 				3704EB2923D5A58400455C5B /* NCMenu.storyboard */,
 				371B5A2D23D0B04500FAFAE9 /* NCMenu.swift */,
+				AF935066276B84E700BD078F /* NCMenu+FloatingPanel.swift */,
 				AF68326927BE65A90010BF0B /* NCMenuAction.swift */,
 				F7FAFD3928BFA947000777FE /* NCNotification+Menu.swift */,
-				AF935066276B84E700BD078F /* NCMenu+FloatingPanel.swift */,
-				3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */,
-				8491B1CC273BBA82001C8C5B /* UIViewController+Menu.swift */,
-				F77A697C250A0FBC00FF1708 /* NCCollectionViewCommon+Menu.swift */,
-				F75D19E225EFE09000D74598 /* NCTrash+Menu.swift */,
-				AF93471127E2341B002537EE /* NCShare+Menu.swift */,
-				F710D2012405826100A6033D /* NCViewerContextMenu.swift */,
-				F78C6FDD296D677300C952C3 /* NCContextMenu.swift */,
 				F7A560412AE1593700BE8FD6 /* NCOperationSaveLivePhoto.swift */,
+				AF93471127E2341B002537EE /* NCShare+Menu.swift */,
+				F75D19E225EFE09000D74598 /* NCTrash+Menu.swift */,
+				F710D2012405826100A6033D /* NCViewerContextMenu.swift */,
+				8491B1CC273BBA82001C8C5B /* UIViewController+Menu.swift */,
 			);
 			path = Menu;
 			sourceTree = "<group>";
@@ -4727,6 +4730,7 @@
 				F76882362C0DD1E7001CF441 /* NCAcknowledgementsView.swift in Sources */,
 				F785EE9D246196DF00B3F945 /* NCNetworkingE2EE.swift in Sources */,
 				F724377B2C10B83E00C7C68D /* NCSharePermissions.swift in Sources */,
+				F7FAEDA22E6D59720042DD33 /* NCMainNavigationControllerMenu.swift in Sources */,
 				F794E13D2BBBFF2E003693D7 /* NCMainTabBarController.swift in Sources */,
 				F753DBDF2E5D99C300A1AF91 /* NCFiles+SyncMetadata.swift in Sources */,
 				F7CBC1252BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.swift in Sources */,

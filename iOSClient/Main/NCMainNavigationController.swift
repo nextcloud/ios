@@ -174,7 +174,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 ])
             } else {
                 NSLayoutConstraint.activate([
-                    menuToolbar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10),
+                    menuToolbar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -15),
                     menuToolbar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
                     menuToolbar.widthAnchor.constraint(equalToConstant: 44)
                 ])
@@ -187,7 +187,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             plusItem?.tintColor = NCBrandColor.shared.customer
 
             guard let plusItem else { return }
-            // plusItem.menu = plusMenu
+            plusItem.menu = plusMenu()
             menuToolbar.setItems([plusItem], animated: false)
             menuToolbar.sizeToFit()
         }
