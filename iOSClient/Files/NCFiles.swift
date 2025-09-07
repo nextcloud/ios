@@ -8,8 +8,6 @@ import RealmSwift
 import SwiftUI
 
 class NCFiles: NCCollectionViewCommon {
-    @IBOutlet weak var plusButton: UIButton!
-
     internal var fileNameBlink: String?
     internal var fileNameOpen: String?
 
@@ -35,29 +33,12 @@ class NCFiles: NCCollectionViewCommon {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        /// Plus Button
-        let image = UIImage(systemName: "plus", withConfiguration: UIImage.SymbolConfiguration(scale: .large))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [.white]))
-
-        plusButton.setTitle("", for: .normal)
-        plusButton.setImage(image, for: .normal)
-        plusButton.backgroundColor = NCBrandColor.shared.customer
-        if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
-            let color = NCBrandColor.shared.getElement(account: activeTableAccount.account)
-            self.plusButton.backgroundColor = color
-        }
-        plusButton.accessibilityLabel = NSLocalizedString("_accessibility_add_upload_", comment: "")
-        plusButton.layer.cornerRadius = plusButton.frame.size.width / 2.0
-        plusButton.layer.masksToBounds = false
-        plusButton.layer.shadowOffset = CGSize(width: 0, height: 0)
-        plusButton.layer.shadowRadius = 3.0
-        plusButton.layer.shadowOpacity = 0.5
-
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil, queue: nil) { notification in
             if let userInfo = notification.userInfo,
                let account = userInfo["account"] as? String,
                self.controller?.account == account {
                 let color = NCBrandColor.shared.getElement(account: account)
-                self.plusButton.backgroundColor = color
+                self.mainNavigationController?.plusItem?.tintColor = color
             }
         }
 
@@ -80,7 +61,7 @@ class NCFiles: NCCollectionViewCommon {
                        controller == self.controller {
                         controller.account = account
                         let color = NCBrandColor.shared.getElement(account: account)
-                        self.plusButton.backgroundColor = color
+                        self.mainNavigationController?.plusItem?.tintColor = color
                     } else {
                         return
                     }
@@ -210,8 +191,12 @@ class NCFiles: NCCollectionViewCommon {
 
             // disable + button if no create permission
             let color = NCBrandColor.shared.getElement(account: self.session.account)
-            plusButton.isEnabled = metadataFolder.isCreatable
-            plusButton.backgroundColor = metadataFolder.isCreatable ? color : .lightGray
+            
+            self.mainNavigationController?.plusItem?.isEnabled = metadataFolder.isCreatable
+            self.mainNavigationController?.plusItem?.tintColor = metadataFolder.isCreatable ? color : .lightGray
+
+            // plusButton.isEnabled = metadataFolder.isCreatable
+            // plusButton.backgroundColor = metadataFolder.isCreatable ? color : .lightGray
         }
 
         let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
@@ -427,10 +412,13 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     override func resetPlusButtonAlpha(animated: Bool = true) {
-        accumulatedScrollDown = 0
-        let update = {
-            self.plusButton.alpha = 1.0
+        guard let menuToolbar = self.mainNavigationController?.menuToolbar else {
+            return
         }
+        let update = {
+            menuToolbar.alpha = 1.0
+        }
+        accumulatedScrollDown = 0
 
         if animated {
             UIView.animate(withDuration: 0.3, animations: update)
@@ -442,16 +430,16 @@ class NCFiles: NCCollectionViewCommon {
     override func isHiddenPlusButton(_ isHidden: Bool) {
         if isHidden {
             UIView.animate(withDuration: 0.5, delay: 0.0, options: [], animations: {
-                self.plusButton.transform = CGAffineTransform(translationX: 100, y: 0)
-                self.plusButton.alpha = 0
+                self.mainNavigationController?.menuToolbar.transform = CGAffineTransform(translationX: 100, y: 0)
+                self.mainNavigationController?.menuToolbar.alpha = 0
             })
         } else {
-            plusButton.transform = CGAffineTransform(translationX: 100, y: 0)
-            plusButton.alpha = 0
+            self.mainNavigationController?.menuToolbar.transform = CGAffineTransform(translationX: 100, y: 0)
+            self.mainNavigationController?.menuToolbar.alpha = 0
 
             UIView.animate(withDuration: 0.5, delay: 0.3, options: [], animations: {
-                self.plusButton.transform = .identity
-                self.plusButton.alpha = 1
+                self.mainNavigationController?.menuToolbar.transform = .identity
+                self.mainNavigationController?.menuToolbar.alpha = 1
             })
         }
     }

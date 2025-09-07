@@ -13,6 +13,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     let utilityFileSystem = NCUtilityFileSystem()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
+    var plusItem: UIBarButtonItem?
+    let menuToolbar = UIToolbar()
+
     var controller: NCMainTabBarController? {
         self.tabBarController as? NCMainTabBarController
     }
@@ -158,6 +161,26 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
 
         setNavigationBarHidden(false, animated: true)
+
+        if topViewController is NCFiles {
+            view.addSubview(menuToolbar)
+            menuToolbar.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                menuToolbar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                menuToolbar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                menuToolbar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+            ])
+
+            let config = UIImage.SymbolConfiguration(pointSize: 25, weight: .thin)
+            let plusImage = UIImage(systemName: "plus.circle.fill", withConfiguration: config)
+
+            plusItem = UIBarButtonItem(image: plusImage, style: .plain, target: nil, action: nil)
+            plusItem?.tintColor = NCBrandColor.shared.customer
+
+            guard let plusItem else { return }
+            //plusItem.menu = plusMenu
+            menuToolbar.setItems([plusItem], animated: false)
+        }
     }
 
     /// Called before a view controller is shown by the navigation controller.
