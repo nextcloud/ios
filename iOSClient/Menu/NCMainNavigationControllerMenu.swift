@@ -18,29 +18,29 @@ extension NCMainNavigationController {
         let utility = NCUtility()
         let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
 
-        var menuAction: [UIMenu] = []
-        var menuE2EE: [UIMenu] = []
-        var menuOnlyOffice: [UIMenu] = []
-        var menuRichDocument: [UIMenu] = []
+        var menuActionElement: [UIMenuElement] = []
+        var menuE2EEElement: [UIMenuElement] = []
+        var menuOnlyOfficeElement: [UIMenuElement] = []
+        var menuRichDocumentElement: [UIMenuElement] = []
 
-        let actionUploadPhoto = UIAction(title: NSLocalizedString("_upload_photos_videos_", comment: ""),
-                                   image: utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor])) { _ in
+        menuActionElement.append(UIAction(title: NSLocalizedString("_upload_photos_videos_", comment: ""),
+                                          image: utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor])) { _ in
             NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
                 if hasPermission {NCPhotosPickerViewController(controller: controller, maxSelectedAssets: 0, singleSelectedMode: false)
                 }
             }
-        }
+        })
 
-        let actionUploadFile = UIAction(title: NSLocalizedString("_upload_file_", comment: ""),
-                                   image: utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor])) { _ in
+        menuActionElement.append(UIAction(title: NSLocalizedString("_upload_file_", comment: ""),
+                                          image: utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor])) { _ in
             controller.documentPickerViewController = NCDocumentPickerViewController(controller: controller, isViewerMedia: false, allowsMultipleSelection: true)
-        }
+        })
 
         if NextcloudKit.shared.isNetworkReachable(),
            let creator = capabilities.directEditingCreators.first(where: { $0.editor == "text" }),
            !isDirectoryE2EE {
-            menuAction.append(UIAction(title: NSLocalizedString("_create_nextcloudtext_document_", comment: ""),
-                                       image: utility.loadImage(named: "doc.text", colors: [NCBrandColor.shared.iconImageColor])) { _ in
+            menuActionElement.append(UIAction(title: NSLocalizedString("_create_nextcloudtext_document_", comment: ""),
+                                              image: utility.loadImage(named: "doc.text", colors: [NCBrandColor.shared.iconImageColor])) { _ in
                 Task {
                     let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + creator.ext, account: session.account, serverUrl: serverUrl)
                     let fileNamePath = utilityFileSystem.getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
@@ -51,13 +51,13 @@ extension NCMainNavigationController {
             })
         }
 
-        let actionScansDocument = UIAction(title: NSLocalizedString("_scans_document_", comment: ""),
-                                           image: utility.loadImage(named: "doc.text.viewfinder", colors: [NCBrandColor.shared.iconImageColor])) { _ in
+        menuActionElement.append(UIAction(title: NSLocalizedString("_scans_document_", comment: ""),
+                                          image: utility.loadImage(named: "doc.text.viewfinder", colors: [NCBrandColor.shared.iconImageColor])) { _ in
             NCDocumentCamera.shared.openScannerDocument(viewController: controller)
-        }
+        })
 
-        let actionCreateVoice = UIAction(title: NSLocalizedString("_create_voice_memo_", comment: ""),
-                                         image: utility.loadImage(named: "mic", colors: [NCBrandColor.shared.iconImageColor])) { _ in
+        menuActionElement.append(UIAction(title: NSLocalizedString("_create_voice_memo_", comment: ""),
+                                          image: utility.loadImage(named: "mic", colors: [NCBrandColor.shared.iconImageColor])) { _ in
             NCAskAuthorization().askAuthorizationAudioRecord(controller: controller) { hasPermission in
                 if hasPermission {
                     if let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as? NCAudioRecorderViewController {
@@ -68,28 +68,28 @@ extension NCMainNavigationController {
                     }
                 }
             }
-        }
+        })
 
         let titleCreateFolder = isDirectoryE2EE ? NSLocalizedString("_create_folder_e2ee_", comment: "") : NSLocalizedString("_create_folder_", comment: "")
         let imageCreateFolder = isDirectoryE2EE ? NCImageCache.shared.getFolderEncrypted(account: session.account) : NCImageCache.shared.getFolder(account: session.account)
 
-        let actionCreateFolder = UIAction(title: titleCreateFolder,
+        menuActionElement.append(UIAction(title: titleCreateFolder,
                                           image: imageCreateFolder) { _ in
             NCDocumentCamera.shared.openScannerDocument(viewController: controller)
-        }
+        })
 
         // Folder encrypted
         if serverUrl == utilityFileSystem.getHomeServer(session: session) && NCPreferences().isEndToEndEnabled(account: session.account) {
-            let actionEncryptFolder = UIAction(title: NSLocalizedString("_create_folder_e2ee_", comment: ""),
-                                     image: NCImageCache.shared.getFolderEncrypted(account: session.account)) { _ in
+            menuE2EEElement.append(UIAction(title: NSLocalizedString("_create_folder_e2ee_", comment: ""),
+                                            image: NCImageCache.shared.getFolderEncrypted(account: session.account)) { _ in
                 let alertController = UIAlertController.createFolder(serverUrl: serverUrl, session: session, markE2ee: true, sceneIdentifier: controller.sceneIdentifier, capabilities: capabilities)
                 controller.present(alertController, animated: true, completion: nil)
-            }
+            })
         }
 
         if capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion18 && directory?.richWorkspace == nil && !isDirectoryE2EE && NextcloudKit.shared.isNetworkReachable() {
-            menuAction.append(UIAction(title: NSLocalizedString("_add_folder_info_", comment: ""),
-                                       image: utility.loadImage(named: "list.dash.header.rectangle", colors: [NCBrandColor.shared.iconImageColor])) { _ in
+            menuActionElement.append(UIAction(title: NSLocalizedString("_add_folder_info_", comment: ""),
+                                              image: utility.loadImage(named: "list.dash.header.rectangle", colors: [NCBrandColor.shared.iconImageColor])) { _ in
                 let richWorkspaceCommon = NCRichWorkspaceCommon()
                 if let viewController = controller.currentViewController() {
                     if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@",
@@ -106,8 +106,8 @@ extension NCMainNavigationController {
 
         if NextcloudKit.shared.isNetworkReachable(),
            let creator = capabilities.directEditingCreators.first(where: { $0.editor == "onlyoffice" && $0.identifier == "onlyoffice_docx"}) {
-            menuOnlyOffice.append(UIAction(title: NSLocalizedString("_create_new_document_", comment: ""),
-                                           image: utility.loadImage(named: "doc.text", colors: [NCBrandColor.shared.iconImageColor])) { _ in
+            menuOnlyOfficeElement.append(UIAction(title: NSLocalizedString("_create_new_document_", comment: ""),
+                                                  image: utility.loadImage(named: "doc.text", colors: [NCBrandColor.shared.iconImageColor])) { _ in
                 let createDocument = NCCreateDocument()
 
                 Task {
@@ -122,8 +122,8 @@ extension NCMainNavigationController {
 
         if NextcloudKit.shared.isNetworkReachable(),
            let creator = capabilities.directEditingCreators.first(where: { $0.editor == "onlyoffice" && $0.identifier == "onlyoffice_xlsx"}) {
-            menuOnlyOffice.append(UIAction(title: NSLocalizedString("_create_new_spreadsheet_", comment: ""),
-                                           image: utility.loadImage(named: "tablecells", colors: [NCBrandColor.shared.spreadsheetIconColor])) { _ in
+            menuOnlyOfficeElement.append(UIAction(title: NSLocalizedString("_create_new_spreadsheet_", comment: ""),
+                                                  image: utility.loadImage(named: "tablecells", colors: [NCBrandColor.shared.spreadsheetIconColor])) { _ in
                 let createDocument = NCCreateDocument()
 
                 Task {
@@ -139,8 +139,8 @@ extension NCMainNavigationController {
 
         if NextcloudKit.shared.isNetworkReachable(),
            let creator = capabilities.directEditingCreators.first(where: { $0.editor == "onlyoffice" && $0.identifier == "onlyoffice_pptx"}) {
-            menuOnlyOffice.append(UIAction(title: NSLocalizedString("_create_new_presentation_", comment: ""),
-                                           image: utility.loadImage(named: "doc", colors: [NCBrandColor.shared.presentationIconColor])) { _ in
+            menuOnlyOfficeElement.append(UIAction(title: NSLocalizedString("_create_new_presentation_", comment: ""),
+                                                  image: utility.loadImage(named: "doc", colors: [NCBrandColor.shared.presentationIconColor])) { _ in
                 let createDocument = NCCreateDocument()
 
                 Task {
@@ -155,8 +155,8 @@ extension NCMainNavigationController {
 
         if capabilities.richDocumentsEnabled,
            NextcloudKit.shared.isNetworkReachable() && !isDirectoryE2EE {
-            menuRichDocument.append(UIAction(title: NSLocalizedString("_create_new_document_", comment: ""),
-                                             image: utility.loadImage(named: "doc.richtext", colors: [NCBrandColor.shared.iconImageColor])) { _ in
+            menuRichDocumentElement.append(UIAction(title: NSLocalizedString("_create_new_document_", comment: ""),
+                                                    image: utility.loadImage(named: "doc.richtext", colors: [NCBrandColor.shared.iconImageColor])) { _ in
                 let createDocument = NCCreateDocument()
 
                 Task {
@@ -169,19 +169,11 @@ extension NCMainNavigationController {
             })
         }
 
-        /*
-         func createRightMenuActions() async -> (select: UIAction,
-                                                 viewStyleSubmenu: UIMenu,
-                                                 sortSubmenu: UIMenu,
-                                                 favoriteOnTop: UIAction,
-                                                 directoryOnTop: UIAction,
-                                                 hiddenFiles: UIAction,
-                                                 personalFilesOnly: UIAction,
-                                                 showDescription: UIAction,
-                                                 showRecommendedFiles: UIAction?)? {
-         return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, fileSettings, additionalSettings])
+        let menuAction = UIMenu(title: "", options: .displayInline, children: menuActionElement)
+        let menuE2EE = UIMenu(title: "", options: .displayInline, children: menuE2EEElement)
+        let menuOnlyOffice = UIMenu(title: "", options: .displayInline, children: menuOnlyOfficeElement)
+        let menuRichDocument = UIMenu(title: "", options: .displayInline, children: menuRichDocumentElement)
 
-         */
-        return UIMenu(children: [menuAction, menuE2])
+        return UIMenu(children: [menuAction, menuE2EE, menuOnlyOffice, menuRichDocument])
     }
 }
