@@ -14,6 +14,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     var plusItem: UIBarButtonItem?
+    var plusMenu = UIMenu()
     let menuToolbar = UIToolbar()
 
     var controller: NCMainTabBarController? {
@@ -187,7 +188,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             plusItem?.tintColor = NCBrandColor.shared.customer
 
             guard let plusItem else { return }
-            plusItem.menu = plusMenu()
+            let (menuAction, menuE2EE, menuOnlyOffice, menuRichDocument) = createPlusMenu()
+            plusMenu = UIMenu(children: [menuAction, menuE2EE, menuOnlyOffice, menuRichDocument])
+            plusItem.menu = plusMenu
             menuToolbar.setItems([plusItem], animated: false)
             menuToolbar.sizeToFit()
         }

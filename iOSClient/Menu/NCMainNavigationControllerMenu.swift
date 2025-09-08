@@ -6,9 +6,9 @@ import UIKit
 import NextcloudKit
 
 extension NCMainNavigationController {
-    func plusMenu() -> UIMenu? {
+    func createPlusMenu() -> (menuAction: UIMenu, menuE2EE: UIMenu, menuOnlyOffice: UIMenu, menuRichDocument: UIMenu) {
         guard let controller else {
-            return nil
+            return (UIMenu(), UIMenu(), UIMenu(), UIMenu())
         }
         let session = NCSession.shared.getSession(controller: controller)
         let utilityFileSystem = NCUtilityFileSystem()
@@ -174,6 +174,9 @@ extension NCMainNavigationController {
         let menuOnlyOffice = UIMenu(title: "", options: .displayInline, children: menuOnlyOfficeElement)
         let menuRichDocument = UIMenu(title: "", options: .displayInline, children: menuRichDocumentElement)
 
-        return UIMenu(children: [menuAction, menuE2EE, menuOnlyOffice, menuRichDocument])
+        return(menuAction, menuE2EE, menuOnlyOffice, menuRichDocument)
+
+
+        //UIMenu(children: [menuAction, menuE2EE, menuOnlyOffice, menuRichDocument])
     }
 }
