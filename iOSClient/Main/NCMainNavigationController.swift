@@ -167,6 +167,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
         setNavigationBarHidden(false, animated: true)
 
+        // PLUS BUTTON
         if topViewController is NCFiles {
             view.addSubview(menuToolbar)
             menuToolbar.translatesAutoresizingMaskIntoConstraints = false
@@ -198,22 +199,23 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
     }
 
-    /// Called before a view controller is shown by the navigation controller.
-    /// This method checks if the view controller is of type `NCViewerMediaPage`.
-    /// If so, it skips applying the custom navigation bar appearance and right bar button items.
-    /// Otherwise, it applies the standard appearance and updates buttons accordingly.
-    ///
-    /// - Parameters:
-    ///   - navigationController: The navigation controller that will show the view controller.
-    ///   - viewController: The view controller that is about to be shown.
-    ///   - animated: True if the transition is animated; false otherwise.
-
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        if viewController is NCFiles {
-            isHiddenPlusButton(false)
-        } else {
-            isHiddenPlusButton(true)
+        // PLUS BUTTON
+        if let fromVC = navigationController.transitionCoordinator?.viewController(forKey: .from) {
+            if !navigationController.viewControllers.contains(fromVC) {
+                // print("🔙 Back da \(fromVC) a \(viewController)")
+                if !(fromVC is NCFiles) {
+                    isHiddenPlusButton(false)
+                }
+
+            } else {
+                // print("➡️ Push da \(fromVC) a \(viewController)")
+                if !(viewController is NCFiles) {
+                    isHiddenPlusButton(true)
+                }
+            }
         }
+
         Task {
             setNavigationBarAppearance()
             await updateRightBarButtonItems()
