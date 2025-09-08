@@ -6,20 +6,25 @@ import UIKit
 import NextcloudKit
 
 extension NCMainNavigationController {
-    func createPlusMenu(session: NCSession.Session, capabilities: NKCapabilities.Capabilities) -> (menuAction: UIMenu, menuE2EE: UIMenu, menuOnlyOffice: UIMenu, menuRichDocument: UIMenu) {
+    func createPlusMenu(session: NCSession.Session, capabilities: NKCapabilities.Capabilities) -> (menuActionElement: [UIMenuElement],
+                                                                                                   menuE2EEElement: [UIMenuElement],
+                                                                                                   menuOnlyOfficeElement: [UIMenuElement],
+                                                                                                   menuRichDocumentElement: [UIMenuElement]) {
+        var menuActionElement: [UIMenuElement] = []
+        var menuE2EEElement: [UIMenuElement] = []
+        var menuOnlyOfficeElement: [UIMenuElement] = []
+        var menuRichDocumentElement: [UIMenuElement] = []
         guard let controller else {
-            return (UIMenu(), UIMenu(), UIMenu(), UIMenu())
+            return (menuActionElement, menuE2EEElement, menuOnlyOfficeElement, menuRichDocumentElement)
         }
+
         let utilityFileSystem = NCUtilityFileSystem()
         let utility = NCUtility()
         let serverUrl = controller.currentServerUrl()
         let isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account)
         let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
 
-        var menuActionElement: [UIMenuElement] = []
-        var menuE2EEElement: [UIMenuElement] = []
-        var menuOnlyOfficeElement: [UIMenuElement] = []
-        var menuRichDocumentElement: [UIMenuElement] = []
+
 
         menuActionElement.append(UIAction(title: NSLocalizedString("_upload_photos_videos_", comment: ""),
                                           image: utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor])) { _ in
@@ -167,14 +172,6 @@ extension NCMainNavigationController {
             })
         }
 
-        let menuAction = UIMenu(title: "", options: .displayInline, children: menuActionElement)
-        let menuE2EE = UIMenu(title: "", options: .displayInline, children: menuE2EEElement)
-        let menuOnlyOffice = UIMenu(title: "", options: .displayInline, children: menuOnlyOfficeElement)
-        let menuRichDocument = UIMenu(title: "", options: .displayInline, children: menuRichDocumentElement)
-
-        return(menuAction, menuE2EE, menuOnlyOffice, menuRichDocument)
-
-
-        //UIMenu(children: [menuAction, menuE2EE, menuOnlyOffice, menuRichDocument])
+        return(menuActionElement, menuE2EEElement, menuOnlyOfficeElement, menuRichDocumentElement)
     }
 }

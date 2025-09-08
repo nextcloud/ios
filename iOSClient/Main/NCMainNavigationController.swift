@@ -127,7 +127,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             }
         }), for: .touchUpInside)
 
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterUpdateNotification), object: nil, queue: nil) { _ in
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterServerDidUpdate), object: nil, queue: nil) { _ in
             Task { @MainActor in
                 let capabilities = await NKCapabilities.shared.getCapabilities(for: self.session.account)
                 guard capabilities.notification.count > 0 else {
@@ -138,6 +138,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                     return
                 }
 
+                // Notification
                 let resultsNotification = await NextcloudKit.shared.getNotificationsAsync(account: self.session.account) { task in
                     Task {
                         let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
@@ -158,6 +159,14 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                         await self.updateRightBarButtonItems()
                     }
                 }
+
+                // Menu Plus
+                let (menuActionElement, menuE2EEElement, menuOnlyOfficeElement, menuRichDocumentElement) = self.createPlusMenu(session: self.session, capabilities: capabilities)
+
+                self.plusMenu.replacingChildren(menuActionElement)
+                self.plusMenu.replacingChildren(menuE2EEElement)
+                self.plusMenu.replacingChildren(menuOnlyOfficeElement)
+                self.plusMenu.replacingChildren(menuRichDocumentElement)
             }
         }
 
@@ -190,7 +199,12 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             guard let plusItem else { return }
             Task { @MainActor in
                 let capabilities = await NCManageDatabase.shared.getCapabilities(account: session.account) ?? NKCapabilities.Capabilities()
-                let (menuAction, menuE2EE, menuOnlyOffice, menuRichDocument) = createPlusMenu(session: session, capabilities: capabilities)
+                let (menuActionElement, menuE2EEElement, menuOnlyOfficeElement, menuRichDocumentElement) = createPlusMenu(session: session, capabilities: capabilities)
+                let menuAction = UIMenu(title: "", options: .displayInline, children: menuActionElement)
+                let menuE2EE = UIMenu(title: "", options: .displayInline, children: menuE2EEElement)
+                let menuOnlyOffice = UIMenu(title: "", options: .displayInline, children: menuOnlyOfficeElement)
+                let menuRichDocument = UIMenu(title: "", options: .displayInline, children: menuRichDocumentElement)
+
                 plusMenu = UIMenu(children: [menuAction, menuE2EE, menuOnlyOffice, menuRichDocument])
                 plusItem.menu = plusMenu
                 menuToolbar.setItems([plusItem], animated: false)

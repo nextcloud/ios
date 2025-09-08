@@ -222,7 +222,7 @@ class NCService: NSObject {
             }
         }
 
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateNotification)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterServerDidUpdate)
     }
 
     // MARK: -

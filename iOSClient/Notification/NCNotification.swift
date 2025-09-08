@@ -79,7 +79,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
             await NCNetworking.shared.networkingTasks.cancel(identifier: "NCNotification")
         }
 
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateNotification)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterServerDidUpdate)
     }
 
     @objc func viewClose() {
