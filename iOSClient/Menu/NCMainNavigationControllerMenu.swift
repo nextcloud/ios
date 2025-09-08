@@ -198,4 +198,21 @@ extension NCMainNavigationController {
         menuToolbar.setItems([plusItem], animated: false)
         menuToolbar.sizeToFit()
     }
+
+    func isHiddenPlusButton(_ isHidden: Bool) {
+        if isHidden {
+            UIView.animate(withDuration: 0.5, delay: 0.0, options: [], animations: {
+                self.menuToolbar.transform = CGAffineTransform(translationX: 100, y: 0)
+                self.menuToolbar.alpha = 0
+            })
+        } else {
+            self.menuToolbar.transform = CGAffineTransform(translationX: 100, y: 0)
+            self.menuToolbar.alpha = 0
+
+            UIView.animate(withDuration: 0.5, delay: 0.3, options: [], animations: {
+                self.menuToolbar.transform = .identity
+                self.menuToolbar.alpha = 1
+            })
+        }
+    }
 }

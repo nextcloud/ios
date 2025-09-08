@@ -136,35 +136,6 @@ class NCFiles: NCCollectionViewCommon {
         fileNameOpen = nil
     }
 
-    // MARK: - Action
-
-    @IBAction func plusButtonAction(_ sender: UIButton) {
-        guard let controller else {
-            return
-        }
-        resetPlusButtonAlpha()
-        Task { @MainActor in
-            let capabilities = await NKCapabilities.shared.getCapabilities(for: controller.account)
-            let fileFolderPath = NCUtilityFileSystem().getFileNamePath("", serverUrl: serverUrl, session: NCSession.shared.getSession(controller: controller))
-            let fileFolderName = (serverUrl as NSString).lastPathComponent
-
-            if let directory = await NCManageDatabase.shared.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", controller.account, serverUrl)) {
-                if !directory.permissions.contains("CK") {
-                    let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_add_file_")
-                    NCContentPresenter().showWarning(error: error)
-                    return
-                }
-            }
-
-            if !FileNameValidator.checkFolderPath(fileFolderPath, account: controller.account, capabilities: capabilities) {
-                let message = "\(String(format: NSLocalizedString("_file_name_validator_error_reserved_name_", comment: ""), fileFolderName)) \(NSLocalizedString("_please_rename_file_", comment: ""))"
-                await UIAlertController.warningAsync( message: message, presenter: controller)
-                return
-            }
-            self.appDelegate.toggleMenu(controller: controller, sender: sender)
-        }
-    }
-
     // MARK: - DataSource
 
     override func reloadDataSource() async {
@@ -424,23 +395,6 @@ class NCFiles: NCCollectionViewCommon {
             UIView.animate(withDuration: 0.3, animations: update)
         } else {
             update()
-        }
-    }
-
-    override func isHiddenPlusButton(_ isHidden: Bool) {
-        if isHidden {
-            UIView.animate(withDuration: 0.5, delay: 0.0, options: [], animations: {
-                self.mainNavigationController?.menuToolbar.transform = CGAffineTransform(translationX: 100, y: 0)
-                self.mainNavigationController?.menuToolbar.alpha = 0
-            })
-        } else {
-            self.mainNavigationController?.menuToolbar.transform = CGAffineTransform(translationX: 100, y: 0)
-            self.mainNavigationController?.menuToolbar.alpha = 0
-
-            UIView.animate(withDuration: 0.5, delay: 0.3, options: [], animations: {
-                self.mainNavigationController?.menuToolbar.transform = .identity
-                self.mainNavigationController?.menuToolbar.alpha = 1
-            })
         }
     }
 

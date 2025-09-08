@@ -209,6 +209,11 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     ///   - animated: True if the transition is animated; false otherwise.
 
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        if viewController is NCFiles {
+            isHiddenPlusButton(false)
+        } else {
+            isHiddenPlusButton(true)
+        }
         Task {
             setNavigationBarAppearance()
             await updateRightBarButtonItems()
