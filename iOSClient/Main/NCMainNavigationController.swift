@@ -188,11 +188,14 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             plusItem?.tintColor = NCBrandColor.shared.customer
 
             guard let plusItem else { return }
-            let (menuAction, menuE2EE, menuOnlyOffice, menuRichDocument) = createPlusMenu()
-            plusMenu = UIMenu(children: [menuAction, menuE2EE, menuOnlyOffice, menuRichDocument])
-            plusItem.menu = plusMenu
-            menuToolbar.setItems([plusItem], animated: false)
-            menuToolbar.sizeToFit()
+            Task { @MainActor in
+                let capabilities = await NCManageDatabase.shared.getCapabilities(account: session.account) ?? NKCapabilities.Capabilities()
+                let (menuAction, menuE2EE, menuOnlyOffice, menuRichDocument) = createPlusMenu(session: session, capabilities: capabilities)
+                plusMenu = UIMenu(children: [menuAction, menuE2EE, menuOnlyOffice, menuRichDocument])
+                plusItem.menu = plusMenu
+                menuToolbar.setItems([plusItem], animated: false)
+                menuToolbar.sizeToFit()
+            }
         }
     }
 

@@ -6,17 +6,15 @@ import UIKit
 import NextcloudKit
 
 extension NCMainNavigationController {
-    func createPlusMenu() -> (menuAction: UIMenu, menuE2EE: UIMenu, menuOnlyOffice: UIMenu, menuRichDocument: UIMenu) {
+    func createPlusMenu(session: NCSession.Session, capabilities: NKCapabilities.Capabilities) -> (menuAction: UIMenu, menuE2EE: UIMenu, menuOnlyOffice: UIMenu, menuRichDocument: UIMenu) {
         guard let controller else {
             return (UIMenu(), UIMenu(), UIMenu(), UIMenu())
         }
-        let session = NCSession.shared.getSession(controller: controller)
         let utilityFileSystem = NCUtilityFileSystem()
+        let utility = NCUtility()
         let serverUrl = controller.currentServerUrl()
         let isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account)
         let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
-        let utility = NCUtility()
-        let capabilities = NCNetworking.shared.capabilities[session.account] ?? NKCapabilities.Capabilities()
 
         var menuActionElement: [UIMenuElement] = []
         var menuE2EEElement: [UIMenuElement] = []
