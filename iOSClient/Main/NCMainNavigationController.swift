@@ -205,7 +205,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 let menuOnlyOffice = UIMenu(title: "", options: .displayInline, children: menuOnlyOfficeElement)
                 let menuRichDocument = UIMenu(title: "", options: .displayInline, children: menuRichDocumentElement)
 
-                plusMenu = UIMenu(children: [menuAction, menuE2EE, menuOnlyOffice, menuRichDocument])
+                plusMenu = UIMenu(children: [menuOnlyOffice, menuRichDocument, menuOnlyOffice, menuE2EE, menuAction])
                 plusItem.menu = plusMenu
                 menuToolbar.setItems([plusItem], animated: false)
                 menuToolbar.sizeToFit()
