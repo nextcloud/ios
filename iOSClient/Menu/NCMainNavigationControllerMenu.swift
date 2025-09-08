@@ -6,16 +6,14 @@ import UIKit
 import NextcloudKit
 
 extension NCMainNavigationController {
-    func createPlusMenu(session: NCSession.Session, capabilities: NKCapabilities.Capabilities) -> (menuActionElement: [UIMenuElement],
-                                                                                                   menuE2EEElement: [UIMenuElement],
-                                                                                                   menuOnlyOfficeElement: [UIMenuElement],
-                                                                                                   menuRichDocumentElement: [UIMenuElement]) {
+    func createPlusMenu(session: NCSession.Session, capabilities: NKCapabilities.Capabilities) {
         var menuActionElement: [UIMenuElement] = []
         var menuE2EEElement: [UIMenuElement] = []
         var menuOnlyOfficeElement: [UIMenuElement] = []
         var menuRichDocumentElement: [UIMenuElement] = []
-        guard let controller else {
-            return (menuActionElement, menuE2EEElement, menuOnlyOfficeElement, menuRichDocumentElement)
+        guard let controller,
+              let plusItem else {
+            return
         }
 
         let utilityFileSystem = NCUtilityFileSystem()
@@ -153,7 +151,7 @@ extension NCMainNavigationController {
                     let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
                     let fileNamePath = utilityFileSystem.getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
 
-                    await createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "collabora", templateId: templates.selectedTemplate.identifier, account: session.account)
+                    await createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "collabora", creatorId: creator.identifier, templateId: templates.selectedTemplate.identifier, account: session.account)
                 }
             })
         }
@@ -190,6 +188,14 @@ extension NCMainNavigationController {
             })
         }
 
-        return(menuActionElement, menuE2EEElement, menuOnlyOfficeElement, menuRichDocumentElement)
+        let menuAction = UIMenu(title: "", options: .displayInline, children: menuActionElement)
+        let menuE2EE = UIMenu(title: "", options: .displayInline, children: menuE2EEElement)
+        let menuOnlyOffice = UIMenu(title: "", options: .displayInline, children: menuOnlyOfficeElement)
+        let menuRichDocument = UIMenu(title: "", options: .displayInline, children: menuRichDocumentElement)
+
+        plusMenu = UIMenu(children: [menuOnlyOffice, menuRichDocument, menuOnlyOffice, menuE2EE, menuAction])
+        plusItem.menu = plusMenu
+        menuToolbar.setItems([plusItem], animated: false)
+        menuToolbar.sizeToFit()
     }
 }

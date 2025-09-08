@@ -161,12 +161,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 }
 
                 // Menu Plus
-                let (menuActionElement, menuE2EEElement, menuOnlyOfficeElement, menuRichDocumentElement) = self.createPlusMenu(session: self.session, capabilities: capabilities)
-
-                self.plusMenu.replacingChildren(menuActionElement)
-                self.plusMenu.replacingChildren(menuE2EEElement)
-                self.plusMenu.replacingChildren(menuOnlyOfficeElement)
-                self.plusMenu.replacingChildren(menuRichDocumentElement)
+                self.createPlusMenu(session: self.session, capabilities: capabilities)
             }
         }
 
@@ -196,19 +191,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             plusItem = UIBarButtonItem(image: plusImage, style: .plain, target: nil, action: nil)
             plusItem?.tintColor = NCBrandColor.shared.customer
 
-            guard let plusItem else { return }
             Task { @MainActor in
                 let capabilities = await NCManageDatabase.shared.getCapabilities(account: session.account) ?? NKCapabilities.Capabilities()
-                let (menuActionElement, menuE2EEElement, menuOnlyOfficeElement, menuRichDocumentElement) = createPlusMenu(session: session, capabilities: capabilities)
-                let menuAction = UIMenu(title: "", options: .displayInline, children: menuActionElement)
-                let menuE2EE = UIMenu(title: "", options: .displayInline, children: menuE2EEElement)
-                let menuOnlyOffice = UIMenu(title: "", options: .displayInline, children: menuOnlyOfficeElement)
-                let menuRichDocument = UIMenu(title: "", options: .displayInline, children: menuRichDocumentElement)
-
-                plusMenu = UIMenu(children: [menuOnlyOffice, menuRichDocument, menuOnlyOffice, menuE2EE, menuAction])
-                plusItem.menu = plusMenu
-                menuToolbar.setItems([plusItem], animated: false)
-                menuToolbar.sizeToFit()
+                createPlusMenu(session: session, capabilities: capabilities)
             }
         }
     }
