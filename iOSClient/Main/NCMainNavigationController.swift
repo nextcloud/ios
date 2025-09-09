@@ -169,20 +169,45 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
         // PLUS BUTTON
         if topViewController is NCFiles {
+            let widthAnchor: CGFloat
+            let trailingAnchor: CGFloat
+            let trailingAnchorPad: CGFloat
+
+            if #available(iOS 26.0, *) {
+                widthAnchor = 44
+                trailingAnchor = -15
+                trailingAnchorPad = -20
+            } else {
+                let appearance = UIToolbarAppearance()
+                appearance.configureWithTransparentBackground()
+                appearance.backgroundColor = .clear
+                appearance.backgroundEffect = nil
+                appearance.shadowColor = .clear
+
+                menuToolbar.standardAppearance = appearance
+                menuToolbar.compactAppearance  = appearance
+                menuToolbar.scrollEdgeAppearance = appearance
+                menuToolbar.isTranslucent = true
+
+                widthAnchor = 100
+                trailingAnchor = 28
+                trailingAnchorPad = -10
+            }
+
             view.addSubview(menuToolbar)
             menuToolbar.translatesAutoresizingMaskIntoConstraints = false
 
             if UIDevice.current.userInterfaceIdiom == .pad {
                 NSLayoutConstraint.activate([
-                    menuToolbar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+                    menuToolbar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: trailingAnchorPad),
                     menuToolbar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
-                    menuToolbar.widthAnchor.constraint(equalToConstant: 44)
+                    menuToolbar.widthAnchor.constraint(equalToConstant: widthAnchor)
                 ])
             } else {
                 NSLayoutConstraint.activate([
-                    menuToolbar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -15),
+                    menuToolbar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: trailingAnchor),
                     menuToolbar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
-                    menuToolbar.widthAnchor.constraint(equalToConstant: 44)
+                    menuToolbar.widthAnchor.constraint(equalToConstant: widthAnchor)
                 ])
             }
 
@@ -213,7 +238,11 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 } else {
                     // print("➡️ Push da \(fromVC) a \(viewController)")
                     if !(viewController is NCFiles) {
-                        isHiddenPlusButton(true)
+                        if #available(iOS 26.0, *) {
+                            isHiddenPlusButton(true)
+                        } else {
+                            isHiddenPlusButton(true, animation: false)
+                        }
                     }
                 }
                 createPlusMenu(session: self.session, capabilities: capabilities)
@@ -448,20 +477,28 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         menuToolbar.sizeToFit()
     }
 
-    func isHiddenPlusButton(_ isHidden: Bool) {
+    func isHiddenPlusButton(_ isHidden: Bool, animation: Bool = true) {
         if isHidden {
-            UIView.animate(withDuration: 0.5, delay: 0.0, options: [], animations: {
+            if animation {
+                UIView.animate(withDuration: 0.5, delay: 0.0, options: [], animations: {
+                    self.menuToolbar.transform = CGAffineTransform(translationX: 100, y: 0)
+                    self.menuToolbar.alpha = 0
+                })
+            } else {
+                self.menuToolbar.alpha = 0
+            }
+        } else {
+            if animation {
                 self.menuToolbar.transform = CGAffineTransform(translationX: 100, y: 0)
                 self.menuToolbar.alpha = 0
-            })
-        } else {
-            self.menuToolbar.transform = CGAffineTransform(translationX: 100, y: 0)
-            self.menuToolbar.alpha = 0
 
-            UIView.animate(withDuration: 0.5, delay: 0.3, options: [], animations: {
-                self.menuToolbar.transform = .identity
+                UIView.animate(withDuration: 0.5, delay: 0.3, options: [], animations: {
+                    self.menuToolbar.transform = .identity
+                    self.menuToolbar.alpha = 1
+                })
+            } else {
                 self.menuToolbar.alpha = 1
-            })
+            }
         }
     }
 
