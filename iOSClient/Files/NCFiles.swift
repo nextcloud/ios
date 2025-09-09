@@ -53,11 +53,13 @@ class NCFiles: NCCollectionViewCommon {
         plusButton.layer.shadowOpacity = 0.5
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil, queue: nil) { notification in
-            if let userInfo = notification.userInfo,
-               let account = userInfo["account"] as? String,
-               self.controller?.account == account {
-                let color = NCBrandColor.shared.getElement(account: account)
-                self.plusButton.backgroundColor = color
+            Task { @MainActor in
+                if let userInfo = notification.userInfo,
+                   let account = userInfo["account"] as? String,
+                   self.controller?.account == account {
+                    let color = NCBrandColor.shared.getElement(account: account)
+                    self.plusButton.backgroundColor = color
+                }
             }
         }
 
@@ -74,37 +76,37 @@ class NCFiles: NCCollectionViewCommon {
             self.titleCurrentFolder = getNavigationTitle()
 
             NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
-                if let userInfo = notification.userInfo,
-                   let account = userInfo["account"] as? String {
-                    if let controller = userInfo["controller"] as? NCMainTabBarController,
-                       controller == self.controller {
-                        controller.account = account
-                        let color = NCBrandColor.shared.getElement(account: account)
-                        self.plusButton.backgroundColor = color
-                    } else {
-                        return
+                Task { @MainActor in
+                    if let userInfo = notification.userInfo,
+                       let account = userInfo["account"] as? String {
+                        if let controller = userInfo["controller"] as? NCMainTabBarController,
+                           controller == self.controller {
+                            controller.account = account
+                            let color = NCBrandColor.shared.getElement(account: account)
+                            self.plusButton.backgroundColor = color
+                        } else {
+                            return
+                        }
                     }
-                }
 
-                self.navigationController?.popToRootViewController(animated: false)
-                self.serverUrl = self.utilityFileSystem.getHomeServer(session: self.session)
-                self.isSearchingMode = false
-                self.isEditMode = false
-                self.fileSelect.removeAll()
-                self.layoutForView = self.database.getLayoutForView(account: self.session.account, key: self.layoutKey, serverUrl: self.serverUrl)
+                    self.navigationController?.popToRootViewController(animated: false)
+                    self.serverUrl = self.utilityFileSystem.getHomeServer(session: self.session)
+                    self.isSearchingMode = false
+                    self.isEditMode = false
+                    self.fileSelect.removeAll()
+                    self.layoutForView = self.database.getLayoutForView(account: self.session.account, key: self.layoutKey, serverUrl: self.serverUrl)
 
-                if self.isLayoutList {
-                    self.collectionView?.collectionViewLayout = self.listLayout
-                } else if self.isLayoutGrid {
-                    self.collectionView?.collectionViewLayout = self.gridLayout
-                } else if self.isLayoutPhoto {
-                    self.collectionView?.collectionViewLayout = self.mediaLayout
-                }
+                    if self.isLayoutList {
+                        self.collectionView?.collectionViewLayout = self.listLayout
+                    } else if self.isLayoutGrid {
+                        self.collectionView?.collectionViewLayout = self.gridLayout
+                    } else if self.isLayoutPhoto {
+                        self.collectionView?.collectionViewLayout = self.mediaLayout
+                    }
 
-                self.titleCurrentFolder = self.getNavigationTitle()
-                self.navigationItem.title = self.titleCurrentFolder
+                    self.titleCurrentFolder = self.getNavigationTitle()
+                    self.navigationItem.title = self.titleCurrentFolder
 
-                Task {
                     await (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
                     await self.reloadDataSource()
                     await self.getServerData()
