@@ -31,6 +31,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var imageFavoriteBackground: UIImageView!
     @IBOutlet weak var imageLocal: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
+    @IBOutlet weak var labelTitle2: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
     @IBOutlet weak var labelInfoSeparator: UILabel!
     @IBOutlet weak var labelSubinfo: UILabel!
@@ -74,6 +75,10 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     var fileTitleLabel: UILabel? {
         get { return labelTitle }
         set { labelTitle = newValue }
+    }
+    var fileTitleLabel2: UILabel? {
+        get { return labelTitle2 }
+        set { labelTitle2 = newValue }
     }
     var fileInfoLabel: UILabel? {
         get { return labelInfo }
@@ -191,11 +196,11 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 
     func titleInfoTrailingFull() {
-        titleTrailingConstraint.constant = 10
+//        titleTrailingConstraint.constant = 10
     }
 
     func titleInfoTrailingDefault() {
-        titleTrailingConstraint.constant = 90
+//        titleTrailingConstraint.constant = 90
     }
 
     func setButtonMore(image: UIImage) {

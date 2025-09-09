@@ -192,7 +192,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         cell.fileUser = metadata.ownerId
 
         if isSearchingMode {
-            cell.fileTitleLabel?.text = metadata.fileName
+            cell.fileTitleLabel?.text = metadata.fileName.sanitizeForBidiCharacters(isFolder: metadata.directory)
             cell.fileTitleLabel?.lineBreakMode = .byTruncatingTail
             if metadata.name == global.appName {
                 cell.fileInfoLabel?.text = NSLocalizedString("_in_", comment: "") + " " + utilityFileSystem.getPath(path: metadata.path, user: metadata.user)
@@ -201,12 +201,12 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
             cell.fileSubinfoLabel?.isHidden = true
         } else if !metadata.sessionError.isEmpty, metadata.status != global.metadataStatusNormal {
-            cell.fileTitleLabel?.text = metadata.fileNameView
+            cell.fileTitleLabel?.text = metadata.fileNameView.sanitizeForBidiCharacters(isFolder: metadata.directory)
             cell.fileSubinfoLabel?.isHidden = false
             cell.fileInfoLabel?.text = metadata.sessionError
         } else {
             cell.fileSubinfoLabel?.isHidden = false
-            cell.fileTitleLabel?.text = metadata.fileNameView
+            cell.fileTitleLabel?.text = metadata.fileNameView.sanitizeForBidiCharacters(isFolder: metadata.directory)
             cell.fileTitleLabel?.lineBreakMode = .byTruncatingMiddle
             cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
         }

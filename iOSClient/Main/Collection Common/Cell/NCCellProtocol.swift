@@ -31,6 +31,7 @@ protocol NCCellProtocol {
     var filePreviewImageView: UIImageView? { get set }
     var fileUser: String? { get set }
     var fileTitleLabel: UILabel? { get set }
+    var fileTitleLabel2: UILabel? { get set }
     var fileInfoLabel: UILabel? { get set }
     var fileSubinfoLabel: UILabel? { get set }
     var fileStatusImage: UIImageView? { get set }

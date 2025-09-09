@@ -1389,6 +1389,7 @@
 		F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCCellMore.swift; sourceTree = "<group>"; };
 		F3C587AD2D47E4FE004532DB /* PHAssetCollectionThumbnailLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PHAssetCollectionThumbnailLoader.swift; sourceTree = "<group>"; };
 		F3CA337C2D0B2B6A00672333 /* AlbumModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumModel.swift; sourceTree = "<group>"; };
+		F3CC8C6D2E704F50007DD0CB /* NextcloudKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = NextcloudKit; path = ../NextcloudKit; sourceTree = SOURCE_ROOT; };
 		F3E173AF2C9AF637006D177A /* ScreenAwakeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenAwakeManager.swift; sourceTree = "<group>"; };
 		F3E173BF2C9B1067006D177A /* AwakeMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwakeMode.swift; sourceTree = "<group>"; };
 		F3F442ED2DDE292600FD701F /* NCMetadataPermissions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMetadataPermissions.swift; sourceTree = "<group>"; };
@@ -3328,6 +3329,7 @@
 				C04E2F202A17BB4D001BAD85 /* NextcloudIntegrationTests.xctest */,
 				C0046CDA2A17B98400D87C9D /* NextcloudUITests.xctest */,
 				F7F1FBA62E27D13700C79E20 /* Frameworks */,
+				F3CC8C6D2E704F50007DD0CB /* NextcloudKit */,
 			);
 			sourceTree = "<group>";
 		};
