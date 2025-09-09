@@ -116,6 +116,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.tabBarController as? NCMainTabBarController
     }
 
+    var mainNavigationController: NCMainNavigationController? {
+        self.navigationController as? NCMainNavigationController
+    }
+
     var sceneIdentifier: String {
         (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
     }
@@ -604,8 +608,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func resetPlusButtonAlpha(animated: Bool = true) { }
 
-    func isHiddenPlusButton(_ isHidden: Bool) { }
-
     @MainActor
     func showLoadingTitle() {
         // Don't show spinner on iPad root folder
@@ -663,7 +665,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // TIP
         dismissTip()
         //
-        isHiddenPlusButton(true)
+        mainNavigationController?.isHiddenPlusButton(true)
     }
 
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
@@ -683,7 +685,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             await self.reloadDataSource()
         }
         //
-        isHiddenPlusButton(false)
+        mainNavigationController?.isHiddenPlusButton(false)
     }
 
     // MARK: - TAP EVENT
