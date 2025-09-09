@@ -49,7 +49,6 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         if self.serverUrl.isEmpty {
-
             //
             // Set ServerURL when start (isEmpty)
             //
@@ -60,14 +59,8 @@ class NCFiles: NCCollectionViewCommon {
                 Task { @MainActor in
                     if let userInfo = notification.userInfo,
                        let account = userInfo["account"] as? String {
-                        if let controller = userInfo["controller"] as? NCMainTabBarController,
-                           controller == self.controller {
-                            controller.account = account
-                            let color = NCBrandColor.shared.getElement(account: account)
-                            self.mainNavigationController?.plusItem?.tintColor = color
-                        } else {
-                            return
-                        }
+                        let color = NCBrandColor.shared.getElement(account: account)
+                        self.mainNavigationController?.plusItem?.tintColor = color
                     }
 
                     self.navigationController?.popToRootViewController(animated: false)

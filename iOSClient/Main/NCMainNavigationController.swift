@@ -127,9 +127,14 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             }
         }), for: .touchUpInside)
 
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterServerDidUpdate), object: nil, queue: nil) { _ in
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterServerDidUpdate), object: nil, queue: nil) { notification in
+            guard let userInfo = notification.userInfo,
+                  let account = userInfo["account"] as? String else {
+                return
+            }
+
             Task { @MainActor in
-                let capabilities = await NKCapabilities.shared.getCapabilities(for: self.session.account)
+                let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
                 guard capabilities.notification.count > 0 else {
                     if self.isNotificationsButtonVisible() {
                         self.controller?.availableNotifications = false
@@ -139,9 +144,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 }
 
                 // Notification
-                let resultsNotification = await NextcloudKit.shared.getNotificationsAsync(account: self.session.account) { task in
+                let resultsNotification = await NextcloudKit.shared.getNotificationsAsync(account: account) { task in
                     Task {
-                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
+                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
                                                                                                     name: "getNotifications")
                         await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                     }
@@ -161,7 +166,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 }
 
                 // Menu Plus
-                self.createPlusMenu(session: self.session, capabilities: capabilities)
+                let session = NCSession.shared.getSession(account: account)
+                self.createPlusMenu(session: session, capabilities: capabilities)
             }
         }
 
