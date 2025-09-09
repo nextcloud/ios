@@ -200,23 +200,25 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     }
 
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        // PLUS BUTTON
-        if let fromVC = navigationController.transitionCoordinator?.viewController(forKey: .from) {
-            if !navigationController.viewControllers.contains(fromVC) {
-                // print("🔙 Back da \(fromVC) a \(viewController)")
-                if !(fromVC is NCFiles) {
-                    isHiddenPlusButton(false)
-                }
+        Task { @MainActor in
+            // PLUS BUTTON
+            if let fromVC = navigationController.transitionCoordinator?.viewController(forKey: .from) {
+                let capabilities = await NKCapabilities.shared.getCapabilities(for: self.session.account)
+                if !navigationController.viewControllers.contains(fromVC) {
+                    // print("🔙 Back da \(fromVC) a \(viewController)")
+                    if !(fromVC is NCFiles) {
+                        isHiddenPlusButton(false)
+                    }
 
-            } else {
-                // print("➡️ Push da \(fromVC) a \(viewController)")
-                if !(viewController is NCFiles) {
-                    isHiddenPlusButton(true)
+                } else {
+                    // print("➡️ Push da \(fromVC) a \(viewController)")
+                    if !(viewController is NCFiles) {
+                        isHiddenPlusButton(true)
+                    }
                 }
+                createPlusMenu(session: self.session, capabilities: capabilities)
             }
-        }
-
-        Task {
+            // MENU
             setNavigationBarAppearance()
             await updateRightBarButtonItems()
         }
