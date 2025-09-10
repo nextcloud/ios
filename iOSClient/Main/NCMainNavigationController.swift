@@ -89,6 +89,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         self.delegate = self
 
         setNavigationBarAppearance()
+        setNavigationBarHidden(false, animated: true)
 
         Task {
             menuButton.setImage(UIImage(systemName: "ellipsis.circle"), for: .normal)
@@ -127,47 +128,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             }
         }), for: .touchUpInside)
 
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterServerDidUpdate), object: nil, queue: nil) { _ in
-            Task { @MainActor in
-                let capabilities = await NKCapabilities.shared.getCapabilities(for: self.session.account)
-                guard capabilities.notification.count > 0 else {
-                    if self.isNotificationsButtonVisible() {
-                        self.controller?.availableNotifications = false
-                        await self.updateRightBarButtonItems()
-                    }
-                    return
-                }
-
-                // Notification
-                let resultsNotification = await NextcloudKit.shared.getNotificationsAsync(account: self.session.account) { task in
-                    Task {
-                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.session.account,
-                                                                                                    name: "getNotifications")
-                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                    }
-                }
-                if resultsNotification.error == .success,
-                    let notifications = resultsNotification.notifications,
-                    notifications.count > 0 {
-                    if !self.isNotificationsButtonVisible() {
-                        self.controller?.availableNotifications = true
-                        await self.updateRightBarButtonItems()
-                    }
-                } else {
-                    if self.isNotificationsButtonVisible() {
-                        self.controller?.availableNotifications = false
-                        await self.updateRightBarButtonItems()
-                    }
-                }
-
-                // Menu Plus
-                self.createPlusMenu(session: self.session, capabilities: capabilities)
-            }
-        }
-
-        setNavigationBarHidden(false, animated: true)
-
-        // PLUS BUTTON
+        // PLUS BUTTON ONLY IN FILES
         if topViewController is NCFiles {
             let widthAnchor: CGFloat
             let trailingAnchor: CGFloat
@@ -216,37 +177,55 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
             plusItem = UIBarButtonItem(image: plusImage, style: .plain, target: nil, action: nil)
             plusItem?.tintColor = NCBrandColor.shared.customer
+        }
+
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterServerDidUpdate), object: nil, queue: nil) { notification in
+            guard let userInfo = notification.userInfo,
+                  let account = userInfo["account"] as? String else {
+                return
+            }
 
             Task { @MainActor in
-                let capabilities = await NCManageDatabase.shared.getCapabilities(account: session.account) ?? NKCapabilities.Capabilities()
-                createPlusMenu(session: session, capabilities: capabilities)
+                let capabilities = await NKCapabilities.shared.getCapabilities(for: account)
+                guard capabilities.notification.count > 0 else {
+                    if self.isNotificationsButtonVisible() {
+                        self.controller?.availableNotifications = false
+                        await self.updateRightBarButtonItems()
+                    }
+                    return
+                }
+
+                // Notification
+                let resultsNotification = await NextcloudKit.shared.getNotificationsAsync(account: account) { task in
+                    Task {
+                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                                    name: "getNotifications")
+                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                    }
+                }
+                if resultsNotification.error == .success,
+                    let notifications = resultsNotification.notifications,
+                    notifications.count > 0 {
+                    if !self.isNotificationsButtonVisible() {
+                        self.controller?.availableNotifications = true
+                        await self.updateRightBarButtonItems()
+                    }
+                } else {
+                    if self.isNotificationsButtonVisible() {
+                        self.controller?.availableNotifications = false
+                        await self.updateRightBarButtonItems()
+                    }
+                }
+
+                // Menu Plus
+                let session = NCSession.shared.getSession(account: account)
+                self.createPlusMenu(session: session, capabilities: capabilities)
             }
         }
     }
 
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
         Task { @MainActor in
-            // PLUS BUTTON
-            if let fromVC = navigationController.transitionCoordinator?.viewController(forKey: .from) {
-                let capabilities = await NKCapabilities.shared.getCapabilities(for: self.session.account)
-                if !navigationController.viewControllers.contains(fromVC) {
-                    // print("🔙 Back da \(fromVC) a \(viewController)")
-                    if !(fromVC is NCFiles) {
-                        isHiddenPlusButton(false)
-                    }
-
-                } else {
-                    // print("➡️ Push da \(fromVC) a \(viewController)")
-                    if !(viewController is NCFiles) {
-                        if #available(iOS 26.0, *) {
-                            isHiddenPlusButton(true)
-                        } else {
-                            isHiddenPlusButton(true, animation: false)
-                        }
-                    }
-                }
-                createPlusMenu(session: self.session, capabilities: capabilities)
-            }
             // MENU
             setNavigationBarAppearance()
             await updateRightBarButtonItems()
@@ -475,6 +454,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         plusItem.menu = plusMenu
         menuToolbar.setItems([plusItem], animated: false)
         menuToolbar.sizeToFit()
+        menuToolbar.alpha = 1
     }
 
     func isHiddenPlusButton(_ isHidden: Bool, animation: Bool = true) {
@@ -499,6 +479,17 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             } else {
                 self.menuToolbar.alpha = 1
             }
+        }
+    }
+
+    func resetPlusButtonAlpha(animated: Bool = true) {
+        let update = {
+            self.menuToolbar.alpha = 1.0
+        }
+        if animated {
+            UIView.animate(withDuration: 0.3, animations: update)
+        } else {
+            update()
         }
     }
 

@@ -214,7 +214,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
                 // Wait 1.5 seconds before resetting the button alpha
                 try? await Task.sleep(nanoseconds: 1_500_000_000)
-                self.resetPlusButtonAlpha()
+                self.mainNavigationController?.resetPlusButtonAlpha()
             }
         }
 
@@ -531,7 +531,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - NotificationCenter
 
     @objc func applicationWillResignActive(_ notification: NSNotification) {
-        self.resetPlusButtonAlpha()
+        mainNavigationController?.resetPlusButtonAlpha()
     }
 
     @objc func closeRichWorkspaceWebView() {
@@ -605,8 +605,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func accountSettingsDidDismiss(tblAccount: tableAccount?, controller: NCMainTabBarController?) { }
-
-    func resetPlusButtonAlpha(animated: Bool = true) { }
 
     @MainActor
     func showLoadingTitle() {

@@ -107,9 +107,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
         tabBarController?.tabBar.isHidden = true
 
-        NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.grabFocus), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRichdocumentGrabFocus), object: nil)
-
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow), name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
@@ -144,15 +142,9 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
         webView.configuration.userContentController.removeScriptMessageHandler(forName: "RichDocumentsMobileInterface")
 
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRichdocumentGrabFocus), object: nil)
-
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardDidShowNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
-    }
-
-    @objc func viewUnload() {
-        navigationController?.popViewController(animated: true)
     }
 
     // MARK: - NotificationCenter
@@ -174,7 +166,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         if message.name == "RichDocumentsMobileInterface" {
             if message.body as? String == "close" {
-                viewUnload()
+                navigationController?.popViewController(animated: true)
             }
 
             if message.body as? String == "insertGraphic" {
@@ -198,7 +190,6 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
             }
 
             if let param = message.body as? [AnyHashable: Any] {
-
                 if param["MessageName"] as? String == "downloadAs" {
                     if let values = param["Values"] as? [AnyHashable: Any] {
                         guard let type = values["Type"] as? String else { return }
@@ -299,6 +290,9 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
             if message.body as? String == "documentLoaded" {
                 print("documentLoaded")
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    self.webView.becomeFirstResponder()
+                }
             }
 
             if message.body as? String == "paste" {

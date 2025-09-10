@@ -33,7 +33,6 @@ class NCAccount: NSObject {
                                           httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
                                           httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
                                           groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-
         let resultsGetUserProfile = await NextcloudKit.shared.getUserProfileAsync(account: account) { task in
             Task {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,

@@ -262,7 +262,7 @@ final class NCGlobal: Sendable {
     let notificationCenterReloadAvatar                          = "reloadAvatar"
     let notificationCenterClearCache                            = "clearCache"
     let notificationCenterCheckUserDelaultErrorDone             = "checkUserDelaultErrorDone"       // userInfo: account, controller
-    let notificationCenterServerDidUpdate                       = "serverDidUpdate"
+    let notificationCenterServerDidUpdate                       = "serverDidUpdate"                 // userInfo: account
 
     let notificationCenterMenuSearchTextPDF                     = "menuSearchTextPDF"
     let notificationCenterMenuGotToPageInPDF                    = "menuGotToPageInPDF"
