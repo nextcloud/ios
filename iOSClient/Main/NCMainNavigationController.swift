@@ -128,7 +128,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             }
         }), for: .touchUpInside)
 
-        // PLUS BUTTON
+        // PLUS BUTTON ONLY IN FILES
         if topViewController is NCFiles {
             let widthAnchor: CGFloat
             let trailingAnchor: CGFloat
