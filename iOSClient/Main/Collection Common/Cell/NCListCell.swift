@@ -344,24 +344,11 @@ class NCListLayout: UICollectionViewFlowLayout {
 }
 
 class BidiFilenameLabel: UILabel {
-    var fullFilename: String = "" {
-        didSet { needsUpdate = true }
-    }
+    var fullFilename: String = ""
 
-    override var numberOfLines: Int {
-            didSet { needsUpdate = true }
-        }
+    var isFolder: Bool = false
 
-    var isFolder: Bool = false {
-        didSet { needsUpdate = true }
-    }
-
-    var lastKnownWidth: CGFloat = 0
-
-    /// Whether the filename should be treated as RTL
-    @IBInspectable var isRTL: Bool = false
-
-    private var needsUpdate = false
+    var isRTL: Bool = false
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -373,44 +360,30 @@ class BidiFilenameLabel: UILabel {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        preferredMaxLayoutWidth = bounds.width
-
-//        if needsUpdate || text == nil {
-            updateText()
-//        }
-
-//         Only update if width changed
-//            if bounds.width != lastKnownWidth {
-//                lastKnownWidth = bounds.width
-//                updateText()
-//            }
-
-//            updateText()  re-truncate using new width
+        updateText()
     }
 
     private func updateText() {
-           guard !fullFilename.isEmpty else {
-               self.text = ""
-               return
-           }
+        guard !fullFilename.isEmpty else {
+            self.text = ""
+            return
+        }
 
-           let availableWidth = bounds.width
-           guard availableWidth > 0 else { return }
+        let availableWidth = bounds.width
+        guard availableWidth > 0 else { return }
 
-           let isRTL = UIView.userInterfaceLayoutDirection(for: semanticContentAttribute) == .rightToLeft
-           let sanitizedFilename = fullFilename.sanitizeForBidiCharacters(isFolder: isFolder, isRTL: isRTL)
+        let isRTL = UIView.userInterfaceLayoutDirection(for: semanticContentAttribute) == .rightToLeft
+        let sanitizedFilename = fullFilename.sanitizeForBidiCharacters(isFolder: isFolder, isRTL: isRTL)
 
-           let nsFilename = sanitizedFilename as NSString
-           let ext = nsFilename.pathExtension
-           var base = nsFilename.deletingPathExtension
+        let nsFilename = sanitizedFilename as NSString
+        let ext = nsFilename.pathExtension
+        let base = nsFilename.deletingPathExtension
 
-           let dotExt = ext.isEmpty ? "" : "." + ext
-        let truncatedBase = truncateBase(base: base, dotExt: dotExt, maxWidth: intrinsicContentSize.width, font: font ?? UIFont.systemFont(ofSize: 17))
+        let dotExt = ext.isEmpty ? "" : "." + ext
+        let truncatedBase = truncateBase(base: base, dotExt: dotExt, maxWidth: availableWidth, font: font ?? UIFont.systemFont(ofSize: 17))
 
-           self.text = sanitizedFilename.replacingOccurrences(of: base, with: truncatedBase)
-
-           needsUpdate = false
-       }
+        self.text = sanitizedFilename.replacingOccurrences(of: base, with: truncatedBase)
+    }
 
     private func truncateBase(base: String, dotExt: String, maxWidth: CGFloat, font: UIFont) -> String {
         let extWidth = (dotExt as NSString).size(withAttributes: [.font: font]).width
