@@ -273,14 +273,6 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             }
         })
 
-        menuActionElement.append(UIAction(title: titleCreateFolder,
-                                          image: imageCreateFolder) { _ in
-            DispatchQueue.main.async {
-                let alertController = UIAlertController.createFolder(serverUrl: serverUrl, session: session, sceneIdentifier: controller.sceneIdentifier, capabilities: capabilities)
-                controller.present(alertController, animated: true, completion: nil)
-            }
-        })
-
         menuActionElement.append(UIAction(title: NSLocalizedString("_scans_document_", comment: ""),
                                           image: utility.loadImage(named: "doc.text.viewfinder", colors: [NCBrandColor.shared.iconImageColor])) { _ in
             DispatchQueue.main.async {
@@ -301,6 +293,14 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                         }
                     }
                 }
+            }
+        })
+
+        menuActionElement.append(UIAction(title: titleCreateFolder,
+                                          image: imageCreateFolder) { _ in
+            DispatchQueue.main.async {
+                let alertController = UIAlertController.createFolder(serverUrl: serverUrl, session: session, sceneIdentifier: controller.sceneIdentifier, capabilities: capabilities)
+                controller.present(alertController, animated: true, completion: nil)
             }
         })
 
@@ -450,7 +450,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         let menuOnlyOffice = UIMenu(title: "", options: .displayInline, children: menuOnlyOfficeElement)
         let menuRichDocument = UIMenu(title: "", options: .displayInline, children: menuRichDocumentElement)
 
-        plusMenu = UIMenu(children: [menuAction, menuText, menuE2EE, menuRichDocument, menuOnlyOffice])
+        plusMenu = UIMenu(children: [menuAction, menuE2EE, menuText, menuRichDocument, menuOnlyOffice])
         plusItem.menu = plusMenu
         menuToolbar.setItems([plusItem], animated: false)
         menuToolbar.sizeToFit()
