@@ -307,23 +307,25 @@ class NCService: NSObject {
                     }
                     if results.error == .success,
                        let data = results.responseData?.data {
-                        let size = CGSize(width: 256, height: 256)
-                        let finalImage: UIImage?
-                        if let uiImage = UIImage(data: data)?.resizeImage(size: size) {
-                            finalImage = uiImage
-                        } else if let svgImage = SVGKImage(data: data) {
-                            svgImage.size = size
-                            finalImage = svgImage.uiImage
-                        } else {
-                            print("Unsupported image format")
-                            continue
-                        }
-                        if let image = finalImage {
-                            let filePath = (self.utilityFileSystem.directoryUserData as NSString).appendingPathComponent(fileName + ".png")
-                            do {
-                                try image.pngData()?.write(to: URL(fileURLWithPath: filePath), options: .atomic)
-                            } catch {
-                                print("Failed to write image to disk: \(error.localizedDescription)")
+                        await MainActor.run {
+                            let size = CGSize(width: 256, height: 256)
+                            let finalImage: UIImage?
+                            if let uiImage = UIImage(data: data)?.resizeImage(size: size) {
+                                finalImage = uiImage
+                            } else if let svgImage = SVGKImage(data: data) {
+                                svgImage.size = size
+                                finalImage = svgImage.uiImage
+                            } else {
+                                print("Unsupported image format")
+                                finalImage = nil
+                            }
+                            if let image = finalImage {
+                                let filePath = (self.utilityFileSystem.directoryUserData as NSString).appendingPathComponent(fileName + ".png")
+                                do {
+                                    try image.pngData()?.write(to: URL(fileURLWithPath: filePath), options: .atomic)
+                                } catch {
+                                    print("Failed to write image to disk: \(error.localizedDescription)")
+                                }
                             }
                         }
                     }
