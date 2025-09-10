@@ -12,9 +12,6 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     let utility = NCUtility()
     let utilityFileSystem = NCUtilityFileSystem()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-
-    var plusItem: UIBarButtonItem?
-    var plusMenu = UIMenu()
     let menuToolbar = UIToolbar()
 
     var controller: NCMainTabBarController? {
@@ -171,12 +168,6 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                     menuToolbar.widthAnchor.constraint(equalToConstant: widthAnchor)
                 ])
             }
-
-            let config = UIImage.SymbolConfiguration(pointSize: 25, weight: .thin)
-            let plusImage = UIImage(systemName: "plus.circle.fill", withConfiguration: config)
-
-            plusItem = UIBarButtonItem(image: plusImage, style: .plain, target: nil, action: nil)
-            plusItem?.tintColor = NCBrandColor.shared.customer
         }
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterServerDidUpdate), object: nil, queue: nil) { notification in
@@ -240,8 +231,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         var menuTextElement: [UIMenuElement] = []
         var menuOnlyOfficeElement: [UIMenuElement] = []
         var menuRichDocumentElement: [UIMenuElement] = []
-        guard let controller,
-              let plusItem else {
+        guard let controller else {
             return
         }
 
@@ -450,11 +440,23 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         let menuOnlyOffice = UIMenu(title: "", options: .displayInline, children: menuOnlyOfficeElement)
         let menuRichDocument = UIMenu(title: "", options: .displayInline, children: menuRichDocumentElement)
 
-        plusMenu = UIMenu(children: [menuAction, menuE2EE, menuText, menuRichDocument, menuOnlyOffice])
-        plusItem.menu = plusMenu
-        menuToolbar.setItems([plusItem], animated: false)
-        menuToolbar.sizeToFit()
-        menuToolbar.alpha = 1
+        let plusMenu = UIMenu(children: [menuAction, menuE2EE, menuText, menuRichDocument, menuOnlyOffice])
+
+        let config = UIImage.SymbolConfiguration(pointSize: 25, weight: .thin)
+        let plusImage = UIImage(systemName: "plus.circle.fill", withConfiguration: config)
+
+        if let plusItem = menuToolbar.items?.first {
+            plusItem.menu = plusMenu
+            menuToolbar.alpha = 1
+        } else {
+            let plusItem = UIBarButtonItem(image: plusImage, style: .plain, target: nil, action: nil)
+            plusItem.tintColor = NCBrandColor.shared.customer
+            plusItem.menu = plusMenu
+            menuToolbar.setItems([plusItem], animated: false)
+            menuToolbar.sizeToFit()
+
+            isHiddenPlusButton(false)
+        }
     }
 
     func isHiddenPlusButton(_ isHidden: Bool, animation: Bool = true) {

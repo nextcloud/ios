@@ -39,7 +39,7 @@ class NCFiles: NCCollectionViewCommon {
                    let account = userInfo["account"] as? String,
                    self.controller?.account == account {
                     let color = NCBrandColor.shared.getElement(account: account)
-                    self.mainNavigationController?.plusItem?.tintColor = color
+                    self.mainNavigationController?.menuToolbar.items?.forEach { $0.tintColor = color }
                 }
             }
         }
@@ -66,7 +66,9 @@ class NCFiles: NCCollectionViewCommon {
                     if let userInfo = notification.userInfo,
                        let account = userInfo["account"] as? String {
                         let color = NCBrandColor.shared.getElement(account: account)
-                        self.mainNavigationController?.plusItem?.tintColor = color
+                        self.mainNavigationController?.menuToolbar.items?.forEach {
+                            $0.tintColor = color
+                        }
                     }
 
                     self.navigationController?.popToRootViewController(animated: false)
@@ -166,11 +168,12 @@ class NCFiles: NCCollectionViewCommon {
             // disable + button if no create permission
             let color = NCBrandColor.shared.getElement(account: self.session.account)
 
-            self.mainNavigationController?.plusItem?.isEnabled = metadataFolder.isCreatable
-            self.mainNavigationController?.plusItem?.tintColor = metadataFolder.isCreatable ? color : .lightGray
-
-            // plusButton.isEnabled = metadataFolder.isCreatable
-            // plusButton.backgroundColor = metadataFolder.isCreatable ? color : .lightGray
+            if let items = self.mainNavigationController?.menuToolbar.items {
+                for item in items {
+                    item.isEnabled = metadataFolder.isCreatable
+                    item.tintColor = metadataFolder.isCreatable ? color : .lightGray
+                }
+            }
         }
 
         let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
