@@ -98,8 +98,10 @@ class NCFiles: NCCollectionViewCommon {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        resetPlusButtonAlpha()
         Task {
+            let capabilities = await database.getCapabilities(account: self.session.account) ?? NKCapabilities.Capabilities()
+            mainNavigationController?.createPlusMenu(session: self.session, capabilities: capabilities)
+
             await self.reloadDataSource()
         }
     }
