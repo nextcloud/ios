@@ -454,6 +454,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         plusItem.menu = plusMenu
         menuToolbar.setItems([plusItem], animated: false)
         menuToolbar.sizeToFit()
+        menuToolbar.alpha = 1
     }
 
     func isHiddenPlusButton(_ isHidden: Bool, animation: Bool = true) {
@@ -478,6 +479,17 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             } else {
                 self.menuToolbar.alpha = 1
             }
+        }
+    }
+
+    func resetPlusButtonAlpha(animated: Bool = true) {
+        let update = {
+            self.menuToolbar.alpha = 1.0
+        }
+        if animated {
+            UIView.animate(withDuration: 0.3, animations: update)
+        } else {
+            update()
         }
     }
 

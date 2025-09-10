@@ -385,22 +385,6 @@ class NCFiles: NCCollectionViewCommon {
         }
     }
 
-    override func resetPlusButtonAlpha(animated: Bool = true) {
-        guard let menuToolbar = self.mainNavigationController?.menuToolbar else {
-            return
-        }
-        let update = {
-            menuToolbar.alpha = 1.0
-        }
-        accumulatedScrollDown = 0
-
-        if animated {
-            UIView.animate(withDuration: 0.3, animations: update)
-        } else {
-            update()
-        }
-    }
-
     // MARK: - NCAccountSettingsModelDelegate
 
     override func accountSettingsDidDismiss(tblAccount: tableAccount?, controller: NCMainTabBarController?) {
