@@ -58,6 +58,12 @@ class NCFiles: NCCollectionViewCommon {
             NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
                 Task { @MainActor in
                     if let userInfo = notification.userInfo,
+                       let controller = userInfo["controller"] as? NCMainTabBarController {
+                        guard controller == self.controller else {
+                            return
+                        }
+                    }
+                    if let userInfo = notification.userInfo,
                        let account = userInfo["account"] as? String {
                         let color = NCBrandColor.shared.getElement(account: account)
                         self.mainNavigationController?.plusItem?.tintColor = color

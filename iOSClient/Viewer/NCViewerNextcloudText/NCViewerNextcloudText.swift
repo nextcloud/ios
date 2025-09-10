@@ -167,7 +167,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
 
     public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         if message.name == "DirectEditingMobileInterface" {
-
             if message.body as? String == "close" {
                 viewUnload()
             }
@@ -182,6 +181,9 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
 
             if message.body as? String == "loaded" {
                 print("loaded")
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    self.webView.becomeFirstResponder()
+                }
             }
 
             if message.body as? String == "paste" {
