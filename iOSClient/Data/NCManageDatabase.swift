@@ -407,6 +407,7 @@ final class NCManageDatabase: @unchecked Sendable {
         self.clearTable(tableChunk.self)
         self.clearTable(tableDirectory.self)
         self.clearTable(TableDownloadLimit.self)
+        self.clearTable(tableExternalSites.self)
         self.clearTable(tableLocalFile.self)
         self.clearTable(tableMetadata.self)
         self.clearTable(tableRecommendedFiles.self)
