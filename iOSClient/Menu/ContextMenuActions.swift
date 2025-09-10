@@ -7,7 +7,6 @@ import NextcloudKit
 /// A collection of default UI actions used throughout the app
 enum ContextMenuActions {
     static func deleteOrUnshare(selectedMetadatas: [tableMetadata], metadataFolder: tableMetadata? = nil, controller: NCMainTabBarController?, completion: (() -> Void)? = nil) -> UIAction {
-
          var titleDelete = NSLocalizedString("_delete_", comment: "")
          var message = NSLocalizedString("_want_delete_", comment: "")
          var icon = "trash"

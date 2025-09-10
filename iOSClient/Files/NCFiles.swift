@@ -34,11 +34,13 @@ class NCFiles: NCCollectionViewCommon {
         super.viewDidLoad()
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil, queue: nil) { notification in
-            if let userInfo = notification.userInfo,
-               let account = userInfo["account"] as? String,
-               self.controller?.account == account {
-                let color = NCBrandColor.shared.getElement(account: account)
-                self.mainNavigationController?.plusItem?.tintColor = color
+            Task { @MainActor in
+                if let userInfo = notification.userInfo,
+                   let account = userInfo["account"] as? String,
+                   self.controller?.account == account {
+                    let color = NCBrandColor.shared.getElement(account: account)
+                    self.mainNavigationController?.menuToolbar.items?.forEach { $0.tintColor = color }
+                }
             }
         }
 
@@ -47,7 +49,6 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         if self.serverUrl.isEmpty {
-
             //
             // Set ServerURL when start (isEmpty)
             //
@@ -55,37 +56,39 @@ class NCFiles: NCCollectionViewCommon {
             self.titleCurrentFolder = getNavigationTitle()
 
             NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
-                if let userInfo = notification.userInfo,
-                   let account = userInfo["account"] as? String {
-                    if let controller = userInfo["controller"] as? NCMainTabBarController,
-                       controller == self.controller {
-                        controller.account = account
-                        let color = NCBrandColor.shared.getElement(account: account)
-                        self.mainNavigationController?.plusItem?.tintColor = color
-                    } else {
-                        return
+                Task { @MainActor in
+                    if let userInfo = notification.userInfo,
+                       let controller = userInfo["controller"] as? NCMainTabBarController {
+                        guard controller == self.controller else {
+                            return
+                        }
                     }
-                }
+                    if let userInfo = notification.userInfo,
+                       let account = userInfo["account"] as? String {
+                        let color = NCBrandColor.shared.getElement(account: account)
+                        self.mainNavigationController?.menuToolbar.items?.forEach {
+                            $0.tintColor = color
+                        }
+                    }
 
-                self.navigationController?.popToRootViewController(animated: false)
-                self.serverUrl = self.utilityFileSystem.getHomeServer(session: self.session)
-                self.isSearchingMode = false
-                self.isEditMode = false
-                self.fileSelect.removeAll()
-                self.layoutForView = self.database.getLayoutForView(account: self.session.account, key: self.layoutKey, serverUrl: self.serverUrl)
+                    self.navigationController?.popToRootViewController(animated: false)
+                    self.serverUrl = self.utilityFileSystem.getHomeServer(session: self.session)
+                    self.isSearchingMode = false
+                    self.isEditMode = false
+                    self.fileSelect.removeAll()
+                    self.layoutForView = self.database.getLayoutForView(account: self.session.account, key: self.layoutKey, serverUrl: self.serverUrl)
 
-                if self.isLayoutList {
-                    self.collectionView?.collectionViewLayout = self.listLayout
-                } else if self.isLayoutGrid {
-                    self.collectionView?.collectionViewLayout = self.gridLayout
-                } else if self.isLayoutPhoto {
-                    self.collectionView?.collectionViewLayout = self.mediaLayout
-                }
+                    if self.isLayoutList {
+                        self.collectionView?.collectionViewLayout = self.listLayout
+                    } else if self.isLayoutGrid {
+                        self.collectionView?.collectionViewLayout = self.gridLayout
+                    } else if self.isLayoutPhoto {
+                        self.collectionView?.collectionViewLayout = self.mediaLayout
+                    }
 
-                self.titleCurrentFolder = self.getNavigationTitle()
-                self.navigationItem.title = self.titleCurrentFolder
+                    self.titleCurrentFolder = self.getNavigationTitle()
+                    self.navigationItem.title = self.titleCurrentFolder
 
-                Task {
                     await (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
                     await self.reloadDataSource()
                     await self.getServerData()
@@ -97,8 +100,10 @@ class NCFiles: NCCollectionViewCommon {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        resetPlusButtonAlpha()
         Task {
+            let capabilities = await database.getCapabilities(account: self.session.account) ?? NKCapabilities.Capabilities()
+            mainNavigationController?.createPlusMenu(session: self.session, capabilities: capabilities)
+
             await self.reloadDataSource()
         }
     }
@@ -163,11 +168,12 @@ class NCFiles: NCCollectionViewCommon {
             // disable + button if no create permission
             let color = NCBrandColor.shared.getElement(account: self.session.account)
 
-            self.mainNavigationController?.plusItem?.isEnabled = metadataFolder.isCreatable
-            self.mainNavigationController?.plusItem?.tintColor = metadataFolder.isCreatable ? color : .lightGray
-
-            // plusButton.isEnabled = metadataFolder.isCreatable
-            // plusButton.backgroundColor = metadataFolder.isCreatable ? color : .lightGray
+            if let items = self.mainNavigationController?.menuToolbar.items {
+                for item in items {
+                    item.isEnabled = metadataFolder.isCreatable
+                    item.tintColor = metadataFolder.isCreatable ? color : .lightGray
+                }
+            }
         }
 
         let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
@@ -379,22 +385,6 @@ class NCFiles: NCCollectionViewCommon {
                     self.collectionView(self.collectionView, didSelectItemAt: indexPath)
                 }
             }
-        }
-    }
-
-    override func resetPlusButtonAlpha(animated: Bool = true) {
-        guard let menuToolbar = self.mainNavigationController?.menuToolbar else {
-            return
-        }
-        let update = {
-            menuToolbar.alpha = 1.0
-        }
-        accumulatedScrollDown = 0
-
-        if animated {
-            UIView.animate(withDuration: 0.3, animations: update)
-        } else {
-            update()
         }
     }
 
