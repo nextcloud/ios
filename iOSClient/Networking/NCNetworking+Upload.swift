@@ -50,6 +50,10 @@ extension NCNetworking {
             taskHandler(task)
         } progressHandler: { progress in
             Task {
+                guard await self.progressQuantizer.shouldEmit(serverUrlFileName: serverUrlFileName, fraction: progress.fractionCompleted) else {
+                    return
+                }
+
                 if let metadata {
                     await NCManageDatabase.shared.setMetadataProgress(ocId: metadata.ocId, progress: progress.fractionCompleted)
                     await self.transferDispatcher.notifyAllDelegates { delegate in
@@ -62,6 +66,10 @@ extension NCNetworking {
                 }
             }
             progressHandler(progress.completedUnitCount, progress.totalUnitCount, progress.fractionCompleted)
+        }
+
+        Task {
+            await progressQuantizer.clear(serverUrlFileName: serverUrlFileName)
         }
 
         if withUploadComplete, let metadata {
@@ -138,6 +146,9 @@ extension NCNetworking {
             taskHandler(task)
         } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
             Task {
+                guard await self.progressQuantizer.shouldEmit(serverUrlFileName: metadata.serverUrlFileName, fraction: fractionCompleted) else {
+                    return
+                }
                 await NCManageDatabase.shared.setMetadataProgress(ocId: metadata.ocId, progress: fractionCompleted)
                 await self.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferProgressDidUpdate(progress: Float(fractionCompleted),
@@ -451,21 +462,21 @@ extension NCNetworking {
                         size: Int64,
                         task: URLSessionTask,
                         error: NKError) {
-        #if EXTENSION_FILE_PROVIDER_EXTENSION
         Task {
-            await FileProviderData.shared.uploadComplete(fileName: fileName,
-                                                         serverUrl: serverUrl,
-                                                         ocId: ocId,
-                                                         etag: etag,
-                                                         date: date,
-                                                         size: size,
-                                                         task: task,
-                                                         error: error)
-            return
-        }
-        #endif
+            await progressQuantizer.clear(serverUrlFileName: serverUrl + "/" + fileName)
 
-        Task {
+            #if EXTENSION_FILE_PROVIDER_EXTENSION
+                await FileProviderData.shared.uploadComplete(fileName: fileName,
+                                                             serverUrl: serverUrl,
+                                                             ocId: ocId,
+                                                             etag: etag,
+                                                             date: date,
+                                                             size: size,
+                                                             task: task,
+                                                             error: error)
+                return
+            #endif
+
             if let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) {
                 await uploadComplete(withMetadata: metadata, ocId: ocId, etag: etag, date: date, size: size, error: error)
             } else {
@@ -483,6 +494,9 @@ extension NCNetworking {
                         session: URLSession,
                         task: URLSessionTask) {
         Task {
+            guard await progressQuantizer.shouldEmit(serverUrlFileName: serverUrl + "/" + fileName, fraction: Double(progress)) else {
+                return
+            }
             await NCManageDatabase.shared.setMetadataProgress(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier, progress: Double(progress))
             await self.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferProgressDidUpdate(progress: progress,
