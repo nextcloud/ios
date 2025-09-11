@@ -132,9 +132,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                                      withActivateSceneForAccount activateSceneForAccount: Bool) {
         nkLog(debug: "Account active \(activeTblAccount.account)")
 
-        // Networking Certificate
-        NCNetworking.shared.activeAccountCertificate(account: activeTblAccount.account)
-
         Task {
             if let capabilities = await NCManageDatabase.shared.getCapabilities(account: activeTblAccount.account) {
                 // set theming color
