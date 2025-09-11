@@ -122,9 +122,7 @@ extension NCNetworking {
     @discardableResult
     func downloadFileInBackground(metadata: tableMetadata,
                                   taskHandler: @escaping (_ task: URLSessionDownloadTask?) -> Void = { _ in },
-                                  start: @escaping () -> Void = { })
-    async -> NKError {
-
+                                  start: @escaping () -> Void = { }) async -> NKError {
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
 
         start()

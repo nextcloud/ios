@@ -585,7 +585,6 @@ actor NCNetworkingProcess {
                 } else {
                     await database.setMetadataSessionAsync(ocId: metadata.ocId,
                                                            status: global.metadataStatusNormal)
-                    
                     metadatasError[metadata] = resultDelete.error
                     returnError = resultDelete.error
                 }
