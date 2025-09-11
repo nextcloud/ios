@@ -79,6 +79,9 @@ extension NCNetworking {
             downloadTask = task
         } progressHandler: { progress in
             Task {
+                guard await self.progressQuantizer.shouldEmit(serverUrlFileName: metadata.serverUrlFileName, fraction: progress.fractionCompleted) else {
+                    return
+                }
                 await NCManageDatabase.shared.setMetadataProgress(ocId: metadata.ocId, progress: progress.fractionCompleted)
                 await self.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferProgressDidUpdate(progress: Float(progress.fractionCompleted),
@@ -89,6 +92,10 @@ extension NCNetworking {
                 }
             }
             progressHandler(progress)
+        }
+
+        Task {
+            await progressQuantizer.clear(serverUrlFileName: metadata.serverUrlFileName)
         }
 
         if withDownloadComplete {
@@ -115,9 +122,7 @@ extension NCNetworking {
     @discardableResult
     func downloadFileInBackground(metadata: tableMetadata,
                                   taskHandler: @escaping (_ task: URLSessionDownloadTask?) -> Void = { _ in },
-                                  start: @escaping () -> Void = { })
-    async -> NKError {
-
+                                  start: @escaping () -> Void = { }) async -> NKError {
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)
 
         start()
@@ -164,9 +169,10 @@ extension NCNetworking {
                           length: Int64,
                           task: URLSessionTask,
                           error: NKError) {
-
-        #if EXTENSION_FILE_PROVIDER_EXTENSION
         Task {
+            await progressQuantizer.clear(serverUrlFileName: serverUrl + "/" + fileName)
+
+            #if EXTENSION_FILE_PROVIDER_EXTENSION
             await FileProviderData.shared.downloadComplete(fileName: fileName,
                                                            serverUrl: serverUrl,
                                                            etag: etag,
@@ -176,10 +182,8 @@ extension NCNetworking {
                                                            task: task,
                                                            error: error)
             return
-        }
-        #endif
+            #endif
 
-        Task {
             guard let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) else {
                 return
             }
@@ -288,6 +292,9 @@ extension NCNetworking {
                           task: URLSessionTask) {
 
         Task {
+            guard await progressQuantizer.shouldEmit(serverUrlFileName: serverUrl + "/" + fileName, fraction: Double(progress)) else {
+                return
+            }
             await NCManageDatabase.shared.setMetadataProgress(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier, progress: Double(progress))
             await self.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferProgressDidUpdate(progress: progress,

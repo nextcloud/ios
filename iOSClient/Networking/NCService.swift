@@ -273,7 +273,8 @@ class NCService: NSObject {
                                                          etag: metadata.etag,
                                                          metadatasInDownload: metadatasInDownload,
                                                          userId: metadata.userId,
-                                                         urlBase: metadata.urlBase) {
+                                                         urlBase: metadata.urlBase),
+               metadata.status == self.global.metadataStatusNormal {
                 await self.database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
                                                                           session: NCNetworking.shared.sessionDownloadBackground,
                                                                           selector: NCGlobal.shared.selectorSynchronizationOffline)
