@@ -217,6 +217,23 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
         Task { @MainActor in
+            // PLUS BUTTON
+            if let fromVC = navigationController.transitionCoordinator?.viewController(forKey: .from) {
+                let capabilities = await NKCapabilities.shared.getCapabilities(for: self.session.account)
+                if !navigationController.viewControllers.contains(fromVC) {
+                    if !(fromVC is NCFiles) {
+                        isHiddenPlusButton(false)
+                    }
+                } else {
+                    if !(viewController is NCFiles) {
+                        if #available(iOS 26.0, *) {
+                            isHiddenPlusButton(true)
+                        } else {
+                            isHiddenPlusButton(true, animation: false)
+                        }
+                    }
+                }
+            }
             // MENU
             setNavigationBarAppearance()
             await updateRightBarButtonItems()
