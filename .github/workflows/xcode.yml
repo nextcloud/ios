@@ -17,7 +17,7 @@ on:
 
 env:
   PROJECT: Nextcloud.xcodeproj
-  DESTINATION: platform=iOS Simulator,name=iPhone 17,OS=26.0
+  DESTINATION: platform=iOS Simulator,name=iPhone 16,OS=18.5
   SCHEME: Nextcloud
   SERVER_BRANCH: stable30
   PHP_VERSION: 8.3
@@ -25,7 +25,7 @@ env:
 jobs:
   build:
     name: Build
-    runs-on: macos-26
+    runs-on: macos-15
     if: github.event.pull_request.draft == false
 
     steps:
@@ -37,7 +37,7 @@ jobs:
     - name: Setup Xcode
       uses: maxim-lobanov/setup-xcode@60606e260d2fc5762a71e64e74b2174e8ea3c8bd # v1.6.0
       with:
-        xcode-version: latest-stable
+        xcode-version: 16.4
 
     - name: Run Xcode Build
       run: |
