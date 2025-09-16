@@ -131,7 +131,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     func convertLivePhoto(metadataFirst: tableMetadata?, metadataLast: tableMetadata?) {
         if let metadataFirst, let metadataLast {
             Task {
-                await self.networking.setLivePhoto(metadataFirst: metadataFirst, metadataLast: metadataLast)
+                // await self.networking.setLivePhoto(metadataFirst: metadataFirst, metadataLast: metadataLast)
             }
         }
         setEditMode(false)

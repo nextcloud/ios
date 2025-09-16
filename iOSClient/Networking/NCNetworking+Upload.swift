@@ -282,14 +282,15 @@ extension NCNetworking {
                                                                          date: metadata.creationDate as Date)
             }
 
+            // Live Photo
             if metadata.isLivePhoto,
                capabilities.isLivePhotoServerAvailable {
                 if metadata.isVideo {
-                    try? await Task.sleep(nanoseconds: 200_000_000)
-                } else {
-                    try? await Task.sleep(nanoseconds: 100_000_000)
+                    await NCManageDatabase.shared.setLivePhotoVideo(account: metadata.account, serverUrlFileName: metadata.serverUrlFileName, fileId: metadata.fileId)
+                } else if metadata.isImage {
+                    await NCManageDatabase.shared.setLivePhotoImage(account: metadata.account, serverUrlFileName: metadata.serverUrlFileName, fileId: metadata.fileId)
                 }
-                await self.createLivePhoto(metadata: metadata)
+                await self.setLivePhoto(account: metadata.account)
             } else {
                 await self.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusUploaded,
@@ -297,7 +298,6 @@ extension NCNetworking {
                                             error: error)
                 }
             }
-
         } else {
             nkLog(error: "Upload file: " + metadata.serverUrlFileName + ", result: error \(error.errorCode)")
 
