@@ -17,7 +17,7 @@ on:
 
 env:
   PROJECT: Nextcloud.xcodeproj
-  DESTINATION: platform=iOS Simulator,name=iPhone 17,OS=26
+  DESTINATION: platform=iOS Simulator,name=iPhone 17,OS=26.0
   SCHEME: Nextcloud
   SERVER_BRANCH: stable30
   PHP_VERSION: 8.3
