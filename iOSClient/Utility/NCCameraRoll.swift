@@ -38,22 +38,15 @@ final class NCCameraRoll: CameraRollExtractor {
         var extracted: Int = 0
         var results: [tableMetadata] = []
 
-        await withTaskGroup(of: [tableMetadata].self) { group in
-            for metadata in metadatas {
-                group.addTask {
-                    let result = await self.extractCameraRoll(from: metadata)
-                    return result
-                }
+        for item in metadatas {
+            // Call the single-item extractor directly; it already does a detachedCopy() when needed
+            let result = await self.extractCameraRoll(from: item)
+            for metadata in result {
+                extracted += 1
+                progress?(extracted, total, metadata)
+                nkLog(debug: "Extracted from camera roll: \(metadata.fileNameView)")
             }
-
-            for await result in group {
-                for item in result {
-                    extracted += 1
-                    progress?(extracted, total, item)
-                    nkLog(debug: "Extracted from camera roll: \(item.fileNameView)")
-                }
-                results.append(contentsOf: result)
-            }
+            results.append(contentsOf: result)
         }
 
         return results
@@ -305,11 +298,13 @@ final class NCCameraRoll: CameraRollExtractor {
             exporter.outputURL = URL(fileURLWithPath: filePath)
             exporter.outputFileType = .mp4
             exporter.shouldOptimizeForNetworkUse = true
+            nonisolated(unsafe) let localExporter = exporter
 
             try await withCheckedThrowingContinuation { continuation in
-                exporter.exportAsynchronously {
-                    // Capture of 'exporter' with non-sendable type 'AVAssetExportSession' in a '@Sendable' closure I don't know how fix
-                    if exporter.status == .completed {
+                localExporter.exportAsynchronously {
+                    // Avoid capturing non-Sendable 'AVAssetExportSession' by using a nonisolated(unsafe) local binding
+                    let status = localExporter.status
+                    if status == .completed {
                         continuation.resume()
                     } else {
                         continuation.resume(throwing: NSError(domain: "ExtractAssetError", code: 5, userInfo: [NSLocalizedDescriptionKey: "Video export failed"]))
@@ -328,7 +323,7 @@ final class NCCameraRoll: CameraRollExtractor {
         guard let asset else {
             return nil
         }
-        let session = NCSession.shared.getSession(account: metadata.account)
+        nonisolated(unsafe) let session = NCSession.shared.getSession(account: metadata.account)
         let options = PHLivePhotoRequestOptions()
         let ocId = UUID().uuidString
         let fileName = (metadata.fileName as NSString).deletingPathExtension + ".mov"
@@ -359,14 +354,31 @@ final class NCCameraRoll: CameraRollExtractor {
             }
         }
 
-        guard let livePhoto else { return nil }
+        guard let livePhoto else {
+            return nil
+        }
 
         // Find the paired video component of the Live Photo
         let videoResource = PHAssetResource.assetResources(for: livePhoto)
             .first(where: { $0.type == .pairedVideo })
-        guard let resource = videoResource else { return nil }
+        guard let resource = videoResource else {
+            return nil
+        }
 
         utilityFileSystem.removeFile(atPath: fileNamePath)
+
+        // Capture only Sendable values needed inside the @Sendable closure
+        let capturedServerUrl = metadata.serverUrl
+        let capturedSceneIdentifier = metadata.sceneIdentifier
+        let capturedLivePhotoFile = metadata.fileName
+        let capturedSession = metadata.session
+        let capturedSessionSelector = metadata.sessionSelector
+        let capturedStatus = metadata.status
+        let capturedIsDirectoryE2EE = metadata.isDirectoryE2EE
+        let capturedCreationDate = metadata.creationDate
+        let capturedDate = metadata.date
+        let capturedUploadDate = metadata.uploadDate
+        let captureSize = utilityFileSystem.getFileSize(filePath: fileNamePath)
 
         // Write video resource to file and create metadata
         return await withCheckedContinuation { (continuation: CheckedContinuation<tableMetadata?, Never>) in
@@ -377,23 +389,23 @@ final class NCCameraRoll: CameraRollExtractor {
                 }
                 NCManageDatabase.shared.createMetadata(fileName: fileName,
                                              ocId: ocId,
-                                             serverUrl: metadata.serverUrl,
+                                             serverUrl: capturedServerUrl,
                                              session: session,
-                                             sceneIdentifier: metadata.sceneIdentifier) { metadataLivePhoto in
-                    metadataLivePhoto.livePhotoFile = metadata.fileName
+                                             sceneIdentifier: capturedSceneIdentifier) { metadataLivePhoto in
+                    metadataLivePhoto.livePhotoFile = capturedLivePhotoFile
                     metadataLivePhoto.isExtractFile = true
-                    metadataLivePhoto.session = metadata.session
-                    metadataLivePhoto.sessionSelector = metadata.sessionSelector
-                    metadataLivePhoto.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
-                    metadataLivePhoto.status = metadata.status
+                    metadataLivePhoto.session = capturedSession
+                    metadataLivePhoto.sessionSelector = capturedSessionSelector
+                    metadataLivePhoto.size = captureSize
+                    metadataLivePhoto.status = capturedStatus
                     metadataLivePhoto.chunk = metadataLivePhoto.size > chunkSize ? chunkSize : 0
-                    metadataLivePhoto.e2eEncrypted = metadata.isDirectoryE2EE
+                    metadataLivePhoto.e2eEncrypted = capturedIsDirectoryE2EE
                     if metadataLivePhoto.chunk > 0 || metadataLivePhoto.e2eEncrypted {
                         metadataLivePhoto.session = NCNetworking.shared.sessionUpload
                     }
-                    metadataLivePhoto.creationDate = metadata.creationDate
-                    metadataLivePhoto.date = metadata.date
-                    metadataLivePhoto.uploadDate = metadata.uploadDate
+                    metadataLivePhoto.creationDate = capturedCreationDate
+                    metadataLivePhoto.date = capturedDate
+                    metadataLivePhoto.uploadDate = capturedUploadDate
 
                     continuation.resume(returning: metadataLivePhoto)
                 }
