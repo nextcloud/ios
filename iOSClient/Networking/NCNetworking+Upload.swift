@@ -284,6 +284,11 @@ extension NCNetworking {
 
             if metadata.isLivePhoto,
                capabilities.isLivePhotoServerAvailable {
+                if metadata.isVideo {
+                    try? await Task.sleep(nanoseconds: 200_000_000)
+                } else {
+                    try? await Task.sleep(nanoseconds: 100_000_000)
+                }
                 await self.createLivePhoto(metadata: metadata)
             } else {
                 await self.transferDispatcher.notifyAllDelegates { delegate in
