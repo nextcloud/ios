@@ -242,7 +242,7 @@ extension NCNetworking {
         let selector = metadata.sessionSelector
         let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
 
-        if error == .success, let ocId = ocId, size == metadata.size {
+        if error == .success, let ocId {
             nkLog(success: "Uploaded file: " + metadata.serverUrlFileName + ", (\(size) bytes)")
 
             metadata.uploadDate = (date as? NSDate) ?? NSDate()

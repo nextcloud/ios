@@ -109,11 +109,12 @@ final class NCCameraRoll: CameraRollExtractor {
                                                                                 fileName: result.metadata.fileNameView,
                                                                                 userId: result.metadata.userId,
                                                                                 urlBase: result.metadata.urlBase)
-            await self.utilityFileSystem.moveFileAsync(atPath: result.filePath, toPath: toPath)
+            self.utilityFileSystem.moveFile(atPath: result.filePath, toPath: toPath)
             metadatas.append(result.metadata)
 
             let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadataSource.assetLocalIdentifier], options: nil)
-            if result.metadata.isLivePhoto, let asset = fetchAssets.firstObject,
+            if result.metadata.isLivePhoto,
+               let asset = fetchAssets.firstObject,
                let livePhotoMetadata = await createMetadataLivePhoto(metadata: result.metadata, asset: asset) {
                 if let metadata = self.database.addAndReturnMetadata(livePhotoMetadata) {
                     metadatas.append(metadata)
@@ -240,7 +241,7 @@ final class NCCameraRoll: CameraRollExtractor {
     }
 
     private func extractImage(asset: PHAsset, ext: String, filePath: String, compatibilityFormat: Bool) async throws {
-        let imageData: Data? = try await withCheckedThrowingContinuation { continuation in
+        let imageData: Data = try await withCheckedThrowingContinuation { continuation in
             let options = PHImageRequestOptions()
             options.isNetworkAccessAllowed = true
             options.deliveryMode = compatibilityFormat ? .opportunistic : .highQualityFormat
@@ -256,20 +257,21 @@ final class NCCameraRoll: CameraRollExtractor {
             }
         }
 
-        var data = imageData!
-
+        // Transform only if compatibilityFormat is requested
+        let finalData: Data
         if compatibilityFormat {
-            guard let ciImage = CIImage(data: data),
+            guard let ciImage = CIImage(data: imageData),
                   let colorSpace = ciImage.colorSpace,
                   let jpegData = CIContext().jpegRepresentation(of: ciImage, colorSpace: colorSpace)
             else {
                 throw NSError(domain: "ExtractAssetError", code: 3, userInfo: [NSLocalizedDescriptionKey: "JPEG conversion failed"])
             }
-            data = jpegData
+            finalData = jpegData
+        } else {
+            finalData = imageData
         }
 
-        self.utilityFileSystem.removeFile(atPath: filePath)
-        try data.write(to: URL(fileURLWithPath: filePath), options: .atomic)
+        try finalData.write(to: URL(fileURLWithPath: filePath), options: .atomic)
     }
 
     private func extractVideo(asset: PHAsset, filePath: String) async throws {
@@ -365,7 +367,11 @@ final class NCCameraRoll: CameraRollExtractor {
             return nil
         }
 
-        utilityFileSystem.removeFile(atPath: fileNamePath)
+        do {
+            try FileManager.default.removeItem(atPath: fileNamePath)
+        } catch {
+            print(error)
+        }
 
         // Capture only Sendable values needed inside the @Sendable closure
         let capturedServerUrl = metadata.serverUrl
@@ -378,7 +384,6 @@ final class NCCameraRoll: CameraRollExtractor {
         let capturedCreationDate = metadata.creationDate
         let capturedDate = metadata.date
         let capturedUploadDate = metadata.uploadDate
-        let captureSize = utilityFileSystem.getFileSize(filePath: fileNamePath)
 
         // Write video resource to file and create metadata
         return await withCheckedContinuation { (continuation: CheckedContinuation<tableMetadata?, Never>) in
@@ -396,7 +401,12 @@ final class NCCameraRoll: CameraRollExtractor {
                     metadataLivePhoto.isExtractFile = true
                     metadataLivePhoto.session = capturedSession
                     metadataLivePhoto.sessionSelector = capturedSessionSelector
-                    metadataLivePhoto.size = captureSize
+                    do {
+                        let attributes = try FileManager.default.attributesOfItem(atPath: fileNamePath)
+                        metadataLivePhoto.size = attributes[FileAttributeKey.size] as? Int64 ?? 0
+                    } catch {
+                        print(error)
+                    }
                     metadataLivePhoto.status = capturedStatus
                     metadataLivePhoto.chunk = metadataLivePhoto.size > chunkSize ? chunkSize : 0
                     metadataLivePhoto.e2eEncrypted = capturedIsDirectoryE2EE
