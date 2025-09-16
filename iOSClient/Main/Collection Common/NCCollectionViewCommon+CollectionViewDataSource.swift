@@ -192,8 +192,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         cell.fileUser = metadata.ownerId
 
         if isSearchingMode {
-            cell.fileTitleLabel?.text = metadata.fileName
-            cell.fileTitleLabel?.lineBreakMode = .byTruncatingTail
             if metadata.name == global.appName {
                 cell.fileInfoLabel?.text = NSLocalizedString("_in_", comment: "") + " " + utilityFileSystem.getPath(path: metadata.path, user: metadata.user)
             } else {
@@ -201,14 +199,22 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
             cell.fileSubinfoLabel?.isHidden = true
         } else if !metadata.sessionError.isEmpty, metadata.status != global.metadataStatusNormal {
-            cell.fileTitleLabel?.text = metadata.fileNameView
             cell.fileSubinfoLabel?.isHidden = false
             cell.fileInfoLabel?.text = metadata.sessionError
         } else {
             cell.fileSubinfoLabel?.isHidden = false
-            cell.fileTitleLabel?.text = metadata.fileNameView
-            cell.fileTitleLabel?.lineBreakMode = .byTruncatingMiddle
+
             cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
+        }
+
+        if cell.fileTitleLabel is BidiFilenameLabel {
+            (cell.fileTitleLabel as? BidiFilenameLabel)?.fullFilename = metadata.fileNameView
+            (cell.fileTitleLabel as? BidiFilenameLabel)?.isFolder = metadata.directory
+            (cell.fileTitleLabel as? BidiFilenameLabel)?.numberOfLines = 1
+//            (cell.fileTitleLabel as? BidiFilenameLabel)?.lineBreakMode = .byCharWrapping
+
+        } else {
+            cell.fileTitleLabel?.text = metadata.fileNameView
         }
 
         // Accessibility [shared] if metadata.ownerId != appDelegate.userId, appDelegate.account == metadata.account {
