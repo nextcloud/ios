@@ -242,7 +242,7 @@ extension NCNetworking {
         let selector = metadata.sessionSelector
         let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
 
-        if error == .success, let ocId = ocId, size == metadata.size {
+        if error == .success, let ocId {
             nkLog(success: "Uploaded file: " + metadata.serverUrlFileName + ", (\(size) bytes)")
 
             metadata.uploadDate = (date as? NSDate) ?? NSDate()
@@ -284,6 +284,11 @@ extension NCNetworking {
 
             if metadata.isLivePhoto,
                capabilities.isLivePhotoServerAvailable {
+                if metadata.isVideo {
+                    try? await Task.sleep(nanoseconds: 200_000_000)
+                } else {
+                    try? await Task.sleep(nanoseconds: 100_000_000)
+                }
                 await self.createLivePhoto(metadata: metadata)
             } else {
                 await self.transferDispatcher.notifyAllDelegates { delegate in
