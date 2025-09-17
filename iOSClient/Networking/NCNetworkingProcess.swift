@@ -133,6 +133,7 @@ actor NCNetworkingProcess {
                 }
             } else {
                 await removeUploadedAssetsIfNeeded()
+                await setLivePhoto()
                 if lastUsedInterval != maxInterval {
                     await startTimer(interval: maxInterval)
                 }
@@ -158,6 +159,11 @@ actor NCNetworkingProcess {
         }
 
         await NCManageDatabase.shared.clearAssetLocalIdentifiersAsync(localIdentifiers)
+    }
+
+    private func setLivePhoto() async {
+        await networking.setLivePhoto(account: currentAccount)
+        await NCManageDatabase.shared.deleteLivePhotoError()
     }
 
     private func runMetadataPipelineAsync() async {

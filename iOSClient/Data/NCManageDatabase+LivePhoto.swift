@@ -15,6 +15,7 @@ class tableLivePhoto: Object {
     @Persisted var serverUrlFileNameVideo: String = ""
     @Persisted var fileIdImage: String = ""
     @Persisted var fileIdVideo: String = ""
+    @Persisted var errorCount: Int = 0
 
     convenience init(account: String, serverUrlFileNameNoExt: String) {
         self.init()
@@ -69,6 +70,26 @@ extension NCManageDatabase {
         await performRealmWriteAsync { realm in
             if let result = realm.object(ofType: tableLivePhoto.self, forPrimaryKey: primaryKey) {
                 realm.delete(result)
+            }
+        }
+    }
+
+    func deleteLivePhotoError() async {
+        await performRealmWriteAsync { realm in
+            let results = realm.objects(tableLivePhoto.self)
+                .where {
+                    $0.errorCount >= 3
+                }
+            realm.delete(results)
+        }
+    }
+
+    func setLivePhotoError(account: String, serverUrlFileNameNoExt: String) async {
+        let primaryKey = account + serverUrlFileNameNoExt
+
+        await performRealmWriteAsync { realm in
+            if let result = realm.object(ofType: tableLivePhoto.self, forPrimaryKey: primaryKey) {
+                result.errorCount = result.errorCount + 1
             }
         }
     }
