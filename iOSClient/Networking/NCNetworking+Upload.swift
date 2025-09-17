@@ -196,7 +196,7 @@ extension NCNetworking {
 
         // Check file dim > 0
         if utilityFileSystem.getFileSize(filePath: fileNameLocalPath) == 0 && metadata.size != 0 {
-            await NCManageDatabase.shared.deleteMetadataOcIdAsync(metadata.ocId)
+            await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
             return NKError(errorCode: self.global.errorResourceNotFound, errorDescription: NSLocalizedString("_error_not_found_", value: "The requested resource could not be found", comment: ""))
         } else {
             let (task, error) = await backgroundSession.uploadAsync(serverUrlFileName: metadata.serverUrlFileName,
@@ -222,7 +222,7 @@ extension NCNetworking {
                     }
                 }
             } else {
-                await NCManageDatabase.shared.deleteMetadataOcIdAsync(metadata.ocId)
+                await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
             }
 
             return(error)
@@ -355,7 +355,7 @@ extension NCNetworking {
 
     func uploadCancelFile(metadata: tableMetadata) async {
         self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase))
-        await NCManageDatabase.shared.deleteMetadataOcIdAsync(metadata.ocIdTransfer)
+        await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocIdTransfer)
         await self.transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferChange(status: self.global.networkingStatusUploadCancel,
                                     metadata: metadata.detachedCopy(),

@@ -62,8 +62,8 @@ extension NCNetworking {
                     return
                 }
 
-                await NCManageDatabase.shared.setLivePhotoFile(ocId: result.fileIdVideo, livePhotoFile: result.fileIdImage)
-                await NCManageDatabase.shared.setLivePhotoFile(ocId: result.fileIdImage, livePhotoFile: result.fileIdVideo)
+                await NCManageDatabase.shared.setLivePhotoFile(fileId: result.fileIdVideo, livePhotoFile: result.fileIdImage)
+                await NCManageDatabase.shared.setLivePhotoFile(fileId: result.fileIdImage, livePhotoFile: result.fileIdVideo)
 
                 await NCManageDatabase.shared.deleteLivePhoto(account: account, serverUrlFileNameNoExt: result.serverUrlFileNameNoExt)
             }

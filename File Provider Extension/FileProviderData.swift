@@ -205,7 +205,7 @@ class FileProviderData: NSObject {
             await signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
 
             if !metadata.ocIdTransfer.isEmpty, ocId != metadata.ocIdTransfer {
-                await self.database.deleteMetadataOcIdAsync(metadata.ocIdTransfer)
+                await self.database.deleteMetadataAsync(id: metadata.ocIdTransfer)
             }
 
             metadata.fileName = fileName
@@ -234,7 +234,7 @@ class FileProviderData: NSObject {
 
         } else {
 
-            await self.database.deleteMetadataOcIdAsync(metadata.ocIdTransfer)
+            await self.database.deleteMetadataAsync(id: metadata.ocIdTransfer)
 
             await signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
         }

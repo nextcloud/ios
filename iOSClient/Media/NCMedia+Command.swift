@@ -125,7 +125,7 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
             return
         }
 
-        await self.database.deleteMetadataOcIdAsync(ocId)
+        await self.database.deleteMetadataAsync(id: ocId)
 
         await MainActor.run {
             if let indexPath = self.dataSource.indexPath(forOcId: ocId) {

@@ -472,7 +472,7 @@ final class NCManageDatabase: @unchecked Sendable {
         await withTaskGroup(of: Void.self) { group in
             for ocId in localMissingOcIds {
                 group.addTask {
-                    await self.deleteLocalFileOcIdAsync(ocId)
+                    await self.deleteLocalFileAsync(id: ocId)
                     self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, userId: userId, urlBase: urlBase))
                 }
             }

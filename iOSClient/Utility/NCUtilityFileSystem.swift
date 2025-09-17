@@ -776,7 +776,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
                         try manager.removeItem(atPath: fileURL.path)
                     } catch { }
                     manager.createFile(atPath: fileURL.path, contents: nil, attributes: nil)
-                    await NCManageDatabase.shared.deleteLocalFileOcIdAsync(ocId)
+                    await NCManageDatabase.shared.deleteLocalFileAsync(id: ocId)
                 }
             }
         }

@@ -444,22 +444,12 @@ extension NCManageDatabase {
         }
     }
 
-    func deleteMetadataOcId(_ ocId: String?, sync: Bool = true) {
-        guard let ocId else { return }
-
-        performRealmWrite(sync: sync) { realm in
-            let result = realm.objects(tableMetadata.self)
-                .filter("ocId == %@", ocId)
-            realm.delete(result)
-        }
-    }
-
-    func deleteMetadataOcIdAsync(_ ocId: String?) async {
-        guard let ocId else { return }
+    func deleteMetadataAsync(id: String?) async {
+        guard let id else { return }
 
         await performRealmWriteAsync { realm in
             let result = realm.objects(tableMetadata.self)
-                .filter("ocId == %@", ocId)
+                .filter("ocId == %@ OR fileId == %@", id, id)
             realm.delete(result)
         }
     }
@@ -842,10 +832,10 @@ extension NCManageDatabase {
         }
     }
 
-    func setLivePhotoFile(ocId: String, livePhotoFile: String) async {
+    func setLivePhotoFile(fileId: String, livePhotoFile: String) async {
         await performRealmWriteAsync { realm in
             let result = realm.objects(tableMetadata.self)
-                .filter("ocId == %@", ocId)
+                .filter("fileId == %@", fileId)
                 .first
             result?.livePhotoFile = livePhotoFile
         }

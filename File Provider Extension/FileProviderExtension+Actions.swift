@@ -76,8 +76,8 @@ extension FileProviderExtension {
                     await self.database.deleteDirectoryAndSubDirectoryAsync(serverUrl: dirForDelete, account: account)
                 }
 
-                await self.database.deleteMetadataOcIdAsync(ocId)
-                await self.database.deleteLocalFileOcIdAsync(ocId)
+                await self.database.deleteMetadataAsync(id: ocId)
+                await self.database.deleteLocalFileAsync(id: ocId)
 
                 completionHandler(nil)
                 return
