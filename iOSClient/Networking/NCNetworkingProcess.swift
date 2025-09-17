@@ -572,6 +572,9 @@ actor NCNetworkingProcess {
                     NCImageCache.shared.removeImageCache(ocIdPlusEtag: metadata.ocId + metadata.etag)
 
                     await database.deleteVideoAsync(metadata.ocId)
+                    if !metadata.livePhotoFile.isEmpty {
+                        await database.deleteMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", metadata.account, metadata.serverUrl, metadata.livePhotoFile))
+                    }
                     await database.deleteMetadataOcIdAsync(metadata.ocId)
                     await database.deleteLocalFileOcIdAsync(metadata.ocId)
 
