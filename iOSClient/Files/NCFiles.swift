@@ -240,6 +240,7 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     private func networkReadFolderAsync(serverUrl: String, forced: Bool) async -> (metadatas: [tableMetadata]?, error: NKError, reloadRequired: Bool) {
+        var reloadRequired: Bool = false
         let resultsReadFile = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrl, account: session.account) { task in
             Task {
                 await NCNetworking.shared.networkingTasks.track(identifier: "\(self.serverUrl)_NCFiles", task: task)
@@ -250,7 +251,7 @@ class NCFiles: NCCollectionViewCommon {
         }
         guard resultsReadFile.error == .success,
               let metadata = resultsReadFile.metadata else {
-            return (nil, resultsReadFile.error, false)
+            return(nil, resultsReadFile.error, reloadRequired)
         }
         let e2eEncrypted = metadata.e2eEncrypted
         let ocId = metadata.ocId
@@ -260,7 +261,7 @@ class NCFiles: NCCollectionViewCommon {
 
         // Verify LivePhoto
         //
-        await networking.setLivePhoto(account: resultsReadFile.account)
+        reloadRequired = await networking.setLivePhoto(account: resultsReadFile.account)
         await NCManageDatabase.shared.deleteLivePhotoError()
 
         let shouldSkipUpdate: Bool = (
@@ -271,7 +272,7 @@ class NCFiles: NCCollectionViewCommon {
         )
 
         if shouldSkipUpdate {
-            return (nil, NKError(), false)
+            return (nil, NKError(), reloadRequired)
         }
 
         showLoadingTitle()
@@ -289,8 +290,9 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         guard error == .success else {
-            return (nil, error, false)
+            return(nil, error, reloadRequired)
         }
+        reloadRequired = true
 
         if let metadataFolder {
             self.metadataFolder = metadataFolder.detachedCopy()
@@ -306,7 +308,7 @@ class NCFiles: NCCollectionViewCommon {
               !metadatas.isEmpty,
               NCPreferences().isEndToEndEnabled(account: account),
               await !NCNetworkingE2EE().isInUpload(account: account, serverUrl: serverUrl) else {
-            return (metadatas, error, true)
+            return(metadatas, error, reloadRequired)
         }
 
         let lock = await self.database.getE2ETokenLockAsync(account: account, serverUrl: serverUrl)
@@ -335,7 +337,7 @@ class NCFiles: NCCollectionViewCommon {
                 NCContentPresenter().showError(error: results.error)
             }
 
-            return (metadatas, error, true)
+            return(metadatas, error, reloadRequired)
         }
 
         let errorDecodeMetadata = await NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: results.signature, serverUrl: serverUrl, session: self.session)
@@ -360,7 +362,7 @@ class NCFiles: NCCollectionViewCommon {
             NCContentPresenter().showError(error: error)
         }
 
-        return (metadatas, error, true)
+        return (metadatas, error, reloadRequired)
     }
 
     func blinkCell(fileName: String?) {
