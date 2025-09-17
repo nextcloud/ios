@@ -842,6 +842,15 @@ extension NCManageDatabase {
         }
     }
 
+    func setLivePhotoFile(ocId: String, livePhotoFile: String) async {
+        await performRealmWriteAsync { realm in
+            let result = realm.objects(tableMetadata.self)
+                .filter("ocId == %@", ocId)
+                .first
+            result?.livePhotoFile = livePhotoFile
+        }
+    }
+
     func clearAssetLocalIdentifiersAsync(_ assetLocalIdentifiers: [String]) async {
         await performRealmWriteAsync { realm in
             let results = realm.objects(tableMetadata.self)
