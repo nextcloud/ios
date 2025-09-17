@@ -80,6 +80,7 @@ extension NCManageDatabase {
         await performRealmReadAsync { realm in
             let results = realm.objects(tableLivePhoto.self)
                 .where {
+                    $0.account == account &&
                     $0.serverUrlFileNameImage != "" &&
                     $0.serverUrlFileNameVideo != "" &&
                     $0.fileIdImage != "" &&

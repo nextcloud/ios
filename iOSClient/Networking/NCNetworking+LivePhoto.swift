@@ -26,7 +26,7 @@ import NextcloudKit
 import Queuer
 
 extension NCNetworking {
-    func setLivePhoto(account: String) async {
+    func setLivePhoto(account: String, forcedDetete: Bool = false) async {
         if let results = await NCManageDatabase.shared.getLivePhotos(account: account) {
             for result in results {
                 let resultLivePhotoImage = await NextcloudKit.shared.setLivephotoAsync(serverUrlfileNamePath: result.serverUrlFileNameImage, livePhotoFile: result.fileIdVideo, account: account) { task in
@@ -39,6 +39,9 @@ extension NCNetworking {
                 }
                 guard resultLivePhotoImage.error == .success else {
                     nkLog(error: "Upload set LivePhoto Image with error \(resultLivePhotoImage.error.errorCode)")
+                    if forcedDetete {
+                        await NCManageDatabase.shared.deleteLivePhoto(account: account, serverUrlFileNameNoExt: result.serverUrlFileNameNoExt)
+                    }
                     return
                 }
 
@@ -52,6 +55,9 @@ extension NCNetworking {
                 }
                 guard resultLivePhotoVideo.error == .success else {
                     nkLog(error: "Upload set LivePhoto Video with error \(resultLivePhotoVideo.error.errorCode)")
+                    if forcedDetete {
+                        await NCManageDatabase.shared.deleteLivePhoto(account: account, serverUrlFileNameNoExt: result.serverUrlFileNameNoExt)
+                    }
                     return
                 }
 
