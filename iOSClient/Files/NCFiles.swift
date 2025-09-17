@@ -248,7 +248,8 @@ class NCFiles: NCCollectionViewCommon {
                 self.collectionView.reloadData()
             }
         }
-        guard resultsReadFile.error == .success, let metadata = resultsReadFile.metadata else {
+        guard resultsReadFile.error == .success,
+              let metadata = resultsReadFile.metadata else {
             return (nil, resultsReadFile.error, false)
         }
         let e2eEncrypted = metadata.e2eEncrypted
@@ -256,6 +257,11 @@ class NCFiles: NCCollectionViewCommon {
 
         await self.database.updateDirectoryRichWorkspaceAsync(metadata.richWorkspace, account: resultsReadFile.account, serverUrl: serverUrl)
         let tableDirectory = await self.database.getTableDirectoryAsync(ocId: metadata.ocId)
+
+        // Verify LivePhoto
+        //
+        await networking.setLivePhoto(account: resultsReadFile.account)
+        await NCManageDatabase.shared.deleteLivePhotoError()
 
         let shouldSkipUpdate: Bool = (
             !forced &&
