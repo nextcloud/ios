@@ -219,7 +219,6 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         Task { @MainActor in
             // PLUS BUTTON
             if let fromVC = navigationController.transitionCoordinator?.viewController(forKey: .from) {
-                let capabilities = await NKCapabilities.shared.getCapabilities(for: self.session.account)
                 if !navigationController.viewControllers.contains(fromVC) {
                     if !(fromVC is NCFiles) {
                         isHiddenPlusButton(false)

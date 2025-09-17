@@ -291,13 +291,14 @@ extension NCNetworking {
                     await NCManageDatabase.shared.setLivePhotoImage(account: metadata.account, serverUrlFileName: metadata.serverUrlFileName, fileId: metadata.fileId)
                 }
                 await self.setLivePhoto(account: metadata.account)
-            } else {
-                await self.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusUploaded,
-                                            metadata: metadata.detachedCopy(),
-                                            error: error)
-                }
             }
+
+            await self.transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferChange(status: self.global.networkingStatusUploaded,
+                                        metadata: metadata.detachedCopy(),
+                                        error: error)
+            }
+
         } else {
             nkLog(error: "Upload file: " + metadata.serverUrlFileName + ", result: error \(error.errorCode)")
 

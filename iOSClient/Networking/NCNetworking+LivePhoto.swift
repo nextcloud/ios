@@ -29,22 +29,7 @@ extension NCNetworking {
     func setLivePhoto(account: String, forcedDetete: Bool = false) async {
         if let results = await NCManageDatabase.shared.getLivePhotos(account: account) {
             for result in results {
-                let resultLivePhotoImage = await NextcloudKit.shared.setLivephotoAsync(serverUrlfileNamePath: result.serverUrlFileNameImage, livePhotoFile: result.fileIdVideo, account: account) { task in
-                    Task {
-                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
-                                                                                                    path: result.serverUrlFileNameImage,
-                                                                                                    name: "setLivephoto")
-                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                    }
-                }
-                guard resultLivePhotoImage.error == .success else {
-                    nkLog(error: "Upload set LivePhoto Image with error \(resultLivePhotoImage.error.errorCode)")
-                    if forcedDetete {
-                        await NCManageDatabase.shared.deleteLivePhoto(account: account, serverUrlFileNameNoExt: result.serverUrlFileNameNoExt)
-                    }
-                    return
-                }
-
+                // VIDEO
                 let resultLivePhotoVideo = await NextcloudKit.shared.setLivephotoAsync(serverUrlfileNamePath: result.serverUrlFileNameVideo, livePhotoFile: result.fileIdImage, account: account) { task in
                     Task {
                         let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
@@ -61,12 +46,21 @@ extension NCNetworking {
                     return
                 }
 
-                if let metadata = await NCManageDatabase.shared.getMetadataFromOcIdAsync(result.fileIdImage) {
-                    await self.transferDispatcher.notifyAllDelegates { delegate in
-                        delegate.transferChange(status: self.global.networkingStatusUploaded,
-                                                metadata: metadata,
-                                                error: .success)
+                // IMAGE
+                let resultLivePhotoImage = await NextcloudKit.shared.setLivephotoAsync(serverUrlfileNamePath: result.serverUrlFileNameImage, livePhotoFile: result.fileIdVideo, account: account) { task in
+                    Task {
+                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: account,
+                                                                                                    path: result.serverUrlFileNameImage,
+                                                                                                    name: "setLivephoto")
+                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
                     }
+                }
+                guard resultLivePhotoImage.error == .success else {
+                    nkLog(error: "Upload set LivePhoto Image with error \(resultLivePhotoImage.error.errorCode)")
+                    if forcedDetete {
+                        await NCManageDatabase.shared.deleteLivePhoto(account: account, serverUrlFileNameNoExt: result.serverUrlFileNameNoExt)
+                    }
+                    return
                 }
 
                 await NCManageDatabase.shared.deleteLivePhoto(account: account, serverUrlFileNameNoExt: result.serverUrlFileNameNoExt)
