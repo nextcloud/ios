@@ -174,8 +174,8 @@
 
 /* User status */
 "_away_"                    = "Away";
-/* User status */
 
+/* User status */
 "_dnd_"                     = "Do not disturb";
 
 /* User status */
@@ -186,6 +186,9 @@
 
 /* User status */
 "_invisible_description_"   = "Appear offline";
+
+/* User status */
+"_busy_"                    = "Busy";
 
 /* User status */
 "_status_message_"          = "Status message";
