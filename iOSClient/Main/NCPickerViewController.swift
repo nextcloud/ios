@@ -41,7 +41,7 @@ class NCPhotosPickerViewController: NSObject {
         var pickerVC: TLPhotosPickerViewController?
 
         configure.cancelTitle = NSLocalizedString("_cancel_", comment: "")
-        configure.doneTitle = NSLocalizedString("_done_", comment: "")
+        configure.doneTitle = NSLocalizedString("_add_", comment: "")
         configure.emptyMessage = NSLocalizedString("_no_albums_", comment: "")
         configure.tapHereToChange = NSLocalizedString("_tap_here_to_change_", comment: "")
 
@@ -92,8 +92,12 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
     override func makeUI() {
         super.makeUI()
 
+        self.customNavItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "xmark"), style: .plain, target: self, action: #selector(cancelButtonTap))
         self.customNavItem.leftBarButtonItem?.tintColor = NCBrandColor.shared.iconImageColor
         self.customNavItem.rightBarButtonItem?.tintColor = NCBrandColor.shared.iconImageColor
+        if #available(iOS 26.0, *) {
+            self.navigationBarTopConstraint.constant = self.navigationBarTopConstraint.constant + 10
+        }
     }
 }
 
