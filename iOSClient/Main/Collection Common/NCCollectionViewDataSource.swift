@@ -6,6 +6,7 @@ import UIKit
 import NextcloudKit
 import RealmSwift
 
+
 class NCCollectionViewDataSource: NSObject {
     private let utilityFileSystem = NCUtilityFileSystem()
     private let utility = NCUtility()
