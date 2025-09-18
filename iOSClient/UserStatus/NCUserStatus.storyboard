@@ -466,6 +466,7 @@
                         <outlet property="onlineImage" destination="wwP-hA-oHT" id="tv9-3Y-ccU"/>
                         <outlet property="onlineLabel" destination="4dG-pv-efQ" id="9Y2-mc-yZ1"/>
                         <outlet property="setStatusMessageButton" destination="3xN-e7-N0L" id="XG9-sA-q3a"/>
+                        <outlet property="statusDescriptionTopConstraint" destination="kyn-nH-0eH" id="dka-Zg-bjY"/>
                         <outlet property="statusMessageEmojiTextField" destination="A55-9l-wXo" id="yTG-lx-gBW"/>
                         <outlet property="statusMessageLabel" destination="ldK-hD-vsJ" id="edn-hK-cYI"/>
                         <outlet property="statusMessageTextField" destination="qXf-nl-3Li" id="7QS-4i-afV"/>

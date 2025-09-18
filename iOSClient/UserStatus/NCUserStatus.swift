@@ -67,6 +67,8 @@ class NCUserStatus: UIViewController {
     @IBOutlet weak var clearStatusMessageButton: UIButton!
     @IBOutlet weak var setStatusMessageButton: UIButton!
 
+    @IBOutlet weak var statusDescriptionTopConstraint: NSLayoutConstraint!
+
     private var statusPredefinedStatuses: [NKUserStatus] = []
     private let utility = NCUtility()
     private var clearAtTimestamp: Double = 0     // Unix Timestamp representing the time to clear the status
@@ -183,6 +185,8 @@ class NCUserStatus: UIViewController {
             busyButton.isHidden = true
             busyImage.isHidden = true
             busyLabel.isHidden = true
+
+            statusDescriptionTopConstraint.constant -= 80
         }
 
         getStatus()
