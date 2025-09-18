@@ -39,7 +39,7 @@ class NCNetworkingE2EEUpload: NSObject {
         defer {
             if finalError != .success {
                 Task {
-                    await self.database.deleteMetadataOcIdAsync(ocId)
+                    await self.database.deleteMetadataAsync(id: ocId)
                 }
             }
             hud.dismiss()
@@ -170,7 +170,7 @@ class NCNetworkingE2EEUpload: NSObject {
         if resultsSendFile.error == .success, let ocId = resultsSendFile.ocId {
             let metadata = metadata.detachedCopy()
 
-            await self.database.deleteMetadataOcIdAsync(metadata.ocId)
+            await self.database.deleteMetadataAsync(id: metadata.ocId)
             await utilityFileSystem.moveFileAsync(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase),
                                                   toPath: utilityFileSystem.getDirectoryProviderStorageOcId(ocId, userId: metadata.userId, urlBase: metadata.urlBase))
 

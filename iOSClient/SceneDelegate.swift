@@ -67,6 +67,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     private func startNextcloud(scene: UIScene, withActivateSceneForAccount activateSceneForAccount: Bool) {
+        // App not in background
+        isAppInBackground = false
         // Open Realm
         NCManageDatabase.shared.openRealm()
         // Table account

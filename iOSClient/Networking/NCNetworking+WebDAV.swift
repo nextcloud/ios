@@ -285,11 +285,11 @@ extension NCNetworking {
 
         func deleteLocalFile(metadata: tableMetadata) async {
             if let metadataLive = await NCManageDatabase.shared.getMetadataLivePhotoAsync(metadata: metadata) {
-                await NCManageDatabase.shared.deleteLocalFileOcIdAsync(metadataLive.ocId)
+                await NCManageDatabase.shared.deleteLocalFileAsync(id: metadataLive.ocId)
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
             }
             await NCManageDatabase.shared.deleteVideoAsync(metadata.ocId)
-            await NCManageDatabase.shared.deleteLocalFileOcIdAsync(metadata.ocId)
+            await NCManageDatabase.shared.deleteLocalFileAsync(id: metadata.ocId)
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
 
             NCImageCache.shared.removeImageCache(ocIdPlusEtag: metadata.ocId + metadata.etag)
@@ -327,7 +327,8 @@ extension NCNetworking {
     }
     #endif
 
-    func setStatusWaitDelete(metadatas: [tableMetadata], sceneIdentifier: String?) {
+    @MainActor
+    func setStatusWaitDelete(metadatas: [tableMetadata], sceneIdentifier: String?) async {
         var metadatasPlain: [tableMetadata] = []
         var metadatasE2EE: [tableMetadata] = []
         let ncHud = NCHud()
@@ -356,31 +357,30 @@ extension NCNetworking {
             self.tapHudStopDelete = false
             let total = Float(metadatasE2EE.count)
 
-            Task {
-                if let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
-                    await MainActor.run {
-                        ncHud.ringProgress(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDelete)
-                    }
+            if let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
+                await MainActor.run {
+                    ncHud.ringProgress(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDelete)
                 }
-
-                var metadatasError: [tableMetadata: NKError] = [:]
-                for metadata in metadatasE2EE {
-                    let error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
-                    if error == .success {
-                        metadatasError[metadata.detachedCopy()] = .success
-                    } else {
-                        metadatasError[metadata.detachedCopy()] = error
-                    }
-                    let num = numIncrement()
-                    ncHud.progress(num: num, total: total)
-                    if tapHudStopDelete { break }
-                }
-                await self.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusDelete,
-                                            metadatasError: metadatasError)
-                }
-                ncHud.dismiss()
             }
+
+            var metadatasError: [tableMetadata: NKError] = [:]
+            for metadata in metadatasE2EE {
+                let error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
+                if error == .success {
+                    metadatasError[metadata.detachedCopy()] = .success
+                } else {
+                    metadatasError[metadata.detachedCopy()] = error
+                }
+                let num = numIncrement()
+                ncHud.progress(num: num, total: total)
+                if tapHudStopDelete { break }
+            }
+            await self.transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferChange(status: self.global.networkingStatusDelete,
+                                        metadatasError: metadatasError)
+            }
+            ncHud.dismiss()
+
 #endif
         } else {
             var ocIds = Set<String>()
@@ -393,9 +393,9 @@ extension NCNetworking {
                 }
 
                 if metadata.status == global.metadataStatusWaitCreateFolder {
-                    let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", metadata.account, metadata.serverUrl))
+                    let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", metadata.account, metadata.serverUrl))
                     for metadata in metadatas {
-                        NCManageDatabase.shared.deleteMetadataOcId(metadata.ocId)
+                        await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
                         utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
                     }
                     return
@@ -405,15 +405,13 @@ extension NCNetworking {
                 serverUrls.insert(metadata.serverUrl)
             }
 
-            Task {
-                await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
-                    for ocId in ocIds {
-                        await NCManageDatabase.shared.setMetadataSessionAsync(ocId: ocId,
-                                                                              status: self.global.metadataStatusWaitDelete)
-                    }
-                    serverUrls.forEach { serverUrl in
-                        delegate.transferReloadData(serverUrl: serverUrl, status: self.global.metadataStatusWaitDelete)
-                    }
+            await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
+                for ocId in ocIds {
+                    await NCManageDatabase.shared.setMetadataSessionAsync(ocId: ocId,
+                                                                          status: self.global.metadataStatusWaitDelete)
+                }
+                serverUrls.forEach { serverUrl in
+                    delegate.transferReloadData(serverUrl: serverUrl, status: self.global.metadataStatusWaitDelete)
                 }
             }
         }
@@ -444,7 +442,7 @@ extension NCNetworking {
             Task {
                 await self.transferDispatcher.notifyAllDelegatesAsync { delegate in
                     let status = self.global.metadataStatusWaitRename
-                    await NCManageDatabase.shared.renameMetadataAsync(fileNameNew: fileNameNew, ocId: metadata.ocId, status: status)
+                    await NCManageDatabase.shared.renameMetadata(fileNameNew: fileNameNew, ocId: metadata.ocId, status: status)
                     delegate.transferReloadData(serverUrl: metadata.serverUrl, status: status)
                 }
             }

@@ -75,12 +75,12 @@ extension NCManageDatabase {
        }
     }
 
-    func deleteLocalFileOcIdAsync(_ ocId: String?) async {
-        guard let ocId else { return }
+    func deleteLocalFileAsync(id: String?) async {
+        guard let id else { return }
 
         await performRealmWriteAsync { realm in
             let results = realm.objects(tableLocalFile.self)
-                .filter("ocId == %@", ocId)
+                .filter("ocId == %@", id)
             realm.delete(results)
         }
     }

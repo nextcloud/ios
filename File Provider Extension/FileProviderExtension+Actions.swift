@@ -76,8 +76,8 @@ extension FileProviderExtension {
                     await self.database.deleteDirectoryAndSubDirectoryAsync(serverUrl: dirForDelete, account: account)
                 }
 
-                await self.database.deleteMetadataOcIdAsync(ocId)
-                await self.database.deleteLocalFileOcIdAsync(ocId)
+                await self.database.deleteMetadataAsync(id: ocId)
+                await self.database.deleteLocalFileAsync(id: ocId)
 
                 completionHandler(nil)
                 return
@@ -154,7 +154,7 @@ extension FileProviderExtension {
             let resultsMove = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: fileNamePathFrom, serverUrlFileNameDestination: fileNamePathTo, overwrite: false, account: metadata.account)
 
             if resultsMove.error == .success {
-                await self.database.renameMetadataAsync(fileNameNew: itemName, ocId: ocId)
+                await self.database.renameMetadata(fileNameNew: itemName, ocId: ocId)
                 await self.database.setMetadataServerUrlFileNameStatusNormalAsync(ocId: ocId)
 
                 guard let metadata = await self.database.getMetadataFromOcIdAsync(ocId),

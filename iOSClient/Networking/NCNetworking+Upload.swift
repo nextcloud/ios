@@ -196,7 +196,7 @@ extension NCNetworking {
 
         // Check file dim > 0
         if utilityFileSystem.getFileSize(filePath: fileNameLocalPath) == 0 && metadata.size != 0 {
-            await NCManageDatabase.shared.deleteMetadataOcIdAsync(metadata.ocId)
+            await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
             return NKError(errorCode: self.global.errorResourceNotFound, errorDescription: NSLocalizedString("_error_not_found_", value: "The requested resource could not be found", comment: ""))
         } else {
             let (task, error) = await backgroundSession.uploadAsync(serverUrlFileName: metadata.serverUrlFileName,
@@ -222,7 +222,7 @@ extension NCNetworking {
                     }
                 }
             } else {
-                await NCManageDatabase.shared.deleteMetadataOcIdAsync(metadata.ocId)
+                await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
             }
 
             return(error)
@@ -282,20 +282,21 @@ extension NCNetworking {
                                                                          date: metadata.creationDate as Date)
             }
 
+            // Live Photo
             if metadata.isLivePhoto,
                capabilities.isLivePhotoServerAvailable {
                 if metadata.isVideo {
-                    try? await Task.sleep(nanoseconds: 200_000_000)
-                } else {
-                    try? await Task.sleep(nanoseconds: 100_000_000)
+                    await NCManageDatabase.shared.setLivePhotoVideo(account: metadata.account, serverUrlFileName: metadata.serverUrlFileName, fileId: metadata.fileId)
+                } else if metadata.isImage {
+                    await NCManageDatabase.shared.setLivePhotoImage(account: metadata.account, serverUrlFileName: metadata.serverUrlFileName, fileId: metadata.fileId)
                 }
-                await self.createLivePhoto(metadata: metadata)
-            } else {
-                await self.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusUploaded,
-                                            metadata: metadata.detachedCopy(),
-                                            error: error)
-                }
+                await self.setLivePhoto(account: metadata.account)
+            }
+
+            await self.transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferChange(status: self.global.networkingStatusUploaded,
+                                        metadata: metadata.detachedCopy(),
+                                        error: error)
             }
 
         } else {
@@ -354,7 +355,7 @@ extension NCNetworking {
 
     func uploadCancelFile(metadata: tableMetadata) async {
         self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase))
-        await NCManageDatabase.shared.deleteMetadataOcIdAsync(metadata.ocIdTransfer)
+        await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocIdTransfer)
         await self.transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferChange(status: self.global.networkingStatusUploadCancel,
                                     metadata: metadata.detachedCopy(),

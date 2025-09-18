@@ -224,8 +224,8 @@ extension NCNetworking {
                 if error.errorCode == NCGlobal.shared.errorResourceNotFound {
                     self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
 
-                    await NCManageDatabase.shared.deleteLocalFileOcIdAsync(metadata.ocId)
-                    await NCManageDatabase.shared.deleteMetadataOcIdAsync(metadata.ocId)
+                    await NCManageDatabase.shared.deleteLocalFileAsync(id: metadata.ocId)
+                    await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
                 } else if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
                     if let metadata = await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
                                                                                             session: "",

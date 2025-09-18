@@ -408,6 +408,7 @@ final class NCManageDatabase: @unchecked Sendable {
         self.clearTable(tableDirectory.self)
         self.clearTable(TableDownloadLimit.self)
         self.clearTable(tableExternalSites.self)
+        self.clearTable(tableLivePhoto.self)
         self.clearTable(tableLocalFile.self)
         self.clearTable(tableMetadata.self)
         self.clearTable(tableRecommendedFiles.self)
@@ -435,6 +436,7 @@ final class NCManageDatabase: @unchecked Sendable {
         self.clearTable(TableGroupfolders.self, account: account)
         self.clearTable(TableGroupfoldersGroups.self, account: account)
         self.clearTable(NCDBLayoutForView.self, account: account)
+        self.clearTable(tableLivePhoto.self, account: account)
         self.clearTable(tableLocalFile.self, account: account)
         self.clearTable(tableMetadata.self, account: account)
         self.clearTable(tableRecommendedFiles.self, account: account)
@@ -470,7 +472,7 @@ final class NCManageDatabase: @unchecked Sendable {
         await withTaskGroup(of: Void.self) { group in
             for ocId in localMissingOcIds {
                 group.addTask {
-                    await self.deleteLocalFileOcIdAsync(ocId)
+                    await self.deleteLocalFileAsync(id: ocId)
                     self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, userId: userId, urlBase: urlBase))
                 }
             }

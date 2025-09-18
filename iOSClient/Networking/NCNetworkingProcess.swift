@@ -224,7 +224,7 @@ actor NCNetworkingProcess {
 
                 // no extract photo
                 if metadatas.isEmpty {
-                    await database.deleteMetadataOcIdAsync(metadata.ocId)
+                    await database.deleteMetadataAsync(id: metadata.ocId)
                 }
 
                 for metadata in metadatas {
@@ -572,8 +572,11 @@ actor NCNetworkingProcess {
                     NCImageCache.shared.removeImageCache(ocIdPlusEtag: metadata.ocId + metadata.etag)
 
                     await database.deleteVideoAsync(metadata.ocId)
-                    await database.deleteMetadataOcIdAsync(metadata.ocId)
-                    await database.deleteLocalFileOcIdAsync(metadata.ocId)
+                    if !metadata.livePhotoFile.isEmpty {
+                        await database.deleteMetadataAsync(id: metadata.livePhotoFile)
+                    }
+                    await database.deleteMetadataAsync(id: metadata.ocId)
+                    await database.deleteLocalFileAsync(id: metadata.ocId)
 
                     if metadata.directory {
                         let serverUrl = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
