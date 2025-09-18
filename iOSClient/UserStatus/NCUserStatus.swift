@@ -50,6 +50,10 @@ class NCUserStatus: UIViewController {
     @IBOutlet weak var invisibleLabel: UILabel!
     @IBOutlet weak var invisibleDescrLabel: UILabel!
 
+    @IBOutlet weak var busyButton: UIButton!
+    @IBOutlet weak var busyImage: UIImageView!
+    @IBOutlet weak var busyLabel: UILabel!
+
     @IBOutlet weak var statusMessageLabel: UILabel!
 
     @IBOutlet weak var statusMessageEmojiTextField: emojiTextField!
@@ -119,6 +123,14 @@ class NCUserStatus: UIViewController {
         invisibleLabel.textColor = NCBrandColor.shared.textColor
         invisibleDescrLabel.text = invisible.descriptionMessage
         invisibleDescrLabel.textColor = .darkGray
+
+        busyButton.layer.cornerRadius = 10
+        busyButton.layer.masksToBounds = true
+        busyButton.backgroundColor = .systemGray5
+        let busy = utility.getUserStatus(userIcon: nil, userStatus: "busy", userMessage: nil)
+        busyImage.image = busy.statusImage
+        busyLabel.text = busy.statusMessage
+        busyLabel.textColor = NCBrandColor.shared.textColor
 
         statusMessageLabel.text = NSLocalizedString("_status_message_", comment: "")
         statusMessageLabel.textColor = NCBrandColor.shared.textColor
