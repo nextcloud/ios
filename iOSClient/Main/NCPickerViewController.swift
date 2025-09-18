@@ -92,10 +92,10 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
     override func makeUI() {
         super.makeUI()
 
-        self.customNavItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "xmark"), style: .plain, target: self, action: #selector(cancelButtonTap))
         self.customNavItem.leftBarButtonItem?.tintColor = NCBrandColor.shared.iconImageColor
         self.customNavItem.rightBarButtonItem?.tintColor = NCBrandColor.shared.iconImageColor
         if #available(iOS 26.0, *) {
+            self.customNavItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "xmark"), style: .plain, target: self, action: #selector(cancelButtonTap))
             self.navigationBarTopConstraint.constant = self.navigationBarTopConstraint.constant + 10
         }
     }
