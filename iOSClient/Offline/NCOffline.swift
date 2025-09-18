@@ -55,7 +55,7 @@ class NCOffline: NCCollectionViewCommon {
 
     override func reloadDataSource() async {
         var ocIds: [String] = []
-        var predicate: NSPredicate = defaultPredicate
+        var predicate: NSPredicate?
 
         if self.serverUrl.isEmpty {
             let directories = await self.database.getTablesDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND offline == true", session.account), sorted: "serverUrl", ascending: true)
@@ -71,9 +71,11 @@ class NCOffline: NCCollectionViewCommon {
             predicate = NSPredicate(format: "account == %@ AND ocId IN %@ AND NOT (status IN %@)", session.account, ocIds, global.metadataStatusHideInView)
         }
 
-        let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
-                                                              withLayout: layoutForView,
-                                                              withAccount: session.account)
+        let metadatas = await self.database.getMetadatasAsyncDataSource(withServerUrl: self.serverUrl,
+                                                                        withUserId: self.session.userId,
+                                                                        withAccount: self.session.account,
+                                                                        withLayout: self.layoutForView,
+                                                                        withPreficate: predicate)
 
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
                                                      layoutForView: layoutForView,
