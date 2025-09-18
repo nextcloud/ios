@@ -207,15 +207,14 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
         }
 
-        if cell.fileTitleLabel is BidiFilenameLabel {
-            (cell.fileTitleLabel as? BidiFilenameLabel)?.fullFilename = metadata.fileNameView
-            (cell.fileTitleLabel as? BidiFilenameLabel)?.isFolder = metadata.directory
-            (cell.fileTitleLabel as? BidiFilenameLabel)?.numberOfLines = 1
-//            (cell.fileTitleLabel as? BidiFilenameLabel)?.lineBreakMode = .byCharWrapping
-
-        } else {
+//        if cell is NCListCell && cell.fileTitleLabel is BidiFilenameLabel {
+//            (cell.fileTitleLabel as? BidiFilenameLabel)?.fullFilename = metadata.fileNameView
+//            (cell.fileTitleLabel as? BidiFilenameLabel)?.isFolder = metadata.directory
+//            (cell.fileTitleLabel as? BidiFilenameLabel)?.numberOfLines = 1
+//
+//        } else {
             cell.fileTitleLabel?.text = metadata.fileNameView
-        }
+//        }
 
         // Accessibility [shared] if metadata.ownerId != appDelegate.userId, appDelegate.account == metadata.account {
         if metadata.ownerId != metadata.userId {
