@@ -19,13 +19,14 @@ extension NCMedia {
             self.database.filterAndNormalizeLivePhotos(from: metadatas) { metadatas in
                 Task { @MainActor in
                     self.dataSource = NCMediaDataSource(metadatas: metadatas)
+                    self.collectionViewReloadData()
                 }
             }
         } else {
-            self.dataSource.clearMetadatas()
-        }
-        await MainActor.run {
-            self.collectionViewReloadData()
+            await MainActor.run {
+                self.dataSource.clearMetadatas()
+                self.collectionViewReloadData()
+            }
         }
     }
 
