@@ -290,9 +290,6 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
             if message.body as? String == "documentLoaded" {
                 print("documentLoaded")
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    self.webView.becomeFirstResponder()
-                }
             }
 
             if message.body as? String == "paste" {
