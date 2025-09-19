@@ -16,9 +16,10 @@ extension NCMedia {
                                                                showOnlyImages: self.showOnlyImages,
                                                                showOnlyVideos: self.showOnlyVideos)
         if let metadatas = await self.database.getMetadatasAsync(predicate: mediaPredicate, sortedByKeyPath: "datePhotosOriginal", ascending: false) {
-            let normalizeLivePhotos = self.database.filterAndNormalizeLivePhotos(from: metadatas)
-            await MainActor.run {
-                self.dataSource = NCMediaDataSource(metadatas: normalizeLivePhotos)
+            self.database.filterAndNormalizeLivePhotos(from: metadatas) { metadatas in
+                Task { @MainActor in
+                    self.dataSource = NCMediaDataSource(metadatas: metadatas)
+                }
             }
         } else {
             self.dataSource.clearMetadatas()

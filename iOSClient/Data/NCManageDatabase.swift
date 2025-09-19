@@ -619,6 +619,13 @@ final class NCManageDatabase: @unchecked Sendable {
         return cleanedMetadatas
     }
 
+    func filterAndNormalizeLivePhotos(from metadatas: [tableMetadata], completion: @escaping ([tableMetadata]) -> Void) {
+        DispatchQueue.global(qos: .userInitiated).async {
+            let normalized = self.filterAndNormalizeLivePhotos(from: metadatas)
+            completion(normalized)
+        }
+    }
+
     // MARK: -
     // MARK: SWIFTUI PREVIEW
 
