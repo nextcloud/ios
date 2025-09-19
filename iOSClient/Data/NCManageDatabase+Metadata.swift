@@ -1240,39 +1240,9 @@ extension NCManageDatabase {
                 .map { $0.detachedCopy() }
         } ?? []
 
-        // Get all fileIds from the detached metadata list
-        let allFileIds: Set<String> = Set(detachedMetadatas.map { $0.fileId })
-
-        // Process based on classFile (image vs video) LivePhoto
-        let cleanedMetadatas: [tableMetadata] = detachedMetadatas.compactMap { metadata in
-            let livePhotoFileId = metadata.livePhotoFile
-            let hasLivePhotoLink = !livePhotoFileId.isEmpty
-            let targetExists = allFileIds.contains(livePhotoFileId)
-
-            switch metadata.classFile {
-            case NKTypeClassFile.image.rawValue:
-                if hasLivePhotoLink,
-                   !targetExists {
-                    metadata.livePhotoFile = "" // Clear broken reference
-                }
-                return metadata
-
-            case NKTypeClassFile.video.rawValue:
-                if hasLivePhotoLink,
-                   targetExists {
-                    return nil // Remove video if it's paired with an existing image
-                } else if hasLivePhotoLink,
-                          !targetExists {
-                    metadata.livePhotoFile = "" // Clear broken reference
-                }
-                return metadata
-
-            default:
-                return metadata
-            }
-        }
-
+        let cleanedMetadatas = filterAndNormalizeLivePhotos(from: detachedMetadatas)
         let sorted = await self.sortedMetadata(layoutForView: layoutForView, account: account, metadatas: cleanedMetadatas)
+
         return sorted
     }
 
