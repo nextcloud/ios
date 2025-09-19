@@ -1218,6 +1218,34 @@ extension NCManageDatabase {
         return sorted
     }
 
+    /// Asynchronously retrieves and sorts `tableMetadata` objects matching a given predicate and layout.
+    func getMetadatasAsyncDataSource(withServerUrl serverUrl: String,
+                                     withUserId userId: String,
+                                     withAccount account: String,
+                                     withLayout layoutForView: NCDBLayoutForView?,
+                                     withPreficate predicateSource: NSPredicate? = nil) async -> [tableMetadata] {
+        var predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName != %@ AND NOT (status IN %@)", account, serverUrl, NextcloudKit.shared.nkCommonInstance.rootFileName, NCGlobal.shared.metadataStatusHideInView)
+
+        if NCPreferences().getPersonalFilesOnly(account: account) {
+            predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName != %@ AND (ownerId == %@ || ownerId == '') AND mountType == '' AND NOT (status IN %@)", account, serverUrl, NextcloudKit.shared.nkCommonInstance.rootFileName, userId, NCGlobal.shared.metadataStatusHideInView)
+        }
+
+        if let predicateSource {
+            predicate = predicateSource
+        }
+
+        let detachedMetadatas = await performRealmReadAsync { realm in
+            realm.objects(tableMetadata.self)
+                .filter(predicate)
+                .map { $0.detachedCopy() }
+        } ?? []
+
+        let cleanedMetadatas = filterAndNormalizeLivePhotos(from: detachedMetadatas)
+        let sorted = await self.sortedMetadata(layoutForView: layoutForView, account: account, metadatas: cleanedMetadatas)
+
+        return sorted
+    }
+
     func getMetadatasAsync(predicate: NSPredicate,
                            withSort sortDescriptors: [RealmSwift.SortDescriptor] = [],
                            withLimit limit: Int? = nil) async -> [tableMetadata]? {

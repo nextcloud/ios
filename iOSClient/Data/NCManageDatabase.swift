@@ -583,6 +583,49 @@ final class NCManageDatabase: @unchecked Sendable {
         return Array(sorted)
     }
 
+    func filterAndNormalizeLivePhotos(from metadatas: [tableMetadata]) -> [tableMetadata] {
+        // Get all fileIds from the detached metadata list
+        let allFileIds: Set<String> = Set(metadatas.map { $0.fileId })
+
+        // Process based on classFile (image vs video) LivePhoto
+        let cleanedMetadatas: [tableMetadata] = metadatas.compactMap { metadata in
+            let livePhotoFileId = metadata.livePhotoFile
+            let hasLivePhotoLink = !livePhotoFileId.isEmpty
+            let targetExists = allFileIds.contains(livePhotoFileId)
+
+            switch metadata.classFile {
+            case NKTypeClassFile.image.rawValue:
+                if hasLivePhotoLink,
+                   !targetExists {
+                    metadata.livePhotoFile = "" // Clear broken reference
+                }
+                return metadata
+
+            case NKTypeClassFile.video.rawValue:
+                if hasLivePhotoLink,
+                   targetExists {
+                    return nil // Remove video if it's paired with an existing image
+                } else if hasLivePhotoLink,
+                          !targetExists {
+                    metadata.livePhotoFile = "" // Clear broken reference
+                }
+                return metadata
+
+            default:
+                return metadata
+            }
+        }
+
+        return cleanedMetadatas
+    }
+
+    func filterAndNormalizeLivePhotos(from metadatas: [tableMetadata], completion: @escaping ([tableMetadata]) -> Void) {
+        DispatchQueue.global(qos: .userInitiated).async {
+            let normalized = self.filterAndNormalizeLivePhotos(from: metadatas)
+            completion(normalized)
+        }
+    }
+
     // MARK: -
     // MARK: SWIFTUI PREVIEW
 
