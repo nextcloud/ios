@@ -50,6 +50,10 @@ class NCUserStatus: UIViewController {
     @IBOutlet weak var invisibleLabel: UILabel!
     @IBOutlet weak var invisibleDescrLabel: UILabel!
 
+    @IBOutlet weak var busyButton: UIButton!
+    @IBOutlet weak var busyImage: UIImageView!
+    @IBOutlet weak var busyLabel: UILabel!
+
     @IBOutlet weak var statusMessageLabel: UILabel!
 
     @IBOutlet weak var statusMessageEmojiTextField: emojiTextField!
@@ -62,6 +66,8 @@ class NCUserStatus: UIViewController {
 
     @IBOutlet weak var clearStatusMessageButton: UIButton!
     @IBOutlet weak var setStatusMessageButton: UIButton!
+
+    @IBOutlet weak var statusDescriptionTopConstraint: NSLayoutConstraint!
 
     private var statusPredefinedStatuses: [NKUserStatus] = []
     private let utility = NCUtility()
@@ -120,6 +126,14 @@ class NCUserStatus: UIViewController {
         invisibleDescrLabel.text = invisible.descriptionMessage
         invisibleDescrLabel.textColor = .darkGray
 
+        busyButton.layer.cornerRadius = 10
+        busyButton.layer.masksToBounds = true
+        busyButton.backgroundColor = .systemGray5
+        let busy = utility.getUserStatus(userIcon: nil, userStatus: "busy", userMessage: nil)
+        busyImage.image = busy.statusImage
+        busyLabel.text = busy.statusMessage
+        busyLabel.textColor = NCBrandColor.shared.textColor
+
         statusMessageLabel.text = NSLocalizedString("_status_message_", comment: "")
         statusMessageLabel.textColor = NCBrandColor.shared.textColor
 
@@ -166,6 +180,14 @@ class NCUserStatus: UIViewController {
         setStatusMessageButton.backgroundColor = NCBrandColor.shared.getElement(account: account)
         setStatusMessageButton.setTitle(NSLocalizedString("_set_status_message_", comment: ""), for: .normal)
         setStatusMessageButton.setTitleColor(NCBrandColor.shared.getText(account: account), for: .normal)
+
+        if let capabilities = NCNetworking.shared.capabilities[account], !capabilities.userStatusSupportsBusy {
+            busyButton.isHidden = true
+            busyImage.isHidden = true
+            busyLabel.isHidden = true
+
+            statusDescriptionTopConstraint.constant -= 80
+        }
 
         getStatus()
     }
@@ -220,7 +242,9 @@ class NCUserStatus: UIViewController {
         self.dndButton.layer.borderColor = nil
         self.invisibleButton.layer.borderWidth = 0
         self.invisibleButton.layer.borderColor = nil
-
+        self.busyButton.layer.borderWidth = 0
+        self.busyButton.layer.borderColor = nil
+        
         let status = "online"
         NextcloudKit.shared.setUserStatus(status: status, account: account) { task in
             Task {
@@ -242,6 +266,8 @@ class NCUserStatus: UIViewController {
         self.dndButton.layer.borderColor = nil
         self.invisibleButton.layer.borderWidth = 0
         self.invisibleButton.layer.borderColor = nil
+        self.busyButton.layer.borderWidth = 0
+        self.busyButton.layer.borderColor = nil
 
         let status = "away"
         NextcloudKit.shared.setUserStatus(status: status, account: account) { task in
@@ -264,6 +290,8 @@ class NCUserStatus: UIViewController {
         self.dndButton.layer.borderColor = self.borderColorButton
         self.invisibleButton.layer.borderWidth = 0
         self.invisibleButton.layer.borderColor = nil
+        self.busyButton.layer.borderWidth = 0
+        self.busyButton.layer.borderColor = nil
 
         let status = "dnd"
         NextcloudKit.shared.setUserStatus(status: status, account: account) { task in
@@ -286,8 +314,34 @@ class NCUserStatus: UIViewController {
         self.dndButton.layer.borderColor = nil
         self.invisibleButton.layer.borderWidth = self.borderWidthButton
         self.invisibleButton.layer.borderColor = self.borderColorButton
+        self.busyButton.layer.borderWidth = 0
+        self.busyButton.layer.borderColor = nil
 
         let status = "invisible"
+        NextcloudKit.shared.setUserStatus(status: status, account: account) { task in
+            Task {
+                let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account,
+                                                                                            name: "setUserStatus")
+                await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+            }
+        } completion: { _, _, error in
+            self.dismissIfError(error)
+        }
+    }
+
+    @IBAction func actionBusy(_ sender: UIButton) {
+        self.onlineButton.layer.borderWidth = 0
+        self.onlineButton.layer.borderColor = nil
+        self.awayButton.layer.borderWidth = 0
+        self.awayButton.layer.borderColor = nil
+        self.dndButton.layer.borderWidth = 0
+        self.dndButton.layer.borderColor = nil
+        self.invisibleButton.layer.borderWidth = 0
+        self.invisibleButton.layer.borderColor = nil
+        self.busyButton.layer.borderWidth = self.borderWidthButton
+        self.busyButton.layer.borderColor = self.borderColorButton
+
+        let status = "busy"
         NextcloudKit.shared.setUserStatus(status: status, account: account) { task in
             Task {
                 let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: self.account,
@@ -413,6 +467,9 @@ class NCUserStatus: UIViewController {
                 case "invisible", "offline":
                     self.invisibleButton.layer.borderWidth = self.borderWidthButton
                     self.invisibleButton.layer.borderColor = self.borderColorButton
+                case "busy":
+                    self.busyButton.layer.borderWidth = self.borderWidthButton
+                    self.busyButton.layer.borderColor = self.borderColorButton
                 default:
                     print("No status")
                 }

@@ -30,6 +30,7 @@ struct NCAccountSettingsView: View {
                         ForEach(0..<model.tblAccounts.count, id: \.self) { index in
                             let status = model.getUserStatus()
                             let avatar = NCUtility().loadUserImage(for: model.tblAccounts[index].user, displayName: model.tblAccounts[index].displayName, urlBase: model.tblAccounts[index].urlBase)
+
                             //
                             // User
                             VStack {
@@ -43,9 +44,11 @@ struct NCAccountSettingsView: View {
                                             .fill(.white)
                                             .frame(width: 30, height: 30)
                                         Image(uiImage: statusImage)
+                                            .renderingMode(.template)
                                             .resizable()
                                             .scaledToFit()
                                             .frame(width: 30, height: 30)
+                                            .foregroundStyle(Color(uiColor: status.statusImageColor))
                                     }
                                     .offset(x: 30, y: -30)
                                 }
