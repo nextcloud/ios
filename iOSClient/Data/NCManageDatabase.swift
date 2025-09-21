@@ -197,7 +197,9 @@ final class NCManageDatabase: @unchecked Sendable {
     }
 
     func migrationSchema(_ migration: Migration, _ oldSchemaVersion: UInt64) {
+        //
         // MANUAL MIGRATIONS (custom logic required)
+        //
 
         if oldSchemaVersion < 365 {
             migration.deleteData(forType: tableMetadata.className())
