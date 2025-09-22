@@ -182,17 +182,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func handleAppRefresh(_ task: BGAppRefreshTask) {
         nkLog(tag: self.global.logTagTask, emoji: .start, message: "Start refresh task")
-
-        var didComplete = false
-
-        task.expirationHandler = {
-            nkLog(tag: self.global.logTagTask, emoji: .warning, message: "Refresh task expiration handler")
-            if !didComplete {
-                task.setTaskCompleted(success: false)
-                didComplete = true
-            }
-        }
-
         guard NCManageDatabase.shared.openRealmBackground() else {
             nkLog(tag: self.global.logTagTask, emoji: .error, message: "Failed to open Realm in background")
             task.setTaskCompleted(success: false)
@@ -204,10 +193,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         Task {
             defer {
-                if !didComplete {
-                    task.setTaskCompleted(success: true)
-                    didComplete = true
-                }
+                task.setTaskCompleted(success: true)
             }
 
             guard let tblAccount = await NCManageDatabase.shared.getActiveTableAccountAsync() else {
@@ -215,24 +201,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 return
             }
 
-            let numTransfers = await backgroundSync(tblAccount: tblAccount)
+            let numTransfers = await backgroundSync(tblAccount: tblAccount, task: task)
             nkLog(tag: self.global.logTagTask, emoji: .success, message: "Refresh task completed with \(numTransfers) transfers")
         }
     }
 
     func handleProcessingTask(_ task: BGProcessingTask) {
         nkLog(tag: self.global.logTagTask, emoji: .start, message: "Start processing task")
-
-        var didComplete = false
-
-        task.expirationHandler = {
-            nkLog(tag: self.global.logTagTask, emoji: .warning, message: "Processing task expiration handler")
-            if !didComplete {
-                task.setTaskCompleted(success: false)
-                didComplete = true
-            }
-        }
-
         guard NCManageDatabase.shared.openRealmBackground() else {
             nkLog(tag: self.global.logTagTask, emoji: .error, message: "Failed to open Realm in background")
             task.setTaskCompleted(success: false)
@@ -244,10 +219,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
        Task {
            defer {
-               if !didComplete {
-                   task.setTaskCompleted(success: true)
-                   didComplete = true
-               }
+               task.setTaskCompleted(success: true)
            }
 
            guard let tblAccount = await NCManageDatabase.shared.getActiveTableAccountAsync() else {
@@ -255,16 +227,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                return
            }
 
-           let numTransfers = await backgroundSync(tblAccount: tblAccount)
+           let numTransfers = await backgroundSync(tblAccount: tblAccount, task: task)
            nkLog(tag: self.global.logTagTask, emoji: .success, message: "Processing task completed with \(numTransfers) transfers of auto upload")
        }
     }
 
-    func backgroundSync(tblAccount: tableAccount) async -> Int {
+    func backgroundSync(tblAccount: tableAccount, task: BGTask? = nil) async -> Int {
+        var expiration: Bool = false
         var numTransfers: Int = 0
         let sortDescriptors = [
             RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
         ]
+
+        task?.expirationHandler = {
+            expiration = true
+            task?.setTaskCompleted(success: true)
+        }
 
         // DOWNLOAD
         let predicateDownload = NSPredicate(format: "status == %d", self.global.metadataStatusWaitDownload)
@@ -273,8 +251,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                                                                                    withLimit: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload)
 
         if let metadatasWaitDownlod,
-           !metadatasWaitDownlod.isEmpty {
+           !metadatasWaitDownlod.isEmpty,
+           !expiration {
             for metadata in metadatasWaitDownlod {
+                guard !expiration else { return numTransfers }
                 let error = await NCNetworking.shared.downloadFileInBackground(metadata: metadata)
 
                 if error == .success {
@@ -287,7 +267,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
 
-        if numTransfers >= NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload {
+        if numTransfers >= NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload || expiration {
             return numTransfers
         }
 
@@ -295,12 +275,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let num = await NCAutoUpload.shared.initAutoUpload(tblAccount: tblAccount)
         nkLog(tag: self.global.logTagBgSync, emoji: .start, message: "Auto upload with \(num) new photo for \(tblAccount.account)")
 
+        guard !expiration else { return numTransfers }
+
         // CREATION FOLDERS
         let predicateCreateFolder = NSPredicate(format: "status == %d AND sessionSelector == %@", self.global.metadataStatusWaitCreateFolder, self.global.selectorUploadAutoUpload)
         let metadatasWaitCreateFolder = await NCManageDatabase.shared.getMetadatasAsync(predicate: predicateCreateFolder,
                                                                                         withLimit: NCBrandOptions.shared.httpMaximumConnectionsPerHost) ?? []
 
         for metadata in metadatasWaitCreateFolder {
+            guard !expiration else { return numTransfers }
             let error = await NCNetworking.shared.createFolderForAutoUpload(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
             guard error == .success else {
                 nkLog(tag: self.global.logTagBgSync, emoji: .error, message: "Auto upload create folder \(metadata.serverUrlFileName) with error: \(error.errorCode)")
@@ -315,11 +298,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                                                                                   withLimit: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload)
 
         if let metadatasWaitUpload,
-           !metadatasWaitUpload.isEmpty {
-
+           !metadatasWaitUpload.isEmpty,
+           !expiration {
             let metadatas = await NCCameraRoll().extractCameraRoll(from: metadatasWaitUpload)
 
             for metadata in metadatas {
+                guard !expiration else { return numTransfers }
                 let error = await NCNetworking.shared.uploadFileInBackground(metadata: metadata.detachedCopy())
                 if error == .success {
                     nkLog(tag: self.global.logTagBgSync, message: "Create new upload \(metadata.fileName) in \(metadata.serverUrl)")
