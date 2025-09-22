@@ -241,7 +241,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         task?.expirationHandler = {
             expiration = true
-            task?.setTaskCompleted(success: true)
         }
 
         // DOWNLOAD
