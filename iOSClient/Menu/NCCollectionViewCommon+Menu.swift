@@ -411,10 +411,9 @@ extension NCCollectionViewCommon {
         if let apps = capabilities.declarativeUI?.apps {
             for (appName, context) in apps {
                 for item in context.contextMenu {
-
                     if item.mimetypeFilters == nil || (item.mimetypeFilters?.contains(metadata.contentType) == true) {
                         let iconImage: UIImage
-                        if let icon = item.icon, let source = SVGKSourceURL.source(from: URL(string: icon)) {
+                        if let iconUrl = item.icon, let source = SVGKSourceURL.source(from: URL(string: metadata.urlBase + iconUrl)) {
                             iconImage = SVGKImage(source: source)?.uiImage ?? UIImage()
                         } else {
                             iconImage = utility.loadImage(named: "testtube.2", colors: [NCBrandColor.shared.presentationIconColor])
