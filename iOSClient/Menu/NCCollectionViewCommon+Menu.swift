@@ -29,6 +29,7 @@ import UIKit
 import FloatingPanel
 import NextcloudKit
 import Queuer
+import SVGKit
 
 extension NCCollectionViewCommon {
     func toggleMenu(metadata: tableMetadata, image: UIImage?, sender: Any?) {
@@ -407,19 +408,53 @@ extension NCCollectionViewCommon {
             actions.append(.deleteOrUnshareAction(selectedMetadatas: [metadata], metadataFolder: metadataFolder, controller: self.controller, order: 170, sender: sender))
         }
 
-        capabilities.declarativeUI?.contextMenu.forEach { item in
-                   actions.append(
-                       NCMenuAction(
-                           title: item.title,
-                           icon: utility.loadImage(named: "testtube.2", colors: [NCBrandColor.shared.presentationIconColor]),
-                           order: Int.max,
-                           sender: sender,
-                           action: { _ in
+        if let apps = capabilities.declarativeUI?.apps {
+            for (appName, context) in apps {
+                for item in context.contextMenu {
 
-                           }
-                       )
-                   )
-               }
+                    if item.mimetypeFilters == nil || (item.mimetypeFilters?.contains(metadata.contentType) == true) {
+                        let iconImage: UIImage
+                        if let icon = item.icon, let source = SVGKSourceURL.source(from: URL(string: icon)) {
+                            iconImage = SVGKImage(source: source)?.uiImage ?? UIImage()
+                        } else {
+                            iconImage = utility.loadImage(named: "testtube.2", colors: [NCBrandColor.shared.presentationIconColor])
+                        }
+
+                            actions.append(
+                            NCMenuAction(
+                                title: item.name,
+                                icon: iconImage,
+                                order: Int.max,
+                                sender: sender,
+                                action: { _ in
+                                    Task {
+                                        await NextcloudKit.shared.sendRequestAsync(url: item.url,
+                                                                                   method: item.method,
+                                                                                   userAgent: userAgent,
+                                                                                   params: item.params,
+                                                                                   bodyParams: item.bodyParams)
+                                    }
+                                }
+                            )
+                        )
+                    }
+                }
+            }
+        }
+
+//        capabilities.declarativeUI?.contextMenu.forEach { item in
+//                   actions.append(
+//                       NCMenuAction(
+//                           title: item.title,
+//                           icon: utility.loadImage(named: "testtube.2", colors: [NCBrandColor.shared.presentationIconColor]),
+//                           order: Int.max,
+//                           sender: sender,
+//                           action: { _ in
+//
+//                           }
+//                       )
+//                   )
+//               }
 
         applicationHandle.addCollectionViewCommonMenu(metadata: metadata, image: image, actions: &actions)
 
@@ -436,3 +471,4 @@ extension TimeInterval {
         return formatter.string(from: self)
     }
 }
+
