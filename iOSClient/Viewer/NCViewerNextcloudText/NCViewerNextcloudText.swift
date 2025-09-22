@@ -181,9 +181,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
 
             if message.body as? String == "loaded" {
                 print("loaded")
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    self.webView.becomeFirstResponder()
-                }
             }
 
             if message.body as? String == "paste" {

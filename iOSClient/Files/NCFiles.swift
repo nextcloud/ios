@@ -149,15 +149,6 @@ class NCFiles: NCCollectionViewCommon {
             return
         }
 
-        let personalFilesOnly = NCPreferences().getPersonalFilesOnly(account: self.session.account)
-        let predicate: NSPredicate = {
-            if personalFilesOnly {
-                return self.personalFilesOnlyPredicate
-            } else {
-                return self.defaultPredicate
-            }
-        }()
-
         self.metadataFolder = await self.database.getMetadataFolderAsync(session: self.session, serverUrl: self.serverUrl)
         if let tblDirectory = await self.database.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.session.account, self.serverUrl)) {
             self.richWorkspaceText = tblDirectory.richWorkspace
@@ -176,9 +167,10 @@ class NCFiles: NCCollectionViewCommon {
             }
         }
 
-        let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
-                                                              withLayout: self.layoutForView,
-                                                              withAccount: self.session.account)
+        let metadatas = await self.database.getMetadatasAsyncDataSource(withServerUrl: self.serverUrl,
+                                                                        withUserId: self.session.userId,
+                                                                        withAccount: self.session.account,
+                                                                        withLayout: self.layoutForView)
 
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
                                                      layoutForView: layoutForView,

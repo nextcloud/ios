@@ -197,16 +197,22 @@ final class NCManageDatabase: @unchecked Sendable {
     }
 
     func migrationSchema(_ migration: Migration, _ oldSchemaVersion: UInt64) {
+        //
         // MANUAL MIGRATIONS (custom logic required)
+        //
+
         if oldSchemaVersion < 365 {
             migration.deleteData(forType: tableMetadata.className())
             migration.enumerateObjects(ofType: tableDirectory.className()) { _, newObject in
                 newObject?["etag"] = ""
             }
         }
+
         if oldSchemaVersion < 383 {
             migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
-                if let oldDate = oldObject?["autoUploadSinceDate"] as? Date {
+                if let schema = oldObject?.objectSchema,
+                   schema["autoUploadSinceDate"] != nil,
+                   let oldDate = oldObject?["autoUploadSinceDate"] as? Date {
                     newObject?["autoUploadOnlyNewSinceDate"] = oldDate
                 } else {
                     newObject?["autoUploadOnlyNewSinceDate"] = Date()
@@ -214,16 +220,22 @@ final class NCManageDatabase: @unchecked Sendable {
                 newObject?["autoUploadOnlyNew"] = true
             }
         }
+
         if oldSchemaVersion < 390 {
             migration.enumerateObjects(ofType: tableCapabilities.className()) { oldObject, newObject in
-                if let oldData = oldObject?["jsondata"] as? Data {
+                if let schema = oldObject?.objectSchema,
+                   schema["jsondata"] != nil,
+                   let oldData = oldObject?["jsondata"] as? Data {
                     newObject?["capabilities"] = oldData
                 }
             }
         }
+
         if oldSchemaVersion < 393 {
             migration.enumerateObjects(ofType: tableMetadata.className()) { oldObject, newObject in
-                if let oldData = oldObject?["serveUrlFileName"] as? String {
+                if let schema = oldObject?.objectSchema,
+                schema["serveUrlFileName"] != nil,
+                let oldData = oldObject?["serveUrlFileName"] as? String {
                     newObject?["serverUrlFileName"] = oldData
                 }
             }
@@ -581,6 +593,49 @@ final class NCManageDatabase: @unchecked Sendable {
         }
 
         return Array(sorted)
+    }
+
+    func filterAndNormalizeLivePhotos(from metadatas: [tableMetadata]) -> [tableMetadata] {
+        // Get all fileIds from the detached metadata list
+        let allFileIds: Set<String> = Set(metadatas.map { $0.fileId })
+
+        // Process based on classFile (image vs video) LivePhoto
+        let cleanedMetadatas: [tableMetadata] = metadatas.compactMap { metadata in
+            let livePhotoFileId = metadata.livePhotoFile
+            let hasLivePhotoLink = !livePhotoFileId.isEmpty
+            let targetExists = allFileIds.contains(livePhotoFileId)
+
+            switch metadata.classFile {
+            case NKTypeClassFile.image.rawValue:
+                if hasLivePhotoLink,
+                   !targetExists {
+                    metadata.livePhotoFile = "" // Clear broken reference
+                }
+                return metadata
+
+            case NKTypeClassFile.video.rawValue:
+                if hasLivePhotoLink,
+                   targetExists {
+                    return nil // Remove video if it's paired with an existing image
+                } else if hasLivePhotoLink,
+                          !targetExists {
+                    metadata.livePhotoFile = "" // Clear broken reference
+                }
+                return metadata
+
+            default:
+                return metadata
+            }
+        }
+
+        return cleanedMetadatas
+    }
+
+    func filterAndNormalizeLivePhotos(from metadatas: [tableMetadata], completion: @escaping ([tableMetadata]) -> Void) {
+        DispatchQueue.global(qos: .userInitiated).async {
+            let normalized = self.filterAndNormalizeLivePhotos(from: metadatas)
+            completion(normalized)
+        }
     }
 
     // MARK: -

@@ -48,15 +48,17 @@ class NCFavorite: NCCollectionViewCommon {
     // MARK: - DataSource
 
     override func reloadDataSource() async {
-        var predicate = self.defaultPredicate
+        var predicate: NSPredicate?
 
         if self.serverUrl.isEmpty {
            predicate = NSPredicate(format: "account == %@ AND favorite == true AND NOT (status IN %@)", session.account, global.metadataStatusHideInView)
         }
 
-        let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
-                                                              withLayout: layoutForView,
-                                                              withAccount: session.account)
+        let metadatas = await self.database.getMetadatasAsyncDataSource(withServerUrl: self.serverUrl,
+                                                                        withUserId: self.session.userId,
+                                                                        withAccount: self.session.account,
+                                                                        withLayout: self.layoutForView,
+                                                                        withPreficate: predicate)
 
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
                                                      layoutForView: layoutForView,
