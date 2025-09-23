@@ -151,8 +151,8 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                 await NCManageDatabase.shared.setOffLocalFileAsync(ocId: metadata.ocId)
             }
         } else if metadata.directory {
-            await NCManageDatabase.shared.setDirectoryAsync(serverUrl: metadata.serverUrlFileName, offline: true, metadata: metadata)
             await NCManageDatabase.shared.cleanTablesOcIds(account: metadata.account, userId: metadata.userId, urlBase: metadata.urlBase)
+            await NCManageDatabase.shared.setDirectoryAsync(serverUrl: metadata.serverUrlFileName, offline: true, metadata: metadata)
             await NCNetworking.shared.synchronization(account: metadata.account, serverUrl: metadata.serverUrlFileName, userId: metadata.userId, urlBase: metadata.urlBase, metadatasInDownload: nil)
         } else {
             var metadatasSynchronizationOffline: [tableMetadata] = []

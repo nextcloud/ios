@@ -8,22 +8,26 @@ import RealmSwift
 
 extension NCMedia {
     func loadDataSource() async {
-        guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", session.account)) else {
+        guard let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", self.session.account)) else {
             return
         }
-        let mediaPredicate = self.imageCache.getMediaPredicateAsync(filterLivePhotoFile: true,
-                                                                    session: session,
-                                                                    mediaPath: tblAccount.mediaPath,
-                                                                    showOnlyImages: self.showOnlyImages,
-                                                                    showOnlyVideos: self.showOnlyVideos)
+        let mediaPredicate = self.imageCache.getMediaPredicate(session: self.session,
+                                                               mediaPath: tblAccount.mediaPath,
+                                                               showOnlyImages: self.showOnlyImages,
+                                                               showOnlyVideos: self.showOnlyVideos)
         if let metadatas = await self.database.getMetadatasAsync(predicate: mediaPredicate, sortedByKeyPath: "datePhotosOriginal", ascending: false) {
-            await MainActor.run {
-                self.dataSource = NCMediaDataSource(metadatas: metadatas)
+            self.database.filterAndNormalizeLivePhotos(from: metadatas) { metadatas in
+                Task { @MainActor in
+                    self.dataSource = NCMediaDataSource(metadatas: metadatas)
+                    self.collectionViewReloadData()
+                }
             }
         } else {
-            self.dataSource.clearMetadatas()
+            await MainActor.run {
+                self.dataSource.clearMetadatas()
+                self.collectionViewReloadData()
+            }
         }
-        self.collectionViewReloadData()
     }
 
     @MainActor
@@ -172,12 +176,10 @@ extension NCMedia {
                 return
             }
             let (_, remoteMetadatas) = await self.database.convertFilesToMetadatasAsync(files, mediaSearch: true)
-            let mediaPredicate = await self.imageCache.getMediaPredicateAsync(filterLivePhotoFile: false,
-                                                                        session: session,
-                                                                        mediaPath: tblAccount.mediaPath,
-                                                                        showOnlyImages: self.showOnlyImages,
-                                                                        showOnlyVideos: self.showOnlyVideos)
-
+            let mediaPredicate = await self.imageCache.getMediaPredicate(session: session,
+                                                                         mediaPath: tblAccount.mediaPath,
+                                                                         showOnlyImages: self.showOnlyImages,
+                                                                         showOnlyVideos: self.showOnlyVideos)
             let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
                 NSPredicate(format: "datePhotosOriginal >= %@ AND datePhotosOriginal <= %@ AND mediaSearch == true", greaterDate as NSDate, lessDate as NSDate),
                 mediaPredicate

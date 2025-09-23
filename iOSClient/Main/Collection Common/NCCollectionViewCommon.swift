@@ -124,16 +124,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
     }
 
-    var defaultPredicate: NSPredicate {
-        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName != %@ AND NOT (status IN %@) AND NOT (livePhotoFile != '' AND classFile == %@)", session.account, self.serverUrl, NextcloudKit.shared.nkCommonInstance.rootFileName, self.global.metadataStatusHideInView, NKTypeClassFile.video.rawValue)
-        return predicate
-    }
-
-    var personalFilesOnlyPredicate: NSPredicate {
-        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName != %@ AND (ownerId == %@ || ownerId == '') AND mountType == '' AND NOT (status IN %@) AND NOT (livePhotoFile != '' AND classFile == %@)", session.account, self.serverUrl, NextcloudKit.shared.nkCommonInstance.rootFileName, session.userId, global.metadataStatusHideInView, NKTypeClassFile.video.rawValue)
-        return predicate
-    }
-
     var isNumberOfItemsInAllSectionsNull: Bool {
         var totalItems = 0
         for section in 0..<self.collectionView.numberOfSections {
@@ -663,7 +653,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // TIP
         dismissTip()
         //
-        mainNavigationController?.isHiddenPlusButton(true)
+        mainNavigationController?.hiddenPlusButton(true)
     }
 
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
@@ -683,7 +673,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             await self.reloadDataSource()
         }
         //
-        mainNavigationController?.isHiddenPlusButton(false)
+        mainNavigationController?.hiddenPlusButton(false)
     }
 
     // MARK: - TAP EVENT

@@ -181,29 +181,34 @@ class NCViewer: NSObject {
 
                     return vc
                 }
-            }
-        }
-        // QLPreview
-        else {
-            let item = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
-                                                                                              fileName: metadata.fileNameView,
-                                                                                              userId: metadata.userId,
-                                                                                              urlBase: metadata.urlBase))
-            if QLPreviewController.canPreview(item as QLPreviewItem) {
-                let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
-                utilityFileSystem.copyFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
-                                                                                                     fileName: metadata.fileNameView,
-                                                                                                     userId: metadata.userId,
-                                                                                                     urlBase: metadata.urlBase), toPath: fileNamePath)
-                let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), isEditingEnabled: false, metadata: metadata)
-                delegate?.present(viewerQuickLook, animated: true)
             } else {
-                // Document Interaction Controller
-                if let controller = delegate?.tabBarController as? NCMainTabBarController {
-                    NCDownloadAction.shared.openActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
-                }
+                self.QLPreview(metadata: metadata, delegate: delegate)
+            }
+        } else {
+            self.QLPreview(metadata: metadata, delegate: delegate)
+        }
+
+        return nil
+    }
+
+    func QLPreview(metadata: tableMetadata, delegate: UIViewController? = nil) {
+        let item = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
+                                                                                          fileName: metadata.fileNameView,
+                                                                                          userId: metadata.userId,
+                                                                                          urlBase: metadata.urlBase))
+        if QLPreviewController.canPreview(item as QLPreviewItem) {
+            let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
+            utilityFileSystem.copyFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
+                                                                                                 fileName: metadata.fileNameView,
+                                                                                                 userId: metadata.userId,
+                                                                                                 urlBase: metadata.urlBase), toPath: fileNamePath)
+            let viewerQuickLook = NCViewerQuickLook(with: URL(fileURLWithPath: fileNamePath), isEditingEnabled: false, metadata: metadata)
+            delegate?.present(viewerQuickLook, animated: true)
+        } else {
+            // Document Interaction Controller
+            if let controller = delegate?.tabBarController as? NCMainTabBarController {
+                NCDownloadAction.shared.openActivityViewController(selectedMetadata: [metadata], controller: controller, sender: nil)
             }
         }
-        return nil
     }
 }
