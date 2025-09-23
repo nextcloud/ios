@@ -177,9 +177,9 @@ actor NCNetworkingProcess {
         }
 
         /// ------------------------ DOWNLOAD
-        let httpMaximumConnectionsPerHostInDownload = NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload
+        let httpMaximumProcessDownload = NCBrandOptions.shared.httpMaximumProcessDownload
         var counterDownloading = metadatas.filter { $0.status == self.global.metadataStatusDownloading }.count
-        let limitDownload = max(0, httpMaximumConnectionsPerHostInDownload - counterDownloading)
+        let limitDownload = max(0, httpMaximumProcessDownload - counterDownloading)
 
         let filteredDownload = metadatas
             .filter { $0.session == self.networking.sessionDownloadBackground && $0.status == NCGlobal.shared.metadataStatusWaitDownload }
@@ -187,7 +187,7 @@ actor NCNetworkingProcess {
             .prefix(limitDownload)
         let metadatasWaitDownload = Array(filteredDownload)
 
-        for metadata in metadatasWaitDownload where counterDownloading < httpMaximumConnectionsPerHostInDownload {
+        for metadata in metadatasWaitDownload where counterDownloading < httpMaximumProcessDownload {
             counterDownloading += 1
             await networking.downloadFileInBackground(metadata: metadata)
         }
@@ -200,14 +200,14 @@ actor NCNetworkingProcess {
             return
         }
 
-        var httpMaximumConnectionsPerHostInUpload = NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload
+        var httpMaximumProcessUpload = NCBrandOptions.shared.httpMaximumProcessUpload
         let isWiFi = self.networking.networkReachability == NKTypeReachability.reachableEthernetOrWiFi
         let sessionUploadSelectors = [self.global.selectorUploadFileNODelete, self.global.selectorUploadFile, self.global.selectorUploadAutoUpload]
         var counterUploading = metadatas.filter { $0.status == self.global.metadataStatusUploading }.count
         for sessionSelector in sessionUploadSelectors {
-            guard counterUploading < httpMaximumConnectionsPerHostInUpload else { return }
+            guard counterUploading < httpMaximumProcessUpload else { return }
 
-            let limitUpload = max(0, httpMaximumConnectionsPerHostInUpload - counterUploading)
+            let limitUpload = max(0, httpMaximumProcessUpload - counterUploading)
             let filteredUpload = metadatas
                 .filter { $0.sessionSelector == sessionSelector && $0.status == NCGlobal.shared.metadataStatusWaitUpload }
                 .sorted { ($0.sessionDate ?? Date.distantFuture) < ($1.sessionDate ?? Date.distantFuture) }
@@ -219,7 +219,7 @@ actor NCNetworkingProcess {
             }
 
             for metadata in metadatasWaitUpload {
-                guard counterUploading < httpMaximumConnectionsPerHostInUpload else { return }
+                guard counterUploading < httpMaximumProcessUpload else { return }
                 let metadatas = await NCCameraRoll().extractCameraRoll(from: metadata)
 
                 // no extract photo
@@ -228,7 +228,7 @@ actor NCNetworkingProcess {
                 }
 
                 for metadata in metadatas {
-                    guard counterUploading < httpMaximumConnectionsPerHostInUpload,
+                    guard counterUploading < httpMaximumProcessUpload,
                           timer != nil else { return }
 
                     /// NO WiFi
