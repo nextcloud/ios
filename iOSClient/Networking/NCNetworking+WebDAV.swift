@@ -288,7 +288,7 @@ extension NCNetworking {
                 await NCManageDatabase.shared.deleteLocalFileAsync(id: metadataLive.ocId)
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
             }
-            await NCManageDatabase.shared.deleteVideoAsync(metadata.ocId)
+            await NCManageDatabase.shared.deleteVideoOrAudioAsync(metadata.ocId)
             await NCManageDatabase.shared.deleteLocalFileAsync(id: metadata.ocId)
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
 
@@ -537,15 +537,15 @@ extension NCNetworking {
     // MARK: - Direct Download
 
     func getVideoUrl(metadata: tableMetadata,
-                     completition: @escaping (_ url: URL?, _ autoplay: Bool, _ error: NKError) -> Void) {
+                     completition: @escaping (_ url: URL?, _ error: NKError) -> Void) {
         if !metadata.url.isEmpty {
             if metadata.url.hasPrefix("/") {
-                completition(URL(fileURLWithPath: metadata.url), true, .success)
+                completition(URL(fileURLWithPath: metadata.url), .success)
             } else {
-                completition(URL(string: metadata.url), true, .success)
+                completition(URL(string: metadata.url), .success)
             }
         } else if utilityFileSystem.fileProviderStorageExists(metadata) {
-            completition(URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)), false, .success)
+            completition(URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileNameView, userId: metadata.userId, urlBase: metadata.urlBase)), .success)
         } else {
             NextcloudKit.shared.getDirectDownload(fileId: metadata.fileId, account: metadata.account) { task in
                 Task {
@@ -557,12 +557,12 @@ extension NCNetworking {
             } completion: { _, url, _, error in
                 if error == .success && url != nil {
                     if let url = URL(string: url!) {
-                        completition(url, false, error)
+                        completition(url, error)
                     } else {
-                        completition(nil, false, error)
+                        completition(nil, error)
                     }
                 } else {
-                    completition(nil, false, error)
+                    completition(nil, error)
                 }
             }
         }

@@ -74,11 +74,20 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
                 if metadata.isImage || metadata.isAudioOrVideo {
                     let metadatas = self.dataSource.getMetadatas()
-                    let ocIds = metadatas.filter { $0.classFile == NKTypeClassFile.image.rawValue ||
-                        $0.classFile == NKTypeClassFile.video.rawValue ||
-                        $0.classFile == NKTypeClassFile.audio.rawValue }.map(\.ocId)
-
-                    if let vc = await NCViewer().getViewerController(metadata: metadata, ocIds: withOcIds ? ocIds : nil, image: image, delegate: self) {
+                    
+                    let siblingMedia: [tableMetadata]
+                    let siblingMetadatasOcIds: [String]
+                    if self.layoutKey == NCGlobal.shared.layoutViewFiles {
+                        siblingMedia = metadatas.filter { $0.classFile == metadata.classFile }
+                        siblingMetadatasOcIds = siblingMedia.map(\.ocId)
+                    } else {
+                        siblingMedia = [metadata]
+                        siblingMetadatasOcIds = metadatas.filter { $0.classFile == NKTypeClassFile.image.rawValue ||
+                            $0.classFile == NKTypeClassFile.video.rawValue ||
+                            $0.classFile == NKTypeClassFile.audio.rawValue }.map(\.ocId)
+                    }
+                    
+                    if let vc = await NCViewer().getViewerController(metadata: metadata, ocIds: withOcIds ? siblingMetadatasOcIds : nil, siblingMedia: siblingMedia, image: image, delegate: self) {
                         self.navigationController?.pushViewController(vc, animated: true)
                     }
                 } else if !metadata.isDirectoryE2EE, metadata.isAvailableEditorView || utilityFileSystem.fileProviderStorageExists(metadata) || metadata.name == self.global.talkName {

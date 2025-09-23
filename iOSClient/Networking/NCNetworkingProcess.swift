@@ -571,7 +571,7 @@ actor NCNetworkingProcess {
 
                     NCImageCache.shared.removeImageCache(ocIdPlusEtag: metadata.ocId + metadata.etag)
 
-                    await database.deleteVideoAsync(metadata.ocId)
+                    await database.deleteVideoOrAudioAsync(metadata.ocId)
                     if !metadata.livePhotoFile.isEmpty {
                         await database.deleteMetadataAsync(id: metadata.livePhotoFile)
                     }
