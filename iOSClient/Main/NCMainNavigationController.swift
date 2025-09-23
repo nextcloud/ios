@@ -126,48 +126,46 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }), for: .touchUpInside)
 
         // PLUS BUTTON ONLY IN FILES
-        if topViewController is NCFiles {
-            let widthAnchor: CGFloat
-            let trailingAnchor: CGFloat
-            let trailingAnchorPad: CGFloat
+        let widthAnchor: CGFloat
+        let trailingAnchor: CGFloat
+        let trailingAnchorPad: CGFloat
 
-            if #available(iOS 26.0, *) {
-                widthAnchor = 44
-                trailingAnchor = -15
-                trailingAnchorPad = -20
-            } else {
-                let appearance = UIToolbarAppearance()
-                appearance.configureWithTransparentBackground()
-                appearance.backgroundColor = .clear
-                appearance.backgroundEffect = nil
-                appearance.shadowColor = .clear
+        if #available(iOS 26.0, *) {
+            widthAnchor = 44
+            trailingAnchor = -15
+            trailingAnchorPad = -20
+        } else {
+            let appearance = UIToolbarAppearance()
+            appearance.configureWithTransparentBackground()
+            appearance.backgroundColor = .clear
+            appearance.backgroundEffect = nil
+            appearance.shadowColor = .clear
 
-                menuToolbar.standardAppearance = appearance
-                menuToolbar.compactAppearance  = appearance
-                menuToolbar.scrollEdgeAppearance = appearance
-                menuToolbar.isTranslucent = true
+            menuToolbar.standardAppearance = appearance
+            menuToolbar.compactAppearance  = appearance
+            menuToolbar.scrollEdgeAppearance = appearance
+            menuToolbar.isTranslucent = true
 
-                widthAnchor = 100
-                trailingAnchor = 28
-                trailingAnchorPad = -10
-            }
+            widthAnchor = 100
+            trailingAnchor = 28
+            trailingAnchorPad = -10
+        }
 
-            view.addSubview(menuToolbar)
-            menuToolbar.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(menuToolbar)
+        menuToolbar.translatesAutoresizingMaskIntoConstraints = false
 
-            if UIDevice.current.userInterfaceIdiom == .pad {
-                NSLayoutConstraint.activate([
-                    menuToolbar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: trailingAnchorPad),
-                    menuToolbar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
-                    menuToolbar.widthAnchor.constraint(equalToConstant: widthAnchor)
-                ])
-            } else {
-                NSLayoutConstraint.activate([
-                    menuToolbar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: trailingAnchor),
-                    menuToolbar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
-                    menuToolbar.widthAnchor.constraint(equalToConstant: widthAnchor)
-                ])
-            }
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            NSLayoutConstraint.activate([
+                menuToolbar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: trailingAnchorPad),
+                menuToolbar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+                menuToolbar.widthAnchor.constraint(equalToConstant: widthAnchor)
+            ])
+        } else {
+            NSLayoutConstraint.activate([
+                menuToolbar.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: trailingAnchor),
+                menuToolbar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
+                menuToolbar.widthAnchor.constraint(equalToConstant: widthAnchor)
+            ])
         }
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterServerDidUpdate), object: nil, queue: nil) { notification in
@@ -218,20 +216,14 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
         Task { @MainActor in
             // PLUS BUTTON
-            if let fromVC = navigationController.transitionCoordinator?.viewController(forKey: .from) {
-                if !navigationController.viewControllers.contains(fromVC) {
-                    if !(fromVC is NCFiles) {
-                        isHiddenPlusButton(false)
-                    }
+            if !(viewController is NCFiles) {
+                if #available(iOS 26.0, *) {
+                    hiddenPlusButton(true)
                 } else {
-                    if !(viewController is NCFiles) {
-                        if #available(iOS 26.0, *) {
-                            isHiddenPlusButton(true)
-                        } else {
-                            isHiddenPlusButton(true, animation: false)
-                        }
-                    }
+                    hiddenPlusButton(true, animation: false)
                 }
+            } else {
+                hiddenPlusButton(false)
             }
             // MENU
             setNavigationBarAppearance()
@@ -471,12 +463,15 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             menuToolbar.setItems([plusItem], animated: false)
             menuToolbar.sizeToFit()
 
-            isHiddenPlusButton(false)
+            hiddenPlusButton(false)
         }
     }
 
-    func isHiddenPlusButton(_ isHidden: Bool, animation: Bool = true) {
+    func hiddenPlusButton(_ isHidden: Bool, animation: Bool = true) {
         if isHidden {
+            if self.menuToolbar.alpha == 0 {
+                return
+            }
             if animation {
                 UIView.animate(withDuration: 0.5, delay: 0.0, options: [], animations: {
                     self.menuToolbar.transform = CGAffineTransform(translationX: 100, y: 0)
@@ -486,6 +481,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 self.menuToolbar.alpha = 0
             }
         } else {
+            if self.menuToolbar.alpha == 1 {
+                return
+            }
             if animation {
                 self.menuToolbar.transform = CGAffineTransform(translationX: 100, y: 0)
                 self.menuToolbar.alpha = 0
