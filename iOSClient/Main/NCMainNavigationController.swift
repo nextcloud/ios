@@ -233,7 +233,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
     // MARK: - PLUS
 
-    func createPlusMenu(session: NCSession.Session, capabilities: NKCapabilities.Capabilities) {
+    func createPlusMenu(session: NCSession.Session, capabilities: NKCapabilities.Capabilities, isHidden: Bool = false) {
         var menuActionElement: [UIMenuElement] = []
         var menuE2EEElement: [UIMenuElement] = []
         var menuTextElement: [UIMenuElement] = []
@@ -455,23 +455,19 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
         if let plusItem = menuToolbar.items?.first {
             plusItem.menu = plusMenu
-            menuToolbar.alpha = 1
         } else {
             let plusItem = UIBarButtonItem(image: plusImage, style: .plain, target: nil, action: nil)
             plusItem.tintColor = NCBrandColor.shared.customer
             plusItem.menu = plusMenu
             menuToolbar.setItems([plusItem], animated: false)
             menuToolbar.sizeToFit()
-
-            hiddenPlusButton(false)
+            isHidden ? (menuToolbar.alpha = 0) : (menuToolbar.alpha = 1)
         }
     }
 
     func hiddenPlusButton(_ isHidden: Bool, animation: Bool = true) {
         if isHidden {
-            if self.menuToolbar.alpha == 0 {
-                return
-            }
+            guard self.menuToolbar.alpha != 0 else { return }
             if animation {
                 UIView.animate(withDuration: 0.5, delay: 0.0, options: [], animations: {
                     self.menuToolbar.transform = CGAffineTransform(translationX: 100, y: 0)
@@ -481,9 +477,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 self.menuToolbar.alpha = 0
             }
         } else {
-            if self.menuToolbar.alpha == 1 {
-                return
-            }
+            guard self.menuToolbar.alpha != 1 else { return }
             if animation {
                 self.menuToolbar.transform = CGAffineTransform(translationX: 100, y: 0)
                 self.menuToolbar.alpha = 0

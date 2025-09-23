@@ -63,6 +63,10 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         self.tabBarController as? NCMainTabBarController
     }
 
+    var mainNavigationController: NCMainNavigationController? {
+        self.navigationController as? NCMainNavigationController
+    }
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -85,6 +89,11 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
+        Task {
+            let capabilities = await database.getCapabilities(account: self.session.account) ?? NKCapabilities.Capabilities()
+            mainNavigationController?.createPlusMenu(session: self.session, capabilities: capabilities, isHidden: true)
+        }
 
         loadItems()
         tableView.reloadData()
