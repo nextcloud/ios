@@ -283,7 +283,7 @@ actor NCNetworkingProcess {
                             hud.dismiss()
                         }
 
-                        httpMaximumConnectionsPerHostInUpload = 1
+                        httpMaximumProcessUpload = 1
                     } else {
                         await networking.uploadFileInBackground(metadata: metadata)
                     }
