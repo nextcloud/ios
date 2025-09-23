@@ -467,13 +467,12 @@ class NCContextMenu: NSObject {
                                     image: iconImage
                                 ) { _ in
                                     Task {
-                                        await NextcloudKit.shared.sendRequestAsync(
-                                            url: item.url,
-                                            method: item.method,
-                                            userAgent: userAgent,
-                                            params: item.params,
-                                            bodyParams: item.bodyParams
-                                        )
+                                        await NextcloudKit.shared.sendRequestAsync(account: metadata.account,
+                                                                                   fileId: metadata.fileId,
+                                                                                   filePath: metadata.path,
+                                                                                   url: item.url,
+                                                                                   method: item.method,
+                                                                                   params: item.params)
                                     }
                                 }
 

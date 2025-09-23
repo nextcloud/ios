@@ -419,7 +419,7 @@ extension NCCollectionViewCommon {
                             iconImage = utility.loadImage(named: "testtube.2", colors: [NCBrandColor.shared.presentationIconColor])
                         }
 
-                            actions.append(
+                        actions.append(
                             NCMenuAction(
                                 title: item.name,
                                 icon: iconImage,
@@ -427,11 +427,12 @@ extension NCCollectionViewCommon {
                                 sender: sender,
                                 action: { _ in
                                     Task {
-                                        await NextcloudKit.shared.sendRequestAsync(url: item.url,
+                                        await NextcloudKit.shared.sendRequestAsync(account: metadata.account,
+                                                                                   fileId: metadata.fileId,
+                                                                                   filePath: metadata.path,
+                                                                                   url: item.url,
                                                                                    method: item.method,
-                                                                                   userAgent: userAgent,
-                                                                                   params: item.params,
-                                                                                   bodyParams: item.bodyParams)
+                                                                                   params: item.params)
                                     }
                                 }
                             )
@@ -441,10 +442,10 @@ extension NCCollectionViewCommon {
             }
         }
 
-//        capabilities.declarativeUI?.contextMenu.forEach { item in
-//                   actions.append(
-//                       NCMenuAction(
-//                           title: item.title,
+        //        capabilities.declarativeUI?.contextMenu.forEach { item in
+        //                   actions.append(
+        //                       NCMenuAction(
+        //                           title: item.title,
 //                           icon: utility.loadImage(named: "testtube.2", colors: [NCBrandColor.shared.presentationIconColor]),
 //                           order: Int.max,
 //                           sender: sender,
