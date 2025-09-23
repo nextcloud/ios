@@ -493,21 +493,7 @@ extension NCViewerMediaPage: NCTransferDelegate {
                 }
                 self.progressView.progress = 0
 
-                if metadata.isAudioOrVideo, let ncplayer = self.currentViewController.ncplayer {
-                    let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
-                                                                                                          fileName: metadata.fileNameView,
-                                                                                                          userId: metadata.userId,
-                                                                                                          urlBase: metadata.urlBase))
-                    if ncplayer.isPlaying() {
-                        ncplayer.playerPause()
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                            ncplayer.openAVPlayer(url: url)
-                            ncplayer.playerPlay()
-                        }
-                    } else {
-                        ncplayer.openAVPlayer(url: url)
-                    }
-                } else if metadata.isImage {
+                if metadata.isImage {
                     self.currentViewController.loadImage()
                 }
                 // UPLOAD

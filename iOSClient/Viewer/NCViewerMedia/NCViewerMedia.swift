@@ -757,7 +757,7 @@ extension NCViewerMedia: NCMediaCoordinatorDelegate {
                                       handler: { [weak self] _ in
             guard let self = self else { return }
             self.playerToolBar?.removeFromSuperview()
-            self.viewerMediaPage?.viewUnload()
+            self.viewerMediaPage?.navigationController?.popViewController(animated: true)
             self.mediaCoordinator.finishMediaSession()
         }))
         
