@@ -53,6 +53,9 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
         self.serverUrl = serverUrl
         self.controller = controller
 
+        self.useAutoUploadFolder = NCPreferences().getUploadUseAutoUploadFolder(account: session.account)
+        self.useAutoUploadSubFolder = NCPreferences().getUploadUseAutoUploadSubFolder(account: session.account)
+
         for asset in self.assets {
             var uti: String?
 
