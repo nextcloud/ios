@@ -20,9 +20,9 @@ actor NCNetworkingProcess {
 
     private var timer: DispatchSourceTimer?
     private let timerQueue = DispatchQueue(label: "com.nextcloud.timerProcess", qos: .utility)
-    private var lastUsedInterval: TimeInterval = 3
-    private let maxInterval: TimeInterval = 3
-    private let minInterval: TimeInterval = 1.5
+    private var lastUsedInterval: TimeInterval = 4
+    private let maxInterval: TimeInterval = 4
+    private let minInterval: TimeInterval = 2
 
     private init() {
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayerIsPlaying), object: nil, queue: nil) { [weak self] _ in
@@ -257,7 +257,7 @@ actor NCNetworkingProcess {
                     if metadata.isDirectoryE2EE {
                         await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: controller)
 
-                        httpMaximumConnectionsPerHostInUpload = 1
+                        httpMaximumProcessUpload = 1
                     } else if metadata.chunk > 0 {
                         let controller = controller
 
@@ -283,7 +283,7 @@ actor NCNetworkingProcess {
                             hud.dismiss()
                         }
 
-                        httpMaximumConnectionsPerHostInUpload = 1
+                        httpMaximumProcessUpload = 1
                     } else {
                         await networking.uploadFileInBackground(metadata: metadata)
                     }
