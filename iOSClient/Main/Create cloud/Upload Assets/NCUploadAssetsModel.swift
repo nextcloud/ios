@@ -34,6 +34,8 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
     @Published var uploadInProgress = false
     // Root View Controller
     @Published var controller: NCMainTabBarController?
+    // Keychain access
+    var keychain = NCPreferences()
     // Session
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
@@ -53,8 +55,8 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
         self.serverUrl = serverUrl
         self.controller = controller
 
-        self.useAutoUploadFolder = NCPreferences().getUploadUseAutoUploadFolder(account: session.account)
-        self.useAutoUploadSubFolder = NCPreferences().getUploadUseAutoUploadSubFolder(account: session.account)
+        self.useAutoUploadFolder = keychain.getUploadUseAutoUploadFolder(account: session.account)
+        self.useAutoUploadSubFolder = keychain.getUploadUseAutoUploadSubFolder(account: session.account)
 
         for asset in self.assets {
             var uti: String?
@@ -76,6 +78,14 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
         }
 
         self.hiddenSave = false
+    }
+
+    func updateUseAutoUploadFolder() {
+        keychain.setUploadUseAutoUploadFolder(account: session.account, value: useAutoUploadFolder)
+    }
+
+    func updateUseAutoUploadSubFolder() {
+        keychain.setUploadUseAutoUploadSubFolder(account: session.account, value: useAutoUploadSubFolder)
     }
 
     func getTextServerUrl() -> String {
