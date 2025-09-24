@@ -230,27 +230,22 @@ class NCViewerMedia: UIViewController {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
-        let wasShown = detailView.isShown
+        let wasShownDetail = detailView.isShown
 
         if UIDevice.current.orientation.isValidInterfaceOrientation {
-
-            if wasShown { closeDetail(animate: false) }
-            dismissTip()
-            if metadata.isVideo {
-                self.imageVideoContainer.isHidden = true
+            if wasShownDetail {
+                closeDetail(animate: false)
             }
+            dismissTip()
 
             coordinator.animate(alongsideTransition: { _ in
                 // back to the original size
-                self.scrollView.zoom(to: CGRect(x: 0, y: 0, width: self.scrollView.bounds.width, height: self.scrollView.bounds.height), animated: false)
-                self.view.layoutIfNeeded()
-            }, completion: { _ in
-                if self.metadata.isVideo {
-                    self.imageVideoContainer.isHidden = false
-                } else if self.metadata.isImage {
-                    self.showTip()
+                if self.scrollView.zoomScale != self.scrollView.minimumZoomScale {
+                    self.scrollView.zoom(to: CGRect(x: 0, y: 0, width: self.scrollView.bounds.width, height: self.scrollView.bounds.height), animated: false)
+                    self.view.layoutIfNeeded()
                 }
-                if wasShown {
+            }, completion: { _ in
+                if wasShownDetail {
                     self.openDetail(animate: true)
                 }
             })
