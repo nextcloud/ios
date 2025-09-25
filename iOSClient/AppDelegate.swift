@@ -247,7 +247,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let predicateDownload = NSPredicate(format: "status == %d", self.global.metadataStatusWaitDownload)
         let metadatasWaitDownlod = await NCManageDatabase.shared.getMetadatasAsync(predicate: predicateDownload,
                                                                                    withSort: sortDescriptors,
-                                                                                   withLimit: NCBrandOptions.shared.httpMaximumProcessDownload)
+                                                                                   withLimit: NCBrandOptions.shared.numMaximumProcess)
 
         if let metadatasWaitDownlod,
            !metadatasWaitDownlod.isEmpty,
@@ -266,7 +266,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
 
-        if numTransfers >= NCBrandOptions.shared.httpMaximumProcessDownload || expiration {
+        if numTransfers >= NCBrandOptions.shared.numMaximumProcess || expiration {
             return numTransfers
         }
 
@@ -279,7 +279,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // CREATION FOLDERS
         let predicateCreateFolder = NSPredicate(format: "status == %d AND sessionSelector == %@", self.global.metadataStatusWaitCreateFolder, self.global.selectorUploadAutoUpload)
         let metadatasWaitCreateFolder = await NCManageDatabase.shared.getMetadatasAsync(predicate: predicateCreateFolder,
-                                                                                        withLimit: NCBrandOptions.shared.httpMaximumProcess) ?? []
+                                                                                        withLimit: NCBrandOptions.shared.numMaximumProcess) ?? []
 
         for metadata in metadatasWaitCreateFolder {
             guard !expiration else { return numTransfers }
@@ -294,7 +294,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let predicateUpload = NSPredicate(format: "status == %d AND sessionSelector == %@ AND chunk == 0", self.global.metadataStatusWaitUpload, self.global.selectorUploadAutoUpload)
         let metadatasWaitUpload = await NCManageDatabase.shared.getMetadatasAsync(predicate: predicateUpload,
                                                                                   withSort: sortDescriptors,
-                                                                                  withLimit: NCBrandOptions.shared.httpMaximumProcessUpload)
+                                                                                  withLimit: NCBrandOptions.shared.numMaximumProcess)
 
         if let metadatasWaitUpload,
            !metadatasWaitUpload.isEmpty,

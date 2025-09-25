@@ -462,6 +462,17 @@ extension NCManageDatabase {
         }
     }
 
+    func replaceMetadataAsync(id: String, metadata: tableMetadata) async {
+        let detached = metadata.detachedCopy()
+
+        await performRealmWriteAsync { realm in
+            let result = realm.objects(tableMetadata.self)
+                .filter("ocId == %@ OR ocIdTransfer == %@", id, id)
+            realm.delete(result)
+            realm.add(detached, update: .all)
+        }
+    }
+
     // Asynchronously deletes an array of `tableMetadata` entries from the Realm database.
     /// - Parameter metadatas: The `tableMetadata` objects to be deleted.
     func deleteMetadatasAsync(_ metadatas: [tableMetadata]) async {
