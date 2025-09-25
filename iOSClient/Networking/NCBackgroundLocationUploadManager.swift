@@ -118,9 +118,7 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
 
             Task.detached {
                 if let tblAccount = await self.database.getActiveTableAccountAsync() {
-                    let numTransfers = await appDelegate.backgroundSync(tblAccount: tblAccount)
-
-                    nkLog(tag: self.global.logTagLocation, emoji: .success, message: "Triggered by location completed with \(numTransfers) transfers")
+                    await appDelegate.backgroundSync(tblAccount: tblAccount)
                 }
             }
         }
