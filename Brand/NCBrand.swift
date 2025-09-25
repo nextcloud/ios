@@ -76,7 +76,7 @@ final class NCBrandOptions: @unchecked Sendable {
     let httpMaximumConnectionsPerHostInUpload: Int = 8
 
     // Max request/download/upload process
-    let numMaximumProcess: Int = 100
+    let numMaximumProcess: Int = 50
 
     // Number of failed attempts after reset app
     let resetAppPasscodeAttempts: Int = 10
