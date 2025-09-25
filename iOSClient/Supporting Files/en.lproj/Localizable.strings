@@ -656,6 +656,7 @@
 "_tip_open_mediadetail_"    = "Swipe up to show the details";
 "_tip_autoupload_button_"   = "Configure the options as you prefer (folder, Wi-Fi, new content, subfolders) and tap ‘Turn on auto uploading’.
 You can stop it at any time, adjust the settings, and enable it again.";
+"_in_folder_"               = "In folder";
 
 // MARK: Accessibility
 
