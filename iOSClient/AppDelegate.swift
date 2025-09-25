@@ -202,7 +202,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
 
             await backgroundSync(tblAccount: tblAccount, task: task)
-            //nkLog(tag: self.global.logTagTask, emoji: .success, message: "Refresh task completed with \(numTransfers) transfers")
         }
     }
 
