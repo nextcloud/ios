@@ -38,7 +38,7 @@ enum NCPlayerState: Equatable {
         default: return false
         }
     }
-    
+
     case stopped
     case opening
     case buffering
@@ -65,9 +65,9 @@ enum NCPlayerState: Equatable {
 }
 
 class NCMediaCoordinator: NSObject {
-    
+
     static let secondsIn5Minutes: Int = 300
-    
+
     private var player: VLCMediaPlayer?
     private var dialogProvider: VLCDialogProvider?
     private let database = NCManageDatabase.shared
@@ -75,18 +75,18 @@ class NCMediaCoordinator: NSObject {
     private let global = NCGlobal.shared
     private let utilityFileSystem = NCUtilityFileSystem()
     private let networking = NCNetworking.shared
-    
+
     static let shared = NCMediaCoordinator()
-    
+
     // MARK: - Delegate
     weak var delegate: NCMediaCoordinatorDelegate?
-    
+
     // MARK: - Command Center Properties
     private var playCommand: Any?
     private var pauseCommand: Any?
     private var previousTrackCommand: Any?
     private var nextTrackCommand: Any?
-    
+
     private var media: VLCMedia?
     var url: URL? {
         didSet {
@@ -98,35 +98,35 @@ class NCMediaCoordinator: NSObject {
             }
         }
     }
-    
+
     // MARK: - Publishers
     private let metadataSwitchSubject = PassthroughSubject<(old: tableMetadata?, new: tableMetadata?), Never>()
     private let fileNameSubject = PassthroughSubject<String, Never>()
     private let positionSubject = PassthroughSubject<Float, Never>()
     private let isPlayingSubject = PassthroughSubject<Bool, Never>()
     private let stateSubject = PassthroughSubject<NCPlayerState, Never>()
-    
+
     // MARK: - Public Publishers
     var metadataSwitchPublisher: AnyPublisher<(old: tableMetadata?, new: tableMetadata?), Never> {
         metadataSwitchSubject.eraseToAnyPublisher()
     }
-    
+
     var fileNamePublisher: AnyPublisher<String, Never> {
         fileNameSubject.eraseToAnyPublisher()
     }
-    
+
     var positionPublisher: AnyPublisher<Float, Never> {
         positionSubject.eraseToAnyPublisher()
     }
-    
+
     var isPlayingPublisher: AnyPublisher<Bool, Never> {
         isPlayingSubject.eraseToAnyPublisher()
     }
-    
+
     var statePublisher: AnyPublisher<NCPlayerState, Never> {
         stateSubject.eraseToAnyPublisher()
     }
-    
+
     var currentItemIndex: Int? {
         guard let item else {
             return nil
@@ -151,19 +151,19 @@ class NCMediaCoordinator: NSObject {
             updateNowPlayingImage(coverImage)
         }
     }
-    
+
     var playRepeat: Bool = false
-    
+
     var fileName: String {
         item?.fileName ?? ""
     }
-    
+
     weak var videoOutputView: UIView? {
         didSet {
             player?.drawable = videoOutputView
         }
     }
-    
+
     var position: Float {
         get {
             return player?.position ?? 0
@@ -173,21 +173,21 @@ class NCMediaCoordinator: NSObject {
             positionSubject.send(newValue)
         }
     }
-    
+
     var length: Float {
         return Float(player?.media?.length.intValue ?? 0)
     }
-    
+
     var isPlaying: Bool {
         return player?.isPlaying ?? false
     }
-    
+
     private(set) var state: NCPlayerState = .stopped {
         didSet {
             stateSubject.send(state)
         }
     }
-    
+
     var currentAudioTrackIndex: Int32 {
         get { return player?.currentAudioTrackIndex ?? 0 }
         set { player?.currentTitleIndex = newValue }
@@ -197,50 +197,50 @@ class NCMediaCoordinator: NSObject {
         get { return player?.currentVideoSubTitleIndex ?? 0 }
         set { player?.currentVideoSubTitleIndex = newValue }
     }
-    
+
     var time: VLCTime {
-        get { return player?.time ?? VLCTime() }
+        return player?.time ?? VLCTime()
     }
 
     var videoSubTitlesNames: [Any] {
-        get { return player?.videoSubTitlesNames ?? [] }
+        return player?.videoSubTitlesNames ?? []
     }
 
     var videoSubTitlesIndexes: [Any] {
-        get { return player?.videoSubTitlesIndexes ?? [] }
+        return player?.videoSubTitlesIndexes ?? []
     }
 
     var audioTrackNames: [Any] {
-        get { return player?.audioTrackNames ?? [] }
+        return player?.audioTrackNames ?? []
     }
 
     var audioTrackIndexes: [Any] {
-        get { return player?.audioTrackIndexes ?? [] }
+        return player?.audioTrackIndexes ?? []
     }
 
     var remainingTime: VLCTime? {
-        get { return player?.remainingTime }
+        return player?.remainingTime
     }
 
     var videoSize: CGSize {
-        get { return player?.videoSize ?? .zero }
+        return player?.videoSize ?? .zero
     }
-    
+
     private override init() {
         super.init()
     }
-    
+
     func setUpDialogProvider() {
         guard dialogProvider == nil else { return }
         dialogProvider = VLCDialogProvider(library: VLCLibrary.shared(), customUI: true)
         dialogProvider?.customRenderer = self
     }
-    
+
     func stop() {
         savePosition()
         player?.stop()
     }
-    
+
     func play(restart: Bool = false) {
         guard !isPlayerInErrorState() else {
             if let item = item {
@@ -250,27 +250,27 @@ class NCMediaCoordinator: NSObject {
         }
         guard let player, currentMediaIsInPlayer() && !restart else {
             stop()
-            
+
             setUpDialogProvider()
-            
+
             player = VLCMediaPlayer()
             player?.drawable = videoOutputView
             player?.media = media
             player?.delegate = self
-            
+
             var position: Float = 0
             if let result = self.database.getVideoOrAudio(metadata: item),
                 let resultPosition = result.position {
                 position = resultPosition
             }
-            
+
             player?.play()
             player?.position = position
             return
         }
         player.play()
     }
-    
+
     func play(item: tableMetadata) {
         if (self.item?.ocId == item.ocId) && !isPlayerInErrorState() {
             play()
@@ -280,19 +280,19 @@ class NCMediaCoordinator: NSObject {
             prepareAndStartPlayback(for: item)
         }
     }
-    
+
     private func isPlayerInErrorState() -> Bool {
         switch state {
-        case .error(_): return true
+        case .error: return true
         default: return false
         }
     }
-    
+
     func pause() {
         savePosition()
         player?.pause()
     }
-    
+
     func jumpForward(_ seconds: Int32) {
         player?.play()
         player?.jumpForward(seconds)
@@ -302,14 +302,14 @@ class NCMediaCoordinator: NSObject {
         player?.play()
         player?.jumpBackward(seconds)
     }
-    
+
     func savePosition() {
         guard let metadata = self.item, let media = self.media else { return }
         guard currentMediaIsInPlayer() else { return }
         guard media.lengthInSeconds > Self.secondsIn5Minutes else { return }
         self.database.addVideoOrAudio(metadata: metadata, position: position)
     }
-    
+
     private func resetSavedPosition() {
         guard let metadata = self.item, currentMediaIsInPlayer() else { return }
         self.database.addVideoOrAudio(metadata: metadata, position: 0)
@@ -351,12 +351,12 @@ class NCMediaCoordinator: NSObject {
             }
         }
     }
-    
+
     func cancelDownload() {
         downloadRequest?.cancel()
         downloadRequest = nil
     }
-    
+
     private func onReceived(playbackURL url: URL, metadata: tableMetadata) {
         guard self.item?.ocId == metadata.ocId else { return }
         self.url = url
@@ -377,7 +377,7 @@ class NCMediaCoordinator: NSObject {
     var needToRestartOnRewindAfterPlayedSeconds: Int = 5
     func rewind() {
         guard let item else { return }
-        if (time.intValue/1000) > needToRestartOnRewindAfterPlayedSeconds {
+        if time.intValue / 1000 > needToRestartOnRewindAfterPlayedSeconds {
             self.database.addVideoOrAudio(metadata: item, position: 0)
             position = 0
             return
@@ -392,7 +392,7 @@ class NCMediaCoordinator: NSObject {
         let prevMetadata = items[prevItemIndex]
         play(item: prevMetadata)
     }
-    
+
     func finishMediaSession(clearQueue: Bool = true) {
         savePosition()
         player?.stop()
@@ -408,9 +408,9 @@ class NCMediaCoordinator: NSObject {
         clearNowPlaying()
         dialogProvider = nil
     }
-    
+
     // MARK: - Command Center
-    
+
     private func setNowPlayingInfo() {
         var nowPlayingInfo = [String: Any]()
 
@@ -467,25 +467,25 @@ class NCMediaCoordinator: NSObject {
 
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
     }
-    
+
     private func updateNowPlayingTime() {
         var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [:]
-        
+
         let length = self.length / 1000
         let positionInSecond = position * length
-        
+
         nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = length
         nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = positionInSecond
-        
+
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
     }
-    
+
     private func updateNowPlayingPlaybackRate(isPlaying: Bool) {
         var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [:]
         nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = isPlaying ? 1 : 0
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nowPlayingInfo
     }
-    
+
     private func updateNowPlayingImage(_ image: UIImage) {
         var nowPlayingInfo = MPNowPlayingInfoCenter.default().nowPlayingInfo ?? [:]
         nowPlayingInfo[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: image.size) { _ in
@@ -523,7 +523,7 @@ class NCMediaCoordinator: NSObject {
 
     private func updateCoverImage() {
         guard let item else { return }
-        
+
         if item.isVideo && !item.hasPreview {
             utility.createImageFileFrom(metadata: item)
             self.coverImage = utility.getImage(ocId: item.ocId,
@@ -541,11 +541,11 @@ class NCMediaCoordinator: NSObject {
             self.coverImage = image
         }
     }
-    
+
     private func itemPlaybackEnded() {
         guard let ocId = item?.ocId,
               let endedItemIndex = items.firstIndex(where: { $0.ocId == ocId }) else { return }
-              
+
         if endedItemIndex < items.count - 1 {
             url = nil
             let nextItemIndex = items.index(after: endedItemIndex)
@@ -557,7 +557,7 @@ class NCMediaCoordinator: NSObject {
             position = 0
         }
     }
-    
+
     private func currentMediaIsInPlayer() -> Bool {
         guard let player else { return false }
         return (player.media?.compare(media) == .orderedSame)
@@ -585,7 +585,7 @@ extension NCMediaCoordinator: VLCMediaPlayerDelegate {
         default: break
         }
     }
-    
+
     func mediaPlayerTimeChanged(_ aNotification: Notification) {
         updateNowPlayingTime()
         positionSubject.send(position)

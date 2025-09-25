@@ -74,7 +74,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
                 if metadata.isImage || metadata.isAudioOrVideo {
                     let metadatas = self.dataSource.getMetadatas()
-                    
+
                     let siblingMedia: [tableMetadata]
                     let siblingMetadatasOcIds: [String]
                     if self.layoutKey == NCGlobal.shared.layoutViewFiles {
@@ -86,7 +86,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                             $0.classFile == NKTypeClassFile.video.rawValue ||
                             $0.classFile == NKTypeClassFile.audio.rawValue }.map(\.ocId)
                     }
-                    
+
                     if let vc = await NCViewer().getViewerController(metadata: metadata, ocIds: withOcIds ? siblingMetadatasOcIds : nil, siblingMedia: siblingMedia, image: image, delegate: self) {
                         self.navigationController?.pushViewController(vc, animated: true)
                     }

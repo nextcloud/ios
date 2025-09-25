@@ -162,7 +162,7 @@ class NCViewerMediaPage: UIViewController {
 
         changeScreenMode(mode: viewerMediaScreenMode)
         tabBarController?.tabBar.isHidden = true
-        
+
         FloatingPlayerViewPresenter.shared.isMediaScreenVisible = true
     }
 
@@ -176,10 +176,10 @@ class NCViewerMediaPage: UIViewController {
 
         changeScreenMode(mode: .normal)
         tabBarController?.tabBar.isHidden = false
-        
+
         FloatingPlayerViewPresenter.shared.isMediaScreenVisible = false
     }
-    
+
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
@@ -306,14 +306,14 @@ extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerD
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         guard currentIndex > 0,
               let metadata = database.getMetadataFromOcId(ocIds[currentIndex - 1]) else { return nil }
-                
+
         return getViewerMedia(index: currentIndex - 1, metadata: metadata)
     }
-    
+
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         guard currentIndex < ocIds.count - 1,
               let metadata = database.getMetadataFromOcId(ocIds[currentIndex + 1]) else { return nil }
-                
+
         return getViewerMedia(index: currentIndex + 1, metadata: metadata)
     }
 
@@ -443,12 +443,12 @@ extension UIPageViewController {
 extension NCViewerMediaPage: NCViewerMediaViewDelegate {
     func movedToAnotherItem(oldItem: tableMetadata, newItem: tableMetadata) {
         guard currentIndex < ocIds.count - 1 else { return }
-        
+
         currentIndex = NCMediaCoordinator.shared.currentItemIndex ?? 0
         let viewerMedia = getViewerMedia(index: currentIndex, metadata: newItem)
         pageViewController.setViewControllers([viewerMedia], direction: .forward, animated: false)
     }
-	
+
     func didOpenDetail() {
         changeScreenMode(mode: .normal)
         imageDetailNavigationItem.image = NCUtility().loadImage(named: "info.circle.fill")

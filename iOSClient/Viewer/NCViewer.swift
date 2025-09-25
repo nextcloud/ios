@@ -66,9 +66,9 @@ class NCViewer: NSObject {
                     mediaCoordinator.finishMediaSession()
                     mediaCoordinator.items = siblingMedia
                 }
-                
+
                 viewerMediaPageContainer.delegateViewController = delegate
-                
+
                 if let ocIds {
                     viewerMediaPageContainer.currentIndex = ocIds.firstIndex(where: { $0 == metadata.ocId }) ?? 0
                     viewerMediaPageContainer.ocIds = ocIds
@@ -76,7 +76,7 @@ class NCViewer: NSObject {
                     viewerMediaPageContainer.currentIndex = 0
                     viewerMediaPageContainer.ocIds = [metadata.ocId]
                 }
-            
+
                 return viewerMediaPageContainer
         }
 

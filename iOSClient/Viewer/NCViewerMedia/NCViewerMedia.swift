@@ -79,7 +79,7 @@ class NCViewerMedia: UIViewController {
     var sceneIdentifier: String {
         (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier ?? ""
     }
-    
+
     private var cancellables: Set<AnyCancellable> = []
 
     // MARK: - View Life Cycle
@@ -128,7 +128,7 @@ class NCViewerMedia: UIViewController {
             activityIndicator?.color = .white
             activityIndicator?.hidesWhenStopped = true
             activityIndicator?.translatesAutoresizingMaskIntoConstraints = false
-            
+
             if let activityIndicator = activityIndicator {
                 view.addSubview(activityIndicator)
                 NSLayoutConstraint.activate([
@@ -138,7 +138,7 @@ class NCViewerMedia: UIViewController {
             }
 
             mediaCoordinator.delegate = self
-            
+
             self.ncplayer = NCPlayer(imageVideoContainer: self.imageVideoContainer, playerToolBar: self.playerToolBar, metadata: self.metadata, viewerMediaPage: self.viewerMediaPage)
         }
 
@@ -173,7 +173,7 @@ class NCViewerMedia: UIViewController {
         }
 
         if metadata.isAudioOrVideo {
-            mediaCoordinator.metadataSwitchPublisher.sink { [weak self] (old, new) in
+            mediaCoordinator.metadataSwitchPublisher.sink { [weak self] old, new in
                 guard let old, let new else { return }
                 self?.playerMovedToAnotherItem(oldItem: old, newItem: new)
             }.store(in: &cancellables)
@@ -197,7 +197,7 @@ class NCViewerMedia: UIViewController {
 
         dismissTip()
     }
-    
+
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         Task {
@@ -234,7 +234,7 @@ class NCViewerMedia: UIViewController {
             })
         }
     }
-	
+
     // MARK: - Image
 
     func loadImage() {
@@ -444,10 +444,10 @@ class NCViewerMedia: UIViewController {
 extension NCViewerMedia {
     @objc func playerMovedToAnotherItem(oldItem: tableMetadata, newItem: tableMetadata) {
         guard oldItem.ocId == metadata.ocId else { return }
-        
+
 		delegate?.movedToAnotherItem(oldItem: oldItem, newItem: newItem)
 	}
-	
+
     @objc func openDetail(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary?, let ocId = userInfo["ocId"] as? String, ocId == metadata.ocId {
             allowOpeningDetails = true
@@ -538,26 +538,26 @@ extension NCViewerMedia {
             }
         }
     }
-    
+
     // MARK: - Activity Indicator
-    
+
     func startActivityIndicator() {
         activityIndicator?.startAnimating()
     }
-    
+
     func stopActivityIndicator() {
         activityIndicator?.stopAnimating()
     }
-    
+
     // MARK: - Media Coordinator Events
-    
+
     func mediaCoordinator(changedPlaybackState state: NCPlayerState) {
         if (state == .buffering) || (state == .gettingURL) {
             startActivityIndicator()
         } else {
             stopActivityIndicator()
         }
-        
+
         switch state {
         case .stopped:
             playerToolBar?.playButtonPlay()
@@ -624,9 +624,9 @@ extension NCViewerMedia {
             ncplayer?.height = Int(size.height)
             playerToolBar.updateTopToolBar()
             database.addVideoOrAudio(metadata: metadata, width: ncplayer?.width, height: ncplayer?.height, length: ncplayer?.length)
-            
+
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterPlayerIsPlaying)
-            
+
             #if DEBUG
             print("Played mode: PLAYING")
             #endif
@@ -639,7 +639,7 @@ extension NCViewerMedia {
         default: break
         }
     }
-    
+
     func mediaCoordinator(didChangePosition position: Float) {
         stopActivityIndicator()
         guard metadata.ocId == mediaCoordinator.item?.ocId else { return }
@@ -752,18 +752,18 @@ extension NCViewerMedia: NCMediaCoordinatorDelegate {
     func showError(withTitle title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
 
-        alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), 
-                                      style: .default, 
+        alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""),
+                                      style: .default,
                                       handler: { [weak self] _ in
             guard let self = self else { return }
             self.playerToolBar?.removeFromSuperview()
             self.viewerMediaPage?.navigationController?.popViewController(animated: true)
             self.mediaCoordinator.finishMediaSession()
         }))
-        
+
         self.present(alert, animated: true)
     }
-    
+
     func showAlert(alert: UIAlertController) {
         self.present(alert, animated: true)
     }

@@ -40,7 +40,7 @@ class NCPlayer: NSObject {
     internal weak var viewerMediaPage: NCViewerMediaPage?
 
     weak var imageVideoContainer: UIImageView?
-    
+
     // MARK: - View Life Cycle
 
     init(imageVideoContainer: UIImageView, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, viewerMediaPage: NCViewerMediaPage?) {
@@ -50,7 +50,7 @@ class NCPlayer: NSObject {
         self.viewerMediaPage = viewerMediaPage
 
         super.init()
-        
+
         configurePlayingUI()
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground(_:)), name: UIApplication.didEnterBackgroundNotification, object: nil)
     }
@@ -60,7 +60,7 @@ class NCPlayer: NSObject {
         NotificationCenter.default.removeObserver(self, name: UIApplication.didEnterBackgroundNotification, object: nil)
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterPlayerStoppedPlaying)
     }
-    
+
     private func configurePlayingUI() {
         self.singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
         if metadata.isVideo {
@@ -70,7 +70,7 @@ class NCPlayer: NSObject {
                 view.addGestureRecognizer(singleTapGestureRecognizer)
             }
         }
-        
+
         playerToolBar?.setBarPlayer(position: 0, ncplayer: self, metadata: metadata, viewerMediaPage: viewerMediaPage)
         playerToolBar?.playerButtonView?.isHidden = false
         if mediaCoordinator.isPlaying {
@@ -144,36 +144,35 @@ class NCPlayer: NSObject {
     func jumpBackward(_ seconds: Int32) {
         mediaCoordinator.jumpBackward(seconds)
     }
-    
+
     var videoSubTitlesNames: [Any] {
         mediaCoordinator.videoSubTitlesNames
     }
-    
+
     var videoSubTitlesIndexes: [Any] {
         mediaCoordinator.videoSubTitlesIndexes
     }
-    
+
     var currentVideoSubTitleIndex: Int32 {
         get { mediaCoordinator.currentVideoSubTitleIndex }
         set { mediaCoordinator.currentVideoSubTitleIndex = newValue }
     }
-    
+
     var audioTrackNames: [Any] {
         mediaCoordinator.audioTrackNames
     }
-    
+
     var audioTrackIndexes: [Any] {
         mediaCoordinator.audioTrackIndexes
     }
-    
+
     var currentAudioTrackIndex: Int32 {
         get { mediaCoordinator.currentAudioTrackIndex }
         set { mediaCoordinator.currentAudioTrackIndex = newValue }
     }
-    
+
     @discardableResult
     func addPlaybackSlave(_ slaveURL: URL, type slaveType: VLCMediaPlaybackSlaveType, enforce enforceSelection: Bool) -> Int32 {
         mediaCoordinator.addPlaybackSlave(slaveURL, type: slaveType, enforce: enforceSelection)
     }
 }
-

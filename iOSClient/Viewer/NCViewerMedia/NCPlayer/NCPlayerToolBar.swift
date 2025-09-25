@@ -46,7 +46,7 @@ class NCPlayerToolBar: UIView {
     @IBOutlet weak var repeatButton: UIButton!
 
     private var mediaCoordinator = NCMediaCoordinator.shared
-    
+
     enum sliderEventType {
         case began
         case ended
@@ -299,7 +299,7 @@ class NCPlayerToolBar: UIView {
         playRepeat.toggle()
         updateRepeatButtonImage()
     }
-    
+
     private func updateRepeatButtonImage() {
         if playRepeat {
             repeatButton.setImage(utility.loadImage(named: "repeat", colors: [.white]), for: .normal)

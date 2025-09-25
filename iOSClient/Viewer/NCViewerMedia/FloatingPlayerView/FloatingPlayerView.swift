@@ -15,7 +15,7 @@ struct FloatingPlayerView: View {
     @State private var dragOffset: CGSize = .zero
     @State private var isDragging: Bool = false
     private let cornerRadius: CGFloat = 10
-    
+
     var body: some View {
         Group {
             if isCompact {
@@ -44,13 +44,13 @@ struct FloatingPlayerView: View {
                 }
         )
     }
-    
+
     private var compactPlayerView: some View {
         ZStack {
             Circle()
                 .foregroundStyle(.gray)
                 .brightness(0.25)
-            
+
             Image(systemName: viewModel.isPlaying ? "pause.fill" : "play.fill")
                 .font(.title)
                 .foregroundStyle(.black)
@@ -61,20 +61,20 @@ struct FloatingPlayerView: View {
             presenter.updateSize(isCompact)
         }
     }
-    
+
     private var expandedPlayerView: some View {
         ZStack {
             RoundedRectangle(cornerRadius: cornerRadius)
                 .foregroundStyle(.gray)
                 .brightness(0.25)
-            
+
             VStack(spacing: 8) {
                 Text(viewModel.fileName)
                     .font(.title3.bold())
                     .lineLimit(1)
-                
+
                 Spacer()
-                
+
                 HStack(spacing: 20) {
                     Image(systemName: "arrow.down.right.and.arrow.up.left")
                         .bold()
@@ -88,32 +88,32 @@ struct FloatingPlayerView: View {
                             isCompact = true
                             presenter.updateSize(isCompact)
                         }
-                    
+
                     Spacer()
-                    
+
                     Button {
                         viewModel.rewind()
                     } label: {
                         Image(systemName: "backward.fill")
                     }
                     .frame(width: 44, height: 44)
-                    
+
                     Button {
                         viewModel.isPlaying ? viewModel.pause() : viewModel.play()
                     } label: {
                         Image(systemName: viewModel.isPlaying ? "pause.fill" : "play.fill")
                     }
                     .frame(width: 44, height: 44)
-                    
+
                     Button {
                         viewModel.forward()
                     } label: {
                         Image(systemName: "forward.fill")
                     }
                     .frame(width: 44, height: 44)
-                    
+
                     Spacer()
-                    
+
                     Button {
                         viewModel.closePlayer()
                     } label: {
