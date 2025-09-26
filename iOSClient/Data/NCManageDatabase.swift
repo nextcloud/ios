@@ -62,7 +62,7 @@ final class NCManageDatabase: @unchecked Sendable {
         do {
             let realm = try Realm()
             if let url = realm.configuration.fileURL {
-                nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .start, message: "Realm is located at: \(url.path)")
+                nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .start, message: "Realm is located at: \(url.path)", consoleOnly: true)
             }
         } catch let error {
             nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm open failed: \(error)")
@@ -84,7 +84,7 @@ final class NCManageDatabase: @unchecked Sendable {
             do {
                 let realm = try Realm()
                 if let url = realm.configuration.fileURL {
-                    nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .start, message: "Realm is located at: \(url.path)")
+                    nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .start, message: "Realm is located at: \(url.path)", consoleOnly: true)
                 }
             } catch {
                 nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm error: \(error)")
@@ -148,7 +148,7 @@ final class NCManageDatabase: @unchecked Sendable {
         do {
             let realm = try Realm()
             if let url = realm.configuration.fileURL {
-                nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .start, message: "Realm is located at: \(url.path)")
+                nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .start, message: "Realm is located at: \(url.path)", consoleOnly: true)
             }
             return true
         } catch {
@@ -187,7 +187,7 @@ final class NCManageDatabase: @unchecked Sendable {
                 Realm.Configuration.defaultConfiguration = configuration
                 let realm = try Realm()
                 if let url = realm.configuration.fileURL {
-                    nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .start, message: "Realm is located at: \(url.path)")
+                    nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .start, message: "Realm is located at: \(url.path)", consoleOnly: true)
                 }
             } catch let error {
                 nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm error: \(error)")

@@ -76,9 +76,7 @@ final class NCBrandOptions: @unchecked Sendable {
     let httpMaximumConnectionsPerHostInUpload: Int = 8
 
     // Max request/download/upload process
-    let httpMaximumProcess: Int = 8
-    let httpMaximumProcessDownload: Int = 8
-    let httpMaximumProcessUpload: Int = 8
+    let numMaximumProcess: Int = 50
 
     // Number of failed attempts after reset app
     let resetAppPasscodeAttempts: Int = 10
@@ -135,7 +133,7 @@ final class NCBrandColor: @unchecked Sendable {
     static let shared = NCBrandColor()
 
     // This is rewrited from customet theme, default is Nextcloud color
-    let customer: UIColor = UIColor(red: 0.0 / 255.0, green: 103.0 / 255.0, blue: 158.0 / 255.0, alpha: 1.0)         // Nextcloud : #00679e
+    let customer: UIColor = UIColor(red: 0.0 / 255.0, green: 130.0 / 255.0, blue: 201.0 / 255.0, alpha: 1.0)         // Nextcloud : #0082C9
     var customerText: UIColor = .white
 
     // INTERNAL DEFINE COLORS
