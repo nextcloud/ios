@@ -312,9 +312,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 // Sequential await keeps ordering and simplifies backpressure
                 let err = await NCNetworking.shared.uploadFileInBackground(metadata: metadata.detachedCopy())
                 if err == .success {
-                    nkLog(tag: self.global.logTagBgSync, message: "Queued upload \(metadata.fileName) → \(metadata.serverUrl)")
+                    nkLog(tag: self.global.logTagBgSync, message: "Queued upload \(metadata.fileName) -> \(metadata.serverUrl)")
                 } else {
-                    nkLog(tag: self.global.logTagBgSync, emoji: .error, message: "Upload failed \(metadata.fileName) → \(metadata.serverUrl) [\(err.errorDescription)]")
+                    nkLog(tag: self.global.logTagBgSync, emoji: .error, message: "Upload failed \(metadata.fileName) -> \(metadata.serverUrl) [\(err.errorDescription)]")
                 }
             }
         }

@@ -409,7 +409,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
                     }
                     try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
                 } catch {
-                    print("Error moving \(atPath) → \(toPath): \(error)")
+                    print("Error moving \(atPath) -> \(toPath): \(error)")
                 }
                 continuation.resume()
             }
