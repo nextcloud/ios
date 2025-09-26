@@ -1,10 +1,7 @@
-//
-//  FloatingPlayerView.swift
-//  Nextcloud
-//
-//  Created by Vitaliy Tolkach on 12.06.2025.
-//  Copyright © 2025 Marino Faggiana. All rights reserved.
-//
+// SPDX-FileCopyrightText: STRATO GmbH
+// SPDX-FileCopyrightText: 2025 Vitaliy Tolkach
+// SPDX-FileCopyrightText: 2025 Serhii Kaliberda
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import SwiftUI
 

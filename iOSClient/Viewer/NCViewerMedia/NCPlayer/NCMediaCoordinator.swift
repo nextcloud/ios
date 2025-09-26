@@ -1,10 +1,6 @@
-//
-//  NCMediaCoordinator.swift
-//  Nextcloud
-//
-//  Created by Sergey Kaliberda on 21.07.2025.
-//  Copyright © 2025 Marino Faggiana. All rights reserved.
-//
+// SPDX-FileCopyrightText: STRATO GmbH
+// SPDX-FileCopyrightText: 2025 Serhii Kaliberda
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
 import MobileVLCKit
