@@ -28,7 +28,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var imageFavorite: UIImageView!
-    @IBOutlet weak var imageFavoriteBackground: UIImageView!
     @IBOutlet weak var imageLocal: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
@@ -142,7 +141,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         imageItem.layer.masksToBounds = true
         imageStatus.image = nil
         imageFavorite.image = nil
-        imageFavoriteBackground.isHidden = true
         imageLocal.image = nil
         labelTitle.text = ""
         labelInfo.text = ""
@@ -282,18 +280,35 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 
     func setIconOutlines() {
-        imageFavoriteBackground.isHidden = fileFavoriteImage?.image == nil
+        [imageStatus, imageLocal, imageSelect, imageFavorite].forEach { imageView in
+            if imageView == imageFavorite {
+                imageView.makeCircularBackground(withColor: imageView.image != nil ? NCBrandColor.shared.yellowFavorite : .clear)
+            } else {
+                imageView.makeCircularBackground(withColor: imageView.image != nil ? .systemBackground : .clear)
+            }
 
-        if imageStatus.image != nil {
-            imageStatus.makeCircularBackground(withColor: .systemBackground)
-        } else {
-            imageStatus.backgroundColor = .clear
+            if imageView.image != nil {
+                imageView.layer.masksToBounds = false
+                imageView.clipsToBounds = false
+                imageView.layer.shadowColor = UIColor.black.cgColor
+                imageView.layer.shadowOpacity = 0.3
+                imageView.layer.shadowRadius = 2.0
+                imageView.layer.shadowOffset = CGSize(width: 0, height: 1)
+                imageView.layer.shadowPath = UIBezierPath(ovalIn: imageView.bounds).cgPath
+            } else {
+                imageView.layer.shadowOpacity = 0
+            }
         }
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        // Keep the shadow path in sync with current bounds
+        imageStatus.layer.shadowPath = UIBezierPath(ovalIn: imageStatus.bounds).cgPath
 
-        if imageLocal.image != nil {
-            imageLocal.makeCircularBackground(withColor: .systemBackground)
-        } else {
-            imageLocal.backgroundColor = .clear
+        // Ensure the circular background remains correct after Auto Layout
+        if imageStatus.layer.cornerRadius != imageStatus.bounds.width / 2 {
+            imageStatus.layer.cornerRadius = imageStatus.bounds.width / 2
         }
     }
 }
@@ -415,3 +430,4 @@ class BidiFilenameLabel: UILabel {
         return result
     }
 }
+
