@@ -294,7 +294,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
                 imageView.layer.shadowOpacity = 0.3
                 imageView.layer.shadowRadius = 2.0
                 imageView.layer.shadowOffset = CGSize(width: 0, height: 1)
-                imageView.layer.shadowPath = UIBezierPath(ovalIn: imageStatus.bounds).cgPath
+                imageView.layer.shadowPath = UIBezierPath(ovalIn: imageView.bounds).cgPath
             } else {
                 imageView.layer.shadowOpacity = 0
             }

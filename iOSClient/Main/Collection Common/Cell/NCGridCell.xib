@@ -28,33 +28,25 @@
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5Ci-V1-hf5" userLabel="imageItem">
                         <rect key="frame" x="0.0" y="0.0" width="416" height="439"/>
                     </imageView>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="star.circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="AYs-f2-vve" userLabel="imageFavorite">
-                        <rect key="frame" x="396" y="5.5" width="15" height="14"/>
-                        <color key="tintColor" systemColor="systemYellowColor"/>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="play.circle" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="a0p-rj-jnV" userLabel="imageStatus">
+                        <rect key="frame" x="5" y="414.5" width="20" height="19"/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="15" id="ZjS-Hv-JNm"/>
-                            <constraint firstAttribute="width" constant="15" id="kDr-15-VeJ"/>
-                        </constraints>
-                    </imageView>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="a0p-rj-jnV" userLabel="imageStatus">
-                        <rect key="frame" x="5" y="419" width="15" height="15"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="15" id="gq1-0a-eLC"/>
-                            <constraint firstAttribute="width" constant="15" id="uJE-4b-Qt7"/>
+                            <constraint firstAttribute="height" constant="20" id="gq1-0a-eLC"/>
+                            <constraint firstAttribute="width" constant="20" id="uJE-4b-Qt7"/>
                         </constraints>
                     </imageView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="81G-wH-fjN" userLabel="imageLocal">
-                        <rect key="frame" x="396" y="419" width="15" height="15"/>
+                        <rect key="frame" x="391" y="414" width="20" height="20"/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="15" id="NTa-Gi-uzY"/>
-                            <constraint firstAttribute="width" constant="15" id="xLe-lb-N1p"/>
+                            <constraint firstAttribute="height" constant="20" id="NTa-Gi-uzY"/>
+                            <constraint firstAttribute="width" constant="20" id="xLe-lb-N1p"/>
                         </constraints>
                     </imageView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DHy-Up-3Bh" userLabel="imageSelect">
-                        <rect key="frame" x="5" y="5" width="15" height="15"/>
+                        <rect key="frame" x="5" y="5" width="20" height="20"/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="15" id="SoZ-J3-98x"/>
-                            <constraint firstAttribute="width" constant="15" id="cZG-gx-gwt"/>
+                            <constraint firstAttribute="height" constant="20" id="SoZ-J3-98x"/>
+                            <constraint firstAttribute="width" constant="20" id="cZG-gx-gwt"/>
                         </constraints>
                     </imageView>
                     <stackView opaque="NO" contentMode="scaleToFill" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="VRH-IZ-lXO">
@@ -96,6 +88,14 @@
                             <action selector="touchUpInsideMore:" destination="vf1-Kf-9uL" eventType="touchUpInside" id="GDx-NN-gE9"/>
                         </connections>
                     </button>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="star.circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="AYs-f2-vve" userLabel="imageFavorite">
+                        <rect key="frame" x="391" y="5.5" width="20" height="20"/>
+                        <color key="tintColor" systemColor="systemYellowColor"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="21" id="ZjS-Hv-JNm"/>
+                            <constraint firstAttribute="width" constant="20" id="kDr-15-VeJ"/>
+                        </constraints>
+                    </imageView>
                 </subviews>
             </view>
             <constraints>
@@ -145,6 +145,7 @@
     </objects>
     <resources>
         <image name="ellipsis" catalog="system" width="128" height="37"/>
+        <image name="play.circle" catalog="system" width="128" height="123"/>
         <image name="star.circle.fill" catalog="system" width="128" height="123"/>
         <systemColor name="systemGray2Color">
             <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

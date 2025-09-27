@@ -342,10 +342,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         // Status
         if metadata.isLivePhoto {
-            cell.fileStatusImage?.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor2])
+            cell.fileStatusImage?.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
             a11yValues.append(NSLocalizedString("_upload_mov_livephoto_", comment: ""))
         } else if metadata.isVideo {
-            cell.fileStatusImage?.image = utility.loadImage(named: "play.circle", colors: [NCBrandColor.shared.iconImageColor2])
+            cell.fileStatusImage?.image = utility.loadImage(named: "play.circle", colors: [NCBrandColor.shared.iconImageColor])
         }
 
         switch metadata.status {
