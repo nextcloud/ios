@@ -96,14 +96,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
         }
 
-        // Status
-        //
-        if metadata.isLivePhoto {
-            cell.fileStatusImage?.image = utility.loadImage(named: "livephoto", colors: isLayoutPhoto ? [.white] : [NCBrandColor.shared.iconImageColor2])
-        } else if metadata.isVideo {
-            cell.fileStatusImage?.image = utility.loadImage(named: "play.circle", colors: NCBrandColor.shared.iconImageMultiColors)
-        }
-
         // Edit mode
         //
         if fileSelect.contains(metadata.ocId) {
@@ -348,13 +340,14 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.setButtonMore(image: imageCache.getImageButtonMore())
         }
 
-        // Staus
+        // Status
         if metadata.isLivePhoto {
-            cell.fileStatusImage?.image = utility.loadImage(named: "livephoto", colors: isLayoutPhoto ? [.white] : [NCBrandColor.shared.iconImageColor2])
+            cell.fileStatusImage?.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor2])
             a11yValues.append(NSLocalizedString("_upload_mov_livephoto_", comment: ""))
         } else if metadata.isVideo {
-            cell.fileStatusImage?.image = utility.loadImage(named: "play.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.fileStatusImage?.image = utility.loadImage(named: "play.circle", colors: [NCBrandColor.shared.iconImageColor2])
         }
+
         switch metadata.status {
         case global.metadataStatusWaitCreateFolder:
             cell.fileStatusImage?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
@@ -475,6 +468,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.hideButtonShare(true)
             cell.hideButtonMore(true)
         }
+
+        cell.setIconOutlines()
 
         return cell
     }

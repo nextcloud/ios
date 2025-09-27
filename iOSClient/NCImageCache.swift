@@ -163,7 +163,7 @@ final class NCImageCache: @unchecked Sendable {
     }
 
     func getImageFavorite(colors: [UIColor] = [NCBrandColor.shared.yellowFavorite]) -> UIImage {
-        return utility.loadImage(named: "star.fill", colors: colors)
+        return utility.loadImage(named: "star.circle.fill", colors: colors)
     }
 
     func getImageOfflineFlag(colors: [UIColor] = [.systemGreen]) -> UIImage {

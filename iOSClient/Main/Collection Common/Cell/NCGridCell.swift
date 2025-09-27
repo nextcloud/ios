@@ -213,11 +213,10 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 
     func setIconOutlines() {
-        if imageStatus.image != nil {
-            imageStatus.makeCircularBackground(withColor: .systemBackground)
-        } else {
-            imageStatus.backgroundColor = .clear
-        }
+        imageStatus.makeCircularBackground(withColor: imageStatus.image != nil ? .systemBackground : .clear)
+        imageLocal.makeCircularBackground(withColor: imageLocal.image != nil ? .systemBackground : .clear)
+        imageSelect.makeCircularBackground(withColor: imageSelect.image != nil ? .systemBackground : .clear)
+        imageFavorite.makeCircularBackground(withColor: imageFavorite.image != nil ? .systemBackground : .clear)
     }
 }
 
