@@ -325,7 +325,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     // MARK: - init
 
     init() {
-        // Configure JSON codecs (stable date format) for
+        // Configure JSON codecs for Upload item
         self.encoderUploadItem = JSONEncoder()
         self.decoderUploadItem = JSONDecoder()
 
@@ -336,7 +336,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
             return
         }
         let backupDirectory = groupDirectory.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud)
-        self.uploadStoreURL = backupDirectory.appendingPathComponent(tableAccountBackup)
+        self.uploadStoreURL = backupDirectory.appendingPathComponent(fileUploadStore)
 
         // Ensure directory exists and load once
         self.uploadStoreIO.sync {
