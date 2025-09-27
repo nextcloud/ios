@@ -480,6 +480,16 @@ extension NCNetworking {
                 return
             #endif
 
+            let uploadItem = UploadItemDisk(fileName: fileName,
+                                            serverUrl: serverUrl,
+                                            ocId: ocId,
+                                            etag: etag,
+                                            date: date,
+                                            size: size,
+                                            taskIdentifier: task.taskIdentifier,
+                                            errorCode: (error as NSError).code)
+            addUploadItem(uploadItem, fileName: fileName, serverUrl: serverUrl)
+
             if let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@ AND sessionTaskIdentifier == %d", serverUrl, fileName, task.taskIdentifier)) {
                 await uploadComplete(withMetadata: metadata, ocId: ocId, etag: etag, date: date, size: size, error: error)
             } else {

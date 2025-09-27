@@ -257,6 +257,17 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         var serverUrl: String
     }
 
+    struct UploadItemDisk: Codable {
+        let fileName: String
+        let serverUrl: String
+        let ocId: String?
+        let etag: String?
+        let date: Date?
+        let size: Int64
+        let taskIdentifier: Int?
+        let errorCode: Int?
+    }
+
     let networkingTasks = NetworkingTasks()
 
     let sessionDownload = NextcloudKit.shared.nkCommonInstance.identifierSessionDownload
@@ -289,6 +300,13 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         return networkReachability == NKTypeReachability.reachableEthernetOrWiFi || networkReachability == NKTypeReachability.reachableCellular
     }
 
+    // Upload store (single live file + in-memory cache)
+    private let uploadStoreIO = DispatchQueue(label: "com.nextcloud.uploadStore.io")    // serializes all access
+    private var uploadStoreURL: URL?
+    private let encoderUploadItem: JSONEncoder
+    private let decoderUploadItem: JSONDecoder
+    private var uploadItemsCache: [UploadItemDisk] = []                                 // in-memory snapshot
+
     // Capabilities
     var capabilities = ThreadSafeDictionary<String, NKCapabilities.Capabilities>()
 
@@ -306,7 +324,33 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 
     // MARK: - init
 
-    init() { }
+    init() {
+        // Configure JSON codecs (stable date format) for
+        self.encoderUploadItem = JSONEncoder()
+        self.decoderUploadItem = JSONDecoder()
+
+        self.encoderUploadItem.dateEncodingStrategy = .iso8601
+        self.decoderUploadItem.dateDecodingStrategy = .iso8601
+
+        guard let groupDirectory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup) else {
+            return
+        }
+        let backupDirectory = groupDirectory.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud)
+        self.uploadStoreURL = backupDirectory.appendingPathComponent(tableAccountBackup)
+
+        // Ensure directory exists and load once
+        self.uploadStoreIO.sync {
+            // Load existing file
+            if let url = self.uploadStoreURL,
+                let data = try? Data(contentsOf: url),
+                !data.isEmpty,
+                let items = try? self.decoderUploadItem.decode([UploadItemDisk].self, from: data) {
+                self.uploadItemsCache = items
+            } else {
+                self.uploadItemsCache = []
+            }
+        }
+    }
 
     // MARK: - Communication Delegate
 
@@ -446,5 +490,67 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 
     func activeAccountCertificate(account: String) {
         (self.p12Data, self.p12Password) = NCPreferences().getClientCertificate(account: account)
+    }
+
+    // MARK: - Upload Item
+
+    func addUploadItem(_ item: UploadItemDisk, fileName: String, serverUrl: String) {
+        guard let url = self.uploadStoreURL else {
+            return
+        }
+        uploadStoreIO.sync {
+            // Upsert by (serverUrl + fileName)
+            if let idx = uploadItemsCache.firstIndex(where: { $0.serverUrl == serverUrl && $0.fileName == fileName }) {
+                uploadItemsCache[idx] = item
+            } else {
+                uploadItemsCache.append(item)
+            }
+            // Persist atomically
+            do {
+                let data = try encoderUploadItem.encode(uploadItemsCache)
+                try data.write(to: url, options: .atomic)
+            } catch {
+                nkLog(tag: "UploadComplete", message: "Persist upsert failed: \(error)")
+            }
+        }
+    }
+
+    func removeUploadItem(serverUrl: String, fileName: String) {
+        guard let url = self.uploadStoreURL else {
+            return
+        }
+        uploadStoreIO.sync {
+            let before = uploadItemsCache.count
+            uploadItemsCache.removeAll { $0.serverUrl == serverUrl && $0.fileName == fileName }
+            guard uploadItemsCache.count != before else { return }
+            do {
+                let data = try encoderUploadItem.encode(uploadItemsCache)
+                try data.write(to: url, options: .atomic)
+            } catch {
+                nkLog(tag: "UploadComplete", message: "Persist remove failed: \(error)")
+            }
+        }
+    }
+
+    // MARK: - Optional helpers
+    /// Read a snapshot for batch processing (e.g., flush to Realm); no disk I/O, returns the cache.
+    func readAllUploadItems() -> [UploadItemDisk] {
+        uploadStoreIO.sync { uploadItemsCache }
+    }
+
+    /// Clear the file (e.g., after a successful batch flush).
+    func clearUploadItemsFile() {
+        guard let url = self.uploadStoreURL else {
+            return
+        }
+        uploadStoreIO.sync {
+            uploadItemsCache.removeAll()
+            do {
+                let data = try encoderUploadItem.encode(uploadItemsCache) // empty array
+                try data.write(to: url, options: .atomic)
+            } catch {
+                nkLog(tag: "UploadComplete", message: "Persist clear failed: \(error)")
+            }
+        }
     }
 }
