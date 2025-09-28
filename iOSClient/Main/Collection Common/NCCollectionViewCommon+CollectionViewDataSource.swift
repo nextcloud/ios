@@ -383,13 +383,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         // AVATAR
         if !metadata.ownerId.isEmpty, metadata.ownerId != metadata.userId {
-            cell.fileAvatarImageView?.contentMode = .scaleAspectFill
-
             let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: metadata.ownerId)
             self.database.getImageAvatarLoaded(fileName: fileName) { image, tblAvatar in
                 if let image {
+                    cell.fileAvatarImageView?.contentMode = .scaleAspectFill
                     cell.fileAvatarImageView?.image = image
                 } else {
+                    cell.fileAvatarImageView?.contentMode = .scaleAspectFill
                     cell.fileAvatarImageView?.image = self.utility.loadUserImage(for: metadata.ownerId, displayName: metadata.ownerDisplayName, urlBase: metadata.urlBase)
                 }
 

@@ -163,16 +163,16 @@ extension NCManageDatabase {
     func getImageAvatarLoaded(fileName: String,
                               dispatchOnMainQueue: Bool = true,
                               completion: @escaping (_ image: UIImage?, _ tblAvatar: tableAvatar?) -> Void) {
-        let directoryUserData = utilityFileSystem.directoryUserData
-        let fileNameLocalPath = utilityFileSystem.createServerUrl(serverUrl: directoryUserData, fileName: fileName)
-        let image = UIImage(contentsOfFile: fileNameLocalPath)
-
         performRealmRead({ realm in
             return realm.objects(tableAvatar.self)
                 .filter("fileName == %@", fileName)
                 .first
                 .map { tableAvatar(value: $0) }
         }, sync: false) { result in
+            let directoryUserData = self.utilityFileSystem.directoryUserData
+            let fileNameLocalPath = self.utilityFileSystem.createServerUrl(serverUrl: directoryUserData, fileName: fileName)
+            let image = UIImage(contentsOfFile: fileNameLocalPath)
+
             if result == nil {
                 self.utilityFileSystem.removeFile(atPath: fileNameLocalPath)
             }
