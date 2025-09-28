@@ -10,33 +10,33 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="gridCell" id="vf1-Kf-9uL" customClass="NCGridCell" customModule="Nextcloud" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="416" height="529"/>
+            <rect key="frame" x="0.0" y="0.0" width="206" height="186"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
-                <rect key="frame" x="0.0" y="0.0" width="416" height="529"/>
+                <rect key="frame" x="0.0" y="0.0" width="206" height="186"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <visualEffectView hidden="YES" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="LfR-yV-Xml" userLabel="VisualEffect">
-                        <rect key="frame" x="0.0" y="0.0" width="416" height="439"/>
+                        <rect key="frame" x="0.0" y="0.0" width="206" height="96"/>
                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="h0r-Oi-xfW">
-                            <rect key="frame" x="0.0" y="0.0" width="416" height="439"/>
+                            <rect key="frame" x="0.0" y="0.0" width="206" height="96"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         </view>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <blurEffect style="extraLight"/>
                     </visualEffectView>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5Ci-V1-hf5" userLabel="imageItem">
-                        <rect key="frame" x="0.0" y="0.0" width="416" height="439"/>
+                        <rect key="frame" x="0.0" y="0.0" width="206" height="96"/>
                     </imageView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="play.circle" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="a0p-rj-jnV" userLabel="imageStatus">
-                        <rect key="frame" x="5" y="414.5" width="20" height="19"/>
+                        <rect key="frame" x="5" y="71.5" width="20" height="19"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="20" id="gq1-0a-eLC"/>
                             <constraint firstAttribute="width" constant="20" id="uJE-4b-Qt7"/>
                         </constraints>
                     </imageView>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="81G-wH-fjN" userLabel="imageLocal">
-                        <rect key="frame" x="391" y="414" width="20" height="20"/>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="arrow.down.circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="81G-wH-fjN" userLabel="imageLocal">
+                        <rect key="frame" x="176" y="71.5" width="20" height="19"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="20" id="NTa-Gi-uzY"/>
                             <constraint firstAttribute="width" constant="20" id="xLe-lb-N1p"/>
@@ -50,10 +50,10 @@
                         </constraints>
                     </imageView>
                     <stackView opaque="NO" contentMode="scaleToFill" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="VRH-IZ-lXO">
-                        <rect key="frame" x="5" y="447" width="406" height="36"/>
+                        <rect key="frame" x="5" y="104" width="196" height="36"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="254" horizontalCompressionResistancePriority="756" verticalCompressionResistancePriority="759" text="Label" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eU3-lY-fKr" userLabel="labelTitle">
-                                <rect key="frame" x="0.0" y="0.0" width="406" height="18"/>
+                                <rect key="frame" x="0.0" y="0.0" width="196" height="18"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -64,19 +64,19 @@
                         </constraints>
                     </stackView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2po-8g-XeS">
-                        <rect key="frame" x="25" y="490" width="366" height="12"/>
+                        <rect key="frame" x="25" y="147" width="156" height="12"/>
                         <fontDescription key="fontDescription" type="system" pointSize="10"/>
                         <color key="textColor" systemColor="systemGrayColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="12P-pO-DHO" userLabel="Label Size">
-                        <rect key="frame" x="25" y="505" width="366" height="12"/>
+                        <rect key="frame" x="25" y="162" width="156" height="12"/>
                         <fontDescription key="fontDescription" type="system" pointSize="10"/>
                         <color key="textColor" systemColor="systemGrayColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EJs-Ro-nbe" userLabel="buttonMoreGrid">
-                        <rect key="frame" x="391" y="501" width="20" height="20"/>
+                        <rect key="frame" x="181" y="158" width="20" height="20"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="20" id="4Ba-Uy-pX2"/>
                             <constraint firstAttribute="width" constant="20" id="aRK-GA-Nba"/>
@@ -89,7 +89,7 @@
                         </connections>
                     </button>
                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="star.circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="AYs-f2-vve" userLabel="imageFavorite">
-                        <rect key="frame" x="391" y="5.5" width="20" height="20"/>
+                        <rect key="frame" x="176" y="5.5" width="20" height="20"/>
                         <color key="tintColor" systemColor="systemYellowColor"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="21" id="ZjS-Hv-JNm"/>
@@ -104,7 +104,7 @@
                 <constraint firstItem="DHy-Up-3Bh" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" constant="5" id="ESV-qE-tbO"/>
                 <constraint firstAttribute="bottom" secondItem="EJs-Ro-nbe" secondAttribute="bottom" constant="8" id="G0O-Kx-3kV"/>
                 <constraint firstAttribute="trailing" secondItem="VRH-IZ-lXO" secondAttribute="trailing" constant="5" id="HAS-uF-AuS"/>
-                <constraint firstItem="AYs-f2-vve" firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" constant="-5" id="HgQ-KH-cPc"/>
+                <constraint firstItem="AYs-f2-vve" firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" constant="-10" id="HgQ-KH-cPc"/>
                 <constraint firstItem="2po-8g-XeS" firstAttribute="top" secondItem="VRH-IZ-lXO" secondAttribute="bottom" constant="7" id="OPl-xq-XOx"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" id="Ouj-ZD-UFm"/>
                 <constraint firstItem="a0p-rj-jnV" firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="-5" id="SbP-y9-f51"/>
@@ -120,14 +120,14 @@
                 <constraint firstItem="12P-pO-DHO" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" constant="25" id="fTQ-Ye-Xj2"/>
                 <constraint firstItem="12P-pO-DHO" firstAttribute="top" secondItem="2po-8g-XeS" secondAttribute="bottom" constant="3" id="hbc-KL-fRj"/>
                 <constraint firstAttribute="trailing" secondItem="EJs-Ro-nbe" secondAttribute="trailing" constant="5" id="ntP-en-sy6"/>
-                <constraint firstAttribute="trailing" secondItem="81G-wH-fjN" secondAttribute="trailing" constant="5" id="omW-UB-blH"/>
+                <constraint firstAttribute="trailing" secondItem="81G-wH-fjN" secondAttribute="trailing" constant="10" id="omW-UB-blH"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" id="qT3-WD-iTV"/>
                 <constraint firstItem="AYs-f2-vve" firstAttribute="top" secondItem="5Ci-V1-hf5" secondAttribute="top" constant="5" id="r8H-oi-tdJ"/>
                 <constraint firstItem="81G-wH-fjN" firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="-5" id="rf2-Z0-OlX"/>
                 <constraint firstItem="a0p-rj-jnV" firstAttribute="leading" secondItem="5Ci-V1-hf5" secondAttribute="leading" constant="5" id="rfI-Sz-Yg3"/>
                 <constraint firstItem="12P-pO-DHO" firstAttribute="centerX" secondItem="vf1-Kf-9uL" secondAttribute="centerX" id="xhm-Np-2Ua"/>
             </constraints>
-            <size key="customSize" width="416" height="524"/>
+            <size key="customSize" width="206" height="181"/>
             <connections>
                 <outlet property="buttonMore" destination="EJs-Ro-nbe" id="BdI-ay-LuX"/>
                 <outlet property="imageFavorite" destination="AYs-f2-vve" id="UeH-R7-bZr"/>
@@ -140,10 +140,11 @@
                 <outlet property="labelSubinfo" destination="12P-pO-DHO" id="K6d-7r-FGh"/>
                 <outlet property="labelTitle" destination="eU3-lY-fKr" id="0P7-yM-Asb"/>
             </connections>
-            <point key="canvasLocation" x="233.59999999999999" y="242.42878560719643"/>
+            <point key="canvasLocation" x="65.599999999999994" y="479.46026986506752"/>
         </collectionViewCell>
     </objects>
     <resources>
+        <image name="arrow.down.circle.fill" catalog="system" width="128" height="123"/>
         <image name="ellipsis" catalog="system" width="128" height="37"/>
         <image name="play.circle" catalog="system" width="128" height="123"/>
         <image name="star.circle.fill" catalog="system" width="128" height="123"/>
