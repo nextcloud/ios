@@ -543,11 +543,18 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         guard let url = self.uploadStoreURL else {
             return
         }
+
+        if uploadItemsCache.isEmpty,
+           let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
+           let size = attrs[.size] as? NSNumber,
+           size.intValue == 0 {
+                return
+        }
+
         uploadStoreIO.sync {
             uploadItemsCache.removeAll()
             do {
-                let data = try encoderUploadItem.encode(uploadItemsCache) // empty array
-                try data.write(to: url, options: .atomic)
+                try Data().write(to: url, options: .atomic)
             } catch {
                 nkLog(tag: "UploadComplete", message: "Persist clear failed: \(error)")
             }
