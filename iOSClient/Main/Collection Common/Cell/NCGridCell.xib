@@ -16,6 +16,9 @@
                 <rect key="frame" x="0.0" y="0.0" width="206" height="186"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5Ci-V1-hf5" userLabel="imageItem">
+                        <rect key="frame" x="0.0" y="0.0" width="206" height="96"/>
+                    </imageView>
                     <visualEffectView hidden="YES" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="LfR-yV-Xml" userLabel="VisualEffect">
                         <rect key="frame" x="0.0" y="0.0" width="206" height="96"/>
                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="h0r-Oi-xfW">
@@ -25,23 +28,6 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <blurEffect style="extraLight"/>
                     </visualEffectView>
-                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5Ci-V1-hf5" userLabel="imageItem">
-                        <rect key="frame" x="0.0" y="0.0" width="206" height="96"/>
-                    </imageView>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="play.circle" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="a0p-rj-jnV" userLabel="imageStatus">
-                        <rect key="frame" x="5" y="71.5" width="20" height="19"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="20" id="gq1-0a-eLC"/>
-                            <constraint firstAttribute="width" constant="20" id="uJE-4b-Qt7"/>
-                        </constraints>
-                    </imageView>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="arrow.down.circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="81G-wH-fjN" userLabel="imageLocal">
-                        <rect key="frame" x="176" y="71.5" width="20" height="19"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="20" id="NTa-Gi-uzY"/>
-                            <constraint firstAttribute="width" constant="20" id="xLe-lb-N1p"/>
-                        </constraints>
-                    </imageView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DHy-Up-3Bh" userLabel="imageSelect">
                         <rect key="frame" x="5" y="5" width="20" height="20"/>
                         <constraints>
@@ -88,14 +74,31 @@
                             <action selector="touchUpInsideMore:" destination="vf1-Kf-9uL" eventType="touchUpInside" id="GDx-NN-gE9"/>
                         </connections>
                     </button>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="star.circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="AYs-f2-vve" userLabel="imageFavorite">
-                        <rect key="frame" x="176" y="5.5" width="20" height="20"/>
-                        <color key="tintColor" systemColor="systemYellowColor"/>
+                    <stackView opaque="NO" contentMode="scaleToFill" spacing="1" translatesAutoresizingMaskIntoConstraints="NO" id="dYL-ap-9lA">
+                        <rect key="frame" x="160" y="5" width="41" height="20"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="play.circle" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="a0p-rj-jnV" userLabel="imageStatus">
+                                <rect key="frame" x="0.0" y="0.5" width="20" height="19"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="arrow.down.circle" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="81G-wH-fjN" userLabel="imageLocal">
+                                <rect key="frame" x="0.0" y="0.5" width="20" height="19"/>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="star.circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="AYs-f2-vve" userLabel="imageFavorite">
+                                <rect key="frame" x="21" y="0.5" width="20" height="19"/>
+                                <color key="tintColor" systemColor="systemYellowColor"/>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" red="0.4036219325" green="0.80000000000000004" blue="0.71445474529999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="21" id="ZjS-Hv-JNm"/>
-                            <constraint firstAttribute="width" constant="20" id="kDr-15-VeJ"/>
+                            <constraint firstAttribute="height" constant="20" id="FOF-YH-TNe"/>
                         </constraints>
-                    </imageView>
+                        <variation key="default">
+                            <mask key="subviews">
+                                <exclude reference="a0p-rj-jnV"/>
+                            </mask>
+                        </variation>
+                    </stackView>
                 </subviews>
             </view>
             <constraints>
@@ -104,11 +107,11 @@
                 <constraint firstItem="DHy-Up-3Bh" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" constant="5" id="ESV-qE-tbO"/>
                 <constraint firstAttribute="bottom" secondItem="EJs-Ro-nbe" secondAttribute="bottom" constant="8" id="G0O-Kx-3kV"/>
                 <constraint firstAttribute="trailing" secondItem="VRH-IZ-lXO" secondAttribute="trailing" constant="5" id="HAS-uF-AuS"/>
-                <constraint firstItem="AYs-f2-vve" firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" constant="-10" id="HgQ-KH-cPc"/>
+                <constraint firstItem="dYL-ap-9lA" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" constant="5" id="IeX-Os-Vrw"/>
                 <constraint firstItem="2po-8g-XeS" firstAttribute="top" secondItem="VRH-IZ-lXO" secondAttribute="bottom" constant="7" id="OPl-xq-XOx"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" id="Ouj-ZD-UFm"/>
-                <constraint firstItem="a0p-rj-jnV" firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="-5" id="SbP-y9-f51"/>
                 <constraint firstItem="2po-8g-XeS" firstAttribute="centerX" secondItem="vf1-Kf-9uL" secondAttribute="centerX" id="TTW-HT-yEO"/>
+                <constraint firstAttribute="trailing" secondItem="dYL-ap-9lA" secondAttribute="trailing" constant="5" id="WeP-6p-nkS"/>
                 <constraint firstItem="LfR-yV-Xml" firstAttribute="leading" secondItem="5Ci-V1-hf5" secondAttribute="leading" id="XVl-U4-maN"/>
                 <constraint firstItem="LfR-yV-Xml" firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" id="ZT5-7T-eis"/>
                 <constraint firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" id="cHT-cP-NN6"/>
@@ -120,16 +123,13 @@
                 <constraint firstItem="12P-pO-DHO" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" constant="25" id="fTQ-Ye-Xj2"/>
                 <constraint firstItem="12P-pO-DHO" firstAttribute="top" secondItem="2po-8g-XeS" secondAttribute="bottom" constant="3" id="hbc-KL-fRj"/>
                 <constraint firstAttribute="trailing" secondItem="EJs-Ro-nbe" secondAttribute="trailing" constant="5" id="ntP-en-sy6"/>
-                <constraint firstAttribute="trailing" secondItem="81G-wH-fjN" secondAttribute="trailing" constant="10" id="omW-UB-blH"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" id="qT3-WD-iTV"/>
-                <constraint firstItem="AYs-f2-vve" firstAttribute="top" secondItem="5Ci-V1-hf5" secondAttribute="top" constant="5" id="r8H-oi-tdJ"/>
-                <constraint firstItem="81G-wH-fjN" firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="-5" id="rf2-Z0-OlX"/>
-                <constraint firstItem="a0p-rj-jnV" firstAttribute="leading" secondItem="5Ci-V1-hf5" secondAttribute="leading" constant="5" id="rfI-Sz-Yg3"/>
                 <constraint firstItem="12P-pO-DHO" firstAttribute="centerX" secondItem="vf1-Kf-9uL" secondAttribute="centerX" id="xhm-Np-2Ua"/>
             </constraints>
             <size key="customSize" width="206" height="181"/>
             <connections>
                 <outlet property="buttonMore" destination="EJs-Ro-nbe" id="BdI-ay-LuX"/>
+                <outlet property="iconsStackView" destination="dYL-ap-9lA" id="IKa-gM-1zT"/>
                 <outlet property="imageFavorite" destination="AYs-f2-vve" id="UeH-R7-bZr"/>
                 <outlet property="imageItem" destination="5Ci-V1-hf5" id="xky-Nw-NUb"/>
                 <outlet property="imageLocal" destination="81G-wH-fjN" id="bqj-wQ-CBV"/>
@@ -144,15 +144,15 @@
         </collectionViewCell>
     </objects>
     <resources>
-        <image name="arrow.down.circle.fill" catalog="system" width="128" height="123"/>
+        <image name="arrow.down.circle" catalog="system" width="128" height="123"/>
         <image name="ellipsis" catalog="system" width="128" height="37"/>
         <image name="play.circle" catalog="system" width="128" height="123"/>
         <image name="star.circle.fill" catalog="system" width="128" height="123"/>
         <systemColor name="systemGray2Color">
-            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGrayColor">
-            <color red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemYellowColor">
             <color red="1" green="0.80000000000000004" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

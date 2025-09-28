@@ -34,7 +34,8 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var labelSubinfo: UILabel!
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
-
+    @IBOutlet weak var iconsStackView: UIStackView!
+    
     var ocId = ""
     var ocIdTransfer = ""
     var account = ""
@@ -113,6 +114,13 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         imageVisualEffect.layer.cornerRadius = 6
         imageVisualEffect.clipsToBounds = true
         imageVisualEffect.alpha = 0.5
+
+        iconsStackView.addBlurBackground(style: .systemThinMaterialDark)
+        iconsStackView.layer.cornerRadius = 6
+        iconsStackView.clipsToBounds = true
+//        iconsStackView.addVibrancyOverlay(using: blur, style: .fill)
+
+//        iconsStackView.addBlurBackground(style: .systemThinMaterialLight)
 
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
         longPressedGesture.minimumPressDuration = 0.5
@@ -213,25 +221,25 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 
     func setIconOutlines() {
-        [imageStatus, imageLocal, imageSelect, imageFavorite].forEach { imageView in
-            if imageView == imageFavorite {
-                imageView.makeCircularBackground(withColor: imageView.image != nil ? NCBrandColor.shared.yellowFavorite : .clear)
-            } else {
-                imageView.makeCircularBackground(withColor: imageView.image != nil ? .systemBackground : .clear)
-            }
-
-            if imageView.image != nil {
-                imageView.layer.masksToBounds = false
-                imageView.clipsToBounds = false
-                imageView.layer.shadowColor = UIColor.black.cgColor
-                imageView.layer.shadowOpacity = 0.3
-                imageView.layer.shadowRadius = 2.0
-                imageView.layer.shadowOffset = CGSize(width: 0, height: 1)
-                imageView.layer.shadowPath = UIBezierPath(ovalIn: imageView.bounds).cgPath
-            } else {
-                imageView.layer.shadowOpacity = 0
-            }
-        }
+//        [imageStatus, imageLocal, imageSelect, imageFavorite].forEach { imageView in
+//            if imageView == imageFavorite {
+//                imageView.makeCircularBackground(withColor: imageView.image != nil ? NCBrandColor.shared.yellowFavorite : .clear)
+//            } else {
+//                imageView.makeCircularBackground(withColor: imageView.image != nil ? .systemBackground : .clear)
+//            }
+//
+//            if imageView.image != nil {
+//                imageView.layer.masksToBounds = false
+//                imageView.clipsToBounds = false
+//                imageView.layer.shadowColor = UIColor.black.cgColor
+//                imageView.layer.shadowOpacity = 0.3
+//                imageView.layer.shadowRadius = 2.0
+//                imageView.layer.shadowOffset = CGSize(width: 0, height: 1)
+//                imageView.layer.shadowPath = UIBezierPath(ovalIn: imageView.bounds).cgPath
+//            } else {
+//                imageView.layer.shadowOpacity = 0
+//            }
+//        }
     }
 }
 
