@@ -132,7 +132,11 @@ actor NCNetworkingProcess {
                     await startTimer(interval: minInterval)
                 }
             } else {
+                // Clear upload Item files
+                networking.clearUploadItemsFile()
+                // Remove upload asset
                 await removeUploadedAssetsIfNeeded()
+
                 if lastUsedInterval != maxInterval {
                     await startTimer(interval: maxInterval)
                 }
