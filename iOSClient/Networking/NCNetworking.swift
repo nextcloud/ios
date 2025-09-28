@@ -532,10 +532,11 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         }
     }
 
-    // MARK: - Optional helpers
     /// Read a snapshot for batch processing (e.g., flush to Realm); no disk I/O, returns the cache.
     func readAllUploadItems() -> [UploadItemDisk] {
-        uploadStoreIO.sync { uploadItemsCache }
+        uploadStoreIO.sync {
+            uploadItemsCache
+        }
     }
 
     /// Clear the file (e.g., after a successful batch flush).
