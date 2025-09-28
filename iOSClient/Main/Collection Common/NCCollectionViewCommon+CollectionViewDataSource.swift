@@ -238,7 +238,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             // Local image: offline
             if let tblDirectory, tblDirectory.offline {
-                cell.fileLocalImage?.image = imageCache.getImageOfflineFlag()
+                cell.fileLocalImage?.image = imageCache.getImageOfflineFlag(colors: [.systemBackground, .systemGreen])
             }
 
             // color folder
@@ -309,9 +309,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             if let tableLocalFile, tableLocalFile.offline {
                 a11yValues.append(NSLocalizedString("_offline_", comment: ""))
-                cell.fileLocalImage?.image = imageCache.getImageOfflineFlag()
+                cell.fileLocalImage?.image = imageCache.getImageOfflineFlag(colors: [.systemBackground, .systemGreen])
             } else if utilityFileSystem.fileProviderStorageExists(metadata) {
-                cell.fileLocalImage?.image = imageCache.getImageLocal()
+                cell.fileLocalImage?.image = imageCache.getImageLocal(colors: [.systemBackground, .systemGreen])
             }
         }
 
@@ -345,7 +345,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileStatusImage?.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
             a11yValues.append(NSLocalizedString("_upload_mov_livephoto_", comment: ""))
         } else if metadata.isVideo {
-            cell.fileStatusImage?.image = utility.loadImage(named: "play.circle", colors: [NCBrandColor.shared.iconImageColor])
+            cell.fileStatusImage?.image = utility.loadImage(named: "play.circle.fill", colors: [.systemBackgroundInverted, .systemGray6])
         }
 
         switch metadata.status {

@@ -115,8 +115,8 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         imageVisualEffect.clipsToBounds = true
         imageVisualEffect.alpha = 0.5
 
-        iconsStackView.addBlurBackground(style: .systemThinMaterialDark)
-        iconsStackView.layer.cornerRadius = 6
+        iconsStackView.addBlurBackground(style: .systemMaterial)
+        iconsStackView.layer.cornerRadius = 8
         iconsStackView.clipsToBounds = true
 //        iconsStackView.addVibrancyOverlay(using: blur, style: .fill)
 
@@ -221,13 +221,13 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 
     func setIconOutlines() {
-//        [imageStatus, imageLocal, imageSelect, imageFavorite].forEach { imageView in
-//            if imageView == imageFavorite {
-//                imageView.makeCircularBackground(withColor: imageView.image != nil ? NCBrandColor.shared.yellowFavorite : .clear)
-//            } else {
-//                imageView.makeCircularBackground(withColor: imageView.image != nil ? .systemBackground : .clear)
-//            }
-//
+//        [imageLocal, imageFavorite].forEach { imageView in
+////            if imageView == imageFavorite {
+////                imageView.makeCircularBackground(withColor: imageView.image != nil ? NCBrandColor.shared.yellowFavorite : .clear)
+////            } else {
+////                imageView.makeCircularBackground(withColor: imageView.image != nil ? .systemBackground : .clear)
+////            }
+////
 //            if imageView.image != nil {
 //                imageView.layer.masksToBounds = false
 //                imageView.clipsToBounds = false

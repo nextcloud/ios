@@ -3,6 +3,7 @@
     <device id="retina4_7" orientation="portrait" appearance="dark"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24063"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -74,25 +75,26 @@
                             <action selector="touchUpInsideMore:" destination="vf1-Kf-9uL" eventType="touchUpInside" id="GDx-NN-gE9"/>
                         </connections>
                     </button>
-                    <stackView opaque="NO" contentMode="scaleToFill" spacing="1" translatesAutoresizingMaskIntoConstraints="NO" id="dYL-ap-9lA">
-                        <rect key="frame" x="160" y="5" width="41" height="20"/>
+                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dYL-ap-9lA">
+                        <rect key="frame" x="162" y="5" width="39" height="37"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="play.circle" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="a0p-rj-jnV" userLabel="imageStatus">
                                 <rect key="frame" x="0.0" y="0.5" width="20" height="19"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="arrow.down.circle" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="81G-wH-fjN" userLabel="imageLocal">
-                                <rect key="frame" x="0.0" y="0.5" width="20" height="19"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="81G-wH-fjN" userLabel="imageLocal">
+                                <rect key="frame" x="4" y="18" width="15.5" height="15.5"/>
+                                <imageReference key="image" image="arrow.down.circle" catalog="system" symbolScale="small"/>
+                                <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="small"/>
                             </imageView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="star.circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="AYs-f2-vve" userLabel="imageFavorite">
-                                <rect key="frame" x="21" y="0.5" width="20" height="19"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="AYs-f2-vve" userLabel="imageFavorite">
+                                <rect key="frame" x="19.5" y="18" width="15.5" height="15.5"/>
                                 <color key="tintColor" systemColor="systemYellowColor"/>
+                                <imageReference key="image" image="star.circle.fill" catalog="system" symbolScale="small"/>
+                                <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="small"/>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" red="0.4036219325" green="0.80000000000000004" blue="0.71445474529999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="20" id="FOF-YH-TNe"/>
-                        </constraints>
+                        <edgeInsets key="layoutMargins" top="1" left="4" bottom="1" right="4"/>
                         <variation key="default">
                             <mask key="subviews">
                                 <exclude reference="a0p-rj-jnV"/>
