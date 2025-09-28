@@ -261,11 +261,11 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         let fileName: String
         let serverUrl: String
         let ocId: String?
+        let ocIdTransfer: String?
         let etag: String?
         let date: Date?
         let size: Int64
         let taskIdentifier: Int?
-        let errorCode: Int?
     }
 
     let networkingTasks = NetworkingTasks()
@@ -305,7 +305,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     private var uploadStoreURL: URL?
     private let encoderUploadItem: JSONEncoder
     private let decoderUploadItem: JSONDecoder
-    private var uploadItemsCache: [UploadItemDisk] = []                                 // in-memory snapshot
+    var uploadItemsCache: [UploadItemDisk] = []
 
     // Capabilities
     var capabilities = ThreadSafeDictionary<String, NKCapabilities.Capabilities>()
