@@ -159,7 +159,11 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         // Restore previously cached progress for this file transfer, or reset to 0 if not found
         let key = "\(metadata.serverUrl)|\(metadata.fileNameView)"
         let progress = transferProgressMap[key] ?? 0
-        cell.setProgress(progress: progress)
+        if progress == 0 {
+            cell.setProgress(progress: Float(metadata.progress))
+        } else {
+            cell.setProgress(progress: progress)
+        }
 
         let serverUrlHome = utilityFileSystem.getHomeServer(session: session)
         var pathText = metadata.serverUrl.replacingOccurrences(of: serverUrlHome, with: "")
@@ -251,15 +255,14 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     // MARK: - DataSource
 
     override func reloadDataSource() async {
-        let predicate = NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal)
+        let predicate = NSPredicate(format: "status IN %@", NCGlobal.shared.metadataStatusTransfers)
         let sortDescriptors = [
             RealmSwift.SortDescriptor(keyPath: "status", ascending: false),
             RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
         ]
 
         let metadatas = await self.database.getMetadatasAsync(predicate: predicate,
-                                                              withSort: sortDescriptors,
-                                                              withLimit: 100)
+                                                              withSort: sortDescriptors)
         if let metadatas, !metadatas.isEmpty {
             self.dataSource = NCCollectionViewDataSource(metadatas: metadatas,
                                                          layoutForView: self.layoutForView)
