@@ -106,8 +106,16 @@ final class NCImageCache: @unchecked Sendable {
         cache.setValue(image, forKey: ocId + etag + ext, cost: cost)
     }
 
+    func addImageCache(image: UIImage, key: String) {
+        cache.setValue(image, forKey: key)
+    }
+
     func getImageCache(ocId: String, etag: String, ext: String) -> UIImage? {
         return cache.value(forKey: ocId + etag + ext)
+    }
+
+    func getImageCache(key: String) -> UIImage? {
+        return cache.value(forKey: key)
     }
 
     func removeImageCache(ocIdPlusEtag: String) {
@@ -128,10 +136,8 @@ final class NCImageCache: @unchecked Sendable {
                            showOnlyVideos: Bool) -> NSPredicate {
         var predicate = NSPredicate()
         let startServerUrl = self.utilityFileSystem.getHomeServer(session: session) + mediaPath
-
-        var showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND mediaSearch == true AND hasPreview == true AND (classFile == '\(NKTypeClassFile.image.rawValue)' OR classFile == '\(NKTypeClassFile.video.rawValue)') AND NOT (status IN %@)"
-
-        var showOnlyPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND mediaSearch == true AND hasPreview == true AND classFile == %@ AND NOT (status IN %@)"
+        let showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND mediaSearch == true AND hasPreview == true AND (classFile == '\(NKTypeClassFile.image.rawValue)' OR classFile == '\(NKTypeClassFile.video.rawValue)') AND NOT (status IN %@)"
+        let showOnlyPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND mediaSearch == true AND hasPreview == true AND classFile == %@ AND NOT (status IN %@)"
 
         if showOnlyImages {
             predicate = NSPredicate(format: showOnlyPredicateMediaString, session.account, startServerUrl, NKTypeClassFile.image.rawValue, global.metadataStatusHideInView)

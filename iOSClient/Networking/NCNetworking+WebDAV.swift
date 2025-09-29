@@ -844,6 +844,9 @@ class NCOperationDownloadAvatar: ConcurrentOperation, @unchecked Sendable {
 
             if error == .success, let image {
                 NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag ?? "")
+                #if !EXTENSION
+                NCImageCache.shared.addImageCache(image: image, key: self.fileName)
+                #endif
 
                 DispatchQueue.main.async {
                     let visibleCells: [UIView] = (self.view as? UICollectionView)?.visibleCells ?? (self.view as? UITableView)?.visibleCells ?? []
