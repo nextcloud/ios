@@ -280,27 +280,24 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 
     func setIconOutlines() {
-        [imageStatus, imageLocal, imageSelect, imageFavorite].forEach { imageView in
-//            if imageView == imageFavorite {
-//                imageView.makeCircularBackground(withColor: imageView.image != nil ? NCBrandColor.shared.yellowFavorite : .clear)
-//            } else if imageView == imageLocal {
-//                imageView.makeCircularBackground(withColor: imageView.image != nil ? .systemGreen : .clear)
-//            } else {
-//                imageView.makeCircularBackground(withColor: imageView.image != nil ? .systemBackground : .clear)
-//            }
-
-            if imageView.image != nil {
-                imageView.layer.masksToBounds = false
-                imageView.clipsToBounds = false
-                imageView.layer.shadowColor = UIColor.black.cgColor
-                imageView.layer.shadowOpacity = 0.2
-                imageView.layer.shadowRadius = 3.5
-                imageView.layer.shadowOffset = CGSize(width: 0, height: 1)
-                imageView.layer.shadowPath = UIBezierPath(ovalIn: imageView.bounds).cgPath
-            } else {
-                imageView.layer.shadowOpacity = 0
-            }
+        [imageStatus, imageLocal].forEach { imageView in
+            imageView.makeCircularBackground(withColor: imageView.image != nil ? .systemBackground : .clear)
         }
+
+        let outlineView = UIImageView()
+        outlineView.translatesAutoresizingMaskIntoConstraints = false
+        outlineView.image = UIImage(systemName: "star")
+        outlineView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 16, weight: .thin)
+        outlineView.tintColor = .systemBackground
+
+        imageFavorite.addSubview(outlineView)
+        NSLayoutConstraint.activate([
+            outlineView.leadingAnchor.constraint(equalTo: imageFavorite.leadingAnchor, constant: -1),
+            outlineView.trailingAnchor.constraint(equalTo: imageFavorite.trailingAnchor, constant: 1),
+            outlineView.topAnchor.constraint(equalTo: imageFavorite.topAnchor, constant: -1),
+            outlineView.bottomAnchor.constraint(equalTo: imageFavorite.bottomAnchor, constant: 1)
+        ])
+        imageFavorite.sendSubviewToBack(outlineView)
     }
 
     override func layoutSubviews() {

@@ -220,27 +220,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         accessibilityValue = value
     }
 
-    func setIconOutlines() {
-//        [imageLocal, imageFavorite].forEach { imageView in
-////            if imageView == imageFavorite {
-////                imageView.makeCircularBackground(withColor: imageView.image != nil ? NCBrandColor.shared.yellowFavorite : .clear)
-////            } else {
-////                imageView.makeCircularBackground(withColor: imageView.image != nil ? .systemBackground : .clear)
-////            }
-////
-//            if imageView.image != nil {
-//                imageView.layer.masksToBounds = false
-//                imageView.clipsToBounds = false
-//                imageView.layer.shadowColor = UIColor.black.cgColor
-//                imageView.layer.shadowOpacity = 0.3
-//                imageView.layer.shadowRadius = 2.0
-//                imageView.layer.shadowOffset = CGSize(width: 0, height: 1)
-//                imageView.layer.shadowPath = UIBezierPath(ovalIn: imageView.bounds).cgPath
-//            } else {
-//                imageView.layer.shadowOpacity = 0
-//            }
-//        }
-    }
+    func setIconOutlines() {}
 }
 
 protocol NCGridCellDelegate: AnyObject {
