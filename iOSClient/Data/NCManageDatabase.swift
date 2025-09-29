@@ -182,7 +182,7 @@ final class NCManageDatabase: @unchecked Sendable {
 
         let configuration = Realm.Configuration(fileURL: databaseFileUrl, schemaVersion: databaseSchemaVersion, objectTypes: objectTypes)
 
-        realmQueue.async {
+        realmQueue.async(qos: .userInitiated, flags: .enforceQoS) {
             do {
                 Realm.Configuration.defaultConfiguration = configuration
                 let realm = try Realm()
@@ -285,7 +285,7 @@ final class NCManageDatabase: @unchecked Sendable {
                 }
             }
         } else {
-            realmQueue.async {
+            realmQueue.async(qos: .userInitiated, flags: .enforceQoS) {
                 autoreleasepool {
                     do {
                         let realm = try Realm()
@@ -331,7 +331,7 @@ final class NCManageDatabase: @unchecked Sendable {
                 realmQueue.sync(execute: executionBlock)
             }
         } else {
-            realmQueue.async(execute: executionBlock)
+            realmQueue.async(qos: .userInitiated, flags: .enforceQoS, execute: executionBlock)
         }
     }
 
@@ -346,7 +346,7 @@ final class NCManageDatabase: @unchecked Sendable {
         #endif
 
         return await withCheckedContinuation { continuation in
-            realmQueue.async {
+            realmQueue.async(qos: .userInitiated, flags: .enforceQoS) {
                 autoreleasepool {
                     do {
                         let realm = try Realm()
@@ -370,7 +370,7 @@ final class NCManageDatabase: @unchecked Sendable {
         #endif
 
         await withCheckedContinuation { continuation in
-            realmQueue.async {
+            realmQueue.async(qos: .userInitiated, flags: .enforceQoS) {
                 autoreleasepool {
                     do {
                         let realm = try Realm()
