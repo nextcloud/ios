@@ -142,7 +142,7 @@ final class NCBrandColor: @unchecked Sendable {
     private var themingColorText = ThreadSafeDictionary<String, UIColor>()
 
     var userColors: [CGColor] = []
-    let yellowFavorite: UIColor = UIColor(red: 248.0 / 255.0, green: 205.0 / 255.0, blue: 70.0 / 255.0, alpha: 1.0)
+    let yellowFavorite: UIColor = UIColor(red: 0.6118, green: 0.4549, blue: 0.1451, alpha: 1.0)
     let iconImageColor: UIColor = .label
     let iconImageColor2: UIColor = .secondaryLabel
     let iconImageMultiColors: [UIColor] = [.secondaryLabel, .label]
