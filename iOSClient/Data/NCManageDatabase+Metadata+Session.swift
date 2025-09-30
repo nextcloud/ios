@@ -211,23 +211,4 @@ extension NCManageDatabase {
             }
         }
     }
-
-    // MARK: - Realm Read
-
-    func updateBadge() async {
-        #if !EXTENSION
-        let num = await performRealmReadAsync { realm in
-            realm.objects(tableMetadata.self)
-                .filter(NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal))
-                .count
-        } ?? 0
-        DispatchQueue.main.async {
-            UNUserNotificationCenter.current().setBadgeCount(num) { error in
-                if let error {
-                    print("Failed to set badge count: \(error)")
-                }
-            }
-        }
-        #endif
-    }
 }

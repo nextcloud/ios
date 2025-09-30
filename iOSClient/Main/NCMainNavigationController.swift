@@ -582,18 +582,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
 
         // Update App Icon badge / File Icon badge
-#if DEBUG
         try? await UNUserNotificationCenter.current().setBadgeCount(transferCount)
-        fileItem?.badgeValue = transferCount == 0 ? nil : "\(transferCount)"
-#else
-        if transferCount > 999 {
-            try? await UNUserNotificationCenter.current().setBadgeCount(999)
-            fileItem?.badgeValue = "999+"
-        } else {
-            try? await UNUserNotificationCenter.current().setBadgeCount(transferCount)
-            fileItem?.badgeValue = transferCount == 0 ? nil : "\(transferCount)"
-        }
-#endif
+        fileItem?.badgeValue = transferCount == 0 ? nil : utility.formatBadgeCount(transferCount)
 
         return transferCount
     }

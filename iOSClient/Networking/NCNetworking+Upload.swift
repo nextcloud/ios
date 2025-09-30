@@ -349,7 +349,6 @@ extension NCNetworking {
                 }
             }
         }
-        await NCManageDatabase.shared.updateBadge()
     }
 
     func uploadCancelFile(metadata: tableMetadata) async {
