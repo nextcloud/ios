@@ -8,6 +8,8 @@ import UIKit
 
 /// A view that allows the user to configure the `auto upload settings for Nextcloud`
 struct NCAutoUploadView: View {
+    @State private var reachedAnchor = false
+
     @StateObject var model: NCAutoUploadModel
     @StateObject var albumModel: AlbumModel
     @State private var showUploadFolder = false
@@ -205,31 +207,38 @@ struct NCAutoUploadView: View {
                 })
             }
             .disabled(model.autoUploadStart)
+        }
+        .safeAreaInset(edge: .bottom) {
+            autoUploadStartButton
+                .frame(maxWidth: .infinity)
+                .padding(.bottom, 10)
+        }
+    }
 
-            // Auto Upload Full
-            Section(content: {
-                Toggle(isOn: model.autoUploadOnlyNew || model.autoUploadStart ? $model.autoUploadStart : $showUploadAllPhotosWarning) {
-                    Text(model.autoUploadStart ? "_stop_autoupload_" : "_start_autoupload_")
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 10)
-                }
+    @ViewBuilder
+    var autoUploadStartButton: some View {
+        Section(content: {
+            let toggle = Toggle(isOn: model.autoUploadOnlyNew || model.autoUploadStart ? $model.autoUploadStart : $showUploadAllPhotosWarning) {
+                Text(model.autoUploadStart ? "_stop_autoupload_" : "_start_autoupload_")
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 10)
+            }
                 .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                 .onChange(of: model.autoUploadStart) { _, newValue in
                     albumModel.populateSelectedAlbums()
                     model.handleAutoUploadChange(newValue: newValue, assetCollections: albumModel.selectedAlbums)
                 }
                 .font(.headline)
-                .toggleStyle(.button)
-                .buttonStyle(.bordered)
-            }, footer: {
-                Text(NSLocalizedString("_autoupload_notice_", comment: ""))
-                    .padding(.top, 20)
-                    .padding(.bottom, 40)
-            })
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-            .listRowInsets(EdgeInsets())
-            .background(Color(UIColor.systemGroupedBackground))
-        }
+
+            if #available(iOS 26.0, *) {
+                toggle
+                    .toggleStyle(.button)
+                    .buttonStyle(.glass)
+            } else {
+                toggle
+                    .toggleStyle(AutoUploadProminentButtonStyle(model: model))
+            }
+        })
     }
 }
 
@@ -243,6 +252,34 @@ var noPermissionsView: some View {
     .padding(16)
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color(UIColor.systemGroupedBackground))
+}
+
+// Custom prominent brand button style used for Toggle-as-Button
+private struct AutoUploadProminentButtonStyle: ToggleStyle {
+    let model: NCAutoUploadModel
+    private var onBackground: Color { Color(NCBrandColor.shared.getElement(account: model.session.account)) }
+    private let offBackground = Color(UIColor.systemGray5)
+    private let onForeground = Color.white
+    private let offForeground = Color.primary
+    private let cornerRadius: CGFloat = 40
+
+    func makeBody(configuration: Configuration) -> some View {
+        Button {
+            configuration.isOn.toggle()
+        } label: {
+            configuration.label
+                .foregroundColor(configuration.isOn ? onForeground : offForeground)
+                .padding(.vertical, 10)
+                .contentShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .background(
+            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                .fill((configuration.isOn ? onBackground : offBackground))
+        )
+        .animation(.easeOut(duration: 0.15), value: configuration.isOn)
+        .shadow(color: .black.opacity(0.2), radius: 10, x: 0, y: 3)
+    }
 }
 
 #Preview {
