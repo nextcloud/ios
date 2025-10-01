@@ -17,6 +17,8 @@ class NCFiles: NCCollectionViewCommon {
 
     internal var syncMetadatasTask: Task<Void, Never>?
 
+    private var didBecomeActiveObserver: NSObjectProtocol?
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
 
@@ -41,15 +43,6 @@ class NCFiles: NCCollectionViewCommon {
                     let color = NCBrandColor.shared.getElement(account: account)
                     self.mainNavigationController?.menuToolbar.items?.forEach { $0.tintColor = color }
                 }
-            }
-        }
-
-        NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { _ in
-            Task { @MainActor in
-                await (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
-                await (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
-
-                self.collectionView.reloadData()
             }
         }
 
@@ -132,6 +125,14 @@ class NCFiles: NCCollectionViewCommon {
                 await getServerData()
             }
         }
+
+        didBecomeActiveObserver = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { _ in
+            Task { @MainActor in
+                await (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
+
+                self.collectionView.reloadData()
+            }
+        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -140,6 +141,10 @@ class NCFiles: NCCollectionViewCommon {
         stopSyncMetadata()
         Task {
             await NCNetworking.shared.networkingTasks.cancel(identifier: "\(self.serverUrl)_NCFiles")
+        }
+
+        if let didBecomeActiveObserver {
+            NotificationCenter.default.removeObserver(didBecomeActiveObserver)
         }
     }
 
