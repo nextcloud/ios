@@ -44,6 +44,15 @@ class NCFiles: NCCollectionViewCommon {
             }
         }
 
+        NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { _ in
+            Task { @MainActor in
+                await (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
+                await (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
+
+                self.collectionView.reloadData()
+            }
+        }
+
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
             self.stopSyncMetadata()
         }
