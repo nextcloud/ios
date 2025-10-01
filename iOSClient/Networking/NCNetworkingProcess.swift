@@ -20,9 +20,9 @@ actor NCNetworkingProcess {
 
     private var timer: DispatchSourceTimer?
     private let timerQueue = DispatchQueue(label: "com.nextcloud.timerProcess", qos: .utility)
-    private var lastUsedInterval: TimeInterval = 3
-    private let maxInterval: TimeInterval = 3
-    private let minInterval: TimeInterval = 1.5
+    private var lastUsedInterval: TimeInterval = 4
+    private let maxInterval: TimeInterval = 4
+    private let minInterval: TimeInterval = 2
 
     private init() {
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayerIsPlaying), object: nil, queue: nil) { [weak self] _ in
@@ -162,10 +162,21 @@ actor NCNetworkingProcess {
 
     private func runMetadataPipelineAsync() async {
         let database = NCManageDatabase.shared
-        let metadatas = await database.getMetadatasAsync(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal))
-        guard !metadatas.isEmpty else {
+        let metadatas = await database.getMetadatasAsync(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal), withLimit: NCBrandOptions.shared.numMaximumProcess)
+        guard let metadatas,
+              !metadatas.isEmpty else {
             return
         }
+
+        let counterDownloading = metadatas.filter { $0.status == self.global.metadataStatusDownloading }.count
+        let counterUploading = metadatas.filter { $0.status == self.global.metadataStatusUploading }.count
+        let processRate: Double = Double(counterDownloading + counterUploading) / Double(NCBrandOptions.shared.numMaximumProcess)
+        // if less than 20% exit
+        if processRate > 0.2 {
+            nkLog(debug: "Process rate \(processRate)")
+            return
+        }
+        var availableProcess = NCBrandOptions.shared.numMaximumProcess - (counterDownloading + counterUploading)
 
         /// ------------------------ WEBDAV
         let waitWebDav = metadatas.filter { self.global.metadataStatusWaitWebDav.contains($0.status) }
@@ -176,50 +187,49 @@ actor NCNetworkingProcess {
             }
         }
 
-        /// ------------------------ DOWNLOAD
-        let httpMaximumConnectionsPerHostInDownload = NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload
-        var counterDownloading = metadatas.filter { $0.status == self.global.metadataStatusDownloading }.count
-        let limitDownload = max(0, httpMaximumConnectionsPerHostInDownload - counterDownloading)
-
+        // ------------------------ DOWNLOAD
         let filteredDownload = metadatas
             .filter { $0.session == self.networking.sessionDownloadBackground && $0.status == NCGlobal.shared.metadataStatusWaitDownload }
             .sorted { ($0.sessionDate ?? Date.distantFuture) < ($1.sessionDate ?? Date.distantFuture) }
-            .prefix(limitDownload)
+            .prefix(availableProcess)
         let metadatasWaitDownload = Array(filteredDownload)
 
-        for metadata in metadatasWaitDownload where counterDownloading < httpMaximumConnectionsPerHostInDownload {
-            counterDownloading += 1
+        for metadata in metadatasWaitDownload {
+            availableProcess -= 1
             await networking.downloadFileInBackground(metadata: metadata)
         }
 
-        /// ------------------------ UPLOAD
+        // TEST AVAILABLE PROCESS
+        guard availableProcess > 0 else {
+            return
+        }
 
-        /// CHUNK or  E2EE - only one for time
+        // ------------------------ UPLOAD
+
+        // CHUNK or  E2EE - only one for time
         let hasUploadingMetadataWithChunksOrE2EE = metadatas.filter { $0.status == NCGlobal.shared.metadataStatusUploading && ($0.chunk > 0 || $0.e2eEncrypted == true) }
         if !hasUploadingMetadataWithChunksOrE2EE.isEmpty {
             return
         }
 
-        var httpMaximumConnectionsPerHostInUpload = NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload
         let isWiFi = self.networking.networkReachability == NKTypeReachability.reachableEthernetOrWiFi
         let sessionUploadSelectors = [self.global.selectorUploadFileNODelete, self.global.selectorUploadFile, self.global.selectorUploadAutoUpload]
-        var counterUploading = metadatas.filter { $0.status == self.global.metadataStatusUploading }.count
         for sessionSelector in sessionUploadSelectors {
-            guard counterUploading < httpMaximumConnectionsPerHostInUpload else { return }
 
-            let limitUpload = max(0, httpMaximumConnectionsPerHostInUpload - counterUploading)
             let filteredUpload = metadatas
                 .filter { $0.sessionSelector == sessionSelector && $0.status == NCGlobal.shared.metadataStatusWaitUpload }
                 .sorted { ($0.sessionDate ?? Date.distantFuture) < ($1.sessionDate ?? Date.distantFuture) }
-                .prefix(limitUpload)
+                .prefix(availableProcess)
             let metadatasWaitUpload = Array(filteredUpload)
 
             if !metadatasWaitUpload.isEmpty {
-                nkLog(debug: "PROCESS (UPLOAD) find \(metadatasWaitUpload.count) items")
+                nkLog(debug: "PROCESS (UPLOAD \(sessionSelector)) find \(metadatasWaitUpload.count) items")
             }
 
             for metadata in metadatasWaitUpload {
-                guard counterUploading < httpMaximumConnectionsPerHostInUpload else { return }
+                guard availableProcess > 0 else {
+                    return
+                }
                 let metadatas = await NCCameraRoll().extractCameraRoll(from: metadata)
 
                 // no extract photo
@@ -228,8 +238,9 @@ actor NCNetworkingProcess {
                 }
 
                 for metadata in metadatas {
-                    guard counterUploading < httpMaximumConnectionsPerHostInUpload,
-                          timer != nil else { return }
+                    guard timer != nil else {
+                        return
+                    }
 
                     /// NO WiFi
                     if !isWiFi && metadata.session == networking.sessionUploadBackgroundWWan { continue }
@@ -254,10 +265,10 @@ actor NCNetworkingProcess {
                         }
                     }
 
+                    // With E2EE or CHUNK upload and exit
                     if metadata.isDirectoryE2EE {
                         await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: controller)
-
-                        httpMaximumConnectionsPerHostInUpload = 1
+                        return
                     } else if metadata.chunk > 0 {
                         let controller = controller
 
@@ -282,12 +293,11 @@ actor NCNetworkingProcess {
 
                             hud.dismiss()
                         }
-
-                        httpMaximumConnectionsPerHostInUpload = 1
+                        return
                     } else {
                         await networking.uploadFileInBackground(metadata: metadata)
                     }
-                    counterUploading += 1
+                    availableProcess -= 1
                 }
             }
         }

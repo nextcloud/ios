@@ -259,8 +259,7 @@ extension NCNetworking {
             metadata.sessionTaskIdentifier = 0
             metadata.status = self.global.metadataStatusNormal
 
-            await NCManageDatabase.shared.deleteMetadataAsync(predicate: NSPredicate(format: "ocIdTransfer == %@", metadata.ocIdTransfer))
-            await NCManageDatabase.shared.addMetadataAsync(metadata)
+            await NCManageDatabase.shared.replaceMetadataAsync(id: metadata.ocIdTransfer, metadata: metadata)
 
             let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase)
 
@@ -350,7 +349,6 @@ extension NCNetworking {
                 }
             }
         }
-        await NCManageDatabase.shared.updateBadge()
     }
 
     func uploadCancelFile(metadata: tableMetadata) async {
@@ -483,7 +481,7 @@ extension NCNetworking {
                 return
             #endif
 
-            if let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) {
+            if let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@ AND sessionTaskIdentifier == %d", serverUrl, fileName, task.taskIdentifier)) {
                 await uploadComplete(withMetadata: metadata, ocId: ocId, etag: etag, date: date, size: size, error: error)
             } else {
                 let predicate = NSPredicate(format: "fileName == %@ AND serverUrl == %@", fileName, serverUrl)

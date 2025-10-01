@@ -372,7 +372,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
             return
         }
 
-        // Salvataggio asincrono → nessun rischio per il main thread
         DispatchQueue.global(qos: .utility).async {
             self.saveX509Certificate(certificate, host: host, directoryCertificate: directoryCertificate)
 

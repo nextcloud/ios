@@ -299,16 +299,21 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 if !metadata.iconUrl.isEmpty {
                     if let ownerId = getAvatarFromIconUrl(metadata: metadata) {
                         let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: ownerId)
-                        self.database.getImageAvatarLoaded(fileName: fileName) { image, tblAvatar in
-                            if let image {
-                                cell.filePreviewImageView?.image = image
-                            } else {
-                                cell.filePreviewImageView?.image = self.utility.loadUserImage(for: ownerId, displayName: nil, urlBase: metadata.urlBase)
-                            }
+                        if let image = NCImageCache.shared.getImageCache(key: fileName) {
+                            cell.filePreviewImageView?.image = image
+                        } else {
+                            self.database.getImageAvatarLoaded(fileName: fileName) { image, tblAvatar in
+                                if let image {
+                                    cell.filePreviewImageView?.image = image
+                                    NCImageCache.shared.addImageCache(image: image, key: fileName)
+                                } else {
+                                    cell.filePreviewImageView?.image = self.utility.loadUserImage(for: ownerId, displayName: nil, urlBase: metadata.urlBase)
+                                }
 
-                            if !(tblAvatar?.loaded ?? false),
-                               self.networking.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
-                                self.networking.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: ownerId, fileName: fileName, account: metadata.account, view: collectionView, isPreviewImageView: true))
+                                if !(tblAvatar?.loaded ?? false),
+                                   self.networking.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
+                                    self.networking.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: ownerId, fileName: fileName, account: metadata.account, view: collectionView, isPreviewImageView: true))
+                                }
                             }
                         }
                     }
@@ -383,19 +388,25 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         // AVATAR
         if !metadata.ownerId.isEmpty, metadata.ownerId != metadata.userId {
-            cell.fileAvatarImageView?.contentMode = .scaleAspectFill
-
             let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: metadata.ownerId)
-            self.database.getImageAvatarLoaded(fileName: fileName) { image, tblAvatar in
-                if let image {
-                    cell.fileAvatarImageView?.image = image
-                } else {
-                    cell.fileAvatarImageView?.image = self.utility.loadUserImage(for: metadata.ownerId, displayName: metadata.ownerDisplayName, urlBase: metadata.urlBase)
-                }
+            if let image = NCImageCache.shared.getImageCache(key: fileName) {
+                cell.fileAvatarImageView?.contentMode = .scaleAspectFill
+                cell.fileAvatarImageView?.image = image
+            } else {
+                self.database.getImageAvatarLoaded(fileName: fileName) { image, tblAvatar in
+                    if let image {
+                        cell.fileAvatarImageView?.contentMode = .scaleAspectFill
+                        cell.fileAvatarImageView?.image = image
+                        NCImageCache.shared.addImageCache(image: image, key: fileName)
+                    } else {
+                        cell.fileAvatarImageView?.contentMode = .scaleAspectFill
+                        cell.fileAvatarImageView?.image = self.utility.loadUserImage(for: metadata.ownerId, displayName: metadata.ownerDisplayName, urlBase: metadata.urlBase)
+                    }
 
-                if !(tblAvatar?.loaded ?? false),
-                   self.networking.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
-                    self.networking.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: metadata.ownerId, fileName: fileName, account: metadata.account, view: collectionView))
+                    if !(tblAvatar?.loaded ?? false),
+                       self.networking.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
+                        self.networking.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: metadata.ownerId, fileName: fileName, account: metadata.account, view: collectionView))
+                    }
                 }
             }
         }

@@ -114,16 +114,16 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     }
 
     /// Function to update the user data
-    func getUserStatus() -> (statusImage: UIImage?, statusMessage: String, descriptionMessage: String) {
+    func getUserStatus() -> (statusImage: UIImage?, statusImageColor: UIColor, statusMessage: String, descriptionMessage: String) {
         guard let tblAccount,
               let capabilities = NCNetworking.shared.capabilities[tblAccount.account] else {
-            return (UIImage(), "", "")
+            return (UIImage(), .black, "", "")
         }
         if capabilities.userStatusEnabled,
            let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", tblAccount.account)) {
             return NCUtility().getUserStatus(userIcon: tableAccount.userStatusIcon, userStatus: tableAccount.userStatusStatus, userMessage: tableAccount.userStatusMessage)
         }
-        return (nil, "", "")
+        return (nil, .black, "", "")
     }
 
     /// Is the user an Admin

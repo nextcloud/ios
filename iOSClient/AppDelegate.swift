@@ -201,8 +201,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 return
             }
 
-            let numTransfers = await backgroundSync(tblAccount: tblAccount, task: task)
-            nkLog(tag: self.global.logTagTask, emoji: .success, message: "Refresh task completed with \(numTransfers) transfers")
+            await backgroundSync(tblAccount: tblAccount, task: task)
         }
     }
 
@@ -227,94 +226,98 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                return
            }
 
-           let numTransfers = await backgroundSync(tblAccount: tblAccount, task: task)
-           nkLog(tag: self.global.logTagTask, emoji: .success, message: "Processing task completed with \(numTransfers) transfers of auto upload")
+           await backgroundSync(tblAccount: tblAccount, task: task)
        }
     }
 
-    func backgroundSync(tblAccount: tableAccount, task: BGTask? = nil) async -> Int {
-        var expiration: Bool = false
-        var numTransfers: Int = 0
-        let sortDescriptors = [
-            RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
-        ]
-
+    func backgroundSync(tblAccount: tableAccount, task: BGTask? = nil) async {
+        // BGTask expiration flag
+        var expired = false
         task?.expirationHandler = {
-            expiration = true
+            expired = true
         }
 
-        // DOWNLOAD
-        let predicateDownload = NSPredicate(format: "status == %d", self.global.metadataStatusWaitDownload)
-        let metadatasWaitDownlod = await NCManageDatabase.shared.getMetadatasAsync(predicate: predicateDownload,
-                                                                                   withSort: sortDescriptors,
-                                                                                   withLimit: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload)
+        // Discover new items for Auto Upload
+        let numAutoUpload = await NCAutoUpload.shared.initAutoUpload(tblAccount: tblAccount)
+        nkLog(tag: self.global.logTagBgSync, emoji: .start, message: "Auto upload found \(numAutoUpload) new items for \(tblAccount.account)")
+        guard !expired else {
+            return
+        }
 
-        if let metadatasWaitDownlod,
-           !metadatasWaitDownlod.isEmpty,
-           !expiration {
-            for metadata in metadatasWaitDownlod {
-                guard !expiration else { return numTransfers }
-                let error = await NCNetworking.shared.downloadFileInBackground(metadata: metadata)
+        // Fetch pending metadatas (bounded set)
+        guard let allMetadatas = await NCManageDatabase.shared.getMetadatasAsync(
+            predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal),
+            withSort: [RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)],
+            withLimit: NCBrandOptions.shared.numMaximumProcess),
+              !allMetadatas.isEmpty,
+              !expired else {
+            return
+        }
 
-                if error == .success {
-                    nkLog(tag: self.global.logTagBgSync, message: "Create new download \(metadata.fileName) in \(metadata.serverUrl)")
+        // Create all pending Auto Upload folders (fail-fast)
+        let pendingCreateFolders = allMetadatas.lazy.filter {
+            $0.status == self.global.metadataStatusWaitCreateFolder &&
+            $0.sessionSelector == self.global.selectorUploadAutoUpload
+        }
+
+        for meta in pendingCreateFolders {
+            guard !expired else {
+                return
+            }
+            let err = await NCNetworking.shared.createFolderForAutoUpload(
+                serverUrlFileName: meta.serverUrlFileName,
+                account: meta.account
+            )
+            // Fail-fast: abort the whole sync on first failure
+            if err != .success {
+                nkLog(tag: self.global.logTagBgSync, emoji: .error, message: "Create folder '\(meta.serverUrlFileName)' failed: \(err.errorCode) – aborting sync")
+                return
+            }
+        }
+
+        // Capacity computation
+        let downloading = allMetadatas.lazy.filter { $0.status == self.global.metadataStatusDownloading }.count
+        let uploading   = allMetadatas.lazy.filter { $0.status == self.global.metadataStatusUploading }.count
+        let used        = downloading + uploading
+        let maximum     = NCBrandOptions.shared.numMaximumProcess
+        let available   = Swift.max(0, maximum - used)
+
+        // Only inject more work if overall utilization <= 20%
+        let utilization = Double(used) / Double(maximum)
+        guard !expired,
+              available > 0,
+              utilization <= 0.20 else {
+            return
+        }
+
+        // Start Auto Uploads (cap by available slots)
+        let seedsToUpload = Array(
+            allMetadatas.lazy.filter {
+                $0.status == self.global.metadataStatusWaitUpload &&
+                $0.sessionSelector == self.global.selectorUploadAutoUpload &&
+                $0.chunk == 0
+            }
+            .prefix(available)
+        )
+
+        let cameraRoll = NCCameraRoll()
+        for seed in seedsToUpload {
+            guard !expired else {
+                return
+            }
+            // Expand seed into concrete metadatas (e.g., Live Photo pair)
+            let extracted = await cameraRoll.extractCameraRoll(from: seed)
+
+            for metadata in extracted {
+                // Sequential await keeps ordering and simplifies backpressure
+                let err = await NCNetworking.shared.uploadFileInBackground(metadata: metadata.detachedCopy())
+                if err == .success {
+                    nkLog(tag: self.global.logTagBgSync, message: "Queued upload \(metadata.fileName) -> \(metadata.serverUrl)")
                 } else {
-                    nkLog(tag: self.global.logTagBgSync, emoji: .error, message: "Download failure \(metadata.fileName) in \(metadata.serverUrl) with error \(error.errorDescription)")
+                    nkLog(tag: self.global.logTagBgSync, emoji: .error, message: "Upload failed \(metadata.fileName) -> \(metadata.serverUrl) [\(err.errorDescription)]")
                 }
-
-                numTransfers += 1
             }
         }
-
-        if numTransfers >= NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload || expiration {
-            return numTransfers
-        }
-
-        // AUTO UPLOAD for get new photo
-        let num = await NCAutoUpload.shared.initAutoUpload(tblAccount: tblAccount)
-        nkLog(tag: self.global.logTagBgSync, emoji: .start, message: "Auto upload with \(num) new photo for \(tblAccount.account)")
-
-        guard !expiration else { return numTransfers }
-
-        // CREATION FOLDERS
-        let predicateCreateFolder = NSPredicate(format: "status == %d AND sessionSelector == %@", self.global.metadataStatusWaitCreateFolder, self.global.selectorUploadAutoUpload)
-        let metadatasWaitCreateFolder = await NCManageDatabase.shared.getMetadatasAsync(predicate: predicateCreateFolder,
-                                                                                        withLimit: NCBrandOptions.shared.httpMaximumConnectionsPerHost) ?? []
-
-        for metadata in metadatasWaitCreateFolder {
-            guard !expiration else { return numTransfers }
-            let error = await NCNetworking.shared.createFolderForAutoUpload(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
-            guard error == .success else {
-                nkLog(tag: self.global.logTagBgSync, emoji: .error, message: "Auto upload create folder \(metadata.serverUrlFileName) with error: \(error.errorCode)")
-                return numTransfers
-            }
-        }
-
-        // UPLOAD
-        let predicateUpload = NSPredicate(format: "status == %d AND sessionSelector == %@ AND chunk == 0", self.global.metadataStatusWaitUpload, self.global.selectorUploadAutoUpload)
-        let metadatasWaitUpload = await NCManageDatabase.shared.getMetadatasAsync(predicate: predicateUpload,
-                                                                                  withSort: sortDescriptors,
-                                                                                  withLimit: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload)
-
-        if let metadatasWaitUpload,
-           !metadatasWaitUpload.isEmpty,
-           !expiration {
-            let metadatas = await NCCameraRoll().extractCameraRoll(from: metadatasWaitUpload)
-
-            for metadata in metadatas {
-                guard !expiration else { return numTransfers }
-                let error = await NCNetworking.shared.uploadFileInBackground(metadata: metadata.detachedCopy())
-                if error == .success {
-                    nkLog(tag: self.global.logTagBgSync, message: "Create new upload \(metadata.fileName) in \(metadata.serverUrl)")
-                } else {
-                    nkLog(tag: self.global.logTagBgSync, emoji: .error, message: "Upload failure \(metadata.fileName) in \(metadata.serverUrl) with error \(error.errorDescription)")
-                }
-
-                numTransfers += 1
-            }
-        }
-
-        return numTransfers
     }
 
     // MARK: - Background Networking Session

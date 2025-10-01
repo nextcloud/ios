@@ -254,7 +254,6 @@ extension NCNetworking {
                         }
                     }
                 }
-                await NCManageDatabase.shared.updateBadge()
             }
         }
     }
