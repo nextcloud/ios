@@ -5,6 +5,7 @@
 
 import Foundation
 import UIKit
+import SwiftUI
 import Alamofire
 import NextcloudKit
 import SVGKit
@@ -467,12 +468,22 @@ class NCContextMenu: NSObject {
                                     image: iconImage
                                 ) { _ in
                                     Task {
-                                        await NextcloudKit.shared.sendRequestAsync(account: metadata.account,
-                                                                                   fileId: metadata.fileId,
-                                                                                   filePath: metadata.path,
-                                                                                   url: item.url,
-                                                                                   method: item.method,
-                                                                                   params: item.params)
+                                        let response = await NextcloudKit.shared.sendRequestAsync(account: metadata.account,
+                                                                                                  fileId: metadata.fileId,
+                                                                                                  filePath: metadata.path,
+                                                                                                  url: item.url,
+                                                                                                  method: item.method,
+                                                                                                  params: item.params)
+
+                                        await MainActor.run {
+                                            let viewer = DeclarativeUIViewer(
+                                                rows: [.init(element: "URL", title: "Test", urlString: "/test")],
+                                                baseURL: "test.com"
+                                            )
+                                            let hosting = UIHostingController(rootView: viewer)
+                        hosting.modalPresentationStyle = .pageSheet
+                        self.viewController.present(hosting, animated: true)
+                    }
                                     }
                                 }
 
