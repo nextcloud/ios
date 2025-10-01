@@ -142,10 +142,6 @@ class NCFiles: NCCollectionViewCommon {
         Task {
             await NCNetworking.shared.networkingTasks.cancel(identifier: "\(self.serverUrl)_NCFiles")
         }
-
-        if let didBecomeActiveObserver {
-            NotificationCenter.default.removeObserver(didBecomeActiveObserver)
-        }
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -153,6 +149,10 @@ class NCFiles: NCCollectionViewCommon {
 
         fileNameBlink = nil
         fileNameOpen = nil
+
+        if let didBecomeActiveObserver {
+            NotificationCenter.default.removeObserver(didBecomeActiveObserver)
+        }
     }
 
     // MARK: - DataSource
