@@ -317,7 +317,6 @@ struct ConfirmAutoUploadSheet: View {
                 .buttonStyle(.bordered)
 
             } else {
-                // Simple confirm
                 Button {
                     model.autoUploadStart = true
                     isPresented = false
@@ -342,7 +341,6 @@ struct ConfirmAutoUploadSheet: View {
             }
         }
         .padding(.horizontal, 20)
-        .tint(.primary)
     }
 }
 
