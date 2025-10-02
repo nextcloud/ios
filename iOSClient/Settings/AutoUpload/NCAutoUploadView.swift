@@ -48,29 +48,29 @@ struct NCAutoUploadView: View {
         .sheet(isPresented: $showSelectAlbums) {
             SelectAlbumView(model: albumModel)
         }
-        .alert(NSLocalizedString("_auto_upload_all_photos_warning_title_", comment: ""), isPresented: $showUploadAllPhotosWarning, actions: {
+        .confirmationDialog(NSLocalizedString("_auto_upload_all_photos_warning_title_", comment: ""), isPresented: $showUploadAllPhotosWarning, titleVisibility: .visible) {
             if model.existsAutoUpload() {
-                Button("_confirm_continue_") {
+                Button(NSLocalizedString("_confirm_continue_", comment: "")) {
                     model.autoUploadStart = true
                 }
-                Button("_confirm_resetting_") {
+                Button(NSLocalizedString("_confirm_resetting_", comment: "")) {
                     model.deleteAutoUploadTransfer()
                     model.autoUploadStart = true
                 }
-                Button("_cancel_", role: .cancel) {
+                Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) {
                     model.autoUploadStart = false
                 }
             } else {
-                Button("_confirm_") {
+                Button(NSLocalizedString("_confirm_", comment: "")) {
                     model.autoUploadStart = true
                 }
-                Button("_cancel_", role: .cancel) {
+                Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) {
                     model.autoUploadStart = false
                 }
             }
-        }, message: {
-            Text("_auto_upload_all_photos_warning_message_")
-        })
+        } message: {
+            Text(NSLocalizedString("_auto_upload_all_photos_warning_message_", comment: ""))
+        }
         .tint(.primary)
     }
 
