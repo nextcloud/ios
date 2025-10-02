@@ -389,6 +389,18 @@ extension NCManageDatabase {
         }
     }
 
+    /// Asynchronously retrieves `tableAccount` matching the given predicate.
+    /// - Parameter predicate: The NSPredicate used to filter the `tableAccount` objects.
+    /// - Returns: A copy of matching `tableAccount`, or `nil` if none is found.
+    func getTableAccountsAsync(predicate: NSPredicate) async -> [tableAccount] {
+        await performRealmReadAsync { realm in
+            realm.objects(tableAccount.self)
+                .filter(predicate)
+                .sorted(byKeyPath: "active", ascending: false)
+                .map { tableAccount(value: $0) }
+        } ?? []
+    }
+
     func getAllTableAccount() -> [tableAccount] {
         performRealmRead { realm in
             let sorted = [SortDescriptor(keyPath: "active", ascending: false),
