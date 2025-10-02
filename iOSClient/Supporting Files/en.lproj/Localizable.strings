@@ -256,8 +256,8 @@
 "_autoupload_favorites_"            = "Auto upload favorites only";
 "_autoupload_description_"          = "New photos/videos will be automatically uploaded to your server.";
 "_autoupload_fullphotos_"           = "Upload the whole camera roll";
-"_start_autoupload_"                = "Turn on auto uploading";
-"_stop_autoupload_"                 = "Stop auto uploading";
+"_start_autoupload_"                = "Turn on auto upload";
+"_stop_autoupload_"                 = "Turn off auto upload";
 "_autoupload_fullphotos_footer_"    = "Adjust the options above before uploading.";
 "_autoupload_create_subfolder_"     = "Use subfolders";
 "_autoupload_create_subfolder_footer_"  = "Store photos in subfolders based on year, month or day.";
