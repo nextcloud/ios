@@ -48,30 +48,10 @@ struct NCAutoUploadView: View {
         .sheet(isPresented: $showSelectAlbums) {
             SelectAlbumView(model: albumModel)
         }
-        .alert(NSLocalizedString("_auto_upload_all_photos_warning_title_", comment: ""), isPresented: $showUploadAllPhotosWarning, actions: {
-            if model.existsAutoUpload() {
-                Button("_confirm_continue_") {
-                    model.autoUploadStart = true
-                }
-                Button("_confirm_resetting_") {
-                    model.deleteAutoUploadTransfer()
-                    model.autoUploadStart = true
-                }
-                Button("_cancel_", role: .cancel) {
-                    model.autoUploadStart = false
-                }
-            } else {
-                Button("_confirm_") {
-                    model.autoUploadStart = true
-                }
-                Button("_cancel_", role: .cancel) {
-                    model.autoUploadStart = false
-                }
-            }
-        }, message: {
-            Text("_auto_upload_all_photos_warning_message_")
-        })
-        .tint(.primary)
+        .sheet(isPresented: $showUploadAllPhotosWarning) {
+            ConfirmAutoUploadSheet(model: model, isPresented: $showUploadAllPhotosWarning)
+            .presentationDetents([.medium, .large])
+        }
     }
 
     @ViewBuilder
@@ -279,6 +259,84 @@ private struct AutoUploadProminentButtonStyle: ToggleStyle {
         )
         .animation(.easeOut(duration: 0.15), value: configuration.isOn)
         .shadow(color: .black.opacity(0.2), radius: 10, x: 0, y: 3)
+    }
+}
+
+struct ConfirmAutoUploadSheet: View {
+    @ObservedObject var model: NCAutoUploadModel
+    @Binding var isPresented: Bool
+
+    var body: some View {
+        VStack(spacing: 16) {
+            // Title
+            Text(NSLocalizedString("_auto_upload_all_photos_warning_title_", comment: ""))
+                .font(.headline)
+                .multilineTextAlignment(.center)
+
+            // Message
+            Text(NSLocalizedString("_auto_upload_all_photos_warning_message_", comment: ""))
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+
+            if model.existsAutoUpload() {
+                Button {
+                    model.autoUploadStart = true
+                    isPresented = false
+                } label: {
+                    Text(NSLocalizedString("_confirm_continue_", comment: ""))
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+
+                Button {
+                    model.deleteAutoUploadTransfer()
+                    model.autoUploadStart = true
+                    isPresented = false
+                } label: {
+                    Text(NSLocalizedString("_confirm_resetting_", comment: ""))
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+
+                }
+                .buttonStyle(.bordered)
+
+                Button(role: .cancel) {
+                    model.autoUploadStart = false
+                    isPresented = false
+                } label: {
+                    Text(NSLocalizedString("_cancel_", comment: ""))
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+
+            } else {
+                // Simple confirm
+                Button {
+                    model.autoUploadStart = true
+                    isPresented = false
+                } label: {
+                    Text(NSLocalizedString("_confirm_", comment: ""))
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+
+                Button(role: .cancel) {
+                    model.autoUploadStart = false
+                    isPresented = false
+                } label: {
+                    Text(NSLocalizedString("_cancel_", comment: ""))
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+            }
+        }
+        .padding(.horizontal, 20)
+        .tint(.primary)
     }
 }
 
