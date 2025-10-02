@@ -117,9 +117,7 @@ class NCBackgroundLocationUploadManager: NSObject, CLLocationManagerDelegate {
             nkLog(tag: self.global.logTagLocation, emoji: .start, message: "Triggered by location change: \(location?.coordinate.latitude ?? 0), \(location?.coordinate.longitude ?? 0)")
 
             Task.detached {
-                if let tblAccount = await self.database.getActiveTableAccountAsync() {
-                    await appDelegate.backgroundSync(tblAccount: tblAccount)
-                }
+                await appDelegate.backgroundSync()
             }
         }
     }
