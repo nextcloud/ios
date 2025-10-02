@@ -50,9 +50,14 @@ class NCAutoUpload: NSObject {
         }
 
         if !tblAccount.autoUploadOnlyNew {
+            // Automatic move to auto upload new
+            await self.database.updateAccountPropertyAsync(\.autoUploadOnlyNew, value: true, account: tblAccount.account)
+
             await MainActor.run {
                 let image = UIImage(systemName: "photo.on.rectangle.angled")?.image(color: .white, size: 20)
                 NCContentPresenter().noteTop(text: NSLocalizedString("_creating_db_photo_progress_", comment: ""), image: image, color: .lightGray, delay: .infinity, priority: .max)
+
+                model.onViewAppear()
             }
         }
 
@@ -66,14 +71,6 @@ class NCAutoUpload: NSObject {
 
         let num = await uploadAssets(controller: controller, tblAccount: tblAccount, assets: assets, fileNames: fileNames)
         nkLog(debug: "Automatic upload \(num) upload")
-
-        // Automatic move to auto upload new
-        if !tblAccount.autoUploadOnlyNew {
-            await self.database.updateAccountPropertyAsync(\.autoUploadOnlyNew, value: true, account: tblAccount.account)
-            await MainActor.run {
-                model.onViewAppear()
-            }
-        }
     }
 
     private func uploadAssets(controller: NCMainTabBarController?,
