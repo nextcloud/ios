@@ -115,7 +115,7 @@
 "_images_"                  = "Images";
 "_confirm_"                 = "Confirm";
 "_confirm_continue_"        = "Confirm by continuing the previous uploading";
-"_confirm_resetting_"       = "confirm ignoring previous uploading ";
+"_confirm_resetting_"       = "Confirm ignoring previous uploading ";
 "_background_location_access_title_"    = "Background Location Access";
 "_background_location_access_message_"  = "This app needs background location access to automatically upload files when you move between areas. GPS is not used and your location is never stored.";
 "_enable_background_location_title_"    = "Enable Background Location";
