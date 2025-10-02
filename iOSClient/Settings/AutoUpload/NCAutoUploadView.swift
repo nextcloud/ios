@@ -279,6 +279,8 @@ struct ConfirmAutoUploadSheet: View {
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
 
+            Spacer().frame(height: 20)
+
             if model.existsAutoUpload() {
                 Button {
                     model.autoUploadStart = true
@@ -302,6 +304,8 @@ struct ConfirmAutoUploadSheet: View {
                 }
                 .buttonStyle(.bordered)
 
+                Spacer().frame(height: 20)
+
                 Button(role: .cancel) {
                     model.autoUploadStart = false
                     isPresented = false
@@ -323,6 +327,8 @@ struct ConfirmAutoUploadSheet: View {
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
+
+                Spacer().frame(height: 20)
 
                 Button(role: .cancel) {
                     model.autoUploadStart = false
