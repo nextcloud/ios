@@ -161,8 +161,10 @@ final class NCManageDatabase: @unchecked Sendable {
     }
 
     private func openRealmAppex() {
-        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-        let databaseFileUrl = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
+        guard let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup) else {
+            return
+        }
+        let databaseFileUrl = dirGroup.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
         let bundleUrl: URL = Bundle.main.bundleURL
         var objectTypes: [Object.Type]
 
@@ -183,19 +185,26 @@ final class NCManageDatabase: @unchecked Sendable {
             ]
         }
 
-        let configuration = Realm.Configuration(fileURL: databaseFileUrl, schemaVersion: databaseSchemaVersion, objectTypes: objectTypes)
-        Realm.Configuration.defaultConfiguration = configuration
+        let migrationCfg = Realm.Configuration(fileURL: databaseFileUrl,
+                                               schemaVersion: databaseSchemaVersion,
+                                               migrationBlock: { migration, oldSchemaVersion in
+            self.migrationSchema(migration, oldSchemaVersion)
+        })
 
-        realmQueue.async(qos: .userInitiated, flags: .enforceQoS) {
-            do {
-                let realm = try Realm(configuration: configuration)
-                if let url = realm.configuration.fileURL {
-                    nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .start, message: "Realm is located at: \(url.path)", consoleOnly: true)
-                }
-            } catch let error {
-                nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm error: \(error)")
-                exit(1)
+        let runtimeCfg = Realm.Configuration(fileURL: databaseFileUrl, schemaVersion: databaseSchemaVersion, objectTypes: objectTypes)
+
+        do {
+            try autoreleasepool {
+                _ = try Realm(configuration: migrationCfg)
             }
+
+            let realm = try Realm(configuration: runtimeCfg)
+            if let url = realm.configuration.fileURL {
+                nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .start, message: "Realm is located at: \(url.path)", consoleOnly: true)
+            }
+        } catch let error {
+            nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm error: \(error)")
+            exit(1)
         }
     }
 
