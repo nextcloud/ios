@@ -467,10 +467,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         Task {
             try? await Task.sleep(nanoseconds: 1_000_000_000)
-            if let tblAccount = await NCManageDatabase.shared.getTableAccountAsync(account: account) {
-                let num = await NCAutoUpload.shared.initAutoUpload(tblAccount: tblAccount)
-                nkLog(start: "Auto upload with \(num) photo")
-            }
+
+            let num = await NCAutoUpload.shared.initAutoUpload()
+            nkLog(start: "Auto upload with \(num) photo")
 
             try? await Task.sleep(nanoseconds: 1_500_000_000)
             await NCService().startRequestServicesServer(account: account, controller: controller)
