@@ -53,14 +53,15 @@ final class NCManageDatabase: @unchecked Sendable {
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let databaseFileUrl = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
 
-        Realm.Configuration.defaultConfiguration = Realm.Configuration(fileURL: databaseFileUrl,
-                                                                       schemaVersion: databaseSchemaVersion,
-                                                                       migrationBlock: { migration, oldSchemaVersion in
+        let configuration = Realm.Configuration(fileURL: databaseFileUrl,
+                                                schemaVersion: databaseSchemaVersion,
+                                                migrationBlock: { migration, oldSchemaVersion in
             self.migrationSchema(migration, oldSchemaVersion)
         })
+        Realm.Configuration.defaultConfiguration = configuration
 
         do {
-            let realm = try Realm()
+            let realm = try Realm(configuration: configuration)
             if let url = realm.configuration.fileURL {
                 nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .start, message: "Realm is located at: \(url.path)", consoleOnly: true)
             }
@@ -113,6 +114,7 @@ final class NCManageDatabase: @unchecked Sendable {
                                                     migrationBlock: { migration, oldSchemaVersion in
                 self.migrationSchema(migration, oldSchemaVersion)
             })
+            Realm.Configuration.defaultConfiguration = configuration
 
             // Writes a compacted copy of the Realm to the given destination
             let realm = try Realm(configuration: configuration)
@@ -139,14 +141,15 @@ final class NCManageDatabase: @unchecked Sendable {
         isSuspendingDatabaseOperation = false
         #endif
 
-        Realm.Configuration.defaultConfiguration = Realm.Configuration(fileURL: databaseFileUrl,
-                                                                       schemaVersion: databaseSchemaVersion,
-                                                                       migrationBlock: { migration, oldSchemaVersion in
+        let configuration = Realm.Configuration(fileURL: databaseFileUrl,
+                                                schemaVersion: databaseSchemaVersion,
+                                                migrationBlock: { migration, oldSchemaVersion in
             self.migrationSchema(migration, oldSchemaVersion)
         })
+        Realm.Configuration.defaultConfiguration = configuration
 
         do {
-            let realm = try Realm()
+            let realm = try Realm(configuration: configuration)
             if let url = realm.configuration.fileURL {
                 nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .start, message: "Realm is located at: \(url.path)", consoleOnly: true)
             }
@@ -181,11 +184,11 @@ final class NCManageDatabase: @unchecked Sendable {
         }
 
         let configuration = Realm.Configuration(fileURL: databaseFileUrl, schemaVersion: databaseSchemaVersion, objectTypes: objectTypes)
+        Realm.Configuration.defaultConfiguration = configuration
 
         realmQueue.async(qos: .userInitiated, flags: .enforceQoS) {
             do {
-                Realm.Configuration.defaultConfiguration = configuration
-                let realm = try Realm()
+                let realm = try Realm(configuration: configuration)
                 if let url = realm.configuration.fileURL {
                     nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .start, message: "Realm is located at: \(url.path)", consoleOnly: true)
                 }
