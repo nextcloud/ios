@@ -507,27 +507,6 @@ final class NCManageDatabase: @unchecked Sendable {
         return ThreadSafeReference(to: object)
     }
 
-    func putThreadConfined(_ tableRef: ThreadSafeReference<Object>) -> Object? {
-        do {
-            let realm = try Realm()
-            return realm.resolve(tableRef)
-        } catch let error as NSError {
-            nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm could not write to database: \(error)")
-        }
-        return nil
-    }
-
-    func realmRefresh() {
-        realmQueue.sync {
-            do {
-                let realm = try Realm()
-                realm.refresh()
-            } catch let error as NSError {
-                nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm could not refresh database: \(error)")
-            }
-        }
-    }
-
     func sha256Hash(_ input: String) -> String {
         let data = Data(input.utf8)
         var digest = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
