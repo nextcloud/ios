@@ -480,6 +480,8 @@ extension NCNetworking {
             #endif
 
             if error == .success {
+                // TODO: upload item
+                /*
                 let uploadItem = UploadItemDisk(fileName: fileName,
                                                 serverUrl: serverUrl,
                                                 ocId: ocId,
@@ -489,6 +491,7 @@ extension NCNetworking {
                                                 size: size,
                                                 taskIdentifier: task.taskIdentifier)
                 addUploadItem(uploadItem, fileName: fileName, serverUrl: serverUrl)
+                */
             } else {
 
             }
