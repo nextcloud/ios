@@ -89,7 +89,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         setNavigationBarHidden(false, animated: true)
 
         Task {
-            menuButton.setImage(UIImage(systemName: "ellipsis.circle"), for: .normal)
+            menuButton.setImage(UIImage(systemName: "ellipsis"), for: .normal)
             menuButton.tintColor = NCBrandColor.shared.iconImageColor
             menuButton.menu = await createRightMenu()
             menuButton.showsMenuAsPrimaryAction = true

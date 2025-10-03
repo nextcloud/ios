@@ -61,7 +61,7 @@ class NCMainTabBarController: UITabBarController {
         // Media
         if let item = tabBar.items?[2] {
             item.title = NSLocalizedString("_media_", comment: "")
-            item.image = UIImage(systemName: "photo")
+            item.image = UIImage(systemName: "photo.fill")
             item.selectedImage = item.image
             item.tag = 102
         }
@@ -69,7 +69,7 @@ class NCMainTabBarController: UITabBarController {
         // Activity
         if let item = tabBar.items?[3] {
             item.title = NSLocalizedString("_activity_", comment: "")
-            item.image = UIImage(systemName: "bolt")
+            item.image = UIImage(systemName: "bolt.fill")
             item.selectedImage = item.image
             item.tag = 103
         }
@@ -77,7 +77,7 @@ class NCMainTabBarController: UITabBarController {
         // More
         if let item = tabBar.items?[4] {
             item.title = NSLocalizedString("_more_", comment: "")
-            item.image = UIImage(systemName: "ellipsis")
+            item.image = UIImage(systemName: "ellipsis.circle.fill")
             item.selectedImage = item.image
             item.tag = 104
         }
