@@ -8,9 +8,6 @@ import NextcloudKit
 // Global flag indicating whether the app has ever become active since launch.
 var hasBecomeActiveOnce: Bool = false
 
-// Global flag used to control Realm write/read operations during app suspension.
-var isSuspendingDatabaseOperation: Bool = false
-
 // Global flag indicating whether the app is currently in background mode.
 var isAppInBackground: Bool = true
 

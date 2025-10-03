@@ -14,6 +14,9 @@ protocol DateCompareable {
     var dateKey: Date { get }
 }
 
+// Global flag used to control Realm write/read operations during app suspension or error
+var isSuspendingDatabaseOperation: Bool = false
+
 final class NCManageDatabase: @unchecked Sendable {
     static let shared = NCManageDatabase()
 
@@ -137,9 +140,7 @@ final class NCManageDatabase: @unchecked Sendable {
         let databaseFileUrl = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
 
         // now you can read/write in Realm
-        #if !EXTENSION
         isSuspendingDatabaseOperation = false
-        #endif
 
         let configuration = Realm.Configuration(fileURL: databaseFileUrl,
                                                 schemaVersion: databaseSchemaVersion,
@@ -204,7 +205,7 @@ final class NCManageDatabase: @unchecked Sendable {
             }
         } catch let error {
             nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm error: \(error)")
-            exit(1)
+            isSuspendingDatabaseOperation = true
         }
     }
 
@@ -266,12 +267,10 @@ final class NCManageDatabase: @unchecked Sendable {
     @discardableResult
     func performRealmRead<T>(_ block: @escaping (Realm) throws -> T?, sync: Bool = true, completion: ((T?) -> Void)? = nil) -> T? {
         // Skip execution if app is suspending
-        #if !EXTENSION
         guard !isSuspendingDatabaseOperation else {
             completion?(nil)
             return nil
         }
-        #endif
         let isOnRealmQueue = DispatchQueue.getSpecific(key: NCManageDatabase.realmQueueKey) != nil
 
         if sync {
@@ -314,11 +313,9 @@ final class NCManageDatabase: @unchecked Sendable {
 
     func performRealmWrite(sync: Bool = true, _ block: @escaping (Realm) throws -> Void) {
         // Skip execution if app is suspending
-        #if !EXTENSION
         guard !isSuspendingDatabaseOperation else {
             return
         }
-        #endif
         let isOnRealmQueue = DispatchQueue.getSpecific(key: NCManageDatabase.realmQueueKey) != nil
 
         let executionBlock: @Sendable () -> Void = {
@@ -350,11 +347,9 @@ final class NCManageDatabase: @unchecked Sendable {
 
     func performRealmReadAsync<T>(_ block: @escaping (Realm) throws -> T?) async -> T? {
         // Skip execution if app is suspending
-        #if !EXTENSION
         guard !isSuspendingDatabaseOperation else {
             return nil
         }
-        #endif
 
         return await withCheckedContinuation { continuation in
             realmQueue.async(qos: .userInitiated, flags: .enforceQoS) {
@@ -374,11 +369,9 @@ final class NCManageDatabase: @unchecked Sendable {
 
     func performRealmWriteAsync(_ block: @escaping (Realm) throws -> Void) async {
         // Skip execution if app is suspending
-        #if !EXTENSION
         if isSuspendingDatabaseOperation {
             return
         }
-        #endif
 
         await withCheckedContinuation { continuation in
             realmQueue.async(qos: .userInitiated, flags: .enforceQoS) {
