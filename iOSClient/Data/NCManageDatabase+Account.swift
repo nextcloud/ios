@@ -21,8 +21,7 @@ class tableAccount: Object {
     @objc dynamic var autoUploadVideo: Bool = false
     @objc dynamic var autoUploadWWAnPhoto: Bool = false
     @objc dynamic var autoUploadWWAnVideo: Bool = false
-    @objc dynamic var autoUploadOnlyNew: Bool = true
-    @objc dynamic var autoUploadOnlyNewSinceDate: Date = Date()
+    @objc dynamic var autoUploadSinceDate: Date?
     @objc dynamic var backend = ""
     @objc dynamic var backendCapabilitiesSetDisplayName: Bool = false
     @objc dynamic var backendCapabilitiesSetPassword: Bool = false
@@ -73,8 +72,7 @@ class tableAccount: Object {
                                    autoUploadVideo: self.autoUploadVideo,
                                    autoUploadWWAnPhoto: self.autoUploadWWAnPhoto,
                                    autoUploadWWAnVideo: self.autoUploadWWAnVideo,
-                                   autoUploadOnlyNew: self.autoUploadOnlyNew,
-                                   autoUploadOnlyNewSinceDate: self.autoUploadOnlyNewSinceDate,
+                                   autoUploadSinceDate: self.autoUploadSinceDate,
                                    user: self.user,
                                    userId: self.userId,
                                    urlBase: self.urlBase)
@@ -116,8 +114,7 @@ struct tableAccountCodable: Codable {
     var autoUploadVideo: Bool
     var autoUploadWWAnPhoto: Bool
     var autoUploadWWAnVideo: Bool
-    var autoUploadOnlyNew: Bool
-    var autoUploadOnlyNewSinceDate: Date
+    var autoUploadSinceDate: Date?
 
     var user: String
     var userId: String
@@ -539,15 +536,6 @@ extension NCManageDatabase {
                 .first?
                 .autoUploadSubfolderGranularity
         } ?? NCGlobal.shared.subfolderGranularityMonthly
-    }
-
-    func getAccountAutoUploadOnlyNewSinceDate() -> Date? {
-        return performRealmRead { realm in
-            realm.objects(tableAccount.self)
-                .filter("active == true")
-                .first?
-                .autoUploadOnlyNewSinceDate
-        }
     }
 
     func getActiveTableAccount() -> tableAccount? {

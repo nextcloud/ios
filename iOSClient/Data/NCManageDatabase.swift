@@ -208,19 +208,6 @@ final class NCManageDatabase: @unchecked Sendable {
             }
         }
 
-        if oldSchemaVersion < 383 {
-            migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
-                if let schema = oldObject?.objectSchema,
-                   schema["autoUploadSinceDate"] != nil,
-                   let oldDate = oldObject?["autoUploadSinceDate"] as? Date {
-                    newObject?["autoUploadOnlyNewSinceDate"] = oldDate
-                } else {
-                    newObject?["autoUploadOnlyNewSinceDate"] = Date()
-                }
-                newObject?["autoUploadOnlyNew"] = true
-            }
-        }
-
         if oldSchemaVersion < 390 {
             migration.enumerateObjects(ofType: tableCapabilities.className()) { oldObject, newObject in
                 if let schema = oldObject?.objectSchema,
@@ -234,9 +221,21 @@ final class NCManageDatabase: @unchecked Sendable {
         if oldSchemaVersion < 393 {
             migration.enumerateObjects(ofType: tableMetadata.className()) { oldObject, newObject in
                 if let schema = oldObject?.objectSchema,
-                schema["serveUrlFileName"] != nil,
-                let oldData = oldObject?["serveUrlFileName"] as? String {
+                   schema["serveUrlFileName"] != nil,
+                   let oldData = oldObject?["serveUrlFileName"] as? String {
                     newObject?["serverUrlFileName"] = oldData
+                }
+            }
+        }
+
+        if oldSchemaVersion < 403 {
+            migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
+                let onlyNew = oldObject?["autoUploadOnlyNew"] as? Bool ?? false
+                if onlyNew {
+                    let oldDate = oldObject?["autoUploadOnlyNewSinceDate"] as? Date
+                    newObject?["autoUploadSinceDate"] = oldDate
+                } else {
+                    newObject?["autoUploadSinceDate"] = nil
                 }
             }
         }

@@ -14,6 +14,7 @@ class tableDirectory: Object {
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileId = ""
     @objc dynamic var lastOpeningDate = NSDate()
+    @objc dynamic var lastSyncDate: NSDate?
     @objc dynamic var ocId = ""
     @objc dynamic var offline: Bool = false
     @objc dynamic var permissions = ""
