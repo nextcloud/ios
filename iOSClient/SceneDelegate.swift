@@ -234,7 +234,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
-        // Must be outside the Task otherwise isSuspendingDatabaseOperation suspends it
         let session = SceneManager.shared.getSession(scene: scene)
         guard let tblAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
             return
