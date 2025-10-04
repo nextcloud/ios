@@ -186,18 +186,20 @@ final class NCManageDatabase: @unchecked Sendable {
             ]
         }
 
-        let migrationCfg = Realm.Configuration(fileURL: databaseFileUrl,
-                                               schemaVersion: databaseSchemaVersion,
-                                               migrationBlock: { migration, oldSchemaVersion in
-            self.migrationSchema(migration, oldSchemaVersion)
-        })
-
-        let runtimeCfg = Realm.Configuration(fileURL: databaseFileUrl, schemaVersion: databaseSchemaVersion, objectTypes: objectTypes)
-
         do {
+            // Migration configuration
+            let migrationCfg = Realm.Configuration(fileURL: databaseFileUrl,
+                                                   schemaVersion: databaseSchemaVersion,
+                                                   migrationBlock: { migration, oldSchemaVersion in
+                self.migrationSchema(migration, oldSchemaVersion)
+            })
             try autoreleasepool {
                 _ = try Realm(configuration: migrationCfg)
             }
+
+            // Runtime and default configuration
+            let runtimeCfg = Realm.Configuration(fileURL: databaseFileUrl, schemaVersion: databaseSchemaVersion, objectTypes: objectTypes)
+            Realm.Configuration.defaultConfiguration = runtimeCfg
 
             let realm = try Realm(configuration: runtimeCfg)
             if let url = realm.configuration.fileURL {
