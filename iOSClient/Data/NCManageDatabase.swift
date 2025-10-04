@@ -96,45 +96,6 @@ final class NCManageDatabase: @unchecked Sendable {
         }
     }
 
-    /// Force compacts the Realm database by writing a compacted copy and replacing the original.
-    /// Must be called when no Realm instances are open.
-    func forceCompactRealm() throws {
-        nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .start, message: "Start Compact Realm")
-
-        guard let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup) else {
-            throw NSError(domain: "RealmMaintenance", code: 1, userInfo: [NSLocalizedDescriptionKey: "App Group container URL not found"])
-        }
-        let url = dirGroup.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
-        let fileManager = FileManager.default
-        let compactedURL = url.deletingLastPathComponent()
-            .appendingPathComponent(url.lastPathComponent + ".compact.realm")
-        let backupURL = url.appendingPathExtension("bak")
-
-        // Write a compacted copy inside an autoreleasepool to ensure file handles are closed
-        try autoreleasepool {
-            let configuration = Realm.Configuration(fileURL: url,
-                                                    schemaVersion: databaseSchemaVersion,
-                                                    migrationBlock: { migration, oldSchemaVersion in
-                self.migrationSchema(migration, oldSchemaVersion)
-            })
-            Realm.Configuration.defaultConfiguration = configuration
-
-            // Writes a compacted copy of the Realm to the given destination
-            let realm = try Realm(configuration: configuration)
-            try realm.writeCopy(toFile: compactedURL)
-        }
-
-        // Atomic-ish swap: old → .bak, compacted → original path
-        if fileManager.fileExists(atPath: backupURL.path) {
-            try? fileManager.removeItem(at: backupURL)
-        }
-        if fileManager.fileExists(atPath: url.path) {
-            try fileManager.moveItem(at: url, to: backupURL)
-        }
-        try fileManager.moveItem(at: compactedURL, to: url)
-        try? fileManager.removeItem(at: backupURL)
-    }
-
     func openRealmBackground() -> Bool {
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let databaseFileUrl = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
@@ -621,6 +582,45 @@ final class NCManageDatabase: @unchecked Sendable {
             let normalized = self.filterAndNormalizeLivePhotos(from: metadatas)
             completion(normalized)
         }
+    }
+
+    /// Compacts the Realm database by writing a compacted copy and replacing the original.
+    /// Must be called when no Realm instances are open.
+    func compactRealm() throws {
+        nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .start, message: "Start Compact Realm")
+
+        guard let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup) else {
+            throw NSError(domain: "RealmMaintenance", code: 1, userInfo: [NSLocalizedDescriptionKey: "App Group container URL not found"])
+        }
+        let url = dirGroup.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
+        let fileManager = FileManager.default
+        let compactedURL = url.deletingLastPathComponent()
+            .appendingPathComponent(url.lastPathComponent + ".compact.realm")
+        let backupURL = url.appendingPathExtension("bak")
+
+        // Write a compacted copy inside an autoreleasepool to ensure file handles are closed
+        try autoreleasepool {
+            let configuration = Realm.Configuration(fileURL: url,
+                                                    schemaVersion: databaseSchemaVersion,
+                                                    migrationBlock: { migration, oldSchemaVersion in
+                self.migrationSchema(migration, oldSchemaVersion)
+            })
+            Realm.Configuration.defaultConfiguration = configuration
+
+            // Writes a compacted copy of the Realm to the given destination
+            let realm = try Realm(configuration: configuration)
+            try realm.writeCopy(toFile: compactedURL)
+        }
+
+        // Atomic-ish swap: old → .bak, compacted → original path
+        if fileManager.fileExists(atPath: backupURL.path) {
+            try? fileManager.removeItem(at: backupURL)
+        }
+        if fileManager.fileExists(atPath: url.path) {
+            try fileManager.moveItem(at: url, to: backupURL)
+        }
+        try fileManager.moveItem(at: compactedURL, to: url)
+        try? fileManager.removeItem(at: backupURL)
     }
 
     // MARK: -
