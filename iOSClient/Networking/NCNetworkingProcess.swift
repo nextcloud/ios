@@ -132,7 +132,11 @@ actor NCNetworkingProcess {
                     await startTimer(interval: minInterval)
                 }
             } else {
+                // Clear upload Item files
+                networking.clearUploadItemsFile()
+                // Remove upload asset
                 await removeUploadedAssetsIfNeeded()
+
                 if lastUsedInterval != maxInterval {
                     await startTimer(interval: maxInterval)
                 }
@@ -171,6 +175,12 @@ actor NCNetworkingProcess {
         let counterDownloading = metadatas.filter { $0.status == self.global.metadataStatusDownloading }.count
         let counterUploading = metadatas.filter { $0.status == self.global.metadataStatusUploading }.count
         let processRate: Double = Double(counterDownloading + counterUploading) / Double(NCBrandOptions.shared.numMaximumProcess)
+
+        // Verify Upload
+        if networking.uploadItemsCache.count >= 10 {
+
+        }
+
         // if less than 20% exit
         if processRate > 0.2 {
             nkLog(debug: "Process rate \(processRate)")

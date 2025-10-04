@@ -8,4 +8,5 @@ import Foundation
 //
 let databaseName                    = "nextcloud.realm"
 let tableAccountBackup              = "tableAccountBackup.json"
-let databaseSchemaVersion: UInt64   = 402
+let fileUploadStore                 = "uploads.json"
+let databaseSchemaVersion: UInt64   = 403

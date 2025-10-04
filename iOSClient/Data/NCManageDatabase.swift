@@ -14,6 +14,9 @@ protocol DateCompareable {
     var dateKey: Date { get }
 }
 
+// Global flag used to control Realm write/read operations during app suspension or error
+var isSuspendingDatabaseOperation: Bool = false
+
 final class NCManageDatabase: @unchecked Sendable {
     static let shared = NCManageDatabase()
 
@@ -53,14 +56,18 @@ final class NCManageDatabase: @unchecked Sendable {
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let databaseFileUrl = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
 
-        Realm.Configuration.defaultConfiguration = Realm.Configuration(fileURL: databaseFileUrl,
-                                                                       schemaVersion: databaseSchemaVersion,
-                                                                       migrationBlock: { migration, oldSchemaVersion in
+        // now you can read/write in Realm
+        isSuspendingDatabaseOperation = false
+
+        let configuration = Realm.Configuration(fileURL: databaseFileUrl,
+                                                schemaVersion: databaseSchemaVersion,
+                                                migrationBlock: { migration, oldSchemaVersion in
             self.migrationSchema(migration, oldSchemaVersion)
         })
+        Realm.Configuration.defaultConfiguration = configuration
 
         do {
-            let realm = try Realm()
+            let realm = try Realm(configuration: configuration)
             if let url = realm.configuration.fileURL {
                 nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .start, message: "Realm is located at: \(url.path)", consoleOnly: true)
             }
@@ -92,61 +99,22 @@ final class NCManageDatabase: @unchecked Sendable {
         }
     }
 
-    /// Force compacts the Realm database by writing a compacted copy and replacing the original.
-    /// Must be called when no Realm instances are open.
-    func forceCompactRealm() throws {
-        nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .start, message: "Start Compact Realm")
-
-        guard let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup) else {
-            throw NSError(domain: "RealmMaintenance", code: 1, userInfo: [NSLocalizedDescriptionKey: "App Group container URL not found"])
-        }
-        let url = dirGroup.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
-        let fileManager = FileManager.default
-        let compactedURL = url.deletingLastPathComponent()
-            .appendingPathComponent(url.lastPathComponent + ".compact.realm")
-        let backupURL = url.appendingPathExtension("bak")
-
-        // Write a compacted copy inside an autoreleasepool to ensure file handles are closed
-        try autoreleasepool {
-            let configuration = Realm.Configuration(fileURL: url,
-                                                    schemaVersion: databaseSchemaVersion,
-                                                    migrationBlock: { migration, oldSchemaVersion in
-                self.migrationSchema(migration, oldSchemaVersion)
-            })
-
-            // Writes a compacted copy of the Realm to the given destination
-            let realm = try Realm(configuration: configuration)
-            try realm.writeCopy(toFile: compactedURL)
-        }
-
-        // Atomic-ish swap: old → .bak, compacted → original path
-        if fileManager.fileExists(atPath: backupURL.path) {
-            try? fileManager.removeItem(at: backupURL)
-        }
-        if fileManager.fileExists(atPath: url.path) {
-            try fileManager.moveItem(at: url, to: backupURL)
-        }
-        try fileManager.moveItem(at: compactedURL, to: url)
-        try? fileManager.removeItem(at: backupURL)
-    }
-
     func openRealmBackground() -> Bool {
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let databaseFileUrl = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
 
         // now you can read/write in Realm
-        #if !EXTENSION
         isSuspendingDatabaseOperation = false
-        #endif
 
-        Realm.Configuration.defaultConfiguration = Realm.Configuration(fileURL: databaseFileUrl,
-                                                                       schemaVersion: databaseSchemaVersion,
-                                                                       migrationBlock: { migration, oldSchemaVersion in
+        let configuration = Realm.Configuration(fileURL: databaseFileUrl,
+                                                schemaVersion: databaseSchemaVersion,
+                                                migrationBlock: { migration, oldSchemaVersion in
             self.migrationSchema(migration, oldSchemaVersion)
         })
+        Realm.Configuration.defaultConfiguration = configuration
 
         do {
-            let realm = try Realm()
+            let realm = try Realm(configuration: configuration)
             if let url = realm.configuration.fileURL {
                 nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .start, message: "Realm is located at: \(url.path)", consoleOnly: true)
             }
@@ -158,10 +126,15 @@ final class NCManageDatabase: @unchecked Sendable {
     }
 
     private func openRealmAppex() {
-        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-        let databaseFileUrl = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
+        guard let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup) else {
+            return
+        }
+        let databaseFileUrl = dirGroup.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
         let bundleUrl: URL = Bundle.main.bundleURL
         var objectTypes: [Object.Type]
+
+        // now you can read/write in Realm
+        isSuspendingDatabaseOperation = false
 
         if bundleUrl.lastPathComponent == "File Provider Extension.appex" {
             objectTypes = [
@@ -180,19 +153,28 @@ final class NCManageDatabase: @unchecked Sendable {
             ]
         }
 
-        let configuration = Realm.Configuration(fileURL: databaseFileUrl, schemaVersion: databaseSchemaVersion, objectTypes: objectTypes)
-
-        realmQueue.async(qos: .userInitiated, flags: .enforceQoS) {
-            do {
-                Realm.Configuration.defaultConfiguration = configuration
-                let realm = try Realm()
-                if let url = realm.configuration.fileURL {
-                    nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .start, message: "Realm is located at: \(url.path)", consoleOnly: true)
-                }
-            } catch let error {
-                nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm error: \(error)")
-                exit(1)
+        do {
+            // Migration configuration
+            let migrationCfg = Realm.Configuration(fileURL: databaseFileUrl,
+                                                   schemaVersion: databaseSchemaVersion,
+                                                   migrationBlock: { migration, oldSchemaVersion in
+                self.migrationSchema(migration, oldSchemaVersion)
+            })
+            try autoreleasepool {
+                _ = try Realm(configuration: migrationCfg)
             }
+
+            // Runtime and default configuration
+            let runtimeCfg = Realm.Configuration(fileURL: databaseFileUrl, schemaVersion: databaseSchemaVersion, objectTypes: objectTypes)
+            Realm.Configuration.defaultConfiguration = runtimeCfg
+
+            let realm = try Realm(configuration: runtimeCfg)
+            if let url = realm.configuration.fileURL {
+                nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .start, message: "Realm is located at: \(url.path)", consoleOnly: true)
+            }
+        } catch let error {
+            nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm error: \(error)")
+            isSuspendingDatabaseOperation = true
         }
     }
 
@@ -205,19 +187,6 @@ final class NCManageDatabase: @unchecked Sendable {
             migration.deleteData(forType: tableMetadata.className())
             migration.enumerateObjects(ofType: tableDirectory.className()) { _, newObject in
                 newObject?["etag"] = ""
-            }
-        }
-
-        if oldSchemaVersion < 383 {
-            migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
-                if let schema = oldObject?.objectSchema,
-                   schema["autoUploadSinceDate"] != nil,
-                   let oldDate = oldObject?["autoUploadSinceDate"] as? Date {
-                    newObject?["autoUploadOnlyNewSinceDate"] = oldDate
-                } else {
-                    newObject?["autoUploadOnlyNewSinceDate"] = Date()
-                }
-                newObject?["autoUploadOnlyNew"] = true
             }
         }
 
@@ -234,9 +203,21 @@ final class NCManageDatabase: @unchecked Sendable {
         if oldSchemaVersion < 393 {
             migration.enumerateObjects(ofType: tableMetadata.className()) { oldObject, newObject in
                 if let schema = oldObject?.objectSchema,
-                schema["serveUrlFileName"] != nil,
-                let oldData = oldObject?["serveUrlFileName"] as? String {
+                   schema["serveUrlFileName"] != nil,
+                   let oldData = oldObject?["serveUrlFileName"] as? String {
                     newObject?["serverUrlFileName"] = oldData
+                }
+            }
+        }
+
+        if oldSchemaVersion < 403 {
+            migration.enumerateObjects(ofType: tableAccount.className()) { oldObject, newObject in
+                let onlyNew = oldObject?["autoUploadOnlyNew"] as? Bool ?? false
+                if onlyNew {
+                    let oldDate = oldObject?["autoUploadOnlyNewSinceDate"] as? Date
+                    newObject?["autoUploadSinceDate"] = oldDate
+                } else {
+                    newObject?["autoUploadSinceDate"] = nil
                 }
             }
         }
@@ -255,12 +236,10 @@ final class NCManageDatabase: @unchecked Sendable {
     @discardableResult
     func performRealmRead<T>(_ block: @escaping (Realm) throws -> T?, sync: Bool = true, completion: ((T?) -> Void)? = nil) -> T? {
         // Skip execution if app is suspending
-        #if !EXTENSION
         guard !isSuspendingDatabaseOperation else {
             completion?(nil)
             return nil
         }
-        #endif
         let isOnRealmQueue = DispatchQueue.getSpecific(key: NCManageDatabase.realmQueueKey) != nil
 
         if sync {
@@ -303,11 +282,9 @@ final class NCManageDatabase: @unchecked Sendable {
 
     func performRealmWrite(sync: Bool = true, _ block: @escaping (Realm) throws -> Void) {
         // Skip execution if app is suspending
-        #if !EXTENSION
         guard !isSuspendingDatabaseOperation else {
             return
         }
-        #endif
         let isOnRealmQueue = DispatchQueue.getSpecific(key: NCManageDatabase.realmQueueKey) != nil
 
         let executionBlock: @Sendable () -> Void = {
@@ -339,11 +316,9 @@ final class NCManageDatabase: @unchecked Sendable {
 
     func performRealmReadAsync<T>(_ block: @escaping (Realm) throws -> T?) async -> T? {
         // Skip execution if app is suspending
-        #if !EXTENSION
         guard !isSuspendingDatabaseOperation else {
             return nil
         }
-        #endif
 
         return await withCheckedContinuation { continuation in
             realmQueue.async(qos: .userInitiated, flags: .enforceQoS) {
@@ -363,11 +338,9 @@ final class NCManageDatabase: @unchecked Sendable {
 
     func performRealmWriteAsync(_ block: @escaping (Realm) throws -> Void) async {
         // Skip execution if app is suspending
-        #if !EXTENSION
-        if isSuspendingDatabaseOperation {
+        guard !isSuspendingDatabaseOperation else {
             return
         }
-        #endif
 
         await withCheckedContinuation { continuation in
             realmQueue.async(qos: .userInitiated, flags: .enforceQoS) {
@@ -503,27 +476,6 @@ final class NCManageDatabase: @unchecked Sendable {
         return ThreadSafeReference(to: object)
     }
 
-    func putThreadConfined(_ tableRef: ThreadSafeReference<Object>) -> Object? {
-        do {
-            let realm = try Realm()
-            return realm.resolve(tableRef)
-        } catch let error as NSError {
-            nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm could not write to database: \(error)")
-        }
-        return nil
-    }
-
-    func realmRefresh() {
-        realmQueue.sync {
-            do {
-                let realm = try Realm()
-                realm.refresh()
-            } catch let error as NSError {
-                nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm could not refresh database: \(error)")
-            }
-        }
-    }
-
     func sha256Hash(_ input: String) -> String {
         let data = Data(input.utf8)
         var digest = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
@@ -636,6 +588,45 @@ final class NCManageDatabase: @unchecked Sendable {
             let normalized = self.filterAndNormalizeLivePhotos(from: metadatas)
             completion(normalized)
         }
+    }
+
+    /// Compacts the Realm database by writing a compacted copy and replacing the original.
+    /// Must be called when no Realm instances are open.
+    func compactRealm() throws {
+        nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .start, message: "Start Compact Realm")
+
+        guard let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup) else {
+            throw NSError(domain: "RealmMaintenance", code: 1, userInfo: [NSLocalizedDescriptionKey: "App Group container URL not found"])
+        }
+        let url = dirGroup.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
+        let fileManager = FileManager.default
+        let compactedURL = url.deletingLastPathComponent()
+            .appendingPathComponent(url.lastPathComponent + ".compact.realm")
+        let backupURL = url.appendingPathExtension("bak")
+
+        // Write a compacted copy inside an autoreleasepool to ensure file handles are closed
+        try autoreleasepool {
+            let configuration = Realm.Configuration(fileURL: url,
+                                                    schemaVersion: databaseSchemaVersion,
+                                                    migrationBlock: { migration, oldSchemaVersion in
+                self.migrationSchema(migration, oldSchemaVersion)
+            })
+            Realm.Configuration.defaultConfiguration = configuration
+
+            // Writes a compacted copy of the Realm to the given destination
+            let realm = try Realm(configuration: configuration)
+            try realm.writeCopy(toFile: compactedURL)
+        }
+
+        // Atomic-ish swap: old → .bak, compacted → original path
+        if fileManager.fileExists(atPath: backupURL.path) {
+            try? fileManager.removeItem(at: backupURL)
+        }
+        if fileManager.fileExists(atPath: url.path) {
+            try fileManager.moveItem(at: url, to: backupURL)
+        }
+        try fileManager.moveItem(at: compactedURL, to: url)
+        try? fileManager.removeItem(at: backupURL)
     }
 
     // MARK: -

@@ -120,11 +120,8 @@ extension NCManageDatabase {
                 .first else {
                 return
             }
-
-            if abs(metadata.progress - progress) > 0.001 {
-                metadata.progress = progress
-                print(progress)
-            }
+            metadata.progress = progress
+            print(progress)
         }
     }
 
@@ -136,11 +133,8 @@ extension NCManageDatabase {
                 .first else {
                 return
             }
-
-            if abs(metadata.progress - progress) > 0.001 {
-                metadata.progress = progress
-                print(progress)
-            }
+            metadata.progress = progress
+            print(progress)
         }
     }
 

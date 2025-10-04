@@ -97,15 +97,19 @@ struct NCAutoUploadView: View {
                         })
                     }
 
-                    Toggle(NSLocalizedString("_back_up_new_photos_only_", comment: ""), isOn: $model.autoUploadOnlyNew)
-                        .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                        .opacity(model.autoUploadStart ? 0.15 : 1)
-                        .onChange(of: model.autoUploadOnlyNew) { _, newValue in
+                    Toggle(NSLocalizedString("_back_up_new_photos_only_", comment: ""), isOn: Binding(
+                        get: {
+                            model.autoUploadSinceDate != nil
+                        },
+                        set: { newValue in
                             model.handleAutoUploadOnlyNew(newValue: newValue)
                         }
-                        .accessibilityIdentifier("NewPhotosToggle")
+                    ))
+                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+                    .opacity(model.autoUploadStart ? 0.15 : 1)
+                    .accessibilityIdentifier("NewPhotosToggle")
                 }, footer: {
-                    if model.autoUploadOnlyNew == true, let date = model.autoUploadOnlyNewSinceDate {
+                    if let date = model.autoUploadSinceDate {
                         Text(String(format: NSLocalizedString("_new_photos_starting_", comment: ""), NCUtility().longDate(date)))
                     }
                 })
@@ -198,17 +202,17 @@ struct NCAutoUploadView: View {
     @ViewBuilder
     var autoUploadStartButton: some View {
         Section(content: {
-            let toggle = Toggle(isOn: model.autoUploadOnlyNew || model.autoUploadStart ? $model.autoUploadStart : $showUploadAllPhotosWarning) {
+            let toggle = Toggle(isOn: model.autoUploadSinceDate != nil || model.autoUploadStart ? $model.autoUploadStart : $showUploadAllPhotosWarning) {
                 Text(model.autoUploadStart ? "_stop_autoupload_" : "_start_autoupload_")
                     .padding(.horizontal, 20)
                     .padding(.vertical, 10)
             }
-                .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                .onChange(of: model.autoUploadStart) { _, newValue in
-                    albumModel.populateSelectedAlbums()
-                    model.handleAutoUploadChange(newValue: newValue, assetCollections: albumModel.selectedAlbums)
-                }
-                .font(.headline)
+            .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+            .onChange(of: model.autoUploadStart) { _, newValue in
+                albumModel.populateSelectedAlbums()
+                model.handleAutoUploadChange(newValue: newValue, assetCollections: albumModel.selectedAlbums)
+            }
+            .font(.headline)
 
             if #available(iOS 26.0, *) {
                 toggle

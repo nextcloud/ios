@@ -108,9 +108,6 @@ class NCAccount: NSObject {
                 // set theming color
                 NCBrandColor.shared.settingThemingColor(account: account, capabilities: capabilities)
             }
-            // Start the auto upload
-            let num = await NCAutoUpload.shared.initAutoUpload(tblAccount: tblAccount)
-            nkLog(start: "Auto upload with \(num) photo")
             // Networking Process
             await NCNetworkingProcess.shared.setCurrentAccount(account)
 
