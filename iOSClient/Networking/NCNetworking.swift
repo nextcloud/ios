@@ -258,12 +258,18 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     }
 
     struct UploadItemDisk: Codable {
+        let date: Date?
+        let errorCode: Int?
+        let etag: String?
         let fileName: String
-        let serverUrl: String
         let ocId: String?
         let ocIdTransfer: String?
-        let etag: String?
-        let date: Date?
+        let progress: Double?
+        let selector: String?
+        let serverUrl: String
+        let session: String?
+        let sessionError: String?
+        let status: Int?
         let size: Int64
         let taskIdentifier: Int?
     }
