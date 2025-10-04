@@ -315,10 +315,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
         nkLog(debug: "Handle events For background URLSession: \(identifier)")
 
-        if NCManageDatabase.shared.openRealmBackground() {
-            WidgetCenter.shared.reloadAllTimelines()
-        }
-
         backgroundSessionCompletionHandler = completionHandler
     }
 
