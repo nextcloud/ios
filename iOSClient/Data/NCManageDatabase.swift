@@ -56,6 +56,9 @@ final class NCManageDatabase: @unchecked Sendable {
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let databaseFileUrl = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
 
+        // now you can read/write in Realm
+        isSuspendingDatabaseOperation = false
+
         let configuration = Realm.Configuration(fileURL: databaseFileUrl,
                                                 schemaVersion: databaseSchemaVersion,
                                                 migrationBlock: { migration, oldSchemaVersion in
@@ -129,6 +132,9 @@ final class NCManageDatabase: @unchecked Sendable {
         let databaseFileUrl = dirGroup.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
         let bundleUrl: URL = Bundle.main.bundleURL
         var objectTypes: [Object.Type]
+
+        // now you can read/write in Realm
+        isSuspendingDatabaseOperation = false
 
         if bundleUrl.lastPathComponent == "File Provider Extension.appex" {
             objectTypes = [
