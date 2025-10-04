@@ -211,6 +211,16 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 self.createPlusMenu(session: session, capabilities: capabilities)
             }
         }
+
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterNetworkReachability), object: nil, queue: .main) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+
+                // Menu Plus
+                let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
+                self.createPlusMenu(session: session, capabilities: capabilities)
+            }
+        }
     }
 
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
@@ -463,6 +473,12 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             menuToolbar.sizeToFit()
             isHidden ? (menuToolbar.alpha = 0) : (menuToolbar.alpha = 1)
         }
+
+        if !NextcloudKit.shared.isNetworkReachable(), isDirectoryE2EE {
+            menuToolbar.items?.first?.isEnabled = false
+        } else {
+            menuToolbar.items?.first?.isEnabled = true
+        }
     }
 
     func hiddenPlusButton(_ isHidden: Bool, animation: Bool = true) {
@@ -501,6 +517,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         } else {
             update()
         }
+    }
+
+    func isEnablePlusButton(_ isEnable: Bool) {
+        menuToolbar.items?.forEach { $0.isEnabled = isEnable }
     }
 
     // MARK: - Right

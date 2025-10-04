@@ -264,6 +264,7 @@ final class NCGlobal: Sendable {
     let notificationCenterClearCache                            = "clearCache"
     let notificationCenterCheckUserDelaultErrorDone             = "checkUserDelaultErrorDone"       // userInfo: account, controller
     let notificationCenterServerDidUpdate                       = "serverDidUpdate"                 // userInfo: account
+    let notificationCenterNetworkReachability                   = "networkReachability"
 
     let notificationCenterMenuSearchTextPDF                     = "menuSearchTextPDF"
     let notificationCenterMenuGotToPageInPDF                    = "menuGotToPageInPDF"
@@ -293,7 +294,6 @@ final class NCGlobal: Sendable {
     let networkingStatusUploaded                                = "statusUploaded"
     let networkingStatusUploadedLivePhoto                       = "statusUploadedLivePhoto"
     let networkingStatusUploadCancel                            = "statusUploadCancel"
-
 
     let networkingStatusReloadAvatar                            = "statusReloadAvatar"
 
