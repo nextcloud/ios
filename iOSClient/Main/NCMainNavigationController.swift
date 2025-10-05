@@ -211,17 +211,23 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                 self.createPlusMenu(session: session, capabilities: capabilities)
             }
         }
+
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: self.global.notificationCenterNetworkReachability), object: nil, queue: .main) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                guard let self else { return }
+
+                // Menu Plus
+                let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
+                self.createPlusMenu(session: session, capabilities: capabilities)
+            }
+        }
     }
 
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
         Task { @MainActor in
             // PLUS BUTTON
             if !(viewController is NCFiles) {
-                if #available(iOS 26.0, *) {
-                    hiddenPlusButton(true)
-                } else {
-                    hiddenPlusButton(true, animation: false)
-                }
+                hiddenPlusButton(true, animation: false)
             } else {
                 hiddenPlusButton(false)
             }
@@ -248,6 +254,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         let serverUrl = controller.currentServerUrl()
         let isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account)
         let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
+        let isNetworkReachable = NextcloudKit.shared.isNetworkReachable()
         let titleCreateFolder = isDirectoryE2EE ? NSLocalizedString("_create_folder_e2ee_", comment: "") : NSLocalizedString("_create_folder_", comment: "")
         let imageCreateFolder = isDirectoryE2EE ? NCImageCache.shared.getFolderEncrypted(account: session.account) : NCImageCache.shared.getFolder(account: session.account)
 
@@ -304,7 +311,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
         // ------------------------------- E2EE
 
-        if serverUrl == utilityFileSystem.getHomeServer(session: session) && NCPreferences().isEndToEndEnabled(account: session.account) {
+        if serverUrl == utilityFileSystem.getHomeServer(session: session),
+           NCPreferences().isEndToEndEnabled(account: session.account),
+           isNetworkReachable {
             menuE2EEElement.append(UIAction(title: NSLocalizedString("_create_folder_e2ee_", comment: ""),
                                             image: NCImageCache.shared.getFolderEncrypted(account: session.account)) { _ in
                 DispatchQueue.main.async {
@@ -319,7 +328,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         if capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion18,
            directory?.richWorkspace == nil,
            !isDirectoryE2EE,
-           NextcloudKit.shared.isNetworkReachable() {
+           isNetworkReachable {
             menuTextElement.append(UIAction(title: NSLocalizedString("_add_folder_info_", comment: ""),
                                             image: utility.loadImage(named: "list.dash.header.rectangle", colors: [NCBrandColor.shared.iconImageColor])) { _ in
                 DispatchQueue.main.async {
@@ -338,7 +347,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             })
         }
 
-        if NextcloudKit.shared.isNetworkReachable(),
+        if isNetworkReachable,
            let creator = capabilities.directEditingCreators.first(where: { $0.editor == "text" }),
            !isDirectoryE2EE {
             menuTextElement.append(UIAction(title: NSLocalizedString("_create_nextcloudtext_document_", comment: ""),
@@ -352,52 +361,52 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             })
         }
 
-        // ------------------------------- COLLABORA
+        // ------------------------------- WEB EDITORS
 
-        if capabilities.richDocumentsEnabled,
-           NextcloudKit.shared.isNetworkReachable(),
+        if isNetworkReachable,
            !isDirectoryE2EE {
 
-            menuRichDocumentElement.append(UIAction(title: NSLocalizedString("_create_new_document_", comment: ""),
-                                                    image: utility.loadImage(named: "doc.richtext", colors: [NCBrandColor.shared.documentIconColor])) { _ in
-                Task { @MainActor in
-                    let createDocument = NCCreateDocument()
-                    let templates = await createDocument.getTemplate(editorId: "collabora", templateId: "document", account: session.account)
-                    let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
-                    let fileNamePath = utilityFileSystem.getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
+            // ------------------------------- COLLABORA
+            if capabilities.richDocumentsEnabled {
+                menuRichDocumentElement.append(UIAction(title: NSLocalizedString("_create_new_document_", comment: ""),
+                                                        image: utility.loadImage(named: "doc.richtext", colors: [NCBrandColor.shared.documentIconColor])) { _ in
+                    Task { @MainActor in
+                        let createDocument = NCCreateDocument()
+                        let templates = await createDocument.getTemplate(editorId: "collabora", templateId: "document", account: session.account)
+                        let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
+                        let fileNamePath = utilityFileSystem.getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
 
-                    await createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "collabora", templateId: templates.selectedTemplate.identifier, account: session.account)
-                }
-            })
+                        await createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "collabora", templateId: templates.selectedTemplate.identifier, account: session.account)
+                    }
+                })
 
-            menuRichDocumentElement.append(UIAction(title: NSLocalizedString("_create_new_spreadsheet_", comment: ""),
-                                                    image: utility.loadImage(named: "tablecells", colors: [NCBrandColor.shared.spreadsheetIconColor])) { _ in
-                Task { @MainActor in
-                    let createDocument = NCCreateDocument()
-                    let templates = await createDocument.getTemplate(editorId: "collabora", templateId: "spreadsheet", account: session.account)
-                    let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
-                    let fileNamePath = utilityFileSystem.getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
+                menuRichDocumentElement.append(UIAction(title: NSLocalizedString("_create_new_spreadsheet_", comment: ""),
+                                                        image: utility.loadImage(named: "tablecells", colors: [NCBrandColor.shared.spreadsheetIconColor])) { _ in
+                    Task { @MainActor in
+                        let createDocument = NCCreateDocument()
+                        let templates = await createDocument.getTemplate(editorId: "collabora", templateId: "spreadsheet", account: session.account)
+                        let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
+                        let fileNamePath = utilityFileSystem.getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
 
-                    await createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "collabora", templateId: templates.selectedTemplate.identifier, account: session.account)
-                }
-            })
+                        await createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "collabora", templateId: templates.selectedTemplate.identifier, account: session.account)
+                    }
+                })
 
-            menuRichDocumentElement.append(UIAction(title: NSLocalizedString("_create_new_presentation_", comment: ""),
-                                                    image: utility.loadImage(named: "play.rectangle", colors: [NCBrandColor.shared.presentationIconColor])) { _ in
-                Task { @MainActor in
-                    let createDocument = NCCreateDocument()
-                    let templates = await createDocument.getTemplate(editorId: "collabora", templateId: "presentation", account: session.account)
-                    let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
-                    let fileNamePath = utilityFileSystem.getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
+                menuRichDocumentElement.append(UIAction(title: NSLocalizedString("_create_new_presentation_", comment: ""),
+                                                        image: utility.loadImage(named: "play.rectangle", colors: [NCBrandColor.shared.presentationIconColor])) { _ in
+                    Task { @MainActor in
+                        let createDocument = NCCreateDocument()
+                        let templates = await createDocument.getTemplate(editorId: "collabora", templateId: "presentation", account: session.account)
+                        let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
+                        let fileNamePath = utilityFileSystem.getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
 
-                    await createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "collabora", templateId: templates.selectedTemplate.identifier, account: session.account)
-                }
-            })
-        }
+                        await createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "collabora", templateId: templates.selectedTemplate.identifier, account: session.account)
+                    }
+                })
+            }
 
-        // ------------------------------- ONLY OFFICE
+            // ------------------------------- ONLY OFFICE
 
-        if NextcloudKit.shared.isNetworkReachable() {
             if let creator = capabilities.directEditingCreators.first(where: { $0.editor == "onlyoffice" && $0.identifier == "onlyoffice_docx"}) {
                 menuOnlyOfficeElement.append(UIAction(title: NSLocalizedString("_create_new_document_", comment: ""),
                                                       image: utility.loadImage(named: "doc.text", colors: [NCBrandColor.shared.documentIconColor])) { _ in
@@ -463,30 +472,43 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             menuToolbar.sizeToFit()
             isHidden ? (menuToolbar.alpha = 0) : (menuToolbar.alpha = 1)
         }
+
+        // E2EE Offile disable
+        if !isNetworkReachable, isDirectoryE2EE {
+            menuToolbar.items?.first?.isEnabled = false
+        } else {
+            menuToolbar.items?.first?.isEnabled = true
+        }
     }
 
     func hiddenPlusButton(_ isHidden: Bool, animation: Bool = true) {
+        let tx = 200.0
         if isHidden {
-            guard self.menuToolbar.alpha != 0 else { return }
+            if menuToolbar.transform.tx == tx {
+                self.menuToolbar.alpha = 0
+                return
+            }
             if animation {
                 UIView.animate(withDuration: 0.5, delay: 0.0, options: [], animations: {
-                    self.menuToolbar.transform = CGAffineTransform(translationX: 100, y: 0)
+                    self.menuToolbar.transform = CGAffineTransform(translationX: tx, y: 0)
                     self.menuToolbar.alpha = 0
                 })
             } else {
+                self.menuToolbar.transform = CGAffineTransform(translationX: tx, y: 0)
                 self.menuToolbar.alpha = 0
             }
         } else {
-            guard self.menuToolbar.alpha != 1 else { return }
+            if menuToolbar.transform.tx == 0.0 {
+                self.menuToolbar.alpha = 1
+                return
+            }
             if animation {
-                self.menuToolbar.transform = CGAffineTransform(translationX: 100, y: 0)
-                self.menuToolbar.alpha = 0
-
                 UIView.animate(withDuration: 0.5, delay: 0.3, options: [], animations: {
                     self.menuToolbar.transform = .identity
                     self.menuToolbar.alpha = 1
                 })
             } else {
+                self.menuToolbar.transform = .identity
                 self.menuToolbar.alpha = 1
             }
         }
@@ -501,6 +523,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         } else {
             update()
         }
+    }
+
+    func isEnablePlusButton(_ isEnable: Bool) {
+        menuToolbar.items?.forEach { $0.isEnabled = isEnable }
     }
 
     // MARK: - Right

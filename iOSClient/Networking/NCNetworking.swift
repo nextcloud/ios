@@ -371,6 +371,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
             lastReachability = false
         }
         networkReachability = typeReachability
+        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterNetworkReachability, userInfo: nil)
     }
 
     func authenticationChallenge(_ session: URLSession,
