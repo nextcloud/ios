@@ -482,18 +482,19 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     }
 
     func hiddenPlusButton(_ isHidden: Bool, animation: Bool = true) {
+        let tx = 200.0
         if isHidden {
-            if menuToolbar.transform.tx == 100.0 {
+            if menuToolbar.transform.tx == tx {
                 self.menuToolbar.alpha = 0
                 return
             }
             if animation {
                 UIView.animate(withDuration: 0.5, delay: 0.0, options: [], animations: {
-                    self.menuToolbar.transform = CGAffineTransform(translationX: 100, y: 0)
+                    self.menuToolbar.transform = CGAffineTransform(translationX: tx, y: 0)
                     self.menuToolbar.alpha = 0
                 })
             } else {
-                self.menuToolbar.transform = CGAffineTransform(translationX: 100, y: 0)
+                self.menuToolbar.transform = CGAffineTransform(translationX: tx, y: 0)
                 self.menuToolbar.alpha = 0
             }
         } else {
