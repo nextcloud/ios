@@ -262,17 +262,19 @@ actor NCNetworkingProcess {
                     var controller: NCMainTabBarController?
                     if let sceneIdentifier = metadata.sceneIdentifier, !sceneIdentifier.isEmpty {
                         controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier)
-                    } else {
+                    }
+
+                    if controller == nil {
                         for ctlr in SceneManager.shared.getControllers() {
                             let account = await ctlr.account
                             if account == metadata.account {
                                 controller = ctlr
                             }
                         }
+                    }
 
-                        if controller == nil {
-                            controller = await UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
-                        }
+                    if controller == nil {
+                        controller = await UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
                     }
 
                     // With E2EE or CHUNK upload and exit
