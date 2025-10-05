@@ -314,7 +314,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
         // ------------------------------- E2EE
 
-        if serverUrl == utilityFileSystem.getHomeServer(session: session) && NCPreferences().isEndToEndEnabled(account: session.account) {
+        if serverUrl == utilityFileSystem.getHomeServer(session: session),
+           NCPreferences().isEndToEndEnabled(account: session.account),
+           NextcloudKit.shared.isNetworkReachable() {
             menuE2EEElement.append(UIAction(title: NSLocalizedString("_create_folder_e2ee_", comment: ""),
                                             image: NCImageCache.shared.getFolderEncrypted(account: session.account)) { _ in
                 DispatchQueue.main.async {
