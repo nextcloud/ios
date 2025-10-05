@@ -285,6 +285,7 @@ actor NCNetworkingProcess {
                         Task { @MainActor in
                             var numChunks = 0
                             var counterUpload: Int = 0
+                            var taskHandler: URLSessionTask?
                             let hud = NCHud(controller?.view)
                             hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""))
 
@@ -293,10 +294,14 @@ actor NCNetworkingProcess {
                             } counterChunk: { counter in
                                 hud.progress(num: Float(counter), total: Float(numChunks))
                             } startFilesChunk: { _ in
-                                hud.setText(NSLocalizedString("_keep_active_for_upload_", comment: ""))
+                                hud.pieProgress(text: NSLocalizedString("_keep_active_for_upload_", comment: ""), tapToCancelDetailText: true) {
+                                    taskHandler?.cancel()
+                                }
                             } requestHandler: { _ in
                                 hud.progress(num: Float(counterUpload), total: Float(numChunks))
                                 counterUpload += 1
+                            } taskHandler: { task in
+                                taskHandler = task
                             } assembling: {
                                 hud.setText(NSLocalizedString("_wait_", comment: ""))
                             }
