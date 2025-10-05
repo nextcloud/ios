@@ -258,6 +258,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         let serverUrl = controller.currentServerUrl()
         let isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account)
         let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
+        let isNetworkReachable = NextcloudKit.shared.isNetworkReachable()
         let titleCreateFolder = isDirectoryE2EE ? NSLocalizedString("_create_folder_e2ee_", comment: "") : NSLocalizedString("_create_folder_", comment: "")
         let imageCreateFolder = isDirectoryE2EE ? NCImageCache.shared.getFolderEncrypted(account: session.account) : NCImageCache.shared.getFolder(account: session.account)
 
@@ -316,7 +317,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
         if serverUrl == utilityFileSystem.getHomeServer(session: session),
            NCPreferences().isEndToEndEnabled(account: session.account),
-           NextcloudKit.shared.isNetworkReachable() {
+           isNetworkReachable {
             menuE2EEElement.append(UIAction(title: NSLocalizedString("_create_folder_e2ee_", comment: ""),
                                             image: NCImageCache.shared.getFolderEncrypted(account: session.account)) { _ in
                 DispatchQueue.main.async {
@@ -331,7 +332,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         if capabilities.serverVersionMajor >= NCGlobal.shared.nextcloudVersion18,
            directory?.richWorkspace == nil,
            !isDirectoryE2EE,
-           NextcloudKit.shared.isNetworkReachable() {
+           isNetworkReachable {
             menuTextElement.append(UIAction(title: NSLocalizedString("_add_folder_info_", comment: ""),
                                             image: utility.loadImage(named: "list.dash.header.rectangle", colors: [NCBrandColor.shared.iconImageColor])) { _ in
                 DispatchQueue.main.async {
@@ -350,7 +351,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             })
         }
 
-        if NextcloudKit.shared.isNetworkReachable(),
+        if isNetworkReachable,
            let creator = capabilities.directEditingCreators.first(where: { $0.editor == "text" }),
            !isDirectoryE2EE {
             menuTextElement.append(UIAction(title: NSLocalizedString("_create_nextcloudtext_document_", comment: ""),
@@ -364,52 +365,52 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             })
         }
 
-        // ------------------------------- COLLABORA
+        // ------------------------------- WEB EDITORS
 
-        if capabilities.richDocumentsEnabled,
-           NextcloudKit.shared.isNetworkReachable(),
+        if isNetworkReachable,
            !isDirectoryE2EE {
 
-            menuRichDocumentElement.append(UIAction(title: NSLocalizedString("_create_new_document_", comment: ""),
-                                                    image: utility.loadImage(named: "doc.richtext", colors: [NCBrandColor.shared.documentIconColor])) { _ in
-                Task { @MainActor in
-                    let createDocument = NCCreateDocument()
-                    let templates = await createDocument.getTemplate(editorId: "collabora", templateId: "document", account: session.account)
-                    let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
-                    let fileNamePath = utilityFileSystem.getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
+            // ------------------------------- COLLABORA
+            if capabilities.richDocumentsEnabled {
+                menuRichDocumentElement.append(UIAction(title: NSLocalizedString("_create_new_document_", comment: ""),
+                                                        image: utility.loadImage(named: "doc.richtext", colors: [NCBrandColor.shared.documentIconColor])) { _ in
+                    Task { @MainActor in
+                        let createDocument = NCCreateDocument()
+                        let templates = await createDocument.getTemplate(editorId: "collabora", templateId: "document", account: session.account)
+                        let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
+                        let fileNamePath = utilityFileSystem.getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
 
-                    await createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "collabora", templateId: templates.selectedTemplate.identifier, account: session.account)
-                }
-            })
+                        await createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "collabora", templateId: templates.selectedTemplate.identifier, account: session.account)
+                    }
+                })
 
-            menuRichDocumentElement.append(UIAction(title: NSLocalizedString("_create_new_spreadsheet_", comment: ""),
-                                                    image: utility.loadImage(named: "tablecells", colors: [NCBrandColor.shared.spreadsheetIconColor])) { _ in
-                Task { @MainActor in
-                    let createDocument = NCCreateDocument()
-                    let templates = await createDocument.getTemplate(editorId: "collabora", templateId: "spreadsheet", account: session.account)
-                    let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
-                    let fileNamePath = utilityFileSystem.getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
+                menuRichDocumentElement.append(UIAction(title: NSLocalizedString("_create_new_spreadsheet_", comment: ""),
+                                                        image: utility.loadImage(named: "tablecells", colors: [NCBrandColor.shared.spreadsheetIconColor])) { _ in
+                    Task { @MainActor in
+                        let createDocument = NCCreateDocument()
+                        let templates = await createDocument.getTemplate(editorId: "collabora", templateId: "spreadsheet", account: session.account)
+                        let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
+                        let fileNamePath = utilityFileSystem.getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
 
-                    await createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "collabora", templateId: templates.selectedTemplate.identifier, account: session.account)
-                }
-            })
+                        await createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "collabora", templateId: templates.selectedTemplate.identifier, account: session.account)
+                    }
+                })
 
-            menuRichDocumentElement.append(UIAction(title: NSLocalizedString("_create_new_presentation_", comment: ""),
-                                                    image: utility.loadImage(named: "play.rectangle", colors: [NCBrandColor.shared.presentationIconColor])) { _ in
-                Task { @MainActor in
-                    let createDocument = NCCreateDocument()
-                    let templates = await createDocument.getTemplate(editorId: "collabora", templateId: "presentation", account: session.account)
-                    let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
-                    let fileNamePath = utilityFileSystem.getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
+                menuRichDocumentElement.append(UIAction(title: NSLocalizedString("_create_new_presentation_", comment: ""),
+                                                        image: utility.loadImage(named: "play.rectangle", colors: [NCBrandColor.shared.presentationIconColor])) { _ in
+                    Task { @MainActor in
+                        let createDocument = NCCreateDocument()
+                        let templates = await createDocument.getTemplate(editorId: "collabora", templateId: "presentation", account: session.account)
+                        let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + "." + templates.ext, account: session.account, serverUrl: serverUrl)
+                        let fileNamePath = utilityFileSystem.getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
 
-                    await createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "collabora", templateId: templates.selectedTemplate.identifier, account: session.account)
-                }
-            })
-        }
+                        await createDocument.createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: "collabora", templateId: templates.selectedTemplate.identifier, account: session.account)
+                    }
+                })
+            }
 
-        // ------------------------------- ONLY OFFICE
+            // ------------------------------- ONLY OFFICE
 
-        if NextcloudKit.shared.isNetworkReachable() {
             if let creator = capabilities.directEditingCreators.first(where: { $0.editor == "onlyoffice" && $0.identifier == "onlyoffice_docx"}) {
                 menuOnlyOfficeElement.append(UIAction(title: NSLocalizedString("_create_new_document_", comment: ""),
                                                       image: utility.loadImage(named: "doc.text", colors: [NCBrandColor.shared.documentIconColor])) { _ in
@@ -476,7 +477,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             isHidden ? (menuToolbar.alpha = 0) : (menuToolbar.alpha = 1)
         }
 
-        if !NextcloudKit.shared.isNetworkReachable(), isDirectoryE2EE {
+        // E2EE Offile disable
+        if !isNetworkReachable, isDirectoryE2EE {
             menuToolbar.items?.first?.isEnabled = false
         } else {
             menuToolbar.items?.first?.isEnabled = true
