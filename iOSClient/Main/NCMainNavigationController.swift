@@ -227,13 +227,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         Task { @MainActor in
             // PLUS BUTTON
             if !(viewController is NCFiles) {
-                if #available(iOS 26.0, *) {
-                    hiddenPlusButton(true)
-                } else {
-                    hiddenPlusButton(true, animation: false)
-                }
+                hiddenPlusButton(true, animation: false)
             } else {
-                hiddenPlusButton(false, animation: false)
+                hiddenPlusButton(false)
             }
             // MENU
             setNavigationBarAppearance()
@@ -487,26 +483,31 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
     func hiddenPlusButton(_ isHidden: Bool, animation: Bool = true) {
         if isHidden {
-            guard self.menuToolbar.alpha != 0 else { return }
+            if menuToolbar.transform.tx == 100.0 {
+                self.menuToolbar.alpha = 0
+                return
+            }
             if animation {
                 UIView.animate(withDuration: 0.5, delay: 0.0, options: [], animations: {
                     self.menuToolbar.transform = CGAffineTransform(translationX: 100, y: 0)
                     self.menuToolbar.alpha = 0
                 })
             } else {
+                self.menuToolbar.transform = CGAffineTransform(translationX: 100, y: 0)
                 self.menuToolbar.alpha = 0
             }
         } else {
-            guard self.menuToolbar.alpha != 1 else { return }
+            if menuToolbar.transform.tx == 0.0 {
+                self.menuToolbar.alpha = 1
+                return
+            }
             if animation {
-                self.menuToolbar.transform = CGAffineTransform(translationX: 100, y: 0)
-                self.menuToolbar.alpha = 0
-
                 UIView.animate(withDuration: 0.5, delay: 0.3, options: [], animations: {
                     self.menuToolbar.transform = .identity
                     self.menuToolbar.alpha = 1
                 })
             } else {
+                self.menuToolbar.transform = .identity
                 self.menuToolbar.alpha = 1
             }
         }
