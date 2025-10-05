@@ -233,7 +233,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                     hiddenPlusButton(true, animation: false)
                 }
             } else {
-                hiddenPlusButton(false)
+                hiddenPlusButton(false, animation: false)
             }
             // MENU
             setNavigationBarAppearance()
