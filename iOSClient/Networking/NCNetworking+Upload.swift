@@ -172,6 +172,12 @@ extension NCNetworking {
             await NCManageDatabase.shared.deleteChunksAsync(account: metadata.account,
                                                             ocId: metadata.ocId,
                                                             directory: directory)
+        } else if results.error.errorCode == -5 {
+            await NCManageDatabase.shared.deleteChunksAsync(account: metadata.account,
+                                                            ocId: metadata.ocId,
+                                                            directory: directory)
+            await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
+            return results
         }
 
         if withUploadComplete {

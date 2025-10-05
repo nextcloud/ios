@@ -287,7 +287,9 @@ actor NCNetworkingProcess {
                             var counterUpload: Int = 0
                             var taskHandler: URLSessionTask?
                             let hud = NCHud(controller?.view)
-                            hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""))
+                            hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""), tapToCancelDetailText: true) {
+                                NotificationCenter.default.postOnMainThread(name: NextcloudKit.shared.nkCommonInstance.notificationCenterChunkedFileStop.rawValue)
+                            }
 
                             await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
                                 numChunks = num
