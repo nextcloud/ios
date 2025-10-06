@@ -72,6 +72,32 @@ final class NCUploadStore {
         forceFlush()
     }
 
+    private func setupLifecycleFlush() {
+        NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: nil) { [weak self] _ in
+            self?.flushWithBackgroundTime()
+        }
+
+        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { [weak self] _ in
+            self?.stopDebounceTimer()
+            self?.flushWithBackgroundTime()
+        }
+
+        NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { [weak self] _ in
+            self?.startDebounceTimer()
+        }
+    }
+
+    private func flushWithBackgroundTime() {
+        var bgTask: UIBackgroundTaskIdentifier = .invalid
+        bgTask = UIApplication.shared.beginBackgroundTask(withName: "NCUploadStore.flush") {
+            UIApplication.shared.endBackgroundTask(bgTask)
+            bgTask = .invalid
+        }
+        forceFlush()
+        UIApplication.shared.endBackgroundTask(bgTask)
+        bgTask = .invalid
+    }
+
     // MARK: Public API
 
     /// Adds or merges an item, then schedules a batched commit.
@@ -209,18 +235,5 @@ final class NCUploadStore {
     private func stopDebounceTimer() {
         debounceTimer?.cancel()
         debounceTimer = nil
-    }
-
-    private func setupLifecycleFlush() {
-        // Ensure a flush when app goes background/terminates
-        NotificationCenter.default.addObserver(
-            forName: UIApplication.willResignActiveNotification,
-            object: nil, queue: nil
-        ) { [weak self] _ in self?.forceFlush() }
-
-        NotificationCenter.default.addObserver(
-            forName: UIApplication.willTerminateNotification,
-            object: nil, queue: nil
-        ) { [weak self] _ in self?.forceFlush() }
     }
 }

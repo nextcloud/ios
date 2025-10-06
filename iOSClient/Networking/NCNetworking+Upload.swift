@@ -546,6 +546,7 @@ extension NCNetworking {
                                                       progress: Double(progress))
 
             await NCManageDatabase.shared.setMetadataProgress(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier, progress: Double(progress))
+
             await self.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferProgressDidUpdate(progress: progress,
                                                    totalBytes: totalBytes,
