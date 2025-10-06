@@ -145,14 +145,33 @@ final class NCUploadStore {
     }
 
     /// Removes the first match by (serverUrl + fileName); batched commit.
-    func removeUploadItem(serverUrl: String, fileName: String) {
+    func removeUploadItem(serverUrl: String, fileName: String, taskIdentifier: Int?) {
         guard let url = self.uploadStoreURL else {
             return
         }
 
         uploadStoreIO.sync {
             if let idx = uploadItemsCache.firstIndex(where: {
-                $0.serverUrl == serverUrl && $0.fileName == fileName
+                $0.serverUrl == serverUrl &&
+                $0.fileName == fileName &&
+                $0.taskIdentifier == taskIdentifier
+            }) {
+                uploadItemsCache.remove(at: idx)
+                changeCounter &+= 1
+                maybeCommit(url: url)
+            }
+        }
+    }
+
+    /// Removes the first match by (ocIdTransfer); batched commit.
+    func removeUploadItem(ocIdTransfer: String) {
+        guard let url = self.uploadStoreURL else {
+            return
+        }
+
+        uploadStoreIO.sync {
+            if let idx = uploadItemsCache.firstIndex(where: {
+                $0.ocIdTransfer == ocIdTransfer
             }) {
                 uploadItemsCache.remove(at: idx)
                 changeCounter &+= 1

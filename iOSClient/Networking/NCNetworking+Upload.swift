@@ -380,7 +380,7 @@ extension NCNetworking {
 
     func uploadCancelFile(metadata: tableMetadata) async {
         #if !EXTENSION
-        NCUploadStore.shared.removeUploadItem(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+        NCUploadStore.shared.removeUploadItem(ocIdTransfer: metadata.ocIdTransfer)
         #endif
 
         self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase))
@@ -522,7 +522,9 @@ extension NCNetworking {
                                                                   size: size,
                                                                   taskIdentifier: task.taskIdentifier))
             } else {
-
+                NCUploadStore.shared.removeUploadItem(serverUrl: serverUrl,
+                                                      fileName: fileName,
+                                                      taskIdentifier: task.taskIdentifier)
             }
             #endif
 
