@@ -238,21 +238,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         var serverUrl: String
     }
 
-    struct UploadItemDisk: Codable {
-        var date: Date?
-        var etag: String?
-        var fileName: String?
-        var ocId: String?
-        var ocIdTransfer: String?
-        var progress: Double?
-        var selector: String?
-        var serverUrl: String?
-        var session: String?
-        var status: Int?
-        var size: Int64?
-        var taskIdentifier: Int?
-    }
-
     let networkingTasks = NetworkingTasks()
 
     let sessionDownload = NextcloudKit.shared.nkCommonInstance.identifierSessionDownload
@@ -285,13 +270,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         return networkReachability == NKTypeReachability.reachableEthernetOrWiFi || networkReachability == NKTypeReachability.reachableCellular
     }
 
-    // Upload store (single live file + in-memory cache)
-    private let uploadStoreIO = DispatchQueue(label: "com.nextcloud.uploadStore.io")    // serializes all access
-    private var uploadStoreURL: URL?
-    private let encoderUploadItem: JSONEncoder
-    private let decoderUploadItem: JSONDecoder
-    var uploadItemsCache: [UploadItemDisk] = []
-
     // Capabilities
     var capabilities = ThreadSafeDictionary<String, NKCapabilities.Capabilities>()
 
@@ -309,33 +287,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 
     // MARK: - init
 
-    init() {
-        // Configure JSON codecs for Upload item
-        self.encoderUploadItem = JSONEncoder()
-        self.decoderUploadItem = JSONDecoder()
-
-        self.encoderUploadItem.dateEncodingStrategy = .iso8601
-        self.decoderUploadItem.dateDecodingStrategy = .iso8601
-
-        guard let groupDirectory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup) else {
-            return
-        }
-        let backupDirectory = groupDirectory.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud)
-        self.uploadStoreURL = backupDirectory.appendingPathComponent(fileUploadStore)
-
-        // Ensure directory exists and load once
-        self.uploadStoreIO.sync {
-            // Load existing file
-            if let url = self.uploadStoreURL,
-                let data = try? Data(contentsOf: url),
-                !data.isEmpty,
-                let items = try? self.decoderUploadItem.decode([UploadItemDisk].self, from: data) {
-                self.uploadItemsCache = items
-            } else {
-                self.uploadItemsCache = []
-            }
-        }
-    }
+    init() { }
 
     // MARK: - Communication Delegate
 
@@ -478,6 +430,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         (self.p12Data, self.p12Password) = NCPreferences().getClientCertificate(account: account)
     }
 
+    /*
     // MARK: - Upload Item
 
     /// Adds or updates an `UploadItemDisk` entry in the local upload cache.
@@ -597,4 +550,5 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
             taskIdentifier: new.taskIdentifier ?? existing.taskIdentifier
         )
     }
+    */
 }
