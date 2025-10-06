@@ -226,15 +226,15 @@ extension NCNetworking {
             if let task, error == .success {
                 nkLog(debug: "Upload file \(metadata.fileNameView) with taskIdentifier \(task.taskIdentifier)")
 
-                addUploadItem(UploadItemDisk(fileName: metadata.fileName,
-                                             ocIdTransfer: metadata.ocIdTransfer,
-                                             progress: 0,
-                                             selector: metadata.sessionSelector,
-                                             serverUrl: metadata.serverUrl,
-                                             session: metadata.session,
-                                             status: metadata.status,
-                                             size: metadata.size,
-                                             taskIdentifier: task.taskIdentifier))
+                NCUploadStore.shared.addUploadItem(UploadItemDisk(fileName: metadata.fileName,
+                                                                  ocIdTransfer: metadata.ocIdTransfer,
+                                                                  progress: 0,
+                                                                  selector: metadata.sessionSelector,
+                                                                  serverUrl: metadata.serverUrl,
+                                                                  session: metadata.session,
+                                                                  status: metadata.status,
+                                                                  size: metadata.size,
+                                                                  taskIdentifier: task.taskIdentifier))
 
                 if let metadata = await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
                                                                                         sessionTaskIdentifier: task.taskIdentifier,
@@ -377,6 +377,7 @@ extension NCNetworking {
     }
 
     func uploadCancelFile(metadata: tableMetadata) async {
+        NCUploadStore.shared.removeUploadItem(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
         self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase))
         await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocIdTransfer)
         await self.transferDispatcher.notifyAllDelegates { delegate in
@@ -507,13 +508,13 @@ extension NCNetworking {
             #endif
 
             if error == .success {
-                addUploadItem(UploadItemDisk(date: date,
-                                             etag: etag,
-                                             fileName: fileName,
-                                             ocId: ocId,
-                                             serverUrl: serverUrl,
-                                             size: size,
-                                             taskIdentifier: task.taskIdentifier))
+                NCUploadStore.shared.addUploadItem(UploadItemDisk(date: date,
+                                                                  etag: etag,
+                                                                  fileName: fileName,
+                                                                  ocId: ocId,
+                                                                  serverUrl: serverUrl,
+                                                                  size: size,
+                                                                  taskIdentifier: task.taskIdentifier))
             } else {
 
             }
@@ -538,6 +539,12 @@ extension NCNetworking {
             guard await progressQuantizer.shouldEmit(serverUrlFileName: serverUrl + "/" + fileName, fraction: Double(progress)) else {
                 return
             }
+
+            NCUploadStore.shared.updateUploadProgress(serverUrl: serverUrl,
+                                                      fileName: fileName,
+                                                      taskIdentifier: task.taskIdentifier,
+                                                      progress: Double(progress))
+
             await NCManageDatabase.shared.setMetadataProgress(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier, progress: Double(progress))
             await self.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferProgressDidUpdate(progress: progress,

@@ -7,23 +7,23 @@ import NextcloudKit
 
 // MARK: - Upload Store (batched persistence)
 
+struct UploadItemDisk: Codable {
+    var date: Date?
+    var etag: String?
+    var fileName: String?
+    var ocId: String?
+    var ocIdTransfer: String?
+    var progress: Double?
+    var selector: String?
+    var serverUrl: String?
+    var session: String?
+    var status: Int?
+    var size: Int64?
+    var taskIdentifier: Int?
+}
+
 final class NCUploadStore {
     static let shared = NCUploadStore()
-
-    struct UploadItemDisk: Codable {
-        var date: Date?
-        var etag: String?
-        var fileName: String?
-        var ocId: String?
-        var ocIdTransfer: String?
-        var progress: Double?
-        var selector: String?
-        var serverUrl: String?
-        var session: String?
-        var status: Int?
-        var size: Int64?
-        var taskIdentifier: Int?
-    }
 
     // Shared state
     private var uploadItemsCache: [UploadItemDisk] = []
@@ -76,7 +76,9 @@ final class NCUploadStore {
 
     /// Adds or merges an item, then schedules a batched commit.
     func addUploadItem(_ item: UploadItemDisk) {
-        guard let url = self.uploadStoreURL else { return }
+        guard let url = self.uploadStoreURL else {
+            return
+        }
 
         uploadStoreIO.sync {
             // Upsert by (serverUrl + fileName + taskIdentifier)
@@ -96,9 +98,32 @@ final class NCUploadStore {
         }
     }
 
+    /// Updates only the `progress` field of an existing upload item, then schedules a batched commit.
+    /// If no matching item is found, nothing happens.
+    func updateUploadProgress(serverUrl: String?, fileName: String?, taskIdentifier: Int?, progress: Double) {
+        guard let url = self.uploadStoreURL else {
+            return
+        }
+
+        uploadStoreIO.sync {
+            if let idx = uploadItemsCache.firstIndex(where: {
+                $0.serverUrl == serverUrl &&
+                $0.fileName == fileName &&
+                $0.taskIdentifier == taskIdentifier
+            }) {
+                // Update only progress field
+                uploadItemsCache[idx].progress = progress
+                changeCounter &+= 1
+                maybeCommit(url: url)
+            }
+        }
+    }
+
     /// Removes the first match by (serverUrl + fileName); batched commit.
     func removeUploadItem(serverUrl: String, fileName: String) {
-        guard let url = self.uploadStoreURL else { return }
+        guard let url = self.uploadStoreURL else {
+            return
+        }
 
         uploadStoreIO.sync {
             if let idx = uploadItemsCache.firstIndex(where: {
@@ -113,7 +138,10 @@ final class NCUploadStore {
 
     /// Forces an immediate flush to disk (e.g., app background/terminate).
     func forceFlush() {
-        guard let url = self.uploadStoreURL else { return }
+        guard let url = self.uploadStoreURL else {
+            return
+        }
+
         uploadStoreIO.sync {
             do {
                 let data = try encoderUploadItem.encode(uploadItemsCache)
@@ -152,7 +180,9 @@ final class NCUploadStore {
         let tooManyChanges = changeCounter >= batchThreshold
         let tooOld = (now - lastPersist) >= maxLatencySec
 
-        guard tooManyChanges || tooOld else { return }
+        guard tooManyChanges || tooOld else {
+            return
+        }
 
         do {
             let data = try encoderUploadItem.encode(uploadItemsCache)
