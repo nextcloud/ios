@@ -40,8 +40,7 @@ final class NCUploadStore {
     private var debounceTimer: DispatchSourceTimer?
 
     // Realm batching controls
-    private let realmBatchThreshold: Int = 50      // <- sync Realm every 50 changes
-    private var realmPendingSync: Bool = false     // <- request sync when we re-enter foreground
+    private let realmBatchThreshold: Int = 20        // existing
 
     init() {
         self.encoderUploadItem.dateEncodingStrategy = .iso8601
@@ -66,40 +65,39 @@ final class NCUploadStore {
         }
 
         self.lastPersist = CFAbsoluteTimeGetCurrent()
+
         setupLifecycleFlush()
         startDebounceTimer()
     }
 
     deinit {
         stopDebounceTimer()
-        forceFlush()
+        flushWithBackgroundTime()
     }
 
     private func setupLifecycleFlush() {
         NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: nil) { [weak self] _ in
             guard let self else { return }
 
-            self.flushWithBackgroundTime()
-        }
-
-        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { [weak self] _ in
-            guard let self else { return }
-
-            self.stopDebounceTimer()
-            self.flushWithBackgroundTime()
+            Task {
+                self.stopDebounceTimer()
+                self.flushWithBackgroundTime()
+            }
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { [weak self] _ in
             guard let self else { return }
 
-            // If a Realm sync was pending while in background, execute it now.
-            if self.realmPendingSync {
-                Task {
-                    await self.syncRealmNow()
-                }
+            // Force a synchronous reload before anything else
+            self.reloadFromDisk()
+
+            Task {
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+
+                await self.syncRealmNow()
+                self.startDebounceTimer()
             }
 
-            self.startDebounceTimer()
         }
     }
 
@@ -252,8 +250,11 @@ final class NCUploadStore {
         t.schedule(deadline: .now() + .seconds(Int(maxLatencySec)), repeating: .seconds(Int(maxLatencySec)))
         t.setEventHandler { [weak self] in
             guard let self, let url = self.uploadStoreURL else { return }
-            // Periodic check to enforce max latency even without new changes burst
+            // JSON latency cap
             self.maybeCommit(url: url)
+            Task {
+                await self.syncRealmNow()
+            }
         }
         t.resume()
         debounceTimer = t
@@ -270,56 +271,93 @@ final class NCUploadStore {
             UIApplication.shared.endBackgroundTask(bgTask)
             bgTask = .invalid
         }
-        forceFlush()
+        Task {
+            self.forceFlush()
+            await self.syncRealmNow()
+        }
         UIApplication.shared.endBackgroundTask(bgTask)
         bgTask = .invalid
     }
 
+    /// Reloads the entire JSON store from disk synchronously.
+    /// When this function returns, `uploadItemsCache` is guaranteed to be updated.
+    private func reloadFromDisk() {
+        guard let url = self.uploadStoreURL else {
+            return
+        }
 
-    /// Schedules a Realm sync if threshold is hit and app is in foreground.
-    /// If the app is not in foreground, defers the sync until next didBecomeActive.
-    private func maybeSyncRealm() {
-        // Guard: threshold-based trigger
-        let shouldSync = (changeCounter % realmBatchThreshold == 0)
-        guard shouldSync else { return }
+        uploadStoreIO.sync {
+            do {
+                let data = try Data(contentsOf: url)
+                guard !data.isEmpty else {
+                    self.uploadItemsCache = []
+                    nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .info, message: "UploadStore: JSON empty, cache cleared")
+                    return
+                }
 
-        if UIApplication.shared.applicationState == .active {
-            // Perform the sync on MainActor to respect any UI/Realm constraints
-            Task {
-                await syncRealmNow()
+                let items = try self.decoderUploadItem.decode([UploadItemDisk].self, from: data)
+                self.uploadItemsCache = items
+                nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .info, message: "UploadStore: JSON reloaded from disk (sync)")
+            } catch {
+                nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .error, message: "UploadStore: reload failed: \(error)")
             }
-        } else {
-            // Defer: mark as pending; it will run on didBecomeActive
-            realmPendingSync = true
+        }
+    }
+
+    /// Schedules a Realm sync. If `force` is true, runs regardless of threshold (foreground only).
+    private func maybeSyncRealm() {
+        guard UIApplication.shared.applicationState == .active else {
+            return
+        }
+
+
+        // threshold mode: sync every N changes
+        guard changeCounter % realmBatchThreshold == 0 else {
+            return
+        }
+
+
+        Task {
+            await syncRealmNow()
         }
     }
 
     /// Performs the actual Realm write using your async APIs.
     private func syncRealmNow() async {
-        // Snapshot the current cache to avoid holding the IO queue
         let snapshot: [UploadItemDisk] = uploadStoreIO.sync {
-            uploadItemsCache
+            uploadItemsCache.filter { $0.ocId != nil && !$0.ocId!.isEmpty }
+        }
+        let ocIdTransfers = snapshot.compactMap { $0.ocIdTransfer }
+        let predicate = NSPredicate(format: "ocIdTransfer IN %@", ocIdTransfers)
+        let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: predicate)
+        let utility = NCUtility()
+        var metadatasUploaded: [tableMetadata] = []
+
+        for metadata in metadatas {
+            guard let uploadItem = (uploadItemsCache.first { $0.ocIdTransfer == metadata.ocIdTransfer }),
+                  let etag = uploadItem.etag,
+                  let ocId = uploadItem.ocId else {
+                continue
+            }
+
+            metadata.uploadDate = (uploadItem.date as? NSDate) ?? NSDate()
+            metadata.etag = etag
+            metadata.ocId = ocId
+            metadata.chunk = 0
+
+            if let fileId = utility.ocIdToFileId(ocId: metadata.ocId) {
+                metadata.fileId = fileId
+            }
+
+            metadata.session = ""
+            metadata.sessionError = ""
+            metadata.sessionTaskIdentifier = 0
+            metadata.status = NCGlobal.shared.metadataStatusNormal
+
+            metadatasUploaded.append(metadata)
+            removeUploadItem(ocIdTransfer: metadata.ocIdTransfer)
         }
 
-        // Example: use your centralized async Realm entry point
-        do {
-            try await NCManageDatabase.shared.performRealmWriteAsync { realm in
-                // TODO: Upsert your Realm objects using `snapshot`.
-                // - Map UploadItemDisk -> RealmObject
-                // - Use primary keys (serverUrl + fileName + taskIdentifier) for upsert
-                // - Keep objects detached if needed for your architecture
-                //
-                // Pseudocode:
-                // for item in snapshot {
-                //     let obj = TableUploadItemDisk.from(item)  // mapping function you own
-                //     realm.add(obj, update: .modified)
-                // }
-            }
-            nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .info, message: "Realm sync completed")
-            realmPendingSync = false
-        } catch {
-            nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .error, message: "Realm sync failed: \(error)")
-            // Keep realmPendingSync as-is; next foreground will try again when threshold hits again.
-        }
+        await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfers: ocIdTransfers, metadatas: metadatasUploaded)
     }
 }
