@@ -137,8 +137,6 @@ final class NCUploadStore {
                 $0.taskIdentifier == taskIdentifier
             }) {
                 uploadItemsCache.remove(at: idx)
-                changeCounter &+= 1
-                maybeCommit()
             }
         }
     }
@@ -150,8 +148,6 @@ final class NCUploadStore {
                 $0.ocIdTransfer == ocIdTransfer
             }) {
                 uploadItemsCache.remove(at: idx)
-                changeCounter &+= 1
-                maybeCommit()
             }
         }
     }
