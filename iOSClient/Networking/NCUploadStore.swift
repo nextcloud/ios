@@ -39,9 +39,6 @@ final class NCUploadStore {
     private let maxLatencySec: TimeInterval = 5     // <- or every 5s at most
     private var debounceTimer: DispatchSourceTimer?
 
-    // Realm batching controls
-    private let realmBatchThreshold: Int = 20        // existing
-
     init() {
         self.encoderUploadItem.dateEncodingStrategy = .iso8601
         self.decoderUploadItem.dateDecodingStrategy = .iso8601
@@ -105,10 +102,6 @@ final class NCUploadStore {
 
     /// Adds or merges an item, then schedules a batched commit.
     func addUploadItem(_ item: UploadItemDisk) {
-        guard let url = self.uploadStoreURL else {
-            return
-        }
-
         uploadStoreIO.sync {
             // Upsert by (serverUrl + fileName + taskIdentifier)
             if let idx = uploadItemsCache.firstIndex(where: {
@@ -123,18 +116,13 @@ final class NCUploadStore {
             }
 
             changeCounter &+= 1
-            maybeCommit(url: url)
-            maybeSyncRealm()
+            maybeCommit()
         }
     }
 
     /// Updates only the `progress` field of an existing upload item, then schedules a batched commit.
     /// If no matching item is found, nothing happens.
     func updateUploadProgress(serverUrl: String?, fileName: String?, taskIdentifier: Int?, progress: Double) {
-        guard let url = self.uploadStoreURL else {
-            return
-        }
-
         uploadStoreIO.sync {
             if let idx = uploadItemsCache.firstIndex(where: {
                 $0.serverUrl == serverUrl &&
@@ -144,17 +132,13 @@ final class NCUploadStore {
                 // Update only progress field
                 uploadItemsCache[idx].progress = progress
                 changeCounter &+= 1
-                maybeCommit(url: url)
+                maybeCommit()
             }
         }
     }
 
     /// Removes the first match by (serverUrl + fileName); batched commit.
     func removeUploadItem(serverUrl: String, fileName: String, taskIdentifier: Int?) {
-        guard let url = self.uploadStoreURL else {
-            return
-        }
-
         uploadStoreIO.sync {
             if let idx = uploadItemsCache.firstIndex(where: {
                 $0.serverUrl == serverUrl &&
@@ -163,26 +147,20 @@ final class NCUploadStore {
             }) {
                 uploadItemsCache.remove(at: idx)
                 changeCounter &+= 1
-                maybeCommit(url: url)
-                maybeSyncRealm()
+                maybeCommit()
             }
         }
     }
 
     /// Removes the first match by (ocIdTransfer); batched commit.
     func removeUploadItem(ocIdTransfer: String) {
-        guard let url = self.uploadStoreURL else {
-            return
-        }
-
         uploadStoreIO.sync {
             if let idx = uploadItemsCache.firstIndex(where: {
                 $0.ocIdTransfer == ocIdTransfer
             }) {
                 uploadItemsCache.remove(at: idx)
                 changeCounter &+= 1
-                maybeCommit(url: url)
-                maybeSyncRealm()
+                maybeCommit()
             }
         }
     }
@@ -226,11 +204,13 @@ final class NCUploadStore {
     }
 
     /// Persist if threshold reached or max latency exceeded.
-    private func maybeCommit(url: URL) {
+    private func maybeCommit() {
+        guard let url = self.uploadStoreURL else {
+            return
+        }
         let now = CFAbsoluteTimeGetCurrent()
         let tooManyChanges = changeCounter >= batchThreshold
         let tooOld = (now - lastPersist) >= maxLatencySec
-
         guard tooManyChanges || tooOld else {
             return
         }
@@ -243,16 +223,19 @@ final class NCUploadStore {
         } catch {
             nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .error, message: "Persist failed: \(error)")
         }
+
+        Task {
+            await syncRealmNow()
+        }
     }
 
     private func startDebounceTimer() {
         let t = DispatchSource.makeTimerSource(queue: uploadStoreIO)
         t.schedule(deadline: .now() + .seconds(Int(maxLatencySec)), repeating: .seconds(Int(maxLatencySec)))
         t.setEventHandler { [weak self] in
-            guard let self, let url = self.uploadStoreURL else { return }
-            // JSON latency cap
-            self.maybeCommit(url: url)
+            guard let self else { return }
             Task {
+                self.maybeCommit()
                 await self.syncRealmNow()
             }
         }
@@ -301,24 +284,6 @@ final class NCUploadStore {
             } catch {
                 nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .error, message: "UploadStore: reload failed: \(error)")
             }
-        }
-    }
-
-    /// Schedules a Realm sync. If `force` is true, runs regardless of threshold (foreground only).
-    private func maybeSyncRealm() {
-        guard UIApplication.shared.applicationState == .active else {
-            return
-        }
-
-
-        // threshold mode: sync every N changes
-        guard changeCounter % realmBatchThreshold == 0 else {
-            return
-        }
-
-
-        Task {
-            await syncRealmNow()
         }
     }
 
