@@ -35,8 +35,8 @@ final class NCUploadStore {
     // Batching controls
     private var changeCounter: Int = 0
     private var lastPersist: TimeInterval = 0
-    private let batchThreshold: Int = 100          // <- persist every 100 changes
-    private let maxLatencySec: TimeInterval = 5    // <- or every 5s at most
+    private let batchThreshold: Int = 20            // <- persist every 20 changes
+    private let maxLatencySec: TimeInterval = 5     // <- or every 5s at most
     private var debounceTimer: DispatchSourceTimer?
 
     init() {
@@ -49,7 +49,6 @@ final class NCUploadStore {
         let backupDirectory = groupDirectory.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud)
         self.uploadStoreURL = backupDirectory.appendingPathComponent(fileUploadStore)
 
-        // Ensure directory exists and load once
         self.uploadStoreIO.sync {
             // Load existing file
             if let url = self.uploadStoreURL,
@@ -175,7 +174,7 @@ final class NCUploadStore {
                 lastPersist = CFAbsoluteTimeGetCurrent()
                 changeCounter = 0
             } catch {
-                nkLog(tag: "UploadStore", message: "Force flush failed: \(error)")
+                nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .info, message: "Force flush failed: \(error)")
             }
         }
     }
@@ -216,7 +215,7 @@ final class NCUploadStore {
             lastPersist = now
             changeCounter = 0
         } catch {
-            nkLog(tag: "UploadStore", message: "Persist failed: \(error)")
+            nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .error, message: "Persist failed: \(error)")
         }
     }
 
