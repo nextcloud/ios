@@ -258,20 +258,18 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     }
 
     struct UploadItemDisk: Codable {
-        let date: Date?
-        let errorCode: Int?
-        let etag: String?
-        let fileName: String
-        let ocId: String?
-        let ocIdTransfer: String?
-        let progress: Double?
-        let selector: String?
-        let serverUrl: String
-        let session: String?
-        let sessionError: String?
-        let status: Int?
-        let size: Int64
-        let taskIdentifier: Int?
+        var date: Date?
+        var etag: String?
+        var fileName: String?
+        var ocId: String?
+        var ocIdTransfer: String?
+        var progress: Double?
+        var selector: String?
+        var serverUrl: String?
+        var session: String?
+        var status: Int?
+        var size: Int64?
+        var taskIdentifier: Int?
     }
 
     let networkingTasks = NetworkingTasks()
@@ -501,14 +499,16 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 
     // MARK: - Upload Item
 
-    func addUploadItem(_ item: UploadItemDisk, fileName: String, serverUrl: String) {
+    func addUploadItem(_ item: UploadItemDisk) {
         guard let url = self.uploadStoreURL else {
             return
         }
         uploadStoreIO.sync {
-            // Upsert by (serverUrl + fileName)
-            if let idx = uploadItemsCache.firstIndex(where: { $0.serverUrl == serverUrl && $0.fileName == fileName }) {
-                uploadItemsCache[idx] = item
+            // Upsert by (serverUrl + fileName + taskIdentifier)
+            if let idx = uploadItemsCache.firstIndex(where: { $0.serverUrl == item.serverUrl && $0.fileName == item.fileName && $0.taskIdentifier == item.taskIdentifier}) {
+                let existing = uploadItemsCache[idx]
+                let merged = mergeUploadItem(existing: existing, with: item)
+                uploadItemsCache[idx] = merged
             } else {
                 uploadItemsCache.append(item)
             }
@@ -537,6 +537,24 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
                 nkLog(tag: "UploadComplete", message: "Persist remove failed: \(error)")
             }
         }
+    }
+
+    /// Merges two UploadItemDisk objects, updating only non-nil fields from `new`.
+    private func mergeUploadItem(existing: UploadItemDisk, with new: UploadItemDisk) -> UploadItemDisk {
+        return UploadItemDisk(
+            date: new.date ?? existing.date,
+            etag: new.etag ?? existing.etag,
+            fileName: existing.fileName ?? new.fileName,
+            ocId: new.ocId ?? existing.ocId,
+            ocIdTransfer: new.ocIdTransfer ?? existing.ocIdTransfer,
+            progress: new.progress ?? existing.progress,
+            selector: new.selector ?? existing.selector,
+            serverUrl: existing.serverUrl ?? new.serverUrl,
+            session: new.session ?? existing.session,
+            status: new.status ?? existing.status,
+            size: new.size ?? existing.size,
+            taskIdentifier: new.taskIdentifier ?? existing.taskIdentifier
+        )
     }
 
     /// Read a snapshot for batch processing (e.g., flush to Realm); no disk I/O, returns the cache.

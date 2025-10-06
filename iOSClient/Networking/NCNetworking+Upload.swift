@@ -222,6 +222,17 @@ extension NCNetworking {
             if let task, error == .success {
                 nkLog(debug: "Upload file \(metadata.fileNameView) with taskIdentifier \(task.taskIdentifier)")
 
+
+                addUploadItem(UploadItemDisk(fileName: metadata.fileName,
+                                             ocIdTransfer: metadata.ocIdTransfer,
+                                             progress: 0,
+                                             selector: metadata.sessionSelector,
+                                             serverUrl: metadata.serverUrl,
+                                             session: metadata.session,
+                                             status: metadata.status,
+                                             size: metadata.size,
+                                             taskIdentifier: task.taskIdentifier))
+
                 if let metadata = await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
                                                                                         sessionTaskIdentifier: task.taskIdentifier,
                                                                                         status: self.global.metadataStatusUploading) {
@@ -493,18 +504,13 @@ extension NCNetworking {
             #endif
 
             if error == .success {
-                // TODO: upload item
-                /*
-                let uploadItem = UploadItemDisk(fileName: fileName,
-                                                serverUrl: serverUrl,
-                                                ocId: ocId,
-                                                ocIdTransfer: nil,
-                                                etag: etag,
-                                                date: date,
-                                                size: size,
-                                                taskIdentifier: task.taskIdentifier)
-                addUploadItem(uploadItem, fileName: fileName, serverUrl: serverUrl)
-                */
+                addUploadItem(UploadItemDisk(date: date,
+                                             etag: etag,
+                                             fileName: fileName,
+                                             ocId: ocId,
+                                             serverUrl: serverUrl,
+                                             size: size,
+                                             taskIdentifier: task.taskIdentifier))
             } else {
 
             }
