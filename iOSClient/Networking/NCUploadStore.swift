@@ -75,6 +75,7 @@ final class NCUploadStore {
             guard let self else { return }
 
             self.stopDebounceTimer()
+            self.forceFlush()
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { [weak self] _ in
@@ -167,8 +168,9 @@ final class NCUploadStore {
                 try data.write(to: url, options: .atomic)
                 lastPersist = CFAbsoluteTimeGetCurrent()
                 changeCounter = 0
+                nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .info, message: "Force flush to disk", consoleOnly: true)
             } catch {
-                nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .info, message: "Force flush failed: \(error)")
+                nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .error, message: "Force flush to disk failed: \(error)")
             }
         }
     }
@@ -211,7 +213,7 @@ final class NCUploadStore {
             lastPersist = now
             changeCounter = 0
         } catch {
-            nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .error, message: "Persist failed: \(error)")
+            nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .error, message: "Flush to disk failed: \(error)")
         }
 
         Task {
@@ -250,13 +252,13 @@ final class NCUploadStore {
                 let items = try self.decoderUploadItem.decode([UploadItemDisk].self, from: data)
                 guard !items.isEmpty else {
                     self.uploadItemsCache = []
-                    nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .info, message: "Load JSON empty, cache cleared", consoleOnly: true)
+                    nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .info, message: "Load JSON from disk empty, cache cleared", consoleOnly: true)
                     return
                 }
                 self.uploadItemsCache = items
-                nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .info, message: "JSON loaded from disk (sync)", consoleOnly: true)
+                nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .info, message: "JSON loaded from disk)", consoleOnly: true)
             } catch {
-                nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .error, message: "Load JSON failed: \(error)")
+                nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .error, message: "Load JSON from disk failed: \(error)")
             }
         }
     }
