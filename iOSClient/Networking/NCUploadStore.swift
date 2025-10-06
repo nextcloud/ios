@@ -278,11 +278,6 @@ final class NCUploadStore {
         }
     }
 
-
-    private func syncdsRealmNow() async {
-
-    }
-
     /// Performs the actual Realm write using your async APIs.
     private func syncRealmNow() async {
         let snapshot: [UploadItemDisk] = uploadStoreIO.sync {
@@ -293,6 +288,7 @@ final class NCUploadStore {
         let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: predicate)
         let utility = NCUtility()
         var metadatasUploaded: [tableMetadata] = []
+        var serversUrl = Set<String>()
 
         for metadata in metadatas {
             guard let uploadItem = (uploadItemsCache.first { $0.ocIdTransfer == metadata.ocIdTransfer }),
@@ -316,17 +312,19 @@ final class NCUploadStore {
             metadata.status = NCGlobal.shared.metadataStatusNormal
 
             metadatasUploaded.append(metadata)
+            serversUrl.insert(metadata.serverUrl)
+
             removeUploadItem(ocIdTransfer: metadata.ocIdTransfer)
         }
 
         await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfers: ocIdTransfers, metadatas: metadatasUploaded)
 
-        // transferDispatcher
+        // TransferDispatcher Reload Data
         if !metadatasUploaded.isEmpty {
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferChange(status: NCGlobal.shared.networkingStatusUploaded,
-                                        metadata: tableMetadata(),
-                                        error: .success)
+                for serverUrl in serversUrl {
+                    delegate.transferReloadData(serverUrl: serverUrl, status: nil)
+                }
             }
         }
     }
