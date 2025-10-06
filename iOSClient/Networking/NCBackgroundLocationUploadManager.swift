@@ -1,10 +1,6 @@
-//
-//  NCBackgroundLocationUploadManager.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 06/06/25.
-//  Copyright © 2025 Marino Faggiana. All rights reserved.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2025 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import CoreLocation
 import NextcloudKit

@@ -1,25 +1,6 @@
-//
-//  NCNetworking.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 23/10/19.
-//  Copyright © 2019 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2019 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 import OpenSSL
@@ -499,6 +480,21 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 
     // MARK: - Upload Item
 
+    /// Adds or updates an `UploadItemDisk` entry in the local upload cache.
+    ///
+    /// This function performs an **upsert** operation (update or insert) inside the `uploadItemsCache`
+    /// by matching the combination of `(serverUrl, fileName, taskIdentifier)`.
+    /// If an existing entry is found, it is **merged** with the new one — only non-nil fields
+    /// from the incoming `item` overwrite the existing values.
+    /// The cache is then serialized and saved atomically to disk.
+    ///
+    /// - Parameter item: The `UploadItemDisk` instance containing upload information to insert or update.
+    ///
+    /// Behavior details:
+    /// - Thread-safe: Executed synchronously inside `uploadStoreIO`.
+    /// - Persistence: The JSON file at `uploadStoreURL` is updated atomically.
+    /// - Merge logic: Only non-nil properties of `item` replace existing ones.
+    /// - Error handling: Logs failures via `nkLog` without throwing exceptions.
     func addUploadItem(_ item: UploadItemDisk) {
         guard let url = self.uploadStoreURL else {
             return
@@ -522,6 +518,21 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         }
     }
 
+    /// Removes an `UploadItemDisk` entry from the local upload cache.
+    ///
+    /// This function deletes the first cached upload record that matches the provided
+    /// `serverUrl` and `fileName` combination. After removal, the cache is persisted
+    /// atomically to disk to maintain consistency.
+    ///
+    /// - Parameters:
+    ///   - serverUrl: The server URL associated with the upload item to remove.
+    ///   - fileName: The file name of the upload item to remove.
+    ///
+    /// Behavior details:
+    /// - Thread-safe: Executed synchronously inside `uploadStoreIO`.
+    /// - Persistence: The JSON file at `uploadStoreURL` is updated atomically after removal.
+    /// - Matching: The record is matched using both `serverUrl` and `fileName`.
+    /// - Error handling: Logs persistence errors using `nkLog` without throwing exceptions.
     func removeUploadItem(serverUrl: String, fileName: String) {
         guard let url = self.uploadStoreURL else {
             return
@@ -537,24 +548,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
                 nkLog(tag: "UploadComplete", message: "Persist remove failed: \(error)")
             }
         }
-    }
-
-    /// Merges two UploadItemDisk objects, updating only non-nil fields from `new`.
-    private func mergeUploadItem(existing: UploadItemDisk, with new: UploadItemDisk) -> UploadItemDisk {
-        return UploadItemDisk(
-            date: new.date ?? existing.date,
-            etag: new.etag ?? existing.etag,
-            fileName: existing.fileName ?? new.fileName,
-            ocId: new.ocId ?? existing.ocId,
-            ocIdTransfer: new.ocIdTransfer ?? existing.ocIdTransfer,
-            progress: new.progress ?? existing.progress,
-            selector: new.selector ?? existing.selector,
-            serverUrl: existing.serverUrl ?? new.serverUrl,
-            session: new.session ?? existing.session,
-            status: new.status ?? existing.status,
-            size: new.size ?? existing.size,
-            taskIdentifier: new.taskIdentifier ?? existing.taskIdentifier
-        )
     }
 
     /// Read a snapshot for batch processing (e.g., flush to Realm); no disk I/O, returns the cache.
@@ -585,5 +578,23 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
                 nkLog(tag: "UploadComplete", message: "Persist clear failed: \(error)")
             }
         }
+    }
+
+    /// Merges two UploadItemDisk objects, updating only non-nil fields from `new`.
+    private func mergeUploadItem(existing: UploadItemDisk, with new: UploadItemDisk) -> UploadItemDisk {
+        return UploadItemDisk(
+            date: new.date ?? existing.date,
+            etag: new.etag ?? existing.etag,
+            fileName: existing.fileName ?? new.fileName,
+            ocId: new.ocId ?? existing.ocId,
+            ocIdTransfer: new.ocIdTransfer ?? existing.ocIdTransfer,
+            progress: new.progress ?? existing.progress,
+            selector: new.selector ?? existing.selector,
+            serverUrl: existing.serverUrl ?? new.serverUrl,
+            session: new.session ?? existing.session,
+            status: new.status ?? existing.status,
+            size: new.size ?? existing.size,
+            taskIdentifier: new.taskIdentifier ?? existing.taskIdentifier
+        )
     }
 }

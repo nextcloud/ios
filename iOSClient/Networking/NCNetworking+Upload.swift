@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2024 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import UIKit
 import NextcloudKit
 import Alamofire
@@ -221,7 +225,6 @@ extension NCNetworking {
 
             if let task, error == .success {
                 nkLog(debug: "Upload file \(metadata.fileNameView) with taskIdentifier \(task.taskIdentifier)")
-
 
                 addUploadItem(UploadItemDisk(fileName: metadata.fileName,
                                              ocIdTransfer: metadata.ocIdTransfer,
