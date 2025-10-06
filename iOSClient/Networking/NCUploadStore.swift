@@ -39,6 +39,10 @@ final class NCUploadStore {
     private let maxLatencySec: TimeInterval = 5     // <- or every 5s at most
     private var debounceTimer: DispatchSourceTimer?
 
+    // Realm batching controls
+    private let realmBatchThreshold: Int = 50      // <- sync Realm every 50 changes
+    private var realmPendingSync: Bool = false     // <- request sync when we re-enter foreground
+
     init() {
         self.encoderUploadItem.dateEncodingStrategy = .iso8601
         self.decoderUploadItem.dateDecodingStrategy = .iso8601
@@ -73,28 +77,30 @@ final class NCUploadStore {
 
     private func setupLifecycleFlush() {
         NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: nil) { [weak self] _ in
-            self?.flushWithBackgroundTime()
+            guard let self else { return }
+
+            self.flushWithBackgroundTime()
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { [weak self] _ in
-            self?.stopDebounceTimer()
-            self?.flushWithBackgroundTime()
+            guard let self else { return }
+
+            self.stopDebounceTimer()
+            self.flushWithBackgroundTime()
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { [weak self] _ in
-            self?.startDebounceTimer()
-        }
-    }
+            guard let self else { return }
 
-    private func flushWithBackgroundTime() {
-        var bgTask: UIBackgroundTaskIdentifier = .invalid
-        bgTask = UIApplication.shared.beginBackgroundTask(withName: "NCUploadStore.flush") {
-            UIApplication.shared.endBackgroundTask(bgTask)
-            bgTask = .invalid
+            // If a Realm sync was pending while in background, execute it now.
+            if self.realmPendingSync {
+                Task {
+                    await self.syncRealmNow()
+                }
+            }
+
+            self.startDebounceTimer()
         }
-        forceFlush()
-        UIApplication.shared.endBackgroundTask(bgTask)
-        bgTask = .invalid
     }
 
     // MARK: Public API
@@ -120,6 +126,7 @@ final class NCUploadStore {
 
             changeCounter &+= 1
             maybeCommit(url: url)
+            maybeSyncRealm()
         }
     }
 
@@ -159,6 +166,7 @@ final class NCUploadStore {
                 uploadItemsCache.remove(at: idx)
                 changeCounter &+= 1
                 maybeCommit(url: url)
+                maybeSyncRealm()
             }
         }
     }
@@ -176,6 +184,7 @@ final class NCUploadStore {
                 uploadItemsCache.remove(at: idx)
                 changeCounter &+= 1
                 maybeCommit(url: url)
+                maybeSyncRealm()
             }
         }
     }
@@ -253,5 +262,64 @@ final class NCUploadStore {
     private func stopDebounceTimer() {
         debounceTimer?.cancel()
         debounceTimer = nil
+    }
+
+    private func flushWithBackgroundTime() {
+        var bgTask: UIBackgroundTaskIdentifier = .invalid
+        bgTask = UIApplication.shared.beginBackgroundTask(withName: "NCUploadStore.flush") {
+            UIApplication.shared.endBackgroundTask(bgTask)
+            bgTask = .invalid
+        }
+        forceFlush()
+        UIApplication.shared.endBackgroundTask(bgTask)
+        bgTask = .invalid
+    }
+
+
+    /// Schedules a Realm sync if threshold is hit and app is in foreground.
+    /// If the app is not in foreground, defers the sync until next didBecomeActive.
+    private func maybeSyncRealm() {
+        // Guard: threshold-based trigger
+        let shouldSync = (changeCounter % realmBatchThreshold == 0)
+        guard shouldSync else { return }
+
+        if UIApplication.shared.applicationState == .active {
+            // Perform the sync on MainActor to respect any UI/Realm constraints
+            Task {
+                await syncRealmNow()
+            }
+        } else {
+            // Defer: mark as pending; it will run on didBecomeActive
+            realmPendingSync = true
+        }
+    }
+
+    /// Performs the actual Realm write using your async APIs.
+    private func syncRealmNow() async {
+        // Snapshot the current cache to avoid holding the IO queue
+        let snapshot: [UploadItemDisk] = uploadStoreIO.sync {
+            uploadItemsCache
+        }
+
+        // Example: use your centralized async Realm entry point
+        do {
+            try await NCManageDatabase.shared.performRealmWriteAsync { realm in
+                // TODO: Upsert your Realm objects using `snapshot`.
+                // - Map UploadItemDisk -> RealmObject
+                // - Use primary keys (serverUrl + fileName + taskIdentifier) for upsert
+                // - Keep objects detached if needed for your architecture
+                //
+                // Pseudocode:
+                // for item in snapshot {
+                //     let obj = TableUploadItemDisk.from(item)  // mapping function you own
+                //     realm.add(obj, update: .modified)
+                // }
+            }
+            nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .info, message: "Realm sync completed")
+            realmPendingSync = false
+        } catch {
+            nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .error, message: "Realm sync failed: \(error)")
+            // Keep realmPendingSync as-is; next foreground will try again when threshold hits again.
+        }
     }
 }
