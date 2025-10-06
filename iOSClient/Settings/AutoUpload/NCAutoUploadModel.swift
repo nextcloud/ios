@@ -49,6 +49,8 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     @Published var error: String = ""
     let database = NCManageDatabase.shared
 
+    private var observerToken: NSObjectProtocol?
+
     // Tip
     var tip: EasyTipView?
     // Root View Controller
@@ -64,7 +66,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     init(controller: NCMainTabBarController?) {
         self.controller = controller
 
-        NotificationCenter.default.addObserver(forName: UIDevice.orientationDidChangeNotification,
+        observerToken = NotificationCenter.default.addObserver(forName: UIDevice.orientationDidChangeNotification,
                                                object: nil,
                                                queue: .main) { _ in
             self.tip?.dismiss()
@@ -73,7 +75,9 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     }
 
     deinit {
-        NotificationCenter.default.removeObserver(self)
+        if let token = observerToken {
+            NotificationCenter.default.removeObserver(token)
+        }
     }
 
     /// Triggered when the view appears.

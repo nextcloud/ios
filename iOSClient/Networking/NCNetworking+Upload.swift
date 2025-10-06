@@ -172,6 +172,19 @@ extension NCNetworking {
             await NCManageDatabase.shared.deleteChunksAsync(account: metadata.account,
                                                             ocId: metadata.ocId,
                                                             directory: directory)
+        } else if results.error.errorCode == -1 ||
+                  results.error.errorCode == -2 ||
+                  results.error.errorCode == -3 ||
+                  results.error.errorCode == -4 ||
+                  results.error.errorCode == -5 {
+            await NCManageDatabase.shared.deleteChunksAsync(account: metadata.account,
+                                                            ocId: metadata.ocId,
+                                                            directory: directory)
+            await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
+            utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
+
+            NCContentPresenter().showError(error: results.error)
+            return results
         }
 
         if withUploadComplete {

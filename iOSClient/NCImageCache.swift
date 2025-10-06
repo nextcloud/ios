@@ -19,6 +19,8 @@ final class NCImageCache: @unchecked Sendable {
     private let allowExtensions = [NCGlobal.shared.previewExt256]
     private var brandElementColor: UIColor?
 
+    private var observerToken: NSObjectProtocol?
+
     public var countLimit: Int = 2000
     lazy var cache: LRUCache<String, UIImage> = {
         return LRUCache<String, UIImage>(countLimit: countLimit)
@@ -28,7 +30,7 @@ final class NCImageCache: @unchecked Sendable {
     public var controller: UITabBarController?
 
     init() {
-        NotificationCenter.default.addObserver(forName: LRUCacheMemoryWarningNotification, object: nil, queue: nil) { _ in
+        observerToken = NotificationCenter.default.addObserver(forName: LRUCacheMemoryWarningNotification, object: nil, queue: nil) { _ in
             self.cache.removeAll()
             self.cache = LRUCache<String, UIImage>(countLimit: self.countLimit)
         }
@@ -86,7 +88,9 @@ final class NCImageCache: @unchecked Sendable {
     }
 
     deinit {
-        NotificationCenter.default.removeObserver(self, name: LRUCacheMemoryWarningNotification, object: nil)
+        if let token = observerToken {
+            NotificationCenter.default.removeObserver(token)
+        }
     }
 
     func allowExtensions(ext: String) -> Bool {

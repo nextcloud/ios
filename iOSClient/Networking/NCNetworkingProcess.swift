@@ -262,17 +262,19 @@ actor NCNetworkingProcess {
                     var controller: NCMainTabBarController?
                     if let sceneIdentifier = metadata.sceneIdentifier, !sceneIdentifier.isEmpty {
                         controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier)
-                    } else {
+                    }
+
+                    if controller == nil {
                         for ctlr in SceneManager.shared.getControllers() {
                             let account = await ctlr.account
                             if account == metadata.account {
                                 controller = ctlr
                             }
                         }
+                    }
 
-                        if controller == nil {
-                            controller = await UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
-                        }
+                    if controller == nil {
+                        controller = await UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
                     }
 
                     // With E2EE or CHUNK upload and exit
@@ -285,18 +287,25 @@ actor NCNetworkingProcess {
                         Task { @MainActor in
                             var numChunks = 0
                             var counterUpload: Int = 0
+                            var taskHandler: URLSessionTask?
                             let hud = NCHud(controller?.view)
-                            hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""))
+                            hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""), tapToCancelDetailText: true) {
+                                NotificationCenter.default.postOnMainThread(name: NextcloudKit.shared.nkCommonInstance.notificationCenterChunkedFileStop.rawValue)
+                            }
 
                             await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
                                 numChunks = num
                             } counterChunk: { counter in
                                 hud.progress(num: Float(counter), total: Float(numChunks))
                             } startFilesChunk: { _ in
-                                hud.setText(NSLocalizedString("_keep_active_for_upload_", comment: ""))
+                                hud.pieProgress(text: NSLocalizedString("_keep_active_for_upload_", comment: ""), tapToCancelDetailText: true) {
+                                    taskHandler?.cancel()
+                                }
                             } requestHandler: { _ in
                                 hud.progress(num: Float(counterUpload), total: Float(numChunks))
                                 counterUpload += 1
+                            } taskHandler: { task in
+                                taskHandler = task
                             } assembling: {
                                 hud.setText(NSLocalizedString("_wait_", comment: ""))
                             }
