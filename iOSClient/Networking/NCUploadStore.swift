@@ -116,7 +116,7 @@ final class NCUploadStore {
 
     /// Updates only the `progress` field of an existing upload item, then schedules a batched commit.
     /// If no matching item is found, nothing happens.
-    func updateUploadProgress(serverUrl: String?, fileName: String?, taskIdentifier: Int?, progress: Double) {
+    func updateUploadProgress(serverUrl: String, fileName: String, taskIdentifier: Int, progress: Double) {
         uploadStoreIO.sync {
             if let idx = uploadItemsCache.firstIndex(where: {
                 $0.serverUrl == serverUrl &&
@@ -129,7 +129,7 @@ final class NCUploadStore {
     }
 
     /// Removes the first match by (serverUrl + fileName); batched commit.
-    func removeUploadItem(serverUrl: String, fileName: String, taskIdentifier: Int?) {
+    func removeUploadItem(serverUrl: String, fileName: String, taskIdentifier: Int) {
         uploadStoreIO.sync {
             if let idx = uploadItemsCache.firstIndex(where: {
                 $0.serverUrl == serverUrl &&
@@ -160,10 +160,29 @@ final class NCUploadStore {
 
         uploadStoreIO.sync {
             do {
+                // Remove orphaned upload items not found in Realm
+                let ocIdTransfers = Set(uploadItemsCache.compactMap { $0.ocIdTransfer })
+                if !ocIdTransfers.isEmpty {
+
+                    let predicate = NSPredicate(format: "ocIdTransfer IN %@", ocIdTransfers)
+                    let metadatas = NCManageDatabase.shared.getMetadatas(predicate: predicate)
+                    let foundTransfers = Set(metadatas.compactMap { $0.ocIdTransfer })
+
+                    let missingTransfers = Set(ocIdTransfers).subtracting(foundTransfers)
+                    if !missingTransfers.isEmpty {
+                        nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .warning, message: "Removing \(missingTransfers.count) orphaned upload items not found in Realm", consoleOnly: true)
+                        uploadItemsCache.removeAll { item in
+                            guard let t = item.ocIdTransfer else { return false }
+                            return missingTransfers.contains(t)
+                        }
+                    }
+                }
+
                 let data = try encoderUploadItem.encode(uploadItemsCache)
                 try data.write(to: url, options: .atomic)
                 lastPersist = CFAbsoluteTimeGetCurrent()
                 changeCounter = 0
+
                 nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .info, message: "Force flush to disk", consoleOnly: true)
             } catch {
                 nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .error, message: "Force flush to disk failed: \(error)")
@@ -259,32 +278,19 @@ final class NCUploadStore {
         }
     }
 
+
+    private func syncdsRealmNow() async {
+
+    }
+
     /// Performs the actual Realm write using your async APIs.
     private func syncRealmNow() async {
         let snapshot: [UploadItemDisk] = uploadStoreIO.sync {
-            return uploadItemsCache
+            uploadItemsCache.filter { $0.ocId != nil && !$0.ocId!.isEmpty }
         }
-
-        // Extract all ocIdTransfers from JSON
         let ocIdTransfers = snapshot.compactMap { $0.ocIdTransfer }
-        guard !ocIdTransfers.isEmpty else {
-            return
-        }
-
-        // Query Realm for all matching metadatas
         let predicate = NSPredicate(format: "ocIdTransfer IN %@", ocIdTransfers)
         let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: predicate)
-        let foundTransfers = Set(metadatas.compactMap { $0.ocIdTransfer })
-
-        // Remove any upload items whose ocIdTransfer is not found in Realm
-        let missingTransfers = ocIdTransfers.filter { !foundTransfers.contains($0) }
-        if !missingTransfers.isEmpty {
-            nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .warning, message: "Removing \(missingTransfers.count) orphaned upload items not found in Realm", consoleOnly: true)
-            for transfer in missingTransfers {
-                removeUploadItem(ocIdTransfer: transfer)
-            }
-        }
-
         let utility = NCUtility()
         var metadatasUploaded: [tableMetadata] = []
 
@@ -314,5 +320,14 @@ final class NCUploadStore {
         }
 
         await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfers: ocIdTransfers, metadatas: metadatasUploaded)
+
+        // transferDispatcher
+        if !metadatasUploaded.isEmpty {
+            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferChange(status: NCGlobal.shared.networkingStatusUploaded,
+                                        metadata: tableMetadata(),
+                                        error: .success)
+            }
+        }
     }
 }
