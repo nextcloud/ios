@@ -50,7 +50,6 @@ final class NCUploadStore {
         self.uploadStoreURL = backupDirectory.appendingPathComponent(fileUploadStore)
 
         self.uploadStoreIO.sync {
-            // Load existing file
             if let url = self.uploadStoreURL,
                 let data = try? Data(contentsOf: url),
                 !data.isEmpty,
@@ -69,17 +68,13 @@ final class NCUploadStore {
 
     deinit {
         stopDebounceTimer()
-        flushWithBackgroundTime()
     }
 
     private func setupLifecycleFlush() {
         NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: nil) { [weak self] _ in
             guard let self else { return }
 
-            Task {
-                self.stopDebounceTimer()
-                self.flushWithBackgroundTime()
-            }
+            self.stopDebounceTimer()
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { [weak self] _ in
@@ -90,8 +85,6 @@ final class NCUploadStore {
 
             Task {
                 try? await Task.sleep(nanoseconds: 1_000_000_000)
-
-                await self.syncRealmNow()
                 self.startDebounceTimer()
             }
 
@@ -129,10 +122,7 @@ final class NCUploadStore {
                 $0.fileName == fileName &&
                 $0.taskIdentifier == taskIdentifier
             }) {
-                // Update only progress field
                 uploadItemsCache[idx].progress = progress
-                changeCounter &+= 1
-                maybeCommit()
             }
         }
     }
@@ -236,7 +226,6 @@ final class NCUploadStore {
             guard let self else { return }
             Task {
                 self.maybeCommit()
-                await self.syncRealmNow()
             }
         }
         t.resume()
@@ -246,20 +235,6 @@ final class NCUploadStore {
     private func stopDebounceTimer() {
         debounceTimer?.cancel()
         debounceTimer = nil
-    }
-
-    private func flushWithBackgroundTime() {
-        var bgTask: UIBackgroundTaskIdentifier = .invalid
-        bgTask = UIApplication.shared.beginBackgroundTask(withName: "NCUploadStore.flush") {
-            UIApplication.shared.endBackgroundTask(bgTask)
-            bgTask = .invalid
-        }
-        Task {
-            self.forceFlush()
-            await self.syncRealmNow()
-        }
-        UIApplication.shared.endBackgroundTask(bgTask)
-        bgTask = .invalid
     }
 
     /// Reloads the entire JSON store from disk synchronously.
@@ -272,17 +247,16 @@ final class NCUploadStore {
         uploadStoreIO.sync {
             do {
                 let data = try Data(contentsOf: url)
-                guard !data.isEmpty else {
+                let items = try self.decoderUploadItem.decode([UploadItemDisk].self, from: data)
+                guard !items.isEmpty else {
                     self.uploadItemsCache = []
-                    nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .info, message: "UploadStore: JSON empty, cache cleared")
+                    nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .info, message: "Load JSON empty, cache cleared", consoleOnly: true)
                     return
                 }
-
-                let items = try self.decoderUploadItem.decode([UploadItemDisk].self, from: data)
                 self.uploadItemsCache = items
-                nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .info, message: "UploadStore: JSON reloaded from disk (sync)")
+                nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .info, message: "JSON loaded from disk (sync)", consoleOnly: true)
             } catch {
-                nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .error, message: "UploadStore: reload failed: \(error)")
+                nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .error, message: "Load JSON failed: \(error)")
             }
         }
     }
@@ -290,11 +264,29 @@ final class NCUploadStore {
     /// Performs the actual Realm write using your async APIs.
     private func syncRealmNow() async {
         let snapshot: [UploadItemDisk] = uploadStoreIO.sync {
-            uploadItemsCache.filter { $0.ocId != nil && !$0.ocId!.isEmpty }
+            return uploadItemsCache
         }
+
+        // Extract all ocIdTransfers from JSON
         let ocIdTransfers = snapshot.compactMap { $0.ocIdTransfer }
+        guard !ocIdTransfers.isEmpty else {
+            return
+        }
+
+        // Query Realm for all matching metadatas
         let predicate = NSPredicate(format: "ocIdTransfer IN %@", ocIdTransfers)
         let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: predicate)
+        let foundTransfers = Set(metadatas.compactMap { $0.ocIdTransfer })
+
+        // Remove any upload items whose ocIdTransfer is not found in Realm
+        let missingTransfers = ocIdTransfers.filter { !foundTransfers.contains($0) }
+        if !missingTransfers.isEmpty {
+            nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .warning, message: "Removing \(missingTransfers.count) orphaned upload items not found in Realm", consoleOnly: true)
+            for transfer in missingTransfers {
+                removeUploadItem(ocIdTransfer: transfer)
+            }
+        }
+
         let utility = NCUtility()
         var metadatasUploaded: [tableMetadata] = []
 

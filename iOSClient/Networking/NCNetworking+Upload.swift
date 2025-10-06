@@ -521,6 +521,7 @@ extension NCNetworking {
                                                                   serverUrl: serverUrl,
                                                                   size: size,
                                                                   taskIdentifier: task.taskIdentifier))
+                return
             } else {
                 NCUploadStore.shared.removeUploadItem(serverUrl: serverUrl,
                                                       fileName: fileName,
