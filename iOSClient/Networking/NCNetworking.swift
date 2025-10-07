@@ -1,25 +1,6 @@
-//
-//  NCNetworking.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 23/10/19.
-//  Copyright © 2019 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2019 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 import OpenSSL
@@ -167,7 +148,7 @@ actor NetworkingTasks {
             $0.identifier == identifier && $0.task.state == .running
         }
         active.append((identifier, task))
-        nkLog(tag: NCGlobal.shared.logNetworkingTasks, emoji: .start, message: "Start task for identifier: \(identifier)", consoleOnly: true)
+        nkLog(tag: NCGlobal.shared.logTagNetworkingTasks, emoji: .start, message: "Start task for identifier: \(identifier)", consoleOnly: true)
     }
 
     /// create a Identifier
@@ -192,7 +173,7 @@ actor NetworkingTasks {
 
         for element in active where element.identifier == identifier {
             element.task.cancel()
-            nkLog(tag: NCGlobal.shared.logNetworkingTasks, emoji: .cancel, message: "Cancel task for identifier: \(identifier)", consoleOnly: true)
+            nkLog(tag: NCGlobal.shared.logTagNetworkingTasks, emoji: .cancel, message: "Cancel task for identifier: \(identifier)", consoleOnly: true)
         }
         active.removeAll {
             $0.identifier == identifier
@@ -205,7 +186,7 @@ actor NetworkingTasks {
     func cancelAll() {
         active.forEach {
             $0.task.cancel()
-            nkLog(tag: NCGlobal.shared.logNetworkingTasks, emoji: .cancel, message: "Cancel task with identifier: \($0.identifier)", consoleOnly: true)
+            nkLog(tag: NCGlobal.shared.logTagNetworkingTasks, emoji: .cancel, message: "Cancel task with identifier: \($0.identifier)", consoleOnly: true)
         }
         active.removeAll()
     }
@@ -257,23 +238,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         var serverUrl: String
     }
 
-    struct UploadItemDisk: Codable {
-        let date: Date?
-        let errorCode: Int?
-        let etag: String?
-        let fileName: String
-        let ocId: String?
-        let ocIdTransfer: String?
-        let progress: Double?
-        let selector: String?
-        let serverUrl: String
-        let session: String?
-        let sessionError: String?
-        let status: Int?
-        let size: Int64
-        let taskIdentifier: Int?
-    }
-
     let networkingTasks = NetworkingTasks()
 
     let sessionDownload = NextcloudKit.shared.nkCommonInstance.identifierSessionDownload
@@ -306,13 +270,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         return networkReachability == NKTypeReachability.reachableEthernetOrWiFi || networkReachability == NKTypeReachability.reachableCellular
     }
 
-    // Upload store (single live file + in-memory cache)
-    private let uploadStoreIO = DispatchQueue(label: "com.nextcloud.uploadStore.io")    // serializes all access
-    private var uploadStoreURL: URL?
-    private let encoderUploadItem: JSONEncoder
-    private let decoderUploadItem: JSONDecoder
-    var uploadItemsCache: [UploadItemDisk] = []
-
     // Capabilities
     var capabilities = ThreadSafeDictionary<String, NKCapabilities.Capabilities>()
 
@@ -330,33 +287,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 
     // MARK: - init
 
-    init() {
-        // Configure JSON codecs for Upload item
-        self.encoderUploadItem = JSONEncoder()
-        self.decoderUploadItem = JSONDecoder()
-
-        self.encoderUploadItem.dateEncodingStrategy = .iso8601
-        self.decoderUploadItem.dateDecodingStrategy = .iso8601
-
-        guard let groupDirectory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup) else {
-            return
-        }
-        let backupDirectory = groupDirectory.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud)
-        self.uploadStoreURL = backupDirectory.appendingPathComponent(fileUploadStore)
-
-        // Ensure directory exists and load once
-        self.uploadStoreIO.sync {
-            // Load existing file
-            if let url = self.uploadStoreURL,
-                let data = try? Data(contentsOf: url),
-                !data.isEmpty,
-                let items = try? self.decoderUploadItem.decode([UploadItemDisk].self, from: data) {
-                self.uploadItemsCache = items
-            } else {
-                self.uploadItemsCache = []
-            }
-        }
-    }
+    init() { }
 
     // MARK: - Communication Delegate
 
@@ -497,75 +428,5 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 
     func activeAccountCertificate(account: String) {
         (self.p12Data, self.p12Password) = NCPreferences().getClientCertificate(account: account)
-    }
-
-    // MARK: - Upload Item
-
-    func addUploadItem(_ item: UploadItemDisk, fileName: String, serverUrl: String) {
-        guard let url = self.uploadStoreURL else {
-            return
-        }
-        uploadStoreIO.sync {
-            // Upsert by (serverUrl + fileName)
-            if let idx = uploadItemsCache.firstIndex(where: { $0.serverUrl == serverUrl && $0.fileName == fileName }) {
-                uploadItemsCache[idx] = item
-            } else {
-                uploadItemsCache.append(item)
-            }
-            // Persist atomically
-            do {
-                let data = try encoderUploadItem.encode(uploadItemsCache)
-                try data.write(to: url, options: .atomic)
-            } catch {
-                nkLog(tag: "UploadComplete", message: "Persist upsert failed: \(error)")
-            }
-        }
-    }
-
-    func removeUploadItem(serverUrl: String, fileName: String) {
-        guard let url = self.uploadStoreURL else {
-            return
-        }
-        uploadStoreIO.sync {
-            let before = uploadItemsCache.count
-            uploadItemsCache.removeAll { $0.serverUrl == serverUrl && $0.fileName == fileName }
-            guard uploadItemsCache.count != before else { return }
-            do {
-                let data = try encoderUploadItem.encode(uploadItemsCache)
-                try data.write(to: url, options: .atomic)
-            } catch {
-                nkLog(tag: "UploadComplete", message: "Persist remove failed: \(error)")
-            }
-        }
-    }
-
-    /// Read a snapshot for batch processing (e.g., flush to Realm); no disk I/O, returns the cache.
-    func readAllUploadItems() -> [UploadItemDisk] {
-        uploadStoreIO.sync {
-            uploadItemsCache
-        }
-    }
-
-    /// Clear the file (e.g., after a successful batch flush).
-    func clearUploadItemsFile() {
-        guard let url = self.uploadStoreURL else {
-            return
-        }
-
-        if uploadItemsCache.isEmpty,
-           let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
-           let size = attrs[.size] as? NSNumber,
-           size.intValue == 0 {
-                return
-        }
-
-        uploadStoreIO.sync {
-            uploadItemsCache.removeAll()
-            do {
-                try Data().write(to: url, options: .atomic)
-            } catch {
-                nkLog(tag: "UploadComplete", message: "Persist clear failed: \(error)")
-            }
-        }
     }
 }

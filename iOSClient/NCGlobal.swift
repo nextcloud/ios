@@ -390,8 +390,9 @@ final class NCGlobal: Sendable {
     let logTagSync                          = "SYNC"
     let logTagServiceProficer               = "SERVICE PROVIDER"
     let logTagDatabase                      = "DB"
-    let logSpeedUpSyncMetadata              = "SYNC METADATA"
-    let logNetworkingTasks                  = "NETWORKING TASKS"
+    let logTagSpeedUpSyncMetadata           = "SYNC METADATA"
+    let logTagNetworkingTasks               = "NETWORKING TASKS"
+    let logTagTransferStore                 = "TRANSFER STORE"
 
     // USER DEFAULTS
     //

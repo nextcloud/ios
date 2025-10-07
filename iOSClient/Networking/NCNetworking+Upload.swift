@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2024 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import UIKit
 import NextcloudKit
 import Alamofire
@@ -198,9 +202,18 @@ extension NCNetworking {
 
     @discardableResult
     func uploadFileInBackground(metadata: tableMetadata,
+                                withFileExistsCheck: Bool = false,
                                 taskHandler: @escaping (_ task: URLSessionUploadTask?) -> Void = { _ in },
                                 start: @escaping () -> Void = { })
     async -> NKError {
+        if withFileExistsCheck || metadata.sessionSelector == global.selectorUploadAutoUpload {
+            let error = await self.fileExists(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
+            if error == .success {
+                await uploadCancelFile(metadata: metadata)
+                return (.success)
+            }
+        }
+
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
 
         start()
@@ -221,6 +234,20 @@ extension NCNetworking {
 
             if let task, error == .success {
                 nkLog(debug: "Upload file \(metadata.fileNameView) with taskIdentifier \(task.taskIdentifier)")
+
+                /*
+                #if !EXTENSION
+                NCTransferStore.shared.addItem(TransferItem(fileName: metadata.fileName,
+                                                            ocIdTransfer: metadata.ocIdTransfer,
+                                                            progress: 0,
+                                                            selector: metadata.sessionSelector,
+                                                            serverUrl: metadata.serverUrl,
+                                                            session: metadata.session,
+                                                            status: metadata.status,
+                                                            size: metadata.size,
+                                                            taskIdentifier: task.taskIdentifier))
+                #endif
+                */
 
                 if let metadata = await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
                                                                                         sessionTaskIdentifier: task.taskIdentifier,
@@ -363,6 +390,12 @@ extension NCNetworking {
     }
 
     func uploadCancelFile(metadata: tableMetadata) async {
+        /*
+        #if !EXTENSION
+        NCTransferStore.shared.removeItem(ocIdTransfer: metadata.ocIdTransfer)
+        #endif
+        */
+
         self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase))
         await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocIdTransfer)
         await self.transferDispatcher.notifyAllDelegates { delegate in
@@ -492,22 +525,25 @@ extension NCNetworking {
                 return
             #endif
 
+            /*
+            #if !EXTENSION
             if error == .success {
-                // TODO: upload item
-                /*
-                let uploadItem = UploadItemDisk(fileName: fileName,
-                                                serverUrl: serverUrl,
-                                                ocId: ocId,
-                                                ocIdTransfer: nil,
-                                                etag: etag,
-                                                date: date,
-                                                size: size,
-                                                taskIdentifier: task.taskIdentifier)
-                addUploadItem(uploadItem, fileName: fileName, serverUrl: serverUrl)
-                */
+                NCTransferStore.shared.addItem(TransferItem(completed: true,
+                                                            date: date,
+                                                            etag: etag,
+                                                            fileName: fileName,
+                                                            ocId: ocId,
+                                                            serverUrl: serverUrl,
+                                                            size: size,
+                                                            taskIdentifier: task.taskIdentifier))
+                return
             } else {
-
+                NCTransferStore.shared.removeItem(serverUrl: serverUrl,
+                                                  fileName: fileName,
+                                                  taskIdentifier: task.taskIdentifier)
             }
+            #endif
+            */
 
             if let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@ AND sessionTaskIdentifier == %d", serverUrl, fileName, task.taskIdentifier)) {
                 await uploadComplete(withMetadata: metadata, ocId: ocId, etag: etag, date: date, size: size, error: error)
@@ -529,7 +565,18 @@ extension NCNetworking {
             guard await progressQuantizer.shouldEmit(serverUrlFileName: serverUrl + "/" + fileName, fraction: Double(progress)) else {
                 return
             }
+
+            /*
+            #if !EXTENSION
+            NCTransferStore.shared.transferProgress(serverUrl: serverUrl,
+                                                    fileName: fileName,
+                                                    taskIdentifier: task.taskIdentifier,
+                                                    progress: Double(progress))
+            #endif
+            */
+
             await NCManageDatabase.shared.setMetadataProgress(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier, progress: Double(progress))
+
             await self.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferProgressDidUpdate(progress: progress,
                                                    totalBytes: totalBytes,
