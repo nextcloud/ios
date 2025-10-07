@@ -202,9 +202,18 @@ extension NCNetworking {
 
     @discardableResult
     func uploadFileInBackground(metadata: tableMetadata,
+                                withFileExistsCheck: Bool = false,
                                 taskHandler: @escaping (_ task: URLSessionUploadTask?) -> Void = { _ in },
                                 start: @escaping () -> Void = { })
     async -> NKError {
+        if withFileExistsCheck {
+            let error = await self.fileExists(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
+            if error == .success {
+                await uploadCancelFile(metadata: metadata)
+                return (.success)
+            }
+        }
+
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileName: metadata.fileName, userId: metadata.userId, urlBase: metadata.urlBase)
 
         start()
