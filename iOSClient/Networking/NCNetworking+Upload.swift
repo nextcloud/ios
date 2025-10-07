@@ -206,7 +206,7 @@ extension NCNetworking {
                                 taskHandler: @escaping (_ task: URLSessionUploadTask?) -> Void = { _ in },
                                 start: @escaping () -> Void = { })
     async -> NKError {
-        if withFileExistsCheck {
+        if withFileExistsCheck || metadata.sessionSelector == global.selectorUploadAutoUpload {
             let error = await self.fileExists(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
             if error == .success {
                 await uploadCancelFile(metadata: metadata)
