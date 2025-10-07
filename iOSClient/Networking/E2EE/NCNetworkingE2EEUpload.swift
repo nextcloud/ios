@@ -188,7 +188,7 @@ class NCNetworkingE2EEUpload: NSObject {
             metadata.status = NCGlobal.shared.metadataStatusNormal
 
             await self.database.addMetadataAsync(metadata)
-            await self.database.addLocalFileAsync(metadata: metadata)
+            await self.database.addLocalFilesAsync(metadatas: [metadata])
             utility.createImageFileFrom(metadata: metadata)
 
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in

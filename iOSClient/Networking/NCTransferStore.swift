@@ -311,7 +311,7 @@ final class NCTransferStore {
 
     /// Performs the actual Realm write using your async APIs.
     private func syncUploadRealm() async {
-        let snapshot: [TransferItem] = transferStoreIO.sync {
+        let snapshotUpload: [TransferItem] = transferStoreIO.sync {
             transferItemsCache.filter { item in
                 if let completed = item.completed, completed {
                     return item.session == NCNetworking.shared.sessionUpload
@@ -322,15 +322,26 @@ final class NCTransferStore {
                 return false
             }
         }
-        let ocIdTransfers = snapshot.compactMap { $0.ocIdTransfer }
-        let predicate = NSPredicate(format: "ocIdTransfer IN %@", ocIdTransfers)
-        let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: predicate)
-        let utility = NCUtility()
-        var metadatasUploaded: [tableMetadata] = []
+        let snapshotDownload: [TransferItem] = transferStoreIO.sync {
+            transferItemsCache.filter { item in
+                if let completed = item.completed, completed {
+                    return item.session == NCNetworking.shared.sessionDownload
+                    || item.session == NCNetworking.shared.sessionDownloadBackground
+                    || item.session == NCNetworking.shared.sessionDownloadBackgroundExt
+                }
+                return false
+            }
+        }
         var serversUrl = Set<String>()
+        let utility = NCUtility()
 
-        for metadata in metadatas {
-            guard let transferItem = (transferItemsCache.first { $0.ocIdTransfer == metadata.ocIdTransfer }),
+        // Upload
+        let ocIdTransfers = snapshotUpload.compactMap { $0.ocIdTransfer }
+        let metadatasUpload = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "ocIdTransfer IN %@", ocIdTransfers))
+        var metadatasUploaded: [tableMetadata] = []
+
+        for metadata in metadatasUpload {
+            guard let transferItem = (snapshotUpload.first { $0.ocIdTransfer == metadata.ocIdTransfer }),
                   let etag = transferItem.etag,
                   let ocId = transferItem.ocId else {
                 continue
@@ -358,8 +369,36 @@ final class NCTransferStore {
 
         await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfers: ocIdTransfers, metadatas: metadatasUploaded)
 
+        // Download
+        let ocIds = snapshotDownload.compactMap { $0.ocId }
+        let metadatasDownload = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "ocId IN %@", ocIds))
+        var metadatasDownloaded: [tableMetadata] = []
+
+        if !metadatasDownload.isEmpty {
+            for metadata in metadatasDownload {
+                guard let transferItem = (snapshotDownload.first { $0.ocId == metadata.ocId }),
+                      let etag = transferItem.etag else {
+                    continue
+                }
+
+                metadata.etag = etag
+                metadata.session = ""
+                metadata.sessionError = ""
+                metadata.sessionTaskIdentifier = 0
+                metadata.status = NCGlobal.shared.metadataStatusNormal
+
+                metadatasDownloaded.append(metadata)
+                serversUrl.insert(metadata.serverUrl)
+
+                removeItem(ocId: metadata.ocId)
+            }
+
+            await NCManageDatabase.shared.addMetadatasAsync(metadatasDownloaded)
+            await NCManageDatabase.shared.addLocalFilesAsync(metadatas: metadatasDownloaded)
+        }
+
         // TransferDispatcher Reload Data
-        if !metadatasUploaded.isEmpty {
+        if !serversUrl.isEmpty {
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                 for serverUrl in serversUrl {
                     delegate.transferReloadData(serverUrl: serverUrl, status: nil)

@@ -304,7 +304,7 @@ extension NCNetworking {
             if selector == self.global.selectorUploadFileNODelete {
                 await self.utilityFileSystem.moveFileAsync(atPath: fileNamePath,
                                                            toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, userId: metadata.userId, urlBase: metadata.urlBase))
-                await NCManageDatabase.shared.addLocalFileAsync(metadata: metadata)
+                await NCManageDatabase.shared.addLocalFilesAsync(metadatas: [metadata])
             } else {
                 self.utilityFileSystem.removeFile(atPath: fileNamePath)
             }

@@ -185,7 +185,7 @@ extension NCNetworking {
                                                               authenticationTag: result.authenticationTag)
                 }
                 #endif
-                await NCManageDatabase.shared.addLocalFileAsync(metadata: metadata)
+                await NCManageDatabase.shared.addLocalFilesAsync(metadatas: [metadata])
 
                 if let updatedMetadata = await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
                                                                                                session: "",

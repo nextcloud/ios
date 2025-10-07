@@ -160,7 +160,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
             if let metadata = await NCManageDatabase.shared.getMetadataLivePhotoAsync(metadata: metadata) {
                 metadatasSynchronizationOffline.append(metadata)
             }
-            await NCManageDatabase.shared.addLocalFileAsync(metadata: metadata, offline: true)
+            await NCManageDatabase.shared.addLocalFilesAsync(metadatas: [metadata], offline: true)
             for metadata in metadatasSynchronizationOffline {
                 await NCManageDatabase.shared.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
                                                                                     session: NCNetworking.shared.sessionDownloadBackground,
@@ -257,7 +257,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                                                               etag: download.etag)
 
         if download.nkError == .success {
-            await NCManageDatabase.shared.addLocalFileAsync(metadata: metadata)
+            await NCManageDatabase.shared.addLocalFilesAsync(metadatas: [metadata])
             if let vc = await NCViewer().getViewerController(metadata: metadata, delegate: viewController) {
                 viewController.navigationController?.pushViewController(vc, animated: true)
             }

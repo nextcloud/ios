@@ -164,7 +164,7 @@ class FileProviderData: NSObject {
 
         if error == .success {
             if let metadata = await self.database.getMetadataFromOcIdAsync(ocId) {
-                await self.database.addLocalFileAsync(metadata: metadata)
+                await self.database.addLocalFilesAsync(metadatas: [metadata])
             }
         }
 
@@ -228,7 +228,7 @@ class FileProviderData: NSObject {
             metadata.status = NCGlobal.shared.metadataStatusNormal
 
             await self.database.addMetadataAsync(metadata)
-            await self.database.addLocalFileAsync(metadata: metadata)
+            await self.database.addLocalFilesAsync(metadatas: [metadata])
 
             await signalEnumerator(ocId: ocId, type: .update)
 
