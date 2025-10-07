@@ -140,7 +140,7 @@ extension NCNetworking {
         return(error)
     }
 
-    // MARK: -
+    // MARK: - Download NextcloudKitDelegate
 
     func downloadComplete(fileName: String,
                           serverUrl: String,
@@ -172,6 +172,26 @@ extension NCNetworking {
             await NextcloudKit.shared.nkCommonInstance.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
 
             if error == .success {
+                /*
+                #if !EXTENSION
+                if error == .success {
+                    NCTransferStore.shared.addItem(TransferItem(completed: true,
+                                                                date: date,
+                                                                etag: etag,
+                                                                fileName: fileName,
+                                                                ocId: ocId,
+                                                                serverUrl: serverUrl,
+                                                                size: size,
+                                                                taskIdentifier: task.taskIdentifier))
+                    return
+                } else {
+                    NCTransferStore.shared.removeItem(serverUrl: serverUrl,
+                                                      fileName: fileName,
+                                                      taskIdentifier: task.taskIdentifier)
+                }
+                #endif
+                */
+
                 nkLog(success: "Downloaded file: " + metadata.serverUrlFileName)
                 #if !EXTENSION
                 if let result = await NCManageDatabase.shared.getE2eEncryptionAsync(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
@@ -239,8 +259,6 @@ extension NCNetworking {
         }
     }
 
-    // MARK: - Download NextcloudKitDelegate
-
     func downloadingFinish(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         if let httpResponse = (downloadTask.response as? HTTPURLResponse) {
             if httpResponse.statusCode >= 200 && httpResponse.statusCode < 300,
@@ -275,6 +293,16 @@ extension NCNetworking {
             guard await progressQuantizer.shouldEmit(serverUrlFileName: serverUrl + "/" + fileName, fraction: Double(progress)) else {
                 return
             }
+
+            /*
+            #if !EXTENSION
+            NCTransferStore.shared.transferProgress(serverUrl: serverUrl,
+                                                    fileName: fileName,
+                                                    taskIdentifier: task.taskIdentifier,
+                                                    progress: Double(progress))
+            #endif
+            */
+
             await NCManageDatabase.shared.setMetadataProgress(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier, progress: Double(progress))
             await self.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferProgressDidUpdate(progress: progress,
