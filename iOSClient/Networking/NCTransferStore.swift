@@ -89,7 +89,6 @@ final class NCTransferStore {
                 try? await Task.sleep(nanoseconds: 1_000_000_000)
                 self.startDebounceTimer()
             }
-
         }
     }
 
@@ -172,36 +171,7 @@ final class NCTransferStore {
 
         transferStoreIO.sync {
             do {
-                let transfers: Set<String> = Set(transferItemsCache.compactMap { $0.ocIdTransfer })
-                let ocids: Set<String> = Set(transferItemsCache.compactMap { $0.ocId })
-
-                if !transfers.isEmpty || !ocids.isEmpty {
-
-                    // Build a predicate that matches either ocIdTransfer or ocId
-                    // Note: pass empty sets as arrays to keep format arguments consistent
-                    let predicate = NSPredicate(format: "(ocIdTransfer IN %@) OR (ocId IN %@)", Array(transfers), Array(ocids))
-
-                    // Query Realm once
-                    let metadatas = NCManageDatabase.shared.getMetadatas(predicate: predicate)
-
-                    // Build found sets for quick lookup
-                    let foundTransfers: Set<String> = Set(metadatas.compactMap { $0.ocIdTransfer })
-                    let foundOcids: Set<String> = Set(metadatas.compactMap { $0.ocId })
-
-                    // Remove items that have NEITHER a matching ocIdTransfer NOR a matching ocId in Realm
-                    let before = transferItemsCache.count
-                    transferItemsCache.removeAll { item in
-                        let ocIdTransfer = item.ocIdTransfer
-                        let ocId = item.ocId
-                        // Keep if either matches; remove only if both are missing
-                        let hasMatch = (ocIdTransfer != nil && foundTransfers.contains(ocIdTransfer!)) || (ocId != nil && foundOcids.contains(ocId!))
-                        return !hasMatch
-                    }
-                    let removed = before - transferItemsCache.count
-                    if removed > 0 {
-                        nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .warning, message: "Removed \(removed) orphaned items (no match on ocIdTransfer nor ocId)", consoleOnly: true)
-                    }
-                }
+                checkOrphaned()
 
                 let data = try encoderTransferItem.encode(transferItemsCache)
                 try data.write(to: url, options: .atomic)
@@ -296,9 +266,44 @@ final class NCTransferStore {
                     return
                 }
                 self.transferItemsCache = items
+                // check
+                self.checkOrphaned()
                 nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .info, message: "JSON loaded from disk)", consoleOnly: true)
             } catch {
                 nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .error, message: "Load JSON from disk failed: \(error)")
+            }
+        }
+    }
+
+    private func checkOrphaned() {
+        let transfers: Set<String> = Set(transferItemsCache.compactMap { $0.ocIdTransfer })
+        let ocids: Set<String> = Set(transferItemsCache.compactMap { $0.ocId })
+
+        if !transfers.isEmpty || !ocids.isEmpty {
+
+            // Build a predicate that matches either ocIdTransfer or ocId
+            // Note: pass empty sets as arrays to keep format arguments consistent
+            let predicate = NSPredicate(format: "(ocIdTransfer IN %@) OR (ocId IN %@)", Array(transfers), Array(ocids))
+
+            // Query Realm once
+            let metadatas = NCManageDatabase.shared.getMetadatas(predicate: predicate)
+
+            // Build found sets for quick lookup
+            let foundTransfers: Set<String> = Set(metadatas.compactMap { $0.ocIdTransfer })
+            let foundOcids: Set<String> = Set(metadatas.compactMap { $0.ocId })
+
+            // Remove items that have NEITHER a matching ocIdTransfer NOR a matching ocId in Realm
+            let before = transferItemsCache.count
+            transferItemsCache.removeAll { item in
+                let ocIdTransfer = item.ocIdTransfer
+                let ocId = item.ocId
+                // Keep if either matches; remove only if both are missing
+                let hasMatch = (ocIdTransfer != nil && foundTransfers.contains(ocIdTransfer!)) || (ocId != nil && foundOcids.contains(ocId!))
+                return !hasMatch
+            }
+            let removed = before - transferItemsCache.count
+            if removed > 0 {
+                nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .warning, message: "Removed \(removed) orphaned items (no match on ocIdTransfer nor ocId)", consoleOnly: true)
             }
         }
     }
