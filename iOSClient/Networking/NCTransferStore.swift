@@ -8,6 +8,7 @@ import NextcloudKit
 // MARK: - Transfer Store (batched persistence)
 
 struct TransferItem: Codable {
+    var completed: Bool = false
     var date: Date?
     var etag: String?
     var fileName: String?
@@ -178,7 +179,7 @@ final class NCTransferStore {
 
                     // Build a predicate that matches either ocIdTransfer or ocId
                     // Note: pass empty sets as arrays to keep format arguments consistent
-                    let predicate = NSPredicate(format: "(ocIdTransfer IN %@) OR (ocId IN %@)",Array(transfers), Array(ocids))
+                    let predicate = NSPredicate(format: "(ocIdTransfer IN %@) OR (ocId IN %@)", Array(transfers), Array(ocids))
 
                     // Query Realm once
                     let metadatas = NCManageDatabase.shared.getMetadatas(predicate: predicate)
@@ -256,7 +257,7 @@ final class NCTransferStore {
         }
 
         Task {
-            await syncRealmNow()
+            await syncUploadRealm()
         }
     }
 
@@ -305,7 +306,15 @@ final class NCTransferStore {
     /// Performs the actual Realm write using your async APIs.
     private func syncUploadRealm() async {
         let snapshot: [TransferItem] = transferStoreIO.sync {
-            transferItemsCache.filter { $0.ocId != nil && !$0.ocId!.isEmpty }
+            transferItemsCache.filter { item in
+                if item.completed {
+                    return item.session == NCNetworking.shared.sessionUpload
+                    || item.session == NCNetworking.shared.sessionUploadBackground
+                    || item.session == NCNetworking.shared.sessionUploadBackgroundExt
+                    || item.session == NCNetworking.shared.sessionUploadBackgroundWWan
+                }
+                return false
+            }
         }
         let ocIdTransfers = snapshot.compactMap { $0.ocIdTransfer }
         let predicate = NSPredicate(format: "ocIdTransfer IN %@", ocIdTransfers)

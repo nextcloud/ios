@@ -523,7 +523,8 @@ extension NCNetworking {
 
             #if !EXTENSION
             if error == .success {
-                NCTransferStore.shared.addItem(TransferItem(date: date,
+                NCTransferStore.shared.addItem(TransferItem(completed: true,
+                                                            date: date,
                                                             etag: etag,
                                                             fileName: fileName,
                                                             ocId: ocId,
