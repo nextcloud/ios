@@ -29,6 +29,7 @@ final class NCTransferStore {
     // Shared state
     private var transferItemsCache: [TransferItem] = []
     private let transferStoreIO = DispatchQueue(label: "TransferStore.IO", qos: .utility)
+    private let debounceQueue = DispatchQueue(label: "TransferStore.Debounce", qos: .utility)
     private let encoderTransferItem = JSONEncoder()
     private let decoderTransferItem = JSONDecoder()
     private(set) var transferStoreURL: URL?
@@ -36,7 +37,7 @@ final class NCTransferStore {
     // Batching controls
     private var changeCounter: Int = 0
     private var lastPersist: TimeInterval = 0
-    private let batchThreshold: Int = 20            // <- persist every 20 changes
+    private let batchThreshold: Int = NCBrandOptions.shared.numMaximumProcess / 2
     private let maxLatencySec: TimeInterval = 5     // <- or every 5s at most
     private var debounceTimer: DispatchSourceTimer?
 
@@ -72,10 +73,11 @@ final class NCTransferStore {
     }
 
     private func setupLifecycleFlush() {
-        NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: nil) { [weak self] _ in
-            guard let self else { return }
-
+        NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: nil) { _ in
             self.stopDebounceTimer()
+        }
+
+        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
             self.forceFlush()
         }
 
@@ -110,8 +112,9 @@ final class NCTransferStore {
             }
 
             changeCounter &+= 1
-            maybeCommit()
         }
+
+        maybeCommit()
     }
 
     /// Updates only the `progress` field of an existing item, then schedules a batched commit.
@@ -164,21 +167,27 @@ final class NCTransferStore {
     }
 
     /// Forces an immediate flush to disk (e.g., app background/terminate).
-    func forceFlush() {
+    private func forceFlush() {
         guard let url = self.transferStoreURL else {
             return
+        }
+        var bgTask: UIBackgroundTaskIdentifier = .invalid
+        bgTask = UIApplication.shared.beginBackgroundTask(withName: "NCTransferStore.flush") {
+            UIApplication.shared.endBackgroundTask(bgTask); bgTask = .invalid
+        }
+        defer {
+            if bgTask != .invalid {
+                UIApplication.shared.endBackgroundTask(bgTask); bgTask = .invalid
+            }
         }
 
         transferStoreIO.sync {
             do {
-                checkOrphaned()
-
                 let data = try encoderTransferItem.encode(transferItemsCache)
                 try data.write(to: url, options: .atomic)
                 lastPersist = CFAbsoluteTimeGetCurrent()
                 changeCounter = 0
-
-                nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .info, message: "Force flush to disk", consoleOnly: true)
+                nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .info, message: "Force flush to disk")
             } catch {
                 nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .error, message: "Force flush to disk failed: \(error)")
             }
@@ -208,23 +217,25 @@ final class NCTransferStore {
 
     /// Persist if threshold reached or max latency exceeded.
     private func maybeCommit() {
-        guard let url = self.transferStoreURL else {
-            return
-        }
-        let now = CFAbsoluteTimeGetCurrent()
-        let tooManyChanges = changeCounter >= batchThreshold
-        let tooOld = (now - lastPersist) >= maxLatencySec
-        guard tooManyChanges || tooOld else {
-            return
-        }
+        transferStoreIO.sync {
+            guard let url = self.transferStoreURL else {
+                return
+            }
+            let now = CFAbsoluteTimeGetCurrent()
+            let tooManyChanges = changeCounter >= batchThreshold
+            let tooOld = (now - lastPersist) >= maxLatencySec
+            guard tooManyChanges || tooOld else {
+                return
+            }
 
-        do {
-            let data = try encoderTransferItem.encode(transferItemsCache)
-            try data.write(to: url, options: .atomic)
-            lastPersist = now
-            changeCounter = 0
-        } catch {
-            nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .error, message: "Flush to disk failed: \(error)")
+            do {
+                let data = try encoderTransferItem.encode(transferItemsCache)
+                try data.write(to: url, options: .atomic)
+                lastPersist = now
+                changeCounter = 0
+            } catch {
+                nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .error, message: "Flush to disk failed: \(error)")
+            }
         }
 
         Task {
@@ -233,13 +244,10 @@ final class NCTransferStore {
     }
 
     private func startDebounceTimer() {
-        let t = DispatchSource.makeTimerSource(queue: transferStoreIO)
+        let t = DispatchSource.makeTimerSource(queue: debounceQueue)
         t.schedule(deadline: .now() + .seconds(Int(maxLatencySec)), repeating: .seconds(Int(maxLatencySec)))
         t.setEventHandler { [weak self] in
-            guard let self else { return }
-            Task {
-                self.maybeCommit()
-            }
+            self?.maybeCommit()
         }
         t.resume()
         debounceTimer = t
