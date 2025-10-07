@@ -8,7 +8,7 @@ import NextcloudKit
 // MARK: - Transfer Store (batched persistence)
 
 struct TransferItem: Codable {
-    var completed: Bool = false
+    var completed: Bool?
     var date: Date?
     var etag: String?
     var fileName: String?
@@ -190,6 +190,7 @@ final class NCTransferStore {
     /// Merge: only non-nil fields from `new` overwrite existing values.
     private func mergeItem(existing: TransferItem, with new: TransferItem) -> TransferItem {
         return TransferItem(
+            completed: new.completed ?? existing.completed,
             date: new.date ?? existing.date,
             etag: new.etag ?? existing.etag,
             fileName: existing.fileName ?? new.fileName,
@@ -312,7 +313,7 @@ final class NCTransferStore {
     private func syncUploadRealm() async {
         let snapshot: [TransferItem] = transferStoreIO.sync {
             transferItemsCache.filter { item in
-                if item.completed {
+                if let completed = item.completed, completed {
                     return item.session == NCNetworking.shared.sessionUpload
                     || item.session == NCNetworking.shared.sessionUploadBackground
                     || item.session == NCNetworking.shared.sessionUploadBackgroundExt
