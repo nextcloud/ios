@@ -236,15 +236,15 @@ extension NCNetworking {
                 nkLog(debug: "Upload file \(metadata.fileNameView) with taskIdentifier \(task.taskIdentifier)")
 
                 #if !EXTENSION
-                NCUploadStore.shared.addUploadItem(UploadItemDisk(fileName: metadata.fileName,
-                                                                  ocIdTransfer: metadata.ocIdTransfer,
-                                                                  progress: 0,
-                                                                  selector: metadata.sessionSelector,
-                                                                  serverUrl: metadata.serverUrl,
-                                                                  session: metadata.session,
-                                                                  status: metadata.status,
-                                                                  size: metadata.size,
-                                                                  taskIdentifier: task.taskIdentifier))
+                NCTransferStore.shared.addItem(TransferItem(fileName: metadata.fileName,
+                                                            ocIdTransfer: metadata.ocIdTransfer,
+                                                            progress: 0,
+                                                            selector: metadata.sessionSelector,
+                                                            serverUrl: metadata.serverUrl,
+                                                            session: metadata.session,
+                                                            status: metadata.status,
+                                                            size: metadata.size,
+                                                            taskIdentifier: task.taskIdentifier))
                 #endif
 
                 if let metadata = await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
@@ -389,7 +389,7 @@ extension NCNetworking {
 
     func uploadCancelFile(metadata: tableMetadata) async {
         #if !EXTENSION
-        NCUploadStore.shared.removeUploadItem(ocIdTransfer: metadata.ocIdTransfer)
+        NCTransferStore.shared.removeItem(ocIdTransfer: metadata.ocIdTransfer)
         #endif
 
         self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase))
@@ -523,18 +523,18 @@ extension NCNetworking {
 
             #if !EXTENSION
             if error == .success {
-                NCUploadStore.shared.addUploadItem(UploadItemDisk(date: date,
-                                                                  etag: etag,
-                                                                  fileName: fileName,
-                                                                  ocId: ocId,
-                                                                  serverUrl: serverUrl,
-                                                                  size: size,
-                                                                  taskIdentifier: task.taskIdentifier))
+                NCTransferStore.shared.addItem(TransferItem(date: date,
+                                                            etag: etag,
+                                                            fileName: fileName,
+                                                            ocId: ocId,
+                                                            serverUrl: serverUrl,
+                                                            size: size,
+                                                            taskIdentifier: task.taskIdentifier))
                 return
             } else {
-                NCUploadStore.shared.removeUploadItem(serverUrl: serverUrl,
-                                                      fileName: fileName,
-                                                      taskIdentifier: task.taskIdentifier)
+                NCTransferStore.shared.removeItem(serverUrl: serverUrl,
+                                                  fileName: fileName,
+                                                  taskIdentifier: task.taskIdentifier)
             }
             #endif
 
@@ -560,10 +560,10 @@ extension NCNetworking {
             }
 
             #if !EXTENSION
-            NCUploadStore.shared.updateUploadProgress(serverUrl: serverUrl,
-                                                      fileName: fileName,
-                                                      taskIdentifier: task.taskIdentifier,
-                                                      progress: Double(progress))
+            NCTransferStore.shared.transferProgress(serverUrl: serverUrl,
+                                                    fileName: fileName,
+                                                    taskIdentifier: task.taskIdentifier,
+                                                    progress: Double(progress))
             #endif
 
             await NCManageDatabase.shared.setMetadataProgress(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier, progress: Double(progress))

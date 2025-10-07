@@ -722,7 +722,7 @@
 		F7864AD02A78FE73004870E0 /* NCManageDatabase+LocalFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7864ACB2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift */; };
 		F7864AD12A78FE73004870E0 /* NCManageDatabase+LocalFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7864ACB2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift */; };
 		F7864AD22A78FE73004870E0 /* NCManageDatabase+LocalFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7864ACB2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift */; };
-		F786891D2E93A9DF000E39B3 /* NCUploadStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78689192E93A9D5000E39B3 /* NCUploadStore.swift */; };
+		F786891D2E93A9DF000E39B3 /* NCTransferStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78689192E93A9D5000E39B3 /* NCTransferStore.swift */; };
 		F787704F22E7019900F287A9 /* NCShareLinkCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F787704E22E7019900F287A9 /* NCShareLinkCell.xib */; };
 		F787AC09298BCB4A0001BB00 /* SVGKitSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F787AC08298BCB4A0001BB00 /* SVGKitSwift */; };
 		F787AC0B298BCB540001BB00 /* SVGKitSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F787AC0A298BCB540001BB00 /* SVGKitSwift */; };
@@ -1657,7 +1657,7 @@
 		F785129A2D79899E0087DDD0 /* NCNetworking+TermsOfService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCNetworking+TermsOfService.swift"; sourceTree = "<group>"; };
 		F785EE9C246196DF00B3F945 /* NCNetworkingE2EE.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNetworkingE2EE.swift; sourceTree = "<group>"; };
 		F7864ACB2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+LocalFile.swift"; sourceTree = "<group>"; };
-		F78689192E93A9D5000E39B3 /* NCUploadStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCUploadStore.swift; sourceTree = "<group>"; };
+		F78689192E93A9D5000E39B3 /* NCTransferStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTransferStore.swift; sourceTree = "<group>"; };
 		F787704E22E7019900F287A9 /* NCShareLinkCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCShareLinkCell.xib; sourceTree = "<group>"; };
 		F78A10BE29322E8A008499B8 /* NCManageDatabase+Directory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+Directory.swift"; sourceTree = "<group>"; };
 		F78A18B523CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerRichWorkspaceWebView.swift; sourceTree = "<group>"; };
@@ -2541,7 +2541,7 @@
 				F70D8D8024A4A9BF000A5756 /* NCNetworkingProcess.swift */,
 				F755BD9A20594AC7008C5FBB /* NCService.swift */,
 				F7A3DB8F2DDE238C008F7EC8 /* NCDebouncer.swift */,
-				F78689192E93A9D5000E39B3 /* NCUploadStore.swift */,
+				F78689192E93A9D5000E39B3 /* NCTransferStore.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -4703,7 +4703,7 @@
 				F7A3DB932DDE23B5008F7EC8 /* NCDebouncer.swift in Sources */,
 				F72CD63A25C19EBF00F46F9A /* NCAutoUpload.swift in Sources */,
 				AF93471D27E2361E002537EE /* NCShareAdvancePermissionFooter.swift in Sources */,
-				F786891D2E93A9DF000E39B3 /* NCUploadStore.swift in Sources */,
+				F786891D2E93A9DF000E39B3 /* NCTransferStore.swift in Sources */,
 				AF1A9B6427D0CA1E00F17A9E /* UIAlertController+Extension.swift in Sources */,
 				F7FA80012C0F4F3B0072FC60 /* NCUploadAssetsView.swift in Sources */,
 				371B5A2E23D0B04500FAFAE9 /* NCMenu.swift in Sources */,

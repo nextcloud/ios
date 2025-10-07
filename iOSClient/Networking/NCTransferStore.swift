@@ -5,9 +5,9 @@
 import UIKit
 import NextcloudKit
 
-// MARK: - Upload Store (batched persistence)
+// MARK: - Transfer Store (batched persistence)
 
-struct UploadItemDisk: Codable {
+struct TransferItem: Codable {
     var date: Date?
     var etag: String?
     var fileName: String?
@@ -22,15 +22,15 @@ struct UploadItemDisk: Codable {
     var taskIdentifier: Int?
 }
 
-final class NCUploadStore {
-    static let shared = NCUploadStore()
+final class NCTransferStore {
+    static let shared = NCTransferStore()
 
     // Shared state
-    private var uploadItemsCache: [UploadItemDisk] = []
-    private let uploadStoreIO = DispatchQueue(label: "UploadStore.IO", qos: .utility)
-    private let encoderUploadItem = JSONEncoder()
-    private let decoderUploadItem = JSONDecoder()
-    private(set) var uploadStoreURL: URL?
+    private var transferItemsCache: [TransferItem] = []
+    private let transferStoreIO = DispatchQueue(label: "TransferStore.IO", qos: .utility)
+    private let encoderTransferItem = JSONEncoder()
+    private let decoderTransferItem = JSONDecoder()
+    private(set) var transferStoreURL: URL?
 
     // Batching controls
     private var changeCounter: Int = 0
@@ -40,23 +40,23 @@ final class NCUploadStore {
     private var debounceTimer: DispatchSourceTimer?
 
     init() {
-        self.encoderUploadItem.dateEncodingStrategy = .iso8601
-        self.decoderUploadItem.dateDecodingStrategy = .iso8601
+        self.encoderTransferItem.dateEncodingStrategy = .iso8601
+        self.decoderTransferItem.dateDecodingStrategy = .iso8601
 
         guard let groupDirectory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup) else {
             return
         }
         let backupDirectory = groupDirectory.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud)
-        self.uploadStoreURL = backupDirectory.appendingPathComponent(fileUploadStore)
+        self.transferStoreURL = backupDirectory.appendingPathComponent(fileTransferStore)
 
-        self.uploadStoreIO.sync {
-            if let url = self.uploadStoreURL,
+        self.transferStoreIO.sync {
+            if let url = self.transferStoreURL,
                 let data = try? Data(contentsOf: url),
                 !data.isEmpty,
-                let items = try? self.decoderUploadItem.decode([UploadItemDisk].self, from: data) {
-                self.uploadItemsCache = items
+                let items = try? self.decoderTransferItem.decode([TransferItem].self, from: data) {
+                self.transferItemsCache = items
             } else {
-                self.uploadItemsCache = []
+                self.transferItemsCache = []
             }
         }
 
@@ -95,18 +95,18 @@ final class NCUploadStore {
     // MARK: Public API
 
     /// Adds or merges an item, then schedules a batched commit.
-    func addUploadItem(_ item: UploadItemDisk) {
-        uploadStoreIO.sync {
+    func addItem(_ item: TransferItem) {
+        transferStoreIO.sync {
             // Upsert by (serverUrl + fileName + taskIdentifier)
-            if let idx = uploadItemsCache.firstIndex(where: {
+            if let idx = transferItemsCache.firstIndex(where: {
                 $0.serverUrl == item.serverUrl &&
                 $0.fileName == item.fileName &&
                 $0.taskIdentifier == item.taskIdentifier
             }) {
-                let merged = mergeUploadItem(existing: uploadItemsCache[idx], with: item)
-                uploadItemsCache[idx] = merged
+                let merged = mergeItem(existing: transferItemsCache[idx], with: item)
+                transferItemsCache[idx] = merged
             } else {
-                uploadItemsCache.append(item)
+                transferItemsCache.append(item)
             }
 
             changeCounter &+= 1
@@ -114,54 +114,54 @@ final class NCUploadStore {
         }
     }
 
-    /// Updates only the `progress` field of an existing upload item, then schedules a batched commit.
+    /// Updates only the `progress` field of an existing item, then schedules a batched commit.
     /// If no matching item is found, nothing happens.
-    func updateUploadProgress(serverUrl: String, fileName: String, taskIdentifier: Int, progress: Double) {
-        uploadStoreIO.sync {
-            if let idx = uploadItemsCache.firstIndex(where: {
+    func transferProgress(serverUrl: String, fileName: String, taskIdentifier: Int, progress: Double) {
+        transferStoreIO.sync {
+            if let idx = transferItemsCache.firstIndex(where: {
                 $0.serverUrl == serverUrl &&
                 $0.fileName == fileName &&
                 $0.taskIdentifier == taskIdentifier
             }) {
-                uploadItemsCache[idx].progress = progress
+                transferItemsCache[idx].progress = progress
             }
         }
     }
 
     /// Removes the first match by (serverUrl + fileName); batched commit.
-    func removeUploadItem(serverUrl: String, fileName: String, taskIdentifier: Int) {
-        uploadStoreIO.sync {
-            if let idx = uploadItemsCache.firstIndex(where: {
+    func removeItem(serverUrl: String, fileName: String, taskIdentifier: Int) {
+        transferStoreIO.sync {
+            if let idx = transferItemsCache.firstIndex(where: {
                 $0.serverUrl == serverUrl &&
                 $0.fileName == fileName &&
                 $0.taskIdentifier == taskIdentifier
             }) {
-                uploadItemsCache.remove(at: idx)
+                transferItemsCache.remove(at: idx)
             }
         }
     }
 
     /// Removes the first match by (ocIdTransfer); batched commit.
-    func removeUploadItem(ocIdTransfer: String) {
-        uploadStoreIO.sync {
-            if let idx = uploadItemsCache.firstIndex(where: {
+    func removeItem(ocIdTransfer: String) {
+        transferStoreIO.sync {
+            if let idx = transferItemsCache.firstIndex(where: {
                 $0.ocIdTransfer == ocIdTransfer
             }) {
-                uploadItemsCache.remove(at: idx)
+                transferItemsCache.remove(at: idx)
             }
         }
     }
 
     /// Forces an immediate flush to disk (e.g., app background/terminate).
     func forceFlush() {
-        guard let url = self.uploadStoreURL else {
+        guard let url = self.transferStoreURL else {
             return
         }
 
-        uploadStoreIO.sync {
+        transferStoreIO.sync {
             do {
-                // Remove orphaned upload items not found in Realm
-                let ocIdTransfers = Set(uploadItemsCache.compactMap { $0.ocIdTransfer })
+                // Remove orphaned items not found in Realm
+                let ocIdTransfers = Set(transferItemsCache.compactMap { $0.ocIdTransfer })
                 if !ocIdTransfers.isEmpty {
 
                     let predicate = NSPredicate(format: "ocIdTransfer IN %@", ocIdTransfers)
@@ -170,22 +170,22 @@ final class NCUploadStore {
 
                     let missingTransfers = Set(ocIdTransfers).subtracting(foundTransfers)
                     if !missingTransfers.isEmpty {
-                        nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .warning, message: "Removing \(missingTransfers.count) orphaned upload items not found in Realm", consoleOnly: true)
-                        uploadItemsCache.removeAll { item in
+                        nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .warning, message: "Removing \(missingTransfers.count) orphaned items not found in Realm", consoleOnly: true)
+                        transferItemsCache.removeAll { item in
                             guard let t = item.ocIdTransfer else { return false }
                             return missingTransfers.contains(t)
                         }
                     }
                 }
 
-                let data = try encoderUploadItem.encode(uploadItemsCache)
+                let data = try encoderTransferItem.encode(transferItemsCache)
                 try data.write(to: url, options: .atomic)
                 lastPersist = CFAbsoluteTimeGetCurrent()
                 changeCounter = 0
 
-                nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .info, message: "Force flush to disk", consoleOnly: true)
+                nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .info, message: "Force flush to disk", consoleOnly: true)
             } catch {
-                nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .error, message: "Force flush to disk failed: \(error)")
+                nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .error, message: "Force flush to disk failed: \(error)")
             }
         }
     }
@@ -193,8 +193,8 @@ final class NCUploadStore {
     // MARK: - Private
 
     /// Merge: only non-nil fields from `new` overwrite existing values.
-    private func mergeUploadItem(existing: UploadItemDisk, with new: UploadItemDisk) -> UploadItemDisk {
-        return UploadItemDisk(
+    private func mergeItem(existing: TransferItem, with new: TransferItem) -> TransferItem {
+        return TransferItem(
             date: new.date ?? existing.date,
             etag: new.etag ?? existing.etag,
             fileName: existing.fileName ?? new.fileName,
@@ -212,7 +212,7 @@ final class NCUploadStore {
 
     /// Persist if threshold reached or max latency exceeded.
     private func maybeCommit() {
-        guard let url = self.uploadStoreURL else {
+        guard let url = self.transferStoreURL else {
             return
         }
         let now = CFAbsoluteTimeGetCurrent()
@@ -223,12 +223,12 @@ final class NCUploadStore {
         }
 
         do {
-            let data = try encoderUploadItem.encode(uploadItemsCache)
+            let data = try encoderTransferItem.encode(transferItemsCache)
             try data.write(to: url, options: .atomic)
             lastPersist = now
             changeCounter = 0
         } catch {
-            nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .error, message: "Flush to disk failed: \(error)")
+            nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .error, message: "Flush to disk failed: \(error)")
         }
 
         Task {
@@ -237,7 +237,7 @@ final class NCUploadStore {
     }
 
     private func startDebounceTimer() {
-        let t = DispatchSource.makeTimerSource(queue: uploadStoreIO)
+        let t = DispatchSource.makeTimerSource(queue: transferStoreIO)
         t.schedule(deadline: .now() + .seconds(Int(maxLatencySec)), repeating: .seconds(Int(maxLatencySec)))
         t.setEventHandler { [weak self] in
             guard let self else { return }
@@ -255,33 +255,33 @@ final class NCUploadStore {
     }
 
     /// Reloads the entire JSON store from disk synchronously.
-    /// When this function returns, `uploadItemsCache` is guaranteed to be updated.
+    /// When this function returns, `transferItemsCache` is guaranteed to be updated.
     private func reloadFromDisk() {
-        guard let url = self.uploadStoreURL else {
+        guard let url = self.transferStoreURL else {
             return
         }
 
-        uploadStoreIO.sync {
+        transferStoreIO.sync {
             do {
                 let data = try Data(contentsOf: url)
-                let items = try self.decoderUploadItem.decode([UploadItemDisk].self, from: data)
+                let items = try self.decoderTransferItem.decode([TransferItem].self, from: data)
                 guard !items.isEmpty else {
-                    self.uploadItemsCache = []
-                    nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .info, message: "Load JSON from disk empty, cache cleared", consoleOnly: true)
+                    self.transferItemsCache = []
+                    nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .info, message: "Load JSON from disk empty, cache cleared", consoleOnly: true)
                     return
                 }
-                self.uploadItemsCache = items
-                nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .info, message: "JSON loaded from disk)", consoleOnly: true)
+                self.transferItemsCache = items
+                nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .info, message: "JSON loaded from disk)", consoleOnly: true)
             } catch {
-                nkLog(tag: NCGlobal.shared.logTagUploadStore, emoji: .error, message: "Load JSON from disk failed: \(error)")
+                nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .error, message: "Load JSON from disk failed: \(error)")
             }
         }
     }
 
     /// Performs the actual Realm write using your async APIs.
     private func syncRealmNow() async {
-        let snapshot: [UploadItemDisk] = uploadStoreIO.sync {
-            uploadItemsCache.filter { $0.ocId != nil && !$0.ocId!.isEmpty }
+        let snapshot: [TransferItem] = transferStoreIO.sync {
+            transferItemsCache.filter { $0.ocId != nil && !$0.ocId!.isEmpty }
         }
         let ocIdTransfers = snapshot.compactMap { $0.ocIdTransfer }
         let predicate = NSPredicate(format: "ocIdTransfer IN %@", ocIdTransfers)
@@ -291,13 +291,13 @@ final class NCUploadStore {
         var serversUrl = Set<String>()
 
         for metadata in metadatas {
-            guard let uploadItem = (uploadItemsCache.first { $0.ocIdTransfer == metadata.ocIdTransfer }),
-                  let etag = uploadItem.etag,
-                  let ocId = uploadItem.ocId else {
+            guard let transferItem = (transferItemsCache.first { $0.ocIdTransfer == metadata.ocIdTransfer }),
+                  let etag = transferItem.etag,
+                  let ocId = transferItem.ocId else {
                 continue
             }
 
-            metadata.uploadDate = (uploadItem.date as? NSDate) ?? NSDate()
+            metadata.uploadDate = (transferItem.date as? NSDate) ?? NSDate()
             metadata.etag = etag
             metadata.ocId = ocId
             metadata.chunk = 0
@@ -314,7 +314,7 @@ final class NCUploadStore {
             metadatasUploaded.append(metadata)
             serversUrl.insert(metadata.serverUrl)
 
-            removeUploadItem(ocIdTransfer: metadata.ocIdTransfer)
+            removeItem(ocIdTransfer: metadata.ocIdTransfer)
         }
 
         await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfers: ocIdTransfers, metadatas: metadatasUploaded)
