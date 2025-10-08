@@ -42,9 +42,7 @@ final class NCAppStateManager {
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                isSuspendingDatabaseOperation = true
-            }
+            isSuspendingDatabaseOperation = true
             isAppInBackground = true
 
             //
