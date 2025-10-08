@@ -52,11 +52,13 @@ final class NCTransferStore {
     // Last successful persist absolute time.
     private var lastPersist: TimeInterval = 0
     // Max number of changes before forcing a persist.
-    private let batchThreshold: Int = NCBrandOptions.shared.numMaximumProcess / 2
+    private let batchThreshold: Int = max(1, NCBrandOptions.shared.numMaximumProcess / 2)
     // Max elapsed time (seconds) between persists.
     private let maxLatencySec: TimeInterval = 5     // <- or every 5s at most
     // Periodic debounce timer.
     private var debounceTimer: DispatchSourceTimer?
+
+    private var observers: [NSObjectProtocol] = []
 
     /// Initializes the store, loads any existing snapshot from disk,
     /// configures date strategies and installs lifecycle observers and debounce timer.
@@ -88,7 +90,11 @@ final class NCTransferStore {
     }
 
     deinit {
-
+        stopDebounceTimer()
+        for observer in observers {
+            NotificationCenter.default.removeObserver(observer)
+        }
+        observers.removeAll()
     }
 
     /// Installs observers to align flush behavior with app lifecycle:
@@ -96,15 +102,15 @@ final class NCTransferStore {
     /// - Force a flush on backgrounding.
     /// - Reload from disk and restart debounce shortly after becoming active.
     private func setupLifecycleFlush() {
-        NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: nil) { _ in
+        let willResignActiveNotification = NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: nil) { _ in
             self.stopDebounceTimer()
         }
 
-        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
+        let didEnterBackgroundNotification = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
             self.commit(forced: true)
         }
 
-        NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { [weak self] _ in
+        let didBecomeActiveNotification = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { [weak self] _ in
             guard let self else { return }
             // Force a synchronous reload before anything else
             self.reloadFromDisk()
@@ -115,6 +121,8 @@ final class NCTransferStore {
                 self.startDebounceTimer()
             }
         }
+
+        observers = [willResignActiveNotification, didEnterBackgroundNotification, didBecomeActiveNotification]
     }
 
     // MARK: Public API
@@ -190,13 +198,24 @@ final class NCTransferStore {
         commit()
     }
 
-    /// Updates `progress` for the item identified by `(serverUrl, fileName, taskIdentifier)`.
+    /// Updates the transfer progress for a specific item and triggers periodic persistence.
+    ///
+    /// This method locates the in-memory `TransferItem` matching the provided
+    /// `(serverUrl, fileName, taskIdentifier)` tuple and updates its `progress` value.
+    /// The operation is performed synchronously on the `transferStoreIO` queue
+    /// to maintain thread-safe access to the cache.
+    ///
+    /// After updating the value, a conditional commit is triggered to limit
+    /// disk I/O:
+    /// - Progress values of **0.0** or **1.0** (start or completion) always trigger a flush.
+    /// - Intermediate progress triggers a flush only when reaching a multiple of **10%**
+    ///   (e.g. 0.1, 0.2, 0.3, ...), ensuring periodic persistence during long transfers.
     ///
     /// - Parameters:
-    ///   - serverUrl: The server URL associated with the item.
-    ///   - fileName: The file name associated with the item.
-    ///   - taskIdentifier: URLSession task identifier.
-    ///   - progress: New progress value in `[0.0, 1.0]`.
+    ///   - serverUrl: The server URL associated with the transfer.
+    ///   - fileName: The file name associated with the transfer.
+    ///   - taskIdentifier: The unique URLSession task identifier.
+    ///   - progress: The new progress value, normalized in the range `[0.0, 1.0]`.
     func transferProgress(serverUrl: String, fileName: String, taskIdentifier: Int, progress: Double) {
         transferStoreIO.sync {
             if let idx = transferItemsCache.firstIndex(where: {
@@ -206,6 +225,10 @@ final class NCTransferStore {
             }) {
                 transferItemsCache[idx].progress = progress
             }
+        }
+
+        if progress == 0 || progress == 1 || (progress * 100).truncatingRemainder(dividingBy: 10) == 0 {
+            commit()
         }
     }
 
@@ -267,14 +290,19 @@ final class NCTransferStore {
         guard let url = self.transferStoreURL else {
             return
         }
+        var didWrite = false
 
         func diskStore() {
             transferStoreIO.sync {
                 do {
+                    // Ensure directory exists
+                    try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+
                     let data = try encoderTransferItem.encode(transferItemsCache)
                     try data.write(to: url, options: .atomic)
                     lastPersist = CFAbsoluteTimeGetCurrent()
                     changeCounter = 0
+                    didWrite = true
                     nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .info, message: "Force flush to disk")
                 } catch {
                     nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .error, message: "Force flush to disk failed: \(error)")
@@ -284,25 +312,25 @@ final class NCTransferStore {
         }
 
         #if EXTENSION
-            diskStore()
+        diskStore()
         #else
-        if UIApplication.shared.applicationState == .background || forced {
+        if appIsInBackground() || forced {
             diskStore()
         }
         #endif
 
-        changeCounter &+= 1
+        if !didWrite {
+            changeCounter &+= 1
 
-        let tooManyChanges = changeCounter >= batchThreshold
-        let tooOld = (CFAbsoluteTimeGetCurrent() - lastPersist) >= maxLatencySec
-        guard tooManyChanges || tooOld else {
-            return
+            let tooManyChanges = changeCounter >= batchThreshold
+            let tooOld = (CFAbsoluteTimeGetCurrent() - lastPersist) >= maxLatencySec
+            if tooManyChanges || tooOld {
+                diskStore()
+            }
         }
 
-        diskStore()
-
-        Task {
-            await syncUploadRealm()
+        if didWrite {
+            Task { await syncUploadRealm() }
         }
     }
 
@@ -311,6 +339,10 @@ final class NCTransferStore {
     /// The timer runs on `debounceQueue` and calls `commit()` every `maxLatencySec` seconds.
     /// It is idempotent across start calls if `debounceTimer` is already active.
     private func startDebounceTimer() {
+        guard debounceTimer == nil else {
+            return
+        }
+
         let t = DispatchSource.makeTimerSource(queue: debounceQueue)
         t.schedule(deadline: .now() + .seconds(Int(maxLatencySec)), repeating: .seconds(Int(maxLatencySec)))
         t.setEventHandler { [weak self] in
@@ -347,7 +379,7 @@ final class NCTransferStore {
                 self.transferItemsCache = items
                 // check
                 self.checkOrphaned()
-                nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .info, message: "JSON loaded from disk)", consoleOnly: true)
+                nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .info, message: "JSON loaded from disk", consoleOnly: true)
             } catch {
                 nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .error, message: "Load JSON from disk failed: \(error)")
             }
@@ -359,11 +391,9 @@ final class NCTransferStore {
     /// Skips execution while the app is in background (main app only).
     /// Performs a single Realm query using a composed predicate for efficiency, then prunes unmatched items.
     private func checkOrphaned() {
-        #if !EXTENSION
-        if UIApplication.shared.applicationState == .background {
+        if appIsInBackground() {
             return
         }
-        #endif
 
         let transfers: Set<String> = Set(transferItemsCache.compactMap { $0.ocIdTransfer })
         let ocids: Set<String> = Set(transferItemsCache.compactMap { $0.ocId })
@@ -410,11 +440,9 @@ final class NCTransferStore {
     ///     persists via `addMetadatasAsync` and `addLocalFilesAsync`, and removes processed items.
     /// - Finally, notifies all transfer delegates per `serverUrl` to reload data.
     private func syncUploadRealm() async {
-        #if !EXTENSION
-        if await UIApplication.shared.applicationState == .background {
+        if appIsInBackground() {
             return
         }
-        #endif
 
         let snapshotUpload: [TransferItem] = transferStoreIO.sync {
             transferItemsCache.filter { item in
@@ -511,4 +539,28 @@ final class NCTransferStore {
             }
         }
     }
+
+    // MARK: - Private utility
+
+    #if !EXTENSION
+    @inline(__always)
+    private func appIsInBackground() -> Bool {
+        if Thread.isMainThread {
+            return UIApplication.shared.applicationState == .background
+        } else {
+            var isBg = false
+            DispatchQueue.main.sync {
+                isBg = (UIApplication.shared.applicationState == .background)
+            }
+            return isBg
+        }
+    }
+    #else
+
+    @inline(__always)
+    private func appIsInBackground() -> Bool {
+        // In extensions we treat "background" checks as false by convention
+        return false
+    }
+    #endif
 }
