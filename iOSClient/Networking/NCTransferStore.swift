@@ -5,6 +5,13 @@
 import UIKit
 import NextcloudKit
 
+/// A lightweight transactional store based on JSON, implementing batched commits and atomic writes.
+/// Acts as an in-memory document-oriented micro-database synchronized to disk.
+/// Designed for efficient, low-latency persistence of transient transfer metadata with strong consistency guarantees
+/// between in-memory state and its file-backed representation.
+///
+/// Version 0.1 - October 2025 by Marino Faggiana
+
 // MARK: - Transfer Store (batched persistence)
 
 /// Immutable transfer item snapshot used by the Transfer Store.
