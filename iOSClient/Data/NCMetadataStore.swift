@@ -406,15 +406,15 @@ final class NCMetadataStore {
                 let items = try self.decoder.decode([MetadataItem].self, from: data)
                 guard !items.isEmpty else {
                     self.metadataItemsCache = []
-                    nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .info, message: "Load JSON from disk empty, cache cleared", consoleOnly: true)
+                    nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .warning, message: "Load \(fileMetadataStore) from disk empty, cache cleared", consoleOnly: true)
                     return
                 }
                 self.metadataItemsCache = items
                 // check
                 self.checkOrphaned()
-                nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .info, message: "JSON loaded from disk", consoleOnly: true)
+                nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .info, message: "\(fileMetadataStore) loaded from disk", consoleOnly: true)
             } catch {
-                nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .error, message: "Load JSON from disk failed: \(error)")
+                nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .error, message: "Load \(fileMetadataStore) from disk failed: \(error)")
             }
         }
     }
@@ -472,6 +472,8 @@ final class NCMetadataStore {
             }
         }
     }
+
+    // MARK: - Private Realm
 
     /// Synchronizes completed upload and download items with Realm metadata.
     /// - Performs a foreground-only sync (skips if app is in background).
