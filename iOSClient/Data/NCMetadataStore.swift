@@ -162,15 +162,30 @@ final class NCMetadataStore {
         commit()
     }
 
+    /// Marks a download transfer as completed by creating or updating its corresponding `MetadataItem`.
+    ///
+    /// This method records the completion of a download task identified by `(fileName, serverUrl, taskIdentifier)`,
+    /// and stores its associated `etag` value. If an existing `MetadataItem` matches the identifiers,
+    /// it will be updated; otherwise, a new one will be created.
+    ///
+    /// - Parameters:
+    ///   - fileName: The name of the downloaded file.
+    ///   - serverUrl: The remote server URL from which the file was downloaded.
+    ///   - taskIdentifier: The unique `URLSession` task identifier associated with the download.
+    ///   - etag: The entity tag (ETag) returned by the server to represent the file version.
+    func setDownloadCompleted(fileName: String, serverUrl: String, taskIdentifier: Int, etag: String) {
+        addItem(MetadataItem(completed: true, etag: etag), forFileName: fileName, forServerUrl: serverUrl, forTaskIdentifier: taskIdentifier)
+    }
+
     /// Removes the first item matching `(serverUrl, fileName, taskIdentifier)` and schedules a commit.
     ///
     /// - Parameters:
     ///   - serverUrl: Server URL associated with the transfer.
     ///   - fileName: File name of the transfer.
     ///   - taskIdentifier: URLSession task identifier.
-    func removeItem(forFileName fileName: String,
-                    forServerUrl serverUrl: String,
-                    forTaskIdentifier taskIdentifier: Int) {
+    func removeItem(fileName: String,
+                    serverUrl: String,
+                    taskIdentifier: Int) {
         let removed: Bool = storeIO.sync {
             if let idx = metadataItemsCache.firstIndex(where: {
                 $0.serverUrl == serverUrl &&
@@ -222,6 +237,31 @@ final class NCMetadataStore {
         }
 
         if removed {
+            commit()
+        }
+    }
+
+    /// Removes all items whose `ocId` matches any value in the provided array,
+    /// then schedules a commit only if one or more items were removed.
+    ///
+    /// - Parameter ocIds: Array of Nextcloud file OCIDs to remove.
+    func removeItems(forOcIds ocIds: [String]) {
+        guard !ocIds.isEmpty else {
+            return
+        }
+
+        let removedCount: Int = storeIO.sync {
+            let before = metadataItemsCache.count
+            metadataItemsCache.removeAll { item in
+                if let ocId = item.ocId {
+                    return ocIds.contains(ocId)
+                }
+                return false
+            }
+            return before - metadataItemsCache.count
+        }
+
+        if removedCount > 0 {
             commit()
         }
     }
@@ -556,32 +596,34 @@ final class NCMetadataStore {
 
         // Download
         if !snapshotDownload.isEmpty {
-            let ocIds = snapshotDownload.compactMap { $0.ocId }
+            let ocIds = Array(Set(snapshotDownload.compactMap { $0.ocId }))
             let metadatasDownload = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "ocId IN %@", ocIds))
             var metadatasDownloaded: [tableMetadata] = []
-            
+
             if !metadatasDownload.isEmpty {
                 for metadata in metadatasDownload {
-                    guard let transferItem = (snapshotDownload.first { $0.ocId == metadata.ocId }),
-                          let etag = transferItem.etag else {
+                    guard let item = (snapshotDownload.first { $0.ocId == metadata.ocId }),
+                          let etag = item.etag else {
                         continue
                     }
-                    
+
                     metadata.etag = etag
                     metadata.session = ""
                     metadata.sessionError = ""
                     metadata.sessionTaskIdentifier = 0
                     metadata.status = NCGlobal.shared.metadataStatusNormal
-                    
+
                     metadatasDownloaded.append(metadata)
                     serversUrl.insert(metadata.serverUrl)
-                    
-                    removeItem(forOcId: metadata.ocId)
                 }
-                
-                await NCManageDatabase.shared.addMetadatasAsync(metadatasDownloaded)
-                await NCManageDatabase.shared.addLocalFilesAsync(metadatas: metadatasDownloaded)
+
+                if !metadatasDownloaded.isEmpty {
+                    await NCManageDatabase.shared.addMetadatasAsync(metadatasDownloaded)
+                    await NCManageDatabase.shared.addLocalFilesAsync(metadatas: metadatasDownloaded)
+                }
             }
+
+            removeItems(forOcIds: ocIds)
         }
 
         // TransferDispatcher Reload Data

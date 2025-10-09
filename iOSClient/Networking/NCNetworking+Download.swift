@@ -179,14 +179,11 @@ extension NCNetworking {
 
             if error == .success,
                let etag = etag {
-                NCMetadataStore.shared.addItem(MetadataItem(completed: true, etag: etag),
-                                               forFileName: fileName,
-                                               forServerUrl: serverUrl,
-                                               forTaskIdentifier: task.taskIdentifier)
+                NCMetadataStore.shared.setDownloadCompleted(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier, etag: etag)
             } else {
-                NCMetadataStore.shared.removeItem(forFileName: fileName,
-                                                  forServerUrl: serverUrl,
-                                                  forTaskIdentifier: task.taskIdentifier)
+                NCMetadataStore.shared.removeItem(fileName: fileName,
+                                                  serverUrl: serverUrl,
+                                                  taskIdentifier: task.taskIdentifier)
             }
 
             await NextcloudKit.shared.nkCommonInstance.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
