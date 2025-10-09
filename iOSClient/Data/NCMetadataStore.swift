@@ -424,6 +424,7 @@ final class NCMetadataStore {
             return
         }
 
+        let statusNormal = NCGlobal.shared.metadataStatusNormal
         let transfers: Set<String> = Set(metadataItemsCache.compactMap { $0.ocIdTransfer })
         let ocids: Set<String> = Set(metadataItemsCache.compactMap { $0.ocId })
 
@@ -436,19 +437,31 @@ final class NCMetadataStore {
             // Query Realm once
             let metadatas = NCManageDatabase.shared.getMetadatas(predicate: predicate)
 
-            // Build found sets for quick lookup
+            // Lookup sets
             let foundTransfers: Set<String> = Set(metadatas.compactMap { $0.ocIdTransfer })
             let foundOcids: Set<String> = Set(metadatas.compactMap { $0.ocId })
+            let normalTransfers: Set<String> = Set(metadatas.lazy.filter { $0.status == statusNormal }.compactMap { $0.ocIdTransfer })
+            let normalOcids: Set<String> = Set(metadatas.lazy.filter { $0.status == statusNormal }.compactMap { $0.ocId })
 
-            // Remove items that have NEITHER a matching ocIdTransfer NOR a matching ocId in Realm
             let before = metadataItemsCache.count
             metadataItemsCache.removeAll { item in
                 let ocIdTransfer = item.ocIdTransfer
                 let ocId = item.ocId
-                // Keep if either matches; remove only if both are missing
-                let hasMatch = (ocIdTransfer != nil && foundTransfers.contains(ocIdTransfer!)) || (ocId != nil && foundOcids.contains(ocId!))
-                return !hasMatch
+
+                // existsm?
+                let hasMatch =
+                    (ocIdTransfer != nil && foundTransfers.contains(ocIdTransfer!)) ||
+                    (ocId != nil && foundOcids.contains(ocId!))
+
+                // is status == NCGlobal.shared.metadataStatusNormal
+                let isInactive =
+                    (ocIdTransfer != nil && normalTransfers.contains(ocIdTransfer!)) ||
+                    (ocId != nil && normalOcids.contains(ocId!))
+
+                // removed if orphan OR normal
+                return (!hasMatch) || isInactive
             }
+
             let removed = before - metadataItemsCache.count
             if removed > 0 {
                 nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .warning, message: "Removed \(removed) orphaned items (no match on ocIdTransfer nor ocId)", consoleOnly: true)
