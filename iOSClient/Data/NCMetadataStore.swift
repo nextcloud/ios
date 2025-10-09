@@ -137,13 +137,16 @@ final class NCMetadataStore {
     /// Inserts or updates a item (upsert by `serverUrl + fileName + taskIdentifier`), then schedules a commit.
     ///
     /// - Parameter item: The item to insert or merge into the cache.
-    func addItem(_ item: MetadataItem) {
+    func addItem(_ item: MetadataItem,
+                 forFileName fileName: String,
+                 forServerUrl serverUrl: String,
+                 forTaskIdentifier taskIdentifier: Int) {
         storeIO.sync {
             // Upsert by (serverUrl + fileName + taskIdentifier)
             if let idx = metadataItemsCache.firstIndex(where: {
-                $0.serverUrl == item.serverUrl &&
-                $0.fileName == item.fileName &&
-                $0.taskIdentifier == item.taskIdentifier
+                $0.serverUrl == serverUrl &&
+                $0.fileName == fileName &&
+                $0.taskIdentifier == taskIdentifier
             }) {
                 let merged = mergeItem(existing: metadataItemsCache[idx], with: item)
                 metadataItemsCache[idx] = merged
@@ -161,7 +164,9 @@ final class NCMetadataStore {
     ///   - serverUrl: Server URL associated with the transfer.
     ///   - fileName: File name of the transfer.
     ///   - taskIdentifier: URLSession task identifier.
-    func removeItem(serverUrl: String, fileName: String, taskIdentifier: Int) {
+    func removeItem(forFileName fileName: String,
+                    forServerUrl serverUrl: String,
+                    forTaskIdentifier taskIdentifier: Int) {
         let removed: Bool = storeIO.sync {
             if let idx = metadataItemsCache.firstIndex(where: {
                 $0.serverUrl == serverUrl &&
@@ -182,7 +187,7 @@ final class NCMetadataStore {
     /// Removes the first item matching `ocIdTransfer` and schedules a commit.
     ///
     /// - Parameter ocIdTransfer: Transfer identifier used to track upload sessions.
-    func removeItem(ocIdTransfer: String) {
+    func removeItem(forOcIdTransfer ocIdTransfer: String) {
         let removed: Bool = storeIO.sync {
             if let idx = metadataItemsCache.firstIndex(where: {
                 $0.ocIdTransfer == ocIdTransfer
@@ -201,7 +206,7 @@ final class NCMetadataStore {
     /// Removes the first item matching `ocId` and schedules a commit.
     ///
     /// - Parameter ocId: Object identifier (Nextcloud file OCID).
-    func removeItem(ocId: String) {
+    func removeItem(forOcId ocId: String) {
         let removed: Bool = storeIO.sync {
             if let idx = metadataItemsCache.firstIndex(where: {
                 $0.ocId == ocId
@@ -519,7 +524,7 @@ final class NCMetadataStore {
             metadatasUploaded.append(metadata)
             serversUrl.insert(metadata.serverUrl)
 
-            removeItem(ocIdTransfer: metadata.ocIdTransfer)
+            removeItem(forOcIdTransfer: metadata.ocIdTransfer)
         }
 
         await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfers: ocIdTransfers, metadatas: metadatasUploaded)
@@ -545,7 +550,7 @@ final class NCMetadataStore {
                 metadatasDownloaded.append(metadata)
                 serversUrl.insert(metadata.serverUrl)
 
-                removeItem(ocId: metadata.ocId)
+                removeItem(forOcId: metadata.ocId)
             }
 
             await NCManageDatabase.shared.addMetadatasAsync(metadatasDownloaded)

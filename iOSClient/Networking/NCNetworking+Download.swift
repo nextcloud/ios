@@ -169,29 +169,21 @@ extension NCNetworking {
                 return
             }
 
+            if error == .success,
+               let etag = etag {
+                NCMetadataStore.shared.addItem(MetadataItem(completed: true, etag: etag),
+                                               forFileName: fileName,
+                                               forServerUrl: serverUrl,
+                                               forTaskIdentifier: task.taskIdentifier)
+            } else {
+                NCMetadataStore.shared.removeItem(forFileName: fileName,
+                                                  forServerUrl: serverUrl,
+                                                  forTaskIdentifier: task.taskIdentifier)
+            }
+
             await NextcloudKit.shared.nkCommonInstance.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
 
             if error == .success {
-                /*
-                #if !EXTENSION
-                if error == .success {
-                 NCMetadataStore.shared.addItem(TransferItem(completed: true,
-                                                                date: date,
-                                                                etag: etag,
-                                                                fileName: fileName,
-                                                                ocId: ocId,
-                                                                serverUrl: serverUrl,
-                                                                size: size,
-                                                                taskIdentifier: task.taskIdentifier))
-                    return
-                } else {
-                 NCMetadataStore.shared.removeItem(serverUrl: serverUrl,
-                                                      fileName: fileName,
-                                                      taskIdentifier: task.taskIdentifier)
-                }
-                #endif
-                */
-
                 nkLog(success: "Downloaded file: " + metadata.serverUrlFileName)
                 #if !EXTENSION
                 if let result = await NCManageDatabase.shared.getE2eEncryptionAsync(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
@@ -294,14 +286,10 @@ extension NCNetworking {
                 return
             }
 
-            /*
-            #if !EXTENSION
-             NCMetadataStore.shared.transferProgress(serverUrl: serverUrl,
+            NCMetadataStore.shared.transferProgress(serverUrl: serverUrl,
                                                     fileName: fileName,
                                                     taskIdentifier: task.taskIdentifier,
                                                     progress: Double(progress))
-            #endif
-            */
 
             await NCManageDatabase.shared.setMetadataProgress(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier, progress: Double(progress))
             await self.transferDispatcher.notifyAllDelegates { delegate in
