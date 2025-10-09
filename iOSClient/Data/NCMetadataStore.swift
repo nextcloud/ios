@@ -14,9 +14,9 @@ import NextcloudKit
 
 // MARK: - Transfer Store (batched persistence)
 
-/// Immutable transfer item snapshot used by the Transfer Store.
+/// Immutable transfer item snapshot used by the Metadata Store.
 /// Fields are optional to allow partial updates/merges during upsert operations.
-struct TransferItem: Codable {
+struct MetadataItem: Codable {
     var completed: Bool?
     var date: Date?
     var etag: String?
@@ -37,21 +37,21 @@ struct TransferItem: Codable {
 /// The store keeps an in-memory cache and periodically persists it to disk (JSON)
 /// based on change count and latency thresholds. It also reacts to app lifecycle
 /// events to ensure data safety across foreground/background transitions.
-final class NCTransferStore {
-    static let shared = NCTransferStore()
+final class NCMetadataStore {
+    static let shared = NCMetadataStore()
 
     // Shared state
-    // In-memory cache of transfer items. Access must be performed on `transferStoreIO`.
-    private var transferItemsCache: [TransferItem] = []
+    // In-memory cache of metadata items. Access must be performed on `storeIO`.
+    private var metadataItemsCache: [MetadataItem] = []
     // Serialization queue for disk and cache mutations.
-    private let transferStoreIO = DispatchQueue(label: "TransferStore.IO", qos: .utility)
+    private let storeIO = DispatchQueue(label: "MetadataStore.IO", qos: .utility)
     // Timer queue used for periodic debounce commits.
-    private let debounceQueue = DispatchQueue(label: "TransferStore.Debounce", qos: .utility)
+    private let debounceQueue = DispatchQueue(label: "MetadataStore.Debounce", qos: .utility)
     // JSON encoders/decoders configured with ISO8601 dates.
-    private let encoderTransferItem = JSONEncoder()
-    private let decoderTransferItem = JSONDecoder()
+    private let encoder = JSONEncoder()
+    private let decoder = JSONDecoder()
     // Backing file URL for persisted JSON.
-    private(set) var transferStoreURL: URL?
+    private(set) var storeURL: URL?
 
     // Batching controls
     // Counts in-memory changes since the last persist.
@@ -70,23 +70,23 @@ final class NCTransferStore {
     /// Initializes the store, loads any existing snapshot from disk,
     /// configures date strategies and installs lifecycle observers and debounce timer.
     init() {
-        self.encoderTransferItem.dateEncodingStrategy = .iso8601
-        self.decoderTransferItem.dateDecodingStrategy = .iso8601
+        self.encoder.dateEncodingStrategy = .iso8601
+        self.decoder.dateDecodingStrategy = .iso8601
 
         guard let groupDirectory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup) else {
             return
         }
         let backupDirectory = groupDirectory.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud)
-        self.transferStoreURL = backupDirectory.appendingPathComponent(fileTransferStore)
+        self.storeURL = backupDirectory.appendingPathComponent(fileMetadataStore)
 
-        self.transferStoreIO.sync {
-            if let url = self.transferStoreURL,
+        self.storeIO.sync {
+            if let url = self.storeURL,
                 let data = try? Data(contentsOf: url),
                 !data.isEmpty,
-                let items = try? self.decoderTransferItem.decode([TransferItem].self, from: data) {
-                self.transferItemsCache = items
+               let items = try? self.decoder.decode([MetadataItem].self, from: data) {
+                self.metadataItemsCache = items
             } else {
-                self.transferItemsCache = []
+                self.metadataItemsCache = []
             }
         }
 
@@ -134,21 +134,21 @@ final class NCTransferStore {
 
     // MARK: Public API
 
-    /// Inserts or updates a transfer item (upsert by `serverUrl + fileName + taskIdentifier`), then schedules a commit.
+    /// Inserts or updates a item (upsert by `serverUrl + fileName + taskIdentifier`), then schedules a commit.
     ///
     /// - Parameter item: The item to insert or merge into the cache.
-    func addItem(_ item: TransferItem) {
-        transferStoreIO.sync {
+    func addItem(_ item: MetadataItem) {
+        storeIO.sync {
             // Upsert by (serverUrl + fileName + taskIdentifier)
-            if let idx = transferItemsCache.firstIndex(where: {
+            if let idx = metadataItemsCache.firstIndex(where: {
                 $0.serverUrl == item.serverUrl &&
                 $0.fileName == item.fileName &&
                 $0.taskIdentifier == item.taskIdentifier
             }) {
-                let merged = mergeItem(existing: transferItemsCache[idx], with: item)
-                transferItemsCache[idx] = merged
+                let merged = mergeItem(existing: metadataItemsCache[idx], with: item)
+                metadataItemsCache[idx] = merged
             } else {
-                transferItemsCache.append(item)
+                metadataItemsCache.append(item)
             }
         }
 
@@ -162,13 +162,13 @@ final class NCTransferStore {
     ///   - fileName: File name of the transfer.
     ///   - taskIdentifier: URLSession task identifier.
     func removeItem(serverUrl: String, fileName: String, taskIdentifier: Int) {
-        transferStoreIO.sync {
-            if let idx = transferItemsCache.firstIndex(where: {
+        storeIO.sync {
+            if let idx = metadataItemsCache.firstIndex(where: {
                 $0.serverUrl == serverUrl &&
                 $0.fileName == fileName &&
                 $0.taskIdentifier == taskIdentifier
             }) {
-                transferItemsCache.remove(at: idx)
+                metadataItemsCache.remove(at: idx)
             }
         }
 
@@ -179,11 +179,11 @@ final class NCTransferStore {
     ///
     /// - Parameter ocIdTransfer: Transfer identifier used to track upload sessions.
     func removeItem(ocIdTransfer: String) {
-        transferStoreIO.sync {
-            if let idx = transferItemsCache.firstIndex(where: {
+        storeIO.sync {
+            if let idx = metadataItemsCache.firstIndex(where: {
                 $0.ocIdTransfer == ocIdTransfer
             }) {
-                transferItemsCache.remove(at: idx)
+                metadataItemsCache.remove(at: idx)
             }
         }
 
@@ -194,11 +194,11 @@ final class NCTransferStore {
     ///
     /// - Parameter ocId: Object identifier (Nextcloud file OCID).
     func removeItem(ocId: String) {
-        transferStoreIO.sync {
-            if let idx = transferItemsCache.firstIndex(where: {
+        storeIO.sync {
+            if let idx = metadataItemsCache.firstIndex(where: {
                 $0.ocId == ocId
             }) {
-                transferItemsCache.remove(at: idx)
+                metadataItemsCache.remove(at: idx)
             }
         }
 
@@ -207,9 +207,9 @@ final class NCTransferStore {
 
     /// Updates the transfer progress for a specific item and triggers periodic persistence.
     ///
-    /// This method locates the in-memory `TransferItem` matching the provided
+    /// This method locates the in-memory `MetadataItem` matching the provided
     /// `(serverUrl, fileName, taskIdentifier)` tuple and updates its `progress` value.
-    /// The operation is performed synchronously on the `transferStoreIO` queue
+    /// The operation is performed synchronously on the `storeIO` queue
     /// to maintain thread-safe access to the cache.
     ///
     /// After updating the value, a conditional commit is triggered to limit
@@ -224,13 +224,13 @@ final class NCTransferStore {
     ///   - taskIdentifier: The unique URLSession task identifier.
     ///   - progress: The new progress value, normalized in the range `[0.0, 1.0]`.
     func transferProgress(serverUrl: String, fileName: String, taskIdentifier: Int, progress: Double) {
-        transferStoreIO.sync {
-            if let idx = transferItemsCache.firstIndex(where: {
+        storeIO.sync {
+            if let idx = metadataItemsCache.firstIndex(where: {
                 $0.serverUrl == serverUrl &&
                 $0.fileName == fileName &&
                 $0.taskIdentifier == taskIdentifier
             }) {
-                transferItemsCache[idx].progress = progress
+                metadataItemsCache[idx].progress = progress
             }
         }
 
@@ -241,14 +241,14 @@ final class NCTransferStore {
 
     // MARK: - Private
 
-    /// Field-wise merge of two `TransferItem` values preferring non-nil fields from `new`.
+    /// Field-wise merge of two `MetadataItem` values preferring non-nil fields from `new`.
     ///
     /// - Parameters:
     ///   - existing: Current cached value.
     ///   - new: New snapshot to merge in.
     /// - Returns: The merged `TransferItem`.
-    private func mergeItem(existing: TransferItem, with new: TransferItem) -> TransferItem {
-        return TransferItem(
+    private func mergeItem(existing: MetadataItem, with new: MetadataItem) -> MetadataItem {
+        return MetadataItem(
             completed: new.completed ?? existing.completed,
             date: new.date ?? existing.date,
             etag: new.etag ?? existing.etag,
@@ -265,10 +265,10 @@ final class NCTransferStore {
         )
     }
 
-    /// Commits (flushes) the in-memory transfer items cache to disk, optionally forcing the operation.
+    /// Commits (flushes) the in-memory metadata items cache to disk, optionally forcing the operation.
     ///
-    /// This method safely serializes the `transferItemsCache` and writes it to the file at `transferStoreURL`.
-    /// The operation is executed synchronously on the dedicated `transferStoreIO` queue to ensure thread safety.
+    /// This method safely serializes the `metadataItemsCache` and writes it to the file at `storeURL`.
+    /// The operation is executed synchronously on the dedicated `storeIO` queue to ensure thread safety.
     ///
     /// Behavior:
     /// - When running inside an extension (`#if EXTENSION`), the cache is always written immediately.
@@ -282,30 +282,30 @@ final class NCTransferStore {
     ///     - `maxLatencySec` seconds have passed since the last persist (`tooOld`)
     /// - After a successful write, both `changeCounter` and `lastPersist` are reset.
     ///
-    /// When a flush occurs, the cache is encoded using `encoderTransferItem` and persisted atomically to prevent corruption.
+    /// When a flush occurs, the cache is encoded using `encoder` and persisted atomically to prevent corruption.
     /// Any error during serialization or write is logged through `nkLog` with detailed context.
     ///
     /// Parameters:
     /// - forced: When `true`, bypasses batching and app-state checks to force an immediate disk flush.
     ///
     /// Side effects:
-    /// - Triggers an asynchronous call to `syncUploadRealm()` after each disk commit to synchronize the persisted data with Realm.
+    /// - Triggers an asynchronous call to `syncRealm()` after each disk commit to synchronize the persisted data with Realm.
     /// - Logs successful and failed flushes using the tag `NCGlobal.shared.logTagTransferStore`.
     ///
     /// This method is optimized for reliability during background transitions and efficient I/O behavior under frequent cache updates.
     private func commit(forced: Bool = false) {
-        guard let url = self.transferStoreURL else {
+        guard let url = self.storeURL else {
             return
         }
         var didWrite = false
 
         func diskStore() {
-            transferStoreIO.sync {
+            storeIO.sync {
                 do {
                     // Ensure directory exists
                     try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
 
-                    let data = try encoderTransferItem.encode(transferItemsCache)
+                    let data = try encoder.encode(metadataItemsCache)
                     try data.write(to: url, options: .atomic)
                     lastPersist = CFAbsoluteTimeGetCurrent()
                     changeCounter = 0
@@ -337,7 +337,9 @@ final class NCTransferStore {
         }
 
         if didWrite {
-            Task { await syncUploadRealm() }
+            Task {
+                await syncRealm()
+            }
         }
     }
 
@@ -367,23 +369,23 @@ final class NCTransferStore {
 
     /// Reloads the on-disk JSON store into the in-memory cache, replacing the current snapshot.
     ///
-    /// This method executes synchronously on `transferStoreIO` to keep mutation serialized.
+    /// This method executes synchronously on `storeIO` to keep mutation serialized.
     /// It logs success/failure and clears the cache if the file is empty.
     private func reloadFromDisk() {
-        guard let url = self.transferStoreURL else {
+        guard let url = self.storeURL else {
             return
         }
 
-        transferStoreIO.sync {
+        storeIO.sync {
             do {
                 let data = try Data(contentsOf: url)
-                let items = try self.decoderTransferItem.decode([TransferItem].self, from: data)
+                let items = try self.decoder.decode([MetadataItem].self, from: data)
                 guard !items.isEmpty else {
-                    self.transferItemsCache = []
+                    self.metadataItemsCache = []
                     nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .info, message: "Load JSON from disk empty, cache cleared", consoleOnly: true)
                     return
                 }
-                self.transferItemsCache = items
+                self.metadataItemsCache = items
                 // check
                 self.checkOrphaned()
                 nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .info, message: "JSON loaded from disk", consoleOnly: true)
@@ -402,8 +404,8 @@ final class NCTransferStore {
             return
         }
 
-        let transfers: Set<String> = Set(transferItemsCache.compactMap { $0.ocIdTransfer })
-        let ocids: Set<String> = Set(transferItemsCache.compactMap { $0.ocId })
+        let transfers: Set<String> = Set(metadataItemsCache.compactMap { $0.ocIdTransfer })
+        let ocids: Set<String> = Set(metadataItemsCache.compactMap { $0.ocId })
 
         if !transfers.isEmpty || !ocids.isEmpty {
 
@@ -419,40 +421,38 @@ final class NCTransferStore {
             let foundOcids: Set<String> = Set(metadatas.compactMap { $0.ocId })
 
             // Remove items that have NEITHER a matching ocIdTransfer NOR a matching ocId in Realm
-            let before = transferItemsCache.count
-            transferItemsCache.removeAll { item in
+            let before = metadataItemsCache.count
+            metadataItemsCache.removeAll { item in
                 let ocIdTransfer = item.ocIdTransfer
                 let ocId = item.ocId
                 // Keep if either matches; remove only if both are missing
                 let hasMatch = (ocIdTransfer != nil && foundTransfers.contains(ocIdTransfer!)) || (ocId != nil && foundOcids.contains(ocId!))
                 return !hasMatch
             }
-            let removed = before - transferItemsCache.count
+            let removed = before - metadataItemsCache.count
             if removed > 0 {
                 nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .warning, message: "Removed \(removed) orphaned items (no match on ocIdTransfer nor ocId)", consoleOnly: true)
             }
         }
     }
 
-    /// Synchronizes completed transfers from the cache into Realm and notifies delegates to refresh UI state.
+    /// Synchronizes completed upload and download items with Realm metadata.
+    /// - Performs a foreground-only sync (skips if app is in background).
+    /// - Builds snapshots of completed uploads/downloads from `metadataItemsCache`.
+    /// - Updates matching `tableMetadata` entries in Realm:
+    ///   • Uploads: apply `etag`, `ocId`, `uploadDate`, reset session fields.
+    ///   • Downloads: apply `etag`, reset session fields, add to local files.
+    /// - Removes processed items from memory (`removeItem`).
+    /// - Notifies delegates via `transferDispatcher` to refresh affected `serverUrl`s.
     ///
-    /// - Note: No-op while the main app is in background.
-    /// - Upload path:
-    ///   - Finds completed upload transfers, fetches corresponding metadatas by `ocIdTransfer`,
-    ///     updates fields (`uploadDate`, `etag`, `ocId`, `fileId`, `status`, clears session fields),
-    ///     persists via `replaceMetadataAsync`, and removes processed items from the cache.
-    /// - Download path:
-    ///   - Finds completed download transfers, fetches metadatas by `ocId`,
-    ///     updates fields (`etag`, `status`, clears session fields),
-    ///     persists via `addMetadatasAsync` and `addLocalFilesAsync`, and removes processed items.
-    /// - Finally, notifies all transfer delegates per `serverUrl` to reload data.
-    private func syncUploadRealm() async {
+    /// Runs on a background thread and awaits Realm async operations.
+    private func syncRealm() async {
         if appIsInBackground() {
             return
         }
 
-        let snapshotUpload: [TransferItem] = transferStoreIO.sync {
-            transferItemsCache.filter { item in
+        let snapshotUpload: [MetadataItem] = storeIO.sync {
+            metadataItemsCache.filter { item in
                 if let completed = item.completed, completed {
                     return item.session == NCNetworking.shared.sessionUpload
                     || item.session == NCNetworking.shared.sessionUploadBackground
@@ -462,8 +462,8 @@ final class NCTransferStore {
                 return false
             }
         }
-        let snapshotDownload: [TransferItem] = transferStoreIO.sync {
-            transferItemsCache.filter { item in
+        let snapshotDownload: [MetadataItem] = storeIO.sync {
+            metadataItemsCache.filter { item in
                 if let completed = item.completed, completed {
                     return item.session == NCNetworking.shared.sessionDownload
                     || item.session == NCNetworking.shared.sessionDownloadBackground
@@ -547,7 +547,7 @@ final class NCTransferStore {
         }
     }
 
-    // MARK: - Private utility
+    // MARK: - Private helpers
 
     #if !EXTENSION
     @inline(__always)
