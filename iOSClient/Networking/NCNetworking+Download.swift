@@ -122,6 +122,14 @@ extension NCNetworking {
                                                                                     sessionTaskIdentifier: task.taskIdentifier,
                                                                                     status: self.global.metadataStatusDownloading) {
 
+                NCMetadataStore.shared.addItem(MetadataItem(ocId: metadata.ocId,
+                                                            selector: metadata.sessionSelector,
+                                                            session: metadata.session,
+                                                            status: metadata.status),
+                                               forFileName: metadata.fileName,
+                                               forServerUrl: metadata.serverUrl,
+                                               forTaskIdentifier: task.taskIdentifier)
+
                 await self.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusDownloading,
                                             metadata: metadata,

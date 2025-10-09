@@ -151,7 +151,11 @@ final class NCMetadataStore {
                 let merged = mergeItem(existing: metadataItemsCache[idx], with: item)
                 metadataItemsCache[idx] = merged
             } else {
-                metadataItemsCache.append(item)
+                var itemForAppend = item
+                itemForAppend.fileName = fileName
+                itemForAppend.serverUrl = serverUrl
+                itemForAppend.taskIdentifier = taskIdentifier
+                metadataItemsCache.append(itemForAppend)
             }
         }
 
