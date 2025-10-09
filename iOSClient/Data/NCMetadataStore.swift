@@ -37,7 +37,7 @@ struct MetadataItem: Codable {
 /// The store keeps an in-memory cache and periodically persists it to disk (JSON)
 /// based on change count and latency thresholds. It also reacts to app lifecycle
 /// events to ensure data safety across foreground/background transitions.
-final class NCMetadataStore {
+final class NCMetadataStore: @unchecked Sendable {
     static let shared = NCMetadataStore()
 
     // Shared state
@@ -736,6 +736,14 @@ final class NCMetadataStore {
                 let estimatedBytes = metadataItemsCache.count * 500 // 500 byte
                 let isHuge = estimatedBytes > thresholdBytes
                 continuation.resume(returning: isHuge)
+            }
+        }
+    }
+
+    func cacheCount() async -> Int {
+        await withCheckedContinuation { continuation in
+            storeIO.async {
+                continuation.resume(returning: self.metadataItemsCache.count)
             }
         }
     }

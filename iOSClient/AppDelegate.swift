@@ -330,8 +330,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         Task.detached(priority: .background) {
-            if await NCMetadataStore.shared.cacheIsHuge(thresholdBytes: 1 * 1024 * 1024) {
+            let cacheIsHuge = await NCMetadataStore.shared.cacheIsHuge(thresholdBytes: 1 * 1024 * 1024)
+            let count = await NCMetadataStore.shared.cacheCount()
+            if cacheIsHuge {
+                nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .start, message: "Forced Sync Realm triggered — \(count) items (~1 MB threshold reached)")
                 NCMetadataStore.shared.forcedSyncRealm()
+            } else {
+                nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .info, message: "No forced Sync Realm required — \(count) items in cache")
             }
         }
     }
