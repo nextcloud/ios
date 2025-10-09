@@ -65,6 +65,12 @@ final class NCMetadataStore {
     // Periodic debounce timer.
     private var debounceTimer: DispatchSourceTimer?
 
+    /// Prevents concurrent Realm synchronizations.
+    /// Only one `syncRealm()` can run at a time; additional requests are ignored
+    /// until the current one completes.
+    private var isSyncingRealm = false
+
+    // Observer
     private var observers: [NSObjectProtocol] = []
 
     /// Initializes the store, loads any existing snapshot from disk,
@@ -162,19 +168,37 @@ final class NCMetadataStore {
         commit()
     }
 
-    /// Marks a download transfer as completed by creating or updating its corresponding `MetadataItem`.
+    /// Marks a download as completed and updates its corresponding cached metadata entry.
     ///
-    /// This method records the completion of a download task identified by `(fileName, serverUrl, taskIdentifier)`,
-    /// and stores its associated `etag` value. If an existing `MetadataItem` matches the identifiers,
-    /// it will be updated; otherwise, a new one will be created.
+    /// This method searches the in-memory cache for a `MetadataItem` matching the given
+    /// `(serverUrl, fileName, taskIdentifier)`.
+    /// If found, it updates the entry to mark it as completed and assigns the provided `etag`.
+    /// The updated state is then persisted asynchronously via `commit()`.
+    /// If no matching item is found, the call has no effect.
     ///
     /// - Parameters:
     ///   - fileName: The name of the downloaded file.
-    ///   - serverUrl: The remote server URL from which the file was downloaded.
-    ///   - taskIdentifier: The unique `URLSession` task identifier associated with the download.
-    ///   - etag: The entity tag (ETag) returned by the server to represent the file version.
+    ///   - serverUrl: The remote server URL associated with the download.
+    ///   - taskIdentifier: The unique identifier of the URLSession download task.
+    ///   - etag: The entity tag (ETag) returned by the server, representing the file version.
     func setDownloadCompleted(fileName: String, serverUrl: String, taskIdentifier: Int, etag: String) {
-        addItem(MetadataItem(completed: true, etag: etag), forFileName: fileName, forServerUrl: serverUrl, forTaskIdentifier: taskIdentifier)
+        let updated: Bool = storeIO.sync {
+            // Upsert by (serverUrl + fileName + taskIdentifier)
+            if let idx = metadataItemsCache.firstIndex(where: {
+                $0.serverUrl == serverUrl &&
+                $0.fileName == fileName &&
+                $0.taskIdentifier == taskIdentifier
+            }) {
+                let merged = mergeItem(existing: metadataItemsCache[idx], with: MetadataItem(completed: true, etag: etag))
+                metadataItemsCache[idx] = merged
+                return true
+            }
+            return false
+        }
+
+        if updated {
+            commit()
+        }
     }
 
     /// Removes the first item matching `(serverUrl, fileName, taskIdentifier)` and schedules a commit.
@@ -353,7 +377,7 @@ final class NCMetadataStore {
     /// - forced: When `true`, bypasses batching and app-state checks to force an immediate disk flush.
     ///
     /// Side effects:
-    /// - Triggers an asynchronous call to `syncRealm()` after each disk commit to synchronize the persisted data with Realm.
+    /// - Triggers `scheduleSyncRealm()` after each disk commit to synchronize the persisted data with Realm.
     /// - Logs successful and failed flushes using the tag `NCGlobal.shared.logTagTransferStore`.
     ///
     /// This method is optimized for reliability during background transitions and efficient I/O behavior under frequent cache updates.
@@ -401,9 +425,7 @@ final class NCMetadataStore {
         }
 
         if didWrite {
-            Task {
-                await syncRealm()
-            }
+            scheduleSyncRealm()
         }
     }
 
@@ -514,6 +536,33 @@ final class NCMetadataStore {
     }
 
     // MARK: - Private Realm
+
+    /// Schedules a Realm synchronization task if none is currently running.
+    ///
+    /// The flag `isSyncingRealm` is set inside the `storeIO` queue to ensure
+    /// serialized access with respect to other store operations.
+    /// If a sync is already in progress, this call exits immediately.
+    ///
+    /// Safe to call from any thread.
+    private func scheduleSyncRealm() {
+        let shouldStart: Bool = storeIO.sync {
+            if isSyncingRealm {
+                return false // another sync is running
+            }
+            isSyncingRealm = true
+            return true
+        }
+
+        guard shouldStart else {
+            return
+        }
+
+        Task { [weak self] in
+            guard let self else { return }
+            await self.syncRealm()
+            self.finishSyncRealm()
+        }
+    }
 
     /// Synchronizes completed upload and download items with Realm metadata.
     /// - Performs a foreground-only sync (skips if app is in background).
@@ -659,4 +708,12 @@ final class NCMetadataStore {
         return false
     }
     #endif
+
+    /// Marks the current Realm sync as completed, allowing the next one to run.
+    @inline(__always)
+    private func finishSyncRealm() {
+        storeIO.sync {
+            isSyncingRealm = false
+        }
+    }
 }
