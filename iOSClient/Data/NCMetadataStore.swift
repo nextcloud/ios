@@ -10,7 +10,7 @@ import NextcloudKit
 /// Designed for efficient, low-latency persistence of transient transfer metadata with strong consistency guarantees
 /// between in-memory state and its file-backed representation.
 ///
-/// Version 0.1 - October 2025 by Marino Faggiana
+/// Version 1.0 - October 2025 by Marino Faggiana
 
 // MARK: - Transfer Store (batched persistence)
 
@@ -325,6 +325,16 @@ final class NCMetadataStore {
            progress == 0 || progress == 1 || (progress * 100).truncatingRemainder(dividingBy: 10) == 0 {
             commit()
         }
+    }
+
+    /// Forces an immediate Realm synchronization, bypassing debounce or batching logic.
+    ///
+    /// This method directly invokes `finishSyncRealm()` to perform an on-demand
+    /// flush of pending metadata changes between the in-memory cache and Realm.
+    /// Typically used during background URLSession handling to ensure all
+    /// completed transfers are persisted before the app is suspended.
+    func forcedSyncRealm() {
+        finishSyncRealm()
     }
 
     // MARK: - Private
@@ -714,6 +724,19 @@ final class NCMetadataStore {
     private func finishSyncRealm() {
         storeIO.sync {
             isSyncingRealm = false
+        }
+    }
+
+    /// Checks whether the in-memory metadata cache exceeds a given approximate size threshold.
+    /// - Parameter thresholdBytes: The estimated byte limit at which the cache should be considered "huge".
+    /// - Returns: `true` if the estimated cache size exceeds the provided threshold.
+    func cacheIsHuge(thresholdBytes: Int) async -> Bool {
+        await withCheckedContinuation { continuation in
+            storeIO.async { [metadataItemsCache] in
+                let estimatedBytes = metadataItemsCache.count * 500 // 500 byte
+                let isHuge = estimatedBytes > thresholdBytes
+                continuation.resume(returning: isHuge)
+            }
         }
     }
 }

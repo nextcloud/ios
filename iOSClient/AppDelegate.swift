@@ -29,6 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     let backgroundQueue = DispatchQueue(label: "com.nextcloud.bgTaskQueue")
     let global = NCGlobal.shared
 
+    var bgTask: UIBackgroundTaskIdentifier = .invalid
     var pushSubscriptionTask: Task<Void, Never>?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -314,8 +315,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
         nkLog(debug: "Handle events For background URLSession: \(identifier)")
-
         backgroundSessionCompletionHandler = completionHandler
+
+        // Starts a temporary background task to ensure that a potential flush
+        // of the MetadataStore JSON can complete even if the app is resumed
+        // briefly for background URLSession events.
+        //
+        // The flush runs only if the cache exceeds ~1 MB (~2000 item), preventing oversized
+        // in-memory data from persisting too long. The task is safely ended
+        // either in its expiration handler or after the operation completes.
+        //
+        // - Note: Must run on the main thread. `forcedFlush()` performs a
+        //   synchronous atomic write to disk.
+        bgTask = UIApplication.shared.beginBackgroundTask(withName: "MetadataStore.flush") {
+            UIApplication.shared.endBackgroundTask(self.bgTask)
+            self.bgTask = .invalid
+        }
+
+        Task.detached(priority: .background) {
+            if await NCMetadataStore.shared.cacheIsHuge(thresholdBytes: 1 * 1024 * 1024) {
+                NCMetadataStore.shared.forcedSyncRealm()
+            }
+        }
     }
 
     // MARK: - Push Notifications
