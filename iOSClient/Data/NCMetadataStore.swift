@@ -30,7 +30,6 @@ struct MetadataItem: Codable {
     var selector: String?
     var serverUrl: String?
     var session: String?
-    var status: Int?
     var size: Int64?
     var taskIdentifier: Int?
 }
@@ -61,13 +60,15 @@ actor NCMetadataStore {
     // Periodic debounce timer.
     private var debounceTimer: DispatchSourceTimer?
 
-    /// Prevents concurrent Realm synchronizations.
-    /// Only one `syncRealm()` can run at a time; additional requests are ignored
-    /// until the current one completes.
+    // Prevents concurrent Realm synchronizations.
+    // Only one `syncRealm()` can run at a time; additional requests are ignored
+    // until the current one completes.
     private var isSyncingRealm = false
 
     // Observer
     private var observers: [NSObjectProtocol] = []
+
+    // MARK: - Initialization
 
     /// Loads the on-disk snapshot, configures the encoder/decoder and schedules lifecycle observers.
     init() {
@@ -281,7 +282,6 @@ actor NCMetadataStore {
             selector: new.selector ?? existing.selector,
             serverUrl: existing.serverUrl ?? new.serverUrl,
             session: new.session ?? existing.session,
-            status: new.status ?? existing.status,
             size: new.size ?? existing.size,
             taskIdentifier: new.taskIdentifier ?? existing.taskIdentifier
         )
@@ -577,7 +577,7 @@ actor NCMetadataStore {
 
     // Heuristics
     func cacheIsHuge(thresholdBytes: Int) async -> Bool {
-        // 500B for item
+        // ~500B for item
         return metadataItemsCache.count * 500 > thresholdBytes
     }
 
