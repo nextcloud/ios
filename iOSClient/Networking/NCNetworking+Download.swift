@@ -121,12 +121,18 @@ extension NCNetworking {
             if let metadata = await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
                                                                                     sessionTaskIdentifier: task.taskIdentifier,
                                                                                     status: self.global.metadataStatusDownloading) {
-
                 await self.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusDownloading,
                                             metadata: metadata,
                                             error: .success)
                 }
+
+                await NCMetadataStore.shared.addItem(MetadataItem(ocId: metadata.ocId,
+                                                                  selector: metadata.sessionSelector,
+                                                                  session: metadata.session),
+                                                     forFileName: metadata.fileName,
+                                                     forServerUrl: metadata.serverUrl,
+                                                     forTaskIdentifier: task.taskIdentifier)
             }
         } else {
             _ = await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
@@ -153,6 +159,15 @@ extension NCNetworking {
         Task {
             await progressQuantizer.clear(serverUrlFileName: serverUrl + "/" + fileName)
 
+            if error == .success,
+               let etag = etag {
+                await NCMetadataStore.shared.setDownloadCompleted(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier, etag: etag)
+            } else {
+                await NCMetadataStore.shared.removeItem(fileName: fileName,
+                                                        serverUrl: serverUrl,
+                                                        taskIdentifier: task.taskIdentifier)
+            }
+
             #if EXTENSION_FILE_PROVIDER_EXTENSION
             await FileProviderData.shared.downloadComplete(fileName: fileName,
                                                            serverUrl: serverUrl,
@@ -172,26 +187,6 @@ extension NCNetworking {
             await NextcloudKit.shared.nkCommonInstance.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
 
             if error == .success {
-                /*
-                #if !EXTENSION
-                if error == .success {
-                    NCTransferStore.shared.addItem(TransferItem(completed: true,
-                                                                date: date,
-                                                                etag: etag,
-                                                                fileName: fileName,
-                                                                ocId: ocId,
-                                                                serverUrl: serverUrl,
-                                                                size: size,
-                                                                taskIdentifier: task.taskIdentifier))
-                    return
-                } else {
-                    NCTransferStore.shared.removeItem(serverUrl: serverUrl,
-                                                      fileName: fileName,
-                                                      taskIdentifier: task.taskIdentifier)
-                }
-                #endif
-                */
-
                 nkLog(success: "Downloaded file: " + metadata.serverUrlFileName)
                 #if !EXTENSION
                 if let result = await NCManageDatabase.shared.getE2eEncryptionAsync(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
@@ -294,14 +289,10 @@ extension NCNetworking {
                 return
             }
 
-            /*
-            #if !EXTENSION
-            NCTransferStore.shared.transferProgress(serverUrl: serverUrl,
-                                                    fileName: fileName,
-                                                    taskIdentifier: task.taskIdentifier,
-                                                    progress: Double(progress))
-            #endif
-            */
+            await NCMetadataStore.shared.transferProgress(serverUrl: serverUrl,
+                                                          fileName: fileName,
+                                                          taskIdentifier: task.taskIdentifier,
+                                                          progress: Double(progress))
 
             await NCManageDatabase.shared.setMetadataProgress(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier, progress: Double(progress))
             await self.transferDispatcher.notifyAllDelegates { delegate in

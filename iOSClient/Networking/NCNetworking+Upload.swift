@@ -237,7 +237,7 @@ extension NCNetworking {
 
                 /*
                 #if !EXTENSION
-                NCTransferStore.shared.addItem(TransferItem(fileName: metadata.fileName,
+                 NCMetadataStore.shared.addItem(TransferItem(fileName: metadata.fileName,
                                                             ocIdTransfer: metadata.ocIdTransfer,
                                                             progress: 0,
                                                             selector: metadata.sessionSelector,
@@ -392,7 +392,7 @@ extension NCNetworking {
     func uploadCancelFile(metadata: tableMetadata) async {
         /*
         #if !EXTENSION
-        NCTransferStore.shared.removeItem(ocIdTransfer: metadata.ocIdTransfer)
+         NCMetadataStore.shared.removeItem(ocIdTransfer: metadata.ocIdTransfer)
         #endif
         */
 
@@ -528,7 +528,7 @@ extension NCNetworking {
             /*
             #if !EXTENSION
             if error == .success {
-                NCTransferStore.shared.addItem(TransferItem(completed: true,
+             NCMetadataStore.shared.addItem(TransferItem(completed: true,
                                                             date: date,
                                                             etag: etag,
                                                             fileName: fileName,
@@ -538,7 +538,7 @@ extension NCNetworking {
                                                             taskIdentifier: task.taskIdentifier))
                 return
             } else {
-                NCTransferStore.shared.removeItem(serverUrl: serverUrl,
+             NCMetadataStore.shared.removeItem(serverUrl: serverUrl,
                                                   fileName: fileName,
                                                   taskIdentifier: task.taskIdentifier)
             }
@@ -566,14 +566,10 @@ extension NCNetworking {
                 return
             }
 
-            /*
-            #if !EXTENSION
-            NCTransferStore.shared.transferProgress(serverUrl: serverUrl,
-                                                    fileName: fileName,
-                                                    taskIdentifier: task.taskIdentifier,
-                                                    progress: Double(progress))
-            #endif
-            */
+            await NCMetadataStore.shared.transferProgress(serverUrl: serverUrl,
+                                                          fileName: fileName,
+                                                          taskIdentifier: task.taskIdentifier,
+                                                          progress: Double(progress))
 
             await NCManageDatabase.shared.setMetadataProgress(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier, progress: Double(progress))
 

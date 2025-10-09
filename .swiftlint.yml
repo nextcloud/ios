@@ -38,6 +38,7 @@ disabled_rules:
   - void_function_in_ternary
   - switch_case_alignment
   - unavailable_condition
+  - orphaned_doc_comment
 excluded:
   - Carthage
   - Pods
