@@ -511,69 +511,77 @@ final class NCMetadataStore {
                 return false
             }
         }
+
+        if snapshotUpload.isEmpty && snapshotDownload.isEmpty {
+            return
+        }
+
         var serversUrl = Set<String>()
         let utility = NCUtility()
 
         // Upload
-        let ocIdTransfers = snapshotUpload.compactMap { $0.ocIdTransfer }
-        let metadatasUpload = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "ocIdTransfer IN %@", ocIdTransfers))
-        var metadatasUploaded: [tableMetadata] = []
+        if !snapshotUpload.isEmpty {
+            let ocIdTransfers = snapshotUpload.compactMap { $0.ocIdTransfer }
+            let metadatasUpload = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "ocIdTransfer IN %@", ocIdTransfers))
+            var metadatasUploaded: [tableMetadata] = []
 
-        for metadata in metadatasUpload {
-            guard let transferItem = (snapshotUpload.first { $0.ocIdTransfer == metadata.ocIdTransfer }),
-                  let etag = transferItem.etag,
-                  let ocId = transferItem.ocId else {
-                continue
-            }
-
-            metadata.uploadDate = (transferItem.date as? NSDate) ?? NSDate()
-            metadata.etag = etag
-            metadata.ocId = ocId
-            metadata.chunk = 0
-
-            if let fileId = utility.ocIdToFileId(ocId: metadata.ocId) {
-                metadata.fileId = fileId
-            }
-
-            metadata.session = ""
-            metadata.sessionError = ""
-            metadata.sessionTaskIdentifier = 0
-            metadata.status = NCGlobal.shared.metadataStatusNormal
-
-            metadatasUploaded.append(metadata)
-            serversUrl.insert(metadata.serverUrl)
-
-            removeItem(forOcIdTransfer: metadata.ocIdTransfer)
-        }
-
-        await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfers: ocIdTransfers, metadatas: metadatasUploaded)
-
-        // Download
-        let ocIds = snapshotDownload.compactMap { $0.ocId }
-        let metadatasDownload = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "ocId IN %@", ocIds))
-        var metadatasDownloaded: [tableMetadata] = []
-
-        if !metadatasDownload.isEmpty {
-            for metadata in metadatasDownload {
-                guard let transferItem = (snapshotDownload.first { $0.ocId == metadata.ocId }),
-                      let etag = transferItem.etag else {
+            for metadata in metadatasUpload {
+                guard let transferItem = (snapshotUpload.first { $0.ocIdTransfer == metadata.ocIdTransfer }),
+                      let etag = transferItem.etag,
+                      let ocId = transferItem.ocId else {
                     continue
                 }
 
+                metadata.uploadDate = (transferItem.date as? NSDate) ?? NSDate()
                 metadata.etag = etag
+                metadata.ocId = ocId
+                metadata.chunk = 0
+
+                if let fileId = utility.ocIdToFileId(ocId: metadata.ocId) {
+                    metadata.fileId = fileId
+                }
+
                 metadata.session = ""
                 metadata.sessionError = ""
                 metadata.sessionTaskIdentifier = 0
                 metadata.status = NCGlobal.shared.metadataStatusNormal
 
-                metadatasDownloaded.append(metadata)
+                metadatasUploaded.append(metadata)
                 serversUrl.insert(metadata.serverUrl)
 
-                removeItem(forOcId: metadata.ocId)
+                removeItem(forOcIdTransfer: metadata.ocIdTransfer)
             }
+            await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfers: ocIdTransfers, metadatas: metadatasUploaded)
+        }
 
-            await NCManageDatabase.shared.addMetadatasAsync(metadatasDownloaded)
-            await NCManageDatabase.shared.addLocalFilesAsync(metadatas: metadatasDownloaded)
+        // Download
+        if !snapshotDownload.isEmpty {
+            let ocIds = snapshotDownload.compactMap { $0.ocId }
+            let metadatasDownload = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "ocId IN %@", ocIds))
+            var metadatasDownloaded: [tableMetadata] = []
+            
+            if !metadatasDownload.isEmpty {
+                for metadata in metadatasDownload {
+                    guard let transferItem = (snapshotDownload.first { $0.ocId == metadata.ocId }),
+                          let etag = transferItem.etag else {
+                        continue
+                    }
+                    
+                    metadata.etag = etag
+                    metadata.session = ""
+                    metadata.sessionError = ""
+                    metadata.sessionTaskIdentifier = 0
+                    metadata.status = NCGlobal.shared.metadataStatusNormal
+                    
+                    metadatasDownloaded.append(metadata)
+                    serversUrl.insert(metadata.serverUrl)
+                    
+                    removeItem(forOcId: metadata.ocId)
+                }
+                
+                await NCManageDatabase.shared.addMetadatasAsync(metadatasDownloaded)
+                await NCManageDatabase.shared.addLocalFilesAsync(metadatas: metadatasDownloaded)
+            }
         }
 
         // TransferDispatcher Reload Data
