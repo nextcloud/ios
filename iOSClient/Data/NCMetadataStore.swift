@@ -162,47 +162,59 @@ final class NCMetadataStore {
     ///   - fileName: File name of the transfer.
     ///   - taskIdentifier: URLSession task identifier.
     func removeItem(serverUrl: String, fileName: String, taskIdentifier: Int) {
-        storeIO.sync {
+        let removed: Bool = storeIO.sync {
             if let idx = metadataItemsCache.firstIndex(where: {
                 $0.serverUrl == serverUrl &&
                 $0.fileName == fileName &&
                 $0.taskIdentifier == taskIdentifier
             }) {
                 metadataItemsCache.remove(at: idx)
+                return true
             }
+            return false
         }
 
-        commit()
+        if removed {
+            commit()
+        }
     }
 
     /// Removes the first item matching `ocIdTransfer` and schedules a commit.
     ///
     /// - Parameter ocIdTransfer: Transfer identifier used to track upload sessions.
     func removeItem(ocIdTransfer: String) {
-        storeIO.sync {
+        let removed: Bool = storeIO.sync {
             if let idx = metadataItemsCache.firstIndex(where: {
                 $0.ocIdTransfer == ocIdTransfer
             }) {
                 metadataItemsCache.remove(at: idx)
+                return true
             }
+            return false
         }
 
-        commit()
+        if removed {
+            commit()
+        }
     }
 
     /// Removes the first item matching `ocId` and schedules a commit.
     ///
     /// - Parameter ocId: Object identifier (Nextcloud file OCID).
     func removeItem(ocId: String) {
-        storeIO.sync {
+        let removed: Bool = storeIO.sync {
             if let idx = metadataItemsCache.firstIndex(where: {
                 $0.ocId == ocId
             }) {
                 metadataItemsCache.remove(at: idx)
+                return true
             }
+            return false
         }
 
-        commit()
+        if removed {
+            commit()
+        }
     }
 
     /// Updates the transfer progress for a specific item and triggers periodic persistence.
@@ -224,17 +236,20 @@ final class NCMetadataStore {
     ///   - taskIdentifier: The unique URLSession task identifier.
     ///   - progress: The new progress value, normalized in the range `[0.0, 1.0]`.
     func transferProgress(serverUrl: String, fileName: String, taskIdentifier: Int, progress: Double) {
-        storeIO.sync {
+        let updated = storeIO.sync { () -> Bool in
             if let idx = metadataItemsCache.firstIndex(where: {
                 $0.serverUrl == serverUrl &&
                 $0.fileName == fileName &&
                 $0.taskIdentifier == taskIdentifier
             }) {
                 metadataItemsCache[idx].progress = progress
+                return true
             }
+            return false
         }
 
-        if progress == 0 || progress == 1 || (progress * 100).truncatingRemainder(dividingBy: 10) == 0 {
+        if updated,
+           progress == 0 || progress == 1 || (progress * 100).truncatingRemainder(dividingBy: 10) == 0 {
             commit()
         }
     }

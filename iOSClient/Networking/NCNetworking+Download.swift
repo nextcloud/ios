@@ -175,7 +175,7 @@ extension NCNetworking {
                 /*
                 #if !EXTENSION
                 if error == .success {
-                    NCTransferStore.shared.addItem(TransferItem(completed: true,
+                 NCMetadataStore.shared.addItem(TransferItem(completed: true,
                                                                 date: date,
                                                                 etag: etag,
                                                                 fileName: fileName,
@@ -185,7 +185,7 @@ extension NCNetworking {
                                                                 taskIdentifier: task.taskIdentifier))
                     return
                 } else {
-                    NCTransferStore.shared.removeItem(serverUrl: serverUrl,
+                 NCMetadataStore.shared.removeItem(serverUrl: serverUrl,
                                                       fileName: fileName,
                                                       taskIdentifier: task.taskIdentifier)
                 }
@@ -296,7 +296,7 @@ extension NCNetworking {
 
             /*
             #if !EXTENSION
-            NCTransferStore.shared.transferProgress(serverUrl: serverUrl,
+             NCMetadataStore.shared.transferProgress(serverUrl: serverUrl,
                                                     fileName: fileName,
                                                     taskIdentifier: task.taskIdentifier,
                                                     progress: Double(progress))
