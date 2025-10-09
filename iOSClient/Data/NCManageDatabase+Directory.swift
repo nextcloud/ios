@@ -57,6 +57,7 @@ extension NCManageDatabase {
                 tableDirectory.favorite = metadata.favorite
                 tableDirectory.permissions = metadata.permissions
                 tableDirectory.richWorkspace = metadata.richWorkspace
+                tableDirectory.lastSyncDate = NSDate()
             } else {
                 let directory = tableDirectory()
                 directory.account = metadata.account
@@ -67,6 +68,7 @@ extension NCManageDatabase {
                 directory.permissions = metadata.permissions
                 directory.richWorkspace = metadata.richWorkspace
                 directory.serverUrl = directoryServerUrl
+                directory.lastSyncDate = NSDate()
                 realm.add(directory, update: .all)
             }
 
