@@ -37,12 +37,10 @@ struct MetadataItem: Codable {
 actor NCMetadataStore {
     static let shared = NCMetadataStore()
 
-    // Shared state
-    // In-memory cache of metadata items. Access must be performed on `storeIO`.
     private var metadataItemsCache: [MetadataItem] = []
     // Timer queue used for periodic debounce commits.
     private let debounceQueue = DispatchQueue(label: "MetadataStore.Debounce", qos: .utility)
-    // JSON encoders/decoders configured with ISO8601 dates.
+    // JSON encoders/decoders
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
     // Backing file URL for persisted JSON.
@@ -56,7 +54,7 @@ actor NCMetadataStore {
     // Max number of changes before forcing a persist.
     private let batchThreshold: Int = max(1, NCBrandOptions.shared.numMaximumProcess / 2)
     // Max elapsed time (seconds) between persists.
-    private let maxLatencySec: TimeInterval = 5     // <- or every 5s at most
+    private let maxLatencySec: TimeInterval = 5 // <- or every 5s at most
     // Periodic debounce timer.
     private var debounceTimer: DispatchSourceTimer?
 
