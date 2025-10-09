@@ -334,7 +334,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             let count = await NCMetadataStore.shared.cacheCount()
             if cacheIsHuge {
                 nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .start, message: "Forced Sync Realm triggered — \(count) items (~1 MB threshold reached)")
-                NCMetadataStore.shared.forcedSyncRealm()
+                await NCMetadataStore.shared.forcedSyncRealm()
             } else {
                 nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .info, message: "No forced Sync Realm required — \(count) items in cache")
             }

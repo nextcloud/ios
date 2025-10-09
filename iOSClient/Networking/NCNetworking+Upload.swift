@@ -566,10 +566,10 @@ extension NCNetworking {
                 return
             }
 
-            NCMetadataStore.shared.transferProgress(serverUrl: serverUrl,
-                                                    fileName: fileName,
-                                                    taskIdentifier: task.taskIdentifier,
-                                                    progress: Double(progress))
+            await NCMetadataStore.shared.transferProgress(serverUrl: serverUrl,
+                                                          fileName: fileName,
+                                                          taskIdentifier: task.taskIdentifier,
+                                                          progress: Double(progress))
 
             await NCManageDatabase.shared.setMetadataProgress(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier, progress: Double(progress))
 
