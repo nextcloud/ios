@@ -324,9 +324,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // The flush runs only if the cache exceeds ~1 MB (~2000 item), preventing oversized
         // in-memory data from persisting too long. The task is safely ended
         // either in its expiration handler or after the operation completes.
-        //
-        // - Note: Must run on the main thread. `forcedFlush()` performs a
-        //   synchronous atomic write to disk.
         bgTask = UIApplication.shared.beginBackgroundTask(withName: "MetadataStore.flush") {
             UIApplication.shared.endBackgroundTask(self.bgTask)
             self.bgTask = .invalid
