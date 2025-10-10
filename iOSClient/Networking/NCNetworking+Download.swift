@@ -146,6 +146,44 @@ extension NCNetworking {
         return(error)
     }
 
+    // MARK: -
+
+    func downloadSuccessMetadataItems(_ metadataItems: [MetadataItem]) async -> [String] {
+        guard !metadataItems.isEmpty else {
+            return []
+        }
+        let ocIds = Array(Set(metadataItems.compactMap { $0.ocId }))
+        let metadatasDownload = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "ocId IN %@", ocIds))
+        var metadatasDownloaded: [tableMetadata] = []
+        var serversUrl = Set<String>()
+
+        if !metadatasDownload.isEmpty {
+            for metadata in metadatasDownload {
+                guard let item = (metadataItems.first { $0.ocId == metadata.ocId }),
+                      let etag = item.etag else {
+                    continue
+                }
+
+                metadata.etag = etag
+                metadata.session = ""
+                metadata.sessionError = ""
+                metadata.sessionTaskIdentifier = 0
+                metadata.status = NCGlobal.shared.metadataStatusNormal
+
+                metadatasDownloaded.append(metadata)
+                serversUrl.insert(metadata.serverUrl)
+            }
+
+            if !metadatasDownloaded.isEmpty {
+                await NCManageDatabase.shared.addMetadatasAsync(metadatasDownloaded)
+                await NCManageDatabase.shared.addLocalFilesAsync(metadatas: metadatasDownloaded)
+            }
+        }
+        await NCMetadataStore.shared.removeItems(forOcIds: ocIds)
+
+        return Array(serversUrl)
+    }
+
     // MARK: - Download NextcloudKitDelegate
 
     func downloadComplete(fileName: String,

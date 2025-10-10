@@ -389,6 +389,62 @@ extension NCNetworking {
         }
     }
 
+    func uploadSuccessMetadataItems(_ metadataItems: [MetadataItem]) async -> [String] {
+        guard !metadataItems.isEmpty else {
+            return []
+        }
+        let ocIdTransfers = metadataItems.compactMap { $0.ocIdTransfer }
+        let metadatasUpload = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "ocIdTransfer IN %@", ocIdTransfers))
+        var metadatasUploaded: [tableMetadata] = []
+        var metadatasLocalFiles: [tableMetadata] = []
+        var serversUrl = Set<String>()
+
+        for metadata in metadatasUpload {
+            guard let transferItem = (metadataItems.first { $0.ocIdTransfer == metadata.ocIdTransfer }),
+                  let etag = transferItem.etag,
+                  let ocId = transferItem.ocId else {
+                continue
+            }
+
+            metadata.uploadDate = (transferItem.date as? NSDate) ?? NSDate()
+            metadata.etag = etag
+            metadata.ocId = ocId
+            metadata.chunk = 0
+
+            if let fileId = utility.ocIdToFileId(ocId: metadata.ocId) {
+                metadata.fileId = fileId
+            }
+
+            metadata.session = ""
+            metadata.sessionError = ""
+            metadata.sessionTaskIdentifier = 0
+            metadata.status = NCGlobal.shared.metadataStatusNormal
+
+            // File System
+            let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase)
+
+            if metadata.sessionSelector == NCGlobal.shared.selectorUploadFileNODelete {
+
+                let fineManeToPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, userId: metadata.userId, urlBase: metadata.urlBase)
+                await utilityFileSystem.moveFileAsync(atPath: fileNamePath, toPath: fineManeToPath)
+                metadatasLocalFiles.append(metadata)
+            } else {
+                utilityFileSystem.removeFile(atPath: fileNamePath)
+            }
+
+            //
+            metadatasUploaded.append(metadata)
+            serversUrl.insert(metadata.serverUrl)
+
+            await NCMetadataStore.shared.removeItem(forOcIdTransfer: metadata.ocIdTransfer)
+        }
+
+        await NCManageDatabase.shared.addLocalFilesAsync(metadatas: metadatasLocalFiles)
+        await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfers: ocIdTransfers, metadatas: metadatasUploaded)
+
+        return Array(serversUrl)
+    }
+
     func uploadCancelFile(metadata: tableMetadata) async {
         /*
         #if !EXTENSION
