@@ -271,6 +271,7 @@ extension NCNetworking {
         var metadatasLocalFiles: [tableMetadata] = []
         var metadatasLivePhoto: [tableMetadata] = []
         var serversUrl = Set<String>()
+        var accounts = Set<String>()
         var autoUploadTransfers: [tableAutoUploadTransfer] = []
 
         for metadata in metadatasUpload {
@@ -297,6 +298,7 @@ extension NCNetworking {
             // Array
             metadatasUploaded.append(metadata)
             serversUrl.insert(metadata.serverUrl)
+            accounts.insert(metadata.account)
 
             // File System
             let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase)
@@ -329,10 +331,24 @@ extension NCNetworking {
             await NCMetadataStore.shared.removeItem(forOcIdTransfer: metadata.ocIdTransfer)
         }
 
+        // Metadatas
         await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfers: ocIdTransfers, metadatas: metadatasUploaded)
-        await NCManageDatabase.shared.addLocalFilesAsync(metadatas: metadatasLocalFiles)
-        await NCManageDatabase.shared.setLivePhotoVideo(metadatas: metadatasLivePhoto)
-        await NCManageDatabase.shared.addAutoUploadTransferAsync(autoUploadTransfers)
+        // Local File
+        if !metadatasLocalFiles.isEmpty {
+            await NCManageDatabase.shared.addLocalFilesAsync(metadatas: metadatasLocalFiles)
+        }
+        // Live Photo
+        if !metadatasLivePhoto.isEmpty {
+            await NCManageDatabase.shared.setLivePhotoVideo(metadatas: metadatasLivePhoto)
+            for account in accounts {
+                await NCNetworking.shared.setLivePhoto(account: account)
+            }
+        }
+        // Auto Upload
+        if !autoUploadTransfers.isEmpty {
+            await NCManageDatabase.shared.addAutoUploadTransferAsync(autoUploadTransfers)
+        }
+
         return Array(serversUrl)
     }
 

@@ -30,40 +30,6 @@ extension NCManageDatabase {
 
     // MARK: - Realm Write
 
-    func setLivePhotoImage(account: String, serverUrlFileName: String, fileId: String) async {
-        let serverUrlFileNameNoExt = (serverUrlFileName as NSString).deletingPathExtension
-        let primaryKey = account + serverUrlFileNameNoExt
-
-        await performRealmWriteAsync { realm in
-            if let result = realm.object(ofType: tableLivePhoto.self, forPrimaryKey: primaryKey) {
-                result.serverUrlFileNameImage = serverUrlFileName
-                result.fileIdImage = fileId
-            } else {
-                let addObject = tableLivePhoto(account: account, serverUrlFileNameNoExt: serverUrlFileNameNoExt)
-                addObject.serverUrlFileNameImage = serverUrlFileName
-                addObject.fileIdImage = fileId
-                realm.add(addObject, update: .all)
-            }
-        }
-    }
-
-    func setLivePhotoVideo(account: String, serverUrlFileName: String, fileId: String) async {
-        let serverUrlFileNameNoExt = (serverUrlFileName as NSString).deletingPathExtension
-        let primaryKey = account + serverUrlFileNameNoExt
-
-        await performRealmWriteAsync { realm in
-            if let result = realm.object(ofType: tableLivePhoto.self, forPrimaryKey: primaryKey) {
-                result.serverUrlFileNameVideo = serverUrlFileName
-                result.fileIdVideo = fileId
-            } else {
-                let addObject = tableLivePhoto(account: account, serverUrlFileNameNoExt: serverUrlFileNameNoExt)
-                addObject.serverUrlFileNameVideo = serverUrlFileName
-                addObject.fileIdVideo = fileId
-                realm.add(addObject, update: .all)
-            }
-        }
-    }
-
     func setLivePhotoVideo(metadatas: [tableMetadata]) async {
         await performRealmWriteAsync { realm in
             for metadata in metadatas {
