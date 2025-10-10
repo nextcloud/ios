@@ -164,7 +164,6 @@ actor NCMetadataStore {
 
     /// Marks a download as completed, updates its `etag`, and triggers a commit.
     func setDownloadCompleted(fileName: String, serverUrl: String, taskIdentifier: Int, etag: String) async {
-        var updated = false
         if let idx = metadataItemsCache.firstIndex(where: {
             $0.serverUrl == serverUrl &&
             $0.fileName == fileName &&
@@ -172,12 +171,17 @@ actor NCMetadataStore {
         }) {
             let merged = mergeItem(existing: metadataItemsCache[idx], with: MetadataItem(completed: true, etag: etag))
             metadataItemsCache[idx] = merged
-            updated = true
+        } else {
+            let itemForAppend = MetadataItem(completed: true,
+                                             etag: etag,
+                                             fileName: fileName,
+                                             serverUrl: serverUrl,
+                                             session: NCNetworking.shared.sessionDownloadBackground,
+                                             taskIdentifier: taskIdentifier)
+            metadataItemsCache.append(itemForAppend)
         }
 
-        if updated {
-            await commit()
-        }
+        await commit()
     }
 
     /// Removes a specific cached item and commits the change.

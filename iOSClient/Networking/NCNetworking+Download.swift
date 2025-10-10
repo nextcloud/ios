@@ -196,15 +196,6 @@ extension NCNetworking {
         Task {
             await progressQuantizer.clear(serverUrlFileName: serverUrl + "/" + fileName)
 
-            if error == .success,
-               let etag = etag {
-                await NCMetadataStore.shared.setDownloadCompleted(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier, etag: etag)
-            } else {
-                await NCMetadataStore.shared.removeItem(fileName: fileName,
-                                                        serverUrl: serverUrl,
-                                                        taskIdentifier: task.taskIdentifier)
-            }
-
             #if EXTENSION_FILE_PROVIDER_EXTENSION
             await FileProviderData.shared.downloadComplete(fileName: fileName,
                                                            serverUrl: serverUrl,
@@ -216,6 +207,24 @@ extension NCNetworking {
                                                            error: error)
             return
             #endif
+
+            if error == .success,
+               let etag = etag {
+                await NCMetadataStore.shared.setDownloadCompleted(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier, etag: etag)
+
+
+
+                
+            } else {
+                await NCMetadataStore.shared.removeItem(fileName: fileName,
+                                                        serverUrl: serverUrl,
+                                                        taskIdentifier: task.taskIdentifier)
+
+
+
+
+            }
+
 
             guard let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) else {
                 return
