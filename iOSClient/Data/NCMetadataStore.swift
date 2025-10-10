@@ -393,6 +393,8 @@ actor NCMetadataStore {
             let foundOcids: Set<String> = Set(metadatas.compactMap { $0.ocId })
             let normalTransfers: Set<String> = Set(metadatas.lazy.filter { $0.status == statusNormal }.compactMap { $0.ocIdTransfer })
             let normalOcids: Set<String> = Set(metadatas.lazy.filter { $0.status == statusNormal }.compactMap { $0.ocId })
+            // let taskIdentifierTransfers: Set<String> = Set(metadatas.lazy.filter { $0.sessionTaskIdentifier == 0 }.compactMap { $0.ocIdTransfer })
+            // let taskIdentifierOcids: Set<String> = Set(metadatas.lazy.filter { $0.sessionTaskIdentifier == 0 }.compactMap { $0.ocId })
 
             let before = metadataItemsCache.count
             metadataItemsCache.removeAll { item in
@@ -407,6 +409,11 @@ actor NCMetadataStore {
                     (ocIdTransfer != nil && normalTransfers.contains(ocIdTransfer!)) ||
                     (ocId != nil && normalOcids.contains(ocId!))
 
+                // let zeroTaskIdentifier =
+                //    (ocIdTransfer != nil && taskIdentifierTransfers.contains(ocIdTransfer!)) ||
+                //    (ocId != nil && taskIdentifierOcids.contains(ocId!))
+
+                // return (!hasMatch) || isInactive || zeroTaskIdentifier
                 return (!hasMatch) || isInactive
             }
 
