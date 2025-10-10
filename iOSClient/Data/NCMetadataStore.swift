@@ -164,6 +164,8 @@ actor NCMetadataStore {
 
     /// Marks a download as completed, updates its `etag`, and triggers a commit.
     func setDownloadCompleted(fileName: String, serverUrl: String, taskIdentifier: Int, etag: String?) async {
+        var session: String?
+
         if let idx = metadataItemsCache.firstIndex(where: {
             $0.serverUrl == serverUrl &&
             $0.fileName == fileName &&
@@ -171,6 +173,7 @@ actor NCMetadataStore {
         }) {
             let merged = mergeItem(existing: metadataItemsCache[idx], with: MetadataItem(completed: true, etag: etag))
             metadataItemsCache[idx] = merged
+            session = merged.session
         } else {
             // Not found? get from metadata
             if let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) {
@@ -183,14 +186,17 @@ actor NCMetadataStore {
                                                  session: NCNetworking.shared.sessionDownload,
                                                  taskIdentifier: taskIdentifier)
                 metadataItemsCache.append(itemForAppend)
+                session = itemForAppend.session
             }
         }
 
-        await commit()
+        await commit(forced: session == NCNetworking.shared.sessionDownload)
     }
 
     /// Marks a upload as completed, updates its `ocid, etag, size, date`, and triggers a commit.
     func setUploadCompleted(fileName: String, serverUrl: String, taskIdentifier: Int, metadata: tableMetadata? = nil, ocId: String?, etag: String?, size: Int64, date: Date?) async {
+        var session: String?
+
         if let idx = metadataItemsCache.firstIndex(where: {
             $0.serverUrl == serverUrl &&
             $0.fileName == fileName &&
@@ -202,6 +208,7 @@ actor NCMetadataStore {
                                                                                          ocId: ocId,
                                                                                          size: size))
             metadataItemsCache[idx] = merged
+            session = merged.session
         } else {
             // Not found? get from metadata
             if let metadata {
@@ -214,10 +221,11 @@ actor NCMetadataStore {
                                                  session: NCNetworking.shared.sessionUpload,
                                                  taskIdentifier: taskIdentifier)
                 metadataItemsCache.append(itemForAppend)
+                session = itemForAppend.session
             }
         }
 
-        await commit()
+        await commit(forced: session == NCNetworking.shared.sessionUpload)
     }
 
     /// Removes a specific cached item and commits the change.
