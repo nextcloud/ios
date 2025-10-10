@@ -158,12 +158,13 @@ extension NCNetworking {
 
         if !metadatasDownload.isEmpty {
             for metadata in metadatasDownload {
-                guard let item = (metadataItems.first { $0.ocId == metadata.ocId }),
-                      let etag = item.etag else {
+                guard let item = (metadataItems.first { $0.ocId == metadata.ocId }) else {
                     continue
                 }
 
-                metadata.etag = etag
+                if let etag = item.etag {
+                    metadata.etag = etag
+                }
                 metadata.session = ""
                 metadata.sessionError = ""
                 metadata.sessionTaskIdentifier = 0
@@ -171,6 +172,20 @@ extension NCNetworking {
 
                 metadatasDownloaded.append(metadata)
                 serversUrl.insert(metadata.serverUrl)
+
+                // E2EE
+                #if !EXTENSION
+                if let result = await NCManageDatabase.shared.getE2eEncryptionAsync(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
+                    NCEndToEndEncryption.shared().decryptFile(metadata.fileName,
+                                                              fileNameView: metadata.fileNameView,
+                                                              ocId: metadata.ocId,
+                                                              userId: metadata.userId,
+                                                              urlBase: metadata.urlBase,
+                                                              key: result.key,
+                                                              initializationVector: result.initializationVector,
+                                                              authenticationTag: result.authenticationTag)
+                }
+                #endif
             }
 
             if !metadatasDownloaded.isEmpty {
@@ -208,59 +223,16 @@ extension NCNetworking {
             return
             #endif
 
-            if error == .success,
-               let etag = etag {
-                await NCMetadataStore.shared.setDownloadCompleted(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier, etag: etag)
-
-
-
-                
-            } else {
-                await NCMetadataStore.shared.removeItem(fileName: fileName,
-                                                        serverUrl: serverUrl,
-                                                        taskIdentifier: task.taskIdentifier)
-
-
-
-
-            }
-
-
-            guard let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) else {
-                return
-            }
-
-            await NextcloudKit.shared.nkCommonInstance.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
-
             if error == .success {
-                nkLog(success: "Downloaded file: " + metadata.serverUrlFileName)
-                #if !EXTENSION
-                if let result = await NCManageDatabase.shared.getE2eEncryptionAsync(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
-                    NCEndToEndEncryption.shared().decryptFile(metadata.fileName,
-                                                              fileNameView: metadata.fileNameView,
-                                                              ocId: metadata.ocId,
-                                                              userId: metadata.userId,
-                                                              urlBase: metadata.urlBase,
-                                                              key: result.key,
-                                                              initializationVector: result.initializationVector,
-                                                              authenticationTag: result.authenticationTag)
-                }
-                #endif
-                await NCManageDatabase.shared.addLocalFilesAsync(metadatas: [metadata])
-
-                if let updatedMetadata = await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                                                               session: "",
-                                                                                               sessionTaskIdentifier: 0,
-                                                                                               sessionError: "",
-                                                                                               status: self.global.metadataStatusNormal,
-                                                                                               etag: etag) {
-                    await self.transferDispatcher.notifyAllDelegates { delegate in
-                        delegate.transferChange(status: self.global.networkingStatusDownloaded,
-                                                metadata: updatedMetadata,
-                                                error: error)
-                    }
-                }
+                await NCMetadataStore.shared.setDownloadCompleted(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier, etag: etag)
             } else {
+                await NCMetadataStore.shared.removeItem(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier)
+
+                guard let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) else {
+                    return
+                }
+                await NextcloudKit.shared.nkCommonInstance.appendServerErrorAccount(metadata.account, errorCode: error.errorCode)
+
                 nkLog(error: "Downloaded file: " + metadata.serverUrlFileName + ", result: error \(error.errorCode)")
 
                 if error.errorCode == NCGlobal.shared.errorResourceNotFound {

@@ -163,7 +163,7 @@ actor NCMetadataStore {
     }
 
     /// Marks a download as completed, updates its `etag`, and triggers a commit.
-    func setDownloadCompleted(fileName: String, serverUrl: String, taskIdentifier: Int, etag: String) async {
+    func setDownloadCompleted(fileName: String, serverUrl: String, taskIdentifier: Int, etag: String?) async {
         if let idx = metadataItemsCache.firstIndex(where: {
             $0.serverUrl == serverUrl &&
             $0.fileName == fileName &&
