@@ -562,15 +562,27 @@ actor NCMetadataStore {
             return
         }
 
-        let serverUrlUpload = await NCNetworking.shared.uploadSuccessMetadataItems(snapshotUpload)
-        let serverUrlDownload = await NCNetworking.shared.downloadSuccessMetadataItems(snapshotDownload)
-        let serversUrl: Set<String> = Set(serverUrlUpload).union(serverUrlDownload)
+        let metadatasUploaded = await NCNetworking.shared.uploadSuccessMetadataItems(snapshotUpload)
+        let metadatasDownloaded = await NCNetworking.shared.downloadSuccessMetadataItems(snapshotDownload)
 
-        // TransferDispatcher Reload Data
-        if !serversUrl.isEmpty {
+        // TransferDispatcher
+        //
+        if !metadatasUploaded.isEmpty {
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                for serverUrl in serversUrl {
-                    delegate.transferReloadData(serverUrl: serverUrl, status: nil)
+                for metadata in metadatasUploaded {
+                    delegate.transferChange(status: NCGlobal.shared.networkingStatusUploaded,
+                                            metadata: metadata,
+                                            error: .success)
+                }
+            }
+        }
+
+        if !metadatasDownloaded.isEmpty {
+            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                for metadata in metadatasDownloaded {
+                    delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
+                                            metadata: metadata,
+                                            error: .success)
                 }
             }
         }

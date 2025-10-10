@@ -261,7 +261,7 @@ extension NCNetworking {
 
     // MARK: - UPLOAD SUCCESS
 
-    func uploadSuccessMetadataItems(_ metadataItems: [MetadataItem]) async -> [String] {
+    func uploadSuccessMetadataItems(_ metadataItems: [MetadataItem]) async -> [tableMetadata] {
         guard !metadataItems.isEmpty else {
             return []
         }
@@ -349,7 +349,7 @@ extension NCNetworking {
             await NCManageDatabase.shared.addAutoUploadTransferAsync(autoUploadTransfers)
         }
 
-        return Array(serversUrl)
+        return metadatasUploaded
     }
 
     // MARK: -

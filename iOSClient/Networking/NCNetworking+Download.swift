@@ -150,7 +150,7 @@ extension NCNetworking {
 
     // MARK: - DOWNLOAD SUCCESS
 
-    func downloadSuccessMetadataItems(_ metadataItems: [MetadataItem]) async -> [String] {
+    func downloadSuccessMetadataItems(_ metadataItems: [MetadataItem]) async -> [tableMetadata] {
         guard !metadataItems.isEmpty else {
             return []
         }
@@ -165,7 +165,6 @@ extension NCNetworking {
                     continue
                 }
 
-                let sessionBak = metadata.session
                 if let etag = item.etag {
                     metadata.etag = etag
                 }
@@ -190,14 +189,6 @@ extension NCNetworking {
                                                               authenticationTag: result.authenticationTag)
                 }
                 #endif
-
-                if sessionBak == sessionDownload {
-                    await self.transferDispatcher.notifyAllDelegates { delegate in
-                        delegate.transferChange(status: self.global.networkingStatusDownloaded,
-                                                metadata: metadata,
-                                                error: .success)
-                    }
-                }
             }
 
             if !metadatasDownloaded.isEmpty {
@@ -207,7 +198,7 @@ extension NCNetworking {
         }
         await NCMetadataStore.shared.removeItems(forOcIds: ocIds)
 
-        return Array(serversUrl)
+        return metadatasDownloaded
     }
 
     // MARK: - Download NextcloudKitDelegate
