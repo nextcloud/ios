@@ -541,7 +541,7 @@ actor NCMetadataStore {
     }
     #else
     @inline(__always)
-    private func appIsInBackground() -> Bool {
+    private func appIsInBackground() async -> Bool {
         return false
     }
     #endif
