@@ -27,7 +27,6 @@ struct MetadataItem: Codable {
     var ocId: String?
     var ocIdTransfer: String?
     var progress: Double?
-    var selector: String?
     var serverUrl: String?
     var session: String?
     var size: Int64?
@@ -277,7 +276,6 @@ actor NCMetadataStore {
             ocId: new.ocId ?? existing.ocId,
             ocIdTransfer: new.ocIdTransfer ?? existing.ocIdTransfer,
             progress: new.progress ?? existing.progress,
-            selector: new.selector ?? existing.selector,
             serverUrl: existing.serverUrl ?? new.serverUrl,
             session: new.session ?? existing.session,
             size: new.size ?? existing.size,
