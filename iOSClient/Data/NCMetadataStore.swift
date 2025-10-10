@@ -470,12 +470,17 @@ actor NCMetadataStore {
             let predicate = NSPredicate(format: "(ocIdTransfer IN %@) OR (ocId IN %@)", Array(transfers), Array(ocids))
             let metadatas = NCManageDatabase.shared.getMetadatas(predicate: predicate)
 
+            // No id found
             let foundTransfers: Set<String> = Set(metadatas.compactMap { $0.ocIdTransfer })
             let foundOcids: Set<String> = Set(metadatas.compactMap { $0.ocId })
+
+            // sessionStatus normal
             let normalTransfers: Set<String> = Set(metadatas.lazy.filter { $0.status == statusNormal }.compactMap { $0.ocIdTransfer })
             let normalOcids: Set<String> = Set(metadatas.lazy.filter { $0.status == statusNormal }.compactMap { $0.ocId })
-            // let taskIdentifierTransfers: Set<String> = Set(metadatas.lazy.filter { $0.sessionTaskIdentifier == 0 }.compactMap { $0.ocIdTransfer })
-            // let taskIdentifierOcids: Set<String> = Set(metadatas.lazy.filter { $0.sessionTaskIdentifier == 0 }.compactMap { $0.ocId })
+
+            // No Task Identifier
+            let taskIdentifierTransfers: Set<String> = Set(metadatas.lazy.filter { $0.sessionTaskIdentifier == 0 }.compactMap { $0.ocIdTransfer })
+            let taskIdentifierOcids: Set<String> = Set(metadatas.lazy.filter { $0.sessionTaskIdentifier == 0 }.compactMap { $0.ocId })
 
             let before = metadataItemsCache.count
             metadataItemsCache.removeAll { item in
@@ -490,12 +495,11 @@ actor NCMetadataStore {
                     (ocIdTransfer != nil && normalTransfers.contains(ocIdTransfer!)) ||
                     (ocId != nil && normalOcids.contains(ocId!))
 
-                // let zeroTaskIdentifier =
-                //    (ocIdTransfer != nil && taskIdentifierTransfers.contains(ocIdTransfer!)) ||
-                //    (ocId != nil && taskIdentifierOcids.contains(ocId!))
+                let zeroTaskIdentifier =
+                    (ocIdTransfer != nil && taskIdentifierTransfers.contains(ocIdTransfer!)) ||
+                    (ocId != nil && taskIdentifierOcids.contains(ocId!))
 
-                // return (!hasMatch) || isInactive || zeroTaskIdentifier
-                return (!hasMatch) || isInactive
+                return (!hasMatch) || isInactive || zeroTaskIdentifier
             }
 
             let removed = before - metadataItemsCache.count

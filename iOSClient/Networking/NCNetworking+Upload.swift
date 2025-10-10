@@ -426,14 +426,9 @@ extension NCNetworking {
     }
 
     func uploadCancelFile(metadata: tableMetadata) async {
-        /*
-        #if !EXTENSION
-         NCMetadataStore.shared.removeItem(ocIdTransfer: metadata.ocIdTransfer)
-        #endif
-        */
-
         self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase))
         await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocIdTransfer)
+        await NCMetadataStore.shared.removeItem(forOcIdTransfer: metadata.ocIdTransfer)
     }
 
 #if !EXTENSION
