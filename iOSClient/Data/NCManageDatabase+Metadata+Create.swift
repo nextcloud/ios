@@ -175,15 +175,13 @@ extension NCManageDatabase {
         metadata.ocIdTransfer = file.ocId
         metadata.ownerId = file.ownerId
         metadata.ownerDisplayName = file.ownerDisplayName
-        if let lock = file.lock {
-            metadata.lock = true
-            metadata.lockOwner = lock.owner
-            metadata.lockOwnerEditor = lock.ownerEditor
-            metadata.lockOwnerType = lock.ownerType.rawValue
-            metadata.lockOwnerDisplayName = lock.ownerDisplayName
-            metadata.lockTime = lock.time
-            metadata.lockTimeOut = lock.time
-        }
+        metadata.lock = file.lock
+        metadata.lockOwner = file.lockOwner
+        metadata.lockOwnerEditor = file.lockOwnerEditor
+        metadata.lockOwnerType = file.lockOwnerType
+        metadata.lockOwnerDisplayName = file.lockOwnerDisplayName
+        metadata.lockTime = file.lockTime
+        metadata.lockTimeOut = file.lockTimeOut
         metadata.path = file.path
         metadata.permissions = file.permissions
         metadata.placePhotos = file.placePhotos
