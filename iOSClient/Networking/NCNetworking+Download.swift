@@ -157,7 +157,7 @@ extension NCNetworking {
         let ocIds = Array(Set(metadataItems.compactMap { $0.ocId }))
         let metadatasDownload = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "ocId IN %@", ocIds))
         var metadatasDownloaded: [tableMetadata] = []
-        var serversUrl = Set<String>()
+        var metadatasReturn: [tableMetadata] = []
 
         if !metadatasDownload.isEmpty {
             for metadata in metadatasDownload {
@@ -173,8 +173,8 @@ extension NCNetworking {
                 metadata.sessionTaskIdentifier = 0
                 metadata.status = NCGlobal.shared.metadataStatusNormal
 
-                metadatasDownloaded.append(metadata)
-                serversUrl.insert(metadata.serverUrl)
+                metadatasDownloaded.append(tableMetadata(value: metadata))
+                metadatasReturn.append(tableMetadata(value: metadata))
 
                 // E2EE
                 #if !EXTENSION
@@ -198,7 +198,7 @@ extension NCNetworking {
         }
         await NCMetadataStore.shared.removeItems(forOcIds: ocIds)
 
-        return metadatasDownloaded
+        return metadatasReturn
     }
 
     // MARK: - Download NextcloudKitDelegate

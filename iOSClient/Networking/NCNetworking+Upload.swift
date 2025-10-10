@@ -270,6 +270,7 @@ extension NCNetworking {
         var metadatasUploaded: [tableMetadata] = []
         var metadatasLocalFiles: [tableMetadata] = []
         var metadatasLivePhoto: [tableMetadata] = []
+        var metadatasReturn: [tableMetadata] = []
         var serversUrl = Set<String>()
         var accounts = Set<String>()
         var autoUploadTransfers: [tableAutoUploadTransfer] = []
@@ -296,7 +297,8 @@ extension NCNetworking {
             metadata.status = NCGlobal.shared.metadataStatusNormal
 
             // Array
-            metadatasUploaded.append(metadata)
+            metadatasUploaded.append(tableMetadata(value: metadata))
+            metadatasReturn.append(tableMetadata(value: metadata))
             serversUrl.insert(metadata.serverUrl)
             accounts.insert(metadata.account)
 
@@ -306,7 +308,7 @@ extension NCNetworking {
             if metadata.sessionSelector == NCGlobal.shared.selectorUploadFileNODelete {
                 let fineManeToPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, userId: metadata.userId, urlBase: metadata.urlBase)
                 await utilityFileSystem.moveFileAsync(atPath: fileNamePath, toPath: fineManeToPath)
-                metadatasLocalFiles.append(metadata)
+                metadatasLocalFiles.append(tableMetadata(value: metadata))
             } else {
                 utilityFileSystem.removeFile(atPath: fileNamePath)
             }
@@ -315,7 +317,7 @@ extension NCNetworking {
             let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
             if capabilities.isLivePhotoServerAvailable,
                metadata.isLivePhoto {
-                metadatasLivePhoto.append(metadata)
+                metadatasLivePhoto.append(tableMetadata(value: metadata))
             }
 
             // Auto Upload
@@ -349,7 +351,7 @@ extension NCNetworking {
             await NCManageDatabase.shared.addAutoUploadTransferAsync(autoUploadTransfers)
         }
 
-        return metadatasUploaded
+        return metadatasReturn
     }
 
     // MARK: -
