@@ -88,9 +88,11 @@ extension NCNetworking {
                 if let dateString = headers["Last-Modified"] as? String {
                     dateLastModified = NKLogFileManager.shared.convertDate(dateString, format: "EEE, dd MMM y HH:mm:ss zzz")
                 }
-                if results.afError?.isExplicitlyCancelledError ?? false {
+
+                if results.afError?.isExplicitlyCancelledError ?? false || (results.afError?.underlyingError as? URLError)?.code.rawValue == -999 {
                     error = NKError(errorCode: self.global.errorRequestExplicityCancelled, errorDescription: "error request explicity cancelled")
                 }
+
                 self.downloadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, etag: results.etag, date: results.date, dateLastModified: dateLastModified, length: results.length, task: downloadTask, error: error)
             }
         }
@@ -163,6 +165,7 @@ extension NCNetworking {
                     continue
                 }
 
+                let sessionBak = metadata.session
                 if let etag = item.etag {
                     metadata.etag = etag
                 }
@@ -188,7 +191,7 @@ extension NCNetworking {
                 }
                 #endif
 
-                if metadata.session == sessionDownload {
+                if sessionBak == sessionDownload {
                     await self.transferDispatcher.notifyAllDelegates { delegate in
                         delegate.transferChange(status: self.global.networkingStatusDownloaded,
                                                 metadata: metadata,
