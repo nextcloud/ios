@@ -64,6 +64,37 @@ extension NCManageDatabase {
         }
     }
 
+    func setLivePhotoVideo(metadatas: [tableMetadata]) async {
+        await performRealmWriteAsync { realm in
+            for metadata in metadatas {
+                let serverUrlFileNameNoExt = (metadata.serverUrlFileName as NSString).deletingPathExtension
+                let primaryKey = metadata.account + serverUrlFileNameNoExt
+                if let result = realm.object(ofType: tableLivePhoto.self, forPrimaryKey: primaryKey) {
+                    if metadata.isVideo {
+                        // Update existing (only the provided fields)
+                        result.serverUrlFileNameVideo = metadata.serverUrlFileName
+                        result.fileIdVideo = metadata.fileId
+                    } else if metadata.isImage {
+                        result.serverUrlFileNameImage = metadata.serverUrlFileName
+                        result.fileIdImage = metadata.fileId
+                    }
+                } else {
+                    // Insert new — ensure the initializer sets the same PK used above
+                    let addObject = tableLivePhoto(account: metadata.account, serverUrlFileNameNoExt: serverUrlFileNameNoExt)
+                    if metadata.isVideo {
+                        addObject.serverUrlFileNameVideo = metadata.serverUrlFileName
+                        addObject.fileIdVideo = metadata.fileId
+                        realm.add(addObject, update: .modified)
+                    } else if metadata.isImage {
+                        addObject.serverUrlFileNameImage = metadata.serverUrlFileName
+                        addObject.fileIdImage = metadata.fileId
+                        realm.add(addObject, update: .modified)
+                    }
+                }
+            }
+        }
+    }
+
     func deleteLivePhoto(account: String, serverUrlFileNameNoExt: String) async {
         let primaryKey = account + serverUrlFileNameNoExt
 

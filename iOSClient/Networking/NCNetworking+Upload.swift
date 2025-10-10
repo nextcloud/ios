@@ -397,7 +397,9 @@ extension NCNetworking {
         let metadatasUpload = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "ocIdTransfer IN %@", ocIdTransfers))
         var metadatasUploaded: [tableMetadata] = []
         var metadatasLocalFiles: [tableMetadata] = []
+        var metadatasLivePhoto: [tableMetadata] = []
         var serversUrl = Set<String>()
+        var autoUploadTransfers: [tableAutoUploadTransfer] = []
 
         for metadata in metadatasUpload {
             guard let transferItem = (metadataItems.first { $0.ocIdTransfer == metadata.ocIdTransfer }),
@@ -420,11 +422,14 @@ extension NCNetworking {
             metadata.sessionTaskIdentifier = 0
             metadata.status = NCGlobal.shared.metadataStatusNormal
 
+            // Array
+            metadatasUploaded.append(metadata)
+            serversUrl.insert(metadata.serverUrl)
+
             // File System
             let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase)
 
             if metadata.sessionSelector == NCGlobal.shared.selectorUploadFileNODelete {
-
                 let fineManeToPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, userId: metadata.userId, urlBase: metadata.urlBase)
                 await utilityFileSystem.moveFileAsync(atPath: fileNamePath, toPath: fineManeToPath)
                 metadatasLocalFiles.append(metadata)
@@ -432,16 +437,30 @@ extension NCNetworking {
                 utilityFileSystem.removeFile(atPath: fileNamePath)
             }
 
-            //
-            metadatasUploaded.append(metadata)
-            serversUrl.insert(metadata.serverUrl)
+            // Live Photo
+            let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
+            if capabilities.isLivePhotoServerAvailable,
+               metadata.isLivePhoto {
+                metadatasLivePhoto.append(metadata)
+            }
+
+            // Auto Upload
+            if metadata.sessionSelector == self.global.selectorUploadAutoUpload,
+               let serverUrlBase = metadata.autoUploadServerUrlBase {
+                autoUploadTransfers.append(tableAutoUploadTransfer(account: metadata.account,
+                                                                 serverUrlBase: serverUrlBase,
+                                                                 fileName: metadata.fileNameView,
+                                                                 assetLocalIdentifier: metadata.assetLocalIdentifier,
+                                                                 date: metadata.creationDate as Date))
+            }
 
             await NCMetadataStore.shared.removeItem(forOcIdTransfer: metadata.ocIdTransfer)
         }
 
-        await NCManageDatabase.shared.addLocalFilesAsync(metadatas: metadatasLocalFiles)
         await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfers: ocIdTransfers, metadatas: metadatasUploaded)
-
+        await NCManageDatabase.shared.addLocalFilesAsync(metadatas: metadatasLocalFiles)
+        await NCManageDatabase.shared.setLivePhotoVideo(metadatas: metadatasLivePhoto)
+        await NCManageDatabase.shared.addAutoUploadTransferAsync(autoUploadTransfers)
         return Array(serversUrl)
     }
 
