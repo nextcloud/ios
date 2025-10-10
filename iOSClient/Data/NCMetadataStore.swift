@@ -144,7 +144,7 @@ actor NCMetadataStore {
     func addItem(_ item: MetadataItem,
                  forFileName fileName: String,
                  forServerUrl serverUrl: String,
-                 forTaskIdentifier taskIdentifier: Int) {
+                 forTaskIdentifier taskIdentifier: Int) async {
         if let idx = metadataItemsCache.firstIndex(where: {
             $0.serverUrl == serverUrl &&
             $0.fileName == fileName &&
@@ -160,11 +160,11 @@ actor NCMetadataStore {
             metadataItemsCache.append(itemForAppend)
         }
 
-        commit()
+        await commit()
     }
 
     /// Marks a download as completed, updates its `etag`, and triggers a commit.
-    func setDownloadCompleted(fileName: String, serverUrl: String, taskIdentifier: Int, etag: String) {
+    func setDownloadCompleted(fileName: String, serverUrl: String, taskIdentifier: Int, etag: String) async {
         var updated = false
         if let idx = metadataItemsCache.firstIndex(where: {
             $0.serverUrl == serverUrl &&
@@ -177,12 +177,12 @@ actor NCMetadataStore {
         }
 
         if updated {
-            commit()
+            await commit()
         }
     }
 
     /// Removes a specific cached item and commits the change.
-    func removeItem(fileName: String, serverUrl: String, taskIdentifier: Int) {
+    func removeItem(fileName: String, serverUrl: String, taskIdentifier: Int) async {
         var removed = false
         if let idx = metadataItemsCache.firstIndex(where: {
             $0.serverUrl == serverUrl &&
@@ -194,12 +194,12 @@ actor NCMetadataStore {
         }
 
         if removed {
-            commit()
+            await commit()
         }
     }
 
     /// Removes a specific cached item and commits the change.
-    func removeItem(forOcIdTransfer ocIdTransfer: String) {
+    func removeItem(forOcIdTransfer ocIdTransfer: String) async {
         var removed = false
         if let idx = metadataItemsCache.firstIndex(where: { $0.ocIdTransfer == ocIdTransfer }) {
             metadataItemsCache.remove(at: idx)
@@ -207,12 +207,12 @@ actor NCMetadataStore {
         }
 
         if removed {
-            commit()
+            await commit()
         }
     }
 
     /// Removes a specific cached item and commits the change.
-    func removeItem(forOcId ocId: String) {
+    func removeItem(forOcId ocId: String) async {
         var removed = false
         if let idx = metadataItemsCache.firstIndex(where: { $0.ocId == ocId }) {
             metadataItemsCache.remove(at: idx)
@@ -220,12 +220,12 @@ actor NCMetadataStore {
         }
 
         if removed {
-            commit()
+            await commit()
         }
     }
 
     /// Removes a specific cached item and commits the change.
-    func removeItems(forOcIds ocIds: [String]) {
+    func removeItems(forOcIds ocIds: [String]) async {
         guard !ocIds.isEmpty else { return }
 
         let before = metadataItemsCache.count
@@ -238,12 +238,12 @@ actor NCMetadataStore {
         let removedCount = before - metadataItemsCache.count
 
         if removedCount > 0 {
-            commit()
+            await commit()
         }
     }
 
     /// Updates `progress` for an item and conditionally triggers a flush (0%, 10%, … 100%).
-    func transferProgress(serverUrl: String, fileName: String, taskIdentifier: Int, progress: Double) {
+    func transferProgress(serverUrl: String, fileName: String, taskIdentifier: Int, progress: Double) async {
         var updated = false
         if let idx = metadataItemsCache.firstIndex(where: {
             $0.serverUrl == serverUrl &&
@@ -256,7 +256,7 @@ actor NCMetadataStore {
 
         if updated,
            progress == 0 || progress == 1 || (progress * 100).truncatingRemainder(dividingBy: 10) == 0 {
-            commit()
+            await commit()
         }
     }
 
@@ -286,7 +286,7 @@ actor NCMetadataStore {
     }
 
     /// Serializes and atomically writes the cache to disk, respecting batching thresholds.
-    private func commit(forced: Bool = false) {
+    private func commit(forced: Bool = false) async {
         guard let url = self.storeURL else { return }
         var didWrite = false
 
@@ -307,7 +307,7 @@ actor NCMetadataStore {
         #if EXTENSION
         diskStore()
         #else
-        if appIsInBackground() || forced {
+        if await appIsInBackground() || forced {
             diskStore()
         }
         #endif
@@ -349,7 +349,7 @@ actor NCMetadataStore {
     }
 
     /// Reloads the JSON snapshot from disk and removes orphaned items.
-    private func reloadFromDisk() {
+    private func reloadFromDisk() async {
         guard let url = self.storeURL else { return }
 
         do {
@@ -361,7 +361,7 @@ actor NCMetadataStore {
                 return
             }
             self.metadataItemsCache = items
-            self.checkOrphaned()
+            await self.checkOrphaned()
             nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .info, message: "\(fileMetadataStore) loaded from disk", consoleOnly: true)
         } catch {
             nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .error, message: "Load \(fileMetadataStore) from disk failed: \(error)")
@@ -369,8 +369,10 @@ actor NCMetadataStore {
     }
 
     /// Prunes items not present in Realm (or with status `.normal`).
-    private func checkOrphaned() {
-        if appIsInBackground() { return }
+    private func checkOrphaned() async {
+        if await appIsInBackground() {
+            return
+        }
 
         let statusNormal = NCGlobal.shared.metadataStatusNormal
         let transfers: Set<String> = Set(metadataItemsCache.compactMap { $0.ocIdTransfer })
@@ -435,7 +437,7 @@ actor NCMetadataStore {
 
     /// Runs on a background thread and awaits Realm async operations.
     private func syncRealm() async {
-        if appIsInBackground() {
+        if await appIsInBackground() {
             return
         }
 
@@ -475,15 +477,9 @@ actor NCMetadataStore {
 
     #if !EXTENSION
     @inline(__always)
-    private func appIsInBackground() -> Bool {
-        if Thread.isMainThread {
-            return UIApplication.shared.applicationState == .background
-        } else {
-            var isBg = false
-            DispatchQueue.main.sync {
-                isBg = (UIApplication.shared.applicationState == .background)
-            }
-            return isBg
+    private func appIsInBackground() async -> Bool {
+        await MainActor.run {
+            UIApplication.shared.applicationState == .background
         }
     }
     #else
