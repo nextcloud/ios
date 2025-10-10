@@ -145,7 +145,7 @@ extension NCNetworking {
         return(error)
     }
 
-    // MARK: -
+    // MARK: - DOWNLOAD SUCCESS
 
     func downloadSuccessMetadataItems(_ metadataItems: [MetadataItem]) async -> [String] {
         guard !metadataItems.isEmpty else {
@@ -220,13 +220,12 @@ extension NCNetworking {
                                                            length: length,
                                                            task: task,
                                                            error: error)
-            return
-            #endif
-
+            #else
             if error == .success {
                 nkLog(success: "Downloaded file: " + fileName)
                 await NCMetadataStore.shared.setDownloadCompleted(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier, etag: etag)
             } else {
+                // Remove Item on MetadataStore
                 await NCMetadataStore.shared.removeItem(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier)
 
                 guard let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) else {
@@ -270,6 +269,7 @@ extension NCNetworking {
                     }
                 }
             }
+            #endif
         }
     }
 
