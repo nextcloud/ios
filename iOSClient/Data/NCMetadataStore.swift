@@ -172,13 +172,18 @@ actor NCMetadataStore {
             let merged = mergeItem(existing: metadataItemsCache[idx], with: MetadataItem(completed: true, etag: etag))
             metadataItemsCache[idx] = merged
         } else {
-            let itemForAppend = MetadataItem(completed: true,
-                                             etag: etag,
-                                             fileName: fileName,
-                                             serverUrl: serverUrl,
-                                             session: NCNetworking.shared.sessionDownloadBackground,
-                                             taskIdentifier: taskIdentifier)
-            metadataItemsCache.append(itemForAppend)
+            // Not found? get from metadata
+            if let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) {
+                let itemForAppend = MetadataItem(completed: true,
+                                                 etag: etag,
+                                                 fileName: fileName,
+                                                 ocId: metadata.ocId,
+                                                 ocIdTransfer: metadata.ocIdTransfer,
+                                                 serverUrl: serverUrl,
+                                                 session: NCNetworking.shared.sessionDownload,
+                                                 taskIdentifier: taskIdentifier)
+                metadataItemsCache.append(itemForAppend)
+            }
         }
 
         await commit()
@@ -459,6 +464,10 @@ actor NCMetadataStore {
                 || item.session == NCNetworking.shared.sessionDownloadBackgroundExt
             }
             return false
+        }
+
+        if snapshotUpload.isEmpty && snapshotDownload.isEmpty {
+            return
         }
 
         let serverUrlUpload = await NCNetworking.shared.uploadSuccessMetadataItems(snapshotUpload)

@@ -281,6 +281,7 @@ extension NCNetworking {
         let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
 
         if error == .success, let ocId {
+            /*
             let metadataItem = MetadataItem(completed: true,
                                             date: date,
                                             etag: etag,
@@ -292,6 +293,7 @@ extension NCNetworking {
                                             session: metadata.session,
                                             size: size,
                                             taskIdentifier: metadata.sessionTaskIdentifier)
+             */
 
             nkLog(success: "Uploaded file: " + metadata.serverUrlFileName + ", (\(size) bytes)")
 

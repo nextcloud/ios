@@ -224,6 +224,7 @@ extension NCNetworking {
             #endif
 
             if error == .success {
+                nkLog(success: "Downloaded file: " + fileName)
                 await NCMetadataStore.shared.setDownloadCompleted(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier, etag: etag)
             } else {
                 await NCMetadataStore.shared.removeItem(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier)
