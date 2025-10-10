@@ -429,4 +429,3 @@ class BidiFilenameLabel: UILabel {
         return result
     }
 }
-
