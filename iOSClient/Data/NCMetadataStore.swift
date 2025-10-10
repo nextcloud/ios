@@ -189,7 +189,35 @@ actor NCMetadataStore {
         await commit()
     }
 
-    func setUploadCompleted(fileName: String, serverUrl: String, taskIdentifier: Int, etag: String?) async {
+    /// Marks a upload as completed, updates its `ocid, etag, size, date`, and triggers a commit.
+    func setUploadCompleted(fileName: String, serverUrl: String, taskIdentifier: Int, metadata: tableMetadata? = nil, ocId: String?, etag: String?, size: Int64, date: Date?) async {
+        if let idx = metadataItemsCache.firstIndex(where: {
+            $0.serverUrl == serverUrl &&
+            $0.fileName == fileName &&
+            $0.taskIdentifier == taskIdentifier
+        }) {
+            let merged = mergeItem(existing: metadataItemsCache[idx], with: MetadataItem(completed: true,
+                                                                                         date: date,
+                                                                                         etag: etag,
+                                                                                         ocId: ocId,
+                                                                                         size: size))
+            metadataItemsCache[idx] = merged
+        } else {
+            // Not found? get from metadata
+            if let metadata {
+                let itemForAppend = MetadataItem(completed: true,
+                                                 etag: etag,
+                                                 fileName: fileName,
+                                                 ocId: metadata.ocId,
+                                                 ocIdTransfer: metadata.ocIdTransfer,
+                                                 serverUrl: serverUrl,
+                                                 session: NCNetworking.shared.sessionUpload,
+                                                 taskIdentifier: taskIdentifier)
+                metadataItemsCache.append(itemForAppend)
+            }
+        }
+
+        await commit()
     }
 
     /// Removes a specific cached item and commits the change.
