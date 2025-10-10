@@ -100,11 +100,6 @@ extension NCNetworking {
                     cancelUploadBackgroundTask(metadata: metadata)
                 }
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
-                await networking.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusUploadCancel,
-                                            metadata: metadata.detachedCopy(),
-                                            error: .success)
-                }
             }
         }
 

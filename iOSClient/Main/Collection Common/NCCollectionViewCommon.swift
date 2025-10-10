@@ -389,7 +389,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         DispatchQueue.main.async {
             switch status {
             // UPLOADED, UPLOADED LIVEPHOTO
-            case self.global.networkingStatusUploaded, self.global.networkingStatusUploadedLivePhoto:
+            case self.global.networkingStatusUploaded:
                 self.debouncer.call {
                     if self.isSearchingMode {
                         self.networkSearch()

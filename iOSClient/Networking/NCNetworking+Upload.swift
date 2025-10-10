@@ -418,11 +418,6 @@ extension NCNetworking {
 
         self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase))
         await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocIdTransfer)
-        await self.transferDispatcher.notifyAllDelegates { delegate in
-            delegate.transferChange(status: self.global.networkingStatusUploadCancel,
-                                    metadata: metadata.detachedCopy(),
-                                    error: .success)
-        }
     }
 
 #if !EXTENSION
