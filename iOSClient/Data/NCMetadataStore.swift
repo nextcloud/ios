@@ -56,6 +56,7 @@ actor NCMetadataStore {
     private let maxLatencySec: TimeInterval = 5 // <- or every 5s at most
     // Periodic debounce timer.
     private var debounceTimer: DispatchSourceTimer?
+    private var currentLatency: TimeInterval?
 
     // Prevents concurrent Realm synchronizations.
     // Only one `syncRealm()` can run at a time; additional requests are ignored
@@ -344,7 +345,6 @@ actor NCMetadataStore {
                 lastPersist = CFAbsoluteTimeGetCurrent()
                 changeCounter = 0
                 didWrite = true
-                nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .info, message: "Force flush to disk")
             } catch {
                 nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .error, message: "Force flush to disk failed: \(error)")
             }
@@ -372,18 +372,59 @@ actor NCMetadataStore {
         }
     }
 
+    /// Returns a dynamic latency (in seconds) for debounce flushes,
+    /// proportional to the number of cached items.
+    /// - 1 item  → 3s
+    /// - 10 items → 5s
+    /// - 50+ items → 10s
+    private func dynamicLatency() -> TimeInterval {
+        let count = metadataItemsCache.count
+        var sec: TimeInterval = 0
+
+        switch count {
+        case 0...1:
+            sec = 2
+        case 2..<10:
+            sec = 5
+        case 10..<50:
+            sec = 10
+        default:
+            sec = 15
+        }
+
+        nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .debug, message: "Latency: \(sec) sec.", consoleOnly: true)
+
+        return sec
+    }
+
+    private func onTimerFired(_ timer: DispatchSourceTimer) async {
+        await commit()
+
+        let newLatency = dynamicLatency()
+        if currentLatency != newLatency {
+            timer.schedule(deadline: .now() + newLatency, repeating: newLatency)
+            currentLatency = newLatency
+        }
+    }
+
     /// Starts or restarts the periodic debounce timer (runs every `maxLatencySec`).
     private func startDebounceTimer() {
         guard debounceTimer == nil else { return }
 
         let t = DispatchSource.makeTimerSource(queue: debounceQueue)
-        t.schedule(deadline: .now() + .seconds(Int(maxLatencySec)),
-                   repeating: .seconds(Int(maxLatencySec)))
-        t.setEventHandler { [weak self] in
-            Task { [weak self] in
-                await self?.commit()
+        let initial = dynamicLatency()
+        currentLatency = initial
+        t.schedule(deadline: .now() + initial, repeating: initial)
+
+        t.setEventHandler { [weak self, weak t] in
+            guard let self, let timer = t else {
+                return
+            }
+            Task {
+                await self.onTimerFired(timer)
             }
         }
+
         t.resume()
         debounceTimer = t
     }
@@ -392,6 +433,7 @@ actor NCMetadataStore {
     private func stopDebounceTimer() {
         debounceTimer?.cancel()
         debounceTimer = nil
+        currentLatency = nil
     }
 
     /// Reloads the JSON snapshot from disk and removes orphaned items.
