@@ -187,6 +187,14 @@ extension NCNetworking {
                                                               authenticationTag: result.authenticationTag)
                 }
                 #endif
+
+                if metadata.session == sessionDownload {
+                    await self.transferDispatcher.notifyAllDelegates { delegate in
+                        delegate.transferChange(status: self.global.networkingStatusDownloaded,
+                                                metadata: metadata,
+                                                error: .success)
+                    }
+                }
             }
 
             if !metadatasDownloaded.isEmpty {
