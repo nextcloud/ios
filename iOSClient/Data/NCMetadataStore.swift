@@ -189,6 +189,9 @@ actor NCMetadataStore {
         await commit()
     }
 
+    func setUploadCompleted(fileName: String, serverUrl: String, taskIdentifier: Int, etag: String?) async {
+    }
+
     /// Removes a specific cached item and commits the change.
     func removeItem(fileName: String, serverUrl: String, taskIdentifier: Int) async {
         var removed = false
