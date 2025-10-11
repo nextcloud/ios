@@ -363,7 +363,7 @@ actor NCMetadataStore {
                 changeCounter = 0
                 didWrite = true
             } catch {
-                nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .error, message: "Force flush to disk failed: \(error)")
+                nkLog(tag: NCGlobal.shared.logTagMetadataStore, emoji: .error, message: "Force flush to disk failed: \(error)")
             }
         }
 
@@ -409,7 +409,7 @@ actor NCMetadataStore {
             sec = 15
         }
 
-        nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .debug, message: "Latency: \(sec) sec.", consoleOnly: true)
+        nkLog(tag: NCGlobal.shared.logTagMetadataStore, emoji: .debug, message: "Latency: \(sec) sec.", consoleOnly: true)
 
         return sec
     }
@@ -466,14 +466,14 @@ actor NCMetadataStore {
             let items = try self.decoder.decode([MetadataItem].self, from: data)
             guard !items.isEmpty else {
                 self.metadataItemsCache = []
-                nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .warning, message: "Load \(fileMetadataStore) from disk empty, cache cleared", consoleOnly: true)
+                nkLog(tag: NCGlobal.shared.logTagMetadataStore, emoji: .warning, message: "Load \(fileMetadataStore) from disk empty, cache cleared", consoleOnly: true)
                 return
             }
             self.metadataItemsCache = items
             await self.checkOrphaned()
-            nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .info, message: "\(fileMetadataStore) loaded from disk", consoleOnly: true)
+            nkLog(tag: NCGlobal.shared.logTagMetadataStore, emoji: .info, message: "\(fileMetadataStore) loaded from disk", consoleOnly: true)
         } catch {
-            nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .error, message: "Load \(fileMetadataStore) from disk failed: \(error)")
+            nkLog(tag: NCGlobal.shared.logTagMetadataStore, emoji: .error, message: "Load \(fileMetadataStore) from disk failed: \(error)")
         }
     }
 
@@ -525,7 +525,7 @@ actor NCMetadataStore {
 
             let removed = before - metadataItemsCache.count
             if removed > 0 {
-                nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .warning, message: "Removed \(removed) orphaned items (no match on ocIdTransfer nor ocId)", consoleOnly: true)
+                nkLog(tag: NCGlobal.shared.logTagMetadataStore, emoji: .warning, message: "Removed \(removed) orphaned items (no match on ocIdTransfer nor ocId)", consoleOnly: true)
             }
         }
     }
