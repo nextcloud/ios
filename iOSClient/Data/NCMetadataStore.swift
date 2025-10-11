@@ -36,7 +36,11 @@ struct MetadataItem: Codable {
 actor NCMetadataStore {
     static let shared = NCMetadataStore()
 
-    private var metadataItemsCache: [MetadataItem] = []
+    var metadataItemsCache: [MetadataItem] = [] {
+        didSet {
+            // print("Array changed, count: \(metadataItemsCache.count)")
+        }
+    }
     // Timer queue used for periodic debounce commits.
     private let debounceQueue = DispatchQueue(label: "MetadataStore.Debounce", qos: .utility)
     // JSON encoders/decoders
