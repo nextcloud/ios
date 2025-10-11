@@ -2529,7 +2529,6 @@
 				F7C30DF8291BCBF00017149B /* E2EE */,
 				F72CD63925C19EBF00F46F9A /* NCAutoUpload.swift */,
 				F77BC3EC293E528A005F2B08 /* NCConfigServer.swift */,
-				F718E2572DF2D5C3004038AF /* NCBackgroundLocationUploadManager.swift */,
 				F75B0ABC244C4DBB00E58DCA /* NCDownloadAction.swift */,
 				F75A9EE523796C6F0044CFCE /* NCNetworking.swift */,
 				F7327E1F2B73A42F00A462C7 /* NCNetworking+Download.swift */,
@@ -2543,7 +2542,6 @@
 				F7327E2F2B73A86700A462C7 /* NCNetworking+WebDAV.swift */,
 				F70D8D8024A4A9BF000A5756 /* NCNetworkingProcess.swift */,
 				F755BD9A20594AC7008C5FBB /* NCService.swift */,
-				F7A3DB8F2DDE238C008F7EC8 /* NCDebouncer.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -3037,32 +3035,33 @@
 		F7BFFA991A24D7BB0044ED85 /* Utility */ = {
 			isa = PBXGroup;
 			children = (
-				F3E173BE2C9B1057006D177A /* ScreenAwakeManager */,
-				F702F2FC25EE5D2C008F8E80 /* NYMnemonic */,
-				F7D4BF2B2CA2E8D800A5E746 /* TOPasscodeViewController */,
-				F76D364528A4F8BF00214537 /* NCActivityIndicator.swift */,
+				F39170A82CB8201B006127BC /* FileAutoRenamer+Extensions.swift */,
+				F33918C32C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift */,
 				F752BA042E58C05200616A26 /* Maintenance.swift */,
 				F7F562FF2E15761500631A11 /* MigrationMultiDomains.swift */,
+				F76D364528A4F8BF00214537 /* NCActivityIndicator.swift */,
+				F7386E452DA90E02009A00F6 /* NCAppVersionManager.swift */,
 				F733598025C1C188002ABA72 /* NCAskAuthorization.swift */,
 				F77C97382953131000FDDD09 /* NCCameraRoll.swift */,
 				F765608E23BF813500765969 /* NCContentPresenter.swift */,
+				F7A3DB8F2DDE238C008F7EC8 /* NCDebouncer.swift */,
 				F70968A324212C4E00ED60E5 /* NCLivePhoto.swift */,
-				F7DB7DE82E8173160017AF90 /* NCStorageEstimator.swift */,
-				F7386E452DA90E02009A00F6 /* NCAppVersionManager.swift */,
 				F7A560412AE1593700BE8FD6 /* NCOperationSaveLivePhoto.swift */,
 				F702F30725EE5D47008F8E80 /* NCPopupViewController.swift */,
+				F7DB7DE82E8173160017AF90 /* NCStorageEstimator.swift */,
 				F707C26421A2DC5200F6181E /* NCStoreReview.swift */,
 				F70BFC7320E0FA7C00C67599 /* NCUtility.swift */,
 				F711A4DB2AF92CAD00095DD8 /* NCUtility+Date.swift */,
 				F359D8662A7D03420023F405 /* NCUtility+Exif.swift */,
 				AF93474B27E34120002537EE /* NCUtility+Image.swift */,
 				F74AF3A3247FB6AE00AC767B /* NCUtilityFileSystem.swift */,
+				F702F2FC25EE5D2C008F8E80 /* NYMnemonic */,
 				AF36077027BFA4E8001A243D /* ParallelWorker.swift */,
+				F33EE6F12BF4C9B200CA1A51 /* PKCS12.swift */,
+				F3E173BE2C9B1057006D177A /* ScreenAwakeManager */,
 				F71F6D062B6A6A5E00F1EB15 /* ThreadSafeArray.swift */,
 				F7245923289BB50B00474787 /* ThreadSafeDictionary.swift */,
-				F33EE6F12BF4C9B200CA1A51 /* PKCS12.swift */,
-				F33918C32C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift */,
-				F39170A82CB8201B006127BC /* FileAutoRenamer+Extensions.swift */,
+				F7D4BF2B2CA2E8D800A5E746 /* TOPasscodeViewController */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -3366,6 +3365,7 @@
 				F77DD6A72C5CC093009448FB /* NCSession.swift */,
 				F76B649B2ADFFAED00014640 /* NCImageCache.swift */,
 				F702F2CE25EE5B5C008F8E80 /* NCGlobal.swift */,
+				F718E2572DF2D5C3004038AF /* NCBackgroundLocationUploadManager.swift */,
 				F7E402282BA85D1D007E5609 /* PrivacyInfo.xcprivacy */,
 				F73CB5771ED46807005F2A5A /* NCBridgeSwift.h */,
 				F70F96AF2874394B006C8379 /* Nextcloud-Bridging-Header.h */,
