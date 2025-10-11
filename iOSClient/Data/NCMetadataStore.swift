@@ -589,7 +589,9 @@ actor NCMetadataStore {
             return
         }
 
+        // UPLOAD
         let metadatasUploaded = await NCNetworking.shared.uploadSuccessMetadataItems(snapshotUpload)
+        // DOWNLOAD
         let metadatasDownloaded = await NCNetworking.shared.downloadSuccessMetadataItems(snapshotDownload)
 
         // TransferDispatcher
