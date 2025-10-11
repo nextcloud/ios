@@ -131,7 +131,8 @@ extension NCNetworking {
 
                 await NCMetadataStore.shared.addItem(MetadataItem(ocId: metadata.ocId,
                                                                   ocIdTransfer: metadata.ocIdTransfer,
-                                                                  session: metadata.session),
+                                                                  session: metadata.session,
+                                                                  status: metadata.status),
                                                      forFileName: metadata.fileName,
                                                      forServerUrl: metadata.serverUrl,
                                                      forTaskIdentifier: task.taskIdentifier)

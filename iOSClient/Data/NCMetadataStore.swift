@@ -30,6 +30,7 @@ struct MetadataItem: Codable {
     var serverUrl: String?
     var session: String?
     var size: Int64?
+    var status: Int?
     var taskIdentifier: Int?
 }
 
@@ -95,7 +96,9 @@ actor NCMetadataStore {
 
         // Post-init setup (actor-safe)
         Task { [weak self] in
-            guard let self else { return }
+            guard let self else {
+                return
+            }
             await self.setupLifecycleFlush()
             await self.startDebounceTimer()
         }
@@ -103,7 +106,9 @@ actor NCMetadataStore {
 
     deinit {
         Task { [weak self] in
-            guard let self else { return }
+            guard let self else {
+                return
+            }
             await self.stopDebounceTimer()
         }
         for observer in observers {
@@ -176,7 +181,7 @@ actor NCMetadataStore {
             $0.fileName == fileName &&
             $0.taskIdentifier == taskIdentifier
         }) {
-            let merged = mergeItem(existing: metadataItemsCache[idx], with: MetadataItem(completed: true, etag: etag))
+            let merged = mergeItem(existing: metadataItemsCache[idx], with: MetadataItem(completed: true, etag: etag, status: 0))
             metadataItemsCache[idx] = merged
             session = merged.session
         } else {
@@ -189,6 +194,7 @@ actor NCMetadataStore {
                                                  ocIdTransfer: metadata.ocIdTransfer,
                                                  serverUrl: serverUrl,
                                                  session: NCNetworking.shared.sessionDownload,
+                                                 status: 0,
                                                  taskIdentifier: taskIdentifier)
                 metadataItemsCache.append(itemForAppend)
                 session = itemForAppend.session
@@ -211,7 +217,8 @@ actor NCMetadataStore {
                                                                                          date: date,
                                                                                          etag: etag,
                                                                                          ocId: ocId,
-                                                                                         size: size))
+                                                                                         size: size,
+                                                                                         status: 0))
             metadataItemsCache[idx] = merged
             session = merged.session
         } else {
@@ -224,6 +231,7 @@ actor NCMetadataStore {
                                                  ocIdTransfer: metadata.ocIdTransfer,
                                                  serverUrl: serverUrl,
                                                  session: NCNetworking.shared.sessionUpload,
+                                                 status: 0,
                                                  taskIdentifier: taskIdentifier)
                 metadataItemsCache.append(itemForAppend)
                 session = itemForAppend.session
@@ -278,7 +286,9 @@ actor NCMetadataStore {
 
     /// Removes a specific cached item and commits the change.
     func removeItems(forOcIds ocIds: [String]) async {
-        guard !ocIds.isEmpty else { return }
+        guard !ocIds.isEmpty else {
+            return
+        }
 
         let before = metadataItemsCache.count
         metadataItemsCache.removeAll { item in
@@ -313,8 +323,8 @@ actor NCMetadataStore {
     }
 
     /// Forces an immediate Realm sync, bypassing debounce logic.
-    func forcedSyncRealm() {
-        finishSyncRealm()
+    func forcedSyncRealm() async {
+        await commit(forced: true)
     }
 
     // MARK: - Private
@@ -332,13 +342,16 @@ actor NCMetadataStore {
             serverUrl: existing.serverUrl ?? new.serverUrl,
             session: new.session ?? existing.session,
             size: new.size ?? existing.size,
+            status: new.status ?? existing.status,
             taskIdentifier: new.taskIdentifier ?? existing.taskIdentifier
         )
     }
 
     /// Serializes and atomically writes the cache to disk, respecting batching thresholds.
     private func commit(forced: Bool = false) async {
-        guard let url = self.storeURL else { return }
+        guard let url = self.storeURL else {
+            return
+        }
         var didWrite = false
 
         func diskStore() {
@@ -413,7 +426,9 @@ actor NCMetadataStore {
 
     /// Starts or restarts the periodic debounce timer (runs every `maxLatencySec`).
     private func startDebounceTimer() {
-        guard debounceTimer == nil else { return }
+        guard debounceTimer == nil else {
+            return
+        }
 
         let t = DispatchSource.makeTimerSource(queue: debounceQueue)
         let initial = dynamicLatency()
@@ -442,7 +457,9 @@ actor NCMetadataStore {
 
     /// Reloads the JSON snapshot from disk and removes orphaned items.
     private func reloadFromDisk() async {
-        guard let url = self.storeURL else { return }
+        guard let url = self.storeURL else {
+            return
+        }
 
         do {
             let data = try Data(contentsOf: url)
@@ -524,15 +541,21 @@ actor NCMetadataStore {
     /// Safe to call from any thread.
     private func scheduleSyncRealm() {
         let shouldStart: Bool = {
-            if isSyncingRealm { return false }
+            if isSyncingRealm {
+                return false
+            }
             isSyncingRealm = true
             return true
         }()
 
-        guard shouldStart else { return }
+        guard shouldStart else {
+            return
+        }
 
         Task { [weak self] in
-            guard let self else { return }
+            guard let self else {
+                return
+            }
             await self.syncRealm()
             await self.finishSyncRealm()
         }
