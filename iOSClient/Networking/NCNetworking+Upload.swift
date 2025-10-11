@@ -334,8 +334,6 @@ extension NCNetworking {
             await NCMetadataStore.shared.removeItem(forOcIdTransfer: metadata.ocIdTransfer)
         }
 
-        nkLog(tag: NCGlobal.shared.logTagMetadataStore, emoji: .debug, message: "REALM UPDATE \(metadatasUploaded.count)", consoleOnly: true)
-
         // Metadatas
         await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfers: ocIdTransfers, metadatas: metadatasUploaded)
         // Local File

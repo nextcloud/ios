@@ -50,19 +50,6 @@ actor NCMetadataStore {
     // Backing file URL for persisted JSON.
     private(set) var storeURL: URL?
 
-    // Batching controls
-    // Counts in-memory changes since the last persist.
-    private var changeCounter: Int = 0
-    // Last successful persist absolute time.
-    private var lastPersist: TimeInterval = 0
-    // Max number of changes before forcing a persist.
-    private let batchThreshold: Int = max(1, NCBrandOptions.shared.numMaximumProcess / 2)
-    // Max elapsed time (seconds) between persists.
-    private let maxLatencySec: TimeInterval = 5 // <- or every 5s at most
-    // Periodic debounce timer.
-    private var debounceTimer: DispatchSourceTimer?
-    private var currentLatency: TimeInterval?
-
     // Prevents concurrent Realm synchronizations.
     // Only one `syncRealm()` can run at a time; additional requests are ignored
     // until the current one completes.
@@ -92,25 +79,16 @@ actor NCMetadataStore {
             self.metadataItemsCache = []
         }
 
-        self.lastPersist = CFAbsoluteTimeGetCurrent()
-
         // Post-init setup (actor-safe)
         Task { [weak self] in
             guard let self else {
                 return
             }
             await self.setupLifecycleFlush()
-            await self.startDebounceTimer()
         }
     }
 
     deinit {
-        Task { [weak self] in
-            guard let self else {
-                return
-            }
-            await self.stopDebounceTimer()
-        }
         for observer in observers {
             NotificationCenter.default.removeObserver(observer)
         }
@@ -126,21 +104,19 @@ actor NCMetadataStore {
     private func setupLifecycleFlush() {
         let willResignActiveNotification = NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: nil) { [weak self] _ in
             Task { [weak self] in
-                await self?.stopDebounceTimer()
+                await self?.flush(forced: true)
             }
         }
 
         let didEnterBackgroundNotification = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { [weak self] _ in
             Task { [weak self] in
-                await self?.commit(forced: true)
+                await self?.flush(forced: true)
             }
         }
 
         let didBecomeActiveNotification = NotificationCenter.default.addObserver(forName: UIApplication.didBecomeActiveNotification, object: nil, queue: nil) { [weak self] _ in
             Task { [weak self] in
                 await self?.reloadFromDisk()
-                try? await Task.sleep(nanoseconds: 1_000_000_000)
-                await self?.startDebounceTimer()
             }
         }
 
@@ -169,7 +145,7 @@ actor NCMetadataStore {
             metadataItemsCache.append(itemForAppend)
         }
 
-        await commit()
+        await flush()
     }
 
     /// Marks a download as completed, updates its `etag`, and triggers a commit.
@@ -201,7 +177,7 @@ actor NCMetadataStore {
             }
         }
 
-        await commit(forced: session == NCNetworking.shared.sessionDownload)
+        await flush(forced: session == NCNetworking.shared.sessionDownload)
     }
 
     /// Marks a upload as completed, updates its `ocid, etag, size, date`, and triggers a commit.
@@ -238,7 +214,7 @@ actor NCMetadataStore {
             }
         }
 
-        await commit(forced: session == NCNetworking.shared.sessionUpload)
+        await flush(forced: session == NCNetworking.shared.sessionUpload)
     }
 
     /// Removes a specific cached item and commits the change.
@@ -254,7 +230,7 @@ actor NCMetadataStore {
         }
 
         if removed {
-            await commit()
+            await flush()
         }
     }
 
@@ -267,7 +243,7 @@ actor NCMetadataStore {
         }
 
         if removed {
-            await commit()
+            await flush()
         }
     }
 
@@ -280,7 +256,7 @@ actor NCMetadataStore {
         }
 
         if removed {
-            await commit()
+            await flush()
         }
     }
 
@@ -300,31 +276,24 @@ actor NCMetadataStore {
         let removedCount = before - metadataItemsCache.count
 
         if removedCount > 0 {
-            await commit()
+            await flush()
         }
     }
 
     /// Updates `progress` for an item and conditionally triggers a flush (0%, 10%, … 100%).
     func transferProgress(serverUrl: String, fileName: String, taskIdentifier: Int, progress: Double) async {
-        var updated = false
         if let idx = metadataItemsCache.firstIndex(where: {
             $0.serverUrl == serverUrl &&
             $0.fileName == fileName &&
             $0.taskIdentifier == taskIdentifier
         }) {
             metadataItemsCache[idx].progress = progress
-            updated = true
-        }
-
-        if updated,
-           progress == 0 || progress == 1 || (progress * 100).truncatingRemainder(dividingBy: 10) == 0 {
-            await commit()
         }
     }
 
     /// Forces an immediate Realm sync, bypassing debounce logic.
     func forcedSyncRealm() async {
-        await commit(forced: true)
+        await flush(forced: true)
     }
 
     // MARK: - Private
@@ -348,111 +317,31 @@ actor NCMetadataStore {
     }
 
     /// Serializes and atomically writes the cache to disk, respecting batching thresholds.
-    private func commit(forced: Bool = false) async {
-        guard let url = self.storeURL else {
+    private func flush(forced: Bool = false) async {
+        guard let url = storeURL,
+              forced || isStoreInBackground() else {
             return
         }
-        var didWrite = false
 
-        func diskStore() {
+        let snapshot = self.metadataItemsCache
+        let encoder = self.encoder
+
+        let success = await Task.detached(priority: .utility) { () -> Bool in
             do {
                 try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
-                let data = try encoder.encode(metadataItemsCache)
+                let data = try encoder.encode(snapshot)
                 try data.write(to: url, options: .atomic)
-                lastPersist = CFAbsoluteTimeGetCurrent()
-                changeCounter = 0
-                didWrite = true
+                return true
             } catch {
-                nkLog(tag: NCGlobal.shared.logTagMetadataStore, emoji: .error, message: "Force flush to disk failed: \(error)")
+                nkLog(tag: NCGlobal.shared.logTagMetadataStore, emoji: .error,
+                      message: "Flush failed: \(error)")
+                return false
             }
-        }
+        }.value
 
-        #if EXTENSION
-        diskStore()
-        #else
-        if await appIsInBackground() || forced {
-            diskStore()
-        }
-        #endif
-
-        if !didWrite {
-            changeCounter &+= 1
-            let tooManyChanges = changeCounter >= batchThreshold
-            let tooOld = (CFAbsoluteTimeGetCurrent() - lastPersist) >= maxLatencySec
-            if tooManyChanges || tooOld {
-                diskStore()
-            }
-        }
-
-        if didWrite {
+        if success {
             scheduleSyncRealm()
         }
-    }
-
-    /// Returns a dynamic latency (in seconds) for debounce flushes,
-    /// proportional to the number of cached items.
-    /// - 1 item  → 3s
-    /// - 10 items → 5s
-    /// - 50+ items → 10s
-    private func dynamicLatency() -> TimeInterval {
-        let count = metadataItemsCache.count
-        var sec: TimeInterval = 0
-
-        switch count {
-        case 0...1:
-            sec = 2
-        case 2..<10:
-            sec = 5
-        case 10..<50:
-            sec = 10
-        default:
-            sec = 15
-        }
-
-        nkLog(tag: NCGlobal.shared.logTagMetadataStore, emoji: .debug, message: "Latency: \(sec) sec.", consoleOnly: true)
-
-        return sec
-    }
-
-    private func onTimerFired(_ timer: DispatchSourceTimer) async {
-        await commit()
-
-        let newLatency = dynamicLatency()
-        if currentLatency != newLatency {
-            timer.schedule(deadline: .now() + newLatency, repeating: newLatency)
-            currentLatency = newLatency
-        }
-    }
-
-    /// Starts or restarts the periodic debounce timer (runs every `maxLatencySec`).
-    private func startDebounceTimer() {
-        guard debounceTimer == nil else {
-            return
-        }
-
-        let t = DispatchSource.makeTimerSource(queue: debounceQueue)
-        let initial = dynamicLatency()
-        currentLatency = initial
-        t.schedule(deadline: .now() + initial, repeating: initial)
-
-        t.setEventHandler { [weak self, weak t] in
-            guard let self, let timer = t else {
-                return
-            }
-            Task {
-                await self.onTimerFired(timer)
-            }
-        }
-
-        t.resume()
-        debounceTimer = t
-    }
-
-    /// Stops and releases the debounce timer if present.
-    private func stopDebounceTimer() {
-        debounceTimer?.cancel()
-        debounceTimer = nil
-        currentLatency = nil
     }
 
     /// Reloads the JSON snapshot from disk and removes orphaned items.
@@ -479,7 +368,7 @@ actor NCMetadataStore {
 
     /// Prunes items not present in Realm (or with status `.normal`).
     private func checkOrphaned() async {
-        if await appIsInBackground() {
+        if isStoreInBackground() {
             return
         }
 
@@ -558,7 +447,7 @@ actor NCMetadataStore {
 
     /// Runs on a background thread and awaits Realm async operations.
     private func syncRealm() async {
-        if await appIsInBackground() {
+        if isStoreInBackground() {
             return
         }
 
@@ -616,14 +505,12 @@ actor NCMetadataStore {
 
     #if !EXTENSION
     @inline(__always)
-    private func appIsInBackground() async -> Bool {
-        await MainActor.run {
-            UIApplication.shared.applicationState == .background
-        }
+    private func isStoreInBackground() -> Bool {
+       return isAppInBackground
     }
     #else
     @inline(__always)
-    private func appIsInBackground() async -> Bool {
+    private func isStoreInBackground() -> Bool {
         return false
     }
     #endif
