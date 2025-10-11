@@ -104,13 +104,13 @@ actor NCMetadataStore {
     private func setupLifecycleFlush() {
         let willResignActiveNotification = NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: nil) { [weak self] _ in
             Task { [weak self] in
-                await self?.flush(forced: true)
+                await self?.forcedFush()
             }
         }
 
         let didEnterBackgroundNotification = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { [weak self] _ in
             Task { [weak self] in
-                await self?.flush(forced: true)
+                await self?.forcedFush()
             }
         }
 
@@ -291,8 +291,8 @@ actor NCMetadataStore {
         }
     }
 
-    /// Forces an immediate Realm sync, bypassing debounce logic.
-    func forcedSyncRealm() async {
+    /// Forces an immediate
+    func forcedFush() async {
         await flush(forced: true)
     }
 
