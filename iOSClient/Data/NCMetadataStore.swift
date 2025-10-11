@@ -37,7 +37,7 @@ struct MetadataItem: Codable {
 actor NCMetadataStore {
     static let shared = NCMetadataStore()
 
-    var metadataItemsCache: [MetadataItem] = [] {
+    private var metadataItemsCache: [MetadataItem] = [] {
         didSet {
             // print("Array changed, count: \(metadataItemsCache.count)")
         }
@@ -102,14 +102,9 @@ actor NCMetadataStore {
     /// - Forces flush on `didEnterBackground`
     /// - Reloads and restarts timer on `didBecomeActive`
     private func setupLifecycleFlush() {
-        let willResignActiveNotification = NotificationCenter.default.addObserver(forName: UIApplication.willResignActiveNotification, object: nil, queue: nil) { [weak self] _ in
+        let willResignActiveNotification = NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { [weak self] _ in
             Task { [weak self] in
-                await self?.forcedFush()
-            }
-        }
-
-        let didEnterBackgroundNotification = NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { [weak self] _ in
-            Task { [weak self] in
+                try? await Task.sleep(nanoseconds: 100_000_000)
                 await self?.forcedFush()
             }
         }
@@ -120,7 +115,7 @@ actor NCMetadataStore {
             }
         }
 
-        observers = [willResignActiveNotification, didEnterBackgroundNotification, didBecomeActiveNotification]
+        observers = [willResignActiveNotification, didBecomeActiveNotification]
     }
 
     // MARK: Public API
@@ -296,6 +291,10 @@ actor NCMetadataStore {
         await flush(forced: true)
     }
 
+    func countCache() async -> Int {
+        return metadataItemsCache.count
+    }
+
     // MARK: - Private
 
     /// Merges two metadata items, preferring non-nil fields from the new value.
@@ -325,6 +324,8 @@ actor NCMetadataStore {
 
         let snapshot = self.metadataItemsCache
         let encoder = self.encoder
+
+        nkLog(tag: NCGlobal.shared.logTagMetadataStore, emoji: .info, message: "Flushed \(metadataItemsCache.count) items", consoleOnly: true)
 
         let success = await Task.detached(priority: .utility) { () -> Bool in
             do {
@@ -372,44 +373,24 @@ actor NCMetadataStore {
             return
         }
 
-        let statusNormal = NCGlobal.shared.metadataStatusNormal
         let transfers: Set<String> = Set(metadataItemsCache.compactMap { $0.ocIdTransfer })
         let ocids: Set<String> = Set(metadataItemsCache.compactMap { $0.ocId })
 
         if !transfers.isEmpty || !ocids.isEmpty {
-            let predicate = NSPredicate(format: "(ocIdTransfer IN %@) OR (ocId IN %@)", Array(transfers), Array(ocids))
+            let predicate = NSPredicate(format: "((ocIdTransfer IN %@) OR (ocId IN %@)) AND (status IN %@)", Array(transfers), Array(ocids), [NCGlobal.shared.metadataStatusDownloading, NCGlobal.shared.metadataStatusUploading])
             let metadatas = NCManageDatabase.shared.getMetadatas(predicate: predicate)
-
-            // No id found
             let foundTransfers: Set<String> = Set(metadatas.compactMap { $0.ocIdTransfer })
             let foundOcids: Set<String> = Set(metadatas.compactMap { $0.ocId })
-
-            // sessionStatus normal
-            let normalTransfers: Set<String> = Set(metadatas.lazy.filter { $0.status == statusNormal }.compactMap { $0.ocIdTransfer })
-            let normalOcids: Set<String> = Set(metadatas.lazy.filter { $0.status == statusNormal }.compactMap { $0.ocId })
-
-            // No Task Identifier
-            let taskIdentifierTransfers: Set<String> = Set(metadatas.lazy.filter { $0.sessionTaskIdentifier == 0 }.compactMap { $0.ocIdTransfer })
-            let taskIdentifierOcids: Set<String> = Set(metadatas.lazy.filter { $0.sessionTaskIdentifier == 0 }.compactMap { $0.ocId })
 
             let before = metadataItemsCache.count
             metadataItemsCache.removeAll { item in
                 let ocIdTransfer = item.ocIdTransfer
                 let ocId = item.ocId
-
                 let hasMatch =
                     (ocIdTransfer != nil && foundTransfers.contains(ocIdTransfer!)) ||
                     (ocId != nil && foundOcids.contains(ocId!))
 
-                let isInactive =
-                    (ocIdTransfer != nil && normalTransfers.contains(ocIdTransfer!)) ||
-                    (ocId != nil && normalOcids.contains(ocId!))
-
-                let zeroTaskIdentifier =
-                    (ocIdTransfer != nil && taskIdentifierTransfers.contains(ocIdTransfer!)) ||
-                    (ocId != nil && taskIdentifierOcids.contains(ocId!))
-
-                return (!hasMatch) || isInactive || zeroTaskIdentifier
+                return !hasMatch
             }
 
             let removed = before - metadataItemsCache.count
