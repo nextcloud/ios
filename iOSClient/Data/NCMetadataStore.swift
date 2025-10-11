@@ -540,24 +540,19 @@ actor NCMetadataStore {
     ///
     /// Safe to call from any thread.
     private func scheduleSyncRealm() {
-        let shouldStart: Bool = {
-            if isSyncingRealm {
-                return false
-            }
-            isSyncingRealm = true
-            return true
-        }()
-
-        guard shouldStart else {
+        guard !isSyncingRealm else {
             return
         }
+        isSyncingRealm = true
 
         Task { [weak self] in
-            guard let self else {
-                return
+            guard let self else { return }
+            defer {
+                Task {
+                    await self.finishSyncRealm()
+                }
             }
             await self.syncRealm()
-            await self.finishSyncRealm()
         }
     }
 
