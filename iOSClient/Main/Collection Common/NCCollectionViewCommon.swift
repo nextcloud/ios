@@ -149,7 +149,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session) && capabilities.recommendations
     }
 
-    internal let debouncer = NCDebouncer(delay: 1)
+    internal let debouncer = NCDebouncer()
 
     // MARK: - View Life Cycle
 
