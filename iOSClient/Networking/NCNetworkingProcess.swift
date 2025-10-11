@@ -115,6 +115,16 @@ actor NCNetworkingProcess {
             }
 
             let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal))
+
+            // Force Push Metadata Store
+            let countWaiting = metadatas.filter { $0.status == self.global.metadataStatusWaitDownload || $0.status == self.global.metadataStatusWaitUpload }.count
+            let countMetadataStore = await NCMetadataStore.shared.countCache()
+
+            if countWaiting == 0,
+               countMetadataStore > 0 {
+                await NCMetadataStore.shared.forcedFush()
+            }
+
             if !metadatas.isEmpty {
                 let tasks = await networking.getAllDataTask()
                 let hasSyncTask = tasks.contains { $0.taskDescription == global.taskDescriptionSynchronization }
@@ -176,7 +186,10 @@ actor NCNetworkingProcess {
 
         // if less than 20% exit
         if processRate > 0.2 {
-            nkLog(debug: "Process rate \(processRate)")
+            let countMetadataStore = await NCMetadataStore.shared.countCache()
+            if countMetadataStore >= NCBrandOptions.shared.numMaximumProcess {
+                await NCMetadataStore.shared.forcedFush()
+            }
             return
         }
         var availableProcess = NCBrandOptions.shared.numMaximumProcess - (counterDownloading + counterUploading)
