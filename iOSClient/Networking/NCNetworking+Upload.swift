@@ -293,24 +293,16 @@ extension NCNetworking {
 
         await NCManageDatabase.shared.replaceMetadataAsync(id: metadata.ocIdTransfer, metadata: metadata)
 
-        let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase)
-
-        if metadata.sessionSelector == self.global.selectorUploadFileNODelete {
-            await self.utilityFileSystem.moveFileAsync(atPath: fileNamePath,
-                                                       toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, userId: metadata.userId, urlBase: metadata.urlBase))
-            await NCManageDatabase.shared.addLocalFilesAsync(metadatas: [metadata])
-        } else {
-            self.utilityFileSystem.removeFile(atPath: fileNamePath)
+        let results = await helperMetadataSuccess(metadata: metadata)
+        if let localFile = results.localFile {
+            await NCManageDatabase.shared.addLocalFilesAsync(metadatas: [localFile])
         }
-
-        // Update the auto upload data
-        if metadata.sessionSelector == self.global.selectorUploadAutoUpload,
-           let serverUrlBase = metadata.autoUploadServerUrlBase {
-            await NCManageDatabase.shared.addAutoUploadTransferAsync(account: metadata.account,
-                                                                     serverUrlBase: serverUrlBase,
-                                                                     fileName: metadata.fileNameView,
-                                                                     assetLocalIdentifier: metadata.assetLocalIdentifier,
-                                                                     date: metadata.creationDate as Date)
+        if let livePhoto = results.livePhoto {
+            await NCManageDatabase.shared.setLivePhotoVideo(metadatas: [livePhoto])
+            await NCNetworking.shared.setLivePhoto(account: metadata.account)
+        }
+        if let tblAutoUpload = results.autoUpload {
+            await NCManageDatabase.shared.addAutoUploadTransferAsync([tblAutoUpload])
         }
 
         await self.transferDispatcher.notifyAllDelegates { delegate in
@@ -361,32 +353,15 @@ extension NCNetworking {
             serversUrl.insert(metadata.serverUrl)
             accounts.insert(metadata.account)
 
-            // File System
-            let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase)
-
-            if metadata.sessionSelector == NCGlobal.shared.selectorUploadFileNODelete {
-                let fineManeToPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, userId: metadata.userId, urlBase: metadata.urlBase)
-                await utilityFileSystem.moveFileAsync(atPath: fileNamePath, toPath: fineManeToPath)
-                metadatasLocalFiles.append(tableMetadata(value: metadata))
-            } else {
-                utilityFileSystem.removeFile(atPath: fileNamePath)
+            let results = await helperMetadataSuccess(metadata: metadata)
+            if let localFile = results.localFile {
+                metadatasLocalFiles.append(localFile)
             }
-
-            // Live Photo
-            let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
-            if capabilities.isLivePhotoServerAvailable,
-               metadata.isLivePhoto {
-                metadatasLivePhoto.append(tableMetadata(value: metadata))
+            if let livePhoto = results.livePhoto {
+                metadatasLivePhoto.append(livePhoto)
             }
-
-            // Auto Upload
-            if metadata.sessionSelector == self.global.selectorUploadAutoUpload,
-               let serverUrlBase = metadata.autoUploadServerUrlBase {
-                autoUploadTransfers.append(tableAutoUploadTransfer(account: metadata.account,
-                                                                 serverUrlBase: serverUrlBase,
-                                                                 fileName: metadata.fileNameView,
-                                                                 assetLocalIdentifier: metadata.assetLocalIdentifier,
-                                                                 date: metadata.creationDate as Date))
+            if let tblAutoUpload = results.autoUpload {
+                autoUploadTransfers.append(tblAutoUpload)
             }
 
             await NCMetadataStore.shared.removeItem(forOcIdTransfer: metadata.ocIdTransfer)
@@ -411,6 +386,42 @@ extension NCNetworking {
         }
 
         return metadatasReturn
+    }
+
+    private func helperMetadataSuccess(metadata: tableMetadata) async -> (localFile: tableMetadata?, livePhoto: tableMetadata?, autoUpload: tableAutoUploadTransfer?) {
+        var localFile: tableMetadata?
+        var livePhoto: tableMetadata?
+        var autoUpload: tableAutoUploadTransfer?
+
+        // File System
+        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase)
+
+        if metadata.sessionSelector == NCGlobal.shared.selectorUploadFileNODelete {
+            let fineManeToPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase)
+            await utilityFileSystem.moveFileAsync(atPath: fileNamePath, toPath: fineManeToPath)
+            localFile = tableMetadata(value: metadata)
+        } else {
+            utilityFileSystem.removeFile(atPath: fileNamePath)
+        }
+
+        // Live Photo
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
+        if capabilities.isLivePhotoServerAvailable,
+           metadata.isLivePhoto {
+            livePhoto = tableMetadata(value: metadata)
+        }
+
+        // Auto Upload
+        if metadata.sessionSelector == self.global.selectorUploadAutoUpload,
+           let serverUrlBase = metadata.autoUploadServerUrlBase {
+            autoUpload = tableAutoUploadTransfer(account: metadata.account,
+                                                 serverUrlBase: serverUrlBase,
+                                                 fileName: metadata.fileNameView,
+                                                 assetLocalIdentifier: metadata.assetLocalIdentifier,
+                                                 date: metadata.creationDate as Date)
+        }
+
+        return (localFile: localFile, livePhoto: livePhoto, autoUpload: autoUpload)
     }
 
     // MARK: - UPLOAD ERROR
@@ -648,3 +659,4 @@ extension NCNetworking {
         }
     }
 }
+
