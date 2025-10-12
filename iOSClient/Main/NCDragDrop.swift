@@ -224,7 +224,7 @@ class NCDragDrop: NSObject {
                                                                creationDate: metadata.creationDate as Date,
                                                                dateModificationFile: metadata.date as Date,
                                                                account: session.account,
-                                                               withUploadComplete: false) { request in
+                                                               performPostProcessing: false) { request in
                 uploadRequest = request
             } progressHandler: { _, _, fractionCompleted in
                 let status = NSLocalizedString("_status_uploading_", comment: "").lowercased()

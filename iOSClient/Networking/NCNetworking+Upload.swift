@@ -17,7 +17,7 @@ extension NCNetworking {
                     dateModificationFile: Date,
                     account: String,
                     metadata: tableMetadata? = nil,
-                    withUploadComplete: Bool = true,
+                    performPostProcessing: Bool = true,
                     customHeaders: [String: String]? = nil,
                     requestHandler: @escaping (_ request: UploadRequest) -> Void = { _ in },
                     taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
@@ -74,7 +74,7 @@ extension NCNetworking {
             await progressQuantizer.clear(serverUrlFileName: serverUrlFileName)
         }
 
-        if withUploadComplete, let metadata {
+        if performPostProcessing, let metadata {
             await self.uploadComplete(withMetadata: metadata, ocId: results.ocId, etag: results.etag, date: results.date, size: results.size, error: results.error)
         }
 
@@ -85,7 +85,7 @@ extension NCNetworking {
 
     @discardableResult
     func uploadChunkFile(metadata: tableMetadata,
-                         withUploadComplete: Bool = true,
+                         performPostProcessing: Bool = true,
                          customHeaders: [String: String]? = nil,
                          numChunks: @escaping (_ num: Int) -> Void = { _ in },
                          counterChunk: @escaping (_ counter: Int) -> Void = { _ in },
@@ -191,8 +191,13 @@ extension NCNetworking {
             return results
         }
 
-        if withUploadComplete {
+        if performPostProcessing {
             await self.uploadComplete(withMetadata: metadata, ocId: results.file?.ocId, etag: results.file?.etag, date: results.file?.date, size: results.file?.size ?? 0, error: results.error)
+            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferChange(status: NCGlobal.shared.networkingStatusUploaded,
+                                        metadata: metadata,
+                                        error: results.error)
+            }
         }
 
         return results
