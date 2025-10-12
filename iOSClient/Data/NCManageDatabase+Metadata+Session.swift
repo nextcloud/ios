@@ -39,7 +39,7 @@ extension NCManageDatabase {
                                  progress: Double? = nil) async -> tableMetadata? {
         var query: NSPredicate = NSPredicate()
         if let ocId {
-            query = NSPredicate(format: "ocId == %@", ocId)
+            query = NSPredicate(format: "ocId == %@ OR fileId == %@", ocId, ocId)
         } else if let account, let serverUrlFileName {
             query = NSPredicate(format: "account == %@ AND serverUrlFileName == %@", account, serverUrlFileName)
         } else {

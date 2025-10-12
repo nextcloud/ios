@@ -384,7 +384,7 @@ extension NCNetworking {
 
                 ocIds.insert(metadata.ocId)
                 if metadata.livePhotoFile.isEmpty == false {
-
+                    ocIds.insert(metadata.livePhotoFile)
                 }
                 serverUrls.insert(metadata.serverUrl)
             }
