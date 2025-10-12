@@ -151,7 +151,7 @@ extension NCNetworking {
 
     // MARK: - DOWNLOAD SUCCESS METADATA ITEM
 
-    func downloadSuccessMetadataItems(_ metadataItems: [MetadataItem]) async -> [tableMetadata] {
+    func downloadSuccess(WithMetadataItems metadataItems: [MetadataItem]) async -> [tableMetadata] {
         guard !metadataItems.isEmpty else {
             return []
         }

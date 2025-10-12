@@ -76,9 +76,9 @@ extension NCNetworking {
 
         if performPostProcessing, let metadata {
             if results.error == .success, let ocId = results.ocId {
-                await uploadSuccessMetadata(metadata, ocId: ocId, etag: results.etag, date: results.date, size: results.size)
+                await uploadSuccess(withMetadata: metadata, ocId: ocId, etag: results.etag, date: results.date)
             } else {
-                await self.uploadError(withMetadata: metadata, error: results.error)
+                await uploadError(withMetadata: metadata, error: results.error)
             }
         }
 
@@ -197,9 +197,9 @@ extension NCNetworking {
 
         if performPostProcessing {
             if results.error == .success, let file = results.file {
-                await uploadSuccessMetadata(metadata, ocId: file.ocId, etag: file.etag, date: file.date, size: file.size)
+                await uploadSuccess(withMetadata: metadata, ocId: file.ocId, etag: file.etag, date: file.date)
             } else {
-                await self.uploadError(withMetadata: metadata, error: results.error)
+                await uploadError(withMetadata: metadata, error: results.error)
             }
         }
 
@@ -270,12 +270,11 @@ extension NCNetworking {
 
     // MARK: - UPLOAD SUCCESS
 
-    func uploadSuccessMetadata(_ metadata: tableMetadata,
+    private func uploadSuccess(withMetadata metadata: tableMetadata,
                                ocId: String,
                                etag: String?,
-                               date: Date?,
-                               size: Int64) async {
-        nkLog(success: "Uploaded file: " + metadata.serverUrlFileName + ", (\(size) bytes)")
+                               date: Date?) async {
+        nkLog(success: "Uploaded file: " + metadata.serverUrlFileName)
 
         metadata.uploadDate = (date as? NSDate) ?? NSDate()
         metadata.etag = etag ?? ""
@@ -312,7 +311,7 @@ extension NCNetworking {
         }
     }
 
-    func uploadSuccessMetadataItems(_ metadataItems: [MetadataItem]) async -> [tableMetadata] {
+    func uploadSuccess(WithMetadataItems metadataItems: [MetadataItem]) async -> [tableMetadata] {
         guard !metadataItems.isEmpty else {
             return []
         }
@@ -332,6 +331,8 @@ extension NCNetworking {
                   let ocId = transferItem.ocId else {
                 continue
             }
+
+            nkLog(success: "Uploaded file: " + metadata.serverUrlFileName)
 
             metadata.uploadDate = (transferItem.date as? NSDate) ?? NSDate()
             metadata.etag = etag

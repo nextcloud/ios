@@ -455,9 +455,9 @@ actor NCMetadataStore {
         }
 
         // UPLOAD
-        let metadatasUploaded = await NCNetworking.shared.uploadSuccessMetadataItems(snapshotUpload)
+        let metadatasUploaded = await NCNetworking.shared.uploadSuccess(WithMetadataItems: snapshotUpload)
         // DOWNLOAD
-        let metadatasDownloaded = await NCNetworking.shared.downloadSuccessMetadataItems(snapshotDownload)
+        let metadatasDownloaded = await NCNetworking.shared.downloadSuccess(WithMetadataItems: snapshotDownload)
 
         // TransferDispatcher
         //
