@@ -364,16 +364,6 @@ extension NCManageDatabase {
 
     // MARK: - Realm Write
 
-    func addMetadataIfNeededAsync(_ metadata: tableMetadata, sync: Bool = true) {
-        let detached = metadata.detachedCopy()
-
-        performRealmWrite(sync: sync) { realm in
-            if realm.object(ofType: tableMetadata.self, forPrimaryKey: metadata.ocId) == nil {
-                realm.add(detached)
-            }
-        }
-    }
-
     func addAndReturnMetadata(_ metadata: tableMetadata) -> tableMetadata? {
         let detached = metadata.detachedCopy()
 
