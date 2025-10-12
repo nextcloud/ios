@@ -193,11 +193,6 @@ extension NCNetworking {
 
         if performPostProcessing {
             await self.uploadComplete(withMetadata: metadata, ocId: results.file?.ocId, etag: results.file?.etag, date: results.file?.date, size: results.file?.size ?? 0, error: results.error)
-            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferChange(status: NCGlobal.shared.networkingStatusUploaded,
-                                        metadata: metadata,
-                                        error: results.error)
-            }
         }
 
         return results
@@ -265,7 +260,7 @@ extension NCNetworking {
         }
     }
 
-    // MARK: - UPLOAD SUCCESS
+    // MARK: - UPLOAD SUCCESS METADATA ITEM
 
     func uploadSuccessMetadataItems(_ metadataItems: [MetadataItem]) async -> [tableMetadata] {
         guard !metadataItems.isEmpty else {
