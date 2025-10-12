@@ -114,7 +114,7 @@ actor NCNetworkingProcess {
                 return
             }
 
-            let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal))
+            let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal), withLimit: NCBrandOptions.shared.numMaximumProcess) ?? []
 
             // Force Push Metadata Store
             let countWaiting = metadatas.filter { $0.status == self.global.metadataStatusWaitDownload || $0.status == self.global.metadataStatusWaitUpload }.count
@@ -134,7 +134,7 @@ actor NCNetworkingProcess {
                     ScreenAwakeManager.shared.mode = resultsScreenAwake.isEmpty && !hasSyncTask ? .off : NCPreferences().screenAwakeMode
                 }
 
-                await runMetadataPipelineAsync()
+                await runMetadataPipelineAsync(metadatas: metadatas)
 
                 // TODO: Check temperature
 
@@ -172,14 +172,8 @@ actor NCNetworkingProcess {
         await NCManageDatabase.shared.clearAssetLocalIdentifiersAsync(localIdentifiers)
     }
 
-    private func runMetadataPipelineAsync() async {
+    private func runMetadataPipelineAsync(metadatas: [tableMetadata]) async {
         let database = NCManageDatabase.shared
-        let metadatas = await database.getMetadatasAsync(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal), withLimit: NCBrandOptions.shared.numMaximumProcess)
-        guard let metadatas,
-              !metadatas.isEmpty else {
-            return
-        }
-
         let counterDownloading = metadatas.filter { $0.status == self.global.metadataStatusDownloading }.count
         let counterUploading = metadatas.filter { $0.status == self.global.metadataStatusUploading }.count
         let processRate: Double = Double(counterDownloading + counterUploading) / Double(NCBrandOptions.shared.numMaximumProcess)
