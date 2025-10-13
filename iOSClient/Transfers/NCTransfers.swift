@@ -37,8 +37,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         listLayout.itemHeight = 105
         self.database.setLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList)
-
-        observeMetadata()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -160,7 +158,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         let key = "\(metadata.serverUrl)|\(metadata.fileNameView)"
         let progress = transferProgressMap[key] ?? 0
         if progress == 0 {
-            cell.setProgress(progress: Float(metadata.progress))
+            // cell.setProgress(progress: Float(metadata.progress))
         } else {
             cell.setProgress(progress: progress)
         }
@@ -315,44 +313,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
                     cell.labelInfo?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - " + self.utilityFileSystem.transformedSize(totalBytes)
                 }
             }
-        }
-    }
-
-    func observeMetadata() {
-        do {
-            let realm = try Realm()
-            let results = realm.objects(tableMetadata.self)
-            notificationToken = results.observe { [weak self] change in
-                guard let self else {
-                    return
-                }
-                switch change {
-                case .initial:
-                    break
-                case .update(let collection, _, _, let modifications):
-                    for index in modifications {
-                        guard index < collection.count else {
-                            continue
-                        }
-                        let modifiedObject = collection[index]
-
-                        for case let cell as NCTransferCell in self.collectionView.visibleCells {
-                            guard cell.serverUrl == modifiedObject.serverUrl,
-                                  cell.fileName == modifiedObject.fileName else {
-                                continue
-                            }
-                            let newProgress = Float(modifiedObject.progress)
-                            if abs(cell.progressView.progress - newProgress) > 0.001 {
-                                cell.setProgress(progress: newProgress)
-                            }
-                        }
-                    }
-                case .error:
-                    break
-                }
-            }
-        } catch let error as NSError {
-            NSLog("Could not access database: ", error)
         }
     }
 }

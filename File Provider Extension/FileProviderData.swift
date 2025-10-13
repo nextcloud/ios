@@ -224,7 +224,6 @@ class FileProviderData: NSObject {
             metadata.sessionSelector = ""
             metadata.sessionDate = nil
             metadata.sessionTaskIdentifier = 0
-            metadata.progress = 0
             metadata.status = NCGlobal.shared.metadataStatusNormal
 
             await self.database.addMetadataAsync(metadata)
