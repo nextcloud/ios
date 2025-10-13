@@ -5,17 +5,21 @@ import UIKit
 // MARK: - Row View
 
 struct TransferRowView: View {
-    let item: MetadataItem
     @ObservedObject var model: TransfersViewModel
+    @State private var isPressing = false
+
+    let item: MetadataItem
+
     let onCancel: () async -> Void
     let onForceStart: () async -> Void
-
-    @State private var isPressing = false
 
     var body: some View {
         VStack(spacing: 8) {
             HStack(alignment: .top, spacing: 12) {
-                iconView
+                Image(systemName: "doc.circle")
+                    .resizable()
+                    .frame(width: 44, height: 44)
+                    .cornerRadius(8)
 
                 VStack(alignment: .leading, spacing: 6) {
                     // Nome file
@@ -89,27 +93,28 @@ struct TransferRowView: View {
 
     // MARK: - Helpers
 
-    private var iconView: some View {
-        Image(systemName: "doc.circle")
-            .resizable()
-            .frame(width: 44, height: 44)
-            .cornerRadius(8)
-    }
-
     private var inProgress: Bool {
-        if let s = item.status { return NCGlobal.shared.metadatasStatusInProgress.contains(s) }
+        if let status = item.status {
+            return NCGlobal.shared.metadatasStatusInProgress.contains(status)
+        }
         return false
     }
 
     private var inWaiting: Bool {
-        if let s = item.status { return NCGlobal.shared.metadatasStatusInWaiting.contains(s) }
+        if let status = item.status {
+            return NCGlobal.shared.metadatasStatusInWaiting.contains(status)
+        }
         return false
     }
 
     private var actionIconName: String {
-        if inProgress { return "stop.circle" }
-        if inWaiting { return "play.circle" }
-        return "ellipsis.circle"
+        if inProgress {
+            return "stop.circle"
+        } else if inWaiting {
+            return "play.circle"
+        } else {
+            return "ellipsis.circle"
+        }
     }
 
     private var actionAccessibilityLabel: String {
@@ -175,33 +180,32 @@ struct TransfersSummaryHeader: View {
 struct TransfersView: View {
     @Environment(\.dismiss) private var dismiss
 
-    @StateObject private var viewModel: TransfersViewModel
+    @StateObject private var model: TransfersViewModel
     private let isPreviewMode: Bool
 
-    // Init reale (produzione)
     init(session: NCSession.Session) {
-        _viewModel = StateObject(wrappedValue: TransfersViewModel(session: session))
+        _model = StateObject(wrappedValue: TransfersViewModel(session: session))
         self.isPreviewMode = false
     }
 
-    // Init preview (solo DEBUG)
+    // Init preview
     #if DEBUG
     init(previewItems: [MetadataItem]) {
-        let vm = TransfersViewModel(session: NCSession.Session(account: "", urlBase: "", user: "", userId: ""))
-        vm.items = previewItems
-        _viewModel = StateObject(wrappedValue: vm)
+        let model = TransfersViewModel(session: NCSession.Session(account: "", urlBase: "", user: "", userId: ""))
+        model.items = previewItems
+        _model = StateObject(wrappedValue: model)
         self.isPreviewMode = true
     }
     #endif
 
     // Contatori per header
     private var inProgressCount: Int {
-        viewModel.items.compactMap(\.status)
+        model.items.compactMap(\.status)
             .filter { NCGlobal.shared.metadatasStatusInProgress.contains($0) }
             .count
     }
     private var inWaitingCount: Int {
-        viewModel.items.compactMap(\.status)
+        model.items.compactMap(\.status)
             .filter { NCGlobal.shared.metadatasStatusInWaiting.contains($0) }
             .count
     }
@@ -209,24 +213,26 @@ struct TransfersView: View {
     var body: some View {
         NavigationView {
             contentView
-                .navigationTitle(viewModel.title)
+                .navigationTitle(model.title)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button(NSLocalizedString("_close_", comment: "")) { dismiss() }
                     }
                     ToolbarItem(placement: .primaryAction) {
                         Button(NSLocalizedString("_cancel_all_task_", comment: "")) {
-                            viewModel.cancelAll()
+                            model.cancelAll()
                         }
                     }
                 }
                 .task {
                     if !isPreviewMode {
-                        viewModel.startObserving()
-                        await viewModel.reload()
+                        model.startObserving()
+                        await model.reload()
                     }
                 }
-                .onDisappear { viewModel.stopObserving() }
+                .onDisappear {
+                    model.stopObserving()
+                }
         }
         .navigationViewStyle(.stack)
         .applyPresentationDetents()
@@ -236,9 +242,9 @@ struct TransfersView: View {
 
     @ViewBuilder
     private var contentView: some View {
-        if viewModel.isLoading {
+        if model.isLoading {
             loadingView
-        } else if viewModel.items.isEmpty {
+        } else if model.items.isEmpty {
             EmptyTransfersView()
         } else {
             listView
@@ -262,29 +268,34 @@ struct TransfersView: View {
                 inProgressCount: inProgressCount,
                 inWaitingCount: inWaitingCount
             )) {
-                ForEach(viewModel.items, id: \.id) { item in
-                    TransferRowView(
-                        item: item,
-                        model: viewModel,
-                        onCancel: { await
-                            viewModel.cancel(item: item)
-                        },
-                        onForceStart: {
-                            await viewModel.startTask(item: item)
-                        }
-                    )
-                    // Swipe actions sulla riga
+                ForEach(model.items, id: \.id) { item in
+                    TransferRowView(model: model,
+                                    item: item,
+                                    onCancel: {
+                                        await model.cancel(item: item)
+                                    },
+                                    onForceStart: {
+                                        await model.startTask(item: item)
+                                    })
+
+                    // Swipe
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                        if let s = item.status, NCGlobal.shared.metadatasStatusInProgress.contains(s) {
+                        if let status = item.status,
+                           NCGlobal.shared.metadatasStatusInProgress.contains(status) {
                             Button(role: .destructive) {
-                                Task { await viewModel.cancel(item: item) }
+                                Task {
+                                    await model.cancel(item: item)
+                                }
                             } label: {
                                 Label(NSLocalizedString("_cancel_", comment: ""), systemImage: "stop.circle")
                             }
                         }
-                        if let s = item.status, NCGlobal.shared.metadatasStatusInWaiting.contains(s) {
+                        if let status = item.status,
+                           NCGlobal.shared.metadatasStatusInWaiting.contains(status) {
                             Button {
-                                Task { await viewModel.startTask(item: item) }
+                                Task {
+                                    await model.startTask(item: item)
+                                }
                             } label: {
                                 Label(NSLocalizedString("_force_start_", comment: ""), systemImage: "play.circle")
                             }
@@ -297,7 +308,9 @@ struct TransfersView: View {
             }
         }
         .listStyle(.plain)
-        .conditionalRefreshable(enabled: !isPreviewMode) { await viewModel.reload() }
+        .conditionalRefreshable(enabled: !isPreviewMode) {
+            await model.reload()
+        }
     }
 }
 

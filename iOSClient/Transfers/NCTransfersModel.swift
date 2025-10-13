@@ -63,13 +63,19 @@ final class TransferEventsBridge {
         // Otherwise, wire your legacy delegates to post them (see adapter below).
         NotificationCenter.default.publisher(for: .NCTransferChange)
             .sink { [weak self] _ in
-                self?.debouncer.call { self?.onChange() }
+                guard let self else { return }
+                self.debouncer.call {
+                    self.onChange()
+                }
             }
             .store(in: &cancellables)
 
         NotificationCenter.default.publisher(for: .NCTransferReloadData)
             .sink { [weak self] _ in
-                self?.debouncer.call { self?.onChange() }
+                guard let self else { return }
+                self.debouncer.call {
+                    self.onChange()
+                }
             }
             .store(in: &cancellables)
 
@@ -91,7 +97,9 @@ final class TransferEventsBridge {
             .store(in: &cancellables)
     }
 
-    func unregister() { cancellables.removeAll() }
+    func unregister() {
+        cancellables.removeAll()
+    }
 }
 
 // MARK: - Legacy Delegate → Notification adapter
@@ -136,28 +144,23 @@ final class TransfersViewModel: ObservableObject {
 
     // Dependencies
     private let session: NCSession.Session
-    private let database: NCManageDatabase
-    private let networking: NCNetworking
-    private let utilityFS: NCUtilityFileSystem
+    private let database = NCManageDatabase.shared
+    private let networking = NCNetworking.shared
+    private let utilityFileSystem = NCUtilityFileSystem()
 
     private var eventBridge: TransferEventsBridge?
 
-    init(session: NCSession.Session,
-         database: NCManageDatabase = .shared,
-         networking: NCNetworking = .shared,
-         utilityFS: NCUtilityFileSystem = .init()) {
+    init(session: NCSession.Session) {
         self.session = session
-        self.database = database
-        self.networking = networking
-        self.utilityFS = utilityFS
     }
 
     /// Loads current transfer items using the new async source.
     func reload() async {
         isLoading = true
-        defer { isLoading = false }
-        let fetched = await database.getMetadataItemsTransfersAsync()
-        self.items = fetched ?? []
+        defer {
+            isLoading = false
+        }
+        self.items = await database.getMetadataItemsTransfersAsync()
     }
 
     /// Start observing transfer change/progress notifications.
@@ -184,28 +187,21 @@ final class TransfersViewModel: ObservableObject {
         eventBridge = nil
     }
 
-    /// Cancel a single transfer. Prefer addressing by `ocIdTransfer` if available.
     func cancel(item: MetadataItem) async {
-        /*
-        // Replace with your real cancel API (by ocIdTransfer / ocId / taskIdentifier)
-        if let ocIdTransfer = item.ocIdTransfer {
-            await networking.cancelTask(byOcIdTransfer: ocIdTransfer)
-        } else if let ocId = item.ocId {
-            await networking.cancelTask(byOcId: ocId)
-        } else if let taskId = item.taskIdentifier {
-            await networking.cancelTask(byTaskIdentifier: taskId)
-        }
-        */
         await reload()
     }
 
     func startTask(item: MetadataItem) async {
+        await reload()
     }
 
     /// Cancel all transfers.
     func cancelAll() {
         networking.cancelAllTask()
-        Task { try? await Task.sleep(nanoseconds: 150_000_000); await reload() }
+        Task {
+            try? await Task.sleep(nanoseconds: 150_000_000);
+            await reload()
+        }
     }
 
     /// Force start based on a seed item (replicates long-press -> startTask).
@@ -220,7 +216,7 @@ final class TransfersViewModel: ObservableObject {
     /// Human-readable path computed from serverUrl relative to home.
     func readablePath(for item: MetadataItem) -> String {
         guard let url = item.serverUrl else { return "/" }
-        let home = utilityFS.getHomeServer(session: session)
+        let home = utilityFileSystem.getHomeServer(session: session)
         var path = url.replacingOccurrences(of: home, with: "")
         if path.isEmpty { path = "/" }
         return path
@@ -237,7 +233,7 @@ final class TransfersViewModel: ObservableObject {
     /// Status tuple (symbol, status text, info text) derived from `status` and other fields.
     func status(for item: MetadataItem) -> (symbol: String?, status: String, info: String) {
         let sizeText: String = {
-            if let s = item.size { return utilityFS.transformedSize(s) }
+            if let s = item.size { return utilityFileSystem.transformedSize(s) }
             return ""
         }()
 
@@ -280,4 +276,3 @@ final class TransfersViewModel: ObservableObject {
         return nil
     }
 }
-
