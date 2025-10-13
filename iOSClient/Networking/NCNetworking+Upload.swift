@@ -241,7 +241,7 @@ extension NCNetworking {
             taskHandler(task)
 
             if let task, error == .success {
-                nkLog(debug: "Upload file \(metadata.fileNameView) with taskIdentifier \(task.taskIdentifier)")
+                nkLog(debug: "Uploading file \(metadata.fileNameView) with taskIdentifier \(task.taskIdentifier)")
 
                 if let metadata = await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
                                                                                         sessionTaskIdentifier: task.taskIdentifier,
@@ -331,7 +331,6 @@ extension NCNetworking {
                   let ocId = transferItem.ocId else {
                 continue
             }
-
             nkLog(success: "Uploaded file: " + metadata.serverUrlFileName)
 
             metadata.uploadDate = (transferItem.date as? NSDate) ?? NSDate()

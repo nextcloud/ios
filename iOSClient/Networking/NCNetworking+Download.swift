@@ -108,7 +108,7 @@ extension NCNetworking {
         taskHandler(task)
 
         if let task, error == .success {
-            nkLog(debug: " Download file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
+            nkLog(debug: " Downloading file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
 
             if let metadata = await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
                                                                                     sessionTaskIdentifier: task.taskIdentifier,
@@ -186,6 +186,7 @@ extension NCNetworking {
                 guard let item = (metadataItems.first { $0.ocId == metadata.ocId }) else {
                     continue
                 }
+                nkLog(success: "Downloaded file: " + metadata.serverUrlFileName)
 
                 if let etag = item.etag {
                     metadata.etag = etag
@@ -289,7 +290,6 @@ extension NCNetworking {
                                                            error: error)
             #else
             if error == .success {
-                nkLog(success: "Downloaded file: " + fileName)
                 await NCMetadataStore.shared.setDownloadCompleted(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier, etag: etag)
             } else {
                 // Remove Item on MetadataStore
