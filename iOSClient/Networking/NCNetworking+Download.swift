@@ -14,7 +14,6 @@ extension NCNetworking {
 
     @discardableResult
     func downloadFile(metadata: tableMetadata,
-                      performPostProcessing: Bool = true,
                       requestHandler: @escaping (_ request: DownloadRequest) -> Void = { _ in },
                       taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                       progressHandler: @escaping (_ progress: Progress) -> Void = { _ in })
@@ -75,19 +74,16 @@ extension NCNetworking {
 
         Task {
             await progressQuantizer.clear(serverUrlFileName: metadata.serverUrlFileName)
+            var error = NKError()
 
-            if performPostProcessing {
-                var error = NKError()
+            if results.afError?.isExplicitlyCancelledError ?? false || (results.afError?.underlyingError as? URLError)?.code.rawValue == -999 {
+                error = NKError(errorCode: self.global.errorRequestExplicityCancelled, errorDescription: "error request explicity cancelled")
+            }
 
-                if results.afError?.isExplicitlyCancelledError ?? false || (results.afError?.underlyingError as? URLError)?.code.rawValue == -999 {
-                    error = NKError(errorCode: self.global.errorRequestExplicityCancelled, errorDescription: "error request explicity cancelled")
-                }
-
-                if error == .success {
-                    await downloadSuccess(withMetadata: metadata, etag: results.etag)
-                } else {
-                    await downloadError(withMetadata: metadata, error: error)
-                }
+            if error == .success {
+                await downloadSuccess(withMetadata: metadata, etag: results.etag)
+            } else {
+                await downloadError(withMetadata: metadata, error: error)
             }
         }
 
@@ -299,7 +295,7 @@ extension NCNetworking {
                 // Remove Item on MetadataStore
                 await NCMetadataStore.shared.removeItem(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier)
 
-                if let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName))  {
+                if let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) {
                     await downloadError(withMetadata: metadata, error: error)
                 }
             }
