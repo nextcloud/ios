@@ -134,18 +134,11 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         return nil
     }
 
-    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        // nothing
-    }
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {}
 
-    override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        // nothing
-    }
+    override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {}
 
-    override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        // nothing
-    }
-
+    override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {}
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "transferCell", for: indexPath) as? NCTransferCell)!
@@ -155,7 +148,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.delegate = self
         cell.ocId = metadata.ocId
         cell.ocIdTransfer = metadata.ocIdTransfer
-        cell.user = metadata.ownerId
         cell.serverUrl = metadata.serverUrl
         cell.fileName = metadata.fileNameView
         cell.imageItem?.image = imageCache.getImageFile()

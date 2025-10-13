@@ -39,7 +39,6 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate {
 
     var ocId = ""
     var ocIdTransfer = ""
-    var user = ""
 
     var serverUrl: String = ""
     var fileName: String = ""
