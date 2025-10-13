@@ -22,21 +22,18 @@ struct TransferRowView: View {
                     .cornerRadius(8)
 
                 VStack(alignment: .leading, spacing: 6) {
-                    // Nome file
                     Text(item.fileName ?? "—")
                         .font(.headline)
                         .lineLimit(2)
 
-                    // Path leggibile
                     Text(model.readablePath(for: item))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
 
-                    // Stato + info
-                    let st = model.status(for: item)
-                    if !st.status.isEmpty {
-                        Text(st.status)
+                    let status = model.status(for: item)
+                    if !status.status.isEmpty {
+                        Text(status.status)
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                     }
@@ -45,20 +42,18 @@ struct TransferRowView: View {
                         Text(wwan)
                             .font(.footnote)
                             .foregroundStyle(.secondary)
-                    } else if !st.info.isEmpty {
-                        Text(st.info)
+                    } else if !status.info.isEmpty {
+                        Text(status.info)
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                     }
 
-                    // Progress lineare
                     ProgressView(value: Double(model.progress(for: item)))
                         .progressViewStyle(.linear)
                 }
 
                 Spacer(minLength: 8)
 
-                // Azione principale: Stop se InProgress, Play se InWaiting
                 if inProgress || inWaiting {
                     Button {
                         Task {
@@ -80,8 +75,12 @@ struct TransferRowView: View {
             .contentShape(Rectangle())
             .gesture(
                 LongPressGesture(minimumDuration: 0.3)
-                    .onChanged { _ in isPressing = true }
-                    .onEnded { _ in isPressing = false }
+                    .onChanged { _ in
+                        isPressing = true
+                    }
+                    .onEnded { _ in
+                        isPressing = false
+                    }
             )
 
             Divider()
@@ -118,8 +117,12 @@ struct TransferRowView: View {
     }
 
     private var actionAccessibilityLabel: String {
-        if inProgress { return "_cancel_" }
-        if inWaiting { return "_force_start_" }
+        if inProgress {
+            return "_cancel_"
+        }
+        if inWaiting {
+            return "_force_start_"
+        }
         return "_more_"
     }
 }
@@ -235,7 +238,7 @@ struct TransfersView: View {
                 }
         }
         .navigationViewStyle(.stack)
-        .applyPresentationDetents()
+        .presentationDetents([.medium, .large])
     }
 
     // MARK: - Subviews (aiuta il type-checker)
@@ -261,7 +264,6 @@ struct TransfersView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    /// Lista pulita: ForEach su `viewModel.items` (richiede `MetadataItem: Identifiable`).
     private var listView: some View {
         List {
             Section(header: TransfersSummaryHeader(
@@ -317,21 +319,12 @@ struct TransfersView: View {
 // MARK: - View helpers
 
 private extension View {
-    /// Applica `.refreshable` solo se `enabled == true`.
     @ViewBuilder
     func conditionalRefreshable(enabled: Bool, action: @escaping () async -> Void) -> some View {
         if enabled {
-            self.refreshable { await action() }
-        } else {
-            self
-        }
-    }
-
-    /// Protegge `.presentationDetents` con availability per evitare errori su iOS più vecchi.
-    @ViewBuilder
-    func applyPresentationDetents() -> some View {
-        if #available(iOS 16.0, *) {
-            self.presentationDetents([.medium, .large])
+            self.refreshable {
+                await action()
+            }
         } else {
             self
         }
@@ -342,8 +335,7 @@ private extension View {
 
 enum TransfersPresenter {
     static func present(from presenter: UIViewController, session: NCSession.Session) {
-        let root = TransfersView(session: session)
-        let hosting = UIHostingController(rootView: root)
+        let hosting = UIHostingController(rootView: TransfersView(session: session))
         let nav = UINavigationController(rootViewController: hosting)
         if #available(iOS 16.0, *) {
             nav.modalPresentationStyle = .pageSheet

@@ -230,10 +230,11 @@ final class TransfersViewModel: ObservableObject {
         return progressMap[key] ?? Float(item.progress ?? 0)
     }
 
-    /// Status tuple (symbol, status text, info text) derived from `status` and other fields.
     func status(for item: MetadataItem) -> (symbol: String?, status: String, info: String) {
         let sizeText: String = {
-            if let s = item.size { return utilityFileSystem.transformedSize(s) }
+            if let size = item.size {
+                return utilityFileSystem.transformedSize(size)
+            }
             return ""
         }()
 
