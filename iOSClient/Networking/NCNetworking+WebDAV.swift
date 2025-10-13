@@ -384,7 +384,9 @@ extension NCNetworking {
 
                 ocIds.insert(metadata.ocId)
                 if metadata.livePhotoFile.isEmpty == false {
-                    ocIds.insert(metadata.livePhotoFile)
+                    if let ocId = utility.getLivePhotoOcId(metadata: metadata) {
+                        ocIds.insert(ocId)
+                    }
                 }
                 serverUrls.insert(metadata.serverUrl)
             }
