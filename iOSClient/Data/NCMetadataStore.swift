@@ -268,7 +268,7 @@ actor NCMetadataStore {
         }
     }
 
-    /// Updates `progress` for an item and conditionally triggers a flush (0%, 10%, … 100%).
+    /// Updates `progress` for an item
     func transferProgress(serverUrl: String, fileName: String, taskIdentifier: Int, progress: Double) async {
         if let idx = metadataItemsCache.firstIndex(where: {
             $0.serverUrl == serverUrl &&

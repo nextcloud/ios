@@ -157,11 +157,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         // Restore previously cached progress for this file transfer, or reset to 0 if not found
         let key = "\(metadata.serverUrl)|\(metadata.fileNameView)"
         let progress = transferProgressMap[key] ?? 0
-        if progress == 0 {
-            // cell.setProgress(progress: Float(metadata.progress))
-        } else {
-            cell.setProgress(progress: progress)
-        }
+        cell.setProgress(progress: progress)
 
         let serverUrlHome = utilityFileSystem.getHomeServer(session: session)
         var pathText = metadata.serverUrl.replacingOccurrences(of: serverUrlHome, with: "")
