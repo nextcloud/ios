@@ -197,8 +197,7 @@ class NCDragDrop: NSObject {
 
             // DOWNLOAD
             if !utilityFileSystem.fileProviderStorageExists(metadata) {
-                let results = await NCNetworking.shared.downloadFile(metadata: metadata,
-                                                                     withDownloadComplete: true) { request in
+                let results = await NCNetworking.shared.downloadFile(metadata: metadata) { request in
                     downloadRequest = request
                 } progressHandler: { progress in
                     let status = NSLocalizedString("_status_downloading_", comment: "").lowercased()
