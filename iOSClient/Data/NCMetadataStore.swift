@@ -41,7 +41,7 @@ struct MetadataItem: Codable, Identifiable {
 actor NCMetadataStore {
     static let shared = NCMetadataStore()
 
-    private var metadataItemsCache: [MetadataItem] = [] {
+    var metadataItemsCache: [MetadataItem] = [] {
         didSet {
             // print("Array changed, count: \(metadataItemsCache.count)")
         }

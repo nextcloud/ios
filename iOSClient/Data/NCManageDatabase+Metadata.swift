@@ -1209,6 +1209,8 @@ extension NCManageDatabase {
                                                   taskIdentifier: 0))
             }
         }
+
+        metadataItems.append(contentsOf: await NCMetadataStore.shared.metadataItemsCache)
         return metadataItems
     }
     #endif

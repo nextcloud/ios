@@ -133,8 +133,7 @@ struct NCTransferLegacyAdapter {
 
 // MARK: - ViewModel (MetadataItem based)
 
-/// ViewModel powering the SwiftUI Transfers UI using `MetadataItem` records.
-/// It mirrors the old NCTransfers list behavior, but reads from `getMetadataItemsTransfersAsync()`.
+
 @MainActor
 final class TransfersViewModel: ObservableObject {
     @Published var items: [MetadataItem] = []
@@ -181,7 +180,6 @@ final class TransfersViewModel: ObservableObject {
         self.eventBridge = bridge
     }
 
-    /// Stop observing events.
     func stopObserving() {
         eventBridge?.unregister()
         eventBridge = nil
@@ -192,10 +190,13 @@ final class TransfersViewModel: ObservableObject {
     }
 
     func startTask(item: MetadataItem) async {
+        if let ocId = item.ocId,
+           let updated = await database.setMetadataSessionAsync(ocId: ocId, status: NCGlobal.shared.metadataStatusUploading) {
+            await networking.uploadFileInBackground(metadata: updated)
+        }
         await reload()
     }
 
-    /// Cancel all transfers.
     func cancelAll() {
         networking.cancelAllTask()
         Task {
@@ -204,16 +205,6 @@ final class TransfersViewModel: ObservableObject {
         }
     }
 
-    /// Force start based on a seed item (replicates long-press -> startTask).
-    func forceStart(from item: MetadataItem) async {
-        if let ocId = item.ocId,
-           let updated = await database.setMetadataSessionAsync(ocId: ocId, status: NCGlobal.shared.metadataStatusUploading) {
-            await networking.uploadFileInBackground(metadata: updated)
-        }
-        await reload()
-    }
-
-    /// Human-readable path computed from serverUrl relative to home.
     func readablePath(for item: MetadataItem) -> String {
         guard let url = item.serverUrl else { return "/" }
         let home = utilityFileSystem.getHomeServer(session: session)
