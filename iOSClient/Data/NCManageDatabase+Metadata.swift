@@ -1181,8 +1181,8 @@ extension NCManageDatabase {
     }
 
     #if !EXTENSION
-    func getMetadataItemsTransfersAsync() async -> [MetadataItem]
-        var metadataItems: [MetadataItem] = [] {
+    func getMetadataItemsTransfersAsync() async -> [MetadataItem] {
+        var metadataItems: [MetadataItem] = []
         let predicate = NSPredicate(format: "status IN %@", NCGlobal.shared.metadataStatusWaitWebDav)
         let sortDescriptors = [
             RealmSwift.SortDescriptor(keyPath: "status", ascending: false),
@@ -1195,18 +1195,18 @@ extension NCManageDatabase {
                 .sorted(by: sortDescriptors)
 
             for result in results {
-                metadataItems.apend(MetadataItem(completed: false,
-                                                 date: result.date,
-                                                 etag: result.etag,
-                                                 fileName: result.fileNameView,
-                                                 ocId: result.ocId,
-                                                 ocIdTransfer: result.ocIdTransfer,
-                                                 progress: 0,
-                                                 serverUrl: result.serverUrl,
-                                                 session: result.session,
-                                                 size: result.size,
-                                                 status: result.status,
-                                                 taskIdentifier: 0))
+                metadataItems.append(MetadataItem(completed: false,
+                                                  date: result.date as Date,
+                                                  etag: result.etag,
+                                                  fileName: result.fileNameView,
+                                                  ocId: result.ocId,
+                                                  ocIdTransfer: result.ocIdTransfer,
+                                                  progress: 0,
+                                                  serverUrl: result.serverUrl,
+                                                  session: result.session,
+                                                  size: result.size,
+                                                  status: result.status,
+                                                  taskIdentifier: 0))
             }
         }
         return metadataItems

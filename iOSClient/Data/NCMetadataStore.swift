@@ -19,7 +19,11 @@ import NextcloudKit
 
 /// Immutable transfer item snapshot used by the Metadata Store.
 /// Fields are optional to allow partial updates/merges during upsert operations.
-struct MetadataItem: Codable {
+struct MetadataItem: Codable, Identifiable {
+    var id: String {
+        ocIdTransfer ?? ocId ?? (serverUrl ?? "") + (fileName ?? "") + String(taskIdentifier ?? 0)
+    }
+
     var completed: Bool?
     var date: Date?
     var etag: String?
