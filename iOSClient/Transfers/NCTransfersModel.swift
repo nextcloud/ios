@@ -6,9 +6,6 @@ import Foundation
 import Combine
 import NextcloudKit
 
-// MARK: - Debounce / Throttle helpers
-
-/// Coalesces rapid sequences of calls into a single execution after a delay.
 final class Debouncer {
     private var task: Task<Void, Never>?
     private let delay: UInt64
@@ -29,7 +26,6 @@ extension Notification.Name {
     static let NCTransferProgressDidUpdate = Notification.Name("NCTransferProgressDidUpdate")
 }
 
-
 final class ProgressThrottler {
     private var lastFire: [String: UInt64] = [:] // key -> nanoseconds
     func shouldFire(key: String, every milliseconds: Int) -> Bool {
@@ -41,10 +37,6 @@ final class ProgressThrottler {
     }
 }
 
-// MARK: - Transfer Events Bridge
-
-/// Bridges networking transfer updates into the ViewModel using NotificationCenter.
-/// Replace with production hooks if your networking exposes Combine or delegates directly.
 final class TransferEventsBridge {
     private var cancellables = Set<AnyCancellable>()
     private let onChange: () -> Void
@@ -59,8 +51,6 @@ final class TransferEventsBridge {
     }
 
     func register(with networking: NCNetworking) {
-        // If NCNetworking already posts these notifications, nothing else is needed.
-        // Otherwise, wire your legacy delegates to post them (see adapter below).
         NotificationCenter.default.publisher(for: .NCTransferChange)
             .sink { [weak self] _ in
                 guard let self else { return }
@@ -102,9 +92,6 @@ final class TransferEventsBridge {
     }
 }
 
-// MARK: - Legacy Delegate → Notification adapter
-
-/// Call these helpers from your existing UIKit delegate methods to notify the SwiftUI layer.
 struct NCTransferLegacyAdapter {
     static func postChange(status: String) {
         NotificationCenter.default.post(name: .NCTransferChange, object: nil, userInfo: ["status": status])
@@ -131,9 +118,6 @@ struct NCTransferLegacyAdapter {
     }
 }
 
-// MARK: - ViewModel (MetadataItem based)
-
-
 @MainActor
 final class TransfersViewModel: ObservableObject {
     @Published var items: [MetadataItem] = []
@@ -153,7 +137,6 @@ final class TransfersViewModel: ObservableObject {
         self.session = session
     }
 
-    /// Loads current transfer items using the new async source.
     func reload() async {
         isLoading = true
         defer {
@@ -162,7 +145,6 @@ final class TransfersViewModel: ObservableObject {
         self.items = await database.getMetadataItemsTransfersAsync()
     }
 
-    /// Start observing transfer change/progress notifications.
     func startObserving() {
         guard eventBridge == nil else { return }
         let bridge = TransferEventsBridge { [weak self] in
@@ -213,7 +195,6 @@ final class TransfersViewModel: ObservableObject {
         return path
     }
 
-    /// Progress for a row.
     func progress(for item: MetadataItem) -> Float {
         let serverUrl = item.serverUrl ?? ""
         let fileName = item.fileName ?? ""
@@ -258,7 +239,6 @@ final class TransfersViewModel: ObservableObject {
         }
     }
 
-    /// Extra info line for WWAN waiting condition based on `session` string.
     func wwanWaitInfoIfNeeded(for item: MetadataItem) -> String? {
         guard let s = item.session else { return nil }
         if s == NCNetworking.shared.sessionUploadBackgroundWWan,

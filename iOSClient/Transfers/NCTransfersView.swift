@@ -4,8 +4,6 @@
 
 import SwiftUI
 
-// MARK: - Row View
-
 struct TransferRowView: View {
     @ObservedObject var model: TransfersViewModel
     @State private var isPressing = false
@@ -61,8 +59,7 @@ struct TransferRowView: View {
                         Task {
                             if inProgress {
                                 await onCancel()
-                            }
-                            else if inWaiting {
+                            } else if inWaiting {
                                 await onForceStart()
                             }
                         }
@@ -193,7 +190,7 @@ struct TransfersView: View {
         self.isPreviewMode = false
     }
 
-    // Init preview
+    // preview
     #if DEBUG
     init(previewItems: [MetadataItem]) {
         let model = TransfersViewModel(session: NCSession.Session(account: "", urlBase: "", user: "", userId: ""))
@@ -203,7 +200,6 @@ struct TransfersView: View {
     }
     #endif
 
-    // Contatori per header
     private var inProgressCount: Int {
         model.items.compactMap(\.status)
             .filter { NCGlobal.shared.metadatasStatusInProgress.contains($0) }
@@ -242,8 +238,6 @@ struct TransfersView: View {
         .navigationViewStyle(.stack)
         .presentationDetents([.medium, .large])
     }
-
-    // MARK: - Subviews (aiuta il type-checker)
 
     @ViewBuilder
     private var contentView: some View {
