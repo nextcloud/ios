@@ -1,16 +1,10 @@
-// FILE: NCTransferModel.swift
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2025 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 import Foundation
 import Combine
 import NextcloudKit
-
-// MARK: - Notification Keys
-
-/// Strongly-typed notification names used to mirror legacy delegate callbacks.
-extension Notification.Name {
-    static let NCTransferChange = Notification.Name("NCTransferChange")
-    static let NCTransferReloadData = Notification.Name("NCTransferReloadData")
-    static let NCTransferProgressDidUpdate = Notification.Name("NCTransferProgressDidUpdate")
-}
 
 // MARK: - Debounce / Throttle helpers
 
@@ -29,7 +23,13 @@ final class Debouncer {
     }
 }
 
-/// Per-key throttle to limit publish frequency for progress updates.
+extension Notification.Name {
+    static let NCTransferChange = Notification.Name("NCTransferChange")
+    static let NCTransferReloadData = Notification.Name("NCTransferReloadData")
+    static let NCTransferProgressDidUpdate = Notification.Name("NCTransferProgressDidUpdate")
+}
+
+
 final class ProgressThrottler {
     private var lastFire: [String: UInt64] = [:] // key -> nanoseconds
     func shouldFire(key: String, every milliseconds: Int) -> Bool {
