@@ -118,11 +118,14 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         transfersButton.setImage(UIImage(systemName: "arrow.left.arrow.right.circle.fill"), for: .normal)
         transfersButton.tintColor = NCBrandColor.shared.iconImageColor
         transfersButton.addAction(UIAction(handler: { _ in
+            TransfersPresenter.present(from: self, session: self.session)
+            /*
             if let navigationController = UIStoryboard(name: "NCTransfers", bundle: nil).instantiateInitialViewController() as? UINavigationController,
                let viewController = navigationController.topViewController as? NCTransfers {
                 viewController.modalPresentationStyle = .pageSheet
                 self.present(navigationController, animated: true, completion: nil)
             }
+            */
         }), for: .touchUpInside)
 
         // PLUS BUTTON ONLY IN FILES

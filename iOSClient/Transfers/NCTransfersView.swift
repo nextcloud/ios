@@ -181,22 +181,24 @@ struct TransfersSummaryHeader: View {
 
 struct TransfersView: View {
     @Environment(\.dismiss) private var dismiss
-
     @StateObject private var model: TransfersViewModel
     private let isPreviewMode: Bool
+    private let onClose: (() -> Void)?
 
-    init(session: NCSession.Session) {
+    init(session: NCSession.Session, onClose: (() -> Void)? = nil) {
         _model = StateObject(wrappedValue: TransfersViewModel(session: session))
         self.isPreviewMode = false
+        self.onClose = onClose
     }
 
     // preview
     #if DEBUG
-    init(previewItems: [MetadataItem]) {
+    init(previewItems: [MetadataItem], onClose: (() -> Void)? = nil) {
         let model = TransfersViewModel(session: NCSession.Session(account: "", urlBase: "", user: "", userId: ""))
         model.items = previewItems
         _model = StateObject(wrappedValue: model)
         self.isPreviewMode = true
+        self.onClose = onClose
     }
     #endif
 
@@ -217,7 +219,11 @@ struct TransfersView: View {
                 .navigationTitle(model.title)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
-                        Button(NSLocalizedString("_close_", comment: "")) { dismiss() }
+                        Button(NSLocalizedString("_close_", comment: "")) {
+                            if let onClose {
+                                onClose()
+                            }
+                        }
                     }
                     ToolbarItem(placement: .primaryAction) {
                         Button(NSLocalizedString("_cancel_all_task_", comment: "")) {
@@ -235,7 +241,6 @@ struct TransfersView: View {
                     model.stopObserving()
                 }
         }
-        .navigationViewStyle(.stack)
         .presentationDetents([.medium, .large])
     }
 
@@ -331,12 +336,13 @@ private extension View {
 
 enum TransfersPresenter {
     static func present(from presenter: UIViewController, session: NCSession.Session) {
-        let hosting = UIHostingController(rootView: TransfersView(session: session))
-        let nav = UINavigationController(rootViewController: hosting)
-        if #available(iOS 16.0, *) {
-            nav.modalPresentationStyle = .pageSheet
-        }
-        presenter.present(nav, animated: true, completion: nil)
+        let rootView = TransfersView(session: session, onClose: { [weak presenter] in
+            presenter?.dismiss(animated: true)
+        })
+        let hosting = UIHostingController(rootView: rootView)
+        hosting.modalPresentationStyle = .pageSheet
+
+        presenter.present(hosting, animated: true)
     }
 }
 

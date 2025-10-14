@@ -149,8 +149,10 @@ final class TransfersViewModel: ObservableObject {
         guard eventBridge == nil else { return }
         let bridge = TransferEventsBridge { [weak self] in
             guard let self else { return }
-            Task { await self.reload() }
-        } onProgress: { [weak self] progress, total, expected, fileName, serverUrl in
+            Task {
+                await self.reload()
+            }
+        } onProgress: { [weak self] progress, _, _, fileName, serverUrl in
             guard let self else { return }
             let key = "\(serverUrl)|\(fileName)"
             let old = progressMap[key] ?? 0
@@ -182,7 +184,7 @@ final class TransfersViewModel: ObservableObject {
     func cancelAll() {
         networking.cancelAllTask()
         Task {
-            try? await Task.sleep(nanoseconds: 150_000_000);
+            try? await Task.sleep(nanoseconds: 150_000_000)
             await reload()
         }
     }
@@ -210,8 +212,8 @@ final class TransfersViewModel: ObservableObject {
             return ""
         }()
 
-        let st = item.status ?? NCGlobal.shared.metadataStatusNormal
-        switch st {
+        let status = item.status ?? NCGlobal.shared.metadataStatusNormal
+        switch status {
         case NCGlobal.shared.metadataStatusWaitCreateFolder:
             return ("arrow.triangle.2.circlepath", NSLocalizedString("_status_wait_create_folder_", comment: ""), "")
         case NCGlobal.shared.metadataStatusWaitDelete:
