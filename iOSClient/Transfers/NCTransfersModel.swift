@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
-import Combine
 import NextcloudKit
 
 final class Debouncer {
@@ -20,12 +19,6 @@ final class Debouncer {
     }
 }
 
-extension Notification.Name {
-    static let NCTransferChange = Notification.Name("NCTransferChange")
-    static let NCTransferReloadData = Notification.Name("NCTransferReloadData")
-    static let NCTransferProgressDidUpdate = Notification.Name("NCTransferProgressDidUpdate")
-}
-
 final class ProgressThrottler {
     private var lastFire: [String: UInt64] = [:] // key -> nanoseconds
     func shouldFire(key: String, every milliseconds: Int) -> Bool {
@@ -34,87 +27,6 @@ final class ProgressThrottler {
         defer { lastFire[key] = now }
         guard let prev = lastFire[key] else { return true }
         return now - prev >= minDelta
-    }
-}
-
-final class TransferEventsBridge {
-    private var cancellables = Set<AnyCancellable>()
-    private let onChange: () -> Void
-    private let onProgress: (_ progress: Float, _ total: Int64, _ expected: Int64, _ file: String, _ url: String) -> Void
-    private let debouncer = Debouncer(milliseconds: 150)
-    private let throttler = ProgressThrottler()
-
-    init(onChange: @escaping () -> Void,
-         onProgress: @escaping (_ progress: Float, _ total: Int64, _ expected: Int64, _ file: String, _ url: String) -> Void) {
-        self.onChange = onChange
-        self.onProgress = onProgress
-    }
-
-    func register(with networking: NCNetworking) {
-        NotificationCenter.default.publisher(for: .NCTransferChange)
-            .sink { [weak self] _ in
-                guard let self else { return }
-                self.debouncer.call {
-                    self.onChange()
-                }
-            }
-            .store(in: &cancellables)
-
-        NotificationCenter.default.publisher(for: .NCTransferReloadData)
-            .sink { [weak self] _ in
-                guard let self else { return }
-                self.debouncer.call {
-                    self.onChange()
-                }
-            }
-            .store(in: &cancellables)
-
-        NotificationCenter.default.publisher(for: .NCTransferProgressDidUpdate)
-            .compactMap { $0.userInfo as? [String: Any] }
-            .sink { [weak self] info in
-                guard let self else { return }
-                let progress = info["progress"] as? Float ?? 0
-                let total = info["totalBytes"] as? Int64 ?? 0
-                let expected = info["totalBytesExpected"] as? Int64 ?? 0
-                let fileName = info["fileName"] as? String ?? ""
-                let serverUrl = info["serverUrl"] as? String ?? ""
-                let key = "\(serverUrl)|\(fileName)"
-
-                // Throttle to max ~10fps per key and ignore <1% deltas
-                guard throttler.shouldFire(key: key, every: 100) else { return }
-                self.onProgress(progress, total, expected, fileName, serverUrl)
-            }
-            .store(in: &cancellables)
-    }
-
-    func unregister() {
-        cancellables.removeAll()
-    }
-}
-
-struct NCTransferLegacyAdapter {
-    static func postChange(status: String) {
-        NotificationCenter.default.post(name: .NCTransferChange, object: nil, userInfo: ["status": status])
-    }
-    static func postChange(status: String, errorMapCount: Int) {
-        NotificationCenter.default.post(name: .NCTransferChange, object: nil, userInfo: ["status": status, "errors": errorMapCount])
-    }
-    static func postReload(serverUrl: String?, status: Int?) {
-        var info: [String: Any] = [:]
-        if let serverUrl { info["serverUrl"] = serverUrl }
-        if let status { info["status"] = status }
-        NotificationCenter.default.post(name: .NCTransferReloadData, object: nil, userInfo: info)
-    }
-    static func postProgress(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) {
-        NotificationCenter.default.post(name: .NCTransferProgressDidUpdate,
-                                        object: nil,
-                                        userInfo: [
-                                            "progress": progress,
-                                            "totalBytes": totalBytes,
-                                            "totalBytesExpected": totalBytesExpected,
-                                            "fileName": fileName,
-                                            "serverUrl": serverUrl
-                                        ])
     }
 }
 
@@ -131,10 +43,13 @@ final class TransfersViewModel: ObservableObject {
     private let networking = NCNetworking.shared
     private let utilityFileSystem = NCUtilityFileSystem()
 
-    private var eventBridge: TransferEventsBridge?
+    private var changeObserver: NSObjectProtocol?
+    private var reloadObserver: NSObjectProtocol?
+    private var progressObserver: NSObjectProtocol?
 
     init(session: NCSession.Session) {
         self.session = session
+        startObserving()
     }
 
     func reload() async {
@@ -146,27 +61,55 @@ final class TransfersViewModel: ObservableObject {
     }
 
     func startObserving() {
-        guard eventBridge == nil else { return }
-        let bridge = TransferEventsBridge { [weak self] in
-            guard let self else { return }
+        changeObserver = NotificationCenter.default.addObserver(
+            forName: Notification.Name("NCTransferChanged"),
+            object: nil, queue: .main
+        ) { [weak self] _ in
             Task {
-                await self.reload()
+                await self?.reload()
             }
-        } onProgress: { [weak self] progress, _, _, fileName, serverUrl in
-            guard let self else { return }
-            let key = "\(serverUrl)|\(fileName)"
-            let old = progressMap[key] ?? 0
-            // Ignore very tiny changes < 1%
-            guard abs(progress - old) >= 0.01 else { return }
-            self.progressMap[key] = progress
         }
-        bridge.register(with: networking)
-        self.eventBridge = bridge
+
+        reloadObserver = NotificationCenter.default.addObserver(
+            forName: Notification.Name("NCTransferReloaded"),
+            object: nil, queue: .main
+        ) { [weak self] _ in
+            Task {
+                await self?.reload()
+            }
+        }
+
+        progressObserver = NotificationCenter.default.addObserver(
+            forName: Notification.Name("NCTransferProgress"),
+            object: nil, queue: .main
+        ) { [weak self] note in
+            guard
+                let info = note.userInfo as? [String: Any],
+                let progress = info["progress"] as? Float,
+                let total = info["total"] as? Int64,
+                let expected = info["expected"] as? Int64,
+                let file = info["file"] as? String,
+                let url = info["url"] as? String
+            else { return }
+
+            let key = "\(url)|\(file)"
+            self?.progressMap[key] = progress
+        }
     }
 
     func stopObserving() {
-        eventBridge?.unregister()
-        eventBridge = nil
+        if let changeObserver {
+            NotificationCenter.default.removeObserver(changeObserver)
+        }
+        if let reloadObserver {
+            NotificationCenter.default.removeObserver(reloadObserver)
+        }
+        if let progressObserver {
+            NotificationCenter.default.removeObserver(progressObserver)
+        }
+        changeObserver = nil
+        reloadObserver = nil
+        progressObserver = nil
     }
 
     func cancel(item: MetadataItem) async {
