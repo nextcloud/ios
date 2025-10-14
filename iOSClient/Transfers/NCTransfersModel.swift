@@ -5,32 +5,6 @@
 import Foundation
 import NextcloudKit
 
-final class Debouncer {
-    private var task: Task<Void, Never>?
-    private let delay: UInt64
-    init(milliseconds: Int = 150) { self.delay = UInt64(milliseconds) * 1_000_000 }
-    func call(_ action: @escaping @Sendable () -> Void) {
-        task?.cancel()
-        task = Task { [delay] in
-            try? await Task.sleep(nanoseconds: delay)
-            if Task.isCancelled { return }
-            action()
-        }
-    }
-}
-
-final class ProgressThrottler {
-    private var lastFire: [String: UInt64] = [:] // key -> nanoseconds
-    func shouldFire(key: String, every milliseconds: Int) -> Bool {
-        let now = DispatchTime.now().uptimeNanoseconds
-        let minDelta = UInt64(milliseconds) * 1_000_000
-        defer { lastFire[key] = now }
-        guard let prev = lastFire[key] else { return true }
-        return now - prev >= minDelta
-    }
-}
-
-@MainActor
 final class TransfersViewModel: ObservableObject {
     @Published var items: [MetadataItem] = []
     @Published var progressMap: [String: Float] = [:]
@@ -43,73 +17,25 @@ final class TransfersViewModel: ObservableObject {
     private let networking = NCNetworking.shared
     private let utilityFileSystem = NCUtilityFileSystem()
 
-    private var changeObserver: NSObjectProtocol?
-    private var reloadObserver: NSObjectProtocol?
-    private var progressObserver: NSObjectProtocol?
+    internal var sceneIdentifier: String = ""
 
     init(session: NCSession.Session) {
         self.session = session
-        startObserving()
+
+        Task {
+            await NCNetworking.shared.transferDispatcher.addDelegate(self)
+        }
     }
 
+    deinit { }
+
+    @MainActor
     func reload() async {
         isLoading = true
         defer {
             isLoading = false
         }
         self.items = await database.getMetadataItemsTransfersAsync()
-    }
-
-    func startObserving() {
-        changeObserver = NotificationCenter.default.addObserver(
-            forName: Notification.Name("NCTransferChanged"),
-            object: nil, queue: .main
-        ) { [weak self] _ in
-            Task {
-                await self?.reload()
-            }
-        }
-
-        reloadObserver = NotificationCenter.default.addObserver(
-            forName: Notification.Name("NCTransferReloaded"),
-            object: nil, queue: .main
-        ) { [weak self] _ in
-            Task {
-                await self?.reload()
-            }
-        }
-
-        progressObserver = NotificationCenter.default.addObserver(
-            forName: Notification.Name("NCTransferProgress"),
-            object: nil, queue: .main
-        ) { [weak self] note in
-            guard
-                let info = note.userInfo as? [String: Any],
-                let progress = info["progress"] as? Float,
-                let total = info["total"] as? Int64,
-                let expected = info["expected"] as? Int64,
-                let file = info["file"] as? String,
-                let url = info["url"] as? String
-            else { return }
-
-            let key = "\(url)|\(file)"
-            self?.progressMap[key] = progress
-        }
-    }
-
-    func stopObserving() {
-        if let changeObserver {
-            NotificationCenter.default.removeObserver(changeObserver)
-        }
-        if let reloadObserver {
-            NotificationCenter.default.removeObserver(reloadObserver)
-        }
-        if let progressObserver {
-            NotificationCenter.default.removeObserver(progressObserver)
-        }
-        changeObserver = nil
-        reloadObserver = nil
-        progressObserver = nil
     }
 
     func cancel(item: MetadataItem) async {
@@ -191,5 +117,11 @@ final class TransfersViewModel: ObservableObject {
             return NSLocalizedString("_waiting_for_", comment: "") + " " + NSLocalizedString("_reachable_wifi_", comment: "")
         }
         return nil
+    }
+}
+
+extension TransfersViewModel: NCTransferDelegate {
+    func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) {
+        // await self.reload()
     }
 }

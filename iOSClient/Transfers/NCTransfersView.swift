@@ -4,179 +4,6 @@
 
 import SwiftUI
 
-struct TransferRowView: View {
-    @ObservedObject var model: TransfersViewModel
-    @State private var isPressing = false
-
-    let item: MetadataItem
-
-    let onCancel: () async -> Void
-    let onForceStart: () async -> Void
-
-    var body: some View {
-        VStack(spacing: 8) {
-            HStack(alignment: .top, spacing: 12) {
-                Image(systemName: "doc.circle")
-                    .resizable()
-                    .frame(width: 44, height: 44)
-                    .cornerRadius(8)
-
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(item.fileName ?? "—")
-                        .font(.headline)
-                        .lineLimit(2)
-
-                    Text(model.readablePath(for: item))
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-
-                    let status = model.status(for: item)
-                    if !status.status.isEmpty {
-                        Text(status.status)
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    if let wwan = model.wwanWaitInfoIfNeeded(for: item), !wwan.isEmpty {
-                        Text(wwan)
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                    } else if !status.info.isEmpty {
-                        Text(status.info)
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    ProgressView(value: Double(model.progress(for: item)))
-                        .progressViewStyle(.linear)
-                }
-
-                Spacer(minLength: 8)
-
-                if inProgress || inWaiting {
-                    Button {
-                        Task {
-                            if inProgress {
-                                await onCancel()
-                            } else if inWaiting {
-                                await onForceStart()
-                            }
-                        }
-                    } label: {
-                        Image(systemName: actionIconName)
-                    }
-                    .buttonStyle(.plain)
-                    .tint(.primary)
-                    .accessibilityLabel(actionAccessibilityLabel)
-                }
-            }
-            .contentShape(Rectangle())
-            .gesture(
-                LongPressGesture(minimumDuration: 0.3)
-                    .onChanged { _ in
-                        isPressing = true
-                    }
-                    .onEnded { _ in
-                        isPressing = false
-                    }
-            )
-
-            Divider()
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 10)
-        .background(isPressing ? Color.gray.opacity(0.08) : Color.clear)
-    }
-
-    // MARK: - Helpers
-
-    private var inProgress: Bool {
-        if let status = item.status {
-            return NCGlobal.shared.metadatasStatusInProgress.contains(status)
-        }
-        return false
-    }
-
-    private var inWaiting: Bool {
-        if let status = item.status {
-            return NCGlobal.shared.metadatasStatusInWaiting.contains(status)
-        }
-        return false
-    }
-
-    private var actionIconName: String {
-        if inProgress {
-            return "stop.circle"
-        } else if inWaiting {
-            return "play.circle"
-        } else {
-            return "ellipsis.circle"
-        }
-    }
-
-    private var actionAccessibilityLabel: String {
-        if inProgress {
-            return "_cancel_"
-        }
-        if inWaiting {
-            return "_force_start_"
-        }
-        return "_more_"
-    }
-}
-
-// MARK: - Empty State
-
-struct EmptyTransfersView: View {
-    var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "arrow.left.arrow.right.circle")
-                .font(.system(size: 48, weight: .regular))
-                .foregroundStyle(.secondary)
-
-            Text(NSLocalizedString("_no_transfer_", comment: ""))
-                .font(.headline)
-
-            Text(NSLocalizedString("_no_transfer_sub_", comment: ""))
-                .font(.subheadline)
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 24)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-}
-
-// MARK: - Summary Header
-
-struct TransfersSummaryHeader: View {
-    let inProgressCount: Int
-    let inWaitingCount: Int
-
-    var body: some View {
-        HStack(spacing: 8) {
-            summaryPill(title: "In Progress", value: inProgressCount)
-            summaryPill(title: "Waiting", value: inWaitingCount)
-            Spacer()
-        }
-        .padding(.vertical, 6)
-    }
-
-    private func summaryPill(title: String, value: Int) -> some View {
-        HStack(spacing: 6) {
-            Text(title)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            Text("\(value)")
-                .font(.caption.weight(.semibold))
-        }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 6)
-        .background(.ultraThinMaterial, in: Capsule())
-    }
-}
-
 // MARK: - Main View
 
 struct TransfersView: View {
@@ -232,13 +59,7 @@ struct TransfersView: View {
                     }
                 }
                 .task {
-                    if !isPreviewMode {
-                        model.startObserving()
-                        await model.reload()
-                    }
-                }
-                .onDisappear {
-                    model.stopObserving()
+                    await model.reload()
                 }
         }
         .presentationDetents([.medium, .large])
@@ -316,6 +137,169 @@ struct TransfersView: View {
         }
     }
 }
+
+// MARK: - Summary Header
+
+struct TransfersSummaryHeader: View {
+    let inProgressCount: Int
+    let inWaitingCount: Int
+
+    var body: some View {
+        HStack(spacing: 8) {
+            summaryPill(title: "In Progress", value: inProgressCount)
+            summaryPill(title: "Waiting", value: inWaitingCount)
+            Spacer()
+        }
+        .padding(.vertical, 6)
+    }
+
+    private func summaryPill(title: String, value: Int) -> some View {
+        HStack(spacing: 6) {
+            Text(title)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Text("\(value)")
+                .font(.caption.weight(.semibold))
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(.ultraThinMaterial, in: Capsule())
+    }
+}
+
+// MARK: - Empty State
+
+struct EmptyTransfersView: View {
+    var body: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "arrow.left.arrow.right.circle")
+                .font(.system(size: 48, weight: .regular))
+                .foregroundStyle(.secondary)
+
+            Text(NSLocalizedString("_no_transfer_", comment: ""))
+                .font(.headline)
+
+            Text(NSLocalizedString("_no_transfer_sub_", comment: ""))
+                .font(.subheadline)
+                .multilineTextAlignment(.center)
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 24)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+// MARK: - Row
+
+struct TransferRowView: View {
+    @ObservedObject var model: TransfersViewModel
+
+    let item: MetadataItem
+    let onCancel: () async -> Void
+    let onForceStart: () async -> Void
+
+    var body: some View {
+        VStack(spacing: 8) {
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: "doc.circle")
+                    .resizable()
+                    .frame(width: 44, height: 44)
+                    .cornerRadius(8)
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(item.fileName ?? "—")
+                        .font(.headline)
+                        .lineLimit(2)
+
+                    Text(model.readablePath(for: item))
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+
+                    let status = model.status(for: item)
+                    if !status.status.isEmpty {
+                        Text(status.status)
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    if let wwan = model.wwanWaitInfoIfNeeded(for: item), !wwan.isEmpty {
+                        Text(wwan)
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    } else if !status.info.isEmpty {
+                        Text(status.info)
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    ProgressView(value: Double(model.progress(for: item)))
+                        .progressViewStyle(.linear)
+                }
+
+                Spacer(minLength: 8)
+
+                if inProgress || inWaiting {
+                    Button {
+                        Task {
+                            if inProgress {
+                                await onCancel()
+                            } else if inWaiting {
+                                await onForceStart()
+                            }
+                        }
+                    } label: {
+                        Image(systemName: actionIconName)
+                    }
+                    .buttonStyle(.plain)
+                    .tint(.primary)
+                    .accessibilityLabel(actionAccessibilityLabel)
+                }
+            }
+            .contentShape(Rectangle())
+            Divider()
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+    }
+
+    // MARK: - Helpers
+
+    private var inProgress: Bool {
+        if let status = item.status {
+            return NCGlobal.shared.metadatasStatusInProgress.contains(status)
+        }
+        return false
+    }
+
+    private var inWaiting: Bool {
+        if let status = item.status {
+            return NCGlobal.shared.metadatasStatusInWaiting.contains(status)
+        }
+        return false
+    }
+
+    private var actionIconName: String {
+        if inProgress {
+            return "stop.circle"
+        } else if inWaiting {
+            return "play.circle"
+        } else {
+            return "ellipsis.circle"
+        }
+    }
+
+    private var actionAccessibilityLabel: String {
+        if inProgress {
+            return "_cancel_"
+        }
+        if inWaiting {
+            return "_force_start_"
+        }
+        return "_more_"
+    }
+}
+
 
 // MARK: - View helpers
 
