@@ -332,20 +332,6 @@ private extension View {
     }
 }
 
-// MARK: - UIKit Presenter
-
-enum TransfersPresenter {
-    static func present(from presenter: UIViewController, session: NCSession.Session) {
-        let rootView = TransfersView(session: session, onClose: { [weak presenter] in
-            presenter?.dismiss(animated: true)
-        })
-        let hosting = UIHostingController(rootView: rootView)
-        hosting.modalPresentationStyle = .pageSheet
-
-        presenter.present(hosting, animated: true)
-    }
-}
-
 // MARK: - SwiftUI Preview
 
 #if DEBUG
