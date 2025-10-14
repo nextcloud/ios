@@ -197,7 +197,8 @@ actor NCNetworkingProcess {
             }
         }
 
-        // ------------------------ DOWNLOAD
+        // MARK: - DOWNLOAD
+        //
         let filteredDownload = metadatas
             .filter { $0.session == self.networking.sessionDownloadBackground && $0.status == NCGlobal.shared.metadataStatusWaitDownload }
             .sorted { ($0.sessionDate ?? Date.distantFuture) < ($1.sessionDate ?? Date.distantFuture) }
@@ -214,8 +215,8 @@ actor NCNetworkingProcess {
             return
         }
 
-        // ------------------------ UPLOAD
-
+        // MARK: - UPLOAD
+        //
         // CHUNK or  E2EE - only one for time
         let hasUploadingMetadataWithChunksOrE2EE = metadatas.filter { $0.status == NCGlobal.shared.metadataStatusUploading && ($0.chunk > 0 || $0.e2eEncrypted == true) }
         if !hasUploadingMetadataWithChunksOrE2EE.isEmpty {
@@ -358,8 +359,7 @@ actor NCNetworkingProcess {
         let networking = NCNetworking.shared
         let database = NCManageDatabase.shared
 
-        /// ------------------------ CREATE FOLDER
-        ///
+        // MARK: - CREATE FOLDER
         let metadatasWaitCreateFolder = metadatas.filter { $0.status == global.metadataStatusWaitCreateFolder }.sorted { $0.serverUrl < $1.serverUrl }
         for metadata in metadatasWaitCreateFolder {
             guard timer != nil else {
@@ -401,8 +401,7 @@ actor NCNetworkingProcess {
             }
         }
 
-        /// ------------------------ COPY
-        ///
+        // MARK: - COPY
         let metadatasWaitCopy = metadatas.filter { $0.status == global.metadataStatusWaitCopy }.sorted { $0.serverUrl < $1.serverUrl }
         for metadata in metadatasWaitCopy {
             guard timer != nil else {
@@ -447,8 +446,7 @@ actor NCNetworkingProcess {
             }
         }
 
-        /// ------------------------ MOVE
-        ///
+        // MARK: - MOVE
         let metadatasWaitMove = metadatas.filter { $0.status == global.metadataStatusWaitMove }.sorted { $0.serverUrl < $1.serverUrl }
         for metadata in metadatasWaitMove {
             guard timer != nil else {
@@ -493,8 +491,7 @@ actor NCNetworkingProcess {
             }
         }
 
-        /// ------------------------ FAVORITE
-        ///
+        // MARK: - FAVORITE
         let metadatasWaitFavorite = metadatas.filter { $0.status == global.metadataStatusWaitFavorite }.sorted { $0.serverUrl < $1.serverUrl }
         for metadata in metadatasWaitFavorite {
             guard timer != nil else {
@@ -536,8 +533,7 @@ actor NCNetworkingProcess {
             }
         }
 
-        /// ------------------------ RENAME
-        ///
+        // MARK: - RENAME
         let metadatasWaitRename = metadatas.filter { $0.status == global.metadataStatusWaitRename }.sorted { $0.serverUrl < $1.serverUrl }
         for metadata in metadatasWaitRename {
             guard timer != nil else {
@@ -572,8 +568,7 @@ actor NCNetworkingProcess {
             }
         }
 
-        /// ------------------------ DELETE
-        ///
+        // MARK: - DELETE
         let metadatasWaitDelete = metadatas.filter { $0.status == global.metadataStatusWaitDelete }.sorted { $0.serverUrl < $1.serverUrl }
         if !metadatasWaitDelete.isEmpty {
             var metadatasError: [tableMetadata: NKError] = [:]

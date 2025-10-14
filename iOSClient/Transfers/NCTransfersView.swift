@@ -300,7 +300,6 @@ struct TransferRowView: View {
     }
 }
 
-
 // MARK: - View helpers
 
 private extension View {

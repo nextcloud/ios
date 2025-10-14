@@ -5,6 +5,7 @@
 import Foundation
 import NextcloudKit
 
+@MainActor
 final class TransfersViewModel: ObservableObject {
     @Published var items: [MetadataItem] = []
     @Published var progressMap: [String: Float] = [:]
@@ -120,8 +121,27 @@ final class TransfersViewModel: ObservableObject {
     }
 }
 
-extension TransfersViewModel: NCTransferDelegate {
+extension TransfersViewModel: @MainActor NCTransferDelegate {
+    func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {
+        Task {
+            await self.reload()
+        }
+    }
+
+    func transferChange(status: String, metadata: tableMetadata, error: NKError) {
+        Task {
+            await self.reload()
+        }
+    }
+
+    func transferReloadData(serverUrl: String?, status: Int?) {
+        Task {
+            await self.reload()
+        }
+    }
+
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) {
-        // await self.reload()
+        let key = "\(serverUrl)|\(fileName)"
+        return progressMap[key] = progress
     }
 }
