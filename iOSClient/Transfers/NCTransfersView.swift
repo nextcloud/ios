@@ -41,8 +41,8 @@ struct TransfersView: View {
             .count
     }
     private var inErrorCount: Int {
-        model.items.compactMap(\.status)
-            .filter { NCGlobal.shared.metadatasStatusInWaiting.contains($0) }
+        model.items.compactMap(\.errorCode)
+            .filter { $0 != 0 }
             .count
     }
 
@@ -74,7 +74,7 @@ struct TransfersView: View {
                     }
                 }
                 .task {
-                   await model.reload(withWebDav: true)
+                   await model.reload(withDatabase: true)
                 }
         }
         .presentationDetents([.medium, .large])

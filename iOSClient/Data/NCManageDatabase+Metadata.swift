@@ -1191,9 +1191,9 @@ extension NCManageDatabase {
     }
 
     #if !EXTENSION
-    func getMetadataItemsWebDavAsync() async -> [MetadataItem] {
+    func getTransferAsync() async -> [MetadataItem] {
         var metadataItems: [MetadataItem] = []
-        let predicate = NSPredicate(format: "status IN %@", NCGlobal.shared.metadataStatusWaitWebDav)
+        let predicate = NSPredicate(format: "status IN %@ || errorCode != 0", NCGlobal.shared.metadataStatusWaitWebDav)
         let sortDescriptors = [
             RealmSwift.SortDescriptor(keyPath: "status", ascending: false),
             RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
@@ -1207,6 +1207,7 @@ extension NCManageDatabase {
             for result in results {
                 metadataItems.append(MetadataItem(completed: false,
                                                   date: result.date as Date,
+                                                  errorCode: result.errorCode,
                                                   etag: result.etag,
                                                   fileName: result.fileNameView,
                                                   ocId: result.ocId,

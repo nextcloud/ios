@@ -18,7 +18,7 @@ final class TransfersViewModel: ObservableObject {
     private let global = NCGlobal.shared
 
     internal var sceneIdentifier: String = ""
-    internal var itemsWebDav: [MetadataItem] = []
+    internal var itemsDB: [MetadataItem] = []
 
     init(session: NCSession.Session) {
         self.session = session
@@ -31,7 +31,7 @@ final class TransfersViewModel: ObservableObject {
     deinit { }
 
     @MainActor
-    func reload(withWebDav: Bool) async {
+    func reload(withDatabase: Bool) async {
         if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
             return
         }
@@ -40,23 +40,22 @@ final class TransfersViewModel: ObservableObject {
         defer {
             isLoading = false
         }
-        if withWebDav {
-            itemsWebDav = await database.getMetadataItemsWebDavAsync()
+        if withDatabase {
+            itemsDB = await database.getTransferAsync()
         }
         let metadataItemsCache = await NCMetadataStore.shared.metadataItemsCache
-        items = itemsWebDav + metadataItemsCache
+        items = itemsDB + metadataItemsCache
     }
 
     func cancel(item: MetadataItem) async {
-        let withWebDav = global.metadataStatusWaitWebDav.contains(item.status)
-        await reload(withWebDav: withWebDav)
+        await reload(withDatabase: true)
     }
 
     func startTask(item: MetadataItem) async {
         if let ocId = item.ocId,
            let updated = await database.setMetadataSessionAsync(ocId: ocId, status: global.metadataStatusUploading) {
             await networking.uploadFileInBackground(metadata: updated)
-            await reload(withWebDav: false)
+            await reload(withDatabase: false)
         }
     }
 
@@ -64,7 +63,7 @@ final class TransfersViewModel: ObservableObject {
         networking.cancelAllTask()
         Task {
             try? await Task.sleep(nanoseconds: 150_000_000)
-            await reload(withWebDav: true)
+            await reload(withDatabase: true)
         }
     }
 
@@ -132,20 +131,20 @@ final class TransfersViewModel: ObservableObject {
 extension TransfersViewModel: @MainActor NCTransferDelegate {
     func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {
         Task {
-            await self.reload(withWebDav: true)
+            await self.reload(withDatabase: true)
         }
     }
 
     func transferChange(status: String, metadata: tableMetadata, error: NKError) {
         Task {
-            let withWebDav = global.metadataStatusWaitWebDav.contains( metadata.status)
-            await self.reload(withWebDav: withWebDav)
+            let withDatabase = global.metadataStatusWaitWebDav.contains( metadata.status)
+            await self.reload(withDatabase: withDatabase)
         }
     }
 
     func transferReloadData(serverUrl: String?, status: Int?) {
         Task {
-            await self.reload(withWebDav: true)
+            await self.reload(withDatabase: true)
         }
     }
 
