@@ -10,7 +10,10 @@ struct TransfersView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var model: TransfersViewModel
     @State private var showCancelConfirmation = false
+    @State private var fireCancelAll = false
+
     private let onClose: (() -> Void)?
+    private let titleCancelAllTask = String(localized: "_cancel_all_request_")
 
     init(session: NCSession.Session? = nil,
          previewItems: [MetadataItem]? = nil,
@@ -57,20 +60,25 @@ struct TransfersView: View {
                             }
                         }
                     }
-                    ToolbarItem(placement: .primaryAction) {
-                        Button("Cancel All") {
-                            showCancelConfirmation = true
-                        }
-                        .confirmationDialog("Are you sure you want to cancel all transfers?",
-                                            isPresented: $showCancelConfirmation,
-                                            titleVisibility: .visible) {
-                            Button("Cancel All", role: .destructive) {
-                                model.cancelAll()
+                    if !model.items.isEmpty {
+                        ToolbarItem(placement: .primaryAction) {
+                            Button(NSLocalizedString("_cancel_all_", comment: "")) {
+                                guard !showCancelConfirmation else {
+                                    return
+                                }
+                                DispatchQueue.main.async {
+                                    showCancelConfirmation = true
+                                }
                             }
-
-                            Button("Dismiss", role: .cancel) { }
+                            .disabled(showCancelConfirmation)
                         }
                     }
+                }
+                .confirmationDialog(titleCancelAllTask, isPresented: $showCancelConfirmation, titleVisibility: .visible) {
+                    Button(NSLocalizedString("_cancel_all_", comment: ""), role: .destructive) {
+                        fireCancelAll = true
+                    }
+                    Button(NSLocalizedString("_dismiss_", comment: ""), role: .cancel) { }
                 }
                 .task {
                    await model.reload(withDatabase: true)

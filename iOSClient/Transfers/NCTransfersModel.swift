@@ -48,15 +48,20 @@ final class TransfersViewModel: ObservableObject {
     }
 
     func cancel(item: MetadataItem) async {
-        await reload(withDatabase: true)
+        guard let metadata = await self.database.getMetadataFromOcIdAndocIdTransferAsync(item.ocIdTransfer) else {
+            return
+        }
+        await NCNetworking.shared.cancelTask(metadata: metadata)
     }
 
     func cancelAll() {
         networking.cancelAllTask()
+        /*
         Task {
             try? await Task.sleep(nanoseconds: 150_000_000)
             await reload(withDatabase: true)
         }
+        */
     }
 
     func readablePath(for item: MetadataItem) -> String {
