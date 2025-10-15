@@ -586,9 +586,13 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
         let rightmenu = await createRightMenu()
-        var tempRightBarButtonItems: [UIBarButtonItem] = rightmenu == nil ? [] : [self.menuBarButtonItem, self.transfersButtonItem]
-        var tempTotalTags = tempRightBarButtonItems.count == 0 ? 0 : self.menuBarButtonItem.tag + self.transfersButtonItem.tag
+        var tempRightBarButtonItems: [UIBarButtonItem] = rightmenu == nil ? [self.transfersButtonItem] : [self.menuBarButtonItem, self.transfersButtonItem]
+        var tempTotalTags = 0
         var totalTags = 0
+
+        for item in tempRightBarButtonItems {
+            tempTotalTags = tempTotalTags + item.tag
+        }
 
         if let rightBarButtonItems = topViewController?.navigationItem.rightBarButtonItems {
             for item in rightBarButtonItems {
@@ -611,8 +615,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
 
         // Update App Icon badge / File Icon badge
-        //try? await UNUserNotificationCenter.current().setBadgeCount(transferCount)
-        //fileItem?.badgeValue = transferCount == 0 ? nil : utility.formatBadgeCount(transferCount)
+        let transferCount = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status != %i", self.global.metadataStatusNormal))?.count ?? 0
+        try? await UNUserNotificationCenter.current().setBadgeCount(transferCount)
+        fileItem?.badgeValue = transferCount == 0 ? nil : utility.formatBadgeCount(transferCount)
     }
 
     func createRightMenu() async -> UIMenu? { return nil }
