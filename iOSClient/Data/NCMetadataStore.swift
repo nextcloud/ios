@@ -26,6 +26,7 @@ struct MetadataItem: Codable, Identifiable {
 
     var completed: Bool = false
     var date: Date?
+    var errorCode: Int = 0
     var etag: String?
     var fileName: String?
     var ocId: String?
@@ -125,22 +126,36 @@ actor NCMetadataStore {
     // MARK: Public API
 
     /// Upserts an item (by `serverUrl + fileName + taskIdentifier`) and schedules a commit.
-    func addItem(_ item: MetadataItem,
-                 forFileName fileName: String,
-                 forServerUrl serverUrl: String,
-                 forTaskIdentifier taskIdentifier: Int) async {
+    func addItem(serverUrl: String,
+                 fileName: String,
+                 taskIdentifier: Int,
+                 ocId: String,
+                 ocIdTransfer: String,
+                 session: String,
+                 status: Int) async {
         if let idx = metadataItemsCache.firstIndex(where: {
             $0.serverUrl == serverUrl &&
             $0.fileName == fileName &&
             $0.taskIdentifier == taskIdentifier
         }) {
-            let merged = mergeItem(existing: metadataItemsCache[idx], with: item)
-            metadataItemsCache[idx] = merged
+            var temp = metadataItemsCache[idx]
+            temp.ocId = ocId
+            temp.ocIdTransfer = ocIdTransfer
+            temp.session = session
+            temp.status = status
+            metadataItemsCache[idx] = temp
         } else {
-            var itemForAppend = item
-            itemForAppend.fileName = fileName
+            var itemForAppend = MetadataItem()
+
             itemForAppend.serverUrl = serverUrl
+            itemForAppend.fileName = fileName
             itemForAppend.taskIdentifier = taskIdentifier
+
+            itemForAppend.ocId = ocId
+            itemForAppend.ocIdTransfer = ocIdTransfer
+            itemForAppend.session = session
+            itemForAppend.status = status
+
             metadataItemsCache.append(itemForAppend)
         }
 
@@ -154,8 +169,11 @@ actor NCMetadataStore {
             $0.fileName == fileName &&
             $0.taskIdentifier == taskIdentifier
         }) {
-            let merged = mergeItem(existing: metadataItemsCache[idx], with: MetadataItem(completed: true, etag: etag, status: 0))
-            metadataItemsCache[idx] = merged
+            var temp = metadataItemsCache[idx]
+            temp.taskIdentifier = taskIdentifier
+            temp.etag = etag
+
+            metadataItemsCache[idx] = temp
         } else {
             // Not found? get from metadata
             if let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) {
@@ -183,13 +201,15 @@ actor NCMetadataStore {
             $0.fileName == fileName &&
             $0.taskIdentifier == taskIdentifier
         }) {
-            let merged = mergeItem(existing: metadataItemsCache[idx], with: MetadataItem(completed: true,
-                                                                                         date: date,
-                                                                                         etag: etag,
-                                                                                         ocId: ocId,
-                                                                                         size: size,
-                                                                                         status: 0))
-            metadataItemsCache[idx] = merged
+            var temp = metadataItemsCache[idx]
+            temp.completed = true
+            temp.date = date
+            temp.etag = etag
+            temp.ocId = ocId
+            temp.size = size
+            temp.status = 0
+
+            metadataItemsCache[idx] = temp
         } else {
             // Not found? get from metadata
             if let metadata {
@@ -293,24 +313,6 @@ actor NCMetadataStore {
     }
 
     // MARK: - Private
-
-    /// Merges two metadata items, preferring non-nil fields from the new value.
-    private func mergeItem(existing: MetadataItem, with new: MetadataItem) -> MetadataItem {
-        return MetadataItem(
-            completed: new.completed ?? existing.completed,
-            date: new.date ?? existing.date,
-            etag: new.etag ?? existing.etag,
-            fileName: existing.fileName ?? new.fileName,
-            ocId: new.ocId ?? existing.ocId,
-            ocIdTransfer: new.ocIdTransfer ?? existing.ocIdTransfer,
-            progress: new.progress ?? existing.progress,
-            serverUrl: existing.serverUrl ?? new.serverUrl,
-            session: new.session ?? existing.session,
-            size: new.size ?? existing.size,
-            status: new.status ?? existing.status,
-            taskIdentifier: new.taskIdentifier ?? existing.taskIdentifier
-        )
-    }
 
     /// Serializes and atomically writes the cache to disk, respecting batching thresholds.
     private func flush(forced: Bool = false) async {

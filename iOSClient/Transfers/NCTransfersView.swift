@@ -40,6 +40,11 @@ struct TransfersView: View {
             .filter { NCGlobal.shared.metadatasStatusInWaiting.contains($0) }
             .count
     }
+    private var inErrorCount: Int {
+        model.items.compactMap(\.status)
+            .filter { NCGlobal.shared.metadatasStatusInWaiting.contains($0) }
+            .count
+    }
 
     var body: some View {
         NavigationView {
@@ -82,8 +87,9 @@ struct TransfersView: View {
         } else {
             List {
                 Section(header: TransfersSummaryHeader(
+                    inWaitingCount: inWaitingCount,
                     inProgressCount: inProgressCount,
-                    inWaitingCount: inWaitingCount
+                    inerrorCount: inErrorCount
                 )) {
                     ForEach(model.items, id: \.id) { item in
                         TransferRowView(model: model, item: item, onCancel: {
@@ -105,13 +111,15 @@ struct TransfersView: View {
 // MARK: - Summary Header
 
 struct TransfersSummaryHeader: View {
-    let inProgressCount: Int
     let inWaitingCount: Int
+    let inProgressCount: Int
+    let inerrorCount: Int
 
     var body: some View {
         HStack(spacing: 8) {
-            summaryPill(title: "In Progress", value: inProgressCount)
-            summaryPill(title: "Waiting", value: inWaitingCount)
+            summaryPill(title: NSLocalizedString("_in_waiting_", comment: ""), value: inWaitingCount)
+            summaryPill(title: NSLocalizedString("_in_progress_", comment: ""), value: inProgressCount)
+            summaryPill(title: NSLocalizedString("_in_error_", comment: ""), value: inerrorCount)
             Spacer()
         }
         .padding(.vertical, 6)

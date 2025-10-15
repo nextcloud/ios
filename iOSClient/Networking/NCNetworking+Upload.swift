@@ -250,13 +250,13 @@ extension NCNetworking {
                                                 error: .success)
                     }
 
-                    await NCMetadataStore.shared.addItem(MetadataItem(ocId: metadata.ocId,
-                                                                      ocIdTransfer: metadata.ocIdTransfer,
-                                                                      session: metadata.session,
-                                                                      status: metadata.status),
-                                                         forFileName: metadata.fileName,
-                                                         forServerUrl: metadata.serverUrl,
-                                                         forTaskIdentifier: task.taskIdentifier)
+                    await NCMetadataStore.shared.addItem(serverUrl: metadata.serverUrl,
+                                                         fileName: metadata.fileName,
+                                                         taskIdentifier: task.taskIdentifier,
+                                                         ocId: metadata.ocId,
+                                                         ocIdTransfer: metadata.ocIdTransfer,
+                                                         session: metadata.session,
+                                                         status: metadata.status)
                 }
             } else {
                 await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
