@@ -425,6 +425,16 @@ extension NCManageDatabase {
         }
     }
 
+    func addMetadataIfNotExistsAsync(_ metadata: tableMetadata) async {
+        let detached = metadata.detachedCopy()
+
+        await performRealmWriteAsync { realm in
+            if realm.object(ofType: tableMetadata.self, forPrimaryKey: metadata.ocId) == nil {
+                realm.add(detached)
+            }
+        }
+    }
+
     func deleteMetadataAsync(predicate: NSPredicate) async {
         await performRealmWriteAsync { realm in
             let result = realm.objects(tableMetadata.self)
