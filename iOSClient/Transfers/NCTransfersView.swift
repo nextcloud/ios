@@ -218,58 +218,23 @@ struct TransferRowView: View {
 
                 Spacer(minLength: 8)
 
-                if inProgress || inWaiting {
-                    Button {
-                        Task {
-                            if inProgress {
-                                await onCancel()
-                            } else if inWaiting {
-                                await onForceStart()
-                            }
-                        }
-                    } label: {
-                        Image(systemName: actionIconName)
+                Button {
+                    Task {
+                        await onCancel()
                     }
-                    .buttonStyle(.plain)
-                    .tint(.primary)
-                    .accessibilityLabel(actionAccessibilityLabel)
+                } label: {
+                    Image(systemName: "stop.circle")
                 }
+                .buttonStyle(.plain)
+                .tint(.primary)
+                .accessibilityLabel(NSLocalizedString("_cancel_", comment: ""))
+
             }
             .contentShape(Rectangle())
             Divider()
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, 15)
         .padding(.vertical, 10)
-    }
-
-    // MARK: - Helpers
-
-    private var inProgress: Bool {
-        return NCGlobal.shared.metadatasStatusInProgress.contains(item.status)
-    }
-
-    private var inWaiting: Bool {
-        return NCGlobal.shared.metadatasStatusInWaiting.contains(item.status)
-    }
-
-    private var actionIconName: String {
-        if inProgress {
-            return "stop.circle"
-        } else if inWaiting {
-            return "play.circle"
-        } else {
-            return "ellipsis.circle"
-        }
-    }
-
-    private var actionAccessibilityLabel: String {
-        if inProgress {
-            return "_cancel_"
-        }
-        if inWaiting {
-            return "_force_start_"
-        }
-        return "_more_"
     }
 }
 
