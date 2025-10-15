@@ -66,52 +66,25 @@ struct TransfersView: View {
         if model.items.isEmpty {
             EmptyTransfersView()
         } else {
-            listView
-        }
-    }
-
-    private var listView: some View {
-        List {
-            Section(header: TransfersSummaryHeader(
-                inProgressCount: inProgressCount,
-                inWaitingCount: inWaitingCount
-            )) {
-                ForEach(model.items, id: \.id) { item in
-                    TransferRowView(model: model, item: item, onCancel: {
-                        await model.cancel(item: item)
-                    },
-                    onForceStart: {
-                        await model.startTask(item: item)
-                    })
-
-                    // Swipe
-                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                        if NCGlobal.shared.metadatasStatusInProgress.contains(item.status) {
-                            Button(role: .destructive) {
-                                Task {
-                                    await model.cancel(item: item)
-                                }
-                            } label: {
-                                Label(NSLocalizedString("_cancel_", comment: ""), systemImage: "stop.circle")
-                            }
-                        }
-                        if NCGlobal.shared.metadatasStatusInWaiting.contains(item.status) {
-                            Button {
-                                Task {
-                                    await model.startTask(item: item)
-                                }
-                            } label: {
-                                Label(NSLocalizedString("_force_start_", comment: ""), systemImage: "play.circle")
-                            }
-                            .tint(.green)
-                        }
+            List {
+                Section(header: TransfersSummaryHeader(
+                    inProgressCount: inProgressCount,
+                    inWaitingCount: inWaitingCount
+                )) {
+                    ForEach(model.items, id: \.id) { item in
+                        TransferRowView(model: model, item: item, onCancel: {
+                            await model.cancel(item: item)
+                        },
+                        onForceStart: {
+                            await model.startTask(item: item)
+                        })
+                        .listRowInsets(EdgeInsets())
+                        .listRowSeparator(.hidden)
                     }
-                    .listRowInsets(EdgeInsets())
-                    .listRowSeparator(.hidden)
                 }
             }
+            .listStyle(.plain)
         }
-        .listStyle(.plain)
     }
 }
 
@@ -242,7 +215,7 @@ struct TransferRowView: View {
 
 struct TransfersView_Previews: PreviewProvider {
     static var previews: some View {
-        let demo: [MetadataItem] = [
+        let items: [MetadataItem] = [
             MetadataItem(completed: false, date: Date(), etag: "E1",
                          fileName: "photo_001.jpg", ocId: "oc1", ocIdTransfer: "tr1",
                          progress: 0.15, serverUrl: "https://demo/files/marino/Photos",
@@ -260,7 +233,7 @@ struct TransfersView_Previews: PreviewProvider {
                          status: NCGlobal.shared.metadataStatusWaitUpload, taskIdentifier: 103)
         ]
 
-        return TransfersView(previewItems: demo)
+        return TransfersView(previewItems: items)
             .previewDisplayName("Transfers – Preview Items")
     }
 }
