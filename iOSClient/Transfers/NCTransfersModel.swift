@@ -31,7 +31,7 @@ final class TransfersViewModel: ObservableObject {
     deinit { }
 
     @MainActor
-    func reload(withWebDav: Bool = false) async {
+    func reload(withWebDav: Bool) async {
         isLoading = true
         defer {
             isLoading = false
@@ -52,7 +52,7 @@ final class TransfersViewModel: ObservableObject {
         if let ocId = item.ocId,
            let updated = await database.setMetadataSessionAsync(ocId: ocId, status: global.metadataStatusUploading) {
             await networking.uploadFileInBackground(metadata: updated)
-            await reload()
+            await reload(withWebDav: false)
         }
     }
 

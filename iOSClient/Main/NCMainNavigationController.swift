@@ -571,9 +571,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
     }
 
-    @discardableResult
     @MainActor
-    func updateRightBarButtonItems(_ fileItem: UITabBarItem? = nil) async -> Int {
+    func updateRightBarButtonItems(_ fileItem: UITabBarItem? = nil) async {
         guard !(collectionViewCommon?.isEditMode ?? false),
               !(trashViewController?.isEditMode ?? false),
               !(mediaViewController?.isEditMode ?? false),
@@ -582,14 +581,13 @@ class NCMainNavigationController: UINavigationController, UINavigationController
               !(topViewController is NCViewerRichDocument),
               !(topViewController is NCViewerNextcloudText)
         else {
-            return 0
+            return
         }
 
-        let transferCount = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status != %i", self.global.metadataStatusNormal))?.count ?? 0
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
         let rightmenu = await createRightMenu()
-        var tempRightBarButtonItems: [UIBarButtonItem] = rightmenu == nil ? [] : [self.menuBarButtonItem]
-        var tempTotalTags = tempRightBarButtonItems.count == 0 ? 0 : self.menuBarButtonItem.tag
+        var tempRightBarButtonItems: [UIBarButtonItem] = rightmenu == nil ? [] : [self.menuBarButtonItem, self.transfersButtonItem]
+        var tempTotalTags = tempRightBarButtonItems.count == 0 ? 0 : self.menuBarButtonItem.tag + self.transfersButtonItem.tag
         var totalTags = 0
 
         if let rightBarButtonItems = topViewController?.navigationItem.rightBarButtonItems {
@@ -608,20 +606,13 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             tempTotalTags += self.notificationsButtonItem.tag
         }
 
-        if transferCount > 0 {
-            tempRightBarButtonItems.append(self.transfersButtonItem)
-            tempTotalTags += self.transfersButtonItem.tag
-        }
-
         if totalTags != tempTotalTags {
             topViewController?.navigationItem.rightBarButtonItems = tempRightBarButtonItems
         }
 
         // Update App Icon badge / File Icon badge
-        try? await UNUserNotificationCenter.current().setBadgeCount(transferCount)
-        fileItem?.badgeValue = transferCount == 0 ? nil : utility.formatBadgeCount(transferCount)
-
-        return transferCount
+        //try? await UNUserNotificationCenter.current().setBadgeCount(transferCount)
+        //fileItem?.badgeValue = transferCount == 0 ? nil : utility.formatBadgeCount(transferCount)
     }
 
     func createRightMenu() async -> UIMenu? { return nil }
@@ -869,13 +860,6 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
     func isNotificationsButtonVisible() -> Bool {
         if topViewController?.navigationItem.rightBarButtonItems?.first(where: { $0.tag == notificationsButtonTag }) != nil {
-            return true
-        }
-        return false
-    }
-
-    func isTransfersButtonVisible() -> Bool {
-        if topViewController?.navigationItem.rightBarButtonItems?.first(where: { $0.tag == transfersButtonTag }) != nil {
             return true
         }
         return false
