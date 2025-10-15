@@ -16,6 +16,7 @@ final class TransfersViewModel: ObservableObject {
     private let database = NCManageDatabase.shared
     private let networking = NCNetworking.shared
     private let utilityFileSystem = NCUtilityFileSystem()
+    let global = NCGlobal.shared
 
     internal var sceneIdentifier: String = ""
     internal var itemsWebDav: [MetadataItem] = []
@@ -31,7 +32,7 @@ final class TransfersViewModel: ObservableObject {
     deinit { }
 
     @MainActor
-    func reload(withWebDav: Bool) async {
+    func reload(withWebDav: Bool = false) async {
         isLoading = true
         defer {
             isLoading = false
@@ -44,17 +45,16 @@ final class TransfersViewModel: ObservableObject {
     }
 
     func cancel(item: MetadataItem) async {
-        let withWebDav = NCGlobal.shared.metadataStatusWaitWebDav.contains(item.status)
-
-        await reload(withWebDav: true)
+        let withWebDav = global.metadataStatusWaitWebDav.contains(item.status)
+        await reload(withWebDav: withWebDav)
     }
 
     func startTask(item: MetadataItem) async {
         if let ocId = item.ocId,
-           let updated = await database.setMetadataSessionAsync(ocId: ocId, status: NCGlobal.shared.metadataStatusUploading) {
+           let updated = await database.setMetadataSessionAsync(ocId: ocId, status: global.metadataStatusUploading) {
             await networking.uploadFileInBackground(metadata: updated)
+            await reload()
         }
-        await reload(withWebDav: true)
     }
 
     func cancelAll() {
@@ -77,7 +77,7 @@ final class TransfersViewModel: ObservableObject {
         let serverUrl = item.serverUrl ?? ""
         let fileName = item.fileName ?? ""
         let key = "\(serverUrl)|\(fileName)"
-        return progressMap[key] ?? Float(item.progress ?? 0)
+        return progressMap[key] ?? Float(item.progress)
     }
 
     func status(for item: MetadataItem) -> (symbol: String?, status: String, info: String) {
@@ -88,29 +88,28 @@ final class TransfersViewModel: ObservableObject {
             return ""
         }()
 
-        let status = item.status ?? NCGlobal.shared.metadataStatusNormal
-        switch status {
-        case NCGlobal.shared.metadataStatusWaitCreateFolder:
+        switch item.status {
+        case global.metadataStatusWaitCreateFolder:
             return ("arrow.triangle.2.circlepath", NSLocalizedString("_status_wait_create_folder_", comment: ""), "")
-        case NCGlobal.shared.metadataStatusWaitDelete:
+        case global.metadataStatusWaitDelete:
             return ("trash.circle", NSLocalizedString("_status_wait_delete_", comment: ""), "")
-        case NCGlobal.shared.metadataStatusWaitFavorite:
+        case global.metadataStatusWaitFavorite:
             return ("star.circle", NSLocalizedString("_status_wait_favorite_", comment: ""), "")
-        case NCGlobal.shared.metadataStatusWaitCopy:
+        case global.metadataStatusWaitCopy:
             return ("c.circle", NSLocalizedString("_status_wait_copy_", comment: ""), "")
-        case NCGlobal.shared.metadataStatusWaitMove:
+        case global.metadataStatusWaitMove:
             return ("m.circle", NSLocalizedString("_status_wait_move_", comment: ""), "")
-        case NCGlobal.shared.metadataStatusWaitRename:
+        case global.metadataStatusWaitRename:
             return ("a.circle", NSLocalizedString("_status_wait_rename_", comment: ""), "")
-        case NCGlobal.shared.metadataStatusWaitDownload:
+        case global.metadataStatusWaitDownload:
             return ("arrow.triangle.2.circlepath", NSLocalizedString("_status_wait_download_", comment: ""), sizeText)
-        case NCGlobal.shared.metadataStatusDownloading:
+        case global.metadataStatusDownloading:
             return ("arrowshape.down.circle", NSLocalizedString("_status_downloading_", comment: ""), sizeText)
-        case NCGlobal.shared.metadataStatusWaitUpload:
+        case global.metadataStatusWaitUpload:
             return ("arrow.triangle.2.circlepath", NSLocalizedString("_status_wait_upload_", comment: ""), "")
-        case NCGlobal.shared.metadataStatusUploading:
+        case global.metadataStatusUploading:
             return ("arrowshape.up.circle", NSLocalizedString("_status_uploading_", comment: ""), sizeText)
-        case NCGlobal.shared.metadataStatusDownloadError, NCGlobal.shared.metadataStatusUploadError:
+        case global.metadataStatusDownloadError, global.metadataStatusUploadError:
             return ("exclamationmark.circle", NSLocalizedString("_status_upload_error_", comment: ""), "")
         default:
             return (nil, "", "")
@@ -136,7 +135,7 @@ extension TransfersViewModel: @MainActor NCTransferDelegate {
 
     func transferChange(status: String, metadata: tableMetadata, error: NKError) {
         Task {
-            let withWebDav = NCGlobal.shared.metadataStatusWaitWebDav.contains( metadata.status)
+            let withWebDav = global.metadataStatusWaitWebDav.contains( metadata.status)
             await self.reload(withWebDav: withWebDav)
         }
     }
