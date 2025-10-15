@@ -9,7 +9,6 @@ final class TransfersViewModel: ObservableObject {
     @Published var items: [MetadataItem] = []
     @Published var progressMap: [String: Float] = [:]
     @Published var isLoading = false
-    @Published var title: String = NSLocalizedString("_transfers_", comment: "")
 
     // Dependencies
     private let session: NCSession.Session

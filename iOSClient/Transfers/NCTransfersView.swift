@@ -40,7 +40,7 @@ struct TransfersView: View {
     var body: some View {
         NavigationView {
             contentView
-                .navigationTitle(model.title)
+                .navigationTitle(NSLocalizedString("_transfers_", comment: ""))
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button(NSLocalizedString("_close_", comment: "")) {
