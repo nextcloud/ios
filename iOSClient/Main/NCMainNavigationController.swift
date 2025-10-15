@@ -125,14 +125,6 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             hosting.modalPresentationStyle = .pageSheet
 
             self.present(hosting, animated: true)
-
-            /*
-            if let navigationController = UIStoryboard(name: "NCTransfers", bundle: nil).instantiateInitialViewController() as? UINavigationController,
-               let viewController = navigationController.topViewController as? NCTransfers {
-                viewController.modalPresentationStyle = .pageSheet
-                self.present(navigationController, animated: true, completion: nil)
-            }
-            */
         }), for: .touchUpInside)
 
         // PLUS BUTTON ONLY IN FILES

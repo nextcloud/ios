@@ -124,7 +124,6 @@ final class NCGlobal: Sendable {
     let layoutViewOffline                           = "LayoutOffline"
     let layoutViewFavorite                          = "LayoutFavorite"
     let layoutViewFiles                             = "LayoutFiles"
-    let layoutViewTransfers                         = "LayoutTransfers"
     let layoutViewRecent                            = "LayoutRecent"
     let layoutViewShares                            = "LayoutShares"
     let layoutViewShareExtension                    = "LayoutShareExtension"
