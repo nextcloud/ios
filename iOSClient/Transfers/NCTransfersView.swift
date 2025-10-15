@@ -9,12 +9,10 @@ import SwiftUI
 struct TransfersView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var model: TransfersViewModel
-    private let isPreviewMode: Bool
     private let onClose: (() -> Void)?
 
     init(session: NCSession.Session, onClose: (() -> Void)? = nil) {
         _model = StateObject(wrappedValue: TransfersViewModel(session: session))
-        self.isPreviewMode = false
         self.onClose = onClose
     }
 
@@ -24,7 +22,6 @@ struct TransfersView: View {
         let model = TransfersViewModel(session: NCSession.Session(account: "", urlBase: "", user: "", userId: ""))
         model.items = previewItems
         _model = StateObject(wrappedValue: model)
-        self.isPreviewMode = true
         self.onClose = onClose
     }
     #endif
@@ -67,23 +64,11 @@ struct TransfersView: View {
 
     @ViewBuilder
     private var contentView: some View {
-        if model.isLoading {
-            loadingView
-        } else if model.items.isEmpty {
+        if model.items.isEmpty {
             EmptyTransfersView()
         } else {
             listView
         }
-    }
-
-    private var loadingView: some View {
-        VStack(spacing: 12) {
-            ProgressView().progressViewStyle(.circular)
-            Text(NSLocalizedString("_loading_", comment: ""))
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var listView: some View {
@@ -93,14 +78,12 @@ struct TransfersView: View {
                 inWaitingCount: inWaitingCount
             )) {
                 ForEach(model.items, id: \.id) { item in
-                    TransferRowView(model: model,
-                                    item: item,
-                                    onCancel: {
-                                        await model.cancel(item: item)
-                                    },
-                                    onForceStart: {
-                                        await model.startTask(item: item)
-                                    })
+                    TransferRowView(model: model, item: item, onCancel: {
+                        await model.cancel(item: item)
+                    },
+                    onForceStart: {
+                        await model.startTask(item: item)
+                    })
 
                     // Swipe
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
@@ -130,9 +113,6 @@ struct TransfersView: View {
             }
         }
         .listStyle(.plain)
-        .conditionalRefreshable(enabled: !isPreviewMode) {
-            await model.reload(withWebDav: true)
-        }
     }
 }
 

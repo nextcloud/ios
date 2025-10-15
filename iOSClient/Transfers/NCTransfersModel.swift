@@ -16,7 +16,7 @@ final class TransfersViewModel: ObservableObject {
     private let database = NCManageDatabase.shared
     private let networking = NCNetworking.shared
     private let utilityFileSystem = NCUtilityFileSystem()
-    let global = NCGlobal.shared
+    private let global = NCGlobal.shared
 
     internal var sceneIdentifier: String = ""
     internal var itemsWebDav: [MetadataItem] = []
