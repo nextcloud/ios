@@ -10,7 +10,6 @@ struct TransfersView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var model: TransfersViewModel
     @State private var showCancelConfirmation = false
-    @State private var fireCancelAll = false
 
     private let onClose: (() -> Void)?
     private let titleCancelAllTask = String(localized: "_cancel_all_request_")
@@ -76,12 +75,17 @@ struct TransfersView: View {
                 }
                 .confirmationDialog(titleCancelAllTask, isPresented: $showCancelConfirmation, titleVisibility: .visible) {
                     Button(NSLocalizedString("_cancel_all_", comment: ""), role: .destructive) {
-                        fireCancelAll = true
+                        model.cancelAll()
                     }
                     Button(NSLocalizedString("_dismiss_", comment: ""), role: .cancel) { }
                 }
                 .task {
                    await model.reload(withDatabase: true)
+                }
+                .onChange(of: model.items.isEmpty) { _, isEmpty in
+                    if isEmpty {
+                        showCancelConfirmation = false
+                    }
                 }
         }
         .presentationDetents([.medium, .large])
