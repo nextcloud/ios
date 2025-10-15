@@ -16,7 +16,6 @@ struct TransfersView: View {
         self.onClose = onClose
     }
 
-    // preview
     #if DEBUG
     init(previewItems: [MetadataItem], onClose: (() -> Void)? = nil) {
         let model = TransfersViewModel(session: NCSession.Session(account: "", urlBase: "", user: "", userId: ""))
@@ -179,10 +178,10 @@ struct TransferRowView: View {
     var body: some View {
         VStack(spacing: 8) {
             HStack(alignment: .top, spacing: 12) {
-                Image(systemName: "doc.circle")
-                    .resizable()
-                    .frame(width: 44, height: 44)
-                    .cornerRadius(8)
+                let status = model.status(for: item)
+
+                Image(systemName: status.symbol)
+                    .imageScale(.large)
 
                 VStack(alignment: .leading, spacing: 6) {
                     Text(item.fileName ?? "—")
@@ -194,7 +193,6 @@ struct TransferRowView: View {
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
 
-                    let status = model.status(for: item)
                     if !status.status.isEmpty {
                         Text(status.status)
                             .font(.footnote)
@@ -213,6 +211,9 @@ struct TransferRowView: View {
 
                     ProgressView(value: Double(model.progress(for: item)))
                         .progressViewStyle(.linear)
+                        .scaleEffect(y: 0.3, anchor: .center)
+                        .frame(height: 2)
+                        .tint(.blue)
                 }
 
                 Spacer(minLength: 8)
@@ -274,7 +275,6 @@ struct TransferRowView: View {
 
 // MARK: - SwiftUI Preview
 
-#if DEBUG
 struct TransfersView_Previews: PreviewProvider {
     static var previews: some View {
         let demo: [MetadataItem] = [
@@ -282,7 +282,7 @@ struct TransfersView_Previews: PreviewProvider {
                          fileName: "photo_001.jpg", ocId: "oc1", ocIdTransfer: "tr1",
                          progress: 0.15, serverUrl: "https://demo/files/marino/Photos",
                          session: nil, size: 1_234_567,
-                         status: NCGlobal.shared.metadataStatusUploading, taskIdentifier: 101),
+                         status: NCGlobal.shared.metadataStatusWaitCreateFolder, taskIdentifier: 101),
             MetadataItem(completed: false, date: Date(), etag: "E2",
                          fileName: "video_002.mov", ocId: "oc2", ocIdTransfer: "tr2",
                          progress: 0.55, serverUrl: "https://demo/files/marino/Videos",
@@ -299,4 +299,3 @@ struct TransfersView_Previews: PreviewProvider {
             .previewDisplayName("Transfers – Preview Items")
     }
 }
-#endif

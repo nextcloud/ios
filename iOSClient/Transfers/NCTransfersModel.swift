@@ -79,7 +79,7 @@ final class TransfersViewModel: ObservableObject {
         return progressMap[key] ?? Float(item.progress)
     }
 
-    func status(for item: MetadataItem) -> (symbol: String?, status: String, info: String) {
+    func status(for item: MetadataItem) -> (symbol: String, status: String, info: String) {
         let sizeText: String = {
             if let size = item.size {
                 return utilityFileSystem.transformedSize(size)
@@ -111,7 +111,7 @@ final class TransfersViewModel: ObservableObject {
         case global.metadataStatusDownloadError, global.metadataStatusUploadError:
             return ("exclamationmark.circle", NSLocalizedString("_status_upload_error_", comment: ""), "")
         default:
-            return (nil, "", "")
+            return ("exclamationmark.circle", "", "")
         }
     }
 
