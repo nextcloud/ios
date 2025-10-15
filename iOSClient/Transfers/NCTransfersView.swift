@@ -9,21 +9,26 @@ import SwiftUI
 struct TransfersView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var model: TransfersViewModel
+    @State private var showCancelConfirmation = false
     private let onClose: (() -> Void)?
 
-    init(session: NCSession.Session, onClose: (() -> Void)? = nil) {
-        _model = StateObject(wrappedValue: TransfersViewModel(session: session))
-        self.onClose = onClose
-    }
+    init(session: NCSession.Session? = nil,
+         previewItems: [MetadataItem]? = nil,
+         onClose: (() -> Void)? = nil) {
+        if let previewItems {
+            // Preview initializer path
+            let previewSession = NCSession.Session(account: "", urlBase: "", user: "", userId: "")
+            let model = TransfersViewModel(session: previewSession)
+            model.items = previewItems
+            _model = StateObject(wrappedValue: model)
+        } else if let session {
+            _model = StateObject(wrappedValue: TransfersViewModel(session: session))
+        } else {
+            fatalError("TransfersView must be initialized with either a session or previewItems.")
+        }
 
-    #if DEBUG
-    init(previewItems: [MetadataItem], onClose: (() -> Void)? = nil) {
-        let model = TransfersViewModel(session: NCSession.Session(account: "", urlBase: "", user: "", userId: ""))
-        model.items = previewItems
-        _model = StateObject(wrappedValue: model)
         self.onClose = onClose
     }
-    #endif
 
     private var inProgressCount: Int {
         model.items.compactMap(\.status)
@@ -49,13 +54,22 @@ struct TransfersView: View {
                         }
                     }
                     ToolbarItem(placement: .primaryAction) {
-                        Button(NSLocalizedString("_cancel_all_task_", comment: "")) {
-                            model.cancelAll()
+                        Button("Cancel All") {
+                            showCancelConfirmation = true
+                        }
+                        .confirmationDialog("Are you sure you want to cancel all transfers?",
+                                            isPresented: $showCancelConfirmation,
+                                            titleVisibility: .visible) {
+                            Button("Cancel All", role: .destructive) {
+                                model.cancelAll()
+                            }
+
+                            Button("Dismiss", role: .cancel) { }
                         }
                     }
                 }
                 .task {
-                    await model.reload(withWebDav: true)
+                   await model.reload(withWebDav: true)
                 }
         }
         .presentationDetents([.medium, .large])
