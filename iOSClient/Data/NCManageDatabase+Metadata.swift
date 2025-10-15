@@ -1191,7 +1191,7 @@ extension NCManageDatabase {
     }
 
     #if !EXTENSION
-    func getMetadataItemsTransfersAsync() async -> [MetadataItem] {
+    func getMetadataItemsWebDavAsync() async -> [MetadataItem] {
         var metadataItems: [MetadataItem] = []
         let predicate = NSPredicate(format: "status IN %@", NCGlobal.shared.metadataStatusWaitWebDav)
         let sortDescriptors = [
@@ -1220,7 +1220,6 @@ extension NCManageDatabase {
             }
         }
 
-        metadataItems.append(contentsOf: await NCMetadataStore.shared.metadataItemsCache)
         return metadataItems
     }
     #endif

@@ -59,7 +59,7 @@ struct TransfersView: View {
                     }
                 }
                 .task {
-                    await model.reload()
+                    await model.reload(withWebDav: true)
                 }
         }
         .presentationDetents([.medium, .large])
@@ -104,8 +104,7 @@ struct TransfersView: View {
 
                     // Swipe
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                        if let status = item.status,
-                           NCGlobal.shared.metadatasStatusInProgress.contains(status) {
+                        if NCGlobal.shared.metadatasStatusInProgress.contains(item.status) {
                             Button(role: .destructive) {
                                 Task {
                                     await model.cancel(item: item)
@@ -114,8 +113,7 @@ struct TransfersView: View {
                                 Label(NSLocalizedString("_cancel_", comment: ""), systemImage: "stop.circle")
                             }
                         }
-                        if let status = item.status,
-                           NCGlobal.shared.metadatasStatusInWaiting.contains(status) {
+                        if NCGlobal.shared.metadatasStatusInWaiting.contains(item.status) {
                             Button {
                                 Task {
                                     await model.startTask(item: item)
@@ -133,7 +131,7 @@ struct TransfersView: View {
         }
         .listStyle(.plain)
         .conditionalRefreshable(enabled: !isPreviewMode) {
-            await model.reload()
+            await model.reload(withWebDav: true)
         }
     }
 }
@@ -266,17 +264,11 @@ struct TransferRowView: View {
     // MARK: - Helpers
 
     private var inProgress: Bool {
-        if let status = item.status {
-            return NCGlobal.shared.metadatasStatusInProgress.contains(status)
-        }
-        return false
+        return NCGlobal.shared.metadatasStatusInProgress.contains(item.status)
     }
 
     private var inWaiting: Bool {
-        if let status = item.status {
-            return NCGlobal.shared.metadatasStatusInWaiting.contains(status)
-        }
-        return false
+        return NCGlobal.shared.metadatasStatusInWaiting.contains(item.status)
     }
 
     private var actionIconName: String {

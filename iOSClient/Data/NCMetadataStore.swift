@@ -21,21 +21,21 @@ import NextcloudKit
 /// Fields are optional to allow partial updates/merges during upsert operations.
 struct MetadataItem: Codable, Identifiable {
     var id: String {
-        ocIdTransfer ?? ocId ?? (serverUrl ?? "") + (fileName ?? "") + String(taskIdentifier ?? 0)
+        ocIdTransfer ?? ocId ?? (serverUrl ?? "") + (fileName ?? "") + String(taskIdentifier)
     }
 
-    var completed: Bool?
+    var completed: Bool = false
     var date: Date?
     var etag: String?
     var fileName: String?
     var ocId: String?
     var ocIdTransfer: String?
-    var progress: Double?
+    var progress: Double = 0
     var serverUrl: String?
     var session: String?
     var size: Int64?
-    var status: Int?
-    var taskIdentifier: Int?
+    var status: Int = 0
+    var taskIdentifier: Int = 0
 }
 
 actor NCMetadataStore {
@@ -430,7 +430,7 @@ actor NCMetadataStore {
         }
 
         let snapshotUpload: [MetadataItem] = metadataItemsCache.filter { item in
-            if let completed = item.completed, completed {
+            if item.completed {
                 return item.session == NCNetworking.shared.sessionUpload
                 || item.session == NCNetworking.shared.sessionUploadBackground
                 || item.session == NCNetworking.shared.sessionUploadBackgroundExt
@@ -439,7 +439,7 @@ actor NCMetadataStore {
             return false
         }
         let snapshotDownload: [MetadataItem] = metadataItemsCache.filter { item in
-            if let completed = item.completed, completed {
+            if item.completed {
                 return item.session == NCNetworking.shared.sessionDownload
                 || item.session == NCNetworking.shared.sessionDownloadBackground
                 || item.session == NCNetworking.shared.sessionDownloadBackgroundExt
