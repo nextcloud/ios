@@ -217,7 +217,7 @@ struct TransfersView_Previews: PreviewProvider {
     static var previews: some View {
         let items: [MetadataItem] = [
             MetadataItem(completed: false, date: Date(), etag: "E1",
-                         fileName: "photo_001.jpg", ocId: "oc1", ocIdTransfer: "tr1",
+                         fileName: "test-folder", ocId: "oc1", ocIdTransfer: "tr1",
                          progress: 0.15, serverUrl: "https://demo/files/marino/Photos",
                          session: nil, size: 1_234_567,
                          status: NCGlobal.shared.metadataStatusWaitCreateFolder, taskIdentifier: 101),
@@ -230,7 +230,7 @@ struct TransfersView_Previews: PreviewProvider {
                          fileName: "doc.pdf", ocId: "oc3", ocIdTransfer: "tr3",
                          progress: 0.0, serverUrl: "https://demo/files/marino/Documents",
                          session: NCNetworking.shared.sessionUploadBackgroundWWan, size: 345_678,
-                         status: NCGlobal.shared.metadataStatusWaitUpload, taskIdentifier: 103)
+                         status: NCGlobal.shared.metadataStatusUploading, taskIdentifier: 103)
         ]
 
         return TransfersView(previewItems: items)
