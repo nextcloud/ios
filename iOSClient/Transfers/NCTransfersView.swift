@@ -272,21 +272,6 @@ struct TransferRowView: View {
     }
 }
 
-// MARK: - View helpers
-
-private extension View {
-    @ViewBuilder
-    func conditionalRefreshable(enabled: Bool, action: @escaping () async -> Void) -> some View {
-        if enabled {
-            self.refreshable {
-                await action()
-            }
-        } else {
-            self
-        }
-    }
-}
-
 // MARK: - SwiftUI Preview
 
 #if DEBUG
