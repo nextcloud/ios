@@ -51,14 +51,6 @@ final class TransfersViewModel: ObservableObject {
         await reload(withDatabase: true)
     }
 
-    func startTask(item: MetadataItem) async {
-        if let ocId = item.ocId,
-           let updated = await database.setMetadataSessionAsync(ocId: ocId, status: global.metadataStatusUploading) {
-            await networking.uploadFileInBackground(metadata: updated)
-            await reload(withDatabase: false)
-        }
-    }
-
     func cancelAll() {
         networking.cancelAllTask()
         Task {

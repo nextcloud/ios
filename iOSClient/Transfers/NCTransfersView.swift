@@ -16,7 +16,6 @@ struct TransfersView: View {
          previewItems: [MetadataItem]? = nil,
          onClose: (() -> Void)? = nil) {
         if let previewItems {
-            // Preview initializer path
             let previewSession = NCSession.Session(account: "", urlBase: "", user: "", userId: "")
             let model = TransfersViewModel(session: previewSession)
             model.items = previewItems
@@ -92,12 +91,9 @@ struct TransfersView: View {
                     inerrorCount: inErrorCount
                 )) {
                     ForEach(model.items, id: \.id) { item in
-                        TransferRowView(model: model, item: item, onCancel: {
+                        TransferRowView(model: model, item: item) {
                             await model.cancel(item: item)
-                        },
-                        onForceStart: {
-                            await model.startTask(item: item)
-                        })
+                        }
                         .listRowInsets(EdgeInsets())
                         .listRowSeparator(.hidden)
                     }
@@ -168,7 +164,6 @@ struct TransferRowView: View {
 
     let item: MetadataItem
     let onCancel: () async -> Void
-    let onForceStart: () async -> Void
 
     var body: some View {
         VStack(spacing: 8) {
