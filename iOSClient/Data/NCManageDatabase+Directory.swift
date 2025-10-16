@@ -124,12 +124,12 @@ extension NCManageDatabase {
     /// - Parameter ocId: The unique object identifier (`ocId`) of the directory to delete.
     ///   If `nil`, the function exits without performing any operation.
     /// - Note: The operation is performed asynchronously and thread-safely within `performRealmWriteAsync`.
-    func deleteDirectoryOcIdAsync(_ ocId: String?) async {
+    func deleteDirectoryOcIdAsync(_ ocId: String?, notSkip: Bool = false) async {
         guard let ocId else {
             return
         }
 
-        await performRealmWriteAsync { realm in
+        await performRealmWriteAsync(notSkip: notSkip) { realm in
             let results = realm.objects(tableDirectory.self)
                 .filter("ocId == %@", ocId)
             realm.delete(results)
@@ -281,8 +281,8 @@ extension NCManageDatabase {
         }
     }
 
-    func getDirectoriesAsync(predicate: NSPredicate) async -> [tableDirectory] {
-        await performRealmReadAsync { realm in
+    func getDirectoriesAsync(predicate: NSPredicate, notSkip: Bool = false) async -> [tableDirectory] {
+        await performRealmReadAsync(notSkip: notSkip) { realm in
             realm.objects(tableDirectory.self)
                 .filter(predicate)
                 .map { tableDirectory(value: $0) }

@@ -1019,8 +1019,8 @@ extension NCManageDatabase {
         }
     }
 
-    func getMetadatasAsync(predicate: NSPredicate) async -> [tableMetadata] {
-        await performRealmReadAsync { realm in
+    func getMetadatasAsync(predicate: NSPredicate, notSkip: Bool = false) async -> [tableMetadata] {
+        await performRealmReadAsync(notSkip: notSkip) { realm in
             realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .map { $0.detachedCopy() }

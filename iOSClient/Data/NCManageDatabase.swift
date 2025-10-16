@@ -464,9 +464,9 @@ final class NCManageDatabase: @unchecked Sendable {
     }
 
     func cleanTablesOcIds(account: String, userId: String, urlBase: String) async {
-        let metadatas = await getMetadatasAsync(predicate: NSPredicate(format: "account == %@", account))
-        let directories = await getDirectoriesAsync(predicate: NSPredicate(format: "account == %@", account))
-        let locals = await getTableLocalFilesAsync(predicate: NSPredicate(format: "account == %@", account))
+        let metadatas = await getMetadatasAsync(predicate: NSPredicate(format: "account == %@", account), notSkip: true)
+        let directories = await getDirectoriesAsync(predicate: NSPredicate(format: "account == %@", account), notSkip: true)
+        let locals = await getTableLocalFilesAsync(predicate: NSPredicate(format: "account == %@", account), notSkip: true)
 
         let metadatasOcIds = Set(metadatas.map { $0.ocId })
         let directoriesOcIds = Set(directories.map { $0.ocId })
@@ -478,7 +478,7 @@ final class NCManageDatabase: @unchecked Sendable {
         await withTaskGroup(of: Void.self) { group in
             for ocId in localMissingOcIds {
                 group.addTask {
-                    await self.deleteLocalFileAsync(id: ocId)
+                    await self.deleteLocalFileAsync(id: ocId, notSkip: true)
                     self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, userId: userId, urlBase: urlBase))
                 }
             }
@@ -487,7 +487,7 @@ final class NCManageDatabase: @unchecked Sendable {
         await withTaskGroup(of: Void.self) { group in
             for ocId in directoriesMissingOcIds {
                 group.addTask {
-                    await self.deleteDirectoryOcIdAsync(ocId)
+                    await self.deleteDirectoryOcIdAsync(ocId, notSkip: true)
                 }
             }
         }

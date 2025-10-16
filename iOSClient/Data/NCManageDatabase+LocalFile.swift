@@ -90,10 +90,10 @@ extension NCManageDatabase {
        }
     }
 
-    func deleteLocalFileAsync(id: String?) async {
+    func deleteLocalFileAsync(id: String?, notSkip: Bool = false) async {
         guard let id else { return }
 
-        await performRealmWriteAsync { realm in
+        await performRealmWriteAsync(notSkip: notSkip) { realm in
             let results = realm.objects(tableLocalFile.self)
                 .filter("ocId == %@", id)
             realm.delete(results)
@@ -147,8 +147,8 @@ extension NCManageDatabase {
 
     // MARK: - Realm Read
 
-    func getTableLocalFilesAsync(predicate: NSPredicate, sorted: String = "fileName", ascending: Bool = true) async -> [tableLocalFile] {
-        await performRealmReadAsync { realm in
+    func getTableLocalFilesAsync(predicate: NSPredicate, sorted: String = "fileName", ascending: Bool = true, notSkip: Bool = false) async -> [tableLocalFile] {
+        await performRealmReadAsync(notSkip: notSkip) { realm in
             realm.objects(tableLocalFile.self)
                 .filter(predicate)
                 .sorted(byKeyPath: sorted, ascending: ascending)
