@@ -1191,23 +1191,19 @@ extension NCManageDatabase {
     }
 
     func getTransferAsync() async -> [tableMetadata] {
-        let predicate = NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal)
-        let sortDescriptors = [
-            RealmSwift.SortDescriptor(keyPath: "status", ascending: false),
-            RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
-        ]
+        await performRealmReadAsync { realm in
+            let predicate = NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal)
+            let sortDescriptors = [
+                RealmSwift.SortDescriptor(keyPath: "status", ascending: false),
+                RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
+            ]
 
-        let results = await performRealmReadAsync { realm in
-            realm.objects(tableMetadata.self)
+            let results = realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .sorted(by: sortDescriptors)
-        }
 
-        guard let results else {
-            return []
-        }
-
-        let sliced = results.prefix(100)
-        return sliced.map { $0.detachedCopy() }
+            let sliced = results.prefix(100)
+            return sliced.map { $0.detachedCopy() }
+        } ?? []
     }
 }
