@@ -128,7 +128,6 @@ extension TransfersViewModel: @MainActor NCTransferDelegate {
 
     func transferChange(status: String, metadata: tableMetadata, error: NKError) {
         Task {
-            let withDatabase = global.metadataStatusWaitWebDav.contains( metadata.status)
             await self.reload()
         }
     }
