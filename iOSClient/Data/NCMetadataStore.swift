@@ -247,9 +247,9 @@ actor NCMetadataStore {
     }
 
     /// Removes a specific cached item and commits the change.
-    func removeItem(forOcIdTransfer ocIdTransfer: String) async {
+    func removeItem(forId id: String) async {
         var removed = false
-        if let idx = metadataItemsCache.firstIndex(where: { $0.ocIdTransfer == ocIdTransfer }) {
+        if let idx = metadataItemsCache.firstIndex(where: { $0.ocIdTransfer == id || $0.ocId == id}) {
             metadataItemsCache.remove(at: idx)
             removed = true
         }
@@ -260,28 +260,18 @@ actor NCMetadataStore {
     }
 
     /// Removes a specific cached item and commits the change.
-    func removeItem(forOcId ocId: String) async {
-        var removed = false
-        if let idx = metadataItemsCache.firstIndex(where: { $0.ocId == ocId }) {
-            metadataItemsCache.remove(at: idx)
-            removed = true
-        }
-
-        if removed {
-            await flush()
-        }
-    }
-
-    /// Removes a specific cached item and commits the change.
-    func removeItems(forOcIds ocIds: [String]) async {
-        guard !ocIds.isEmpty else {
+    func removeItems(forIds ids: [String]) async {
+        guard !ids.isEmpty else {
             return
         }
 
         let before = metadataItemsCache.count
         metadataItemsCache.removeAll { item in
-            if let ocId = item.ocId {
-                return ocIds.contains(ocId)
+            if let ocId = item.ocId, ids.contains(ocId) {
+                return true
+            }
+            if let ocIdTransfer = item.ocIdTransfer, ids.contains(ocIdTransfer) {
+                return true
             }
             return false
         }
@@ -455,6 +445,7 @@ actor NCMetadataStore {
         let metadatasDownloaded = await NCNetworking.shared.downloadSuccess(WithMetadataItems: snapshotDownload)
         // VERIFY ZOMBIE
         #if !EXTENSION
+        await NCManageDatabase.shared.flushRealmAsync()
         await NCNetworking.shared.verifyZombie()
         #endif
 

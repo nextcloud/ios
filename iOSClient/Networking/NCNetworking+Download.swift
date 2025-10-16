@@ -218,7 +218,7 @@ extension NCNetworking {
                 await NCManageDatabase.shared.addLocalFilesAsync(metadatas: metadatasDownloaded)
             }
         }
-        await NCMetadataStore.shared.removeItems(forOcIds: ocIds)
+        await NCMetadataStore.shared.removeItems(forIds: ocIds)
 
         return metadatasReturn
     }

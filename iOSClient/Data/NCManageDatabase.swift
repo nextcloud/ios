@@ -361,6 +361,25 @@ final class NCManageDatabase: @unchecked Sendable {
 
     // MARK: -
 
+    /// Forces a Realm flush by refreshing the latest state from disk.
+    /// This ensures that the current thread has the most recent version
+    /// of all committed transactions.
+    func flushRealmAsync() async {
+        await withCheckedContinuation { continuation in
+            realmQueue.async(qos: .utility) {
+                autoreleasepool {
+                    do {
+                        let realm = try Realm()
+                        _ = realm.refresh()
+                    } catch {
+                        nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm flush error: \(error)")
+                    }
+                    continuation.resume()
+                }
+            }
+        }
+    }
+
     func clearTable(_ table: Object.Type, account: String? = nil) {
         performRealmWrite { realm in
             var results: Results<Object>

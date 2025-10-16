@@ -354,6 +354,7 @@ extension NCNetworking {
                                                                               status: self.global.metadataStatusWaitUpload)
                     } else {
                         await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
+                        await NCMetadataStore.shared.removeItem(forId: metadata.ocId)
                     }
                 }
             }
