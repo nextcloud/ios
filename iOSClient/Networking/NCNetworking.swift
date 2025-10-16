@@ -488,4 +488,16 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     func activeAccountCertificate(account: String) {
         (self.p12Data, self.p12Password) = NCPreferences().getClientCertificate(account: account)
     }
+
+    #if !EXTENSION
+    @inline(__always)
+    func isInBackground() -> Bool {
+       return isAppInBackground
+    }
+    #else
+    @inline(__always)
+    func isInBackground() -> Bool {
+        return false
+    }
+    #endif
 }
