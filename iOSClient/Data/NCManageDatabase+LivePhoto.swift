@@ -31,6 +31,10 @@ extension NCManageDatabase {
     // MARK: - Realm Write
 
     func setLivePhotoVideo(metadatas: [tableMetadata]) async {
+        guard !metadatas.isEmpty else {
+            return
+        }
+
         await performRealmWriteAsync { realm in
             for metadata in metadatas {
                 let serverUrlFileNameNoExt = (metadata.serverUrlFileName as NSString).deletingPathExtension

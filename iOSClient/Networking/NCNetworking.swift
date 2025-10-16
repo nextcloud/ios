@@ -268,17 +268,11 @@ actor TranfersSuccess {
 
     func flush() async {
         // Metadatas
-        if !tablesMetadatas.isEmpty {
-            let ocIdTransfers = tablesMetadatas.map(\.ocIdTransfer)
-            await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfers: ocIdTransfers, metadatas: tablesMetadatas)
-            tablesMetadatas.removeAll()
-        }
+        let ocIdTransfers = tablesMetadatas.map(\.ocIdTransfer)
+        await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfers: ocIdTransfers, metadatas: tablesMetadatas)
 
         // Local File
-        if !tablesLocalFiles.isEmpty {
-            await NCManageDatabase.shared.addLocalFilesAsync(metadatas: tablesLocalFiles)
-            tablesLocalFiles.removeAll()
-        }
+        await NCManageDatabase.shared.addLocalFilesAsync(metadatas: tablesLocalFiles)
 
         // Live Photo
         if !tablesLivePhoto.isEmpty {
@@ -289,13 +283,26 @@ actor TranfersSuccess {
                 await NCNetworking.shared.setLivePhoto(account: account)
             }
             #endif
-            tablesLivePhoto.removeAll()
         }
         // Auto Upload
-        if !tablesAutoUpload.isEmpty {
-            await NCManageDatabase.shared.addAutoUploadTransferAsync(tablesAutoUpload)
-            tablesAutoUpload.removeAll()
+        await NCManageDatabase.shared.addAutoUploadTransferAsync(tablesAutoUpload)
+
+        // TransferDispatcher
+        //
+        if !tablesMetadatas.isEmpty {
+            await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
+                for metadata in tablesMetadatas {
+                    delegate.transferChange(status: NCGlobal.shared.networkingStatusUploaded,
+                                            metadata: metadata,
+                                            error: .success)
+                }
+            }
         }
+
+        tablesMetadatas.removeAll()
+        tablesLocalFiles.removeAll()
+        tablesLivePhoto.removeAll()
+        tablesAutoUpload.removeAll()
     }
 }
 
