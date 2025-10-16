@@ -473,7 +473,7 @@ extension NCManageDatabase {
             detached.append(metadata.detachedCopy())
         }
 
-        await performRealmWriteAsync { realm in
+        await performRealmWriteAsync(notSkip: true) { realm in
             let result = realm.objects(tableMetadata.self)
                 .filter("ocIdTransfer IN %@", ocIdTransfersToDelete)
             realm.delete(result)

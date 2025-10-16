@@ -34,7 +34,7 @@ extension NCManageDatabase {
     /// - Parameters:
     ///   - metadatas: Array of `tableMetadata` to map into `tableLocalFile`.
     ///   - offline: Optional override for the `offline` flag applied to all items.
-    func addLocalFilesAsync(metadatas: [tableMetadata], offline: Bool? = nil) async {
+    func addLocalFilesAsync(metadatas: [tableMetadata], offline: Bool? = nil, notSkip: Bool = false) async {
         guard !metadatas.isEmpty else {
             return
         }
@@ -54,7 +54,7 @@ extension NCManageDatabase {
                 )
             } ?? [:]
 
-        await performRealmWriteAsync { realm in
+        await performRealmWriteAsync(notSkip: notSkip) { realm in
             for metadata in metadatas {
                 // Reuse existing object or create a new one
                 let local = existingMap[metadata.ocId] ?? tableLocalFile()

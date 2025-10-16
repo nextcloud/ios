@@ -336,9 +336,10 @@ final class NCManageDatabase: @unchecked Sendable {
         }
     }
 
-    func performRealmWriteAsync(_ block: @escaping (Realm) throws -> Void) async {
+    func performRealmWriteAsync(notSkip: Bool = false, _ block: @escaping (Realm) throws -> Void) async {
         // Skip execution if app is suspending
-        guard !isSuspendingDatabaseOperation else {
+        if isSuspendingDatabaseOperation,
+           notSkip == false {
             return
         }
 

@@ -46,10 +46,10 @@ extension NCManageDatabase {
         }
     }
 
-    func addAutoUploadTransferAsync(_ items: [tableAutoUploadTransfer]) async {
+    func addAutoUploadTransferAsync(_ items: [tableAutoUploadTransfer], notSkip: Bool = false) async {
         guard !items.isEmpty else { return }
 
-        await performRealmWriteAsync { realm in
+        await performRealmWriteAsync(notSkip: notSkip) { realm in
             realm.add(items, update: .all)
         }
     }

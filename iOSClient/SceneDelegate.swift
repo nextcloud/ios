@@ -222,6 +222,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
 
+        Task {
+            await NCNetworking.shared.tranfersSuccess.flush()
+        }
+
         if NCPreferences().privacyScreenEnabled {
             if SwiftEntryKit.isCurrentlyDisplaying {
                 SwiftEntryKit.dismiss {

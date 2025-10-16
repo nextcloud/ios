@@ -253,7 +253,7 @@ actor TranfersSuccess {
         return tablesMetadatas.count
     }
 
-    func flush() async {
+    func flushAndNotifty() async {
         // Metadatas
         let ocIdTransfers = tablesMetadatas.map(\.ocIdTransfer)
         await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfersToDelete: ocIdTransfers, metadatas: tablesMetadatas)
@@ -285,6 +285,27 @@ actor TranfersSuccess {
                 }
             }
         }
+
+        tablesMetadatas.removeAll()
+        tablesLocalFiles.removeAll()
+        tablesLivePhoto.removeAll()
+        tablesAutoUpload.removeAll()
+    }
+
+    func flush() async {
+        // Metadatas
+        let ocIdTransfers = tablesMetadatas.map(\.ocIdTransfer)
+        await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfersToDelete: ocIdTransfers, metadatas: tablesMetadatas)
+
+        // Local File
+        await NCManageDatabase.shared.addLocalFilesAsync(metadatas: tablesLocalFiles, notSkip: true)
+
+        // Live Photo
+        if !tablesLivePhoto.isEmpty {
+            await NCManageDatabase.shared.setLivePhotoVideo(metadatas: tablesLivePhoto, notSkip: true)
+        }
+        // Auto Upload
+        await NCManageDatabase.shared.addAutoUploadTransferAsync(tablesAutoUpload, notSkip: true)
 
         tablesMetadatas.removeAll()
         tablesLocalFiles.removeAll()
