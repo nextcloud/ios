@@ -43,7 +43,7 @@ final class TransfersViewModel: ObservableObject {
         if withDatabase {
             itemsDB = await database.getTransferAsync()
         }
-        let metadataItemsCache = await NCMetadataStore.shared.metadataItemsCache
+        let metadataItemsCache = await NCMetadataStore.shared.metadataItemsCache.filter { !$0.completed }
         items = itemsDB + metadataItemsCache
     }
 

@@ -308,10 +308,6 @@ actor NCMetadataStore {
         await flush(forced: true)
     }
 
-    func countCache() async -> Int {
-        return metadataItemsCache.count
-    }
-
     // MARK: - Private
 
     /// Serializes and atomically writes the cache to disk, respecting batching thresholds.

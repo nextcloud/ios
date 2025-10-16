@@ -114,14 +114,11 @@ actor NCNetworkingProcess {
                 return
             }
 
-            let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal), withLimit: NCBrandOptions.shared.numMaximumProcess) ?? []
+            let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal), withLimit: NCBrandOptions.shared.numMaximumProcess * 2) ?? []
 
-            // Force Push Metadata Store
-            let countWaiting = metadatas.filter { $0.status == self.global.metadataStatusWaitDownload || $0.status == self.global.metadataStatusWaitUpload }.count
-            let countMetadataStore = await NCMetadataStore.shared.countCache()
-
-            if countWaiting == 0,
-               countMetadataStore > 0 {
+            // Force Push Metadata Store if all completed
+            let completeItems = await NCMetadataStore.shared.metadataItemsCache.filter { $0.completed }
+            if completeItems.count >= NCBrandOptions.shared.numMaximumProcess {
                 await NCMetadataStore.shared.forcedFush()
             }
 
@@ -176,16 +173,6 @@ actor NCNetworkingProcess {
         let database = NCManageDatabase.shared
         let counterDownloading = metadatas.filter { $0.status == self.global.metadataStatusDownloading }.count
         let counterUploading = metadatas.filter { $0.status == self.global.metadataStatusUploading }.count
-        let processRate: Double = Double(counterDownloading + counterUploading) / Double(NCBrandOptions.shared.numMaximumProcess)
-
-        // if less than 20% exit
-        if processRate > 0.2 {
-            let countMetadataStore = await NCMetadataStore.shared.countCache()
-            if countMetadataStore >= NCBrandOptions.shared.numMaximumProcess {
-                await NCMetadataStore.shared.forcedFush()
-            }
-            return
-        }
         var availableProcess = NCBrandOptions.shared.numMaximumProcess - (counterDownloading + counterUploading)
 
         /// ------------------------ WEBDAV
