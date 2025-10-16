@@ -114,13 +114,16 @@ actor NCNetworkingProcess {
                 return
             }
 
-            let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal), withLimit: NCBrandOptions.shared.numMaximumProcess * 2) ?? []
-
-            // Force Push Metadata Store if all completed
+            // METADATASTORE: test forced push
+            //
             let completeItems = await NCMetadataStore.shared.metadataItemsCache.filter { $0.completed }
             if completeItems.count >= NCBrandOptions.shared.numMaximumProcess {
                 await NCMetadataStore.shared.forcedFush()
             }
+
+            // METADATAS TABLE
+            //
+            let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal), withLimit: NCBrandOptions.shared.numMaximumProcess * 2) ?? []
 
             if !metadatas.isEmpty {
                 let tasks = await networking.getAllDataTask()
