@@ -95,22 +95,6 @@ struct NCSettingsAdvancedView: View {
             // Section: Diagnostic
             if !NCBrandOptions.shared.disable_log {
                 Section(content: {
-                    #if DEBUG
-                    /// View Metadata Store
-                    Button(action: {
-                        model.viewMetadataStore()
-                    }, label: {
-                        HStack {
-                            Image(systemName: "opticaldiscdrive")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 25, height: 25)
-                                .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-                            Text("View Metadata Store")
-                        }
-                    })
-                    .tint(Color(UIColor.label))
-                    #endif
                     /// View Log File
                     Button(action: {
                         model.viewLogFile()

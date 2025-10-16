@@ -85,7 +85,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         _ = NCNetworking.shared
         _ = NCDownloadAction.shared
         _ = NCNetworkingProcess.shared
-        _ = NCMetadataStore.shared
 
         if let activeTblAccount, !alreadyMigratedMultiDomains {
             //

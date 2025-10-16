@@ -117,14 +117,6 @@ extension NCNetworking {
                                             metadata: metadata,
                                             error: .success)
                 }
-
-                await NCMetadataStore.shared.addItem(serverUrl: metadata.serverUrl,
-                                                     fileName: metadata.fileName,
-                                                     taskIdentifier: task.taskIdentifier,
-                                                     ocId: metadata.ocId,
-                                                     ocIdTransfer: metadata.ocIdTransfer,
-                                                     session: metadata.session,
-                                                     status: metadata.status)
             }
         } else {
             _ = await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
@@ -169,58 +161,6 @@ extension NCNetworking {
                                         error: .success)
             }
         }
-    }
-
-    func downloadSuccess(WithMetadataItems metadataItems: [MetadataItem]) async -> [tableMetadata] {
-        guard !metadataItems.isEmpty else {
-            return []
-        }
-        let ocIds = Array(Set(metadataItems.compactMap { $0.ocId }))
-        let metadatasDownload = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "ocId IN %@", ocIds))
-        var metadatasDownloaded: [tableMetadata] = []
-        var metadatasReturn: [tableMetadata] = []
-
-        if !metadatasDownload.isEmpty {
-            for metadata in metadatasDownload {
-                guard let item = (metadataItems.first { $0.ocId == metadata.ocId }) else {
-                    continue
-                }
-                nkLog(success: "Downloaded file: " + metadata.serverUrlFileName)
-
-                if let etag = item.etag {
-                    metadata.etag = etag
-                }
-                metadata.session = ""
-                metadata.sessionError = ""
-                metadata.sessionTaskIdentifier = 0
-                metadata.status = NCGlobal.shared.metadataStatusNormal
-
-                metadatasDownloaded.append(tableMetadata(value: metadata))
-                metadatasReturn.append(tableMetadata(value: metadata))
-
-                // E2EE
-                #if !EXTENSION
-                if let result = await NCManageDatabase.shared.getE2eEncryptionAsync(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
-                    NCEndToEndEncryption.shared().decryptFile(metadata.fileName,
-                                                              fileNameView: metadata.fileNameView,
-                                                              ocId: metadata.ocId,
-                                                              userId: metadata.userId,
-                                                              urlBase: metadata.urlBase,
-                                                              key: result.key,
-                                                              initializationVector: result.initializationVector,
-                                                              authenticationTag: result.authenticationTag)
-                }
-                #endif
-            }
-
-            if !metadatasDownloaded.isEmpty {
-                await NCManageDatabase.shared.addMetadatasAsync(metadatasDownloaded)
-                await NCManageDatabase.shared.addLocalFilesAsync(metadatas: metadatasDownloaded)
-            }
-        }
-        await NCMetadataStore.shared.removeItems(forIds: ocIds)
-
-        return metadatasReturn
     }
 
     // MARK: - DOWNLOAD ERROR
@@ -288,15 +228,13 @@ extension NCNetworking {
                                                            task: task,
                                                            error: error)
             #else
+            guard let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) else {
+                return
+            }
             if error == .success {
-                await NCMetadataStore.shared.setDownloadCompleted(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier, etag: etag)
+                await downloadSuccess(withMetadata: metadata, etag: etag)
             } else {
-                // Remove Item on MetadataStore
-                await NCMetadataStore.shared.removeItem(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier)
-
-                if let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) {
-                    await downloadError(withMetadata: metadata, error: error)
-                }
+                await downloadError(withMetadata: metadata, error: error)
             }
             #endif
         }
@@ -336,11 +274,6 @@ extension NCNetworking {
             guard await progressQuantizer.shouldEmit(serverUrlFileName: serverUrl + "/" + fileName, fraction: Double(progress)) else {
                 return
             }
-
-            await NCMetadataStore.shared.transferProgress(serverUrl: serverUrl,
-                                                          fileName: fileName,
-                                                          taskIdentifier: task.taskIdentifier,
-                                                          progress: Double(progress))
 
             await self.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferProgressDidUpdate(progress: progress,

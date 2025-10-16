@@ -114,13 +114,6 @@ actor NCNetworkingProcess {
                 return
             }
 
-            // METADATASTORE: test forced push
-            //
-            let completeItems = await NCMetadataStore.shared.metadataItemsCache.filter { $0.completed }
-            if completeItems.count >= NCBrandOptions.shared.numMaximumProcess {
-                await NCMetadataStore.shared.forcedFush()
-            }
-
             // METADATAS TABLE
             //
             let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal), withLimit: NCBrandOptions.shared.numMaximumProcess * 2) ?? []
@@ -176,6 +169,12 @@ actor NCNetworkingProcess {
         let database = NCManageDatabase.shared
         let counterDownloading = metadatas.filter { $0.status == self.global.metadataStatusDownloading }.count
         let counterUploading = metadatas.filter { $0.status == self.global.metadataStatusUploading }.count
+        let processRate: Double = Double(counterDownloading + counterUploading) / Double(NCBrandOptions.shared.numMaximumProcess)
+        // if less than 20% exit
+        if processRate > 0.2 {
+            nkLog(debug: "Process rate \(processRate)")
+            return
+        }
         var availableProcess = NCBrandOptions.shared.numMaximumProcess - (counterDownloading + counterUploading)
 
         /// ------------------------ WEBDAV

@@ -6,7 +6,7 @@ import Foundation
 import NextcloudKit
 
 final class TransfersViewModel: ObservableObject {
-    @Published var items: [MetadataItem] = []
+    @Published var items: [tableMetadata] = []
     @Published var progressMap: [String: Float] = [:]
     @Published var isLoading = false
 
@@ -18,7 +18,6 @@ final class TransfersViewModel: ObservableObject {
     private let global = NCGlobal.shared
 
     internal var sceneIdentifier: String = ""
-    internal var itemsDB: [MetadataItem] = []
 
     init(session: NCSession.Session) {
         self.session = session
@@ -31,7 +30,7 @@ final class TransfersViewModel: ObservableObject {
     deinit { }
 
     @MainActor
-    func reload(withDatabase: Bool) async {
+    func reload() async {
         if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
             return
         }
@@ -40,14 +39,11 @@ final class TransfersViewModel: ObservableObject {
         defer {
             isLoading = false
         }
-        if withDatabase {
-            itemsDB = await database.getTransferAsync()
-        }
-        let metadataItemsCache = await NCMetadataStore.shared.metadataItemsCache.filter { !$0.completed }
-        items = itemsDB + metadataItemsCache
+
+        items = await database.getTransferAsync()
     }
 
-    func cancel(item: MetadataItem) async {
+    func cancel(item: tableMetadata) async {
         guard let metadata = await self.database.getMetadataFromOcIdAndocIdTransferAsync(item.ocIdTransfer) else {
             return
         }
@@ -64,27 +60,24 @@ final class TransfersViewModel: ObservableObject {
         */
     }
 
-    func readablePath(for item: MetadataItem) -> String {
-        guard let url = item.serverUrl else { return "/" }
+    func readablePath(for item: tableMetadata) -> String {
+        let url = item.serverUrl
         let home = utilityFileSystem.getHomeServer(session: session)
         var path = url.replacingOccurrences(of: home, with: "")
         if path.isEmpty { path = "/" }
         return path
     }
 
-    func progress(for item: MetadataItem) -> Float {
-        let serverUrl = item.serverUrl ?? ""
-        let fileName = item.fileName ?? ""
+    func progress(for item: tableMetadata) -> Float {
+        let serverUrl = item.serverUrl
+        let fileName = item.fileName
         let key = "\(serverUrl)|\(fileName)"
-        return progressMap[key] ?? Float(item.progress)
+        return progressMap[key] ?? Float(0)
     }
 
-    func status(for item: MetadataItem) -> (symbol: String, status: String, info: String) {
+    func status(for item: tableMetadata) -> (symbol: String, status: String, info: String) {
         let sizeText: String = {
-            if let size = item.size {
-                return utilityFileSystem.transformedSize(size)
-            }
-            return ""
+            return utilityFileSystem.transformedSize(item.size)
         }()
 
         switch item.status {
@@ -117,9 +110,8 @@ final class TransfersViewModel: ObservableObject {
         }
     }
 
-    func wwanWaitInfoIfNeeded(for item: MetadataItem) -> String? {
-        guard let s = item.session else { return nil }
-        if s == NCNetworking.shared.sessionUploadBackgroundWWan,
+    func wwanWaitInfoIfNeeded(for item: tableMetadata) -> String? {
+        if item.session == NCNetworking.shared.sessionUploadBackgroundWWan,
            !(NCNetworking.shared.networkReachability == .reachableEthernetOrWiFi) {
             return NSLocalizedString("_waiting_for_", comment: "") + " " + NSLocalizedString("_reachable_wifi_", comment: "")
         }
@@ -130,20 +122,20 @@ final class TransfersViewModel: ObservableObject {
 extension TransfersViewModel: @MainActor NCTransferDelegate {
     func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {
         Task {
-            await self.reload(withDatabase: true)
+            await self.reload()
         }
     }
 
     func transferChange(status: String, metadata: tableMetadata, error: NKError) {
         Task {
             let withDatabase = global.metadataStatusWaitWebDav.contains( metadata.status)
-            await self.reload(withDatabase: withDatabase)
+            await self.reload()
         }
     }
 
     func transferReloadData(serverUrl: String?, status: Int?) {
         Task {
-            await self.reload(withDatabase: true)
+            await self.reload()
         }
     }
 

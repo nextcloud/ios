@@ -249,14 +249,6 @@ extension NCNetworking {
                                                 metadata: metadata,
                                                 error: .success)
                     }
-
-                    await NCMetadataStore.shared.addItem(serverUrl: metadata.serverUrl,
-                                                         fileName: metadata.fileName,
-                                                         taskIdentifier: task.taskIdentifier,
-                                                         ocId: metadata.ocId,
-                                                         ocIdTransfer: metadata.ocIdTransfer,
-                                                         session: metadata.session,
-                                                         status: metadata.status)
                 }
             } else {
                 await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
@@ -307,83 +299,6 @@ extension NCNetworking {
                                     metadata: metadata.detachedCopy(),
                                     error: .success)
         }
-    }
-
-    func uploadSuccess(WithMetadataItems metadataItems: [MetadataItem]) async -> [tableMetadata] {
-        guard !metadataItems.isEmpty else {
-            return []
-        }
-        let ocIdTransfers = metadataItems.compactMap { $0.ocIdTransfer }
-        let metadatasUpload = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "ocIdTransfer IN %@", ocIdTransfers))
-        var metadatasUploaded: [tableMetadata] = []
-        var metadatasLocalFiles: [tableMetadata] = []
-        var metadatasLivePhoto: [tableMetadata] = []
-        var metadatasReturn: [tableMetadata] = []
-        var serversUrl = Set<String>()
-        var accounts = Set<String>()
-        var autoUploadTransfers: [tableAutoUploadTransfer] = []
-
-        for metadata in metadatasUpload {
-            guard let transferItem = (metadataItems.first { $0.ocIdTransfer == metadata.ocIdTransfer }),
-                  let etag = transferItem.etag,
-                  let ocId = transferItem.ocId else {
-                continue
-            }
-            nkLog(success: "Uploaded file: " + metadata.serverUrlFileName)
-
-            metadata.uploadDate = (transferItem.date as? NSDate) ?? NSDate()
-            metadata.etag = etag
-            metadata.ocId = ocId
-            metadata.chunk = 0
-
-            if let fileId = utility.ocIdToFileId(ocId: metadata.ocId) {
-                metadata.fileId = fileId
-            }
-
-            metadata.session = ""
-            metadata.sessionError = ""
-            metadata.sessionTaskIdentifier = 0
-            metadata.status = NCGlobal.shared.metadataStatusNormal
-
-            // Array
-            metadatasUploaded.append(tableMetadata(value: metadata))
-            metadatasReturn.append(tableMetadata(value: metadata))
-            serversUrl.insert(metadata.serverUrl)
-            accounts.insert(metadata.account)
-
-            let results = await helperMetadataSuccess(metadata: metadata)
-            if let localFile = results.localFile {
-                metadatasLocalFiles.append(localFile)
-            }
-            if let livePhoto = results.livePhoto {
-                metadatasLivePhoto.append(livePhoto)
-            }
-            if let tblAutoUpload = results.autoUpload {
-                autoUploadTransfers.append(tblAutoUpload)
-            }
-
-            await NCMetadataStore.shared.removeItem(forId: metadata.ocIdTransfer)
-        }
-
-        // Metadatas
-        await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfers: ocIdTransfers, metadatas: metadatasUploaded)
-        // Local File
-        if !metadatasLocalFiles.isEmpty {
-            await NCManageDatabase.shared.addLocalFilesAsync(metadatas: metadatasLocalFiles)
-        }
-        // Live Photo
-        if !metadatasLivePhoto.isEmpty {
-            await NCManageDatabase.shared.setLivePhotoVideo(metadatas: metadatasLivePhoto)
-            for account in accounts {
-                await NCNetworking.shared.setLivePhoto(account: account)
-            }
-        }
-        // Auto Upload
-        if !autoUploadTransfers.isEmpty {
-            await NCManageDatabase.shared.addAutoUploadTransferAsync(autoUploadTransfers)
-        }
-
-        return metadatasReturn
     }
 
     private func helperMetadataSuccess(metadata: tableMetadata) async -> (localFile: tableMetadata?, livePhoto: tableMetadata?, autoUpload: tableAutoUploadTransfer?) {
@@ -484,7 +399,6 @@ extension NCNetworking {
     func uploadCancelFile(metadata: tableMetadata) async {
         self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase))
         await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocIdTransfer)
-        await NCMetadataStore.shared.removeItem(forId: metadata.ocIdTransfer)
     }
 
 #if !EXTENSION
@@ -606,23 +520,19 @@ extension NCNetworking {
                                                              error: error)
 
             #else
-            if error == .success {
-                await NCMetadataStore.shared.setUploadCompleted(fileName: fileName,
-                                                                serverUrl: serverUrl,
-                                                                taskIdentifier: task.taskIdentifier,
-                                                                ocId: ocId,
-                                                                etag: etag,
-                                                                size: size,
-                                                                date: date)
-            } else {
-                await NCMetadataStore.shared.removeItem(fileName: fileName, serverUrl: serverUrl, taskIdentifier: task.taskIdentifier)
+            guard let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@ AND sessionTaskIdentifier == %d", serverUrl, fileName, task.taskIdentifier)) else {
+                await NCManageDatabase.shared.deleteMetadataAsync(predicate: NSPredicate(format: "fileName == %@ AND serverUrl == %@", fileName, serverUrl))
+                return
+            }
 
-                if let metadata = await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@ AND sessionTaskIdentifier == %d", serverUrl, fileName, task.taskIdentifier)) {
-                    await uploadError(withMetadata: metadata, error: error)
-                } else {
-                    let predicate = NSPredicate(format: "fileName == %@ AND serverUrl == %@", fileName, serverUrl)
-                    await NCManageDatabase.shared.deleteMetadataAsync(predicate: predicate)
+            if error == .success {
+                if let ocId{
+                    await uploadSuccess(withMetadata: metadata, ocId: ocId, etag: etag, date: date)
+                }else {
+                    await NCManageDatabase.shared.deleteMetadataAsync(predicate: NSPredicate(format: "fileName == %@ AND serverUrl == %@", fileName, serverUrl))
                 }
+            } else {
+                await uploadError(withMetadata: metadata, error: error)
             }
             #endif
         }
@@ -639,11 +549,6 @@ extension NCNetworking {
             guard await progressQuantizer.shouldEmit(serverUrlFileName: serverUrl + "/" + fileName, fraction: Double(progress)) else {
                 return
             }
-
-            await NCMetadataStore.shared.transferProgress(serverUrl: serverUrl,
-                                                          fileName: fileName,
-                                                          taskIdentifier: task.taskIdentifier,
-                                                          progress: Double(progress))
 
             await self.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferProgressDidUpdate(progress: progress,

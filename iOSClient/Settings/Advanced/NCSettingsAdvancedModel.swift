@@ -182,23 +182,6 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
 
         controller?.present(viewerQuickLook, animated: true, completion: nil)
     }
-
-    /// Presents the log file viewer.
-    func viewMetadataStore() {
-        if let groupDirectory = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup) {
-            let backupDirectory = groupDirectory.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud)
-            let url = backupDirectory.appendingPathComponent(fileMetadataStore)
-
-            // Create NCViewerQuickLook with the metadata store file
-            let viewerQuickLook = NCViewerQuickLook(
-                with: url,
-                isEditingEnabled: false,
-                metadata: nil
-            )
-
-            controller?.present(viewerQuickLook, animated: true, completion: nil)
-        }
-    }
 }
 
 /// An enum that represents the intervals for cache deletion

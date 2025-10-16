@@ -1190,38 +1190,24 @@ extension NCManageDatabase {
         }
     }
 
-    #if !EXTENSION
-    func getTransferAsync() async -> [MetadataItem] {
-        var metadataItems: [MetadataItem] = []
-        let predicate = NSPredicate(format: "status IN %@ || errorCode != 0", NCGlobal.shared.metadataStatusWaitWebDav)
+    func getTransferAsync() async -> [tableMetadata] {
+        let predicate = NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal)
         let sortDescriptors = [
             RealmSwift.SortDescriptor(keyPath: "status", ascending: false),
             RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
         ]
 
-        await performRealmReadAsync { realm in
-            let results = realm.objects(tableMetadata.self)
+        let results = await performRealmReadAsync { realm in
+            realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .sorted(by: sortDescriptors)
-
-            for result in results {
-                metadataItems.append(MetadataItem(completed: false,
-                                                  date: result.date as Date,
-                                                  errorCode: result.errorCode,
-                                                  etag: result.etag,
-                                                  fileName: result.fileNameView,
-                                                  ocId: result.ocId,
-                                                  ocIdTransfer: result.ocIdTransfer,
-                                                  progress: 0,
-                                                  serverUrl: result.serverUrl,
-                                                  session: result.session,
-                                                  size: result.size,
-                                                  status: result.status,
-                                                  taskIdentifier: 0))
-            }
         }
 
-        return metadataItems
+        guard let results else {
+            return []
+        }
+
+        let sliced = results.prefix(100)
+        return sliced.map { $0.detachedCopy() }
     }
-    #endif
 }

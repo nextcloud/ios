@@ -15,7 +15,7 @@ struct TransfersView: View {
     private let titleCancelAllTask = String(localized: "_cancel_all_request_")
 
     init(session: NCSession.Session? = nil,
-         previewItems: [MetadataItem]? = nil,
+         previewItems: [tableMetadata]? = nil,
          onClose: (() -> Void)? = nil) {
         if let previewItems {
             let previewSession = NCSession.Session(account: "", urlBase: "", user: "", userId: "")
@@ -80,7 +80,7 @@ struct TransfersView: View {
                     Button(NSLocalizedString("_dismiss_", comment: ""), role: .cancel) { }
                 }
                 .task {
-                   await model.reload(withDatabase: true)
+                   await model.reload()
                 }
                 .onChange(of: model.items.isEmpty) { _, isEmpty in
                     if isEmpty {
@@ -102,7 +102,7 @@ struct TransfersView: View {
                     inProgressCount: inProgressCount,
                     inerrorCount: inErrorCount
                 )) {
-                    ForEach(model.items, id: \.id) { item in
+                    ForEach(model.items, id: \.ocId) { item in
                         TransferRowView(model: model, item: item) {
                             await model.cancel(item: item)
                         }
@@ -174,7 +174,7 @@ struct EmptyTransfersView: View {
 struct TransferRowView: View {
     @ObservedObject var model: TransfersViewModel
 
-    let item: MetadataItem
+    let item: tableMetadata
     let onCancel: () async -> Void
 
     var body: some View {
@@ -186,7 +186,7 @@ struct TransferRowView: View {
                     .imageScale(.large)
 
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(item.fileName ?? "—")
+                    Text(item.fileName)
                         .font(.headline)
                         .lineLimit(2)
 
@@ -244,6 +244,7 @@ struct TransferRowView: View {
 
 struct TransfersView_Previews: PreviewProvider {
     static var previews: some View {
+        /*
         let items: [MetadataItem] = [
             MetadataItem(completed: false, date: Date(), etag: "E1",
                          fileName: "test-folder", ocId: "oc1", ocIdTransfer: "tr1",
@@ -264,5 +265,6 @@ struct TransfersView_Previews: PreviewProvider {
 
         return TransfersView(previewItems: items)
             .previewDisplayName("Transfers – Preview Items")
+        */
     }
 }
