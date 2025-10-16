@@ -280,9 +280,9 @@ extension NCNetworking {
         metadata.sessionTaskIdentifier = 0
         metadata.status = self.global.metadataStatusNormal
 
-        await NCManageDatabase.shared.replaceMetadataAsync(id: metadata.ocIdTransfer, metadata: metadata)
-
         let results = await helperMetadataSuccess(metadata: metadata)
+
+        await NCManageDatabase.shared.replaceMetadataAsync(id: metadata.ocIdTransfer, metadata: metadata)
         if let localFile = results.localFile {
             await NCManageDatabase.shared.addLocalFilesAsync(metadatas: [localFile])
         }
