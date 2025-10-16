@@ -453,6 +453,10 @@ actor NCMetadataStore {
         let metadatasUploaded = await NCNetworking.shared.uploadSuccess(WithMetadataItems: snapshotUpload)
         // DOWNLOAD
         let metadatasDownloaded = await NCNetworking.shared.downloadSuccess(WithMetadataItems: snapshotDownload)
+        // VERIFY ZOMBIE
+        #if !EXTENSION
+        await NCNetworking.shared.verifyZombie()
+        #endif
 
         // TransferDispatcher
         //

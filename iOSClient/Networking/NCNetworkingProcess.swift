@@ -187,6 +187,11 @@ actor NCNetworkingProcess {
             }
         }
 
+        // TEST AVAILABLE PROCESS
+        guard availableProcess > 0 else {
+            return
+        }
+
         // MARK: - DOWNLOAD
         //
         let filteredDownload = metadatas
