@@ -249,10 +249,14 @@ actor TranfersSuccess {
         }
     }
 
+    func count() async -> Int {
+        return tablesMetadatas.count
+    }
+
     func flush() async {
         // Metadatas
         let ocIdTransfers = tablesMetadatas.map(\.ocIdTransfer)
-        await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfers: ocIdTransfers, metadatas: tablesMetadatas)
+        await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfersToDelete: ocIdTransfers, metadatas: tablesMetadatas)
 
         // Local File
         await NCManageDatabase.shared.addLocalFilesAsync(metadatas: tablesLocalFiles)

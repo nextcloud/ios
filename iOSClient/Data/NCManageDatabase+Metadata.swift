@@ -464,16 +464,20 @@ extension NCManageDatabase {
         }
     }
 
-    func replaceMetadataAsync(ocIdTransfers: [String], metadatas: [tableMetadata]) async {
-        guard !ocIdTransfers.isEmpty else {
+    func replaceMetadataAsync(ocIdTransfersToDelete: [String], metadatas: [tableMetadata]) async {
+        guard !ocIdTransfersToDelete.isEmpty else {
             return
+        }
+        var detached: [tableMetadata] = []
+        for metadata in metadatas {
+            detached.append(metadata.detachedCopy())
         }
 
         await performRealmWriteAsync { realm in
             let result = realm.objects(tableMetadata.self)
-                .filter("ocIdTransfer IN %@", ocIdTransfers, ocIdTransfers)
+                .filter("ocIdTransfer IN %@", ocIdTransfersToDelete)
             realm.delete(result)
-            realm.add(metadatas, update: .all)
+            realm.add(detached, update: .all)
         }
     }
 
