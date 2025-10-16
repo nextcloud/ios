@@ -249,23 +249,6 @@ actor TranfersSuccess {
         }
     }
 
-    func remove(metadata: tableMetadata) {
-        tablesMetadatas.removeAll { item in
-            item.ocId == metadata.ocId
-        }
-        tablesLocalFiles.removeAll { item in
-            item.ocId == metadata.ocId
-        }
-        tablesLivePhoto.removeAll { item in
-            item.ocId == metadata.ocId
-        }
-        if let autoUploadServerUrlBase = metadata.autoUploadServerUrlBase {
-            tablesAutoUpload.removeAll { item in
-                item.primaryKey == metadata.account + autoUploadServerUrlBase + metadata.fileNameView
-            }
-        }
-    }
-
     func flush() async {
         // Metadatas
         let ocIdTransfers = tablesMetadatas.map(\.ocIdTransfer)
