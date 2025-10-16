@@ -230,6 +230,75 @@ actor ProgressQuantizer {
     }
 }
 
+actor TranfersSuccess {
+    private var tablesMetadatas: [tableMetadata] = []
+    private var tablesLocalFiles: [tableMetadata] = []
+    private var tablesLivePhoto: [tableMetadata] = []
+    private var tablesAutoUpload: [tableAutoUploadTransfer] = []
+
+    func append(metadata: tableMetadata, localFile: tableMetadata?, livePhoto: tableMetadata?, autoUpload: tableAutoUploadTransfer?) {
+        tablesMetadatas.append(metadata)
+        if let localFile {
+            tablesLocalFiles.append(localFile)
+        }
+        if let livePhoto {
+            tablesLivePhoto.append(livePhoto)
+        }
+        if let autoUpload {
+            tablesAutoUpload.append(autoUpload)
+        }
+    }
+
+    func remove(metadata: tableMetadata) {
+        tablesMetadatas.removeAll { item in
+            item.ocId == metadata.ocId
+        }
+        tablesLocalFiles.removeAll { item in
+            item.ocId == metadata.ocId
+        }
+        tablesLivePhoto.removeAll { item in
+            item.ocId == metadata.ocId
+        }
+        if let autoUploadServerUrlBase = metadata.autoUploadServerUrlBase {
+            tablesAutoUpload.removeAll { item in
+                item.primaryKey == metadata.account + autoUploadServerUrlBase + metadata.fileNameView
+            }
+        }
+    }
+
+    func flush() async {
+        // Metadatas
+        if !tablesMetadatas.isEmpty {
+            let ocIdTransfers = tablesMetadatas.map(\.ocIdTransfer)
+            await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfers: ocIdTransfers, metadatas: tablesMetadatas)
+            tablesMetadatas.removeAll()
+        }
+
+        // Local File
+        if !tablesLocalFiles.isEmpty {
+            await NCManageDatabase.shared.addLocalFilesAsync(metadatas: tablesLocalFiles)
+            tablesLocalFiles.removeAll()
+        }
+
+        // Live Photo
+        if !tablesLivePhoto.isEmpty {
+            let accounts = Set(tablesLivePhoto.map { $0.account })
+            await NCManageDatabase.shared.setLivePhotoVideo(metadatas: tablesLivePhoto)
+            #if !EXTENSION
+            for account in accounts {
+                await NCNetworking.shared.setLivePhoto(account: account)
+            }
+            #endif
+            tablesLivePhoto.removeAll()
+        }
+        // Auto Upload
+        if !tablesAutoUpload.isEmpty {
+            await NCManageDatabase.shared.addAutoUploadTransferAsync(tablesAutoUpload)
+            tablesAutoUpload.removeAll()
+        }
+    }
+}
+
 class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     static let shared = NCNetworking()
 
@@ -237,8 +306,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
         var fileName: String
         var serverUrl: String
     }
-
-    let networkingTasks = NetworkingTasks()
 
     let sessionDownload = NextcloudKit.shared.nkCommonInstance.identifierSessionDownload
     let sessionDownloadBackground = NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground
@@ -273,9 +340,11 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     // Capabilities
     var capabilities = ThreadSafeDictionary<String, NKCapabilities.Capabilities>()
 
+    // Actors
     let transferDispatcher = NCTransferDelegateDispatcher()
-
+    let networkingTasks = NetworkingTasks()
     let progressQuantizer = ProgressQuantizer()
+    let tranfersSuccess = TranfersSuccess()
 
     // OPERATIONQUEUE
     let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)

@@ -149,7 +149,7 @@ final class NCManageDatabase: @unchecked Sendable {
                 tableE2eMetadata12.self, tableE2eMetadata.self, tableE2eUsers.self,
                 tableE2eCounter.self, tableShare.self, tableChunk.self, tableAvatar.self,
                 tableDashboardWidget.self, tableDashboardWidgetButton.self,
-                NCDBLayoutForView.self, TableSecurityGuardDiagnostics.self
+                NCDBLayoutForView.self, TableSecurityGuardDiagnostics.self, tableLivePhoto.self
             ]
         }
 

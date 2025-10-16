@@ -526,9 +526,9 @@ extension NCNetworking {
             }
 
             if error == .success {
-                if let ocId{
+                if let ocId {
                     await uploadSuccess(withMetadata: metadata, ocId: ocId, etag: etag, date: date)
-                }else {
+                } else {
                     await NCManageDatabase.shared.deleteMetadataAsync(predicate: NSPredicate(format: "fileName == %@ AND serverUrl == %@", fileName, serverUrl))
                 }
             } else {
