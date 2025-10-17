@@ -24,7 +24,11 @@ actor NCMetadataTranfersSuccess {
         metadata.sessionTaskIdentifier = 0
         metadata.status = NCGlobal.shared.metadataStatusNormal
 
-        tranfersSuccess.append(metadata)
+        if let index = tranfersSuccess.firstIndex(where: { $0.ocId == metadata.ocId }) {
+            tranfersSuccess[index] = metadata
+        } else {
+            tranfersSuccess.append(metadata)
+        }
     }
 
     func count() async -> Int {
