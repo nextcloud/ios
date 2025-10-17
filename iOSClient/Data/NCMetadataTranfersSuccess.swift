@@ -4,7 +4,7 @@
 
 import Foundation
 
-actor TranfersSuccess {
+actor NCMetadataTranfersSuccess {
     private var tranfersSuccess: [tableMetadata] = []
     private let utility = NCUtility()
 
@@ -65,6 +65,9 @@ actor TranfersSuccess {
         // Local File
         await NCManageDatabase.shared.addLocalFilesAsync(metadatas: metadatasLocalFiles)
 
+        // Auto Upload
+        await NCManageDatabase.shared.addAutoUploadTransferAsync(autoUploads)
+
         // Live Photo
         if !metadatasLivePhoto.isEmpty {
             let accounts = Set(metadatasLivePhoto.map { $0.account })
@@ -75,9 +78,6 @@ actor TranfersSuccess {
             }
             #endif
         }
-
-        // Auto Upload
-        await NCManageDatabase.shared.addAutoUploadTransferAsync(autoUploads)
 
         // TransferDispatcher
         //

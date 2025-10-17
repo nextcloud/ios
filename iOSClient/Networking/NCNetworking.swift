@@ -275,7 +275,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     let transferDispatcher = NCTransferDelegateDispatcher()
     let networkingTasks = NetworkingTasks()
     let progressQuantizer = ProgressQuantizer()
-    let tranfersSuccess = TranfersSuccess()
+    let metadataTranfersSuccess = NCMetadataTranfersSuccess()
 
     // OPERATIONQUEUE
     let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)

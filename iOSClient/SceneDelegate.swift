@@ -254,11 +254,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             defer {
                 app.endBackgroundTask(bgID); bgID = .invalid
             }
-            // Timeout auto-imposto per non rischiare l’expiration
+            // Timeout auto
             let didFinish = await withTaskGroup(of: Bool.self) { group -> Bool in
                 group.addTask {
                     // TRANSFERS SUCCESS
-                    await NCNetworking.shared.tranfersSuccess.flush()
+                    await NCNetworking.shared.metadataTranfersSuccess.flush()
                     // BACKUP
                     await NCManageDatabase.shared.backupTableAccountToFileAsync()
                     // QUEUE

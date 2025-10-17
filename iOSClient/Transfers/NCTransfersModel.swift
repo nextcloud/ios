@@ -36,7 +36,7 @@ final class TransfersViewModel: ObservableObject {
         while !Task.isCancelled {
             if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] != "1" {
                 isLoading = true
-                let transfersSuccess = await networking.tranfersSuccess.getAll()
+                let transfersSuccess = await networking.metadataTranfersSuccess.getAll()
                 items = await database.getTransferAsync(tranfersSuccess: transfersSuccess)
                 isLoading = false
             }

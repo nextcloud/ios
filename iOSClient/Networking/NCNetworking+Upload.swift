@@ -286,12 +286,12 @@ extension NCNetworking {
         if let localFile = results.localFile {
             await NCManageDatabase.shared.addLocalFilesAsync(metadatas: [localFile])
         }
+        if let tblAutoUpload = results.autoUpload {
+            await NCManageDatabase.shared.addAutoUploadTransferAsync([tblAutoUpload])
+        }
         if let livePhoto = results.livePhoto {
             await NCManageDatabase.shared.setLivePhotoVideo(metadatas: [livePhoto])
             await NCNetworking.shared.setLivePhoto(account: metadata.account)
-        }
-        if let tblAutoUpload = results.autoUpload {
-            await NCManageDatabase.shared.addAutoUploadTransferAsync([tblAutoUpload])
         }
 
         await self.transferDispatcher.notifyAllDelegates { delegate in
@@ -492,9 +492,15 @@ extension NCNetworking {
             if error == .success {
                 if let ocId {
                     if isInBackground() {
-                        await uploadSuccess(withMetadata: metadata, ocId: ocId, etag: etag, date: date)
+                        await uploadSuccess(withMetadata: metadata,
+                                            ocId: ocId,
+                                            etag: etag,
+                                            date: date)
                     } else {
-                        await NCNetworking.shared.tranfersSuccess.append(metadata: metadata, ocId: ocId, date: date, etag: etag)
+                        await NCNetworking.shared.metadataTranfersSuccess.append(metadata: metadata,
+                                                                                 ocId: ocId,
+                                                                                 date: date,
+                                                                                 etag: etag)
                     }
                 } else {
                     await NCManageDatabase.shared.deleteMetadataAsync(predicate: NSPredicate(format: "fileName == %@ AND serverUrl == %@", fileName, serverUrl))

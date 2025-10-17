@@ -120,9 +120,9 @@ actor NCNetworkingProcess {
             // TRANSFERS SUCCESS
             //
             let countWaitUpload = metadatas.filter { $0.status == self.global.metadataStatusWaitUpload }.count
-            let countTransferSuccess = await NCNetworking.shared.tranfersSuccess.count()
+            let countTransferSuccess = await NCNetworking.shared.metadataTranfersSuccess.count()
             if (countWaitUpload == 0 && countTransferSuccess > 0) || countTransferSuccess >= NCBrandOptions.shared.numMaximumProcess * 2 {
-                await NCNetworking.shared.tranfersSuccess.flush()
+                await NCNetworking.shared.metadataTranfersSuccess.flush()
             }
 
             if !metadatas.isEmpty {
@@ -174,7 +174,7 @@ actor NCNetworkingProcess {
 
     private func runMetadataPipelineAsync(metadatas: [tableMetadata]) async {
         let database = NCManageDatabase.shared
-        let countTransferSuccess = await NCNetworking.shared.tranfersSuccess.count()
+        let countTransferSuccess = await NCNetworking.shared.metadataTranfersSuccess.count()
         let counterDownloading = metadatas.filter { $0.status == self.global.metadataStatusDownloading }.count
         let counterUploading = metadatas.filter { $0.status == self.global.metadataStatusUploading }.count - countTransferSuccess
         var availableProcess = NCBrandOptions.shared.numMaximumProcess - (counterDownloading + counterUploading)
