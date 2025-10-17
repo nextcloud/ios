@@ -21,10 +21,6 @@ struct TranfersSuccessItem: Codable, Identifiable {
 
 actor TranfersSuccess {
     private var tranfersSuccessItem: [TranfersSuccessItem] = []
-    private var tablesMetadatas: [tableMetadata] = []
-    private var tablesLocalFiles: [tableMetadata] = []
-    private var tablesLivePhoto: [tableMetadata] = []
-    private var tablesAutoUpload: [tableAutoUploadTransfer] = []
 
     func append(ocId: String, fileName: String, serverUrl: String, taskIdentifier: Int, date: Date?, etag: String?, size: Int64?) {
         let item = TranfersSuccessItem(ocId: ocId,
@@ -37,26 +33,18 @@ actor TranfersSuccess {
         tranfersSuccessItem.append(item)
     }
 
-    func append(metadata: tableMetadata, localFile: tableMetadata?, livePhoto: tableMetadata?, autoUpload: tableAutoUploadTransfer?) {
-        tablesMetadatas.append(metadata)
-        if let localFile {
-            tablesLocalFiles.append(localFile)
-        }
-        if let livePhoto {
-            tablesLivePhoto.append(livePhoto)
-        }
-        if let autoUpload {
-            tablesAutoUpload.append(autoUpload)
-        }
-    }
-
     func count() async -> Int {
-        return tablesMetadatas.count
+        return tranfersSuccessItem.count
     }
 
     func flush() async {
         let utility = NCUtility()
         let isInBackground = NCNetworking.shared.isInBackground()
+
+        var metadatasUploaded: [tableMetadata] = []
+        var metadatasLocalFiles: [tableMetadata] = []
+        var metadatasLivePhoto: [tableMetadata] = []
+        var autoUploads: [tableAutoUploadTransfer] = []
 
         let metadatasUploading = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "status == %d", NCGlobal.shared.metadataStatusUploading)) ?? []
 
@@ -98,35 +86,46 @@ actor TranfersSuccess {
             metadata.status = NCGlobal.shared.metadataStatusNormal
 
             let results = await NCNetworking.shared.helperMetadataSuccess(metadata: metadata)
+
+            metadatasUploaded.append(metadata)
+            if let localFile = results.localFile {
+                metadatasLocalFiles.append(localFile)
+            }
+            if let livePhoto = results.livePhoto {
+                metadatasLivePhoto.append(livePhoto)
+            }
+            if let autoUpload = results.autoUpload {
+                autoUploads.append(autoUpload)
+            }
         }
 
-
         // Metadatas
-        let ocIdTransfers = tablesMetadatas.map(\.ocIdTransfer)
-        await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfersToDelete: ocIdTransfers, metadatas: tablesMetadatas)
+        let ocIdTransfers = metadatasUploaded.map(\.ocIdTransfer)
+        await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfersToDelete: ocIdTransfers, metadatas: metadatasUploaded)
 
         // Local File
-        await NCManageDatabase.shared.addLocalFilesAsync(metadatas: tablesLocalFiles)
+        await NCManageDatabase.shared.addLocalFilesAsync(metadatas: metadatasLocalFiles)
 
         // Live Photo
-        if !tablesLivePhoto.isEmpty {
-            let accounts = Set(tablesLivePhoto.map { $0.account })
-            await NCManageDatabase.shared.setLivePhotoVideo(metadatas: tablesLivePhoto)
+        if !metadatasLivePhoto.isEmpty {
+            let accounts = Set(metadatasLivePhoto.map { $0.account })
+            await NCManageDatabase.shared.setLivePhotoVideo(metadatas: metadatasLivePhoto)
             #if !EXTENSION
             for account in accounts {
                 await NCNetworking.shared.setLivePhoto(account: account)
             }
             #endif
         }
+
         // Auto Upload
-        await NCManageDatabase.shared.addAutoUploadTransferAsync(tablesAutoUpload)
+        await NCManageDatabase.shared.addAutoUploadTransferAsync(autoUploads)
 
         // TransferDispatcher
         //
-        if !tablesMetadatas.isEmpty,
+        if !metadatasUploaded.isEmpty,
            !isInBackground {
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                for metadata in tablesMetadatas {
+                for metadata in metadatasUploaded {
                     delegate.transferChange(status: NCGlobal.shared.networkingStatusUploaded,
                                             metadata: metadata,
                                             error: .success)
@@ -134,9 +133,6 @@ actor TranfersSuccess {
             }
         }
 
-        tablesMetadatas.removeAll()
-        tablesLocalFiles.removeAll()
-        tablesLivePhoto.removeAll()
-        tablesAutoUpload.removeAll()
+        tranfersSuccessItem.removeAll()
     }
 }
