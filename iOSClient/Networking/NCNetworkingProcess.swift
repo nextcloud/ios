@@ -174,14 +174,10 @@ actor NCNetworkingProcess {
 
     private func runMetadataPipelineAsync(metadatas: [tableMetadata]) async {
         let database = NCManageDatabase.shared
+        let countTransferSuccess = await NCNetworking.shared.tranfersSuccess.count()
         let counterDownloading = metadatas.filter { $0.status == self.global.metadataStatusDownloading }.count
-        let counterUploading = metadatas.filter { $0.status == self.global.metadataStatusUploading }.count
+        let counterUploading = metadatas.filter { $0.status == self.global.metadataStatusUploading }.count - countTransferSuccess
         let processRate: Double = Double(counterDownloading + counterUploading) / Double(NCBrandOptions.shared.numMaximumProcess)
-        // if less than 20% exit
-        if processRate > 0.2 {
-            nkLog(debug: "Process rate \(processRate)")
-            return
-        }
         var availableProcess = NCBrandOptions.shared.numMaximumProcess - (counterDownloading + counterUploading)
 
         /// ------------------------ WEBDAV
