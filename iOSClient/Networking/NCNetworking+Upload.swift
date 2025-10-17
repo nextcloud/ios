@@ -492,6 +492,8 @@ extension NCNetworking {
             if error == .success {
                 if let ocId {
                     if isInBackground() {
+                        await uploadSuccess(withMetadata: metadata, ocId: ocId, etag: etag, date: date)
+                    } else {
                         await NCNetworking.shared.tranfersSuccess.append(ocId: ocId,
                                                                          fileName: fileName,
                                                                          serverUrl: serverUrl,
@@ -499,8 +501,6 @@ extension NCNetworking {
                                                                          date: date,
                                                                          etag: etag,
                                                                          size: size)
-                    } else {
-                        await uploadSuccess(withMetadata: metadata, ocId: ocId, etag: etag, date: date)
                     }
                 } else {
                     await NCManageDatabase.shared.deleteMetadataAsync(predicate: NSPredicate(format: "fileName == %@ AND serverUrl == %@", fileName, serverUrl))
