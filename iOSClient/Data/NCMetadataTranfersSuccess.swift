@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
+import NextcloudKit
 
 actor NCMetadataTranfersSuccess {
     private var tranfersSuccess: [tableMetadata] = []
@@ -91,5 +92,7 @@ actor NCMetadataTranfersSuccess {
                 }
             }
         }
+
+        nkLog(tag: NCGlobal.shared.logTagMetadataTransfers, message: "Flush successful", consoleOnly: true)
     }
 }

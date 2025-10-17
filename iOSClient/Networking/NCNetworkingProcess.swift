@@ -115,7 +115,7 @@ actor NCNetworkingProcess {
             }
             // METADATAS TABLE
             //
-            let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal), withLimit: NCBrandOptions.shared.numMaximumProcess * 2) ?? []
+            let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal), withLimit: NCBrandOptions.shared.numMaximumProcess * 3) ?? []
 
             // TRANSFERS SUCCESS
             //
@@ -234,7 +234,8 @@ actor NCNetworkingProcess {
             }
 
             for metadata in metadatasWaitUpload {
-                guard availableProcess > 0 else {
+                guard availableProcess > 0,
+                      !isAppInBackground else {
                     return
                 }
                 let metadatas = await NCCameraRoll().extractCameraRoll(from: metadata)

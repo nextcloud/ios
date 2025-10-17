@@ -293,8 +293,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 nkLog(debug: "Flush timed out, will continue next launch")
             }
         }
-
-
     }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
