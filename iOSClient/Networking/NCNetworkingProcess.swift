@@ -121,7 +121,7 @@ actor NCNetworkingProcess {
             //
             let countWaitUpload = metadatas.filter { $0.status == self.global.metadataStatusWaitUpload }.count
             let countTransferSuccess = await NCNetworking.shared.tranfersSuccess.count()
-            if (countWaitUpload == 0 && countTransferSuccess > 0) { // || countTransferSuccess >= NCBrandOptions.shared.numMaximumProcess {
+            if (countWaitUpload == 0 && countTransferSuccess > 0) || countTransferSuccess >= NCBrandOptions.shared.numMaximumProcess * 2 {
                 await NCNetworking.shared.tranfersSuccess.flush()
             }
 
@@ -177,7 +177,6 @@ actor NCNetworkingProcess {
         let countTransferSuccess = await NCNetworking.shared.tranfersSuccess.count()
         let counterDownloading = metadatas.filter { $0.status == self.global.metadataStatusDownloading }.count
         let counterUploading = metadatas.filter { $0.status == self.global.metadataStatusUploading }.count - countTransferSuccess
-        let processRate: Double = Double(counterDownloading + counterUploading) / Double(NCBrandOptions.shared.numMaximumProcess)
         var availableProcess = NCBrandOptions.shared.numMaximumProcess - (counterDownloading + counterUploading)
 
         /// ------------------------ WEBDAV
