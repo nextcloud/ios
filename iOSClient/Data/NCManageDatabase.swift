@@ -14,7 +14,7 @@ protocol DateCompareable {
     var dateKey: Date { get }
 }
 
-// Global flag used to control Realm write/read operations during app suspension or error
+// Global flag used to control Realm write/read operations
 var isSuspendingDatabaseOperation: Bool = false
 
 final class NCManageDatabase: @unchecked Sendable {
@@ -55,10 +55,6 @@ final class NCManageDatabase: @unchecked Sendable {
     func openRealm() {
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let databaseFileUrl = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
-
-        // now you can read/write in Realm
-        isSuspendingDatabaseOperation = false
-
         let configuration = Realm.Configuration(fileURL: databaseFileUrl,
                                                 schemaVersion: databaseSchemaVersion,
                                                 migrationBlock: { migration, oldSchemaVersion in
@@ -102,10 +98,6 @@ final class NCManageDatabase: @unchecked Sendable {
     func openRealmBackground() -> Bool {
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let databaseFileUrl = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
-
-        // now you can read/write in Realm
-        isSuspendingDatabaseOperation = false
-
         let configuration = Realm.Configuration(fileURL: databaseFileUrl,
                                                 schemaVersion: databaseSchemaVersion,
                                                 migrationBlock: { migration, oldSchemaVersion in
@@ -132,9 +124,6 @@ final class NCManageDatabase: @unchecked Sendable {
         let databaseFileUrl = dirGroup.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
         let bundleUrl: URL = Bundle.main.bundleURL
         var objectTypes: [Object.Type]
-
-        // now you can read/write in Realm
-        isSuspendingDatabaseOperation = false
 
         if bundleUrl.lastPathComponent == "File Provider Extension.appex" {
             objectTypes = [
@@ -314,10 +303,9 @@ final class NCManageDatabase: @unchecked Sendable {
 
     // MARK: - performRealmRead async/await, performRealmWrite async/await
 
-    func performRealmReadAsync<T>(notSkip: Bool = false, _ block: @escaping (Realm) throws -> T?) async -> T? {
+    func performRealmReadAsync<T>(_ block: @escaping (Realm) throws -> T?) async -> T? {
         // Skip execution if app is suspending
-        if isSuspendingDatabaseOperation,
-           notSkip == false {
+        guard !isSuspendingDatabaseOperation else {
             return nil
         }
 
@@ -337,10 +325,9 @@ final class NCManageDatabase: @unchecked Sendable {
         }
     }
 
-    func performRealmWriteAsync(notSkip: Bool = false, _ block: @escaping (Realm) throws -> Void) async {
+    func performRealmWriteAsync(_ block: @escaping (Realm) throws -> Void) async {
         // Skip execution if app is suspending
-        if isSuspendingDatabaseOperation,
-           notSkip == false {
+        guard !isSuspendingDatabaseOperation else {
             return
         }
 
@@ -464,9 +451,9 @@ final class NCManageDatabase: @unchecked Sendable {
     }
 
     func cleanTablesOcIds(account: String, userId: String, urlBase: String) async {
-        let metadatas = await getMetadatasAsync(predicate: NSPredicate(format: "account == %@", account), notSkip: true)
-        let directories = await getDirectoriesAsync(predicate: NSPredicate(format: "account == %@", account), notSkip: true)
-        let locals = await getTableLocalFilesAsync(predicate: NSPredicate(format: "account == %@", account), notSkip: true)
+        let metadatas = await getMetadatasAsync(predicate: NSPredicate(format: "account == %@", account))
+        let directories = await getDirectoriesAsync(predicate: NSPredicate(format: "account == %@", account))
+        let locals = await getTableLocalFilesAsync(predicate: NSPredicate(format: "account == %@", account))
 
         let metadatasOcIds = Set(metadatas.map { $0.ocId })
         let directoriesOcIds = Set(directories.map { $0.ocId })
@@ -478,7 +465,7 @@ final class NCManageDatabase: @unchecked Sendable {
         await withTaskGroup(of: Void.self) { group in
             for ocId in localMissingOcIds {
                 group.addTask {
-                    await self.deleteLocalFileAsync(id: ocId, notSkip: true)
+                    await self.deleteLocalFileAsync(id: ocId)
                     self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId, userId: userId, urlBase: urlBase))
                 }
             }
@@ -487,7 +474,7 @@ final class NCManageDatabase: @unchecked Sendable {
         await withTaskGroup(of: Void.self) { group in
             for ocId in directoriesMissingOcIds {
                 group.addTask {
-                    await self.deleteDirectoryOcIdAsync(ocId, notSkip: true)
+                    await self.deleteDirectoryOcIdAsync(ocId)
                 }
             }
         }

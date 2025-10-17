@@ -408,8 +408,8 @@ extension NCManageDatabase {
         } ?? []
     }
 
-    func getAllTableAccountAsync(notSkip: Bool = false) async -> [tableAccount] {
-        await performRealmReadAsync(notSkip: notSkip) { realm in
+    func getAllTableAccountAsync() async -> [tableAccount] {
+        await performRealmReadAsync { realm in
             let sorted = [
                 SortDescriptor(keyPath: "active", ascending: false),
                 SortDescriptor(keyPath: "user", ascending: true)

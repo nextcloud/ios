@@ -178,7 +178,7 @@ class NCAccount: NSObject {
         guard let dirGroupApps = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupApps) else { return nil }
         var accounts = [NKShareAccounts.DataAccounts]()
 
-        for account in await database.getAllTableAccountAsync(notSkip: true) {
+        for account in await database.getAllTableAccountAsync() {
             let name = account.alias.isEmpty ? account.displayName : account.alias
             let fileName = NCSession.shared.getFileName(urlBase: account.urlBase, user: account.user)
             let fileNamePath = self.utilityFileSystem.createServerUrl(serverUrl: self.utilityFileSystem.directoryUserData, fileName: fileName)

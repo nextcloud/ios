@@ -473,7 +473,7 @@ extension NCManageDatabase {
             detached.append(metadata.detachedCopy())
         }
 
-        await performRealmWriteAsync(notSkip: true) { realm in
+        await performRealmWriteAsync { realm in
             let result = realm.objects(tableMetadata.self)
                 .filter("ocIdTransfer IN %@", ocIdTransfersToDelete)
             realm.delete(result)
@@ -692,8 +692,8 @@ extension NCManageDatabase {
         }
     }
 
-    func setLivePhotoFile(fileId: String, livePhotoFile: String, notSkip: Bool = false) async {
-        await performRealmWriteAsync(notSkip: notSkip) { realm in
+    func setLivePhotoFile(fileId: String, livePhotoFile: String) async {
+        await performRealmWriteAsync { realm in
             let result = realm.objects(tableMetadata.self)
                 .filter("fileId == %@", fileId)
                 .first
@@ -1019,8 +1019,8 @@ extension NCManageDatabase {
         }
     }
 
-    func getMetadatasAsync(predicate: NSPredicate, notSkip: Bool = false) async -> [tableMetadata] {
-        await performRealmReadAsync(notSkip: notSkip) { realm in
+    func getMetadatasAsync(predicate: NSPredicate) async -> [tableMetadata] {
+        await performRealmReadAsync { realm in
             realm.objects(tableMetadata.self)
                 .filter(predicate)
                 .map { $0.detachedCopy() }

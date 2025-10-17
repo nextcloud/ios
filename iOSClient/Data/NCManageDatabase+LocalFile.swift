@@ -34,7 +34,7 @@ extension NCManageDatabase {
     /// - Parameters:
     ///   - metadatas: Array of `tableMetadata` to map into `tableLocalFile`.
     ///   - offline: Optional override for the `offline` flag applied to all items.
-    func addLocalFilesAsync(metadatas: [tableMetadata], offline: Bool? = nil, notSkip: Bool = false) async {
+    func addLocalFilesAsync(metadatas: [tableMetadata], offline: Bool? = nil) async {
         guard !metadatas.isEmpty else {
             return
         }
@@ -54,7 +54,7 @@ extension NCManageDatabase {
                 )
             } ?? [:]
 
-        await performRealmWriteAsync(notSkip: notSkip) { realm in
+        await performRealmWriteAsync { realm in
             for metadata in metadatas {
                 // Reuse existing object or create a new one
                 let local = existingMap[metadata.ocId] ?? tableLocalFile()
@@ -90,10 +90,10 @@ extension NCManageDatabase {
        }
     }
 
-    func deleteLocalFileAsync(id: String?, notSkip: Bool = false) async {
+    func deleteLocalFileAsync(id: String?) async {
         guard let id else { return }
 
-        await performRealmWriteAsync(notSkip: notSkip) { realm in
+        await performRealmWriteAsync { realm in
             let results = realm.objects(tableLocalFile.self)
                 .filter("ocId == %@", id)
             realm.delete(results)
@@ -147,8 +147,8 @@ extension NCManageDatabase {
 
     // MARK: - Realm Read
 
-    func getTableLocalFilesAsync(predicate: NSPredicate, sorted: String = "fileName", ascending: Bool = true, notSkip: Bool = false) async -> [tableLocalFile] {
-        await performRealmReadAsync(notSkip: notSkip) { realm in
+    func getTableLocalFilesAsync(predicate: NSPredicate, sorted: String = "fileName", ascending: Bool = true) async -> [tableLocalFile] {
+        await performRealmReadAsync { realm in
             realm.objects(tableLocalFile.self)
                 .filter(predicate)
                 .sorted(byKeyPath: sorted, ascending: ascending)
