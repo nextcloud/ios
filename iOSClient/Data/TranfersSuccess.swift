@@ -4,90 +4,41 @@
 
 import Foundation
 
-struct TranfersSuccessItem: Codable, Identifiable {
-    var id: String {
-        ocId
-    }
-
-    var ocId: String
-    var fileName: String
-    var serverUrl: String
-    var taskIdentifier: Int
-
-    var date: Date?
-    var etag: String?
-    var size: Int64?
-}
-
 actor TranfersSuccess {
-    private var tranfersSuccessItem: [TranfersSuccessItem] = []
+    private var tranfersSuccess: [tableMetadata] = []
+    private let utility = NCUtility()
 
-    func append(ocId: String, fileName: String, serverUrl: String, taskIdentifier: Int, date: Date?, etag: String?, size: Int64?) {
-        let item = TranfersSuccessItem(ocId: ocId,
-                                       fileName: fileName,
-                                       serverUrl: serverUrl,
-                                       taskIdentifier: taskIdentifier,
-                                       date: date,
-                                       etag: etag,
-                                       size: size)
-        tranfersSuccessItem.append(item)
+    func append(metadata: tableMetadata, ocId: String, date: Date?, etag: String?) {
+        metadata.ocId = ocId
+        metadata.uploadDate = (date as? NSDate) ?? NSDate()
+        metadata.etag = etag ?? ""
+        metadata.chunk = 0
+
+        if let fileId = self.utility.ocIdToFileId(ocId: ocId) {
+            metadata.fileId = fileId
+        }
+
+        metadata.session = ""
+        metadata.sessionError = ""
+        metadata.sessionTaskIdentifier = 0
+        metadata.status = NCGlobal.shared.metadataStatusNormal
+
+        tranfersSuccess.append(metadata)
     }
 
     func count() async -> Int {
-        return tranfersSuccessItem.count
+        return tranfersSuccess.count
     }
 
     func flush() async {
-        let utility = NCUtility()
         let isInBackground = NCNetworking.shared.isInBackground()
-
-        var metadatasUploaded: [tableMetadata] = []
         var metadatasLocalFiles: [tableMetadata] = []
         var metadatasLivePhoto: [tableMetadata] = []
         var autoUploads: [tableAutoUploadTransfer] = []
 
-        let metadatasUploading = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "status == %d", NCGlobal.shared.metadataStatusUploading)) ?? []
-
-        for item in tranfersSuccessItem {
-            let metadata: tableMetadata?
-
-            if let found = metadatasUploading.first(where: {
-                $0.fileName == item.fileName &&
-                $0.serverUrl == item.serverUrl &&
-                $0.sessionTaskIdentifier == item.taskIdentifier
-            }) {
-                metadata = found
-            } else {
-                metadata = await NCManageDatabase.shared.getMetadataAsync(
-                    predicate: NSPredicate(
-                        format: "serverUrl == %@ AND fileName == %@ AND sessionTaskIdentifier == %d",
-                        item.serverUrl,
-                        item.fileName,
-                        item.taskIdentifier
-                    )
-                )
-            }
-            guard let metadata else {
-                continue
-            }
-
-            metadata.uploadDate = (item.date as? NSDate) ?? NSDate()
-            metadata.etag = item.etag ?? ""
-            metadata.ocId = item.ocId
-            metadata.chunk = 0
-
-            if let fileId = utility.ocIdToFileId(ocId: item.ocId) {
-                metadata.fileId = fileId
-            }
-
-            metadata.session = ""
-            metadata.sessionError = ""
-            metadata.sessionTaskIdentifier = 0
-            metadata.status = NCGlobal.shared.metadataStatusNormal
-
+        for metadata in tranfersSuccess {
             let results = await NCNetworking.shared.helperMetadataSuccess(metadata: metadata)
 
-            metadatasUploaded.append(metadata)
             if let localFile = results.localFile {
                 metadatasLocalFiles.append(localFile)
             }
@@ -100,8 +51,8 @@ actor TranfersSuccess {
         }
 
         // Metadatas
-        let ocIdTransfers = metadatasUploaded.map(\.ocIdTransfer)
-        await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfersToDelete: ocIdTransfers, metadatas: metadatasUploaded)
+        let ocIdTransfers = tranfersSuccess.map(\.ocIdTransfer)
+        await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfersToDelete: ocIdTransfers, metadatas: tranfersSuccess)
 
         // Local File
         await NCManageDatabase.shared.addLocalFilesAsync(metadatas: metadatasLocalFiles)
@@ -122,10 +73,10 @@ actor TranfersSuccess {
 
         // TransferDispatcher
         //
-        if !metadatasUploaded.isEmpty,
+        if !tranfersSuccess.isEmpty,
            !isInBackground {
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                for metadata in metadatasUploaded {
+                for metadata in tranfersSuccess {
                     delegate.transferChange(status: NCGlobal.shared.networkingStatusUploaded,
                                             metadata: metadata,
                                             error: .success)
@@ -133,6 +84,6 @@ actor TranfersSuccess {
             }
         }
 
-        tranfersSuccessItem.removeAll()
+        tranfersSuccess.removeAll()
     }
 }
