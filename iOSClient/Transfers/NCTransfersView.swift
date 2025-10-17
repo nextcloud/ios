@@ -9,10 +9,8 @@ import SwiftUI
 struct TransfersView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var model: TransfersViewModel
-    @State private var showCancelConfirmation = false
 
     private let onClose: (() -> Void)?
-    private let titleCancelAllTask = String(localized: "_cancel_all_request_")
 
     init(session: NCSession.Session? = nil,
          previewItems: [tableMetadata]? = nil,
@@ -59,33 +57,10 @@ struct TransfersView: View {
                             }
                         }
                     }
-                    if !model.items.isEmpty {
-                        ToolbarItem(placement: .primaryAction) {
-                            Button(NSLocalizedString("_cancel_all_", comment: "")) {
-                                guard !showCancelConfirmation else {
-                                    return
-                                }
-                                DispatchQueue.main.async {
-                                    showCancelConfirmation = true
-                                }
-                            }
-                            .disabled(showCancelConfirmation)
-                        }
-                    }
-                }
-                .confirmationDialog(titleCancelAllTask, isPresented: $showCancelConfirmation, titleVisibility: .visible) {
-                    Button(NSLocalizedString("_cancel_all_", comment: ""), role: .destructive) {
-                        model.cancelAll()
-                    }
-                    Button(NSLocalizedString("_dismiss_", comment: ""), role: .cancel) { }
                 }
                 .task {
-                    model.reload()
-                }
-                .onChange(of: model.items.isEmpty) { _, isEmpty in
-                    if isEmpty {
-                        showCancelConfirmation = false
-                    }
+                   await model.pollTransfers()
+
                 }
         }
         .presentationDetents([.medium, .large])
@@ -226,6 +201,7 @@ struct TransferRowView: View {
                     }
                 } label: {
                     Image(systemName: "stop.circle")
+                        .imageScale(.large)
                 }
                 .buttonStyle(.plain)
                 .tint(.primary)

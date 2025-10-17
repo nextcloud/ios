@@ -18,7 +18,6 @@ final class TransfersViewModel: ObservableObject {
     private let global = NCGlobal.shared
 
     internal var sceneIdentifier: String = ""
-    private var reloadTask: Task<Void, Never>?
 
     init(session: NCSession.Session) {
         self.session = session
@@ -29,24 +28,19 @@ final class TransfersViewModel: ObservableObject {
     }
 
     deinit {
-        reloadTask?.cancel()
-        reloadTask = nil
+        print("deinit")
     }
 
     @MainActor
-    func reload() {
-        reloadTask?.cancel()
-        reloadTask = Task {
-            while !Task.isCancelled {
-                if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
-                    isLoading = true
-                } else {
-                    let tranfersSuccess = await NCNetworking.shared.tranfersSuccess.getAll()
-                    items = await database.getTransferAsync(tranfersSuccess: tranfersSuccess)
-                    isLoading = false
-                }
-                try? await Task.sleep(nanoseconds: 1_000_000_000)
+    func pollTransfers() async {
+        while !Task.isCancelled {
+            if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] != "1" {
+                isLoading = true
+                let transfersSuccess = await networking.tranfersSuccess.getAll()
+                items = await database.getTransferAsync(tranfersSuccess: transfersSuccess)
+                isLoading = false
             }
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
         }
     }
 
@@ -55,10 +49,6 @@ final class TransfersViewModel: ObservableObject {
             return
         }
         await NCNetworking.shared.cancelTask(metadata: metadata)
-    }
-
-    func cancelAll() {
-        networking.cancelAllTask()
     }
 
     func readablePath(for item: tableMetadata) -> String {
