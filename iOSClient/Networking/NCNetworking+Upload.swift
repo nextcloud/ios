@@ -301,42 +301,6 @@ extension NCNetworking {
         }
     }
 
-    private func helperMetadataSuccess(metadata: tableMetadata) async -> (localFile: tableMetadata?, livePhoto: tableMetadata?, autoUpload: tableAutoUploadTransfer?) {
-        var localFile: tableMetadata?
-        var livePhoto: tableMetadata?
-        var autoUpload: tableAutoUploadTransfer?
-
-        // File System Local file
-        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase)
-
-        if metadata.sessionSelector == NCGlobal.shared.selectorUploadFileNODelete {
-            let fineManeToPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase)
-            await utilityFileSystem.moveFileAsync(atPath: fileNamePath, toPath: fineManeToPath)
-            localFile = tableMetadata(value: metadata)
-        } else {
-            utilityFileSystem.removeFile(atPath: fileNamePath)
-        }
-
-        // Live Photo
-        let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
-        if capabilities.isLivePhotoServerAvailable,
-           metadata.isLivePhoto {
-            livePhoto = tableMetadata(value: metadata)
-        }
-
-        // Auto Upload
-        if metadata.sessionSelector == self.global.selectorUploadAutoUpload,
-           let serverUrlBase = metadata.autoUploadServerUrlBase {
-            autoUpload = tableAutoUploadTransfer(account: metadata.account,
-                                                 serverUrlBase: serverUrlBase,
-                                                 fileName: metadata.fileNameView,
-                                                 assetLocalIdentifier: metadata.assetLocalIdentifier,
-                                                 date: metadata.creationDate as Date)
-        }
-
-        return (localFile: localFile, livePhoto: livePhoto, autoUpload: autoUpload)
-    }
-
     // MARK: - UPLOAD ERROR
 
     func uploadError(withMetadata metadata: tableMetadata, error: NKError) async {
@@ -528,7 +492,13 @@ extension NCNetworking {
             if error == .success {
                 if let ocId {
                     if isInBackground() {
-                        await NCNetworking.shared.tranfersSuccess.append(ocId: ocId, fileName: fileName, serverUrl: serverUrl, etag: etag, size: size)
+                        await NCNetworking.shared.tranfersSuccess.append(ocId: ocId,
+                                                                         fileName: fileName,
+                                                                         serverUrl: serverUrl,
+                                                                         taskIdentifier: task.taskIdentifier,
+                                                                         date: date,
+                                                                         etag: etag,
+                                                                         size: size)
                     } else {
                         await uploadSuccess(withMetadata: metadata, ocId: ocId, etag: etag, date: date)
                     }
