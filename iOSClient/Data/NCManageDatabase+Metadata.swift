@@ -1198,7 +1198,7 @@ extension NCManageDatabase {
         await performRealmReadAsync { realm in
             let predicate = NSPredicate(format: "status IN %@", NCGlobal.shared.metadataStatusTransfers)
             let sortDescriptors = [
-                RealmSwift.SortDescriptor(keyPath: "status", ascending: false),
+                RealmSwift.SortDescriptor(keyPath: "status", ascending: true),
                 RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
             ]
 
