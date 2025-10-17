@@ -240,6 +240,10 @@ actor NCNetworkingProcess {
                 }
                 let metadatas = await NCCameraRoll().extractCameraRoll(from: metadata)
 
+                if isAppInBackground {
+                    return
+                }
+
                 // no extract photo
                 if metadatas.isEmpty {
                     await database.deleteMetadataAsync(id: metadata.ocId)

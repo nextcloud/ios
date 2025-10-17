@@ -10,7 +10,7 @@ extension NCNetworking {
     @discardableResult
     func setLivePhoto(account: String) async -> Bool {
         var setLivePhoto: Bool = false
-        let results = await NCManageDatabase.shared.getLivePhotos(account: account)
+        let results = await NCManageDatabase.shared.getLivePhotos(account: account, notSkip: true)
         guard let results,
               !results.isEmpty else {
             return setLivePhoto
@@ -30,7 +30,7 @@ extension NCNetworking {
             }
             guard resultLivePhotoVideo.error == .success else {
                 nkLog(error: "Upload set LivePhoto Video with error \(resultLivePhotoVideo.error.errorCode)")
-                await NCManageDatabase.shared.setLivePhotoError(account: account, serverUrlFileNameNoExt: result.serverUrlFileNameNoExt)
+                await NCManageDatabase.shared.setLivePhotoError(account: account, serverUrlFileNameNoExt: result.serverUrlFileNameNoExt, notSkip: true)
                 return false
             }
 
@@ -46,13 +46,13 @@ extension NCNetworking {
             }
             guard resultLivePhotoImage.error == .success else {
                 nkLog(error: "Upload set LivePhoto Image with error \(resultLivePhotoImage.error.errorCode)")
-                await NCManageDatabase.shared.setLivePhotoError(account: account, serverUrlFileNameNoExt: result.serverUrlFileNameNoExt)
+                await NCManageDatabase.shared.setLivePhotoError(account: account, serverUrlFileNameNoExt: result.serverUrlFileNameNoExt, notSkip: true)
                 return false
             }
 
-            await NCManageDatabase.shared.setLivePhotoFile(fileId: result.fileIdVideo, livePhotoFile: result.fileIdImage)
-            await NCManageDatabase.shared.setLivePhotoFile(fileId: result.fileIdImage, livePhotoFile: result.fileIdVideo)
-            await NCManageDatabase.shared.deleteLivePhoto(account: account, serverUrlFileNameNoExt: result.serverUrlFileNameNoExt)
+            await NCManageDatabase.shared.setLivePhotoFile(fileId: result.fileIdVideo, livePhotoFile: result.fileIdImage, notSkip: true)
+            await NCManageDatabase.shared.setLivePhotoFile(fileId: result.fileIdImage, livePhotoFile: result.fileIdVideo, notSkip: true)
+            await NCManageDatabase.shared.deleteLivePhoto(account: account, serverUrlFileNameNoExt: result.serverUrlFileNameNoExt, notSkip: true)
 
             setLivePhoto = true
         }

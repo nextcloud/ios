@@ -692,8 +692,8 @@ extension NCManageDatabase {
         }
     }
 
-    func setLivePhotoFile(fileId: String, livePhotoFile: String) async {
-        await performRealmWriteAsync { realm in
+    func setLivePhotoFile(fileId: String, livePhotoFile: String, notSkip: Bool = false) async {
+        await performRealmWriteAsync(notSkip: notSkip) { realm in
             let result = realm.objects(tableMetadata.self)
                 .filter("fileId == %@", fileId)
                 .first
