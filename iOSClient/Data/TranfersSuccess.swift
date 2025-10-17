@@ -32,11 +32,12 @@ actor TranfersSuccess {
 
     func flush() async {
         let isInBackground = NCNetworking.shared.isInBackground()
+        let metadataUploaded: [tableMetadata] = tranfersSuccess
         var metadatasLocalFiles: [tableMetadata] = []
         var metadatasLivePhoto: [tableMetadata] = []
         var autoUploads: [tableAutoUploadTransfer] = []
 
-        for metadata in tranfersSuccess {
+        for metadata in metadataUploaded {
             let results = await NCNetworking.shared.helperMetadataSuccess(metadata: metadata)
 
             if let localFile = results.localFile {
@@ -48,11 +49,14 @@ actor TranfersSuccess {
             if let autoUpload = results.autoUpload {
                 autoUploads.append(autoUpload)
             }
+            tranfersSuccess.removeAll {
+                $0.ocIdTransfer == metadata.ocIdTransfer
+            }
         }
 
         // Metadatas
-        let ocIdTransfers = tranfersSuccess.map(\.ocIdTransfer)
-        await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfersToDelete: ocIdTransfers, metadatas: tranfersSuccess)
+        let ocIdTransfers = metadataUploaded.map(\.ocIdTransfer)
+        await NCManageDatabase.shared.replaceMetadataAsync(ocIdTransfersToDelete: ocIdTransfers, metadatas: metadataUploaded)
 
         // Local File
         await NCManageDatabase.shared.addLocalFilesAsync(metadatas: metadatasLocalFiles)
@@ -73,17 +77,15 @@ actor TranfersSuccess {
 
         // TransferDispatcher
         //
-        if !tranfersSuccess.isEmpty,
+        if !metadataUploaded.isEmpty,
            !isInBackground {
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                for metadata in tranfersSuccess {
+                for metadata in metadataUploaded {
                     delegate.transferChange(status: NCGlobal.shared.networkingStatusUploaded,
                                             metadata: metadata,
                                             error: .success)
                 }
             }
         }
-
-        tranfersSuccess.removeAll()
     }
 }
