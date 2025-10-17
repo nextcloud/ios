@@ -18,6 +18,7 @@ final class TransfersViewModel: ObservableObject {
     private let global = NCGlobal.shared
 
     internal var sceneIdentifier: String = ""
+    private var reloadTask: Task<Void, Never>?
 
     init(session: NCSession.Session) {
         self.session = session
@@ -27,20 +28,26 @@ final class TransfersViewModel: ObservableObject {
         }
     }
 
-    deinit { }
+    deinit {
+        reloadTask?.cancel()
+        reloadTask = nil
+    }
 
     @MainActor
-    func reload() async {
-        if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
-            return
+    func reload() {
+        reloadTask?.cancel()
+        reloadTask = Task {
+            while !Task.isCancelled {
+                if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
+                    isLoading = true
+                } else {
+                    let tranfersSuccess = await NCNetworking.shared.tranfersSuccess.getAll()
+                    items = await database.getTransferAsync(tranfersSuccess: tranfersSuccess)
+                    isLoading = false
+                }
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+            }
         }
-
-        isLoading = true
-        defer {
-            isLoading = false
-        }
-
-        items = await database.getTransferAsync()
     }
 
     func cancel(item: tableMetadata) async {
@@ -52,12 +59,6 @@ final class TransfersViewModel: ObservableObject {
 
     func cancelAll() {
         networking.cancelAllTask()
-        /*
-        Task {
-            try? await Task.sleep(nanoseconds: 150_000_000)
-            await reload(withDatabase: true)
-        }
-        */
     }
 
     func readablePath(for item: tableMetadata) -> String {
@@ -120,24 +121,6 @@ final class TransfersViewModel: ObservableObject {
 }
 
 extension TransfersViewModel: @MainActor NCTransferDelegate {
-    func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {
-        Task {
-            await self.reload()
-        }
-    }
-
-    func transferChange(status: String, metadata: tableMetadata, error: NKError) {
-        Task {
-            await self.reload()
-        }
-    }
-
-    func transferReloadData(serverUrl: String?, status: Int?) {
-        Task {
-            await self.reload()
-        }
-    }
-
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) {
         Task { @MainActor in
             let key = "\(serverUrl)|\(fileName)"

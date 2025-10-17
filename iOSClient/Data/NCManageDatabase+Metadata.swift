@@ -1194,7 +1194,7 @@ extension NCManageDatabase {
         }
     }
 
-    func getTransferAsync() async -> [tableMetadata] {
+    func getTransferAsync(tranfersSuccess: [tableMetadata]) async -> [tableMetadata] {
         await performRealmReadAsync { realm in
             let predicate = NSPredicate(format: "status IN %@", NCGlobal.shared.metadataStatusTransfers)
             let sortDescriptors = [
@@ -1206,7 +1206,10 @@ extension NCManageDatabase {
                 .filter(predicate)
                 .sorted(by: sortDescriptors)
 
-            let sliced = results.prefix(100)
+            let excludedIds = Set(tranfersSuccess.compactMap { $0.ocIdTransfer })
+            let filtered = results.filter { !excludedIds.contains($0.ocIdTransfer) }
+
+            let sliced = filtered.prefix(100)
             return sliced.map { $0.detachedCopy() }
         } ?? []
     }

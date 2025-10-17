@@ -80,7 +80,7 @@ struct TransfersView: View {
                     Button(NSLocalizedString("_dismiss_", comment: ""), role: .cancel) { }
                 }
                 .task {
-                   await model.reload()
+                    model.reload()
                 }
                 .onChange(of: model.items.isEmpty) { _, isEmpty in
                     if isEmpty {

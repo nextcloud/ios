@@ -30,6 +30,10 @@ actor TranfersSuccess {
         return tranfersSuccess.count
     }
 
+    func getAll() async -> [tableMetadata] {
+        return tranfersSuccess
+    }
+
     func flush() async {
         let isInBackground = NCNetworking.shared.isInBackground()
         let metadataUploaded: [tableMetadata] = tranfersSuccess
