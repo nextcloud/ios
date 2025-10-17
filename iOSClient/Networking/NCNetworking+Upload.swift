@@ -282,29 +282,22 @@ extension NCNetworking {
 
         let results = await helperMetadataSuccess(metadata: metadata)
 
-        if isInBackground() {
-            await NCManageDatabase.shared.replaceMetadataAsync(id: metadata.ocIdTransfer, metadata: metadata)
-            if let localFile = results.localFile {
-                await NCManageDatabase.shared.addLocalFilesAsync(metadatas: [localFile])
-            }
-            if let livePhoto = results.livePhoto {
-                await NCManageDatabase.shared.setLivePhotoVideo(metadatas: [livePhoto])
-                await NCNetworking.shared.setLivePhoto(account: metadata.account)
-            }
-            if let tblAutoUpload = results.autoUpload {
-                await NCManageDatabase.shared.addAutoUploadTransferAsync([tblAutoUpload])
-            }
+        await NCManageDatabase.shared.replaceMetadataAsync(id: metadata.ocIdTransfer, metadata: metadata)
+        if let localFile = results.localFile {
+            await NCManageDatabase.shared.addLocalFilesAsync(metadatas: [localFile])
+        }
+        if let livePhoto = results.livePhoto {
+            await NCManageDatabase.shared.setLivePhotoVideo(metadatas: [livePhoto])
+            await NCNetworking.shared.setLivePhoto(account: metadata.account)
+        }
+        if let tblAutoUpload = results.autoUpload {
+            await NCManageDatabase.shared.addAutoUploadTransferAsync([tblAutoUpload])
+        }
 
-            await self.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferChange(status: self.global.networkingStatusUploaded,
-                                        metadata: metadata.detachedCopy(),
-                                        error: .success)
-            }
-        } else {
-            await tranfersSuccess.append(metadata: metadata,
-                                         localFile: results.localFile,
-                                         livePhoto: results.livePhoto,
-                                         autoUpload: results.autoUpload)
+        await self.transferDispatcher.notifyAllDelegates { delegate in
+            delegate.transferChange(status: self.global.networkingStatusUploaded,
+                                    metadata: metadata.detachedCopy(),
+                                    error: .success)
         }
     }
 
@@ -534,7 +527,11 @@ extension NCNetworking {
 
             if error == .success {
                 if let ocId {
-                    await uploadSuccess(withMetadata: metadata, ocId: ocId, etag: etag, date: date)
+                    if isInBackground() {
+                        await NCNetworking.shared.tranfersSuccess.append(ocId: ocId, fileName: fileName, serverUrl: serverUrl, etag: etag, size: size)
+                    } else {
+                        await uploadSuccess(withMetadata: metadata, ocId: ocId, etag: etag, date: date)
+                    }
                 } else {
                     await NCManageDatabase.shared.deleteMetadataAsync(predicate: NSPredicate(format: "fileName == %@ AND serverUrl == %@", fileName, serverUrl))
                 }

@@ -4,11 +4,30 @@
 
 import Foundation
 
+struct TranfersSuccessItem: Codable, Identifiable {
+    var id: String {
+        ocId
+    }
+
+    var ocId: String
+    var fileName: String
+    var serverUrl: String
+
+    var etag: String?
+    var size: Int64?
+}
+
 actor TranfersSuccess {
+    private var tranfersSuccessItem: [TranfersSuccessItem] = []
     private var tablesMetadatas: [tableMetadata] = []
     private var tablesLocalFiles: [tableMetadata] = []
     private var tablesLivePhoto: [tableMetadata] = []
     private var tablesAutoUpload: [tableAutoUploadTransfer] = []
+
+    func append(ocId: String, fileName: String, serverUrl: String, etag: String?, size: Int64?) {
+        let item = TranfersSuccessItem(ocId: ocId, fileName: fileName, serverUrl: serverUrl, etag: etag, size: size)
+        tranfersSuccessItem.append(item)
+    }
 
     func append(metadata: tableMetadata, localFile: tableMetadata?, livePhoto: tableMetadata?, autoUpload: tableAutoUploadTransfer?) {
         tablesMetadatas.append(metadata)
