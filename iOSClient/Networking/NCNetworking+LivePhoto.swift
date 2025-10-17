@@ -50,8 +50,10 @@ extension NCNetworking {
                 return false
             }
 
+            // Update metadata livePhotoFile
             await NCManageDatabase.shared.setLivePhotoFile(fileId: result.fileIdVideo, livePhotoFile: result.fileIdImage)
             await NCManageDatabase.shared.setLivePhotoFile(fileId: result.fileIdImage, livePhotoFile: result.fileIdVideo)
+            // Remove tableLivePhoto
             await NCManageDatabase.shared.deleteLivePhoto(account: account, serverUrlFileNameNoExt: result.serverUrlFileNameNoExt)
 
             setLivePhoto = true

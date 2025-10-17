@@ -121,7 +121,7 @@ actor NCNetworkingProcess {
             //
             let countWaitUpload = metadatas.filter { $0.status == self.global.metadataStatusWaitUpload }.count
             let countTransferSuccess = await NCNetworking.shared.metadataTranfersSuccess.count()
-            if (countWaitUpload == 0 && countTransferSuccess > 0) || countTransferSuccess >= NCBrandOptions.shared.numMaximumProcess * 2 {
+            if (countWaitUpload == 0 && countTransferSuccess > 0) || countTransferSuccess >= NCBrandOptions.shared.numMaximumProcess {
                 await NCNetworking.shared.metadataTranfersSuccess.flush()
             }
 
