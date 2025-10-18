@@ -11,6 +11,7 @@ actor NCNetworkingProcess {
     static let shared = NCNetworkingProcess()
 
     private let utilityFileSystem = NCUtilityFileSystem()
+    private let utility = NCUtility()
     private let global = NCGlobal.shared
     private let networking = NCNetworking.shared
 
@@ -64,6 +65,22 @@ actor NCNetworkingProcess {
 
     func setCurrentAccount(_ account: String) {
         currentAccount = account
+    }
+
+    /// Updates the app and tab bar badges to reflect active or pending transfers.
+    ///
+    /// Calculates the number of transfers still in progress or failed by subtracting
+    /// the completed transfer count from all non-normal metadata records, then updates
+    /// both the app icon badge and the Files tab badge accordingly.
+    @MainActor
+    private func countBadge() async {
+        let countTransferSuccess = await NCNetworking.shared.metadataTranfersSuccess.count()
+        let count = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "status != %i", self.global.metadataStatusNormal)).count - countTransferSuccess
+        try? await UNUserNotificationCenter.current().setBadgeCount(count)
+        if let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController,
+           let files = controller.tabBar.items?.first {
+            files.badgeValue = count == 0 ? nil : self.utility.formatBadgeCount(count)
+        }
     }
 
     func startTimer(interval: TimeInterval) async {
@@ -149,6 +166,8 @@ actor NCNetworkingProcess {
                     await startTimer(interval: maxInterval)
                 }
             }
+
+            await countBadge()
         }
     }
 
@@ -175,9 +194,9 @@ actor NCNetworkingProcess {
     private func runMetadataPipelineAsync(metadatas: [tableMetadata]) async {
         let database = NCManageDatabase.shared
         let countTransferSuccess = await NCNetworking.shared.metadataTranfersSuccess.count()
-        let counterDownloading = metadatas.filter { $0.status == self.global.metadataStatusDownloading }.count
-        let counterUploading = metadatas.filter { $0.status == self.global.metadataStatusUploading }.count - countTransferSuccess
-        var availableProcess = NCBrandOptions.shared.numMaximumProcess - (counterDownloading + counterUploading)
+        let countDownloading = metadatas.filter { $0.status == self.global.metadataStatusDownloading }.count
+        let countUploading = metadatas.filter { $0.status == self.global.metadataStatusUploading }.count - countTransferSuccess
+        var availableProcess = NCBrandOptions.shared.numMaximumProcess - (countDownloading + countUploading)
 
         /// ------------------------ WEBDAV
         let waitWebDav = metadatas.filter { self.global.metadataStatusWaitWebDav.contains($0.status) }
@@ -288,7 +307,7 @@ actor NCNetworkingProcess {
 
                         Task { @MainActor in
                             var numChunks = 0
-                            var counterUpload: Int = 0
+                            var countUpload: Int = 0
                             var taskHandler: URLSessionTask?
                             let hud = NCHud(controller?.view)
                             hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""), tapToCancelDetailText: true) {
@@ -304,8 +323,8 @@ actor NCNetworkingProcess {
                                     taskHandler?.cancel()
                                 }
                             } requestHandler: { _ in
-                                hud.progress(num: Float(counterUpload), total: Float(numChunks))
-                                counterUpload += 1
+                                hud.progress(num: Float(countUpload), total: Float(numChunks))
+                                countUpload += 1
                             } taskHandler: { task in
                                 taskHandler = task
                             } assembling: {
@@ -326,7 +345,7 @@ actor NCNetworkingProcess {
         /// No upload available ? --> Retry Upload in Error
         ///
         let uploadError = metadatas.filter { $0.status == self.global.metadataStatusUploadError }
-        if counterUploading == 0 {
+        if countUploading == 0 {
             for metadata in uploadError {
                 /// Check QUOTA
                 if metadata.sessionError.contains("\(global.errorQuota)") {

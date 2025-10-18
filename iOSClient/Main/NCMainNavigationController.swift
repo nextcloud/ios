@@ -605,11 +605,6 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         if totalTags != tempTotalTags {
             topViewController?.navigationItem.rightBarButtonItems = tempRightBarButtonItems
         }
-
-        // Update App Icon badge / File Icon badge
-        let transferCount = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status != %i", self.global.metadataStatusNormal))?.count ?? 0
-        try? await UNUserNotificationCenter.current().setBadgeCount(transferCount)
-        fileItem?.badgeValue = transferCount == 0 ? nil : utility.formatBadgeCount(transferCount)
     }
 
     func createRightMenu() async -> UIMenu? { return nil }
