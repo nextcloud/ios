@@ -200,12 +200,13 @@ final class NCGlobal: Sendable {
 
     // Selector
     //
-    let selectorDownloadFile                    = "downloadFile"
     let selectorReadFile                        = "readFile"
     let selectorListingFavorite                 = "listingFavorite"
     let selectorLoadFileView                    = "loadFileView"
     let selectorLoadFileQuickLook               = "loadFileQuickLook"
     let selectorOpenIn                          = "openIn"
+
+    let selectorDownloadFile                    = "downloadFile"
 
     let selectorUploadAutoUpload                = "uploadAutoUpload"
     let selectorUploadFile                      = "uploadFile"

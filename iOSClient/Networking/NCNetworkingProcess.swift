@@ -25,6 +25,10 @@ actor NCNetworkingProcess {
     private let maxInterval: TimeInterval = 4
     private let minInterval: TimeInterval = 2
 
+    private let sessionForUpload = [NextcloudKit.shared.nkCommonInstance.identifierSessionUpload,
+                                    NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground,
+                                    NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundWWan]
+
     private init() {
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayerIsPlaying), object: nil, queue: nil) { [weak self] _ in
             guard let self else { return }
@@ -227,6 +231,7 @@ actor NCNetworkingProcess {
         let countDownloading = metadatas.filter { $0.status == self.global.metadataStatusDownloading }.count
         let countUploading = metadatas.filter { $0.status == self.global.metadataStatusUploading }.count - countTransferSuccess
         var availableProcess = NCBrandOptions.shared.numMaximumProcess - (countDownloading + countUploading)
+        let isWiFi = self.networking.networkReachability == NKTypeReachability.reachableEthernetOrWiFi
 
         /// ------------------------ WEBDAV
         let waitWebDav = metadatas.filter { self.global.metadataStatusWaitWebDav.contains($0.status) }
@@ -264,71 +269,56 @@ actor NCNetworkingProcess {
 
         // MARK: - UPLOAD
         //
-        // CHUNK or  E2EE - only one for time
-        let hasUploadingMetadataWithChunksOrE2EE = metadatas.filter {
-            $0.status == NCGlobal.shared.metadataStatusUploading && ($0.chunk > 0 || $0.e2eEncrypted == true)
-        }
-        if !hasUploadingMetadataWithChunksOrE2EE.isEmpty {
-            return
-        }
+        let metadatasWaitUpload = Array(metadatas
+            .filter {
+                sessionForUpload.contains($0.session) &&
+                $0.status == NCGlobal.shared.metadataStatusWaitUpload
+            }
+            .sorted { // Earlier dates first; nils go to the end
+                ($0.sessionDate ?? .distantFuture) < ($1.sessionDate ?? .distantFuture)
+            }
+            .prefix(availableProcess))
 
-        let isWiFi = self.networking.networkReachability == NKTypeReachability.reachableEthernetOrWiFi
-        let sessionUploadSelectors = [self.global.selectorUploadFileNODelete, self.global.selectorUploadFile, self.global.selectorUploadAutoUpload]
-        for sessionSelector in sessionUploadSelectors {
-            let filteredUpload = metadatas
-                .filter { $0.sessionSelector == sessionSelector && $0.status == NCGlobal.shared.metadataStatusWaitUpload }
-                .sorted { ($0.sessionDate ?? Date.distantFuture) < ($1.sessionDate ?? Date.distantFuture) }
-                .prefix(availableProcess)
-            let metadatasWaitUpload = Array(filteredUpload)
-
-            if !metadatasWaitUpload.isEmpty {
-                nkLog(debug: "PROCESS (UPLOAD \(sessionSelector)) find \(metadatasWaitUpload.count) items")
+        for metadata in metadatasWaitUpload {
+            guard availableProcess > 0,
+                  !isAppInBackground else {
+                return
+            }
+            /// NO WiFi
+            if !isWiFi && metadata.session == networking.sessionUploadBackgroundWWan {
+                continue
             }
 
-            for metadata in metadatasWaitUpload {
-                guard availableProcess > 0,
-                      !isAppInBackground else {
+            let extractMetadatas = await NCCameraRoll().extractCameraRoll(from: metadata)
+            if isAppInBackground { return }
+
+            // no extract photo
+            if extractMetadatas.isEmpty {
+                await database.deleteMetadataAsync(id: metadata.ocId)
+            }
+
+            for metadata in extractMetadatas {
+                guard timer != nil else {
                     return
                 }
-                let metadatas = await NCCameraRoll().extractCameraRoll(from: metadata)
-                if isAppInBackground { return }
 
-                // no extract photo
-                if metadatas.isEmpty {
-                    await database.deleteMetadataAsync(id: metadata.ocId)
+                // UPLOAD E2EE
+                //
+                if metadata.isDirectoryE2EE {
+                    let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
+                    await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: controller)
+                // UPLOAD CHUNK
+                //
+                } else if metadata.chunk > 0 {
+                    await uploadChunk(metadata: metadata)
+                // UPLOAD IN BACKGROUND
+                //
+                } else {
+                    if !isAppInBackground {
+                        await networking.uploadFileInBackground(metadata: metadata)
+                    }
                 }
-
-                for metadata in metadatas {
-                    guard timer != nil else {
-                        return
-                    }
-
-                    /// NO WiFi
-                    if !isWiFi && metadata.session == networking.sessionUploadBackgroundWWan {
-                        continue
-                    }
-
-                    // UPLOAD E2EE
-                    //
-                    if metadata.isDirectoryE2EE {
-                        let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
-                        await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: controller)
-                        return
-                    // UPLOAD CHUNK
-                    //
-                    } else if metadata.chunk > 0 {
-                        await uploadChunk(metadata: metadata)
-                        return
-
-                    // UPLOAD IN BACKGROUND
-                    //
-                    } else {
-                        if !isAppInBackground {
-                            await networking.uploadFileInBackground(metadata: metadata)
-                        }
-                    }
-                    availableProcess -= 1
-                }
+                availableProcess -= 1
             }
         }
 
