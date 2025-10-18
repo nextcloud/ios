@@ -108,7 +108,7 @@ actor NCNetworkingProcess {
         newTimer.resume()
     }
 
-    func stopTimer() async {
+    private func stopTimer() async {
         timer?.cancel()
         timer = nil
     }
@@ -222,7 +222,9 @@ actor NCNetworkingProcess {
 
         for metadata in metadatasWaitDownload {
             availableProcess -= 1
-            await networking.downloadFileInBackground(metadata: metadata)
+            if !isAppInBackground {
+                await networking.downloadFileInBackground(metadata: metadata)
+            }
         }
 
         // TEST AVAILABLE PROCESS
@@ -241,7 +243,6 @@ actor NCNetworkingProcess {
         let isWiFi = self.networking.networkReachability == NKTypeReachability.reachableEthernetOrWiFi
         let sessionUploadSelectors = [self.global.selectorUploadFileNODelete, self.global.selectorUploadFile, self.global.selectorUploadAutoUpload]
         for sessionSelector in sessionUploadSelectors {
-
             let filteredUpload = metadatas
                 .filter { $0.sessionSelector == sessionSelector && $0.status == NCGlobal.shared.metadataStatusWaitUpload }
                 .sorted { ($0.sessionDate ?? Date.distantFuture) < ($1.sessionDate ?? Date.distantFuture) }
@@ -258,10 +259,7 @@ actor NCNetworkingProcess {
                     return
                 }
                 let metadatas = await NCCameraRoll().extractCameraRoll(from: metadata)
-
-                if isAppInBackground {
-                    return
-                }
+                if isAppInBackground { return }
 
                 // no extract photo
                 if metadatas.isEmpty {
@@ -274,10 +272,9 @@ actor NCNetworkingProcess {
                     }
 
                     /// NO WiFi
-                    if !isWiFi && metadata.session == networking.sessionUploadBackgroundWWan { continue }
-
-                    await database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                           status: global.metadataStatusUploading)
+                    if !isWiFi && metadata.session == networking.sessionUploadBackgroundWWan {
+                        continue
+                    }
 
                     /// find controller
                     var controller: NCMainTabBarController?
@@ -335,7 +332,9 @@ actor NCNetworkingProcess {
                         }
                         return
                     } else {
-                        await networking.uploadFileInBackground(metadata: metadata)
+                        if !isAppInBackground {
+                            await networking.uploadFileInBackground(metadata: metadata)
+                        }
                     }
                     availableProcess -= 1
                 }
