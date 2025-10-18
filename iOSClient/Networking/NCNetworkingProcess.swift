@@ -29,7 +29,7 @@ actor NCNetworkingProcess {
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayerIsPlaying), object: nil, queue: nil) { [weak self] _ in
             guard let self else { return }
 
-            Task {
+            Task { @MainActor in
                 await self.setScreenAwake(false)
             }
         }
@@ -37,7 +37,7 @@ actor NCNetworkingProcess {
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayerStoppedPlaying), object: nil, queue: nil) { [weak self] _ in
             guard let self else { return }
 
-            Task {
+            Task { @MainActor in
                 await self.setScreenAwake(true)
             }
         }
@@ -59,6 +59,36 @@ actor NCNetworkingProcess {
         }
     }
 
+    @MainActor
+    private func getRootController() -> NCMainTabBarController? {
+        UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+    }
+
+    @MainActor
+    private func getController(account: String, sceneIdentifier: String?) async -> NCMainTabBarController? {
+        /// find controller
+        var controller: NCMainTabBarController?
+        if let sceneIdentifier = sceneIdentifier,
+           !sceneIdentifier.isEmpty {
+            controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier)
+        }
+
+        if controller == nil {
+            for ctlr in SceneManager.shared.getControllers() {
+                let account = ctlr.account
+                if account == account {
+                    controller = ctlr
+                }
+            }
+        }
+
+        if controller == nil {
+            controller = getRootController()
+        }
+
+        return controller
+    }
+
     private func setScreenAwake(_ enabled: Bool) {
         enableControllingScreenAwake = enabled
     }
@@ -77,7 +107,7 @@ actor NCNetworkingProcess {
         let countTransferSuccess = await NCNetworking.shared.metadataTranfersSuccess.count()
         let count = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "status != %i", self.global.metadataStatusNormal)).count - countTransferSuccess
         try? await UNUserNotificationCenter.current().setBadgeCount(count)
-        if let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController,
+        if let controller = getRootController(),
            let files = controller.tabBar.items?.first {
             files.badgeValue = count == 0 ? nil : self.utility.formatBadgeCount(count)
         }
@@ -276,31 +306,18 @@ actor NCNetworkingProcess {
                         continue
                     }
 
-                    /// find controller
-                    var controller: NCMainTabBarController?
-                    if let sceneIdentifier = metadata.sceneIdentifier, !sceneIdentifier.isEmpty {
-                        controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier)
-                    }
-
-                    if controller == nil {
-                        for ctlr in SceneManager.shared.getControllers() {
-                            let account = await ctlr.account
-                            if account == metadata.account {
-                                controller = ctlr
-                            }
-                        }
-                    }
-
-                    if controller == nil {
-                        controller = await UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
-                    }
-
-                    // With E2EE or CHUNK upload and exit
+                    // UPLOAD E2EE
+                    //
                     if metadata.isDirectoryE2EE {
+                        let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
+
                         await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: controller)
                         return
+
+                    // UPLOAD CHUNK
+                    //
                     } else if metadata.chunk > 0 {
-                        let controller = controller
+                        let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
 
                         Task { @MainActor in
                             var numChunks = 0
@@ -331,6 +348,9 @@ actor NCNetworkingProcess {
                             hud.dismiss()
                         }
                         return
+
+                    // UPLOAD IN BACKGROUND
+                    //
                     } else {
                         if !isAppInBackground {
                             await networking.uploadFileInBackground(metadata: metadata)
