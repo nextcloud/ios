@@ -26,6 +26,7 @@ import PhotosUI
 
 final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     let fileManager = FileManager()
+    private let fileIO = DispatchQueue(label: "FileManager.Delete", qos: .utility)
 
     var directoryGroup: String {
         return fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)?.path ?? ""
@@ -382,10 +383,10 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         }
     }
 
-    func removeFile(atPath: String) {
-        DispatchQueue.global(qos: .utility).async {
+    func removeFile(atPath path: String) {
+        fileIO.async {
             do {
-                try FileManager.default.removeItem(atPath: atPath)
+                try FileManager.default.removeItem(atPath: path)
             } catch {
                 print(error)
             }

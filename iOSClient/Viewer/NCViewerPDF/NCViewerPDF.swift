@@ -79,7 +79,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
                                                                              userId: metadata.userId,
                                                                              urlBase: metadata.urlBase)
             pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
-            
+
             navigationItem.rightBarButtonItem = UIBarButtonItem(
                 image: NCImageCache.shared.getImageButtonMore(),
                 primaryAction: nil,

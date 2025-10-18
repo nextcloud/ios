@@ -29,9 +29,14 @@ extension NCNetworking {
                 }
             }
             guard resultLivePhotoVideo.error == .success else {
-                nkLog(error: "Upload set LivePhoto Video with error \(resultLivePhotoVideo.error.errorCode)")
-                await NCManageDatabase.shared.setLivePhotoError(account: account, serverUrlFileNameNoExt: result.serverUrlFileNameNoExt)
-                return false
+                if resultLivePhotoVideo.error.errorCode == 404 {
+                    await NCManageDatabase.shared.deleteLivePhoto(account: account, serverUrlFileNameNoExt: result.serverUrlFileNameNoExt)
+                    continue
+                } else {
+                    nkLog(error: "Upload set LivePhoto Video with error \(resultLivePhotoVideo.error.errorCode)")
+                    await NCManageDatabase.shared.setLivePhotoError(account: account, serverUrlFileNameNoExt: result.serverUrlFileNameNoExt)
+                    return false
+                }
             }
 
             // IMAGE PART
@@ -45,14 +50,20 @@ extension NCNetworking {
                 }
             }
             guard resultLivePhotoImage.error == .success else {
-                nkLog(error: "Upload set LivePhoto Image with error \(resultLivePhotoImage.error.errorCode)")
-                await NCManageDatabase.shared.setLivePhotoError(account: account, serverUrlFileNameNoExt: result.serverUrlFileNameNoExt)
-                return false
+                if resultLivePhotoImage.error.errorCode == 404 {
+                    await NCManageDatabase.shared.deleteLivePhoto(account: account, serverUrlFileNameNoExt: result.serverUrlFileNameNoExt)
+                    continue
+                } else {
+                    nkLog(error: "Upload set LivePhoto Image with error \(resultLivePhotoImage.error.errorCode)")
+                    await NCManageDatabase.shared.setLivePhotoError(account: account, serverUrlFileNameNoExt: result.serverUrlFileNameNoExt)
+                    return false
+                }
             }
 
+            // Update metadata livePhotoFile
             await NCManageDatabase.shared.setLivePhotoFile(fileId: result.fileIdVideo, livePhotoFile: result.fileIdImage)
             await NCManageDatabase.shared.setLivePhotoFile(fileId: result.fileIdImage, livePhotoFile: result.fileIdVideo)
-
+            // Remove tableLivePhoto
             await NCManageDatabase.shared.deleteLivePhoto(account: account, serverUrlFileNameNoExt: result.serverUrlFileNameNoExt)
 
             setLivePhoto = true

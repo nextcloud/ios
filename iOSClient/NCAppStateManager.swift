@@ -19,7 +19,7 @@ var maintenanceMode: Bool = false
 /// This class observes system notifications related to app lifecycle events and updates global flags accordingly:
 ///
 /// - `hasBecomeActiveOnce`: set to `true` the first time the app enters foreground.
-/// - `isSuspendingDatabaseOperation`: set to `true` when the app enters background (useful to safely close Realm writes).
+/// - `isSuspendingDatabaseOperation`: set to `true` (useful to safely close Realm reads writes).
 /// - `isAppInBackground`: indicates whether the app is currently running in background.
 ///
 /// Additionally, it logs lifecycle transitions using `nkLog(debug:)`.
@@ -42,7 +42,6 @@ final class NCAppStateManager {
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
             let appDelegate = UIApplication.shared.delegate as? AppDelegate
 
-            isSuspendingDatabaseOperation = true
             isAppInBackground = true
 
             //

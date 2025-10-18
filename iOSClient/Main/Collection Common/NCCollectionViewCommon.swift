@@ -149,7 +149,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session) && capabilities.recommendations
     }
 
-    internal let debouncer = NCDebouncer(delay: 1)
+    internal let debouncer = NCDebouncer()
 
     // MARK: - View Life Cycle
 
@@ -389,7 +389,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         DispatchQueue.main.async {
             switch status {
             // UPLOADED, UPLOADED LIVEPHOTO
-            case self.global.networkingStatusUploaded, self.global.networkingStatusUploadedLivePhoto:
+            case self.global.networkingStatusUploaded:
                 self.debouncer.call {
                     if self.isSearchingMode {
                         self.networkSearch()
@@ -400,12 +400,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     }
                 }
             // DOWNLOAD
-            case self.global.networkingStatusDownloading:
-                Task {
-                    if metadata.serverUrl == self.serverUrl {
-                        await self.reloadDataSource()
-                    }
-                }
             case self.global.networkingStatusDownloaded:
                 Task {
                     if metadata.serverUrl == self.serverUrl {

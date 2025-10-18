@@ -197,8 +197,7 @@ class NCDragDrop: NSObject {
 
             // DOWNLOAD
             if !utilityFileSystem.fileProviderStorageExists(metadata) {
-                let results = await NCNetworking.shared.downloadFile(metadata: metadata,
-                                                                     withDownloadComplete: true) { request in
+                let results = await NCNetworking.shared.downloadFile(metadata: metadata) { request in
                     downloadRequest = request
                 } progressHandler: { progress in
                     let status = NSLocalizedString("_status_downloading_", comment: "").lowercased()
@@ -224,7 +223,7 @@ class NCDragDrop: NSObject {
                                                                creationDate: metadata.creationDate as Date,
                                                                dateModificationFile: metadata.date as Date,
                                                                account: session.account,
-                                                               withUploadComplete: false) { request in
+                                                               performPostProcessing: false) { request in
                 uploadRequest = request
             } progressHandler: { _, _, fractionCompleted in
                 let status = NSLocalizedString("_status_uploading_", comment: "").lowercased()

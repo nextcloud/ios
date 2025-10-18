@@ -652,6 +652,9 @@
 "_propagate_layout_"        = "Apply the following change to all subfolders";
 "_version_mismatch_error_"  = "Version change: please open the main app to update the data.";
 "_check_auto_upload_"       = "Automatic photo upload is currently disabled.\nWith Nextcloud iOS you can automatically back up your photos and keep them safe on your server.\nJust open Settings → Auto Upload, choose the options you prefer, and turn it on with the \"%@\" button.";
+"_cancel_all_request_"      = "Are you sure you want to cancel all transfers?";
+"_cancel_all_"              = "Cancel All";
+"_dismiss_"                 = "Dismiss";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails";

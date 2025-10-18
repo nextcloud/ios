@@ -383,6 +383,11 @@ extension NCNetworking {
                 }
 
                 ocIds.insert(metadata.ocId)
+                if metadata.livePhotoFile.isEmpty == false {
+                    if let ocId = utility.getLivePhotoOcId(metadata: metadata) {
+                        ocIds.insert(ocId)
+                    }
+                }
                 serverUrls.insert(metadata.serverUrl)
             }
 

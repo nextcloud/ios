@@ -30,36 +30,37 @@ extension NCManageDatabase {
 
     // MARK: - Realm Write
 
-    func setLivePhotoImage(account: String, serverUrlFileName: String, fileId: String) async {
-        let serverUrlFileNameNoExt = (serverUrlFileName as NSString).deletingPathExtension
-        let primaryKey = account + serverUrlFileNameNoExt
-
-        await performRealmWriteAsync { realm in
-            if let result = realm.object(ofType: tableLivePhoto.self, forPrimaryKey: primaryKey) {
-                result.serverUrlFileNameImage = serverUrlFileName
-                result.fileIdImage = fileId
-            } else {
-                let addObject = tableLivePhoto(account: account, serverUrlFileNameNoExt: serverUrlFileNameNoExt)
-                addObject.serverUrlFileNameImage = serverUrlFileName
-                addObject.fileIdImage = fileId
-                realm.add(addObject, update: .all)
-            }
+    func setLivePhotoVideo(metadatas: [tableMetadata]) async {
+        guard !metadatas.isEmpty else {
+            return
         }
-    }
-
-    func setLivePhotoVideo(account: String, serverUrlFileName: String, fileId: String) async {
-        let serverUrlFileNameNoExt = (serverUrlFileName as NSString).deletingPathExtension
-        let primaryKey = account + serverUrlFileNameNoExt
 
         await performRealmWriteAsync { realm in
-            if let result = realm.object(ofType: tableLivePhoto.self, forPrimaryKey: primaryKey) {
-                result.serverUrlFileNameVideo = serverUrlFileName
-                result.fileIdVideo = fileId
-            } else {
-                let addObject = tableLivePhoto(account: account, serverUrlFileNameNoExt: serverUrlFileNameNoExt)
-                addObject.serverUrlFileNameVideo = serverUrlFileName
-                addObject.fileIdVideo = fileId
-                realm.add(addObject, update: .all)
+            for metadata in metadatas {
+                let serverUrlFileNameNoExt = (metadata.serverUrlFileName as NSString).deletingPathExtension
+                let primaryKey = metadata.account + serverUrlFileNameNoExt
+                if let result = realm.object(ofType: tableLivePhoto.self, forPrimaryKey: primaryKey) {
+                    if metadata.isVideo {
+                        // Update existing (only the provided fields)
+                        result.serverUrlFileNameVideo = metadata.serverUrlFileName
+                        result.fileIdVideo = metadata.fileId
+                    } else if metadata.isImage {
+                        result.serverUrlFileNameImage = metadata.serverUrlFileName
+                        result.fileIdImage = metadata.fileId
+                    }
+                } else {
+                    // Insert new — ensure the initializer sets the same PK used above
+                    let addObject = tableLivePhoto(account: metadata.account, serverUrlFileNameNoExt: serverUrlFileNameNoExt)
+                    if metadata.isVideo {
+                        addObject.serverUrlFileNameVideo = metadata.serverUrlFileName
+                        addObject.fileIdVideo = metadata.fileId
+                        realm.add(addObject, update: .modified)
+                    } else if metadata.isImage {
+                        addObject.serverUrlFileNameImage = metadata.serverUrlFileName
+                        addObject.fileIdImage = metadata.fileId
+                        realm.add(addObject, update: .modified)
+                    }
+                }
             }
         }
     }

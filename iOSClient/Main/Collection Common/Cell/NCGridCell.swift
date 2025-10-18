@@ -35,7 +35,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
     @IBOutlet weak var iconsStackView: UIStackView!
-    
+
     var ocId = ""
     var ocIdTransfer = ""
     var account = ""
