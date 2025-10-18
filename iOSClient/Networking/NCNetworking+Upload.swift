@@ -87,16 +87,51 @@ extension NCNetworking {
     // MARK: - Upload chunk file in foreground
 
     @discardableResult
-    func uploadChunkFile(metadata: tableMetadata,
-                         performPostProcessing: Bool = true,
-                         customHeaders: [String: String]? = nil,
-                         numChunks: @escaping (_ num: Int) -> Void = { _ in },
-                         counterChunk: @escaping (_ counter: Int) -> Void = { _ in },
-                         startFilesChunk: @escaping (_ filesChunk: [(fileName: String, size: Int64)]) -> Void = { _ in },
-                         requestHandler: @escaping (_ request: UploadRequest) -> Void = { _ in },
-                         taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
-                         progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
-                         assembling: @escaping () -> Void = { })
+    @MainActor
+    func uploadChunk(metadata: tableMetadata, hud: NCHud) async -> (account: String,
+                                                                                         remainingChunks: [(fileName: String, size: Int64)]?,
+                                                                                         file: NKFile?,
+                                                                                         error: NKError) {
+        var numChunks = 0
+        var countUpload: Int = 0
+        var taskHandler: URLSessionTask?
+
+        hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""), tapToCancelDetailText: true) {
+            NotificationCenter.default.postOnMainThread(name: NextcloudKit.shared.nkCommonInstance.notificationCenterChunkedFileStop.rawValue)
+        }
+
+        let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
+            numChunks = num
+        } counterChunk: { counter in
+            hud.progress(num: Float(counter), total: Float(numChunks))
+        } startFilesChunk: { _ in
+            hud.pieProgress(text: NSLocalizedString("_keep_active_for_upload_", comment: ""), tapToCancelDetailText: true) {
+                taskHandler?.cancel()
+            }
+        } requestHandler: { _ in
+            hud.progress(num: Float(countUpload), total: Float(numChunks))
+            countUpload += 1
+        } taskHandler: { task in
+            taskHandler = task
+        } assembling: {
+            hud.setText(NSLocalizedString("_wait_", comment: ""))
+        }
+
+        hud.dismiss()
+
+        return results
+    }
+
+    private func uploadChunkFile(metadata: tableMetadata,
+                                 performPostProcessing: Bool = true,
+                                 customHeaders: [String: String]? = nil,
+                                 numChunks: @escaping (_ num: Int) -> Void = { _ in },
+                                 counterChunk: @escaping (_ counter: Int) -> Void = { _ in },
+                                 startFilesChunk: @escaping (_ filesChunk: [(fileName: String, size: Int64)]) -> Void = { _ in },
+                                 requestHandler: @escaping (_ request: UploadRequest) -> Void = { _ in },
+                                 taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
+                                 progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
+                                 assembling: @escaping () -> Void = { })
     async -> (account: String,
               remainingChunks: [(fileName: String, size: Int64)]?,
               file: NKFile?,

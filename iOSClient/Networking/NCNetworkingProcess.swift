@@ -310,7 +310,9 @@ actor NCNetworkingProcess {
                 // UPLOAD CHUNK
                 //
                 } else if metadata.chunk > 0 {
-                    await uploadChunk(metadata: metadata)
+                    let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
+                    let hud = await NCHud(controller?.view)
+                    await networking.uploadChunk(metadata: metadata, hud: hud)
                 // UPLOAD IN BACKGROUND
                 //
                 } else {
@@ -353,38 +355,6 @@ actor NCNetworkingProcess {
         }
 
         return
-    }
-
-    @MainActor
-    private func uploadChunk(metadata: tableMetadata) async {
-        let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
-        var numChunks = 0
-        var countUpload: Int = 0
-        var taskHandler: URLSessionTask?
-        let hud = NCHud(controller?.view)
-
-        hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""), tapToCancelDetailText: true) {
-            NotificationCenter.default.postOnMainThread(name: NextcloudKit.shared.nkCommonInstance.notificationCenterChunkedFileStop.rawValue)
-        }
-
-        await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
-            numChunks = num
-        } counterChunk: { counter in
-            hud.progress(num: Float(counter), total: Float(numChunks))
-        } startFilesChunk: { _ in
-            hud.pieProgress(text: NSLocalizedString("_keep_active_for_upload_", comment: ""), tapToCancelDetailText: true) {
-                taskHandler?.cancel()
-            }
-        } requestHandler: { _ in
-            hud.progress(num: Float(countUpload), total: Float(numChunks))
-            countUpload += 1
-        } taskHandler: { task in
-            taskHandler = task
-        } assembling: {
-            hud.setText(NSLocalizedString("_wait_", comment: ""))
-        }
-
-        hud.dismiss()
     }
 
     private func metadataStatusWaitWebDav(metadatas: [tableMetadata]) async -> (status: Int?, error: NKError) {

@@ -207,22 +207,8 @@ class NCNetworkingE2EEUpload: NSObject {
     private func sendFile(metadata: tableMetadata, e2eToken: String, hud: NCHud, controller: UIViewController?) async -> (ocId: String?, etag: String?, date: Date?, error: NKError) {
 
         if metadata.chunk > 0 {
-            var counterUpload: Int = 0
-            let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata, performPostProcessing: false) { num in
-                self.numChunks = num
-            } counterChunk: { counter in
-                hud.progress(num: Float(counter), total: Float(self.numChunks))
-            } startFilesChunk: { _ in
-                hud.setText(NSLocalizedString("_keep_active_for_upload_", comment: ""))
-            } requestHandler: { _ in
-                hud.progress(num: Float(counterUpload), total: Float(self.numChunks))
-                counterUpload += 1
-            } assembling: {
-                hud.setText(NSLocalizedString("_wait_", comment: ""))
-            }
-
+            let results = await NCNetworking.shared.uploadChunk(metadata: metadata, hud: hud)
             return (results.file?.ocId, results.file?.etag, results.file?.date, results.error)
-
         } else {
             let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
                                                                                       fileName: metadata.fileName,
