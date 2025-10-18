@@ -206,10 +206,12 @@ final class NCGlobal: Sendable {
     let selectorLoadFileView                    = "loadFileView"
     let selectorLoadFileQuickLook               = "loadFileQuickLook"
     let selectorOpenIn                          = "openIn"
+
     let selectorUploadAutoUpload                = "uploadAutoUpload"
     let selectorUploadFile                      = "uploadFile"
     let selectorUploadFileNODelete              = "UploadFileNODelete"
     let selectorUploadFileShareExtension        = "uploadFileShareExtension"
+
     let selectorSaveAlbum                       = "saveAlbum"
     let selectorSaveAsScan                      = "saveAsScan"
     let selectorOpenDetail                      = "openDetail"

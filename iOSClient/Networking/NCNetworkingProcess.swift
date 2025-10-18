@@ -265,7 +265,9 @@ actor NCNetworkingProcess {
         // MARK: - UPLOAD
         //
         // CHUNK or  E2EE - only one for time
-        let hasUploadingMetadataWithChunksOrE2EE = metadatas.filter { $0.status == NCGlobal.shared.metadataStatusUploading && ($0.chunk > 0 || $0.e2eEncrypted == true) }
+        let hasUploadingMetadataWithChunksOrE2EE = metadatas.filter {
+            $0.status == NCGlobal.shared.metadataStatusUploading && ($0.chunk > 0 || $0.e2eEncrypted == true)
+        }
         if !hasUploadingMetadataWithChunksOrE2EE.isEmpty {
             return
         }
@@ -310,43 +312,12 @@ actor NCNetworkingProcess {
                     //
                     if metadata.isDirectoryE2EE {
                         let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
-
                         await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: controller)
                         return
-
                     // UPLOAD CHUNK
                     //
                     } else if metadata.chunk > 0 {
-                        let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
-
-                        Task { @MainActor in
-                            var numChunks = 0
-                            var countUpload: Int = 0
-                            var taskHandler: URLSessionTask?
-                            let hud = NCHud(controller?.view)
-                            hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""), tapToCancelDetailText: true) {
-                                NotificationCenter.default.postOnMainThread(name: NextcloudKit.shared.nkCommonInstance.notificationCenterChunkedFileStop.rawValue)
-                            }
-
-                            await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
-                                numChunks = num
-                            } counterChunk: { counter in
-                                hud.progress(num: Float(counter), total: Float(numChunks))
-                            } startFilesChunk: { _ in
-                                hud.pieProgress(text: NSLocalizedString("_keep_active_for_upload_", comment: ""), tapToCancelDetailText: true) {
-                                    taskHandler?.cancel()
-                                }
-                            } requestHandler: { _ in
-                                hud.progress(num: Float(countUpload), total: Float(numChunks))
-                                countUpload += 1
-                            } taskHandler: { task in
-                                taskHandler = task
-                            } assembling: {
-                                hud.setText(NSLocalizedString("_wait_", comment: ""))
-                            }
-
-                            hud.dismiss()
-                        }
+                        await uploadChunk(metadata: metadata)
                         return
 
                     // UPLOAD IN BACKGROUND
@@ -392,6 +363,38 @@ actor NCNetworkingProcess {
         }
 
         return
+    }
+
+    @MainActor
+    private func uploadChunk(metadata: tableMetadata) async {
+        let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
+        var numChunks = 0
+        var countUpload: Int = 0
+        var taskHandler: URLSessionTask?
+        let hud = NCHud(controller?.view)
+
+        hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""), tapToCancelDetailText: true) {
+            NotificationCenter.default.postOnMainThread(name: NextcloudKit.shared.nkCommonInstance.notificationCenterChunkedFileStop.rawValue)
+        }
+
+        await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
+            numChunks = num
+        } counterChunk: { counter in
+            hud.progress(num: Float(counter), total: Float(numChunks))
+        } startFilesChunk: { _ in
+            hud.pieProgress(text: NSLocalizedString("_keep_active_for_upload_", comment: ""), tapToCancelDetailText: true) {
+                taskHandler?.cancel()
+            }
+        } requestHandler: { _ in
+            hud.progress(num: Float(countUpload), total: Float(numChunks))
+            countUpload += 1
+        } taskHandler: { task in
+            taskHandler = task
+        } assembling: {
+            hud.setText(NSLocalizedString("_wait_", comment: ""))
+        }
+
+        hud.dismiss()
     }
 
     private func metadataStatusWaitWebDav(metadatas: [tableMetadata]) async -> (status: Int?, error: NKError) {
