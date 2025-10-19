@@ -233,10 +233,11 @@ actor NCNetworkingProcess {
         var availableProcess = NCBrandOptions.shared.numMaximumProcess - (countDownloading + countUploading)
         let isWiFi = self.networking.networkReachability == NKTypeReachability.reachableEthernetOrWiFi
 
-        /// ------------------------ WEBDAV
+        // MARK: - WEBDAV
+        //
         let waitWebDav = metadatas.filter { self.global.metadataStatusWaitWebDav.contains($0.status) }
         if !waitWebDav.isEmpty {
-            let (_, error) = await NCNetworking.shared.networkingProcessWebDAV(metadatas: Array(waitWebDav), timer: timer)
+            let error = await NCNetworking.shared.networkingProcessWebDAV(metadatas: Array(waitWebDav), timer: timer)
             if error != .success {
                 return
             }
@@ -298,9 +299,7 @@ actor NCNetworkingProcess {
             }
 
             for metadata in extractMetadatas {
-                guard timer != nil else {
-                    return
-                }
+                guard timer != nil else { return }
 
                 // UPLOAD E2EE
                 //

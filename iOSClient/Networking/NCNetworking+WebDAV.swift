@@ -790,7 +790,7 @@ extension NCNetworking {
 
     // MARK: - Networking Process WebDAV
 
-    func networkingProcessWebDAV(metadatas: [tableMetadata], timer: DispatchSourceTimer?) async -> (status: Int?, error: NKError) {
+    func networkingProcessWebDAV(metadatas: [tableMetadata], timer: DispatchSourceTimer?) async -> NKError {
         let networking = NCNetworking.shared
         let database = NCManageDatabase.shared
 
@@ -798,14 +798,14 @@ extension NCNetworking {
         let metadatasWaitCreateFolder = metadatas.filter { $0.status == global.metadataStatusWaitCreateFolder }.sorted { $0.serverUrl < $1.serverUrl }
         for metadata in metadatasWaitCreateFolder {
             guard timer != nil else {
-                return (global.metadataStatusWaitCreateFolder, .cancelled)
+                return .cancelled
             }
             var error: NKError = .success
 
             if metadata.sessionSelector == self.global.selectorUploadAutoUpload {
                 error = await networking.createFolderForAutoUpload(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
                 if error != .success {
-                    return (global.metadataStatusWaitCreateFolder, error)
+                    return error
                 }
             } else {
                 error = await networking.createFolder(fileName: metadata.fileName,
@@ -832,7 +832,7 @@ extension NCNetworking {
             }
 
             if error != .success {
-                return (global.metadataStatusWaitCreateFolder, error)
+                return error
             }
         }
 
@@ -840,7 +840,7 @@ extension NCNetworking {
         let metadatasWaitCopy = metadatas.filter { $0.status == global.metadataStatusWaitCopy }.sorted { $0.serverUrl < $1.serverUrl }
         for metadata in metadatasWaitCopy {
             guard timer != nil else {
-                return (global.metadataStatusWaitCopy, .cancelled)
+                return .cancelled
             }
 
             let destination = metadata.destination
@@ -877,7 +877,7 @@ extension NCNetworking {
             }
 
             if resultCopy.error != .success {
-                return (global.metadataStatusWaitCopy, resultCopy.error)
+                return resultCopy.error
             }
         }
 
@@ -885,7 +885,7 @@ extension NCNetworking {
         let metadatasWaitMove = metadatas.filter { $0.status == global.metadataStatusWaitMove }.sorted { $0.serverUrl < $1.serverUrl }
         for metadata in metadatasWaitMove {
             guard timer != nil else {
-                return (global.metadataStatusWaitMove, .cancelled)
+                return .cancelled
             }
 
             let destination = metadata.destination
@@ -922,7 +922,7 @@ extension NCNetworking {
             }
 
             if resultMove.error != .success {
-                return (global.metadataStatusWaitMove, resultMove.error)
+                return resultMove.error
             }
         }
 
@@ -930,7 +930,7 @@ extension NCNetworking {
         let metadatasWaitFavorite = metadatas.filter { $0.status == global.metadataStatusWaitFavorite }.sorted { $0.serverUrl < $1.serverUrl }
         for metadata in metadatasWaitFavorite {
             guard timer != nil else {
-                return (global.metadataStatusWaitFavorite, .cancelled)
+                return .cancelled
             }
 
             let session = NCSession.Session(account: metadata.account, urlBase: metadata.urlBase, user: metadata.user, userId: metadata.userId)
@@ -964,7 +964,7 @@ extension NCNetworking {
             }
 
             if resultsFavorite.error != .success {
-                return (global.metadataStatusWaitFavorite, resultsFavorite.error)
+                return resultsFavorite.error
             }
         }
 
@@ -972,7 +972,7 @@ extension NCNetworking {
         let metadatasWaitRename = metadatas.filter { $0.status == global.metadataStatusWaitRename }.sorted { $0.serverUrl < $1.serverUrl }
         for metadata in metadatasWaitRename {
             guard timer != nil else {
-                return (global.metadataStatusWaitRename, .cancelled)
+                return .cancelled
             }
 
             let serverUrlFileNameSource = metadata.serverUrlFileName
@@ -999,7 +999,7 @@ extension NCNetworking {
             }
 
             if resultRename.error != .success {
-                return (global.metadataStatusWaitRename, resultRename.error)
+                return resultRename.error
             }
         }
 
@@ -1011,7 +1011,7 @@ extension NCNetworking {
 
             for metadata in metadatasWaitDelete {
                 guard timer != nil else {
-                    return (global.metadataStatusWaitDelete, .cancelled)
+                    return .cancelled
                 }
 
                 let resultDelete = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account) { task in
@@ -1056,11 +1056,11 @@ extension NCNetworking {
             }
 
             if returnError != .success {
-                return (global.metadataStatusWaitDelete, returnError)
+                return returnError
             }
         }
 
-        return (nil, .success)
+        return .success
     }
 }
 
