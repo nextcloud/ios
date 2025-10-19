@@ -247,6 +247,47 @@ extension NCNetworking {
         return results.error
     }
 
+    private func processCreateFolder(metadatas: [tableMetadata], timer: DispatchSourceTimer?) async -> NKError {
+        var error: NKError = .success
+
+        for metadata in metadatas {
+            guard timer != nil else { return .cancelled }
+
+            if metadata.sessionSelector == self.global.selectorUploadAutoUpload {
+                error = await createFolderForAutoUpload(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
+                if error != .success { return error }
+            } else {
+                error = await createFolder(fileName: metadata.fileName,
+                                           serverUrl: metadata.serverUrl,
+                                           overwrite: true,
+                                           session: NCSession.shared.getSession(account: metadata.account),
+                                           selector: metadata.sessionSelector)
+            }
+
+            if let sceneIdentifier = metadata.sceneIdentifier {
+                await transferDispatcher.notifyDelegates(forScene: sceneIdentifier) { delegate in
+                    delegate.transferChange(status: self.global.networkingStatusCreateFolder,
+                                            metadata: metadata,
+                                            error: error)
+                } others: { delegate in
+                    delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
+                }
+            } else {
+                await transferDispatcher.notifyAllDelegates { delegate in
+                    delegate.transferChange(status: self.global.networkingStatusCreateFolder,
+                                            metadata: metadata,
+                                            error: error)
+                }
+            }
+
+            if error != .success {
+                return error
+            }
+        }
+
+        return .success
+    }
+
     // MARK: - Delete
 
     #if !EXTENSION
@@ -403,6 +444,58 @@ extension NCNetworking {
         }
     }
 
+    private func processDelete(metadatas: [tableMetadata], timer: DispatchSourceTimer?) async -> NKError {
+        let database = NCManageDatabase.shared
+        var metadatasErrors: [tableMetadata: NKError] = [:]
+        var error = NKError()
+
+        for metadata in metadatas {
+            guard timer != nil else { return .cancelled }
+
+            let results = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account) { task in
+                Task {
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                                path: metadata.serverUrlFileName,
+                                                                                                name: "deleteFileOrFolder")
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
+            }
+
+            if results.error == .success || results.error.errorCode == NCGlobal.shared.errorResourceNotFound {
+                do {
+                    try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
+                } catch { }
+
+                await database.deleteVideoAsync(metadata.ocId)
+                if !metadata.livePhotoFile.isEmpty {
+                    await database.deleteMetadataAsync(id: metadata.livePhotoFile)
+                }
+                await database.deleteMetadataAsync(id: metadata.ocId)
+                await database.deleteLocalFileAsync(id: metadata.ocId)
+
+                if metadata.directory {
+                    let serverUrl = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+                    await database.deleteDirectoryAndSubDirectoryAsync(serverUrl: serverUrl,
+                                                                       account: metadata.account)
+                }
+
+                metadatasErrors[metadata] = .success
+            } else {
+                await database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                       status: global.metadataStatusNormal)
+                metadatasErrors[metadata] = results.error
+                error = results.error
+            }
+        }
+
+        await transferDispatcher.notifyAllDelegates { delegate in
+            delegate.transferChange(status: self.global.networkingStatusDelete,
+                                    metadatasError: metadatasErrors)
+        }
+
+        return error
+    }
+
     // MARK: - Rename
 
     func renameMetadata(_ metadata: tableMetadata, fileNameNew: String) {
@@ -435,6 +528,43 @@ extension NCNetworking {
         }
     }
 
+    private func processRename(metadatas: [tableMetadata], timer: DispatchSourceTimer?) async -> NKError {
+        let database = NCManageDatabase.shared
+
+        for metadata in metadatas {
+            guard timer != nil else { return .cancelled}
+
+            let serverUrlFileNameSource = metadata.serverUrlFileName
+            let serverUrlFileNameDestination = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+            let results = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: false, account: metadata.account) { task in
+                Task {
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                                path: serverUrlFileNameSource,
+                                                                                                name: "moveFileOrFolder")
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
+            }
+
+            if results.error == .success {
+                await database.setMetadataServerUrlFileNameStatusNormalAsync(ocId: metadata.ocId)
+            } else {
+                await database.restoreMetadataFileNameAsync(ocId: metadata.ocId)
+            }
+
+            await transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferChange(status: NCGlobal.shared.networkingStatusRename,
+                                        metadata: metadata,
+                                        error: results.error)
+            }
+
+            if results.error != .success {
+                return results.error
+            }
+        }
+
+        return .success
+    }
+
     // MARK: - Move
 
     func moveMetadata(_ metadata: tableMetadata, destination: String, overwrite: Bool) {
@@ -452,6 +582,53 @@ extension NCNetworking {
                 delegate.transferReloadData(serverUrl: metadata.serverUrl, status: status)
             }
         }
+    }
+
+    private func processMove(metadatas: [tableMetadata], timer: DispatchSourceTimer?) async -> NKError {
+        let database = NCManageDatabase.shared
+
+        for metadata in metadatas {
+            guard timer != nil else { return .cancelled }
+
+            let destination = metadata.destination
+            let serverUrlFileNameDestination = utilityFileSystem.createServerUrl(serverUrl: destination, fileName: metadata.fileName)
+            let overwrite = (metadata.storeFlag as? NSString)?.boolValue ?? false
+
+            let results = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: metadata.serverUrlFileName, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account) { task in
+                Task {
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                                path: serverUrlFileNameDestination,
+                                                                                                name: "moveFileOrFolder")
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
+            }
+
+            await database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                   status: global.metadataStatusNormal)
+
+            if results.error == .success {
+                let resultRead = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrlFileNameDestination, account: metadata.account)
+                if resultRead.error == .success, let metadata = resultRead.metadata {
+                    // Remove directory
+                    if metadata.directory {
+                        let serverUrl = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+                        await database.deleteDirectoryAndSubDirectoryAsync(serverUrl: serverUrl,
+                                                                           account: resultRead.account)
+                    }
+                    await database.addMetadataAsync(metadata)
+                }
+            }
+
+            await transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferMove(metadata: metadata, destination: destination, error: results.error)
+            }
+
+            if results.error != .success {
+                return results.error
+            }
+        }
+
+        return .success
     }
 
     // MARK: - Copy
@@ -473,6 +650,53 @@ extension NCNetworking {
         }
     }
 
+    private func processCopy(metadatas: [tableMetadata], timer: DispatchSourceTimer?) async -> NKError {
+        let database = NCManageDatabase.shared
+
+        for metadata in metadatas {
+            guard timer != nil else { return .cancelled }
+
+            let destination = metadata.destination
+            var serverUrlFileNameDestination = utilityFileSystem.createServerUrl(serverUrl: destination, fileName: metadata.fileName)
+            let overwrite = (metadata.storeFlag as? NSString)?.boolValue ?? false
+
+            /// Within same folder
+            if metadata.serverUrl == destination {
+                let fileNameCopy = await NCNetworking.shared.createFileName(fileNameBase: metadata.fileName, account: metadata.account, serverUrl: metadata.serverUrl)
+                serverUrlFileNameDestination = utilityFileSystem.createServerUrl(serverUrl: destination, fileName: fileNameCopy)
+            }
+
+            let results = await NextcloudKit.shared.copyFileOrFolderAsync(serverUrlFileNameSource: metadata.serverUrlFileName, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account) { task in
+                Task {
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                                path: serverUrlFileNameDestination,
+                                                                                                name: "copyFileOrFolder")
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
+            }
+
+            await database.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                   status: global.metadataStatusNormal)
+
+            if results.error == .success {
+                let resultsRead = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrlFileNameDestination, account: metadata.account)
+                if resultsRead.error == .success, let metadata = resultsRead.metadata {
+                    await database.addMetadataAsync(metadata)
+                }
+            }
+
+            await transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferCopy(metadata: metadata, destination: destination, error: results.error)
+            }
+
+            if results.error != .success {
+                return results.error
+            }
+        }
+
+        return .success
+    }
+
     // MARK: - Favorite
 
     func favoriteMetadata(_ metadata: tableMetadata,
@@ -488,6 +712,50 @@ extension NCNetworking {
                 delegate.transferReloadData(serverUrl: metadata.serverUrl, status: status)
             }
         }
+    }
+
+    private func processFavorite(metadatas: [tableMetadata], timer: DispatchSourceTimer?) async -> NKError {
+        let database = NCManageDatabase.shared
+
+        for metadata in metadatas {
+            guard timer != nil else { return .cancelled }
+
+            let session = NCSession.Session(account: metadata.account, urlBase: metadata.urlBase, user: metadata.user, userId: metadata.userId)
+            let fileName = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
+            let results = await NextcloudKit.shared.setFavoriteAsync(fileName: fileName, favorite: metadata.favorite, account: metadata.account) { task in
+                Task {
+                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
+                                                                                                path: fileName,
+                                                                                                name: "setFavorite")
+                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
+                }
+            }
+
+            if results.error == .success {
+                await database.setMetadataFavoriteAsync(ocId: metadata.ocId,
+                                                        favorite: nil,
+                                                        saveOldFavorite: nil,
+                                                        status: global.metadataStatusNormal)
+            } else {
+                let favorite = (metadata.storeFlag as? NSString)?.boolValue ?? false
+                await database.setMetadataFavoriteAsync(ocId: metadata.ocId,
+                                                        favorite: favorite,
+                                                        saveOldFavorite: nil,
+                                                        status: global.metadataStatusNormal)
+            }
+
+            await transferDispatcher.notifyAllDelegates { delegate in
+                delegate.transferChange(status: self.global.networkingStatusFavorite,
+                                        metadata: metadata,
+                                        error: results.error)
+            }
+
+            if results.error != .success {
+                return results.error
+            }
+        }
+
+        return .success
     }
 
     // MARK: - Lock Files
@@ -788,277 +1056,47 @@ extension NCNetworking {
         }
     }
 
-    // MARK: - Networking Process WebDAV
+    // MARK: - Hub Process WebDAV
 
-    func networkingProcessWebDAV(metadatas: [tableMetadata], timer: DispatchSourceTimer?) async -> NKError {
-        let networking = NCNetworking.shared
-        let database = NCManageDatabase.shared
+    func hubProcessWebDAV(metadatas: [tableMetadata], timer: DispatchSourceTimer?) async -> NKError {
+        var metadatas: [tableMetadata] = []
+        var error = NKError()
 
-        // MARK: - CREATE FOLDER
-        let metadatasWaitCreateFolder = metadatas.filter { $0.status == global.metadataStatusWaitCreateFolder }.sorted { $0.serverUrl < $1.serverUrl }
-        for metadata in metadatasWaitCreateFolder {
-            guard timer != nil else {
-                return .cancelled
-            }
-            var error: NKError = .success
+        // CREATE FOLDER
+        //
+        metadatas = metadatas.filter { $0.status == global.metadataStatusWaitCreateFolder }.sorted { $0.serverUrl < $1.serverUrl }
+        error = await processCreateFolder(metadatas: metadatas, timer: timer)
+        guard error == .success else { return error }
 
-            if metadata.sessionSelector == self.global.selectorUploadAutoUpload {
-                error = await networking.createFolderForAutoUpload(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
-                if error != .success {
-                    return error
-                }
-            } else {
-                error = await networking.createFolder(fileName: metadata.fileName,
-                                                      serverUrl: metadata.serverUrl,
-                                                      overwrite: true,
-                                                      session: NCSession.shared.getSession(account: metadata.account),
-                                                      selector: metadata.sessionSelector)
-            }
+        // COPY
+        //
+        metadatas = metadatas.filter { $0.status == global.metadataStatusWaitCopy }.sorted { $0.serverUrl < $1.serverUrl }
+        error = await processCopy(metadatas: metadatas, timer: timer)
+        guard error == .success else { return error }
 
-            if let sceneIdentifier = metadata.sceneIdentifier {
-                await networking.transferDispatcher.notifyDelegates(forScene: sceneIdentifier) { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusCreateFolder,
-                                            metadata: metadata,
-                                            error: error)
-                } others: { delegate in
-                    delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
-                }
-            } else {
-                await networking.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusCreateFolder,
-                                            metadata: metadata,
-                                            error: error)
-                }
-            }
+        // MOVE
+        //
+        metadatas = metadatas.filter { $0.status == global.metadataStatusWaitMove }.sorted { $0.serverUrl < $1.serverUrl }
+        error = await processMove(metadatas: metadatas, timer: timer)
+        guard error == .success else { return error }
 
-            if error != .success {
-                return error
-            }
-        }
+        // FAVORITE
+        //
+        metadatas = metadatas.filter { $0.status == global.metadataStatusWaitFavorite }.sorted { $0.serverUrl < $1.serverUrl }
+        error = await processFavorite(metadatas: metadatas, timer: timer)
+        guard error == .success else { return error }
 
-        // MARK: - COPY
-        let metadatasWaitCopy = metadatas.filter { $0.status == global.metadataStatusWaitCopy }.sorted { $0.serverUrl < $1.serverUrl }
-        for metadata in metadatasWaitCopy {
-            guard timer != nil else {
-                return .cancelled
-            }
+        // RENAME
+        //
+        metadatas = metadatas.filter { $0.status == global.metadataStatusWaitRename }.sorted { $0.serverUrl < $1.serverUrl }
+        error = await processRename(metadatas: metadatas, timer: timer)
+        guard error == .success else { return error }
 
-            let destination = metadata.destination
-            var serverUrlFileNameDestination = utilityFileSystem.createServerUrl(serverUrl: destination, fileName: metadata.fileName)
-            let overwrite = (metadata.storeFlag as? NSString)?.boolValue ?? false
-
-            /// Within same folder
-            if metadata.serverUrl == destination {
-                let fileNameCopy = await NCNetworking.shared.createFileName(fileNameBase: metadata.fileName, account: metadata.account, serverUrl: metadata.serverUrl)
-                serverUrlFileNameDestination = utilityFileSystem.createServerUrl(serverUrl: destination, fileName: fileNameCopy)
-            }
-
-            let resultCopy = await NextcloudKit.shared.copyFileOrFolderAsync(serverUrlFileNameSource: metadata.serverUrlFileName, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                path: serverUrlFileNameDestination,
-                                                                                                name: "copyFileOrFolder")
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                }
-            }
-
-            await database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                   status: global.metadataStatusNormal)
-
-            if resultCopy.error == .success {
-                let result = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrlFileNameDestination, account: metadata.account)
-                if result.error == .success, let metadata = result.metadata {
-                    await database.addMetadataAsync(metadata)
-                }
-            }
-
-            await networking.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferCopy(metadata: metadata, destination: destination, error: resultCopy.error)
-            }
-
-            if resultCopy.error != .success {
-                return resultCopy.error
-            }
-        }
-
-        // MARK: - MOVE
-        let metadatasWaitMove = metadatas.filter { $0.status == global.metadataStatusWaitMove }.sorted { $0.serverUrl < $1.serverUrl }
-        for metadata in metadatasWaitMove {
-            guard timer != nil else {
-                return .cancelled
-            }
-
-            let destination = metadata.destination
-            let serverUrlFileNameDestination = utilityFileSystem.createServerUrl(serverUrl: destination, fileName: metadata.fileName)
-            let overwrite = (metadata.storeFlag as? NSString)?.boolValue ?? false
-
-            let resultMove = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: metadata.serverUrlFileName, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                path: serverUrlFileNameDestination,
-                                                                                                name: "moveFileOrFolder")
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                }
-            }
-
-            await database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                   status: global.metadataStatusNormal)
-
-            if resultMove.error == .success {
-                let result = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrlFileNameDestination, account: metadata.account)
-                if result.error == .success, let metadata = result.metadata {
-                    // Remove directory
-                    if metadata.directory {
-                        let serverUrl = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
-                        await database.deleteDirectoryAndSubDirectoryAsync(serverUrl: serverUrl,
-                                                                           account: result.account)
-                    }
-                    await database.addMetadataAsync(metadata)
-                }
-            }
-
-            await networking.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferMove(metadata: metadata, destination: destination, error: resultMove.error)
-            }
-
-            if resultMove.error != .success {
-                return resultMove.error
-            }
-        }
-
-        // MARK: - FAVORITE
-        let metadatasWaitFavorite = metadatas.filter { $0.status == global.metadataStatusWaitFavorite }.sorted { $0.serverUrl < $1.serverUrl }
-        for metadata in metadatasWaitFavorite {
-            guard timer != nil else {
-                return .cancelled
-            }
-
-            let session = NCSession.Session(account: metadata.account, urlBase: metadata.urlBase, user: metadata.user, userId: metadata.userId)
-            let fileName = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
-            let resultsFavorite = await NextcloudKit.shared.setFavoriteAsync(fileName: fileName, favorite: metadata.favorite, account: metadata.account) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                path: fileName,
-                                                                                                name: "setFavorite")
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                }
-            }
-
-            if resultsFavorite.error == .success {
-                await database.setMetadataFavoriteAsync(ocId: metadata.ocId,
-                                                        favorite: nil,
-                                                        saveOldFavorite: nil,
-                                                        status: global.metadataStatusNormal)
-            } else {
-                let favorite = (metadata.storeFlag as? NSString)?.boolValue ?? false
-                await database.setMetadataFavoriteAsync(ocId: metadata.ocId,
-                                                        favorite: favorite,
-                                                        saveOldFavorite: nil,
-                                                        status: global.metadataStatusNormal)
-            }
-
-            await networking.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferChange(status: self.global.networkingStatusFavorite,
-                                        metadata: metadata,
-                                        error: resultsFavorite.error)
-            }
-
-            if resultsFavorite.error != .success {
-                return resultsFavorite.error
-            }
-        }
-
-        // MARK: - RENAME
-        let metadatasWaitRename = metadatas.filter { $0.status == global.metadataStatusWaitRename }.sorted { $0.serverUrl < $1.serverUrl }
-        for metadata in metadatasWaitRename {
-            guard timer != nil else {
-                return .cancelled
-            }
-
-            let serverUrlFileNameSource = metadata.serverUrlFileName
-            let serverUrlFileNameDestination = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
-            let resultRename = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: false, account: metadata.account) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                path: serverUrlFileNameSource,
-                                                                                                name: "moveFileOrFolder")
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                }
-            }
-
-            if resultRename.error == .success {
-                await database.setMetadataServerUrlFileNameStatusNormalAsync(ocId: metadata.ocId)
-            } else {
-                await database.restoreMetadataFileNameAsync(ocId: metadata.ocId)
-            }
-
-            await networking.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferChange(status: NCGlobal.shared.networkingStatusRename,
-                                        metadata: metadata,
-                                        error: resultRename.error)
-            }
-
-            if resultRename.error != .success {
-                return resultRename.error
-            }
-        }
-
-        // MARK: - DELETE
-        let metadatasWaitDelete = metadatas.filter { $0.status == global.metadataStatusWaitDelete }.sorted { $0.serverUrl < $1.serverUrl }
-        if !metadatasWaitDelete.isEmpty {
-            var metadatasError: [tableMetadata: NKError] = [:]
-            var returnError = NKError()
-
-            for metadata in metadatasWaitDelete {
-                guard timer != nil else {
-                    return .cancelled
-                }
-
-                let resultDelete = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account) { task in
-                    Task {
-                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                    path: metadata.serverUrlFileName,
-                                                                                                    name: "deleteFileOrFolder")
-                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                    }
-                }
-
-                if resultDelete.error == .success || resultDelete.error.errorCode == NCGlobal.shared.errorResourceNotFound {
-                    do {
-                        try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
-                    } catch { }
-
-                    await database.deleteVideoAsync(metadata.ocId)
-                    if !metadata.livePhotoFile.isEmpty {
-                        await database.deleteMetadataAsync(id: metadata.livePhotoFile)
-                    }
-                    await database.deleteMetadataAsync(id: metadata.ocId)
-                    await database.deleteLocalFileAsync(id: metadata.ocId)
-
-                    if metadata.directory {
-                        let serverUrl = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
-                        await database.deleteDirectoryAndSubDirectoryAsync(serverUrl: serverUrl,
-                                                                           account: metadata.account)
-                    }
-
-                    metadatasError[metadata] = .success
-                } else {
-                    await database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                           status: global.metadataStatusNormal)
-                    metadatasError[metadata] = resultDelete.error
-                    returnError = resultDelete.error
-                }
-            }
-
-            await networking.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferChange(status: self.global.networkingStatusDelete,
-                                        metadatasError: metadatasError)
-            }
-
-            if returnError != .success {
-                return returnError
-            }
-        }
+        // DELETE
+        //
+        metadatas = metadatas.filter { $0.status == global.metadataStatusWaitDelete }.sorted { $0.serverUrl < $1.serverUrl }
+        error = await processDelete(metadatas: metadatas, timer: timer)
+        guard error == .success else { return error }
 
         return .success
     }

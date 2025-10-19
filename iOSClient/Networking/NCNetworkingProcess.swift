@@ -233,11 +233,11 @@ actor NCNetworkingProcess {
         var availableProcess = NCBrandOptions.shared.numMaximumProcess - (countDownloading + countUploading)
         let isWiFi = self.networking.networkReachability == NKTypeReachability.reachableEthernetOrWiFi
 
-        // MARK: - WEBDAV
+        // WEBDAV
         //
         let waitWebDav = metadatas.filter { self.global.metadataStatusWaitWebDav.contains($0.status) }
         if !waitWebDav.isEmpty {
-            let error = await NCNetworking.shared.networkingProcessWebDAV(metadatas: Array(waitWebDav), timer: timer)
+            let error = await NCNetworking.shared.hubProcessWebDAV(metadatas: Array(waitWebDav), timer: timer)
             if error != .success {
                 return
             }
@@ -248,7 +248,7 @@ actor NCNetworkingProcess {
             return
         }
 
-        // MARK: - DOWNLOAD
+        // DOWNLOAD
         //
         let filteredDownload = metadatas
             .filter { $0.session == self.networking.sessionDownloadBackground && $0.status == NCGlobal.shared.metadataStatusWaitDownload }
@@ -268,7 +268,7 @@ actor NCNetworkingProcess {
             return
         }
 
-        // MARK: - UPLOAD
+        // UPLOAD
         //
         let metadatasWaitUpload = Array(metadatas
             .filter {
