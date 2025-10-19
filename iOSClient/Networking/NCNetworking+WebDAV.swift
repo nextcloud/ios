@@ -160,6 +160,51 @@ extension NCNetworking {
         return resultFileName
     }
 
+    // MARK: - Hub Process WebDAV
+
+    func hubProcessWebDAV(metadatas: [tableMetadata], timer: DispatchSourceTimer?) async -> NKError {
+        var metadatas: [tableMetadata] = []
+        var error = NKError()
+
+        // CREATE FOLDER
+        //
+        metadatas = metadatas.filter { $0.status == global.metadataStatusWaitCreateFolder }.sorted { $0.serverUrl < $1.serverUrl }
+        error = await createFolder(metadatas: metadatas, timer: timer)
+        guard error == .success else { return error }
+
+        // COPY
+        //
+        metadatas = metadatas.filter { $0.status == global.metadataStatusWaitCopy }.sorted { $0.serverUrl < $1.serverUrl }
+        error = await copyFileOrFolder(metadatas: metadatas, timer: timer)
+        guard error == .success else { return error }
+
+        // MOVE
+        //
+        metadatas = metadatas.filter { $0.status == global.metadataStatusWaitMove }.sorted { $0.serverUrl < $1.serverUrl }
+        error = await moveFileOrFolder(metadatas: metadatas, timer: timer)
+        guard error == .success else { return error }
+
+        // FAVORITE
+        //
+        metadatas = metadatas.filter { $0.status == global.metadataStatusWaitFavorite }.sorted { $0.serverUrl < $1.serverUrl }
+        error = await setFavorite(metadatas: metadatas, timer: timer)
+        guard error == .success else { return error }
+
+        // RENAME
+        //
+        metadatas = metadatas.filter { $0.status == global.metadataStatusWaitRename }.sorted { $0.serverUrl < $1.serverUrl }
+        error = await renameFileOrFolder(metadatas: metadatas, timer: timer)
+        guard error == .success else { return error }
+
+        // DELETE
+        //
+        metadatas = metadatas.filter { $0.status == global.metadataStatusWaitDelete }.sorted { $0.serverUrl < $1.serverUrl }
+        error = await deleteFileOrFolder(metadatas: metadatas, timer: timer)
+        guard error == .success else { return error }
+
+        return .success
+    }
+
     // MARK: - Create folder
 
     func createFolder(fileName: String,
@@ -1054,51 +1099,6 @@ extension NCNetworking {
             NCManageDatabase.shared.addMetadata(metadata)
             completion(account, returnMetadata, error)
         }
-    }
-
-    // MARK: - Hub Process WebDAV
-
-    func hubProcessWebDAV(metadatas: [tableMetadata], timer: DispatchSourceTimer?) async -> NKError {
-        var metadatas: [tableMetadata] = []
-        var error = NKError()
-
-        // CREATE FOLDER
-        //
-        metadatas = metadatas.filter { $0.status == global.metadataStatusWaitCreateFolder }.sorted { $0.serverUrl < $1.serverUrl }
-        error = await createFolder(metadatas: metadatas, timer: timer)
-        guard error == .success else { return error }
-
-        // COPY
-        //
-        metadatas = metadatas.filter { $0.status == global.metadataStatusWaitCopy }.sorted { $0.serverUrl < $1.serverUrl }
-        error = await copyFileOrFolder(metadatas: metadatas, timer: timer)
-        guard error == .success else { return error }
-
-        // MOVE
-        //
-        metadatas = metadatas.filter { $0.status == global.metadataStatusWaitMove }.sorted { $0.serverUrl < $1.serverUrl }
-        error = await moveFileOrFolder(metadatas: metadatas, timer: timer)
-        guard error == .success else { return error }
-
-        // FAVORITE
-        //
-        metadatas = metadatas.filter { $0.status == global.metadataStatusWaitFavorite }.sorted { $0.serverUrl < $1.serverUrl }
-        error = await setFavorite(metadatas: metadatas, timer: timer)
-        guard error == .success else { return error }
-
-        // RENAME
-        //
-        metadatas = metadatas.filter { $0.status == global.metadataStatusWaitRename }.sorted { $0.serverUrl < $1.serverUrl }
-        error = await renameFileOrFolder(metadatas: metadatas, timer: timer)
-        guard error == .success else { return error }
-
-        // DELETE
-        //
-        metadatas = metadatas.filter { $0.status == global.metadataStatusWaitDelete }.sorted { $0.serverUrl < $1.serverUrl }
-        error = await deleteFileOrFolder(metadatas: metadatas, timer: timer)
-        guard error == .success else { return error }
-
-        return .success
     }
 }
 
