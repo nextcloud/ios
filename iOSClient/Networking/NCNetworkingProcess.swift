@@ -238,13 +238,14 @@ actor NCNetworkingProcess {
         let waitWebDav = metadatas.filter { self.global.metadataStatusWaitWebDav.contains($0.status) }
         if !waitWebDav.isEmpty {
             let error = await NCNetworking.shared.hubProcessWebDAV(metadatas: Array(waitWebDav), timer: timer)
-            if error != .success {
+            guard error == .success else {
                 return
             }
         }
 
         // TEST AVAILABLE PROCESS
-        guard availableProcess > 0 else {
+        guard availableProcess > 0,
+            timer != nil else {
             return
         }
 
@@ -264,7 +265,8 @@ actor NCNetworkingProcess {
         }
 
         // TEST AVAILABLE PROCESS
-        guard availableProcess > 0 else {
+        guard availableProcess > 0,
+              timer != nil else {
             return
         }
 
@@ -282,7 +284,7 @@ actor NCNetworkingProcess {
 
         for metadata in metadatasWaitUpload {
             guard availableProcess > 0,
-                  !isAppInBackground else {
+                  timer != nil else {
                 return
             }
             /// NO WiFi
@@ -291,7 +293,9 @@ actor NCNetworkingProcess {
             }
 
             let extractMetadatas = await NCCameraRoll().extractCameraRoll(from: metadata)
-            if isAppInBackground { return }
+            guard timer != nil else {
+                return
+            }
 
             // no extract photo
             if extractMetadatas.isEmpty {
@@ -299,7 +303,9 @@ actor NCNetworkingProcess {
             }
 
             for metadata in extractMetadatas {
-                guard timer != nil else { return }
+                guard timer != nil else {
+                    return
+                }
 
                 // UPLOAD E2EE
                 //
