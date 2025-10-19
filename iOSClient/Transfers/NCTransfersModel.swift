@@ -93,7 +93,7 @@ final class TransfersViewModel: ObservableObject {
         case global.metadataStatusUploading:
             return ("arrowshape.up.circle", NSLocalizedString("_status_uploading_", comment: ""), sizeText)
         case global.metadataStatusDownloadError, global.metadataStatusUploadError:
-            return ("exclamationmark.circle", NSLocalizedString("_status_upload_error_", comment: ""), "")
+            return ("exclamationmark.circle", NSLocalizedString("_status_upload_error_", comment: ""), item.sessionError)
         case global.metadataStatusNormal:
             return ("checkmark.circle", NSLocalizedString("_done_", comment: ""), sizeText)
         default:

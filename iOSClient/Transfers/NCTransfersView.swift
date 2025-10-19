@@ -186,11 +186,13 @@ struct TransferRowView: View {
                             .foregroundStyle(.secondary)
                     }
 
-                    ProgressView(value: Double(model.progress(for: item)))
-                        .progressViewStyle(.linear)
-                        .scaleEffect(y: 0.3, anchor: .center)
-                        .frame(height: 2)
-                        .tint(.blue)
+                    if item.status == NCGlobal.shared.metadataStatusDownloading || item.status == NCGlobal.shared.metadataStatusUploading {
+                        ProgressView(value: Double(model.progress(for: item)))
+                            .progressViewStyle(.linear)
+                            .scaleEffect(y: 0.3, anchor: .center)
+                            .frame(height: 2)
+                            .tint(.blue)
+                    }
                 }
 
                 Spacer(minLength: 8)
@@ -220,27 +222,23 @@ struct TransferRowView: View {
 
 struct TransfersView_Previews: PreviewProvider {
     static var previews: some View {
-        /*
-        let items: [MetadataItem] = [
-            MetadataItem(completed: false, date: Date(), etag: "E1",
-                         fileName: "test-folder", ocId: "oc1", ocIdTransfer: "tr1",
-                         progress: 0.15, serverUrl: "https://demo/files/marino/Photos",
-                         session: nil, size: 1_234_567,
-                         status: NCGlobal.shared.metadataStatusWaitCreateFolder, taskIdentifier: 101),
-            MetadataItem(completed: false, date: Date(), etag: "E2",
-                         fileName: "video_002.mov", ocId: "oc2", ocIdTransfer: "tr2",
-                         progress: 0.55, serverUrl: "https://demo/files/marino/Videos",
-                         session: nil, size: 52_345_678,
-                         status: NCGlobal.shared.metadataStatusDownloading, taskIdentifier: 102),
-            MetadataItem(completed: false, date: Date(), etag: "E3",
-                         fileName: "doc.pdf", ocId: "oc3", ocIdTransfer: "tr3",
-                         progress: 0.0, serverUrl: "https://demo/files/marino/Documents",
-                         session: NCNetworking.shared.sessionUploadBackgroundWWan, size: 345_678,
-                         status: NCGlobal.shared.metadataStatusUploading, taskIdentifier: 103)
-        ]
+        let items: [tableMetadata] = [
+            tableMetadata(ocId: "1", fileName: "filename 1", status: NCGlobal.shared.metadataStatusWaitCreateFolder),
+            tableMetadata(ocId: "2", fileName: "filename 2", status: NCGlobal.shared.metadataStatusUploading),
+            tableMetadata(ocId: "3", fileName: "filename 3", status: NCGlobal.shared.metadataStatusUploadError, sessionError: "Disk full")]
 
         return TransfersView(previewItems: items)
             .previewDisplayName("Transfers – Preview Items")
-        */
+    }
+}
+
+extension tableMetadata {
+    convenience init(ocId: String, fileName: String, status: Int, sessionError: String = "") {
+        self.init()
+        self.ocId = ocId
+        self.ocIdTransfer = ocIdTransfer
+        self.fileName = fileName
+        self.status = status
+        self.sessionError = sessionError
     }
 }
