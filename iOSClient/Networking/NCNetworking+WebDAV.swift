@@ -247,7 +247,7 @@ extension NCNetworking {
         return results.error
     }
 
-    private func processCreateFolder(metadatas: [tableMetadata], timer: DispatchSourceTimer?) async -> NKError {
+    private func createFolder(metadatas: [tableMetadata], timer: DispatchSourceTimer?) async -> NKError {
         var error: NKError = .success
 
         for metadata in metadatas {
@@ -1065,7 +1065,7 @@ extension NCNetworking {
         // CREATE FOLDER
         //
         metadatas = metadatas.filter { $0.status == global.metadataStatusWaitCreateFolder }.sorted { $0.serverUrl < $1.serverUrl }
-        error = await processCreateFolder(metadatas: metadatas, timer: timer)
+        error = await createFolder(metadatas: metadatas, timer: timer)
         guard error == .success else { return error }
 
         // COPY
