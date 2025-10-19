@@ -1209,8 +1209,7 @@ extension NCManageDatabase {
             let excludedIds = Set(tranfersSuccess.compactMap { $0.ocIdTransfer })
             let filtered = results.filter { !excludedIds.contains($0.ocIdTransfer) }
 
-            let sliced = filtered.prefix(100)
-            return sliced.map { $0.detachedCopy() }
+            return filtered.map { $0.detachedCopy() }
         } ?? []
     }
 }

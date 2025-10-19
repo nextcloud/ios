@@ -158,7 +158,7 @@ struct TransferRowView: View {
                 let status = model.status(for: item)
 
                 Image(systemName: status.symbol)
-                    .imageScale(.large)
+                    .font(.system(size: 30))
 
                 VStack(alignment: .leading, spacing: 6) {
                     Text(item.fileName)
@@ -189,8 +189,8 @@ struct TransferRowView: View {
                     if item.status == NCGlobal.shared.metadataStatusDownloading || item.status == NCGlobal.shared.metadataStatusUploading {
                         ProgressView(value: Double(model.progress(for: item)))
                             .progressViewStyle(.linear)
-                            .scaleEffect(y: 0.3, anchor: .center)
-                            .frame(height: 2)
+                            .scaleEffect(y: 0.5, anchor: .center)
+                            .frame(height: 5)
                             .tint(.blue)
                     }
                 }
@@ -203,7 +203,7 @@ struct TransferRowView: View {
                     }
                 } label: {
                     Image(systemName: "stop.circle")
-                        .imageScale(.large)
+                        .font(.system(size: 30))
                 }
                 .buttonStyle(.plain)
                 .tint(.primary)
@@ -225,7 +225,7 @@ struct TransfersView_Previews: PreviewProvider {
         let items: [tableMetadata] = [
             tableMetadata(ocId: "1", fileName: "filename 1", status: NCGlobal.shared.metadataStatusWaitCreateFolder),
             tableMetadata(ocId: "2", fileName: "filename 2", status: NCGlobal.shared.metadataStatusUploading),
-            tableMetadata(ocId: "3", fileName: "filename 3", status: NCGlobal.shared.metadataStatusUploadError, sessionError: "Disk full")]
+            tableMetadata(ocId: "3", fileName: "filename 3", status: NCGlobal.shared.metadataStatusUploadError, sessionError: "Disk full", errorCode: 1)]
 
         return TransfersView(previewItems: items)
             .previewDisplayName("Transfers – Preview Items")
@@ -233,12 +233,13 @@ struct TransfersView_Previews: PreviewProvider {
 }
 
 extension tableMetadata {
-    convenience init(ocId: String, fileName: String, status: Int, sessionError: String = "") {
+    convenience init(ocId: String, fileName: String, status: Int, sessionError: String = "", errorCode: Int = 0) {
         self.init()
         self.ocId = ocId
         self.ocIdTransfer = ocIdTransfer
         self.fileName = fileName
         self.status = status
+        self.errorCode = errorCode
         self.sessionError = sessionError
     }
 }
