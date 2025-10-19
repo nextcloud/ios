@@ -45,7 +45,7 @@ class NCContextMenu: NSObject {
                                 NSLocalizedString("_remove_favorites_", comment: "") :
                                 NSLocalizedString("_add_favorites_", comment: ""),
                                 image: utility.loadImage(named: self.metadata.favorite ? "star.slash" : "star", colors: [NCBrandColor.shared.yellowFavorite])) { _ in
-            self.networking.favoriteMetadata(self.metadata) { error in
+            self.networking.setStatusWaitFavorite(self.metadata) { error in
                 if error != .success {
                     NCContentPresenter().showError(error: error)
                 }

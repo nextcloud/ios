@@ -224,7 +224,7 @@ extension NCCollectionViewCommon {
                     order: 50,
                     sender: sender,
                     action: { _ in
-                        NCNetworking.shared.favoriteMetadata(metadata) { error in
+                        NCNetworking.shared.setStatusWaitFavorite(metadata) { error in
                             if error != .success {
                                 NCContentPresenter().showError(error: error)
                             }
@@ -327,7 +327,7 @@ extension NCCollectionViewCommon {
                                 return
                             }
 
-                            NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew)
+                            NCNetworking.shared.setStatusWaitRename(metadata, fileNameNew: fileNameNew)
                         }
                     }
                 )

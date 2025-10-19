@@ -592,7 +592,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                         continue
                     }
 
-                    NCNetworking.shared.copyMetadata(metadata, destination: destination, overwrite: overwrite)
+                    NCNetworking.shared.setStatusWaitCopy(metadata, destination: destination, overwrite: overwrite)
                 }
 
             } else if move {
@@ -601,7 +601,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                         continue
                     }
 
-                    NCNetworking.shared.moveMetadata(metadata, destination: destination, overwrite: overwrite)
+                    NCNetworking.shared.setStatusWaitMove(metadata, destination: destination, overwrite: overwrite)
                 }
             }
         }

@@ -444,7 +444,7 @@ extension NCNetworking {
         }
     }
 
-    private func processDelete(metadatas: [tableMetadata], timer: DispatchSourceTimer?) async -> NKError {
+    private func deleteFileOrFolder(metadatas: [tableMetadata], timer: DispatchSourceTimer?) async -> NKError {
         let database = NCManageDatabase.shared
         var metadatasErrors: [tableMetadata: NKError] = [:]
         var error = NKError()
@@ -498,7 +498,7 @@ extension NCNetworking {
 
     // MARK: - Rename
 
-    func renameMetadata(_ metadata: tableMetadata, fileNameNew: String) {
+    func setStatusWaitRename(_ metadata: tableMetadata, fileNameNew: String) {
         let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanRename)
         if (!metadata.permissions.isEmpty && permission == false) ||
             (metadata.status != global.metadataStatusNormal && metadata.status != global.metadataStatusWaitRename) {
@@ -528,7 +528,7 @@ extension NCNetworking {
         }
     }
 
-    private func processRename(metadatas: [tableMetadata], timer: DispatchSourceTimer?) async -> NKError {
+    private func renameFileOrFolder(metadatas: [tableMetadata], timer: DispatchSourceTimer?) async -> NKError {
         let database = NCManageDatabase.shared
 
         for metadata in metadatas {
@@ -567,7 +567,7 @@ extension NCNetworking {
 
     // MARK: - Move
 
-    func moveMetadata(_ metadata: tableMetadata, destination: String, overwrite: Bool) {
+    func setStatusWaitMove(_ metadata: tableMetadata, destination: String, overwrite: Bool) {
         let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanRename)
 
         if (!metadata.permissions.isEmpty && !permission) ||
@@ -584,7 +584,7 @@ extension NCNetworking {
         }
     }
 
-    private func processMove(metadatas: [tableMetadata], timer: DispatchSourceTimer?) async -> NKError {
+    private func moveFileOrFolder(metadatas: [tableMetadata], timer: DispatchSourceTimer?) async -> NKError {
         let database = NCManageDatabase.shared
 
         for metadata in metadatas {
@@ -633,7 +633,7 @@ extension NCNetworking {
 
     // MARK: - Copy
 
-    func copyMetadata(_ metadata: tableMetadata, destination: String, overwrite: Bool) {
+    func setStatusWaitCopy(_ metadata: tableMetadata, destination: String, overwrite: Bool) {
         let permission = NCMetadataPermissions.permissionsContainsString(metadata.permissions, permissions: NCMetadataPermissions.permissionCanRename)
 
         if (!metadata.permissions.isEmpty && !permission) ||
@@ -650,7 +650,7 @@ extension NCNetworking {
         }
     }
 
-    private func processCopy(metadatas: [tableMetadata], timer: DispatchSourceTimer?) async -> NKError {
+    private func copyFileOrFolder(metadatas: [tableMetadata], timer: DispatchSourceTimer?) async -> NKError {
         let database = NCManageDatabase.shared
 
         for metadata in metadatas {
@@ -699,8 +699,8 @@ extension NCNetworking {
 
     // MARK: - Favorite
 
-    func favoriteMetadata(_ metadata: tableMetadata,
-                          completion: @escaping (_ error: NKError) -> Void) {
+    func setStatusWaitFavorite(_ metadata: tableMetadata,
+                               completion: @escaping (_ error: NKError) -> Void) {
         if metadata.status != global.metadataStatusNormal && metadata.status != global.metadataStatusWaitFavorite {
             return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_favorite_file_"))
         }
@@ -714,7 +714,7 @@ extension NCNetworking {
         }
     }
 
-    private func processFavorite(metadatas: [tableMetadata], timer: DispatchSourceTimer?) async -> NKError {
+    private func setFavorite(metadatas: [tableMetadata], timer: DispatchSourceTimer?) async -> NKError {
         let database = NCManageDatabase.shared
 
         for metadata in metadatas {
@@ -1071,31 +1071,31 @@ extension NCNetworking {
         // COPY
         //
         metadatas = metadatas.filter { $0.status == global.metadataStatusWaitCopy }.sorted { $0.serverUrl < $1.serverUrl }
-        error = await processCopy(metadatas: metadatas, timer: timer)
+        error = await copyFileOrFolder(metadatas: metadatas, timer: timer)
         guard error == .success else { return error }
 
         // MOVE
         //
         metadatas = metadatas.filter { $0.status == global.metadataStatusWaitMove }.sorted { $0.serverUrl < $1.serverUrl }
-        error = await processMove(metadatas: metadatas, timer: timer)
+        error = await moveFileOrFolder(metadatas: metadatas, timer: timer)
         guard error == .success else { return error }
 
         // FAVORITE
         //
         metadatas = metadatas.filter { $0.status == global.metadataStatusWaitFavorite }.sorted { $0.serverUrl < $1.serverUrl }
-        error = await processFavorite(metadatas: metadatas, timer: timer)
+        error = await setFavorite(metadatas: metadatas, timer: timer)
         guard error == .success else { return error }
 
         // RENAME
         //
         metadatas = metadatas.filter { $0.status == global.metadataStatusWaitRename }.sorted { $0.serverUrl < $1.serverUrl }
-        error = await processRename(metadatas: metadatas, timer: timer)
+        error = await renameFileOrFolder(metadatas: metadatas, timer: timer)
         guard error == .success else { return error }
 
         // DELETE
         //
         metadatas = metadatas.filter { $0.status == global.metadataStatusWaitDelete }.sorted { $0.serverUrl < $1.serverUrl }
-        error = await processDelete(metadatas: metadatas, timer: timer)
+        error = await deleteFileOrFolder(metadatas: metadatas, timer: timer)
         guard error == .success else { return error }
 
         return .success
