@@ -44,7 +44,6 @@ struct Maintenance: View {
     }
 
     /// Executes the maintenance.
-    ///
     private func startMaintenance() async {
         do {
             try NCManageDatabase.shared.compactRealm()
