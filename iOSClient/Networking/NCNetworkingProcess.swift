@@ -287,21 +287,26 @@ actor NCNetworkingProcess {
                   timer != nil else {
                 return
             }
-            /// NO WiFi
+            // WiFi check
             if !isWiFi && metadata.session == networking.sessionUploadBackgroundWWan {
                 continue
             }
-
+            // File exists ? skip it
+            let error = await networking.fileExists(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
+            if error == .success {
+                await database.deleteMetadataAsync(id: metadata.ocId)
+                continue
+            }
+            // extract image/video
             let extractMetadatas = await NCCameraRoll().extractCameraRoll(from: metadata)
             guard timer != nil else {
                 return
             }
-
             // no extract photo
             if extractMetadatas.isEmpty {
                 await database.deleteMetadataAsync(id: metadata.ocId)
             }
-
+            // upload file(s)
             for metadata in extractMetadatas {
                 guard timer != nil else {
                     return

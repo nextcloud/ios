@@ -40,7 +40,7 @@ final class TransfersViewModel: ObservableObject {
                 items = await database.getTransferAsync(tranfersSuccess: transfersSuccess)
                 isLoading = false
             }
-            try? await Task.sleep(nanoseconds: 1_000_000_000)
+            try? await Task.sleep(nanoseconds: 500_000_000)
         }
     }
 
