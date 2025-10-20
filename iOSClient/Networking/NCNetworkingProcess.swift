@@ -244,10 +244,7 @@ actor NCNetworkingProcess {
         }
 
         // TEST AVAILABLE PROCESS
-        guard availableProcess > 0,
-            timer != nil else {
-            return
-        }
+        guard availableProcess > 0, timer != nil else { return }
 
         // DOWNLOAD
         //
@@ -265,10 +262,7 @@ actor NCNetworkingProcess {
         }
 
         // TEST AVAILABLE PROCESS
-        guard availableProcess > 0,
-              timer != nil else {
-            return
-        }
+        guard availableProcess > 0, timer != nil else { return }
 
         // UPLOAD
         //
@@ -283,10 +277,7 @@ actor NCNetworkingProcess {
             .prefix(availableProcess))
 
         for metadata in metadatasWaitUpload {
-            guard availableProcess > 0,
-                  timer != nil else {
-                return
-            }
+            guard availableProcess > 0, timer != nil else { return }
             // WiFi check
             if !isWiFi && metadata.session == networking.sessionUploadBackgroundWWan {
                 continue
@@ -299,19 +290,14 @@ actor NCNetworkingProcess {
             }
             // extract image/video
             let extractMetadatas = await NCCameraRoll().extractCameraRoll(from: metadata)
-            guard timer != nil else {
-                return
-            }
+            guard timer != nil else { return }
             // no extract photo
             if extractMetadatas.isEmpty {
                 await database.deleteMetadataAsync(id: metadata.ocId)
             }
             // upload file(s)
             for metadata in extractMetadatas {
-                guard timer != nil else {
-                    return
-                }
-
+                guard timer != nil else { return }
                 // UPLOAD E2EE
                 //
                 if metadata.isDirectoryE2EE {
