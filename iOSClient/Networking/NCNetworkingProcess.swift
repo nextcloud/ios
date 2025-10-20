@@ -237,7 +237,7 @@ actor NCNetworkingProcess {
         //
         let waitWebDav = metadatas.filter { self.global.metadataStatusWaitWebDav.contains($0.status) }
         if !waitWebDav.isEmpty {
-            let error = await NCNetworking.shared.hubProcessWebDAV(metadatas: Array(waitWebDav))
+            let error = await hubProcessWebDAV(metadatas: Array(waitWebDav))
             guard error == .success else {
                 return
             }
@@ -361,4 +361,71 @@ actor NCNetworkingProcess {
 
         return
     }
+
+    // MARK: - Hub Process WebDAV
+
+    private func hubProcessWebDAV(metadatas: [tableMetadata]) async -> NKError {
+        var results: [tableMetadata] = []
+
+        // CREATE FOLDER
+        //
+        results = metadatas.filter { $0.status == global.metadataStatusWaitCreateFolder }.sorted { $0.serverUrl < $1.serverUrl }
+        for metadata in results {
+            let error = await networking.createFolder(metadata: metadata)
+            guard error == .success, timer != nil else {
+                return .cancelled
+            }
+        }
+
+        // COPY
+        //
+        results = metadatas.filter { $0.status == global.metadataStatusWaitCopy }.sorted { $0.serverUrl < $1.serverUrl }
+        for metadata in results {
+            let error = await networking.copyFileOrFolder(metadata: metadata)
+            guard error == .success, timer != nil else {
+                return .cancelled
+            }
+        }
+
+        // MOVE
+        //
+        results = metadatas.filter { $0.status == global.metadataStatusWaitMove }.sorted { $0.serverUrl < $1.serverUrl }
+        for metadata in results {
+            let error = await networking.moveFileOrFolder(metadata: metadata)
+            guard error == .success, timer != nil else {
+                return .cancelled
+            }
+        }
+
+        // FAVORITE
+        //
+        results = metadatas.filter { $0.status == global.metadataStatusWaitFavorite }.sorted { $0.serverUrl < $1.serverUrl }
+        for metadata in results {
+            let error = await networking.setFavorite(metadata: metadata)
+            guard error == .success, timer != nil else {
+                return .cancelled
+            }
+        }
+
+        // RENAME
+        //
+        results = metadatas.filter { $0.status == global.metadataStatusWaitRename }.sorted { $0.serverUrl < $1.serverUrl }
+        for metadata in results {
+            let error = await networking.renameFileOrFolder(metadata: metadata)
+            guard error == .success else { return error }
+        }
+
+        // DELETE
+        //
+        results = metadatas.filter { $0.status == global.metadataStatusWaitDelete }.sorted { $0.serverUrl < $1.serverUrl }
+        for metadata in results {
+            let error = await networking.deleteFileOrFolder(metadata: metadata)
+            guard error == .success, timer != nil else {
+                return .cancelled
+            }
+        }
+
+        return .success
+    }
+
 }
