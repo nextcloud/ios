@@ -342,17 +342,9 @@ extension NCNetworking {
     }
     #endif
 
-    @MainActor
     func setStatusWaitDelete(metadatas: [tableMetadata], sceneIdentifier: String?) async {
         var metadatasPlain: [tableMetadata] = []
         var metadatasE2EE: [tableMetadata] = []
-        let ncHud = NCHud()
-        var num: Float = 0
-
-        func numIncrement() -> Float {
-            num += 1
-            return num
-        }
 
         for metadata in metadatas {
             if metadata.isDirectoryE2EE {
@@ -369,27 +361,36 @@ extension NCNetworking {
                 return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_offline_not_allowed_"))
             }
 
-            self.tapHudStopDelete = false
-            let total = Float(metadatasE2EE.count)
+            Task { @MainActor in
+                let ncHud = NCHud()
+                var num: Float = 0
+                let total = Float(metadatasE2EE.count)
 
-            if let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
-                await MainActor.run {
-                    ncHud.ringProgress(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDelete)
+                self.tapHudStopDelete = false
+
+                if let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
+                    await MainActor.run {
+                        ncHud.ringProgress(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDelete)
+                    }
                 }
-            }
 
-            for metadata in metadatasE2EE {
-                let error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
-                let num = numIncrement()
-                ncHud.progress(num: num, total: total)
-                if tapHudStopDelete { break }
+                for metadata in metadatasE2EE {
+                    let error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
+                    num += 1
+                    ncHud.progress(num: num, total: total)
 
-                await self.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: NCGlobal.shared.networkingStatusDelete,
-                                            metadata: metadata,
-                                            destination: nil,
-                                            error: error)
+                    await self.transferDispatcher.notifyAllDelegates { delegate in
+                        delegate.transferChange(status: NCGlobal.shared.networkingStatusDelete,
+                                                metadata: metadata,
+                                                destination: nil,
+                                                error: error)
+                    }
+
+                    if tapHudStopDelete {
+                        break
+                    }
                 }
+
                 ncHud.dismiss()
             }
 
