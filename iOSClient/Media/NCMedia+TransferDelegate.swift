@@ -17,14 +17,7 @@ extension NCMedia: NCTransferDelegate {
         }
     }
 
-    func transferCopy(metadata: tableMetadata, destination: String, error: NKError) {
-        Task {
-            await self.loadDataSource()
-            await self.searchMediaUI()
-        }
-    }
-
-    func transferMove(metadata: tableMetadata, destination: String, error: NKError) {
+    func transferCopyMove(metadata: tableMetadata, destination: String, error: NKError) {
         Task {
             await self.loadDataSource()
             await self.searchMediaUI()

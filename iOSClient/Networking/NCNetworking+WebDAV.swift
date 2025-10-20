@@ -582,7 +582,7 @@ extension NCNetworking {
         }
 
         await transferDispatcher.notifyAllDelegates { delegate in
-            delegate.transferMove(metadata: metadata, destination: destination, error: results.error)
+            delegate.transferCopyMove(metadata: metadata, destination: destination, error: results.error)
         }
 
         return results.error
@@ -638,7 +638,7 @@ extension NCNetworking {
         }
 
         await transferDispatcher.notifyAllDelegates { delegate in
-            delegate.transferCopy(metadata: metadata, destination: destination, error: results.error)
+            delegate.transferCopyMove(metadata: metadata, destination: destination, error: results.error)
         }
 
         return results.error

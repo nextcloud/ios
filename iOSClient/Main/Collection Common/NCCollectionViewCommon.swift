@@ -443,34 +443,20 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    func transferCopy(metadata: tableMetadata, destination: String, error: NKError) {
-        if error != .success {
-            NCContentPresenter().showError(error: error)
-        }
-
-        if isSearchingMode {
-            return networkSearch()
-        }
-
-        if metadata.serverUrl == self.serverUrl || destination == self.serverUrl {
-            Task {
-                await self.reloadDataSource()
+    func transferCopyMove(metadata: tableMetadata, destination: String, error: NKError) {
+        self.debouncer.call {
+            if error != .success {
+                NCContentPresenter().showError(error: error)
             }
-        }
-    }
 
-    func transferMove(metadata: tableMetadata, destination: String, error: NKError) {
-        if error != .success {
-            NCContentPresenter().showError(error: error)
-        }
+            if self.isSearchingMode {
+                return self.networkSearch()
+            }
 
-        if isSearchingMode {
-            return networkSearch()
-        }
-
-        if metadata.serverUrl == self.serverUrl || destination == self.serverUrl {
-            Task {
-                await self.reloadDataSource()
+            if metadata.serverUrl == self.serverUrl || destination == self.serverUrl {
+                Task {
+                    await self.reloadDataSource()
+                }
             }
         }
     }
