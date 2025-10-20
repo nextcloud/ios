@@ -237,7 +237,7 @@ actor NCNetworkingProcess {
         //
         let waitWebDav = metadatas.filter { self.global.metadataStatusWaitWebDav.contains($0.status) }
         if !waitWebDav.isEmpty {
-            let error = await NCNetworking.shared.hubProcessWebDAV(metadatas: Array(waitWebDav), timer: timer)
+            let error = await NCNetworking.shared.hubProcessWebDAV(metadatas: Array(waitWebDav))
             guard error == .success else {
                 return
             }
