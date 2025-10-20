@@ -24,7 +24,7 @@ struct Maintenance: View {
                     .frame(width: 80, height: 80)
                     .foregroundColor(.white)
 
-                Text("Optimization in Progress")
+                Text("opt_in_pro_")
                     .font(.headline)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
