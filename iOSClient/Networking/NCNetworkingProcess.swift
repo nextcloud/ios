@@ -237,7 +237,7 @@ actor NCNetworkingProcess {
         //
         let waitWebDav = metadatas.filter { self.global.metadataStatusWaitWebDav.contains($0.status) }
         if !waitWebDav.isEmpty {
-            let error = await hubProcessWebDAV(metadatas: Array(waitWebDav))
+            let error = await hubProcessWebDav(metadatas: Array(waitWebDav))
             guard error == .success else {
                 return
             }
@@ -362,9 +362,9 @@ actor NCNetworkingProcess {
         return
     }
 
-    // MARK: - Hub Process WebDAV
+    // MARK: - Hub Process WebDav
 
-    private func hubProcessWebDAV(metadatas: [tableMetadata]) async -> NKError {
+    private func hubProcessWebDav(metadatas: [tableMetadata]) async -> NKError {
         var results: [tableMetadata] = []
 
         // CREATE FOLDER
