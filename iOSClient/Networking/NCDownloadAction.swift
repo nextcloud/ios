@@ -495,7 +495,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                     NCManageDatabase.shared.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
                     Task {
                         await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                            delegate.transferRequestData(serverUrl: serverUrl)
+                            delegate.transferReloadData(serverUrl: serverUrl, requestData: true, status: nil)
                         }
                     }
                 } else {

@@ -19,7 +19,6 @@ protocol NCTransferDelegate: AnyObject {
 
     func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError)
     func transferReloadData(serverUrl: String?, requestData: Bool, status: Int?)
-    func transferRequestData(serverUrl: String?)
     func transferProgressDidUpdate(progress: Float,
                                    totalBytes: Int64,
                                    totalBytesExpected: Int64,
@@ -30,7 +29,6 @@ protocol NCTransferDelegate: AnyObject {
 extension NCTransferDelegate {
     func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError) {}
     func transferReloadData(serverUrl: String?, requestData: Bool, status: Int?) {}
-    func transferRequestData(serverUrl: String?) {}
     func transferProgressDidUpdate(progress: Float,
                                    totalBytes: Int64,
                                    totalBytesExpected: Int64,

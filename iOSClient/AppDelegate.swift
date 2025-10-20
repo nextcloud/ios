@@ -379,7 +379,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 Task {
                     await NCNetworking.shared.transferDispatcher.notifyAllDelegatesAsync { delegate in
                         try? await Task.sleep(nanoseconds: 500_000_000)
-                        delegate.transferRequestData(serverUrl: nil)
+                        delegate.transferReloadData(serverUrl: nil, requestData: true, status: nil)
                     }
                 }
             } else if let navigationController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? UINavigationController,

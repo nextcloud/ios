@@ -416,30 +416,28 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func transferReloadData(serverUrl: String?, requestData: Bool, status: Int?) {
         self.debouncer.call {
-            if self.isSearchingMode {
-                guard status != self.global.metadataStatusWaitDelete,
-                      status != self.global.metadataStatusWaitRename,
-                      status != self.global.metadataStatusWaitMove,
-                      status != self.global.metadataStatusWaitCopy,
-                      status != self.global.metadataStatusWaitFavorite else {
-                    return
+            if requestData {
+                if self.isSearchingMode {
+                    self.networkSearch()
+                } else if ( self.serverUrl == serverUrl) || serverUrl == nil {
+                    Task {
+                        await self.getServerData()
+                    }
                 }
-                self.networkSearch()
-            } else if ( self.serverUrl == serverUrl) || serverUrl == nil {
-                Task {
-                    await self.reloadDataSource()
-                }
-            }
-        }
-    }
-
-    func transferRequestData(serverUrl: String?) {
-        self.debouncer.call {
-            if self.isSearchingMode {
-                self.networkSearch()
-            } else if ( self.serverUrl == serverUrl) || serverUrl == nil {
-                Task {
-                    await self.getServerData()
+            } else {
+                if self.isSearchingMode {
+                    guard status != self.global.metadataStatusWaitDelete,
+                          status != self.global.metadataStatusWaitRename,
+                          status != self.global.metadataStatusWaitMove,
+                          status != self.global.metadataStatusWaitCopy,
+                          status != self.global.metadataStatusWaitFavorite else {
+                        return
+                    }
+                    self.networkSearch()
+                } else if ( self.serverUrl == serverUrl) || serverUrl == nil {
+                    Task {
+                        await self.reloadDataSource()
+                    }
                 }
             }
         }
