@@ -343,60 +343,23 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) { }
 
-    func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {
-        switch status {
-        // DELETE
-        case self.global.networkingStatusDelete:
-            let errorForThisServer = metadatasError.first { entry in
-                let (key, value) = entry
-                return key.serverUrl == self.serverUrl && value != .success
-            }?.value
-
-            let needLoadDataSource = metadatasError.contains { entry in
-                let (key, value) = entry
-                return key.serverUrl == self.serverUrl && value == .success
-            }
-
-            if let error = errorForThisServer {
-                NCContentPresenter().showError(error: error)
-            }
-
-            if self.isSearchingMode {
-                self.networkSearch()
-            } else if needLoadDataSource {
-                Task {
-                    await self.reloadDataSource()
-                }
-            } else {
-                Task.detached {
-                    if await self.isRecommendationActived() {
-                        await self.networking.createRecommendations(session: self.session, serverUrl: self.serverUrl, collectionView: self.collectionView)
-                    }
-                }
-            }
-        default:
-            break
-        }
-    }
-
     func transferChange(status: String, metadata: tableMetadata, error: NKError) {
         guard session.account == metadata.account else { return }
 
-        if error != .success {
+        if error != .success,
+           error.errorCode != global.errorResourceNotFound {
             NCContentPresenter().showError(error: error)
         }
 
-        DispatchQueue.main.async {
+        self.debouncer.call {
             switch status {
-            // UPLOADED, UPLOADED LIVEPHOTO
-            case self.global.networkingStatusUploaded:
-                self.debouncer.call {
-                    if self.isSearchingMode {
-                        self.networkSearch()
-                    } else if self.serverUrl == metadata.serverUrl {
-                        Task {
-                            await self.reloadDataSource()
-                        }
+            // UPLOADED, UPLOADED LIVEPHOTO, DELETE
+            case self.global.networkingStatusUploaded, self.global.networkingStatusDelete:
+                if self.isSearchingMode {
+                    self.networkSearch()
+                } else if self.serverUrl == metadata.serverUrl {
+                    Task {
+                        await self.reloadDataSource()
                     }
                 }
             // DOWNLOAD

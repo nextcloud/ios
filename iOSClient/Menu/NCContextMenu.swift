@@ -171,13 +171,12 @@ class NCContextMenu: NSObject {
         let deleteConfirmLocal = UIAction(title: NSLocalizedString("_remove_local_file_", comment: ""),
                                           image: utility.loadImage(named: "trash"), attributes: .destructive) { _ in
             Task {
-                var metadatasError: [tableMetadata: NKError] = [:]
                 let error = await self.networking.deleteCache(self.metadata, sceneIdentifier: self.sceneIdentifier)
-                metadatasError[self.metadata.detachedCopy()] = error
 
                 await self.networking.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusDelete,
-                                            metadatasError: metadatasError)
+                    delegate.transferChange(status: NCGlobal.shared.networkingStatusDelete,
+                                            metadata: self.metadata,
+                                            error: error)
                 }
             }
         }

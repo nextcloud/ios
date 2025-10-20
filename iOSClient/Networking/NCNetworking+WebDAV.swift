@@ -376,23 +376,19 @@ extension NCNetworking {
                 }
             }
 
-            var metadatasError: [tableMetadata: NKError] = [:]
             for metadata in metadatasE2EE {
                 let error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
-                if error == .success {
-                    metadatasError[metadata.detachedCopy()] = .success
-                } else {
-                    metadatasError[metadata.detachedCopy()] = error
-                }
                 let num = numIncrement()
                 ncHud.progress(num: num, total: total)
                 if tapHudStopDelete { break }
+
+                await self.transferDispatcher.notifyAllDelegates { delegate in
+                    delegate.transferChange(status: NCGlobal.shared.networkingStatusDelete,
+                                            metadata: metadata,
+                                            error: error)
+                }
+                ncHud.dismiss()
             }
-            await self.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferChange(status: self.global.networkingStatusDelete,
-                                        metadatasError: metadatasError)
-            }
-            ncHud.dismiss()
 
 #endif
         } else {

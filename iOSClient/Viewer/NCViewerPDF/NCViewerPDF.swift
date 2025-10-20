@@ -525,23 +525,6 @@ extension NCViewerPDF: EasyTipViewDelegate {
 }
 
 extension NCViewerPDF: NCTransferDelegate {
-    func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {
-        switch status {
-        // DELETE
-        case NCGlobal.shared.networkingStatusDelete:
-            let shouldUnloadView = metadatasError.contains { key, error in
-                key.ocId == self.metadata?.ocId && error == .success
-            }
-            if shouldUnloadView {
-                DispatchQueue.main.async {
-                    self.navigationController?.popViewController(animated: true)
-                }
-            }
-        default:
-            break
-        }
-    }
-
     func transferChange(status: String, metadata: tableMetadata, error: NKError) {
         guard self.metadata?.serverUrl == metadata.serverUrl,
               self.metadata?.fileNameView == metadata.fileNameView
@@ -551,6 +534,12 @@ extension NCViewerPDF: NCTransferDelegate {
 
         DispatchQueue.main.async {
             switch status {
+            // DELETE
+            case NCGlobal.shared.networkingStatusDelete:
+                if error == .success,
+                   metadata.ocId == self.metadata?.ocId {
+                    self.navigationController?.popViewController(animated: true)
+                }
             // UPLOAD
             case NCGlobal.shared.networkingStatusUploading:
                 NCActivityIndicator.shared.start()
