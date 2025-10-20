@@ -354,10 +354,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.debouncer.call {
             switch status {
             // UPLOADED, UPLOADED LIVEPHOTO, DELETE
-            case self.global.networkingStatusUploaded, self.global.networkingStatusDelete:
+            case self.global.networkingStatusUploaded,
+                self.global.networkingStatusDelete,
+                self.global.networkingStatusCopyMove:
                 if self.isSearchingMode {
                     self.networkSearch()
-                } else if self.serverUrl == metadata.serverUrl {
+                } else if self.serverUrl == metadata.serverUrl || destination == self.serverUrl {
                     Task {
                         await self.reloadDataSource()
                     }
@@ -438,24 +440,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             } else if ( self.serverUrl == serverUrl) || serverUrl == nil {
                 Task {
                     await self.getServerData()
-                }
-            }
-        }
-    }
-
-    func transferCopyMove(metadata: tableMetadata, destination: String, error: NKError) {
-        self.debouncer.call {
-            if error != .success {
-                NCContentPresenter().showError(error: error)
-            }
-
-            if self.isSearchingMode {
-                return self.networkSearch()
-            }
-
-            if metadata.serverUrl == self.serverUrl || destination == self.serverUrl {
-                Task {
-                    await self.reloadDataSource()
                 }
             }
         }

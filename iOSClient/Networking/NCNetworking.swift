@@ -16,28 +16,26 @@ import SwiftUI
 
 protocol NCTransferDelegate: AnyObject {
     var sceneIdentifier: String { get }
+
+    func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError)
+    func transferReloadData(serverUrl: String?, status: Int?)
+    func transferRequestData(serverUrl: String?)
     func transferProgressDidUpdate(progress: Float,
                                    totalBytes: Int64,
                                    totalBytesExpected: Int64,
                                    fileName: String,
                                    serverUrl: String)
-
-    func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError)
-    func transferReloadData(serverUrl: String?, status: Int?)
-    func transferRequestData(serverUrl: String?)
-    func transferCopyMove(metadata: tableMetadata, destination: String, error: NKError)
 }
 
 extension NCTransferDelegate {
+    func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError) {}
+    func transferReloadData(serverUrl: String?, status: Int?) {}
+    func transferRequestData(serverUrl: String?) {}
     func transferProgressDidUpdate(progress: Float,
                                    totalBytes: Int64,
                                    totalBytesExpected: Int64,
                                    fileName: String,
                                    serverUrl: String) {}
-    func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError) {}
-    func transferReloadData(serverUrl: String?, status: Int?) {}
-    func transferRequestData(serverUrl: String?) {}
-    func transferCopyMove(metadata: tableMetadata, destination: String, error: NKError) {}
 }
 
 /// Actor-based delegate dispatcher using weak references.

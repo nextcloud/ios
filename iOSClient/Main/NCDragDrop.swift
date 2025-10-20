@@ -150,7 +150,7 @@ class NCDragDrop: NSObject {
         for metadata in metadatas {
             NCNetworking.shared.setStatusWaitCopy(metadata, destination: destination, overwrite: false)
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferCopyMove(metadata: metadata, destination: destination, error: .success)
+                delegate.transferChange(status: self.global.networkingStatusCopyMove, metadata: metadata, destination: destination, error: .success)
             }
         }
     }
@@ -159,7 +159,7 @@ class NCDragDrop: NSObject {
         for metadata in metadatas {
             NCNetworking.shared.setStatusWaitMove(metadata, destination: destination, overwrite: false)
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferCopyMove(metadata: metadata, destination: destination, error: .success)
+                delegate.transferChange(status: self.global.networkingStatusCopyMove, metadata: metadata, destination: destination, error: .success)
             }
         }
     }

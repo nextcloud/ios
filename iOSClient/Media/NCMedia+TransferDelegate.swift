@@ -17,10 +17,17 @@ extension NCMedia: NCTransferDelegate {
         }
     }
 
-    func transferCopyMove(metadata: tableMetadata, destination: String, error: NKError) {
-        Task {
-            await self.loadDataSource()
-            await self.searchMediaUI()
+    func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError) {
+        self.debouncer.call {
+            switch status {
+            case self.global.networkingStatusCopyMove:
+                Task {
+                    await self.loadDataSource()
+                    await self.searchMediaUI()
+                }
+            default:
+                break
+            }
         }
     }
 }
