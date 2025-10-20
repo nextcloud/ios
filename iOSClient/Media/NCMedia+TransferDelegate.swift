@@ -9,7 +9,7 @@ import NextcloudKit
 // MARK: - Drag
 
 extension NCMedia: NCTransferDelegate {
-    func transferReloadData(serverUrl: String?, status: Int?) {
+    func transferReloadData(serverUrl: String?, requestData: Bool, status: Int?) {
         self.debouncer.call {
             Task {
                 await self.loadDataSource()
@@ -17,17 +17,17 @@ extension NCMedia: NCTransferDelegate {
         }
     }
 
-    func transferCopy(metadata: tableMetadata, destination: String, error: NKError) {
-        Task {
-            await self.loadDataSource()
-            await self.searchMediaUI()
-        }
-    }
-
-    func transferMove(metadata: tableMetadata, destination: String, error: NKError) {
-        Task {
-            await self.loadDataSource()
-            await self.searchMediaUI()
+    func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError) {
+        self.debouncer.call {
+            switch status {
+            case self.global.networkingStatusCopyMove:
+                Task {
+                    await self.loadDataSource()
+                    await self.searchMediaUI()
+                }
+            default:
+                break
+            }
         }
     }
 }

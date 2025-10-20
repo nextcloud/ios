@@ -155,6 +155,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferChange(status: self.global.networkingStatusCreateFolder,
                                     metadata: metadata.detachedCopy(),
+                                    destination: nil,
                                     error: .success)
         }
 

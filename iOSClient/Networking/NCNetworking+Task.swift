@@ -90,6 +90,7 @@ extension NCNetworking {
                 await networking.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusDownloadCancel,
                                             metadata: metadata.detachedCopy(),
+                                            destination: nil,
                                             error: .success)
                 }
             // UPLOAD
@@ -100,17 +101,12 @@ extension NCNetworking {
                     cancelUploadBackgroundTask(metadata: metadata)
                 }
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
-                await networking.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusUploadCancel,
-                                            metadata: metadata.detachedCopy(),
-                                            error: .success)
-                }
             }
         }
 
         await networking.transferDispatcher.notifyAllDelegates { delegate in
             serverUrls.forEach { serverUrl in
-                delegate.transferReloadData(serverUrl: serverUrl, status: nil)
+                delegate.transferReloadData(serverUrl: serverUrl, requestData: false, status: nil)
             }
         }
     }

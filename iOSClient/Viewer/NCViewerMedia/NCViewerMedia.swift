@@ -625,7 +625,7 @@ extension NCViewerMedia: EasyTipViewDelegate {
 }
 
 extension NCViewerMedia: NCTransferDelegate {
-    func transferChange(status: String, metadata: tableMetadata, error: NKError) {
+    func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError) {
         switch status {
         // DOWNLOAD
         case self.global.networkingStatusDownloaded:

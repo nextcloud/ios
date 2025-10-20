@@ -582,10 +582,19 @@ extension NCViewerMediaPage: UIScrollViewDelegate {
 }
 
 extension NCViewerMediaPage: NCTransferDelegate {
-    func transferChange(status: String, metadata: tableMetadata, error: NKError) {
+    func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError) {
         DispatchQueue.main.async {
             switch status {
-                // DOWNLOAD
+            // DELETE
+            case NCGlobal.shared.networkingStatusDelete:
+                if error == .success,
+                   metadata.ocId == self.currentViewController.metadata.ocId {
+                    if let ncplayer = self.currentViewController.ncplayer, ncplayer.isPlaying() {
+                        ncplayer.playerPause()
+                    }
+                    self.navigationController?.popViewController(animated: true)
+                }
+            // DOWNLOAD
             case self.global.networkingStatusDownloaded:
                 guard metadata.ocId == self.currentViewController.metadata.ocId else {
                     return
@@ -616,26 +625,6 @@ extension NCViewerMediaPage: NCTransferDelegate {
                     self.currentViewController.loadImage()
                 } else {
                     self.modifiedOcId.append(metadata.ocId)
-                }
-            default:
-                break
-            }
-        }
-    }
-
-    func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {
-        DispatchQueue.main.async {
-            switch status {
-                // DELETE
-            case NCGlobal.shared.networkingStatusDelete:
-                let hasAtLeastOneSuccess = metadatasError.contains { key, value in
-                    self.ocIds.contains(key.ocId) && value == .success
-                }
-                if hasAtLeastOneSuccess {
-                    if let ncplayer = self.currentViewController.ncplayer, ncplayer.isPlaying() {
-                        ncplayer.playerPause()
-                    }
-                    self.navigationController?.popViewController(animated: true)
                 }
             default:
                 break

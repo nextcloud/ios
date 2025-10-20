@@ -11,7 +11,7 @@ final class NCDebouncer {
     private var timer: Timer?
     private var latestBlock: (() -> Void)?
 
-    init(delay: TimeInterval, maxEventCount: Int = 10) {
+    init(delay: TimeInterval = 2, maxEventCount: Int = 10) {
         self.delay = delay
         self.maxEventCount = maxEventCount
     }

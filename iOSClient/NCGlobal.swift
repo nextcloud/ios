@@ -124,7 +124,6 @@ final class NCGlobal: Sendable {
     let layoutViewOffline                           = "LayoutOffline"
     let layoutViewFavorite                          = "LayoutFavorite"
     let layoutViewFiles                             = "LayoutFiles"
-    let layoutViewTransfers                         = "LayoutTransfers"
     let layoutViewRecent                            = "LayoutRecent"
     let layoutViewShares                            = "LayoutShares"
     let layoutViewShareExtension                    = "LayoutShareExtension"
@@ -201,16 +200,19 @@ final class NCGlobal: Sendable {
 
     // Selector
     //
-    let selectorDownloadFile                    = "downloadFile"
     let selectorReadFile                        = "readFile"
     let selectorListingFavorite                 = "listingFavorite"
     let selectorLoadFileView                    = "loadFileView"
     let selectorLoadFileQuickLook               = "loadFileQuickLook"
     let selectorOpenIn                          = "openIn"
+
+    let selectorDownloadFile                    = "downloadFile"
+
     let selectorUploadAutoUpload                = "uploadAutoUpload"
     let selectorUploadFile                      = "uploadFile"
     let selectorUploadFileNODelete              = "UploadFileNODelete"
     let selectorUploadFileShareExtension        = "uploadFileShareExtension"
+
     let selectorSaveAlbum                       = "saveAlbum"
     let selectorSaveAsScan                      = "saveAsScan"
     let selectorOpenDetail                      = "openDetail"
@@ -246,6 +248,9 @@ final class NCGlobal: Sendable {
     let metadataStatusHideInView                = [1, 2, 3, 11]
     let metadataStatusWaitWebDav                = [10, 11, 12, 13, 14, 15]
     let metadataStatusTransfers                 = [-2, -3, 2, 3, 10, 11, 12, 13, 14, 15]
+
+    let metadatasStatusInWaiting                = [-1, 1, 10, 11, 12, 13, 14, 15]
+    let metadatasStatusInProgress               = [-2, 2]
 
     // Auto upload subfolder granularity
     //
@@ -284,6 +289,7 @@ final class NCGlobal: Sendable {
     let networkingStatusCreateFolder                            = "statusCreateFolder"
     let networkingStatusDelete                                  = "statusDelete"
     let networkingStatusRename                                  = "statusRename"
+    let networkingStatusCopyMove                                = "statusCopyMove"
     let networkingStatusFavorite                                = "statusFavorite"
 
     let networkingStatusDownloading                             = "statusDownloading"
@@ -292,8 +298,6 @@ final class NCGlobal: Sendable {
 
     let networkingStatusUploading                               = "statusUploading"
     let networkingStatusUploaded                                = "statusUploaded"
-    let networkingStatusUploadedLivePhoto                       = "statusUploadedLivePhoto"
-    let networkingStatusUploadCancel                            = "statusUploadCancel"
 
     let networkingStatusReloadAvatar                            = "statusReloadAvatar"
 
@@ -392,7 +396,7 @@ final class NCGlobal: Sendable {
     let logTagDatabase                      = "DB"
     let logTagSpeedUpSyncMetadata           = "SYNC METADATA"
     let logTagNetworkingTasks               = "NETWORKING TASKS"
-    let logTagTransferStore                 = "TRANSFER STORE"
+    let logTagMetadataTransfers             = "METADATA TRANSFERS"
 
     // USER DEFAULTS
     //

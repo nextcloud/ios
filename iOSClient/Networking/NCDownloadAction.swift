@@ -31,7 +31,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
 
     // MARK: - Download
 
-    func transferChange(status: String, metadata: tableMetadata, error: NKError) {
+    func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError) {
         DispatchQueue.main.async {
             switch status {
             /// DOWNLOADED
@@ -495,7 +495,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                     NCManageDatabase.shared.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
                     Task {
                         await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                            delegate.transferRequestData(serverUrl: serverUrl)
+                            delegate.transferReloadData(serverUrl: serverUrl, requestData: true, status: nil)
                         }
                     }
                 } else {
@@ -592,7 +592,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                         continue
                     }
 
-                    NCNetworking.shared.copyMetadata(metadata, destination: destination, overwrite: overwrite)
+                    NCNetworking.shared.setStatusWaitCopy(metadata, destination: destination, overwrite: overwrite)
                 }
 
             } else if move {
@@ -601,7 +601,7 @@ class NCDownloadAction: NSObject, UIDocumentInteractionControllerDelegate, NCSel
                         continue
                     }
 
-                    NCNetworking.shared.moveMetadata(metadata, destination: destination, overwrite: overwrite)
+                    NCNetworking.shared.setStatusWaitMove(metadata, destination: destination, overwrite: overwrite)
                 }
             }
         }

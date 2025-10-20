@@ -244,7 +244,7 @@ class NCUserStatus: UIViewController {
         self.invisibleButton.layer.borderColor = nil
         self.busyButton.layer.borderWidth = 0
         self.busyButton.layer.borderColor = nil
-        
+
         let status = "online"
         NextcloudKit.shared.setUserStatus(status: status, account: account) { task in
             Task {

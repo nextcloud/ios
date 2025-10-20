@@ -118,11 +118,13 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         transfersButton.setImage(UIImage(systemName: "arrow.left.arrow.right.circle.fill"), for: .normal)
         transfersButton.tintColor = NCBrandColor.shared.iconImageColor
         transfersButton.addAction(UIAction(handler: { _ in
-            if let navigationController = UIStoryboard(name: "NCTransfers", bundle: nil).instantiateInitialViewController() as? UINavigationController,
-               let viewController = navigationController.topViewController as? NCTransfers {
-                viewController.modalPresentationStyle = .pageSheet
-                self.present(navigationController, animated: true, completion: nil)
-            }
+            let rootView = TransfersView(session: self.session, onClose: { [weak self] in
+                self?.dismiss(animated: true)
+            })
+            let hosting = UIHostingController(rootView: rootView)
+            hosting.modalPresentationStyle = .pageSheet
+
+            self.present(hosting, animated: true)
         }), for: .touchUpInside)
 
         // PLUS BUTTON ONLY IN FILES
@@ -561,9 +563,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         }
     }
 
-    @discardableResult
     @MainActor
-    func updateRightBarButtonItems(_ fileItem: UITabBarItem? = nil) async -> Int {
+    func updateRightBarButtonItems(_ fileItem: UITabBarItem? = nil) async {
         guard !(collectionViewCommon?.isEditMode ?? false),
               !(trashViewController?.isEditMode ?? false),
               !(mediaViewController?.isEditMode ?? false),
@@ -572,15 +573,18 @@ class NCMainNavigationController: UINavigationController, UINavigationController
               !(topViewController is NCViewerRichDocument),
               !(topViewController is NCViewerNextcloudText)
         else {
-            return 0
+            return
         }
 
-        let transferCount = await self.database.getMetadatasAsync(predicate: NSPredicate(format: "status != %i", self.global.metadataStatusNormal))?.count ?? 0
         let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
         let rightmenu = await createRightMenu()
-        var tempRightBarButtonItems: [UIBarButtonItem] = rightmenu == nil ? [] : [self.menuBarButtonItem]
-        var tempTotalTags = tempRightBarButtonItems.count == 0 ? 0 : self.menuBarButtonItem.tag
+        var tempRightBarButtonItems: [UIBarButtonItem] = rightmenu == nil ? [self.transfersButtonItem] : [self.menuBarButtonItem, self.transfersButtonItem]
+        var tempTotalTags = 0
         var totalTags = 0
+
+        for item in tempRightBarButtonItems {
+            tempTotalTags = tempTotalTags + item.tag
+        }
 
         if let rightBarButtonItems = topViewController?.navigationItem.rightBarButtonItems {
             for item in rightBarButtonItems {
@@ -598,20 +602,9 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             tempTotalTags += self.notificationsButtonItem.tag
         }
 
-        if transferCount > 0 {
-            tempRightBarButtonItems.append(self.transfersButtonItem)
-            tempTotalTags += self.transfersButtonItem.tag
-        }
-
         if totalTags != tempTotalTags {
             topViewController?.navigationItem.rightBarButtonItems = tempRightBarButtonItems
         }
-
-        // Update App Icon badge / File Icon badge
-        try? await UNUserNotificationCenter.current().setBadgeCount(transferCount)
-        fileItem?.badgeValue = transferCount == 0 ? nil : utility.formatBadgeCount(transferCount)
-
-        return transferCount
     }
 
     func createRightMenu() async -> UIMenu? { return nil }
@@ -743,7 +736,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             Task {
                 NCPreferences().setFavoriteOnTop(account: self.session.account, value: !favoriteOnTop)
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, status: nil)
+                    delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, requestData: false, status: nil)
                 }
                 await self.updateRightMenu()
             }
@@ -755,7 +748,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             Task {
                 NCPreferences().setDirectoryOnTop(account: self.session.account, value: !directoryOnTop)
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, status: nil)
+                    delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, requestData: false, status: nil)
                 }
                 await self.updateRightMenu()
             }
@@ -778,7 +771,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             Task {
                 NCPreferences().setPersonalFilesOnly(account: self.session.account, value: !personalFilesOnly)
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, status: nil)
+                    delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, requestData: false, status: nil)
                 }
                 await self.updateRightMenu()
             }
@@ -790,7 +783,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
             NCPreferences().showDescription = !showDescriptionKeychain
             Task {
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, status: nil)
+                    delegate.transferReloadData(serverUrl: collectionViewCommon.serverUrl, requestData: false, status: nil)
                 }
                 await self.updateRightMenu()
             }
@@ -859,13 +852,6 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
     func isNotificationsButtonVisible() -> Bool {
         if topViewController?.navigationItem.rightBarButtonItems?.first(where: { $0.tag == notificationsButtonTag }) != nil {
-            return true
-        }
-        return false
-    }
-
-    func isTransfersButtonVisible() -> Bool {
-        if topViewController?.navigationItem.rightBarButtonItems?.first(where: { $0.tag == transfersButtonTag }) != nil {
             return true
         }
         return false

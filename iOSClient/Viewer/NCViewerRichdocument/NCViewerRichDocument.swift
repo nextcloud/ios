@@ -381,7 +381,7 @@ extension NCViewerRichDocument: UINavigationControllerDelegate {
         Task {
             if parent == nil {
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
+                    delegate.transferReloadData(serverUrl: metadata.serverUrl, requestData: false, status: nil)
                 }
             }
         }
@@ -389,7 +389,7 @@ extension NCViewerRichDocument: UINavigationControllerDelegate {
 }
 
 extension NCViewerRichDocument: NCTransferDelegate {
-    func transferChange(status: String, metadata: tableMetadata, error: NKError) {
+    func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError) {
         DispatchQueue.main.async {
             switch status {
             // FAVORITE

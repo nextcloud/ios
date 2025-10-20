@@ -148,18 +148,18 @@ class NCDragDrop: NSObject {
 
     func copyFile(metadatas: [tableMetadata], destination: String) async {
         for metadata in metadatas {
-            NCNetworking.shared.copyMetadata(metadata, destination: destination, overwrite: false)
+            NCNetworking.shared.setStatusWaitCopy(metadata, destination: destination, overwrite: false)
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferCopy(metadata: metadata, destination: destination, error: .success)
+                delegate.transferChange(status: self.global.networkingStatusCopyMove, metadata: metadata, destination: destination, error: .success)
             }
         }
     }
 
     func moveFile(metadatas: [tableMetadata], destination: String) async {
         for metadata in metadatas {
-            NCNetworking.shared.moveMetadata(metadata, destination: destination, overwrite: false)
+            NCNetworking.shared.setStatusWaitMove(metadata, destination: destination, overwrite: false)
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferMove(metadata: metadata, destination: destination, error: .success)
+                delegate.transferChange(status: self.global.networkingStatusCopyMove, metadata: metadata, destination: destination, error: .success)
             }
         }
     }
@@ -197,8 +197,7 @@ class NCDragDrop: NSObject {
 
             // DOWNLOAD
             if !utilityFileSystem.fileProviderStorageExists(metadata) {
-                let results = await NCNetworking.shared.downloadFile(metadata: metadata,
-                                                                     withDownloadComplete: true) { request in
+                let results = await NCNetworking.shared.downloadFile(metadata: metadata) { request in
                     downloadRequest = request
                 } progressHandler: { progress in
                     let status = NSLocalizedString("_status_downloading_", comment: "").lowercased()
@@ -224,7 +223,7 @@ class NCDragDrop: NSObject {
                                                                creationDate: metadata.creationDate as Date,
                                                                dateModificationFile: metadata.date as Date,
                                                                account: session.account,
-                                                               withUploadComplete: false) { request in
+                                                               performPostProcessing: false) { request in
                 uploadRequest = request
             } progressHandler: { _, _, fractionCompleted in
                 let status = NSLocalizedString("_status_uploading_", comment: "").lowercased()

@@ -288,7 +288,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         outlineView.translatesAutoresizingMaskIntoConstraints = false
         outlineView.image = UIImage(systemName: "star")
         outlineView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 16, weight: .thin)
-        outlineView.tintColor = .systemBackground
+        outlineView.tintColor = .clear
 
         imageFavorite.addSubview(outlineView)
         NSLayoutConstraint.activate([
@@ -429,4 +429,3 @@ class BidiFilenameLabel: UILabel {
         return result
     }
 }
-

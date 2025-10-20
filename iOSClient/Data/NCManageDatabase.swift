@@ -14,7 +14,7 @@ protocol DateCompareable {
     var dateKey: Date { get }
 }
 
-// Global flag used to control Realm write/read operations during app suspension or error
+// Global flag used to control Realm write/read operations
 var isSuspendingDatabaseOperation: Bool = false
 
 final class NCManageDatabase: @unchecked Sendable {
@@ -55,10 +55,6 @@ final class NCManageDatabase: @unchecked Sendable {
     func openRealm() {
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let databaseFileUrl = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
-
-        // now you can read/write in Realm
-        isSuspendingDatabaseOperation = false
-
         let configuration = Realm.Configuration(fileURL: databaseFileUrl,
                                                 schemaVersion: databaseSchemaVersion,
                                                 migrationBlock: { migration, oldSchemaVersion in
@@ -102,10 +98,6 @@ final class NCManageDatabase: @unchecked Sendable {
     func openRealmBackground() -> Bool {
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let databaseFileUrl = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
-
-        // now you can read/write in Realm
-        isSuspendingDatabaseOperation = false
-
         let configuration = Realm.Configuration(fileURL: databaseFileUrl,
                                                 schemaVersion: databaseSchemaVersion,
                                                 migrationBlock: { migration, oldSchemaVersion in
@@ -133,9 +125,6 @@ final class NCManageDatabase: @unchecked Sendable {
         let bundleUrl: URL = Bundle.main.bundleURL
         var objectTypes: [Object.Type]
 
-        // now you can read/write in Realm
-        isSuspendingDatabaseOperation = false
-
         if bundleUrl.lastPathComponent == "File Provider Extension.appex" {
             objectTypes = [
                 NCKeyValue.self, tableMetadata.self, tableLocalFile.self,
@@ -149,7 +138,7 @@ final class NCManageDatabase: @unchecked Sendable {
                 tableE2eMetadata12.self, tableE2eMetadata.self, tableE2eUsers.self,
                 tableE2eCounter.self, tableShare.self, tableChunk.self, tableAvatar.self,
                 tableDashboardWidget.self, tableDashboardWidgetButton.self,
-                NCDBLayoutForView.self, TableSecurityGuardDiagnostics.self
+                NCDBLayoutForView.self, TableSecurityGuardDiagnostics.self, tableLivePhoto.self
             ]
         }
 
@@ -360,6 +349,25 @@ final class NCManageDatabase: @unchecked Sendable {
     }
 
     // MARK: -
+
+    /// Forces a Realm flush by refreshing the latest state from disk.
+    /// This ensures that the current thread has the most recent version
+    /// of all committed transactions.
+    func flushRealmAsync() async {
+        await withCheckedContinuation { continuation in
+            realmQueue.async(qos: .utility) {
+                autoreleasepool {
+                    do {
+                        let realm = try Realm()
+                        _ = realm.refresh()
+                    } catch {
+                        nkLog(tag: NCGlobal.shared.logTagDatabase, emoji: .error, message: "Realm flush error: \(error)")
+                    }
+                    continuation.resume()
+                }
+            }
+        }
+    }
 
     func clearTable(_ table: Object.Type, account: String? = nil) {
         performRealmWrite { realm in

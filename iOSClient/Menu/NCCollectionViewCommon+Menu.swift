@@ -224,7 +224,7 @@ extension NCCollectionViewCommon {
                     order: 50,
                     sender: sender,
                     action: { _ in
-                        NCNetworking.shared.favoriteMetadata(metadata) { error in
+                        NCNetworking.shared.setStatusWaitFavorite(metadata) { error in
                             if error != .success {
                                 NCContentPresenter().showError(error: error)
                             }
@@ -291,6 +291,7 @@ extension NCCollectionViewCommon {
                                     metadata.sessionSelector = NCGlobal.shared.selectorSaveAsScan
                                     delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
                                                             metadata: metadata,
+                                                            destination: nil,
                                                             error: .success)
                                 }
                             } else {
@@ -327,7 +328,7 @@ extension NCCollectionViewCommon {
                                 return
                             }
 
-                            NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew)
+                            NCNetworking.shared.setStatusWaitRename(metadata, fileNameNew: fileNameNew)
                         }
                     }
                 )
@@ -360,6 +361,7 @@ extension NCCollectionViewCommon {
                                     metadata.sessionSelector = NCGlobal.shared.selectorLoadFileQuickLook
                                     delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
                                                             metadata: metadata,
+                                                            destination: nil,
                                                             error: .success)
                                 }
                             } else {

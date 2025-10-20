@@ -126,7 +126,7 @@ class NCSharePaging: UIViewController {
         super.viewWillDisappear(animated)
         Task {
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
+                delegate.transferReloadData(serverUrl: metadata.serverUrl, requestData: false, status: nil)
             }
         }
     }
@@ -319,7 +319,7 @@ class NCShareHeaderView: UIView {
 
     @IBAction func touchUpInsideFavorite(_ sender: UIButton) {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
-        NCNetworking.shared.favoriteMetadata(metadata) { error in
+        NCNetworking.shared.setStatusWaitFavorite(metadata) { error in
             if error == .success {
                 guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
                 self.favorite.setImage(NCUtility().loadImage(

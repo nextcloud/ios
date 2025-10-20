@@ -315,30 +315,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
         nkLog(debug: "Handle events For background URLSession: \(identifier)")
+
+        if NCManageDatabase.shared.openRealmBackground() {
+            WidgetCenter.shared.reloadAllTimelines()
+        }
+
         backgroundSessionCompletionHandler = completionHandler
-
-        // Starts a temporary background task to ensure that a potential flush
-        // of the MetadataStore JSON can complete even if the app is resumed
-        // briefly for background URLSession events.
-        //
-        // The flush runs only if the cache exceeds ~1 MB (~2000 item), preventing oversized
-        // in-memory data from persisting too long. The task is safely ended
-        // either in its expiration handler or after the operation completes.
-        bgTask = UIApplication.shared.beginBackgroundTask(withName: "MetadataStore.flush") {
-            UIApplication.shared.endBackgroundTask(self.bgTask)
-            self.bgTask = .invalid
-        }
-
-        Task.detached(priority: .background) {
-            let cacheIsHuge = await NCMetadataStore.shared.cacheIsHuge(thresholdBytes: 1 * 1024 * 1024)
-            let count = await NCMetadataStore.shared.cacheCount()
-            if cacheIsHuge {
-                nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .start, message: "Forced Sync Realm triggered — \(count) items (~1 MB threshold reached)")
-                await NCMetadataStore.shared.forcedSyncRealm()
-            } else {
-                nkLog(tag: NCGlobal.shared.logTagTransferStore, emoji: .info, message: "No forced Sync Realm required — \(count) items in cache")
-            }
-        }
     }
 
     // MARK: - Push Notifications
@@ -397,7 +379,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 Task {
                     await NCNetworking.shared.transferDispatcher.notifyAllDelegatesAsync { delegate in
                         try? await Task.sleep(nanoseconds: 500_000_000)
-                        delegate.transferRequestData(serverUrl: nil)
+                        delegate.transferReloadData(serverUrl: nil, requestData: true, status: nil)
                     }
                 }
             } else if let navigationController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? UINavigationController,

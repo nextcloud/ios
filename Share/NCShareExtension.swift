@@ -411,22 +411,7 @@ extension NCShareExtension {
         if metadata.isDirectoryE2EE {
             error = await NCNetworkingE2EEUpload().upload(metadata: metadata, session: session, controller: self)
         } else if metadata.chunk > 0 {
-            var numChunks = 0
-            var counterUpload: Int = 0
-            hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""))
-
-            let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
-                numChunks = num
-            } counterChunk: { counter in
-                self.hud.progress(num: Float(counter), total: Float(numChunks))
-            } startFilesChunk: { _ in
-                self.hud.setText(NSLocalizedString("_keep_active_for_upload_", comment: ""))
-            } requestHandler: { _ in
-                self.hud.progress(num: Float(counterUpload), total: Float(numChunks))
-                counterUpload += 1
-            } assembling: {
-                self.hud.setText(NSLocalizedString("_wait_", comment: ""))
-            }
+            let results = await NCNetworking.shared.uploadChunk(metadata: metadata, hud: hud)
             error = results.error
         } else {
             let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
