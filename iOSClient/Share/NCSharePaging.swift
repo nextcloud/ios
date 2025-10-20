@@ -126,7 +126,7 @@ class NCSharePaging: UIViewController {
         super.viewWillDisappear(animated)
         Task {
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
+                delegate.transferReloadData(serverUrl: metadata.serverUrl, requestData: false, status: nil)
             }
         }
     }

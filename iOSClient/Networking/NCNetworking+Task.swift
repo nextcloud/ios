@@ -106,7 +106,7 @@ extension NCNetworking {
 
         await networking.transferDispatcher.notifyAllDelegates { delegate in
             serverUrls.forEach { serverUrl in
-                delegate.transferReloadData(serverUrl: serverUrl, status: nil)
+                delegate.transferReloadData(serverUrl: serverUrl, requestData: false, status: nil)
             }
         }
     }

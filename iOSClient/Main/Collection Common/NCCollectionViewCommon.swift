@@ -414,7 +414,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    func transferReloadData(serverUrl: String?, status: Int?) {
+    func transferReloadData(serverUrl: String?, requestData: Bool, status: Int?) {
         self.debouncer.call {
             if self.isSearchingMode {
                 guard status != self.global.metadataStatusWaitDelete,
