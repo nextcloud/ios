@@ -291,6 +291,7 @@ extension NCCollectionViewCommon {
                                     metadata.sessionSelector = NCGlobal.shared.selectorSaveAsScan
                                     delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
                                                             metadata: metadata,
+                                                            destination: nil,
                                                             error: .success)
                                 }
                             } else {
@@ -360,6 +361,7 @@ extension NCCollectionViewCommon {
                                     metadata.sessionSelector = NCGlobal.shared.selectorLoadFileQuickLook
                                     delegate.transferChange(status: NCGlobal.shared.networkingStatusDownloaded,
                                                             metadata: metadata,
+                                                            destination: nil,
                                                             error: .success)
                                 }
                             } else {

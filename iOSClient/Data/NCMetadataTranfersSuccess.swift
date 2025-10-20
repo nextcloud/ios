@@ -92,6 +92,7 @@ actor NCMetadataTranfersSuccess {
                 for metadata in metadataUploaded {
                     delegate.transferChange(status: NCGlobal.shared.networkingStatusUploaded,
                                             metadata: metadata,
+                                            destination: nil,
                                             error: .success)
                 }
             }

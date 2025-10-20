@@ -61,6 +61,7 @@ class NCContextMenu: NSObject {
                         metadata.sessionSelector = self.global.selectorOpenIn
                         delegate.transferChange(status: self.global.networkingStatusDownloaded,
                                                 metadata: metadata,
+                                                destination: nil,
                                                 error: .success)
                     }
                 }
@@ -113,6 +114,7 @@ class NCContextMenu: NSObject {
                         metadata.sessionSelector = self.global.selectorLoadFileQuickLook
                         delegate.transferChange(status: self.global.networkingStatusDownloaded,
                                                 metadata: metadata,
+                                                destination: nil,
                                                 error: .success)
                     }
                 } else {
@@ -176,6 +178,7 @@ class NCContextMenu: NSObject {
                 await self.networking.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(status: NCGlobal.shared.networkingStatusDelete,
                                             metadata: self.metadata,
+                                            destination: nil,
                                             error: error)
                 }
             }

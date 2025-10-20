@@ -264,6 +264,7 @@ extension NCNetworking {
             await transferDispatcher.notifyDelegates(forScene: sceneIdentifier) { delegate in
                 delegate.transferChange(status: self.global.networkingStatusCreateFolder,
                                         metadata: metadata,
+                                        destination: nil,
                                         error: error)
             } others: { delegate in
                 delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
@@ -272,6 +273,7 @@ extension NCNetworking {
             await transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferChange(status: self.global.networkingStatusCreateFolder,
                                         metadata: metadata,
+                                        destination: nil,
                                         error: error)
             }
         }
@@ -385,6 +387,7 @@ extension NCNetworking {
                 await self.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(status: NCGlobal.shared.networkingStatusDelete,
                                             metadata: metadata,
+                                            destination: nil,
                                             error: error)
                 }
                 ncHud.dismiss()
@@ -466,6 +469,7 @@ extension NCNetworking {
         await transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferChange(status: NCGlobal.shared.networkingStatusDelete,
                                     metadata: metadata,
+                                    destination: nil,
                                     error: results.error)
         }
 
@@ -526,6 +530,7 @@ extension NCNetworking {
         await transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferChange(status: NCGlobal.shared.networkingStatusRename,
                                     metadata: metadata,
+                                    destination: nil,
                                     error: results.error)
         }
 
@@ -690,6 +695,7 @@ extension NCNetworking {
         await transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferChange(status: self.global.networkingStatusFavorite,
                                     metadata: metadata,
+                                    destination: nil,
                                     error: results.error)
         }
 

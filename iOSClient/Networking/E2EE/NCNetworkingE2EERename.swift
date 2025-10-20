@@ -77,6 +77,7 @@ class NCNetworkingE2EERename: NSObject {
         await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferChange(status: NCGlobal.shared.networkingStatusRename,
                                     metadata: metadata,
+                                    destination: nil,
                                     error: uploadMetadataError)
         }
 

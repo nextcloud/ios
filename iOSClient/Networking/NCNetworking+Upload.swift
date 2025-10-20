@@ -47,6 +47,7 @@ extension NCNetworking {
                     await self.transferDispatcher.notifyAllDelegates { delegate in
                         delegate.transferChange(status: self.global.networkingStatusUploading,
                                                 metadata: metadata,
+                                                destination: nil,
                                                 error: .success)
                     }
                 }
@@ -164,6 +165,7 @@ extension NCNetworking {
                 await self.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusUploading,
                                             metadata: metadata.detachedCopy(),
+                                            destination: nil,
                                             error: .success)
                 }
             }
@@ -282,6 +284,7 @@ extension NCNetworking {
                     await self.transferDispatcher.notifyAllDelegates { delegate in
                         delegate.transferChange(status: self.global.networkingStatusUploading,
                                                 metadata: metadata,
+                                                destination: nil,
                                                 error: .success)
                     }
                 }
@@ -332,6 +335,7 @@ extension NCNetworking {
         await self.transferDispatcher.notifyAllDelegates { delegate in
             delegate.transferChange(status: self.global.networkingStatusUploaded,
                                     metadata: metadata.detachedCopy(),
+                                    destination: nil,
                                     error: .success)
         }
     }
@@ -376,6 +380,7 @@ extension NCNetworking {
                 await self.transferDispatcher.notifyAllDelegates { delegate in
                     delegate.transferChange(status: self.global.networkingStatusUploaded,
                                             metadata: metadata,
+                                            destination: nil,
                                             error: error)
                 }
             }

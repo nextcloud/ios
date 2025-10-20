@@ -22,7 +22,7 @@ protocol NCTransferDelegate: AnyObject {
                                    fileName: String,
                                    serverUrl: String)
 
-    func transferChange(status: String, metadata: tableMetadata, error: NKError)
+    func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError)
     func transferReloadData(serverUrl: String?, status: Int?)
     func transferRequestData(serverUrl: String?)
     func transferCopyMove(metadata: tableMetadata, destination: String, error: NKError)
@@ -34,7 +34,7 @@ extension NCTransferDelegate {
                                    totalBytesExpected: Int64,
                                    fileName: String,
                                    serverUrl: String) {}
-    func transferChange(status: String, metadata: tableMetadata, error: NKError) {}
+    func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError) {}
     func transferReloadData(serverUrl: String?, status: Int?) {}
     func transferRequestData(serverUrl: String?) {}
     func transferCopyMove(metadata: tableMetadata, destination: String, error: NKError) {}

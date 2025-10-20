@@ -194,6 +194,7 @@ class NCNetworkingE2EEUpload: NSObject {
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferChange(status: global.networkingStatusUploaded,
                                         metadata: metadata,
+                                        destination: nil,
                                         error: .success)
             }
         }

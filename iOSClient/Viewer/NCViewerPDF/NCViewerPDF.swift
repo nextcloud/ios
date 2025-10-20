@@ -525,7 +525,7 @@ extension NCViewerPDF: EasyTipViewDelegate {
 }
 
 extension NCViewerPDF: NCTransferDelegate {
-    func transferChange(status: String, metadata: tableMetadata, error: NKError) {
+    func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError) {
         guard self.metadata?.serverUrl == metadata.serverUrl,
               self.metadata?.fileNameView == metadata.fileNameView
         else {
