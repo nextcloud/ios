@@ -135,18 +135,20 @@ struct EmptyTransfersView: View {
                         .padding(.vertical, 4)
                         .background(.thinMaterial, in: Capsule())
                         .transition(.opacity.combined(with: .move(edge: .top)))
-                        .padding(.top, -8)
+                        .padding(.top, 6)
                         .padding(.trailing, -8)
-                } else {
-                    Text(NSLocalizedString("_no_transfer_", comment: ""))
-                        .font(.headline)
-
-                    Text(NSLocalizedString("_no_transfer_sub_", comment: ""))
-                        .font(.subheadline)
-                        .multilineTextAlignment(.center)
-                        .foregroundStyle(.secondary)
-                        .padding(.horizontal, 24)
                 }
+            }
+
+            if !flash {
+                Text(NSLocalizedString("_no_transfer_", comment: ""))
+                    .font(.headline)
+
+                Text(NSLocalizedString("_no_transfer_sub_", comment: ""))
+                    .font(.subheadline)
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 24)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
