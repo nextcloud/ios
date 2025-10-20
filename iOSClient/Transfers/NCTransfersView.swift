@@ -64,7 +64,7 @@ struct TransfersView: View {
     @ViewBuilder
     private var contentView: some View {
         if model.items.isEmpty {
-            EmptyTransfersView()
+            EmptyTransfersView(model: model)
         } else {
             List {
                 Section(header: TransfersSummaryHeader(
@@ -117,22 +117,52 @@ struct TransfersSummaryHeader: View {
 // MARK: - Empty State
 
 struct EmptyTransfersView: View {
+    @ObservedObject var model: TransfersViewModel
+    @State private var flash = false
+
     var body: some View {
         VStack(spacing: 16) {
-            Image(systemName: "arrow.left.arrow.right.circle")
-                .font(.system(size: 48, weight: .regular))
-                .foregroundStyle(.secondary)
+            ZStack(alignment: .topTrailing) {
+                Image(systemName: flash ? "checkmark.circle" : "arrow.left.arrow.right.circle")
+                    .font(.system(size: 48, weight: .regular))
+                    .foregroundStyle(flash ? .green : .secondary)
+                    .symbolEffect(.bounce, value: flash)
 
-            Text(NSLocalizedString("_no_transfer_", comment: ""))
-                .font(.headline)
+                if flash {
+                    Text(NSLocalizedString("_updated_", comment: "Updated"))
+                        .font(.caption2.weight(.semibold))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(.thinMaterial, in: Capsule())
+                        .transition(.opacity.combined(with: .move(edge: .top)))
+                        .padding(.top, -8)
+                        .padding(.trailing, -8)
+                } else {
+                    Text(NSLocalizedString("_no_transfer_", comment: ""))
+                        .font(.headline)
 
-            Text(NSLocalizedString("_no_transfer_sub_", comment: ""))
-                .font(.subheadline)
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 24)
+                    Text(NSLocalizedString("_no_transfer_sub_", comment: ""))
+                        .font(.subheadline)
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 24)
+                }
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .task(id: model.showFlushMessage) {
+            guard model.showFlushMessage else { return }
+
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.82)) {
+                flash = true
+            }
+            try? await Task.sleep(nanoseconds: 1_600_000_000)
+            withAnimation(.easeInOut(duration: 0.25)) {
+                flash = false
+            }
+
+            model.showFlushMessage = false
+        }
     }
 }
 

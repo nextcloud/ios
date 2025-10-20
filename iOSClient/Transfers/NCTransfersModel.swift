@@ -9,6 +9,7 @@ final class TransfersViewModel: ObservableObject {
     @Published var items: [tableMetadata] = []
     @Published var progressMap: [String: Float] = [:]
     @Published var isLoading = false
+    @Published var showFlushMessage = false
 
     // Dependencies
     private let session: NCSession.Session
@@ -27,8 +28,8 @@ final class TransfersViewModel: ObservableObject {
             await NCNetworking.shared.transferDispatcher.addDelegate(self)
         }
 
-        observerToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMetadataTranfersSuccessFlush), object: nil, queue: nil) { _ in
-
+        observerToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMetadataTranfersSuccessFlush), object: nil, queue: nil) { [weak self] _ in
+            self?.showFlushMessage = true
         }
     }
 
