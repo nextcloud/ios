@@ -53,29 +53,24 @@ actor NCTransferDelegateDispatcher {
 
     /// Notifies all delegates.
     func notifyAllDelegates(_ block: (NCTransferDelegate) -> Void) {
-        let delegatesCopy = transferDelegates.allObjects
+        let delegatesCopy = transferDelegates.allObjects.compactMap { $0 as? NCTransferDelegate }
         for delegate in delegatesCopy {
-            if let delegate = delegate as? NCTransferDelegate {
-                block(delegate)
-            }
+            block(delegate)
         }
     }
 
     func notifyAllDelegatesAsync(_ block: @escaping (NCTransferDelegate) async -> Void) async {
-        let delegatesCopy = transferDelegates.allObjects
+        let delegatesCopy = transferDelegates.allObjects.compactMap { $0 as? NCTransferDelegate }
         for delegate in delegatesCopy {
-            if let delegate = delegate as? NCTransferDelegate {
-                await block(delegate)
-            }
+            await block(delegate)
         }
     }
 
     /// Notifies the delegate for a specific scene.
     func notifyDelegate(forScene sceneIdentifier: String, _ block: (NCTransferDelegate) -> Void) {
-        let delegatesCopy = transferDelegates.allObjects
+        let delegatesCopy = transferDelegates.allObjects.compactMap { $0 as? NCTransferDelegate }
         for delegate in delegatesCopy {
-            if let delegate = delegate as? NCTransferDelegate,
-               delegate.sceneIdentifier == sceneIdentifier {
+            if delegate.sceneIdentifier == sceneIdentifier {
                 block(delegate)
             }
         }
@@ -85,9 +80,8 @@ actor NCTransferDelegateDispatcher {
     func notifyDelegates(forScene sceneIdentifier: String,
                          matching: (NCTransferDelegate) -> Void,
                          others: (NCTransferDelegate) -> Void) {
-        let delegatesCopy = transferDelegates.allObjects
+        let delegatesCopy = transferDelegates.allObjects.compactMap { $0 as? NCTransferDelegate }
         for delegate in delegatesCopy {
-            guard let delegate = delegate as? NCTransferDelegate else { continue }
             if delegate.sceneIdentifier == sceneIdentifier {
                 matching(delegate)
             } else {
