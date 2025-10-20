@@ -17,6 +17,7 @@ final class TransfersViewModel: ObservableObject {
     private let utilityFileSystem = NCUtilityFileSystem()
     private let global = NCGlobal.shared
 
+    private var observerToken: NSObjectProtocol?
     internal var sceneIdentifier: String = ""
 
     init(session: NCSession.Session) {
@@ -25,10 +26,17 @@ final class TransfersViewModel: ObservableObject {
         Task { @MainActor in
             await NCNetworking.shared.transferDispatcher.addDelegate(self)
         }
+
+        observerToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMetadataTranfersSuccessFlush), object: nil, queue: nil) { _ in
+
+        }
     }
 
     deinit {
         print("deinit")
+        if let token = observerToken {
+            NotificationCenter.default.removeObserver(token)
+        }
     }
 
     @MainActor
