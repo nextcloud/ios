@@ -69,7 +69,7 @@ struct TransfersView: View {
             List {
                 Section(header: TransfersSummaryHeader(
                     inProgressCount: inProgressCount,
-                    inerrorCount: inErrorCount
+                    inErrorCount: inErrorCount
                 )) {
                     ForEach(model.items, id: \.ocId) { item in
                         TransferRowView(model: model, item: item) {
@@ -89,12 +89,12 @@ struct TransfersView: View {
 
 struct TransfersSummaryHeader: View {
     let inProgressCount: Int
-    let inerrorCount: Int
+    let inErrorCount: Int
 
     var body: some View {
         HStack(spacing: 8) {
             summaryPill(title: "_in_progress_", value: inProgressCount)
-            summaryPill(title: "_in_error_", value: inerrorCount)
+            summaryPill(title: "_in_error_", value: inErrorCount)
             Spacer()
         }
         .padding(.vertical, 6)
@@ -240,7 +240,7 @@ struct TransferRowView: View {
 
 struct TransfersView_Previews: PreviewProvider {
     static var previews: some View {
-        //let items: [tableMetadata] = []
+        // let items: [tableMetadata] = []
         let items: [tableMetadata] = [
             tableMetadata(ocId: "1", fileName: "filename 1", status: NCGlobal.shared.metadataStatusWaitCreateFolder),
             tableMetadata(ocId: "2", fileName: "filename 2", size: 7230000, status: NCGlobal.shared.metadataStatusUploading),
