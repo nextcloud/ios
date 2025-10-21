@@ -43,10 +43,10 @@ struct TransfersView: View {
     var body: some View {
         NavigationView {
             contentView
-                .navigationTitle(NSLocalizedString("_transfers_", comment: ""))
+                .navigationTitle("_transfers_")
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
-                        Button(NSLocalizedString("_close_", comment: "")) {
+                        Button("_close_") {
                             if let onClose {
                                 onClose()
                             }
@@ -93,8 +93,8 @@ struct TransfersSummaryHeader: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            summaryPill(title: NSLocalizedString("_in_progress_", comment: ""), value: inProgressCount)
-            summaryPill(title: NSLocalizedString("_in_error_", comment: ""), value: inerrorCount)
+            summaryPill(title: "_in_progress_", value: inProgressCount)
+            summaryPill(title: "_in_error_", value: inerrorCount)
             Spacer()
         }
         .padding(.vertical, 6)
@@ -127,24 +127,18 @@ struct EmptyTransfersView: View {
                     .font(.system(size: 48, weight: .regular))
                     .foregroundStyle(flash ? .green : .secondary)
                     .symbolEffect(.bounce, value: flash)
-
-                if flash {
-                    Text(NSLocalizedString("_updated_", comment: "Updated"))
-                        .font(.caption2.weight(.semibold))
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(.thinMaterial, in: Capsule())
-                        .transition(.opacity.combined(with: .move(edge: .top)))
-                        .padding(.top, 6)
-                        .padding(.trailing, -8)
-                }
             }
 
-            if !flash {
-                Text(NSLocalizedString("_no_transfer_", comment: ""))
+            if flash {
+                Text("_update_in_progress_")
                     .font(.headline)
+                    .multilineTextAlignment(.center)
+            } else {
+                Text("_no_transfer_")
+                    .font(.headline)
+                    .multilineTextAlignment(.center)
 
-                Text(NSLocalizedString("_no_transfer_sub_", comment: ""))
+                Text("_no_transfer_sub_")
                     .font(.subheadline)
                     .multilineTextAlignment(.center)
                     .foregroundStyle(.secondary)
@@ -158,7 +152,7 @@ struct EmptyTransfersView: View {
             withAnimation(.spring(response: 0.35, dampingFraction: 0.82)) {
                 flash = true
             }
-            try? await Task.sleep(nanoseconds: 1_600_000_000)
+            try? await Task.sleep(nanoseconds: 3_000_000_000)
             withAnimation(.easeInOut(duration: 0.25)) {
                 flash = false
             }
@@ -246,12 +240,14 @@ struct TransferRowView: View {
 
 struct TransfersView_Previews: PreviewProvider {
     static var previews: some View {
+        let items: [tableMetadata] = []
+        /*
         let items: [tableMetadata] = [
             tableMetadata(ocId: "1", fileName: "filename 1", status: NCGlobal.shared.metadataStatusWaitCreateFolder),
             tableMetadata(ocId: "2", fileName: "filename 2", size: 7230000, status: NCGlobal.shared.metadataStatusUploading),
             tableMetadata(ocId: "3", fileName: "filename 3", size: 5230000, status: NCGlobal.shared.metadataStatusDownloading),
             tableMetadata(ocId: "4", fileName: "filename 4", size: 7230000, status: NCGlobal.shared.metadataStatusUploadError, sessionError: "Disk full", errorCode: 1)]
-
+         */
         return TransfersView(previewItems: items)
             .previewDisplayName("Transfers – Preview Items")
     }
