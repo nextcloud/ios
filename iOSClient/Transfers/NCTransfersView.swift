@@ -9,6 +9,7 @@ import SwiftUI
 struct TransfersView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var model: TransfersViewModel
+    @State private var inWaitingCount: Int = 0
 
     private let onClose: (() -> Void)?
 
@@ -34,6 +35,7 @@ struct TransfersView: View {
             .filter { NCGlobal.shared.metadatasStatusInProgress.contains($0) }
             .count
     }
+
     private var inErrorCount: Int {
         model.items.compactMap(\.errorCode)
             .filter { $0 != 0 }
@@ -54,8 +56,10 @@ struct TransfersView: View {
                     }
                 }
                 .task {
-                   await model.pollTransfers()
-
+                    await model.pollTransfers()
+                }
+                .task(id: model.items.map(\.status)) {
+                    inWaitingCount = await NCNetworkingProcess.shared.getInWaitingCount()
                 }
         }
         .presentationDetents([.medium, .large])
@@ -63,11 +67,12 @@ struct TransfersView: View {
 
     @ViewBuilder
     private var contentView: some View {
-        if model.items.isEmpty {
+        if model.showFlushMessage || (model.items.isEmpty && inWaitingCount == 0) {
             EmptyTransfersView(model: model)
         } else {
             List {
                 Section(header: TransfersSummaryHeader(
+                    inWaitingCount: inWaitingCount,
                     inProgressCount: inProgressCount,
                     inErrorCount: inErrorCount
                 )) {
@@ -88,11 +93,13 @@ struct TransfersView: View {
 // MARK: - Summary Header
 
 struct TransfersSummaryHeader: View {
+    let inWaitingCount: Int
     let inProgressCount: Int
     let inErrorCount: Int
 
     var body: some View {
         HStack(spacing: 8) {
+            summaryPill(title: "_in_waiting_", value: inWaitingCount)
             summaryPill(title: "_in_progress_", value: inProgressCount)
             summaryPill(title: "_in_error_", value: inErrorCount)
             Spacer()

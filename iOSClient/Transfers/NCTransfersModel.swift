@@ -26,6 +26,7 @@ final class TransfersViewModel: ObservableObject {
 
         Task { @MainActor in
             await NCNetworking.shared.transferDispatcher.addDelegate(self)
+            await NCNetworkingProcess.shared.inWaitingBadge()
         }
 
         observerToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMetadataTranfersSuccessFlush), object: nil, queue: nil) { [weak self] _ in
