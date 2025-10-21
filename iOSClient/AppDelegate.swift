@@ -228,7 +228,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             expired = true
         }
 
-        // TRANSFERS SUCCESS
+        // Transfer success flush
         await NCNetworking.shared.metadataTranfersSuccess.flush()
         guard !expired else {
             return

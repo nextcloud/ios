@@ -76,15 +76,13 @@ actor NCMetadataTranfersSuccess {
         await NCManageDatabase.shared.addAutoUploadTransferAsync(autoUploads)
 
         // Live Photo
-        if !metadatasLivePhoto.isEmpty {
-            let accounts = Set(metadatasLivePhoto.map { $0.account })
-            await NCManageDatabase.shared.setLivePhotoVideo(metadatas: metadatasLivePhoto)
-            #if !EXTENSION
-            for account in accounts {
-                await NCNetworking.shared.setLivePhoto(account: account)
-            }
-            #endif
+        let accounts = Set(metadatasLivePhoto.map { $0.account })
+        await NCManageDatabase.shared.setLivePhotoVideo(metadatas: metadatasLivePhoto)
+        #if !EXTENSION
+        for account in accounts {
+            await NCNetworking.shared.setLivePhoto(account: account)
         }
+        #endif
 
         // TransferDispatcher
         //
