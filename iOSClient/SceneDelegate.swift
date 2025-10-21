@@ -257,8 +257,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             // Timeout auto
             let didFinish = await withTaskGroup(of: Bool.self) { group -> Bool in
                 group.addTask {
-                    // TRANSFERS SUCCESS
-                    await NCNetworking.shared.metadataTranfersSuccess.flush()
                     // BACKUP
                     await NCManageDatabase.shared.backupTableAccountToFileAsync()
                     // QUEUE
@@ -279,6 +277,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     // CLEAR OLDER FILES
                     await NCManageDatabase.shared.cleanTablesOcIds(account: tblAccount.account, userId: tblAccount.userId, urlBase: tblAccount.urlBase)
                     await NCUtilityFileSystem().cleanUpAsync()
+                    // TRANSFERS SUCCESS
+                    await NCNetworking.shared.metadataTranfersSuccess.flush()
 
                     return true
                 }

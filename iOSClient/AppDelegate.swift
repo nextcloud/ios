@@ -268,18 +268,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // Capacity computation
         let downloading = allMetadatas.lazy.filter { $0.status == self.global.metadataStatusDownloading }.count
-        let uploading   = allMetadatas.lazy.filter { $0.status == self.global.metadataStatusUploading }.count
-        let used        = downloading + uploading
-        let maximum     = NCBrandOptions.shared.numMaximumProcess
-        let available   = max(0, maximum - used)
-
-        // Only inject more work if overall utilization <= 20%
-        let utilization = Double(used) / Double(maximum)
-        guard !expired,
-              available > 0,
-              utilization <= 0.20 else {
-            return
-        }
+        let uploading = allMetadatas.lazy.filter { $0.status == self.global.metadataStatusUploading }.count
+        let availableProcess   = max(0, NCBrandOptions.shared.numMaximumProcess - (downloading + uploading))
 
         // Start Auto Uploads (cap by available slots)
         let metadatasToUpload = Array(
@@ -288,7 +278,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 $0.sessionSelector == self.global.selectorUploadAutoUpload &&
                 $0.chunk == 0
             }
-            .prefix(available)
+            .prefix(availableProcess)
         )
 
         let cameraRoll = NCCameraRoll()
