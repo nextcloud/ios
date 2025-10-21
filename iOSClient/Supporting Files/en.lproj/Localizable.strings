@@ -657,6 +657,9 @@
 "_dismiss_"                 = "Dismiss";
 "_opt_in_pro_"              = "Optimization in progress …";
 "_update_in_progress_"      = "Update in progress …";
+"_in_waiting_"              = "In waiting";
+"_in_progress_"             = "In progress";
+"_in_error_"                = "In error";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails";
