@@ -275,7 +275,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Capacity computation
         let downloading = allMetadatas.lazy.filter { $0.status == self.global.metadataStatusDownloading }.count
         let uploading = allMetadatas.lazy.filter { $0.status == self.global.metadataStatusUploading }.count
-        let availableProcess   = max(0, NCBrandOptions.shared.numMaximumProcess - (downloading + uploading))
+        let availableProcess = max(0, NCBrandOptions.shared.numMaximumProcess - (downloading + uploading))
 
         // Start Auto Uploads (cap by available slots)
         let metadatasToUpload = Array(
