@@ -115,12 +115,10 @@ actor NCNetworkingProcess {
     func inWaitingBadge() async {
         let countTransferSuccess = await NCNetworking.shared.metadataTranfersSuccess.count()
         let totalNonNormal = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "status IN %@", self.global.metadatasStatusInWaiting)).count
-        let newInWaitingCount = totalNonNormal - countTransferSuccess
-
+        let newInWaitingCount = max(0, totalNonNormal - countTransferSuccess)
         // Update actor-isolated state
         inWaitingCount = newInWaitingCount
 
-        // Hop to the main actor only for UI and notification badge updates
         await MainActor.run {
             UNUserNotificationCenter.current().setBadgeCount(newInWaitingCount)
 
