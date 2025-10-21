@@ -46,6 +46,8 @@ actor NCMetadataTranfersSuccess {
         var metadatasLivePhoto: [tableMetadata] = []
         var autoUploads: [tableAutoUploadTransfer] = []
 
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMetadataTranfersSuccessFlush)
+
         for metadata in metadataUploaded {
             let results = await NCNetworking.shared.helperMetadataSuccess(metadata: metadata)
 

@@ -34,11 +34,6 @@ struct TransfersView: View {
             .filter { NCGlobal.shared.metadatasStatusInProgress.contains($0) }
             .count
     }
-    private var inWaitingCount: Int {
-        model.items.compactMap(\.status)
-            .filter { NCGlobal.shared.metadatasStatusInWaiting.contains($0) }
-            .count
-    }
     private var inErrorCount: Int {
         model.items.compactMap(\.errorCode)
             .filter { $0 != 0 }
@@ -48,10 +43,10 @@ struct TransfersView: View {
     var body: some View {
         NavigationView {
             contentView
-                .navigationTitle(NSLocalizedString("_transfers_", comment: ""))
+                .navigationTitle("_transfers_")
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
-                        Button(NSLocalizedString("_close_", comment: "")) {
+                        Button("_close_") {
                             if let onClose {
                                 onClose()
                             }
@@ -69,13 +64,12 @@ struct TransfersView: View {
     @ViewBuilder
     private var contentView: some View {
         if model.items.isEmpty {
-            EmptyTransfersView()
+            EmptyTransfersView(model: model)
         } else {
             List {
                 Section(header: TransfersSummaryHeader(
-                    inWaitingCount: inWaitingCount,
                     inProgressCount: inProgressCount,
-                    inerrorCount: inErrorCount
+                    inErrorCount: inErrorCount
                 )) {
                     ForEach(model.items, id: \.ocId) { item in
                         TransferRowView(model: model, item: item) {
@@ -94,15 +88,13 @@ struct TransfersView: View {
 // MARK: - Summary Header
 
 struct TransfersSummaryHeader: View {
-    let inWaitingCount: Int
     let inProgressCount: Int
-    let inerrorCount: Int
+    let inErrorCount: Int
 
     var body: some View {
         HStack(spacing: 8) {
-            summaryPill(title: NSLocalizedString("_in_waiting_", comment: ""), value: inWaitingCount)
-            summaryPill(title: NSLocalizedString("_in_progress_", comment: ""), value: inProgressCount)
-            summaryPill(title: NSLocalizedString("_in_error_", comment: ""), value: inerrorCount)
+            summaryPill(title: "_in_progress_", value: inProgressCount)
+            summaryPill(title: "_in_error_", value: inErrorCount)
             Spacer()
         }
         .padding(.vertical, 6)
@@ -125,22 +117,48 @@ struct TransfersSummaryHeader: View {
 // MARK: - Empty State
 
 struct EmptyTransfersView: View {
+    @ObservedObject var model: TransfersViewModel
+    @State private var flash = false
+
     var body: some View {
         VStack(spacing: 16) {
-            Image(systemName: "arrow.left.arrow.right.circle")
-                .font(.system(size: 48, weight: .regular))
-                .foregroundStyle(.secondary)
+            ZStack(alignment: .topTrailing) {
+                Image(systemName: flash ? "checkmark.circle" : "arrow.left.arrow.right.circle")
+                    .font(.system(size: 48, weight: .regular))
+                    .foregroundStyle(flash ? .green : .secondary)
+                    .symbolEffect(.bounce, value: flash)
+            }
 
-            Text(NSLocalizedString("_no_transfer_", comment: ""))
-                .font(.headline)
+            if flash {
+                Text("_update_in_progress_")
+                    .font(.headline)
+                    .multilineTextAlignment(.center)
+            } else {
+                Text("_no_transfer_")
+                    .font(.headline)
+                    .multilineTextAlignment(.center)
 
-            Text(NSLocalizedString("_no_transfer_sub_", comment: ""))
-                .font(.subheadline)
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.secondary)
-                .padding(.horizontal, 24)
+                Text("_no_transfer_sub_")
+                    .font(.subheadline)
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 24)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .task(id: model.showFlushMessage) {
+            guard model.showFlushMessage else { return }
+
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.82)) {
+                flash = true
+            }
+            try? await Task.sleep(nanoseconds: 3_000_000_000)
+            withAnimation(.easeInOut(duration: 0.25)) {
+                flash = false
+            }
+
+            model.showFlushMessage = false
+        }
     }
 }
 
@@ -222,12 +240,12 @@ struct TransferRowView: View {
 
 struct TransfersView_Previews: PreviewProvider {
     static var previews: some View {
+        // let items: [tableMetadata] = []
         let items: [tableMetadata] = [
             tableMetadata(ocId: "1", fileName: "filename 1", status: NCGlobal.shared.metadataStatusWaitCreateFolder),
             tableMetadata(ocId: "2", fileName: "filename 2", size: 7230000, status: NCGlobal.shared.metadataStatusUploading),
             tableMetadata(ocId: "3", fileName: "filename 3", size: 5230000, status: NCGlobal.shared.metadataStatusDownloading),
             tableMetadata(ocId: "4", fileName: "filename 4", size: 7230000, status: NCGlobal.shared.metadataStatusUploadError, sessionError: "Disk full", errorCode: 1)]
-
         return TransfersView(previewItems: items)
             .previewDisplayName("Transfers – Preview Items")
     }

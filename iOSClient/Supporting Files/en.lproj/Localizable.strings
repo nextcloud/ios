@@ -655,7 +655,8 @@
 "_cancel_all_request_"      = "Are you sure you want to cancel all transfers?";
 "_cancel_all_"              = "Cancel All";
 "_dismiss_"                 = "Dismiss";
-"opt_in_pro_"               = "Optimization in Progress";
+"_opt_in_pro_"              = "Optimization in progress …";
+"_update_in_progress_"      = "Update in progress …";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails";
