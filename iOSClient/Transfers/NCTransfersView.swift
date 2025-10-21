@@ -43,7 +43,7 @@ struct TransfersView: View {
     var body: some View {
         NavigationView {
             contentView
-                .navigationTitle("_transfers_")
+                .navigationTitle(NSLocalizedString("_transfers_", comment: ""))
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("_close_") {
@@ -203,14 +203,6 @@ struct TransferRowView: View {
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                     }
-
-                    if item.status == NCGlobal.shared.metadataStatusDownloading || item.status == NCGlobal.shared.metadataStatusUploading {
-                        ProgressView(value: Double(model.progress(for: item)))
-                            .progressViewStyle(.linear)
-                            .scaleEffect(y: 0.5, anchor: .center)
-                            .frame(height: 5)
-                            .tint(.blue)
-                    }
                 }
 
                 Spacer(minLength: 8)
@@ -220,13 +212,30 @@ struct TransferRowView: View {
                         await onCancel()
                     }
                 } label: {
-                    Image(systemName: "stop.circle")
-                        .font(.system(size: 30))
+                    ZStack {
+                        Circle()
+                            .stroke(
+                                Color.gray.opacity(0.2),
+                                lineWidth: 2
+                            )
+                            .frame(width: 36, height: 36)
+
+                        Circle()
+                            .trim(from: 0, to: CGFloat(model.progress(for: item)))
+                            .stroke(
+                                Color(Color(NCBrandColor.shared.customer)),
+                                style: StrokeStyle(lineWidth: 2, lineCap: .round)
+                            )
+                            .rotationEffect(.degrees(-90))
+                            .frame(width: 36, height: 36)
+                            .animation(.easeInOut(duration: 0.25), value: model.progress(for: item))
+                        Image(systemName: "stop.fill")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundStyle(.primary)
+                    }
                 }
                 .buttonStyle(.plain)
-                .tint(.primary)
                 .accessibilityLabel(NSLocalizedString("_cancel_", comment: ""))
-
             }
             .contentShape(Rectangle())
             Divider()
