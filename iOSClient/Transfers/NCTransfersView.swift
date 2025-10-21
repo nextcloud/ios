@@ -240,14 +240,12 @@ struct TransferRowView: View {
 
 struct TransfersView_Previews: PreviewProvider {
     static var previews: some View {
-        let items: [tableMetadata] = []
-        /*
+        //let items: [tableMetadata] = []
         let items: [tableMetadata] = [
             tableMetadata(ocId: "1", fileName: "filename 1", status: NCGlobal.shared.metadataStatusWaitCreateFolder),
             tableMetadata(ocId: "2", fileName: "filename 2", size: 7230000, status: NCGlobal.shared.metadataStatusUploading),
             tableMetadata(ocId: "3", fileName: "filename 3", size: 5230000, status: NCGlobal.shared.metadataStatusDownloading),
             tableMetadata(ocId: "4", fileName: "filename 4", size: 7230000, status: NCGlobal.shared.metadataStatusUploadError, sessionError: "Disk full", errorCode: 1)]
-         */
         return TransfersView(previewItems: items)
             .previewDisplayName("Transfers – Preview Items")
     }
