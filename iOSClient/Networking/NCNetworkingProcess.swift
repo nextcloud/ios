@@ -282,11 +282,13 @@ actor NCNetworkingProcess {
             if !isWiFi && metadata.session == networking.sessionUploadBackgroundWWan {
                 continue
             }
-            // File exists ? skip it
-            let error = await networking.fileExists(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
-            if error == .success {
-                await database.deleteMetadataAsync(id: metadata.ocId)
-                continue
+            // File exists for Auto Upload? skip it
+            if metadata.sessionSelector == global.selectorUploadAutoUpload {
+                let error = await networking.fileExists(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
+                if error == .success {
+                    await database.deleteMetadataAsync(id: metadata.ocId)
+                    continue
+                }
             }
             // extract image/video
             let extractMetadatas = await NCCameraRoll().extractCameraRoll(from: metadata)
