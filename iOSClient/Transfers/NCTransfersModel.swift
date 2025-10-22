@@ -66,14 +66,18 @@ final class TransfersViewModel: ObservableObject {
         let home = utilityFileSystem.getHomeServer(session: session)
         var path = url.replacingOccurrences(of: home, with: "")
         if path.isEmpty { path = "/" }
-        return path
+        return item.account + " " + path
     }
 
     func progress(for item: tableMetadata) -> Float {
         let serverUrl = item.serverUrl
         let fileName = item.fileName
         let key = "\(serverUrl)|\(fileName)"
-        return progressMap[key] ?? Float(0)
+        if item.status == global.metadataStatusDownloading || item.status == global.metadataStatusUploading {
+            return progressMap[key] ?? Float(0)
+        } else {
+            return Float(0)
+        }
     }
 
     func status(for item: tableMetadata) -> (symbol: String, status: String, info: String) {
@@ -103,7 +107,26 @@ final class TransfersViewModel: ObservableObject {
         case global.metadataStatusUploading:
             return ("arrowshape.up.circle", NSLocalizedString("_status_uploading_", comment: ""), sizeText)
         case global.metadataStatusDownloadError, global.metadataStatusUploadError:
-            return ("exclamationmark.circle", NSLocalizedString("_status_upload_error_", comment: ""), item.sessionError)
+            let symbol = "exclamationmark.circle"
+            var status = NSLocalizedString("_status_upload_error_", comment: "")
+            if let sessionDate = item.sessionDate {
+                let elapsed = Date().timeIntervalSince(sessionDate)
+                let remaining = max(0, 300 - elapsed)
+
+                if remaining > 0 {
+                    let minutesLeft = Int(remaining / 60)
+                    let secondsLeft = Int(remaining.truncatingRemainder(dividingBy: 60))
+                    // Formattiamo solo se meno di 10 min
+                    if minutesLeft > 0 {
+                        status += " – \(minutesLeft) " + NSLocalizedString("_retry_minutes_", comment: "")
+                    } else {
+                        status += " – \(secondsLeft) " + NSLocalizedString("_retry_seconds_", comment: "")
+                    }
+                } else {
+                    status += " – " + NSLocalizedString("_retry_soon_", comment: "")
+                }
+            }
+            return (symbol, status, item.sessionError)
         case global.metadataStatusNormal:
             return ("checkmark.circle", NSLocalizedString("_done_", comment: ""), sizeText)
         default:
