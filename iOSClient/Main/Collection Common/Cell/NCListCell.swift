@@ -284,20 +284,27 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             imageView.makeCircularBackground(withColor: imageView.image != nil ? .systemBackground : .clear)
         }
 
-        let outlineView = UIImageView()
-        outlineView.translatesAutoresizingMaskIntoConstraints = false
-        outlineView.image = UIImage(systemName: "star")
-        outlineView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 16, weight: .thin)
-        outlineView.tintColor = .clear
+        if imageFavorite.image != nil {
+            let outlineView = UIImageView()
+            outlineView.translatesAutoresizingMaskIntoConstraints = false
+            outlineView.image = UIImage(systemName: "star")
+            outlineView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 16, weight: .thin)
+            outlineView.tintColor = .systemBackground
 
-        imageFavorite.addSubview(outlineView)
-        NSLayoutConstraint.activate([
-            outlineView.leadingAnchor.constraint(equalTo: imageFavorite.leadingAnchor, constant: -1),
-            outlineView.trailingAnchor.constraint(equalTo: imageFavorite.trailingAnchor, constant: 1),
-            outlineView.topAnchor.constraint(equalTo: imageFavorite.topAnchor, constant: -1),
-            outlineView.bottomAnchor.constraint(equalTo: imageFavorite.bottomAnchor, constant: 1)
-        ])
-        imageFavorite.sendSubviewToBack(outlineView)
+            imageFavorite.addSubview(outlineView)
+            NSLayoutConstraint.activate([
+                outlineView.leadingAnchor.constraint(equalTo: imageFavorite.leadingAnchor, constant: -1),
+                outlineView.trailingAnchor.constraint(equalTo: imageFavorite.trailingAnchor, constant: 1),
+                outlineView.topAnchor.constraint(equalTo: imageFavorite.topAnchor, constant: -1),
+                outlineView.bottomAnchor.constraint(equalTo: imageFavorite.bottomAnchor, constant: 1)
+            ])
+            imageFavorite.sendSubviewToBack(outlineView)
+        } else {
+            imageFavorite.subviews.forEach { view in
+                view.removeFromSuperview()
+            }
+        }
+
     }
 
     override func layoutSubviews() {
