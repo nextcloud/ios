@@ -66,7 +66,7 @@ final class TransfersViewModel: ObservableObject {
         let home = utilityFileSystem.getHomeServer(session: session)
         var path = url.replacingOccurrences(of: home, with: "")
         if path.isEmpty { path = "/" }
-        return path
+        return item.account + " " + path
     }
 
     func progress(for item: tableMetadata) -> Float {
