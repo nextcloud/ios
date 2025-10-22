@@ -6,7 +6,7 @@ import Foundation
 import NextcloudKit
 
 final class TransfersViewModel: ObservableObject {
-    @Published var items: [tableMetadata] = []
+    @Published var metadatas: [tableMetadata] = []
     @Published var progressMap: [String: Float] = [:]
     @Published var isLoading = false
     @Published var showFlushMessage = false
@@ -60,15 +60,31 @@ final class TransfersViewModel: ObservableObject {
         while !Task.isCancelled {
             if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] != "1" {
                 isLoading = true
+
+                // Items
                 let transfersSuccess = await networking.metadataTranfersSuccess.getAll()
-                items = await database.getTransferAsync(tranfersSuccess: transfersSuccess)
-                inWaitingCount = await NCNetworkingProcess.shared.getInWaitingCount()
-                inProgressCount = items.compactMap(\.status)
+                let results = await database.getTransferAsync(tranfersSuccess: transfersSuccess)
+                metadatas = results.filter {
+                    self.global.metadataStatusTransfers.contains($0.status)
+                }
+
+                // inWaitingCount
+                let inWaitingCountTemp = metadatas.compactMap(\.status)
+                    .filter { global.metadatasStatusInWaiting.contains($0) }
+                    .count
+                let countTransferSuccess = await NCNetworking.shared.metadataTranfersSuccess.count()
+                inWaitingCount = max(0, inWaitingCountTemp - countTransferSuccess)
+
+                // inProgressCount
+                inProgressCount = metadatas.compactMap(\.status)
                     .filter { NCGlobal.shared.metadatasStatusInProgress.contains($0) }
                     .count
-               inErrorCount = items.compactMap(\.errorCode)
+
+                // inErrorCount
+                inErrorCount = metadatas.compactMap(\.errorCode)
                     .filter { $0 != 0 }
                     .count
+
                 isLoading = false
             }
             try? await Task.sleep(nanoseconds: 500_000_000)
