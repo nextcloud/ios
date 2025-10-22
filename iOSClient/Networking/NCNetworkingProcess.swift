@@ -177,15 +177,9 @@ actor NCNetworkingProcess {
                 }
             }
 
-            // METADATAS TABLE
+            // METADATAS
             //
-            let sortDescriptors = [
-                RealmSwift.SortDescriptor(keyPath: "status", ascending: false),
-                RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
-            ]
-            let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal),
-                                                                            withSort: sortDescriptors,
-                                                                            withLimit: NCBrandOptions.shared.numMaximumProcess * 3) ?? []
+            let metadatas = await NCManageDatabase.shared.getMetadataProcess()
 
             // TRANSFERS SUCCESS
             //
