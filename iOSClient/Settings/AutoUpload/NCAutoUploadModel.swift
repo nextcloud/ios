@@ -48,8 +48,6 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     @Published var error: String = ""
     let database = NCManageDatabase.shared
 
-    private var observerToken: NSObjectProtocol?
-
     // Root View Controller
     var controller: NCMainTabBarController?
     // A variable user for change the auto upload directory
