@@ -1196,7 +1196,7 @@ extension NCManageDatabase {
 
     func getTransferAsync(tranfersSuccess: [tableMetadata]) async -> [tableMetadata] {
         await performRealmReadAsync { realm in
-            let predicate = NSPredicate(format: "status != %d", NCGlobal.shared.metadataStatusNormal)
+            let predicate = NSPredicate(format: "status IN %@", NCGlobal.shared.metadataStatusTransfers)
             let sortDescriptors = [
                 RealmSwift.SortDescriptor(keyPath: "status", ascending: true),
                 RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)
@@ -1211,5 +1211,13 @@ extension NCManageDatabase {
 
             return filtered.map { $0.detachedCopy() }
         } ?? []
+    }
+
+    func getMetadatasInWaitingCountAsync() async -> Int {
+        await performRealmReadAsync { realm in
+            realm.objects(tableMetadata.self)
+                .filter("status IN %@", NCGlobal.shared.metadatasStatusInWaiting)
+                .count
+        } ?? 0
     }
 }

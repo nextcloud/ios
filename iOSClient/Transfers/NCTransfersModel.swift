@@ -33,7 +33,6 @@ final class TransfersViewModel: ObservableObject {
 
         Task { @MainActor in
             await NCNetworking.shared.transferDispatcher.addDelegate(self)
-            await NCNetworkingProcess.shared.inWaitingBadge()
             await pollTransfers()
         }
     }
@@ -69,11 +68,7 @@ final class TransfersViewModel: ObservableObject {
                 }
 
                 // inWaitingCount
-                let inWaitingCountTemp = metadatas.compactMap(\.status)
-                    .filter { global.metadatasStatusInWaiting.contains($0) }
-                    .count
-                let countTransferSuccess = await NCNetworking.shared.metadataTranfersSuccess.count()
-                inWaitingCount = max(0, inWaitingCountTemp - countTransferSuccess)
+                inWaitingCount = await NCNetworkingProcess.shared.getInWaitingCount()
 
                 // inProgressCount
                 inProgressCount = metadatas.compactMap(\.status)
