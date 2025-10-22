@@ -210,7 +210,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
                 // Menu Plus
                 let session = NCSession.shared.getSession(account: account)
-                self.createPlusMenu(session: session, capabilities: capabilities)
+                await self.createPlusMenu(session: session, capabilities: capabilities)
             }
         }
 
@@ -220,7 +220,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
                 // Menu Plus
                 let capabilities = await NKCapabilities.shared.getCapabilities(for: session.account)
-                self.createPlusMenu(session: session, capabilities: capabilities)
+                await self.createPlusMenu(session: session, capabilities: capabilities)
             }
         }
     }
@@ -241,7 +241,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
     // MARK: - PLUS
 
-    func createPlusMenu(session: NCSession.Session, capabilities: NKCapabilities.Capabilities, isHidden: Bool = false) {
+    func createPlusMenu(session: NCSession.Session, capabilities: NKCapabilities.Capabilities, isHidden: Bool = false) async {
         var menuActionElement: [UIMenuElement] = []
         var menuE2EEElement: [UIMenuElement] = []
         var menuTextElement: [UIMenuElement] = []
@@ -254,8 +254,8 @@ class NCMainNavigationController: UINavigationController, UINavigationController
         let utilityFileSystem = NCUtilityFileSystem()
         let utility = NCUtility()
         let serverUrl = controller.currentServerUrl()
-        let isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account)
-        let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
+        let isDirectoryE2EE = await NCUtilityFileSystem().isDirectoryE2EEAsync(serverUrl: serverUrl, urlBase: session.urlBase, userId: session.userId, account: session.account)
+        let directory = await NCManageDatabase.shared.getTableDirectoryAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
         let isNetworkReachable = NextcloudKit.shared.isNetworkReachable()
         let titleCreateFolder = isDirectoryE2EE ? NSLocalizedString("_create_folder_e2ee_", comment: "") : NSLocalizedString("_create_folder_", comment: "")
         let imageCreateFolder = isDirectoryE2EE ? NCImageCache.shared.getFolderEncrypted(account: session.account) : NCImageCache.shared.getFolder(account: session.account)
@@ -333,10 +333,10 @@ class NCMainNavigationController: UINavigationController, UINavigationController
            isNetworkReachable {
             menuTextElement.append(UIAction(title: NSLocalizedString("_add_folder_info_", comment: ""),
                                             image: utility.loadImage(named: "list.dash.header.rectangle", colors: [NCBrandColor.shared.iconImageColor])) { _ in
-                DispatchQueue.main.async {
+                Task { @MainActor in
                     let richWorkspaceCommon = NCRichWorkspaceCommon()
                     if let viewController = controller.currentViewController() {
-                        if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@",
+                        if await NCManageDatabase.shared.getMetadataAsync(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@",
                                                                                       session.account,
                                                                                       serverUrl,
                                                                                       NCGlobal.shared.fileNameRichWorkspace.lowercased())) == nil {

@@ -118,7 +118,7 @@ class NCFiles: NCCollectionViewCommon {
         Task {
             // Plus Menu reload
             let capabilities = await database.getCapabilities(account: self.session.account) ?? NKCapabilities.Capabilities()
-            mainNavigationController?.createPlusMenu(session: self.session, capabilities: capabilities)
+            await mainNavigationController?.createPlusMenu(session: self.session, capabilities: capabilities)
             // Server data
             if !isSearchingMode {
                 await getServerData()
