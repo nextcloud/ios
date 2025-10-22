@@ -9,7 +9,6 @@ import SwiftUI
 struct TransfersView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var model: TransfersViewModel
-    @State private var inWaitingCount: Int = 0
 
     private let onClose: (() -> Void)?
 
@@ -30,18 +29,6 @@ struct TransfersView: View {
         self.onClose = onClose
     }
 
-    private var inProgressCount: Int {
-        model.items.compactMap(\.status)
-            .filter { NCGlobal.shared.metadatasStatusInProgress.contains($0) }
-            .count
-    }
-
-    private var inErrorCount: Int {
-        model.items.compactMap(\.errorCode)
-            .filter { $0 != 0 }
-            .count
-    }
-
     var body: some View {
         NavigationView {
             contentView
@@ -58,23 +45,21 @@ struct TransfersView: View {
                 .task {
                     await model.pollTransfers()
                 }
-                .task(id: model.items.map(\.status)) {
-                    inWaitingCount = await NCNetworkingProcess.shared.getInWaitingCount()
-                }
         }
+        .navigationViewStyle(.stack)
         .presentationDetents([.medium, .large])
     }
 
     @ViewBuilder
     private var contentView: some View {
-        if model.showFlushMessage || (model.items.isEmpty && inWaitingCount == 0) {
+        if model.showFlushMessage || (model.items.isEmpty && model.inWaitingCount == 0) {
             EmptyTransfersView(model: model)
         } else {
             List {
                 Section(header: TransfersSummaryHeader(
-                    inWaitingCount: inWaitingCount,
-                    inProgressCount: inProgressCount,
-                    inErrorCount: inErrorCount
+                    inWaitingCount: model.inWaitingCount,
+                    inProgressCount: model.inProgressCount,
+                    inErrorCount: model.inErrorCount
                 )) {
                     ForEach(model.items, id: \.ocId) { item in
                         TransferRowView(model: model, item: item) {

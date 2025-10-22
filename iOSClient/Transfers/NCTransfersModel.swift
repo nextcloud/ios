@@ -10,6 +10,9 @@ final class TransfersViewModel: ObservableObject {
     @Published var progressMap: [String: Float] = [:]
     @Published var isLoading = false
     @Published var showFlushMessage = false
+    @Published var inWaitingCount = 0
+    @Published var inProgressCount = 0
+    @Published var inErrorCount = 0
 
     // Dependencies
     private let session: NCSession.Session
@@ -48,6 +51,13 @@ final class TransfersViewModel: ObservableObject {
                 isLoading = true
                 let transfersSuccess = await networking.metadataTranfersSuccess.getAll()
                 items = await database.getTransferAsync(tranfersSuccess: transfersSuccess)
+                inWaitingCount = await NCNetworkingProcess.shared.getInWaitingCount()
+                inProgressCount = items.compactMap(\.status)
+                    .filter { NCGlobal.shared.metadatasStatusInProgress.contains($0) }
+                    .count
+               inErrorCount = items.compactMap(\.errorCode)
+                    .filter { $0 != 0 }
+                    .count
                 isLoading = false
             }
             try? await Task.sleep(nanoseconds: 500_000_000)
