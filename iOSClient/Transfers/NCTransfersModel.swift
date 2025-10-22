@@ -73,7 +73,11 @@ final class TransfersViewModel: ObservableObject {
         let serverUrl = item.serverUrl
         let fileName = item.fileName
         let key = "\(serverUrl)|\(fileName)"
-        return progressMap[key] ?? Float(0)
+        if item.status == global.metadataStatusDownloading || item.status == global.metadataStatusUploading {
+            return progressMap[key] ?? Float(0)
+        } else {
+            return Float(0)
+        }
     }
 
     func status(for item: tableMetadata) -> (symbol: String, status: String, info: String) {
@@ -114,12 +118,12 @@ final class TransfersViewModel: ObservableObject {
                     let secondsLeft = Int(remaining.truncatingRemainder(dividingBy: 60))
                     // Formattiamo solo se meno di 10 min
                     if minutesLeft > 0 {
-                        status += " – \(minutesLeft) min left to retry"
+                        status += " – \(minutesLeft) " + NSLocalizedString("_retry_minutes_", comment: "")
                     } else {
-                        status += " – \(secondsLeft)s left to retry"
+                        status += " – \(secondsLeft) " + NSLocalizedString("_retry_seconds_", comment: "")
                     }
                 } else {
-                    status += " – retrying soon..."
+                    status += " – " + NSLocalizedString("_retry_soon_", comment: "")
                 }
             }
             return (symbol, status, item.sessionError)
