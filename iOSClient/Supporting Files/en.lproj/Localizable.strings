@@ -660,6 +660,9 @@
 "_in_waiting_"              = "In waiting";
 "_in_progress_"             = "In progress";
 "_in_error_"                = "In error";
+"_retry_minutes_"           = "min left to retry";
+"_retry_seconds_"           = "sec left to retry";
+"_retry_soon_"              = "retrying soon …";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails";

@@ -279,6 +279,15 @@ actor NCNetworkingProcess {
         // TEST AVAILABLE PROCESS
         guard availableProcess > 0, timer != nil else { return }
 
+        // UPLOAD IN ERROR (check > 5 minute ago)
+        //
+        for metadata in metadatas where metadata.status == self.global.metadataStatusUploadError && (metadata.sessionDate ?? .distantFuture) < Date().addingTimeInterval(-300) {
+            await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                  session: self.networking.sessionUploadBackground,
+                                                                  sessionError: "",
+                                                                  status: global.metadataStatusWaitUpload)
+        }
+
         // UPLOAD
         //
         let metadatasWaitUpload = Array(metadatas
@@ -336,41 +345,9 @@ actor NCNetworkingProcess {
                 availableProcess -= 1
             }
         }
-
-        /// No upload available ? --> Retry Upload in Error
-        ///
-        let uploadError = metadatas.filter { $0.status == self.global.metadataStatusUploadError }
-        if countUploading == 0 {
-            for metadata in uploadError {
-                /// Check QUOTA
-                if metadata.sessionError.contains("\(global.errorQuota)") {
-                    let results = await NextcloudKit.shared.getUserMetadataAsync(account: metadata.account, userId: metadata.userId) { task in
-                        Task {
-                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                        path: metadata.userId,
-                                                                                                        name: "getUserMetadata")
-                            await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                        }
-                    }
-                    if results.error == .success, let userProfile = results.userProfile, userProfile.quotaFree > 0, userProfile.quotaFree > metadata.size {
-                        await database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                               session: self.networking.sessionUploadBackground,
-                                                               sessionError: "",
-                                                               status: self.global.metadataStatusWaitUpload)
-                    }
-                } else {
-                    await database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                           session: self.networking.sessionUploadBackground,
-                                                           sessionError: "",
-                                                           status: global.metadataStatusWaitUpload)
-                }
-            }
-        }
-
-        return
     }
 
-    // MARK: - Hub Process WebDav
+    // MARK: - Helper
 
     private func hubProcessWebDav(metadatas: [tableMetadata]) async -> NKError {
         var results: [tableMetadata] = []

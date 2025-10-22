@@ -9,7 +9,6 @@ import SwiftUI
 struct TransfersView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var model: TransfersViewModel
-    @State private var inWaitingCount: Int = 0
 
     private let onClose: (() -> Void)?
 
@@ -30,18 +29,6 @@ struct TransfersView: View {
         self.onClose = onClose
     }
 
-    private var inProgressCount: Int {
-        model.items.compactMap(\.status)
-            .filter { NCGlobal.shared.metadatasStatusInProgress.contains($0) }
-            .count
-    }
-
-    private var inErrorCount: Int {
-        model.items.compactMap(\.errorCode)
-            .filter { $0 != 0 }
-            .count
-    }
-
     var body: some View {
         NavigationView {
             contentView
@@ -58,23 +45,21 @@ struct TransfersView: View {
                 .task {
                     await model.pollTransfers()
                 }
-                .task(id: model.items.map(\.status)) {
-                    inWaitingCount = await NCNetworkingProcess.shared.getInWaitingCount()
-                }
         }
+        .navigationViewStyle(.stack)
         .presentationDetents([.medium, .large])
     }
 
     @ViewBuilder
     private var contentView: some View {
-        if model.showFlushMessage || (model.items.isEmpty && inWaitingCount == 0) {
+        if model.showFlushMessage || (model.items.isEmpty && model.inWaitingCount == 0) {
             EmptyTransfersView(model: model)
         } else {
             List {
                 Section(header: TransfersSummaryHeader(
-                    inWaitingCount: inWaitingCount,
-                    inProgressCount: inProgressCount,
-                    inErrorCount: inErrorCount
+                    inWaitingCount: model.inWaitingCount,
+                    inProgressCount: model.inProgressCount,
+                    inErrorCount: model.inErrorCount
                 )) {
                     ForEach(model.items, id: \.ocId) { item in
                         TransferRowView(model: model, item: item) {
@@ -109,7 +94,7 @@ struct TransfersSummaryHeader: View {
 
     private func summaryPill(title: String, value: Int) -> some View {
         HStack(spacing: 6) {
-            Text(title)
+            Text(NSLocalizedString(title, comment: ""))
                 .font(.caption)
                 .foregroundStyle(.secondary)
             Text("\(value)")
@@ -188,27 +173,29 @@ struct TransferRowView: View {
                 VStack(alignment: .leading, spacing: 6) {
                     Text(item.fileName)
                         .font(.headline)
-                        .lineLimit(2)
 
                     Text(model.readablePath(for: item))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
-                        .lineLimit(1)
+                        .padding(.top, 2)
 
                     if !status.status.isEmpty {
                         Text(status.status)
                             .font(.footnote)
                             .foregroundStyle(.secondary)
+                            .padding(.top, 2)
                     }
 
                     if let wwan = model.wwanWaitInfoIfNeeded(for: item), !wwan.isEmpty {
                         Text(wwan)
                             .font(.footnote)
                             .foregroundStyle(.secondary)
+                            .padding(.top, 2)
                     } else if !status.info.isEmpty {
                         Text(status.info)
                             .font(.footnote)
                             .foregroundStyle(.secondary)
+                            .padding(.top, 2)
                     }
                 }
 
@@ -261,7 +248,7 @@ struct TransfersView_Previews: PreviewProvider {
             tableMetadata(ocId: "1", fileName: "filename 1", status: NCGlobal.shared.metadataStatusWaitCreateFolder),
             tableMetadata(ocId: "2", fileName: "filename 2", size: 7230000, status: NCGlobal.shared.metadataStatusUploading),
             tableMetadata(ocId: "3", fileName: "filename 3", size: 5230000, status: NCGlobal.shared.metadataStatusDownloading),
-            tableMetadata(ocId: "4", fileName: "filename 4", size: 7230000, status: NCGlobal.shared.metadataStatusUploadError, sessionError: "Disk full", errorCode: 1)]
+            tableMetadata(ocId: "4", fileName: "filename 4", size: 7230000, status: NCGlobal.shared.metadataStatusUploadError, sessionError: "Disk full Disk full Disk full Disk full Disk full Disk full Disk full Disk full", errorCode: 1)]
         return TransfersView(previewItems: items)
             .previewDisplayName("Transfers – Preview Items")
     }
