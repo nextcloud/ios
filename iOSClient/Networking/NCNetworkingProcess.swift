@@ -25,8 +25,6 @@ actor NCNetworkingProcess {
     private let maxInterval: TimeInterval = 4
     private let minInterval: TimeInterval = 2
 
-    private var inWaitingCount: Int = 0
-
     private let sessionForUpload = [NextcloudKit.shared.nkCommonInstance.identifierSessionUpload,
                                     NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground,
                                     NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundWWan]
@@ -103,10 +101,6 @@ actor NCNetworkingProcess {
         currentAccount = account
     }
 
-    func getInWaitingCount() -> Int {
-        return inWaitingCount
-    }
-
     /// Updates the app and tab bar badges to reflect active or pending transfers.
     ///
     /// Calculates the number of transfers still in progress or failed by subtracting
@@ -115,16 +109,14 @@ actor NCNetworkingProcess {
     func inWaitingBadge() async {
         let countTransferSuccess = await NCNetworking.shared.metadataTranfersSuccess.count()
         let totalNonNormal = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "status IN %@", self.global.metadatasStatusInWaiting)).count
-        let newInWaitingCount = max(0, totalNonNormal - countTransferSuccess)
-        // Update actor-isolated state
-        inWaitingCount = newInWaitingCount
+        let count = max(0, totalNonNormal - countTransferSuccess)
 
         await MainActor.run {
-            UNUserNotificationCenter.current().setBadgeCount(newInWaitingCount)
+            UNUserNotificationCenter.current().setBadgeCount(count)
 
             if let controller = getRootController(),
                let files = controller.tabBar.items?.first {
-                files.badgeValue = newInWaitingCount == 0 ? nil : self.utility.formatBadgeCount(newInWaitingCount)
+                files.badgeValue = count == 0 ? nil : self.utility.formatBadgeCount(count)
             }
         }
     }
