@@ -52,6 +52,8 @@ extension NCManageDatabase {
                     return
             }
 
+            metadata.sessionDate = Date()
+
             if let name = newFileName {
                 metadata.fileName = name
                 metadata.fileNameView = name
@@ -124,13 +126,13 @@ extension NCManageDatabase {
                 return
             }
 
+            metadata.sessionDate = Date()
             metadata.sceneIdentifier = sceneIdentifier
             metadata.session = session
             metadata.sessionTaskIdentifier = 0
             metadata.sessionError = ""
             metadata.sessionSelector = selector
             metadata.status = NCGlobal.shared.metadataStatusWaitDownload
-            metadata.sessionDate = Date()
         }
 
         return await performRealmReadAsync { realm in
@@ -153,12 +155,12 @@ extension NCManageDatabase {
 
         // Apply modifications
         detachedMetadatas = detachedMetadatas.map { metadata in
+            metadata.sessionDate = nil
             metadata.sceneIdentifier = nil
             metadata.session = ""
             metadata.sessionTaskIdentifier = 0
             metadata.sessionError = ""
             metadata.sessionSelector = ""
-            metadata.sessionDate = nil
             metadata.status = NCGlobal.shared.metadataStatusNormal
             return metadata
         }
