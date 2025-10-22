@@ -279,9 +279,9 @@ actor NCNetworkingProcess {
         // TEST AVAILABLE PROCESS
         guard availableProcess > 0, timer != nil else { return }
 
-        // UPLOAD IN ERROR (check > 10 minute ago)
+        // UPLOAD IN ERROR (check > 5 minute ago)
         //
-        for metadata in metadatas where metadata.status == self.global.metadataStatusUploadError && (metadata.sessionDate ?? .distantFuture) < Date().addingTimeInterval(-600) {
+        for metadata in metadatas where metadata.status == self.global.metadataStatusUploadError && (metadata.sessionDate ?? .distantFuture) < Date().addingTimeInterval(-300) {
             await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
                                                                   session: self.networking.sessionUploadBackground,
                                                                   sessionError: "",

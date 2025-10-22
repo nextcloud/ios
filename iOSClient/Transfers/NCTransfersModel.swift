@@ -103,7 +103,26 @@ final class TransfersViewModel: ObservableObject {
         case global.metadataStatusUploading:
             return ("arrowshape.up.circle", NSLocalizedString("_status_uploading_", comment: ""), sizeText)
         case global.metadataStatusDownloadError, global.metadataStatusUploadError:
-            return ("exclamationmark.circle", NSLocalizedString("_status_upload_error_", comment: ""), item.sessionError)
+            let symbol = "exclamationmark.circle"
+            var status = NSLocalizedString("_status_upload_error_", comment: "")
+            if let sessionDate = item.sessionDate {
+                let elapsed = Date().timeIntervalSince(sessionDate)
+                let remaining = max(0, 300 - elapsed)
+
+                if remaining > 0 {
+                    let minutesLeft = Int(remaining / 60)
+                    let secondsLeft = Int(remaining.truncatingRemainder(dividingBy: 60))
+                    // Formattiamo solo se meno di 10 min
+                    if minutesLeft > 0 {
+                        status += " – \(minutesLeft) min left to retry"
+                    } else {
+                        status += " – \(secondsLeft)s left to retry"
+                    }
+                } else {
+                    status += " – retrying soon..."
+                }
+            }
+            return (symbol, status, item.sessionError)
         case global.metadataStatusNormal:
             return ("checkmark.circle", NSLocalizedString("_done_", comment: ""), sizeText)
         default:

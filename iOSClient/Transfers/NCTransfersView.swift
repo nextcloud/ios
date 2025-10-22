@@ -109,7 +109,7 @@ struct TransfersSummaryHeader: View {
 
     private func summaryPill(title: String, value: Int) -> some View {
         HStack(spacing: 6) {
-            Text(title)
+            Text(NSLocalizedString(title, comment: ""))
                 .font(.caption)
                 .foregroundStyle(.secondary)
             Text("\(value)")
