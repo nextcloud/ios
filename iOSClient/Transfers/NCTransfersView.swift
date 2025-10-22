@@ -62,6 +62,7 @@ struct TransfersView: View {
                     inWaitingCount = await NCNetworkingProcess.shared.getInWaitingCount()
                 }
         }
+        .navigationViewStyle(.stack)
         .presentationDetents([.medium, .large])
     }
 
