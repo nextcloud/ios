@@ -229,7 +229,7 @@
 "_lock_protection_no_screen_"        = "Do not ask at startup";
 "_enable_touch_face_id_"        = "Enable Touch/Face ID";
 "_wifi_only_"                   = "Only use Wi-Fi connection";
-"_settings_autoupload_"         = "Auto upload";
+"_settings_autoupload_"         = "Auto upload photos";
 "_clear_cache_"                 = "Clear cache";
 "_clear_cache_footer_"          = "Clear downloaded and offline files from the app";
 "_exit_"                        = "Reset application";
@@ -254,7 +254,7 @@
 "_autoupload_photos_"               = "Auto upload photos";
 "_autoupload_videos_"               = "Auto upload videos";
 "_autoupload_favorites_"            = "Auto upload favorites only";
-"_autoupload_description_"          = "New photos/videos will be automatically uploaded to your server.";
+"_autoupload_description_"          = "Choose whether new photos or videos will be automatically uploaded to your server.";
 "_autoupload_fullphotos_"           = "Upload the whole camera roll";
 "_start_autoupload_"                = "Turn on auto upload";
 "_stop_autoupload_"                 = "Turn off auto upload";
