@@ -7,7 +7,6 @@ import Foundation
 import UIKit
 import Photos
 import NextcloudKit
-import EasyTipView
 import SwiftUI
 
 enum AutoUploadTimespan: String, CaseIterable, Identifiable {
@@ -51,8 +50,6 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     private var observerToken: NSObjectProtocol?
 
-    // Tip
-    var tip: EasyTipView?
     // Root View Controller
     var controller: NCMainTabBarController?
     // A variable user for change the auto upload directory
@@ -65,19 +62,6 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// Initialization code to set up the ViewModel with the active account
     init(controller: NCMainTabBarController?) {
         self.controller = controller
-
-        observerToken = NotificationCenter.default.addObserver(forName: UIDevice.orientationDidChangeNotification,
-                                               object: nil,
-                                               queue: .main) { _ in
-            self.tip?.dismiss()
-            self.tip = nil
-        }
-    }
-
-    deinit {
-        if let token = observerToken {
-            NotificationCenter.default.removeObserver(token)
-        }
     }
 
     /// Triggered when the view appears.
@@ -99,11 +83,6 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         requestAuthorization()
 
         if !autoUploadImage && !autoUploadVideo { autoUploadImage = true }
-    }
-
-    func onViewDisappear() {
-        tip?.dismiss()
-        tip = nil
     }
 
     // MARK: - All functions
