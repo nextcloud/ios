@@ -42,9 +42,9 @@ struct TransfersView: View {
                         }
                     }
                 }
-                .task {
-                    await model.pollTransfers()
-                }
+        }
+        .onDisappear {
+            model.detach()
         }
         .navigationViewStyle(.stack)
         .presentationDetents([.medium, .large])

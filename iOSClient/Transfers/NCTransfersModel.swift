@@ -22,18 +22,19 @@ final class TransfersViewModel: ObservableObject {
     private let global = NCGlobal.shared
 
     private var observerToken: NSObjectProtocol?
-    internal var sceneIdentifier: String = ""
+    internal let sceneIdentifier: String = UUID().uuidString
 
     init(session: NCSession.Session) {
         self.session = session
 
+        observerToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMetadataTranfersSuccessFlush), object: nil, queue: nil) { [weak self] _ in
+            self?.showFlushMessage = true
+        }
+
         Task { @MainActor in
             await NCNetworking.shared.transferDispatcher.addDelegate(self)
             await NCNetworkingProcess.shared.inWaitingBadge()
-        }
-
-        observerToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMetadataTranfersSuccessFlush), object: nil, queue: nil) { [weak self] _ in
-            self?.showFlushMessage = true
+            await pollTransfers()
         }
     }
 
@@ -41,6 +42,16 @@ final class TransfersViewModel: ObservableObject {
         print("deinit")
         if let token = observerToken {
             NotificationCenter.default.removeObserver(token)
+        }
+    }
+
+    func detach() {
+        if let token = observerToken {
+            NotificationCenter.default.removeObserver(token)
+            observerToken = nil
+        }
+        Task { @MainActor in
+            await NCNetworking.shared.transferDispatcher.removeDelegate(self)
         }
     }
 
@@ -157,7 +168,7 @@ extension TransfersViewModel: @MainActor NCTransferDelegate {
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) {
         Task { @MainActor in
             let key = "\(serverUrl)|\(fileName)"
-            return progressMap[key] = progress
+            progressMap[key] = progress
         }
     }
 }
