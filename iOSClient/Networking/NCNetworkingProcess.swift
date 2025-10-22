@@ -18,12 +18,13 @@ actor NCNetworkingProcess {
     private var currentTask: Task<Void, Never>?
     private var enableControllingScreenAwake = true
     private var currentAccount = ""
+    private var inWaitingCount: Int = 0
 
     private var timer: DispatchSourceTimer?
     private let timerQueue = DispatchQueue(label: "com.nextcloud.timerProcess", qos: .utility)
-    private var lastUsedInterval: TimeInterval = 4
-    private let maxInterval: TimeInterval = 4
-    private let minInterval: TimeInterval = 2
+    private var lastUsedInterval: TimeInterval = 3.5
+    private let maxInterval: TimeInterval = 3.5
+    private let minInterval: TimeInterval = 1.5
 
     private let sessionForUpload = [NextcloudKit.shared.nkCommonInstance.identifierSessionUpload,
                                     NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground,
@@ -101,24 +102,16 @@ actor NCNetworkingProcess {
         currentAccount = account
     }
 
-    /// Updates the app and tab bar badges to reflect active or pending transfers.
-    ///
-    /// Calculates the number of transfers still in progress or failed by subtracting
-    /// the completed transfer count from all non-normal metadata records, then updates
-    /// both the app icon badge and the Files tab badge accordingly.
-    func inWaitingBadge() async {
+    private func inWaitingCount() async -> Int {
         let countTransferSuccess = await NCNetworking.shared.metadataTranfersSuccess.count()
-        let totalNonNormal = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "status IN %@", self.global.metadatasStatusInWaiting)).count
+        let totalNonNormal = await NCManageDatabase.shared.getMetadatasInWaitingCountAsync()
         let count = max(0, totalNonNormal - countTransferSuccess)
 
-        await MainActor.run {
-            UNUserNotificationCenter.current().setBadgeCount(count)
+        return count
+    }
 
-            if let controller = getRootController(),
-               let files = controller.tabBar.items?.first {
-                files.badgeValue = count == 0 ? nil : self.utility.formatBadgeCount(count)
-            }
-        }
+    func getInWaitingCount() async -> Int {
+        return inWaitingCount
     }
 
     func startTimer(interval: TimeInterval) async {
@@ -171,7 +164,18 @@ actor NCNetworkingProcess {
 
             // UPDATE INWAIT & BADGE
             //
-            await inWaitingBadge()
+            let count = await inWaitingCount()
+            if count != inWaitingCount {
+                inWaitingCount = count
+                Task { @MainActor in
+                    UNUserNotificationCenter.current().setBadgeCount(count)
+
+                    if let controller = getRootController(),
+                        let files = controller.tabBar.items?.first {
+                        files.badgeValue = count == 0 ? nil : self.utility.formatBadgeCount(count)
+                    }
+                }
+            }
 
             // METADATAS TABLE
             //
