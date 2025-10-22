@@ -142,7 +142,7 @@ struct EmptyTransfersView: View {
             withAnimation(.spring(response: 0.35, dampingFraction: 0.82)) {
                 flash = true
             }
-            try? await Task.sleep(nanoseconds: 3_000_000_000)
+            try? await Task.sleep(nanoseconds: 4_000_000_000)
             withAnimation(.easeInOut(duration: 0.25)) {
                 flash = false
             }
