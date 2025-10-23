@@ -292,6 +292,12 @@ extension NCNetworking {
                     utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
                     continue
                 }
+
+                // Verify in Metadata Transfer Success
+                guard await metadataTranfersSuccess.getMetadata(ocIdTransfer: metadata.ocIdTransfer) == nil else {
+                    continue
+                }
+
                 var foundTask = false
                 let tasks = await nkSession.sessionData.session.tasks
 

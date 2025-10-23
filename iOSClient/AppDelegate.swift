@@ -222,6 +222,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func backgroundSync(task: BGTask? = nil) async {
+        defer {
+            // Update badge safely at the end of the background sync
+            Task { @MainActor in
+                do {
+                    let count = await NCManageDatabase.shared.getMetadatasInWaitingCountAsync()
+                    try await UNUserNotificationCenter.current().setBadgeCount(count)
+                } catch { }
+            }
+        }
+
         // BGTask expiration flag
         var expired = false
         task?.expirationHandler = {

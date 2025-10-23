@@ -39,6 +39,10 @@ actor NCMetadataTranfersSuccess {
         return tranfersSuccess
     }
 
+    func getMetadata(ocIdTransfer: String) async -> tableMetadata? {
+        return tranfersSuccess.filter( { $0.ocIdTransfer == ocIdTransfer }).first
+    }
+
     func flush() async {
         let isInBackground = NCNetworking.shared.isInBackground()
         let metadataUploaded: [tableMetadata] = tranfersSuccess
