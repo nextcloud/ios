@@ -241,18 +241,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             return
         }
 
-        // Fetch pending metadatas (bounded set)
-        guard let allMetadatas = await NCManageDatabase.shared.getMetadatasAsync(
-            predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal),
-            withSort: [RealmSwift.SortDescriptor(keyPath: "sessionDate", ascending: true)],
-            withLimit: NCBrandOptions.shared.numMaximumProcess),
-                !allMetadatas.isEmpty,
-                !expired else {
+        // Fetch METADATAS
+        let metadatas = await NCManageDatabase.shared.getMetadataProcess()
+        guard !metadatas.isEmpty, !expired else {
             return
         }
 
         // Create all pending Auto Upload folders (fail-fast)
-        let pendingCreateFolders = allMetadatas.lazy.filter {
+        let pendingCreateFolders = metadatas.lazy.filter {
             $0.status == self.global.metadataStatusWaitCreateFolder &&
             $0.sessionSelector == self.global.selectorUploadAutoUpload
         }
@@ -273,13 +269,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         // Capacity computation
-        let downloading = allMetadatas.lazy.filter { $0.status == self.global.metadataStatusDownloading }.count
-        let uploading = allMetadatas.lazy.filter { $0.status == self.global.metadataStatusUploading }.count
+        let downloading = metadatas.lazy.filter { $0.status == self.global.metadataStatusDownloading }.count
+        let uploading = metadatas.lazy.filter { $0.status == self.global.metadataStatusUploading }.count
         let availableProcess = max(0, NCBrandOptions.shared.numMaximumProcess - (downloading + uploading))
 
         // Start Auto Uploads (cap by available slots)
         let metadatasToUpload = Array(
-            allMetadatas.lazy.filter {
+            metadatas.lazy.filter {
                 $0.status == self.global.metadataStatusWaitUpload &&
                 $0.sessionSelector == self.global.selectorUploadAutoUpload &&
                 $0.chunk == 0
@@ -292,6 +288,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             guard !expired else {
                 return
             }
+
+            // File exists for Auto Upload? skip it
+            let error = await NCNetworking.shared.fileExists(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
+            if error == .success {
+                await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
+                continue
+            }
+
             // Expand seed into concrete metadatas (e.g., Live Photo pair)
             let extracted = await cameraRoll.extractCameraRoll(from: metadata)
 
@@ -299,7 +303,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 // Sequential await keeps ordering and simplifies backpressure
                 let err = await NCNetworking.shared.uploadFileInBackground(metadata: metadata.detachedCopy())
                 if err == .success {
-                    nkLog(tag: self.global.logTagBgSync, message: "Queued upload \(metadata.fileName) -> \(metadata.serverUrl)")
+                    nkLog(tag: self.global.logTagBgSync, message: "In queued upload \(metadata.fileName) -> \(metadata.serverUrl)")
                 } else {
                     nkLog(tag: self.global.logTagBgSync, emoji: .error, message: "Upload failed \(metadata.fileName) -> \(metadata.serverUrl) [\(err.errorDescription)]")
                 }
