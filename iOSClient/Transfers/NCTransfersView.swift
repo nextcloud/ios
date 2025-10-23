@@ -256,6 +256,5 @@ extension tableMetadata {
         self.status = status
         self.errorCode = errorCode
         self.sessionError = sessionError
-        self.user = "xxxx"
     }
 }
