@@ -320,17 +320,27 @@ actor NCNetworkingProcess {
             // upload file(s)
             for metadata in extractMetadatas {
                 guard timer != nil else { return }
+
                 // UPLOAD E2EE
                 //
                 if metadata.isDirectoryE2EE {
                     let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
                     await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: controller)
+
                 // UPLOAD CHUNK
                 //
                 } else if metadata.chunk > 0 {
-                    let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
-                    let hud = await NCHud(controller?.view)
-                    await networking.uploadChunk(metadata: metadata, hud: hud)
+                    Task { @MainActor in
+                        let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
+                        var hud = NCHud(controller?.view)
+
+                        if let viewController = controller?.currentViewController() as? NCCollectionViewCommon {
+                            hud = NCHud(viewController.view)
+                        }
+
+                        await networking.uploadChunk(metadata: metadata, hud: hud)
+                    }
+
                 // UPLOAD IN BACKGROUND
                 //
                 } else {
@@ -338,6 +348,7 @@ actor NCNetworkingProcess {
                         await networking.uploadFileInBackground(metadata: metadata)
                     }
                 }
+
                 availableProcess -= 1
             }
         }

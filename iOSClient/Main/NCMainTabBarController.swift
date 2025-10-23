@@ -156,6 +156,10 @@ class NCMainTabBarController: UITabBarController {
         return (selectedViewController as? UINavigationController)?.topViewController
     }
 
+    func currentNavigationController() -> UINavigationController? {
+        return selectedViewController as? UINavigationController
+    }
+
     func currentServerUrl() -> String {
         let session = NCSession.shared.getSession(account: account)
         var serverUrl = NCUtilityFileSystem().getHomeServer(session: session)
