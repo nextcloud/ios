@@ -700,25 +700,36 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
 
     /// Helper that calculates app
     func getAppSize() -> Int64 {
-        let fileManager = FileManager.default
+        let fm = FileManager.default
         var total: Int64 = 0
-        let url = NSHomeDirectory()
 
-        let directoryURL = URL(fileURLWithPath: url, isDirectory: true)
-        if let enumerator = fileManager.enumerator(at: directoryURL,
-                                                   includingPropertiesForKeys: [.isRegularFileKey, .fileSizeKey],
-                                                   options: [.skipsHiddenFiles]
-        ) {
-            for case let fileURL as URL in enumerator {
-                do {
-                    let values = try fileURL.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey])
-                    if values.isRegularFile == true, let fileSize = values.fileSize {
-                        total += Int64(fileSize)
+        func folderSize(_ url: URL) -> Int64 {
+            var t: Int64 = 0
+            let keys: [URLResourceKey] = [.isRegularFileKey, .fileAllocatedSizeKey, .totalFileAllocatedSizeKey]
+            if let e = fm.enumerator(at: url, includingPropertiesForKeys: keys, options: [.skipsHiddenFiles, .skipsPackageDescendants]) {
+                for case let f as URL in e {
+                    if let v = try? f.resourceValues(forKeys: Set(keys)),
+                       v.isRegularFile == true {
+                        t += Int64(v.totalFileAllocatedSize ?? v.fileAllocatedSize ?? 0)
                     }
-                } catch {
-                    // ignore unreadable files
                 }
             }
+            return t
+        }
+
+        // App sandbox
+        if let docs = fm.urls(for: .documentDirectory, in: .userDomainMask).first {
+            total += folderSize(docs)
+        }
+        if let lib = fm.urls(for: .libraryDirectory, in: .userDomainMask).first {
+            total += folderSize(lib)
+        }
+        let tmp = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
+        total += folderSize(tmp)
+
+        // App Group
+        if let group = fm.containerURL(forSecurityApplicationGroupIdentifier: "group.com.yourcompany.yourapp") {
+            total += folderSize(group)
         }
 
         return total

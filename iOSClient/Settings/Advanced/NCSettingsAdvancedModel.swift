@@ -138,15 +138,12 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     /// Asynchronously calculates the size of cache directory and updates the footer title.
     @MainActor
     func calculateSize() async {
-        // Run the heavy calculation off the main thread
-        let totalSize = await withCheckedContinuation { continuation in
-            DispatchQueue.global(qos: .utility).async {
-                let size = NCUtilityFileSystem().getAppSize()
-                continuation.resume(returning: size)
-            }
-        }
+        let totalSize = await Task.detached(priority: .utility) {
+            NCUtilityFileSystem().getAppSize()
+        }.value
 
-        self.footerTitle = "\(NSLocalizedString("_clear_cache_footer_", comment: "")). (\(NSLocalizedString("_used_space_", comment: "")) \(NCUtilityFileSystem().transformedSize(totalSize)))"
+        let pretty = NCUtilityFileSystem().transformedSize(totalSize)
+        self.footerTitle = "\(NSLocalizedString("_clear_cache_footer_", comment: "")). (\(NSLocalizedString("_used_space_", comment: "")) \(pretty))"
     }
 
     /// Removes all accounts & exits the Nextcloud application if specified.
