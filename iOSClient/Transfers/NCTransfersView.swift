@@ -147,7 +147,22 @@ struct EmptyTransfersView: View {
                 flash = true
             }
 
-            try? await Task.sleep(nanoseconds: 4_000_000_000)
+            let timeout: UInt64 = 15_000_000_000
+            let interval: UInt64 = 200_000_000
+            var elapsed: UInt64 = 0
+
+            while elapsed < timeout {
+                try? await Task.sleep(nanoseconds: interval)
+                elapsed += interval
+
+                if model.inProgressCount > 0 {
+                    break
+                }
+
+                if Task.isCancelled {
+                    return
+                }
+            }
 
             withAnimation(.easeInOut(duration: 0.25)) {
                 flash = false
