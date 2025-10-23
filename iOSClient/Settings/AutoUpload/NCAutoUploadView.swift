@@ -30,9 +30,6 @@ struct NCAutoUploadView: View {
         .onAppear {
             model.onViewAppear()
         }
-        .onDisappear {
-            model.onViewDisappear()
-        }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
             model.checkPermission()
         }

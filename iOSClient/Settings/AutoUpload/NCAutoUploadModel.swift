@@ -7,7 +7,6 @@ import Foundation
 import UIKit
 import Photos
 import NextcloudKit
-import EasyTipView
 import SwiftUI
 
 enum AutoUploadTimespan: String, CaseIterable, Identifiable {
@@ -49,10 +48,6 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     @Published var error: String = ""
     let database = NCManageDatabase.shared
 
-    private var observerToken: NSObjectProtocol?
-
-    // Tip
-    var tip: EasyTipView?
     // Root View Controller
     var controller: NCMainTabBarController?
     // A variable user for change the auto upload directory
@@ -65,19 +60,6 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// Initialization code to set up the ViewModel with the active account
     init(controller: NCMainTabBarController?) {
         self.controller = controller
-
-        observerToken = NotificationCenter.default.addObserver(forName: UIDevice.orientationDidChangeNotification,
-                                               object: nil,
-                                               queue: .main) { _ in
-            self.tip?.dismiss()
-            self.tip = nil
-        }
-    }
-
-    deinit {
-        if let token = observerToken {
-            NotificationCenter.default.removeObserver(token)
-        }
     }
 
     /// Triggered when the view appears.
@@ -99,13 +81,6 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         requestAuthorization()
 
         if !autoUploadImage && !autoUploadVideo { autoUploadImage = true }
-
-        showTip()
-    }
-
-    func onViewDisappear() {
-        tip?.dismiss()
-        tip = nil
     }
 
     // MARK: - All functions
@@ -268,47 +243,6 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     func checkPermission() {
         let status = CLLocationManager().authorizationStatus
         permissionGranted = (status == .authorizedAlways && NCPreferences().location)
-    }
-}
-
-extension NCAutoUploadModel: EasyTipViewDelegate {
-    func showTip() {
-        guard !session.account.isEmpty,
-              !database.tipExists(NCGlobal.shared.tipAutoUploadButton)
-        else {
-            return
-        }
-
-        var preferences = EasyTipView.Preferences()
-
-        preferences.drawing.foregroundColor = .white
-        preferences.drawing.backgroundColor = .lightGray
-        preferences.drawing.textAlignment = .left
-        preferences.drawing.arrowPosition = .any
-        preferences.drawing.cornerRadius = 10
-
-        preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: 100)
-        preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -100)
-        preferences.animating.showInitialAlpha = 0
-        preferences.animating.showDuration = 0.5
-        preferences.animating.dismissDuration = 0.5
-
-        if tip == nil {
-            tip = EasyTipView(text: NSLocalizedString("_tip_autoupload_button_", comment: ""), preferences: preferences, delegate: self, tip: NCGlobal.shared.tipAutoUploadButton)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                if let view = self.controller?.tabBar {
-                    self.tip?.show(forView: view)
-                }
-            }
-        }
-    }
-
-    func easyTipViewDidTap(_ tipView: EasyTipView) {
-        database.addTip(NCGlobal.shared.tipAutoUploadButton)
-    }
-
-    func easyTipViewDidDismiss(_ tipView: EasyTipView) {
-        tip = nil
     }
 }
 
