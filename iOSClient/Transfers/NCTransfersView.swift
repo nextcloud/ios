@@ -137,12 +137,18 @@ struct EmptyTransfersView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .task(id: model.showFlushMessage) {
-            guard model.showFlushMessage else { return }
+            guard model.showFlushMessage else {
+                return
+            }
 
             withAnimation(.spring(response: 0.35, dampingFraction: 0.82)) {
                 flash = true
             }
+
+            await NCNetworking.shared.verifyZombie()
+
             try? await Task.sleep(nanoseconds: 4_000_000_000)
+
             withAnimation(.easeInOut(duration: 0.25)) {
                 flash = false
             }
