@@ -321,6 +321,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
         nkLog(debug: "Handle events For background URLSession: \(identifier)")
+
+        NCManageDatabase.shared.openRealmBackground()
+
         backgroundSessionCompletionHandler = completionHandler
     }
 
