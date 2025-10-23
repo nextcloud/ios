@@ -240,16 +240,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         // Transfer success flush
         await NCNetworking.shared.metadataTranfersSuccess.flush()
-        guard !expired else {
-            return
-        }
+        guard !expired else { return }
 
         // Discover new items for Auto Upload
         let numAutoUpload = await NCAutoUpload.shared.initAutoUpload()
         nkLog(tag: self.global.logTagBgSync, emoji: .start, message: "Auto upload found \(numAutoUpload) new items")
-        guard !expired else {
-            return
-        }
+        guard !expired else { return }
 
         // Fetch METADATAS
         let metadatas = await NCManageDatabase.shared.getMetadataProcess()
@@ -264,9 +260,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         for metadata in pendingCreateFolders {
-            guard !expired else {
-                return
-            }
+            guard !expired else { return }
+
             let err = await NCNetworking.shared.createFolderForAutoUpload(
                 serverUrlFileName: metadata.serverUrlFileName,
                 account: metadata.account
@@ -283,7 +278,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let uploading = metadatas.lazy.filter { $0.status == self.global.metadataStatusUploading }.count
         let availableProcess = max(0, NCBrandOptions.shared.numMaximumProcess - (downloading + uploading))
 
-        // Start Auto Uploads (cap by available slots)
+        // Start Auto Uploads
         let metadatasToUpload = Array(
             metadatas.lazy.filter {
                 $0.status == self.global.metadataStatusWaitUpload &&
@@ -294,12 +289,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         )
 
         let cameraRoll = NCCameraRoll()
-        for metadata in metadatasToUpload {
-            guard !expired else {
-                return
-            }
 
-            // File exists for Auto Upload? skip it
+        for metadata in metadatasToUpload {
+            guard !expired else { return }
+
+            // File exists? skip it
             let error = await NCNetworking.shared.fileExists(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
             if error == .success {
                 await NCManageDatabase.shared.deleteMetadataAsync(id: metadata.ocId)
@@ -308,6 +302,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
             // Expand seed into concrete metadatas (e.g., Live Photo pair)
             let extracted = await cameraRoll.extractCameraRoll(from: metadata)
+            guard !expired else { return }
 
             for metadata in extracted {
                 // Sequential await keeps ordering and simplifies backpressure
@@ -317,6 +312,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 } else {
                     nkLog(tag: self.global.logTagBgSync, emoji: .error, message: "Upload failed \(metadata.fileName) -> \(metadata.serverUrl) [\(err.errorDescription)]")
                 }
+                guard !expired else { return }
             }
         }
     }
@@ -326,9 +322,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
         nkLog(debug: "Handle events For background URLSession: \(identifier)")
 
-        if NCManageDatabase.shared.openRealmBackground() {
-            WidgetCenter.shared.reloadAllTimelines()
-        }
+        NCManageDatabase.shared.openRealmBackground()
 
         backgroundSessionCompletionHandler = completionHandler
     }

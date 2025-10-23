@@ -28,7 +28,7 @@ struct TransfersView: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             contentView
                 .navigationTitle(NSLocalizedString("_transfers_", comment: ""))
                 .toolbar {
@@ -44,7 +44,6 @@ struct TransfersView: View {
         .onDisappear {
             model.detach()
         }
-        .navigationViewStyle(.stack)
         .presentationDetents([.medium, .large])
     }
 
@@ -155,7 +154,7 @@ struct EmptyTransfersView: View {
                 try? await Task.sleep(nanoseconds: interval)
                 elapsed += interval
 
-                if model.inProgressCount > 0 {
+                if model.inProgressCount > 0 || model.inWaitingCount == 0 {
                     break
                 }
 
