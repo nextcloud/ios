@@ -6,7 +6,7 @@ import Foundation
 import NextcloudKit
 
 final class TransfersViewModel: ObservableObject {
-    @Published var items: [tableMetadata] = []
+    @Published var metadatas: [tableMetadata] = []
     @Published var progressMap: [String: Float] = [:]
     @Published var isLoading = false
     @Published var showFlushMessage = false
@@ -22,18 +22,18 @@ final class TransfersViewModel: ObservableObject {
     private let global = NCGlobal.shared
 
     private var observerToken: NSObjectProtocol?
-    internal var sceneIdentifier: String = ""
+    internal let sceneIdentifier: String = UUID().uuidString
 
     init(session: NCSession.Session) {
         self.session = session
 
-        Task { @MainActor in
-            await NCNetworking.shared.transferDispatcher.addDelegate(self)
-            await NCNetworkingProcess.shared.inWaitingBadge()
-        }
-
         observerToken = NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMetadataTranfersSuccessFlush), object: nil, queue: nil) { [weak self] _ in
             self?.showFlushMessage = true
+        }
+
+        Task { @MainActor in
+            await NCNetworking.shared.transferDispatcher.addDelegate(self)
+            await pollTransfers()
         }
     }
 
@@ -44,20 +44,42 @@ final class TransfersViewModel: ObservableObject {
         }
     }
 
+    func detach() {
+        if let token = observerToken {
+            NotificationCenter.default.removeObserver(token)
+            observerToken = nil
+        }
+        Task { @MainActor in
+            await NCNetworking.shared.transferDispatcher.removeDelegate(self)
+        }
+    }
+
     @MainActor
     func pollTransfers() async {
         while !Task.isCancelled {
             if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] != "1" {
                 isLoading = true
+
+                // Items
                 let transfersSuccess = await networking.metadataTranfersSuccess.getAll()
-                items = await database.getTransferAsync(tranfersSuccess: transfersSuccess)
+                let results = await database.getTransferAsync(tranfersSuccess: transfersSuccess)
+                metadatas = results.filter {
+                    self.global.metadataStatusTransfers.contains($0.status)
+                }
+
+                // inWaitingCount
                 inWaitingCount = await NCNetworkingProcess.shared.getInWaitingCount()
-                inProgressCount = items.compactMap(\.status)
+
+                // inProgressCount
+                inProgressCount = metadatas.compactMap(\.status)
                     .filter { NCGlobal.shared.metadatasStatusInProgress.contains($0) }
                     .count
-               inErrorCount = items.compactMap(\.errorCode)
+
+                // inErrorCount
+                inErrorCount = metadatas.compactMap(\.errorCode)
                     .filter { $0 != 0 }
                     .count
+
                 isLoading = false
             }
             try? await Task.sleep(nanoseconds: 500_000_000)
@@ -69,14 +91,6 @@ final class TransfersViewModel: ObservableObject {
             return
         }
         await NCNetworking.shared.cancelTask(metadata: metadata)
-    }
-
-    func readablePath(for item: tableMetadata) -> String {
-        let url = item.serverUrl
-        let home = utilityFileSystem.getHomeServer(session: session)
-        var path = url.replacingOccurrences(of: home, with: "")
-        if path.isEmpty { path = "/" }
-        return item.account + " " + path
     }
 
     func progress(for item: tableMetadata) -> Float {
@@ -157,7 +171,7 @@ extension TransfersViewModel: @MainActor NCTransferDelegate {
     func transferProgressDidUpdate(progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String) {
         Task { @MainActor in
             let key = "\(serverUrl)|\(fileName)"
-            return progressMap[key] = progress
+            progressMap[key] = progress
         }
     }
 }

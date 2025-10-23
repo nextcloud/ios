@@ -12,13 +12,11 @@ struct TransfersView: View {
 
     private let onClose: (() -> Void)?
 
-    init(session: NCSession.Session? = nil,
-         previewItems: [tableMetadata]? = nil,
-         onClose: (() -> Void)? = nil) {
-        if let previewItems {
+    init(session: NCSession.Session? = nil, previewMetadatas: [tableMetadata]? = nil, onClose: (() -> Void)? = nil) {
+        if let previewMetadatas {
             let previewSession = NCSession.Session(account: "", urlBase: "", user: "", userId: "")
             let model = TransfersViewModel(session: previewSession)
-            model.items = previewItems
+            model.metadatas = previewMetadatas
             _model = StateObject(wrappedValue: model)
         } else if let session {
             _model = StateObject(wrappedValue: TransfersViewModel(session: session))
@@ -42,9 +40,9 @@ struct TransfersView: View {
                         }
                     }
                 }
-                .task {
-                    await model.pollTransfers()
-                }
+        }
+        .onDisappear {
+            model.detach()
         }
         .navigationViewStyle(.stack)
         .presentationDetents([.medium, .large])
@@ -52,7 +50,7 @@ struct TransfersView: View {
 
     @ViewBuilder
     private var contentView: some View {
-        if model.showFlushMessage || (model.items.isEmpty && model.inWaitingCount == 0) {
+        if model.showFlushMessage || (model.metadatas.isEmpty && model.inWaitingCount == 0) {
             EmptyTransfersView(model: model)
         } else {
             List {
@@ -61,7 +59,7 @@ struct TransfersView: View {
                     inProgressCount: model.inProgressCount,
                     inErrorCount: model.inErrorCount
                 )) {
-                    ForEach(model.items, id: \.ocId) { item in
+                    ForEach(model.metadatas, id: \.ocId) { item in
                         TransferRowView(model: model, item: item) {
                             await model.cancel(item: item)
                         }
@@ -144,7 +142,7 @@ struct EmptyTransfersView: View {
             withAnimation(.spring(response: 0.35, dampingFraction: 0.82)) {
                 flash = true
             }
-            try? await Task.sleep(nanoseconds: 3_000_000_000)
+            try? await Task.sleep(nanoseconds: 4_000_000_000)
             withAnimation(.easeInOut(duration: 0.25)) {
                 flash = false
             }
@@ -173,11 +171,6 @@ struct TransferRowView: View {
                 VStack(alignment: .leading, spacing: 6) {
                     Text(item.fileName)
                         .font(.headline)
-
-                    Text(model.readablePath(for: item))
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .padding(.top, 2)
 
                     if !status.status.isEmpty {
                         Text(status.status)
@@ -243,13 +236,12 @@ struct TransferRowView: View {
 
 struct TransfersView_Previews: PreviewProvider {
     static var previews: some View {
-        // let items: [tableMetadata] = []
-        let items: [tableMetadata] = [
+        let metadatas: [tableMetadata] = [
             tableMetadata(ocId: "1", fileName: "filename 1", status: NCGlobal.shared.metadataStatusWaitCreateFolder),
             tableMetadata(ocId: "2", fileName: "filename 2", size: 7230000, status: NCGlobal.shared.metadataStatusUploading),
             tableMetadata(ocId: "3", fileName: "filename 3", size: 5230000, status: NCGlobal.shared.metadataStatusDownloading),
             tableMetadata(ocId: "4", fileName: "filename 4", size: 7230000, status: NCGlobal.shared.metadataStatusUploadError, sessionError: "Disk full Disk full Disk full Disk full Disk full Disk full Disk full Disk full", errorCode: 1)]
-        return TransfersView(previewItems: items)
+        return TransfersView(previewMetadatas: metadatas)
             .previewDisplayName("Transfers – Preview Items")
     }
 }

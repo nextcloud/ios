@@ -92,7 +92,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         Task {
             let capabilities = await database.getCapabilities(account: self.session.account) ?? NKCapabilities.Capabilities()
-            mainNavigationController?.createPlusMenu(session: self.session, capabilities: capabilities, isHidden: true)
+            await mainNavigationController?.createPlusMenu(session: self.session, capabilities: capabilities, isHidden: true)
         }
 
         loadItems()
