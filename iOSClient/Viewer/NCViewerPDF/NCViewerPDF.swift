@@ -79,7 +79,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
                                                                              userId: metadata.userId,
                                                                              urlBase: metadata.urlBase)
             pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
-            
+
             navigationItem.rightBarButtonItem = UIBarButtonItem(
                 image: NCImageCache.shared.getImageButtonMore(),
                 primaryAction: nil,
@@ -133,7 +133,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         // NOTIFIFICATION
 
-        NotificationCenter.default.addObserver(self, selector: #selector(viewUnload), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(searchText), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuSearchTextPDF), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(goToPage), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuGotToPageInPDF), object: nil)
 
@@ -141,7 +140,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     }
 
     deinit {
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuSearchTextPDF), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMenuGotToPageInPDF), object: nil)
 
@@ -289,12 +287,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         }, completion: { _ in
             self.pdfView.autoScales = true
         })
-    }
-
-    @objc func viewUnload() {
-        DispatchQueue.main.async {
-            self.navigationController?.popViewController(animated: true)
-        }
     }
 
     @objc func viewDismiss() {
@@ -533,22 +525,7 @@ extension NCViewerPDF: EasyTipViewDelegate {
 }
 
 extension NCViewerPDF: NCTransferDelegate {
-    func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {
-        switch status {
-        // DELETE
-        case NCGlobal.shared.networkingStatusDelete:
-            let shouldUnloadView = metadatasError.contains { key, error in
-                key.ocId == self.metadata?.ocId && error == .success
-            }
-            if shouldUnloadView {
-                self.viewUnload()
-            }
-        default:
-            break
-        }
-    }
-
-    func transferChange(status: String, metadata: tableMetadata, error: NKError) {
+    func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError) {
         guard self.metadata?.serverUrl == metadata.serverUrl,
               self.metadata?.fileNameView == metadata.fileNameView
         else {
@@ -557,6 +534,12 @@ extension NCViewerPDF: NCTransferDelegate {
 
         DispatchQueue.main.async {
             switch status {
+            // DELETE
+            case NCGlobal.shared.networkingStatusDelete:
+                if error == .success,
+                   metadata.ocId == self.metadata?.ocId {
+                    self.navigationController?.popViewController(animated: true)
+                }
             // UPLOAD
             case NCGlobal.shared.networkingStatusUploading:
                 NCActivityIndicator.shared.start()

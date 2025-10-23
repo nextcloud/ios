@@ -63,6 +63,10 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         self.tabBarController as? NCMainTabBarController
     }
 
+    var mainNavigationController: NCMainNavigationController? {
+        self.navigationController as? NCMainNavigationController
+    }
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -85,6 +89,11 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
+        Task {
+            let capabilities = await database.getCapabilities(account: self.session.account) ?? NKCapabilities.Capabilities()
+            await mainNavigationController?.createPlusMenu(session: self.session, capabilities: capabilities, isHidden: true)
+        }
 
         loadItems()
         tableView.reloadData()
@@ -223,7 +232,8 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
 
         // ITEM : External
-        if NCBrandOptions.shared.disable_more_external_site == false {
+        if NCBrandOptions.shared.disable_more_external_site == false,
+           capabilities.externalSites {
             if let externalSites = self.database.getAllExternalSites(account: session.account) {
                 for externalSite in externalSites {
                     if !externalSite.name.isEmpty, !externalSite.url.isEmpty, let urlEncoded = externalSite.url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {

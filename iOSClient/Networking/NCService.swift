@@ -1,25 +1,6 @@
-//
-//  NCService.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 14/03/18.
-//  Copyright © 2018 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2018 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 @preconcurrency import NextcloudKit
@@ -222,7 +203,7 @@ class NCService: NSObject {
             }
         }
 
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateNotification)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterServerDidUpdate, userInfo: ["account": account])
     }
 
     // MARK: -
@@ -234,8 +215,6 @@ class NCService: NSObject {
         }
 
         nkLog(tag: self.global.logTagSync, emoji: .start, message: "Synchronize favorite for account: \(account)")
-
-        await self.database.cleanTablesOcIds(account: tblAccount.account, userId: tblAccount.userId, urlBase: tblAccount.urlBase)
 
         let resultsFavorite = await NextcloudKit.shared.listingFavoritesAsync(showHiddenFiles: showHiddenFiles, account: account) { task in
             Task {
@@ -273,7 +252,8 @@ class NCService: NSObject {
                                                          etag: metadata.etag,
                                                          metadatasInDownload: metadatasInDownload,
                                                          userId: metadata.userId,
-                                                         urlBase: metadata.urlBase) {
+                                                         urlBase: metadata.urlBase),
+               metadata.status == self.global.metadataStatusNormal {
                 await self.database.setMetadataSessionInWaitDownloadAsync(ocId: metadata.ocId,
                                                                           session: NCNetworking.shared.sessionDownloadBackground,
                                                                           selector: NCGlobal.shared.selectorSynchronizationOffline)
@@ -307,23 +287,25 @@ class NCService: NSObject {
                     }
                     if results.error == .success,
                        let data = results.responseData?.data {
-                        let size = CGSize(width: 256, height: 256)
-                        let finalImage: UIImage?
-                        if let uiImage = UIImage(data: data)?.resizeImage(size: size) {
-                            finalImage = uiImage
-                        } else if let svgImage = SVGKImage(data: data) {
-                            svgImage.size = size
-                            finalImage = svgImage.uiImage
-                        } else {
-                            print("Unsupported image format")
-                            continue
-                        }
-                        if let image = finalImage {
-                            let filePath = (self.utilityFileSystem.directoryUserData as NSString).appendingPathComponent(fileName + ".png")
-                            do {
-                                try image.pngData()?.write(to: URL(fileURLWithPath: filePath), options: .atomic)
-                            } catch {
-                                print("Failed to write image to disk: \(error.localizedDescription)")
+                        await MainActor.run {
+                            let size = CGSize(width: 256, height: 256)
+                            let finalImage: UIImage?
+                            if let uiImage = UIImage(data: data)?.resizeImage(size: size) {
+                                finalImage = uiImage
+                            } else if let svgImage = SVGKImage(data: data) {
+                                svgImage.size = size
+                                finalImage = svgImage.uiImage
+                            } else {
+                                print("Unsupported image format")
+                                finalImage = nil
+                            }
+                            if let image = finalImage {
+                                let filePath = (self.utilityFileSystem.directoryUserData as NSString).appendingPathComponent(fileName + ".png")
+                                do {
+                                    try image.pngData()?.write(to: URL(fileURLWithPath: filePath), options: .atomic)
+                                } catch {
+                                    print("Failed to write image to disk: \(error.localizedDescription)")
+                                }
                             }
                         }
                     }

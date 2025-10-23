@@ -66,6 +66,8 @@ class NCShareExtension: UIViewController {
         tableView.tableFooterView = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 0, height: 1)))
         commandViewHeightConstraint.constant = heightCommandView
 
+        cancelButton.title = NSLocalizedString("_cancel_", comment: "")
+
         createFolderView.layer.cornerRadius = 10
         createFolderImage.image = utility.loadImage(named: "folder.badge.plus", colors: [NCBrandColor.shared.iconImageColor])
         createFolderLabel.text = NSLocalizedString("_create_folder_", comment: "")
@@ -407,24 +409,9 @@ extension NCShareExtension {
         hud.ringProgress(view: self.view, text: NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUploaded) " + NSLocalizedString("_of_", comment: "") + " \(self.filesName.count)")
 
         if metadata.isDirectoryE2EE {
-            error = await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: self)
+            error = await NCNetworkingE2EEUpload().upload(metadata: metadata, session: session, controller: self)
         } else if metadata.chunk > 0 {
-            var numChunks = 0
-            var counterUpload: Int = 0
-            hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""))
-
-            let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
-                numChunks = num
-            } counterChunk: { counter in
-                self.hud.progress(num: Float(counter), total: Float(numChunks))
-            } startFilesChunk: { _ in
-                self.hud.setText(NSLocalizedString("_keep_active_for_upload_", comment: ""))
-            } requestHandler: { _ in
-                self.hud.progress(num: Float(counterUpload), total: Float(numChunks))
-                counterUpload += 1
-            } assembling: {
-                self.hud.setText(NSLocalizedString("_wait_", comment: ""))
-            }
+            let results = await NCNetworking.shared.uploadChunk(metadata: metadata, hud: hud)
             error = results.error
         } else {
             let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,

@@ -14,7 +14,6 @@ protocol NCCollectionViewCommonSelectTabBarDelegate: AnyObject {
     func share()
     func saveAsAvailableOffline(isAnyOffline: Bool)
     func lock(isAnyLocked: Bool)
-    func convertLivePhoto(metadataFirst: tableMetadata?, metadataLast: tableMetadata?)
 }
 
 class NCCollectionViewCommonSelectTabBar: ObservableObject {
@@ -30,7 +29,6 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
     @Published var canUnlock = true
     @Published var enableLock = false
     @Published var isSelectedEmpty = true
-    @Published var canConvertLivePhoto = false
     @Published var metadatas: [tableMetadata] = []
 
     init(controller: NCMainTabBarController? = nil, viewController: UIViewController, delegate: NCCollectionViewCommonSelectTabBarDelegate? = nil) {
@@ -97,7 +95,6 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
             isAllDirectory = true
             isAnyLocked = false
             canUnlock = true
-            canConvertLivePhoto = false
             self.metadatas = metadatas
 
             for metadata in metadatas {
@@ -131,15 +128,6 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
             }
             let capabilities = NCNetworking.shared.capabilities[controller?.account ?? ""] ?? NKCapabilities.Capabilities()
             enableLock = !isAnyDirectory && canUnlock && !capabilities.filesLockVersion.isEmpty
-            // Convert Live Photo
-            if metadatas.count == 2,
-               let metadataFirst = metadatas.first,
-               !metadataFirst.isLivePhoto,
-               let metadataLast = metadatas.last,
-               !metadataLast.isLivePhoto,
-               (metadataFirst.isVideo && metadataLast.isImage) || (metadataFirst.isImage && metadataLast.isVideo) {
-                canConvertLivePhoto = true
-            }
         }
         self.isSelectedEmpty = fileSelect.isEmpty
     }
@@ -188,13 +176,6 @@ struct NCCollectionViewCommonSelectTabBarView: View {
                 .disabled(tabBarSelect.isSelectedEmpty)
 
                 Menu {
-                    Button(action: {
-                        tabBarSelect.delegate?.convertLivePhoto(metadataFirst: tabBarSelect.metadatas.first, metadataLast: tabBarSelect.metadatas.last)
-                    }, label: {
-                        Label(NSLocalizedString("_convert_live_photo_", comment: ""), systemImage: "livephoto")
-                    })
-                    .disabled(!tabBarSelect.canConvertLivePhoto)
-
                     Button(action: {
                         tabBarSelect.delegate?.saveAsAvailableOffline(isAnyOffline: tabBarSelect.isAnyOffline)
                     }, label: {

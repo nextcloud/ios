@@ -15,8 +15,11 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     let database = NCManageDatabase.shared
     let utilityFileSystem = NCUtilityFileSystem()
     var anchor: UInt64 = 0
+
     // X-NC-PAGINATE
     var recordsPerPage: Int = 100
+    // X-NC-PAGINATE
+
     var paginateToken: String?
     var paginatedTotal: Int = 0
 

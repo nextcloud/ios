@@ -142,6 +142,9 @@ struct NCUploadAssetsView: View {
                                 Text(NSLocalizedString("_use_folder_auto_upload_", comment: ""))
                                     .font(.system(size: 15))
                             })
+                            .onChange(of: model.useAutoUploadFolder) {
+                                model.updateUseAutoUploadFolder()
+                            }
                             .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getElement(account: metadata?.account))))
 
                             if model.useAutoUploadFolder {
@@ -149,6 +152,9 @@ struct NCUploadAssetsView: View {
                                     Text(NSLocalizedString("_autoupload_create_subfolder_", comment: ""))
                                         .font(.system(size: 15))
                                 })
+                                .onChange(of: model.useAutoUploadSubFolder) {
+                                    model.updateUseAutoUploadSubFolder()
+                                }
                                 .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getElement(account: metadata?.account))))
                             }
                         }

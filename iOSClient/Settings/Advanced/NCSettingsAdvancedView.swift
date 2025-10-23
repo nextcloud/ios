@@ -92,7 +92,7 @@ struct NCSettingsAdvancedView: View {
                     Text(NSLocalizedString("_privacy_footer_", comment: ""))
                 })
             }
-            // Section: Diagnostic LOG
+            // Section: Diagnostic
             if !NCBrandOptions.shared.disable_log {
                 Section(content: {
                     /// View Log File

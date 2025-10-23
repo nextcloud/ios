@@ -285,7 +285,7 @@ extension NCViewerProviderContextMenu: VLCMediaPlayerDelegate {
 }
 
 extension NCViewerProviderContextMenu: NCTransferDelegate {
-    func transferChange(status: String, metadata: tableMetadata, error: NKError) {
+    func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError) {
         if error != .success {
             NCContentPresenter().showError(error: error)
         }

@@ -28,7 +28,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var imageFavorite: UIImageView!
-    @IBOutlet weak var imageFavoriteBackground: UIImageView!
     @IBOutlet weak var imageLocal: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
@@ -142,7 +141,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         imageItem.layer.masksToBounds = true
         imageStatus.image = nil
         imageFavorite.image = nil
-        imageFavoriteBackground.isHidden = true
         imageLocal.image = nil
         labelTitle.text = ""
         labelInfo.text = ""
@@ -282,18 +280,41 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 
     func setIconOutlines() {
-        imageFavoriteBackground.isHidden = fileFavoriteImage?.image == nil
-
-        if imageStatus.image != nil {
-            imageStatus.makeCircularBackground(withColor: .systemBackground)
-        } else {
-            imageStatus.backgroundColor = .clear
+        [imageStatus, imageLocal].forEach { imageView in
+            imageView.makeCircularBackground(withColor: imageView.image != nil ? .systemBackground : .clear)
         }
 
-        if imageLocal.image != nil {
-            imageLocal.makeCircularBackground(withColor: .systemBackground)
+        if imageFavorite.image != nil {
+            let outlineView = UIImageView()
+            outlineView.translatesAutoresizingMaskIntoConstraints = false
+            outlineView.image = UIImage(systemName: "star")
+            outlineView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 16, weight: .thin)
+            outlineView.tintColor = .systemBackground
+
+            imageFavorite.addSubview(outlineView)
+            NSLayoutConstraint.activate([
+                outlineView.leadingAnchor.constraint(equalTo: imageFavorite.leadingAnchor, constant: -1),
+                outlineView.trailingAnchor.constraint(equalTo: imageFavorite.trailingAnchor, constant: 1),
+                outlineView.topAnchor.constraint(equalTo: imageFavorite.topAnchor, constant: -1),
+                outlineView.bottomAnchor.constraint(equalTo: imageFavorite.bottomAnchor, constant: 1)
+            ])
+            imageFavorite.sendSubviewToBack(outlineView)
         } else {
-            imageLocal.backgroundColor = .clear
+            imageFavorite.subviews.forEach { view in
+                view.removeFromSuperview()
+            }
+        }
+
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        // Keep the shadow path in sync with current bounds
+        imageStatus.layer.shadowPath = UIBezierPath(ovalIn: imageStatus.bounds).cgPath
+
+        // Ensure the circular background remains correct after Auto Layout
+        if imageStatus.layer.cornerRadius != imageStatus.bounds.width / 2 {
+            imageStatus.layer.cornerRadius = imageStatus.bounds.width / 2
         }
     }
 }
@@ -340,5 +361,78 @@ class NCListLayout: UICollectionViewFlowLayout {
 
     override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
         return proposedContentOffset
+    }
+}
+
+class BidiFilenameLabel: UILabel {
+    var fullFilename: String = ""
+
+    var isFolder: Bool = false
+
+    var isRTL: Bool = false
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        updateText()
+    }
+
+    private func updateText() {
+        guard !fullFilename.isEmpty else {
+            self.text = ""
+            return
+        }
+
+        let availableWidth = bounds.width
+        guard availableWidth > 0 else { return }
+
+        let isRTL = UIView.userInterfaceLayoutDirection(for: semanticContentAttribute) == .rightToLeft
+        let sanitizedFilename = fullFilename.sanitizeForBidiCharacters(isFolder: isFolder, isRTL: isRTL)
+
+        let nsFilename = sanitizedFilename as NSString
+        let ext = nsFilename.pathExtension
+        let base = nsFilename.deletingPathExtension
+
+        let dotExt = ext.isEmpty ? "" : "." + ext
+        let truncatedBase = truncateBase(base: base, dotExt: dotExt, maxWidth: availableWidth, font: font ?? UIFont.systemFont(ofSize: 17))
+
+        self.text = sanitizedFilename.replacingOccurrences(of: base, with: truncatedBase)
+    }
+
+    private func truncateBase(base: String, dotExt: String, maxWidth: CGFloat, font: UIFont) -> String {
+        let extWidth = (dotExt as NSString).size(withAttributes: [.font: font]).width
+
+        if (base as NSString).size(withAttributes: [.font: font]).width + extWidth <= maxWidth {
+            return base
+        }
+
+        let characters = Array(base)
+        var low = 0
+        var high = characters.count
+        var result = ""
+
+        while low <= high {
+            let mid = (low + high) / 2
+            let prefixCount = mid / 2
+            let suffixCount = mid - prefixCount
+            let finalString = String(characters.prefix(prefixCount)) + "…" + String(characters.suffix(suffixCount))
+            let finalStringWidth = (finalString as NSString).size(withAttributes: [.font: font]).width + extWidth
+
+            if finalStringWidth <= maxWidth {
+                result = finalString
+                low = mid + 1
+            } else {
+                high = mid - 1
+            }
+        }
+
+        return result
     }
 }

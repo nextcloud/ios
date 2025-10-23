@@ -112,7 +112,6 @@ class NCDeepLinkHandler {
     }
 
     private func navigateToCreateNew(controller: NCMainTabBarController) {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
         controller.selectedIndex = ControllerConstants.filesIndex
         DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
             let serverUrl = controller.currentServerUrl()
@@ -126,8 +125,7 @@ class NCDeepLinkHandler {
 
                 return
             }
-
-            appDelegate.toggleMenu(controller: controller, sender: nil)
+            // appDelegate.toggleMenu(controller: controller, sender: nil)
         }
     }
 

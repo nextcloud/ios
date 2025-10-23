@@ -26,9 +26,9 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
 
         if canDeleteServer {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { _ in
-                self.networking.setStatusWaitDelete(metadatas: metadatas, sceneIdentifier: self.controller?.sceneIdentifier)
                 self.setEditMode(false)
                 Task {
+                    await self.networking.setStatusWaitDelete(metadatas: metadatas, sceneIdentifier: self.controller?.sceneIdentifier)
                     await self.reloadDataSource()
                 }
             })
@@ -115,7 +115,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
             navigationItem.hidesBackButton = editMode
             navigationController?.interactivePopGestureRecognizer?.isEnabled = !editMode
             searchController(enabled: !editMode)
-            isHiddenPlusButton(editMode)
+            mainNavigationController?.hiddenPlusButton(editMode)
 
             if editMode {
                 navigationItem.leftBarButtonItems = nil
@@ -126,14 +126,5 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
 
             self.collectionView.reloadData()
         }
-    }
-
-    func convertLivePhoto(metadataFirst: tableMetadata?, metadataLast: tableMetadata?) {
-        if let metadataFirst, let metadataLast {
-            Task {
-                await self.networking.setLivePhoto(metadataFirst: metadataFirst, metadataLast: metadataLast)
-            }
-        }
-        setEditMode(false)
     }
 }

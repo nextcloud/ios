@@ -427,12 +427,14 @@ extension NCManageDatabase {
             }
         }
 
+        // Create Auto Upload Directory
         let serverUrlBase = utilityFileSystem.createServerUrl(serverUrl: autoUploadDirectory, fileName: autoUploadFileName)
         let fileNameBase = getAccountAutoUploadFileName(account: session.account)
         let metadata = metadatasFolder.first(where: { $0.serverUrl + "/" + $0.fileNameView == serverUrlBase })
 
-        createMetadata(serverUrl: serverUrlBase, fileName: fileNameBase, metadata: metadata)
+        createMetadata(serverUrl: autoUploadDirectory, fileName: fileNameBase, metadata: metadata)
 
+        // Create Auto Upload SubDirectory - Granularity
         if useSubFolder {
             let autoUploadServerUrlBase = self.getAccountAutoUploadServerUrlBase(session: session)
             let autoUploadSubfolderGranularity = self.getAccountAutoUploadSubfolderGranularity()

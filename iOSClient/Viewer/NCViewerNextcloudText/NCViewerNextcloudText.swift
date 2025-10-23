@@ -167,7 +167,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
 
     public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         if message.name == "DirectEditingMobileInterface" {
-
             if message.body as? String == "close" {
                 viewUnload()
             }
@@ -231,7 +230,7 @@ extension NCViewerNextcloudText: UINavigationControllerDelegate {
         Task {
             if parent == nil {
                 await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferRequestData(serverUrl: self.metadata.serverUrl)
+                    delegate.transferReloadData(serverUrl: self.metadata.serverUrl, requestData: true, status: nil)
                 }
             }
         }
@@ -239,7 +238,7 @@ extension NCViewerNextcloudText: UINavigationControllerDelegate {
 }
 
 extension NCViewerNextcloudText: NCTransferDelegate {
-    func transferChange(status: String, metadata: tableMetadata, error: NKError) {
+    func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError) {
         DispatchQueue.main.async {
             switch status {
             // FAVORITE

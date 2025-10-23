@@ -14,6 +14,7 @@ class tableDirectory: Object {
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileId = ""
     @objc dynamic var lastOpeningDate = NSDate()
+    @objc dynamic var lastSyncDate: NSDate?
     @objc dynamic var ocId = ""
     @objc dynamic var offline: Bool = false
     @objc dynamic var permissions = ""
@@ -51,16 +52,25 @@ extension NCManageDatabase {
             }
 
             // tableDirectory
-            let directory = tableDirectory()
-            directory.account = metadata.account
-            directory.etag = metadata.etag
-            directory.favorite = metadata.favorite
-            directory.fileId = metadata.fileId
-            directory.ocId = metadata.ocId
-            directory.permissions = metadata.permissions
-            directory.richWorkspace = metadata.richWorkspace
-            directory.serverUrl = directoryServerUrl
-            realm.add(directory, update: .all)
+            if let tableDirectory = realm.object(ofType: tableDirectory.self, forPrimaryKey: metadata.ocId) {
+                tableDirectory.etag = metadata.etag
+                tableDirectory.favorite = metadata.favorite
+                tableDirectory.permissions = metadata.permissions
+                tableDirectory.richWorkspace = metadata.richWorkspace
+                tableDirectory.lastSyncDate = NSDate()
+            } else {
+                let directory = tableDirectory()
+                directory.account = metadata.account
+                directory.etag = metadata.etag
+                directory.favorite = metadata.favorite
+                directory.fileId = metadata.fileId
+                directory.ocId = metadata.ocId
+                directory.permissions = metadata.permissions
+                directory.richWorkspace = metadata.richWorkspace
+                directory.serverUrl = directoryServerUrl
+                directory.lastSyncDate = NSDate()
+                realm.add(directory, update: .all)
+            }
 
             // tableMetadata
             let results = realm.objects(tableMetadata.self)

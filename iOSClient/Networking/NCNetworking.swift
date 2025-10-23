@@ -1,25 +1,6 @@
-//
-//  NCNetworking.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 23/10/19.
-//  Copyright © 2019 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2019 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
 import OpenSSL
@@ -35,32 +16,24 @@ import SwiftUI
 
 protocol NCTransferDelegate: AnyObject {
     var sceneIdentifier: String { get }
+
+    func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError)
+    func transferReloadData(serverUrl: String?, requestData: Bool, status: Int?)
     func transferProgressDidUpdate(progress: Float,
                                    totalBytes: Int64,
                                    totalBytesExpected: Int64,
                                    fileName: String,
                                    serverUrl: String)
-
-    func transferChange(status: String, metadata: tableMetadata, error: NKError)
-    func transferChange(status: String, metadatasError: [tableMetadata: NKError])
-    func transferReloadData(serverUrl: String?, status: Int?)
-    func transferRequestData(serverUrl: String?)
-    func transferCopy(metadata: tableMetadata, destination: String, error: NKError)
-    func transferMove(metadata: tableMetadata, destination: String, error: NKError)
 }
 
 extension NCTransferDelegate {
+    func transferChange(status: String, metadata: tableMetadata, destination: String?, error: NKError) {}
+    func transferReloadData(serverUrl: String?, requestData: Bool, status: Int?) {}
     func transferProgressDidUpdate(progress: Float,
                                    totalBytes: Int64,
                                    totalBytesExpected: Int64,
                                    fileName: String,
                                    serverUrl: String) {}
-    func transferChange(status: String, metadata: tableMetadata, error: NKError) {}
-    func transferChange(status: String, metadatasError: [tableMetadata: NKError]) {}
-    func transferReloadData(serverUrl: String?, status: Int?) {}
-    func transferRequestData(serverUrl: String?) {}
-    func transferCopy(metadata: tableMetadata, destination: String, error: NKError) {}
-    func transferMove(metadata: tableMetadata, destination: String, error: NKError) {}
 }
 
 /// Actor-based delegate dispatcher using weak references.
@@ -80,29 +53,24 @@ actor NCTransferDelegateDispatcher {
 
     /// Notifies all delegates.
     func notifyAllDelegates(_ block: (NCTransferDelegate) -> Void) {
-        let delegatesCopy = transferDelegates.allObjects
+        let delegatesCopy = transferDelegates.allObjects.compactMap { $0 as? NCTransferDelegate }
         for delegate in delegatesCopy {
-            if let delegate = delegate as? NCTransferDelegate {
-                block(delegate)
-            }
+            block(delegate)
         }
     }
 
     func notifyAllDelegatesAsync(_ block: @escaping (NCTransferDelegate) async -> Void) async {
-        let delegatesCopy = transferDelegates.allObjects
+        let delegatesCopy = transferDelegates.allObjects.compactMap { $0 as? NCTransferDelegate }
         for delegate in delegatesCopy {
-            if let delegate = delegate as? NCTransferDelegate {
-                await block(delegate)
-            }
+            await block(delegate)
         }
     }
 
     /// Notifies the delegate for a specific scene.
     func notifyDelegate(forScene sceneIdentifier: String, _ block: (NCTransferDelegate) -> Void) {
-        let delegatesCopy = transferDelegates.allObjects
+        let delegatesCopy = transferDelegates.allObjects.compactMap { $0 as? NCTransferDelegate }
         for delegate in delegatesCopy {
-            if let delegate = delegate as? NCTransferDelegate,
-               delegate.sceneIdentifier == sceneIdentifier {
+            if delegate.sceneIdentifier == sceneIdentifier {
                 block(delegate)
             }
         }
@@ -112,9 +80,8 @@ actor NCTransferDelegateDispatcher {
     func notifyDelegates(forScene sceneIdentifier: String,
                          matching: (NCTransferDelegate) -> Void,
                          others: (NCTransferDelegate) -> Void) {
-        let delegatesCopy = transferDelegates.allObjects
+        let delegatesCopy = transferDelegates.allObjects.compactMap { $0 as? NCTransferDelegate }
         for delegate in delegatesCopy {
-            guard let delegate = delegate as? NCTransferDelegate else { continue }
             if delegate.sceneIdentifier == sceneIdentifier {
                 matching(delegate)
             } else {
@@ -167,7 +134,7 @@ actor NetworkingTasks {
             $0.identifier == identifier && $0.task.state == .running
         }
         active.append((identifier, task))
-        nkLog(tag: NCGlobal.shared.logNetworkingTasks, emoji: .start, message: "Start task for identifier: \(identifier)", consoleOnly: true)
+        nkLog(tag: NCGlobal.shared.logTagNetworkingTasks, emoji: .start, message: "Start task for identifier: \(identifier)", consoleOnly: true)
     }
 
     /// create a Identifier
@@ -192,7 +159,7 @@ actor NetworkingTasks {
 
         for element in active where element.identifier == identifier {
             element.task.cancel()
-            nkLog(tag: NCGlobal.shared.logNetworkingTasks, emoji: .cancel, message: "Cancel task for identifier: \(identifier)", consoleOnly: true)
+            nkLog(tag: NCGlobal.shared.logTagNetworkingTasks, emoji: .cancel, message: "Cancel task for identifier: \(identifier)", consoleOnly: true)
         }
         active.removeAll {
             $0.identifier == identifier
@@ -205,7 +172,7 @@ actor NetworkingTasks {
     func cancelAll() {
         active.forEach {
             $0.task.cancel()
-            nkLog(tag: NCGlobal.shared.logNetworkingTasks, emoji: .cancel, message: "Cancel task with identifier: \($0.identifier)", consoleOnly: true)
+            nkLog(tag: NCGlobal.shared.logTagNetworkingTasks, emoji: .cancel, message: "Cancel task with identifier: \($0.identifier)", consoleOnly: true)
         }
         active.removeAll()
     }
@@ -220,10 +187,42 @@ actor NetworkingTasks {
     }
 }
 
+/// Quantizes per-task progress updates to integer percentages (0...100).
+/// Each (serverUrlFileName) pair is tracked separately, so you get
+/// at most one update per integer percent for each transfer.
+actor ProgressQuantizer {
+    private var lastPercent: [String: Int] = [:]
+
+    /// Returns `true` only when integer percent changes (or hits 100).
+    ///
+    /// - Parameters:
+    ///   - serverUrlFileName: The name of the file being transferred.
+    ///   - fraction: Progress fraction [0.0 ... 1.0].
+    func shouldEmit(serverUrlFileName: String, fraction: Double) -> Bool {
+        let percent = min(max(Int((fraction * 100).rounded(.down)), 0), 100)
+
+        let last = lastPercent[serverUrlFileName] ?? -1
+        guard percent != last || percent == 100 else {
+            return false
+        }
+
+        lastPercent[serverUrlFileName] = percent
+        return true
+    }
+
+    /// Clears stored state for a finished transfer.
+    func clear(serverUrlFileName: String) {
+        lastPercent.removeValue(forKey: serverUrlFileName)
+    }
+}
+
 class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     static let shared = NCNetworking()
 
-    let networkingTasks = NetworkingTasks()
+    struct FileNameServerUrl: Hashable {
+        var fileName: String
+        var serverUrl: String
+    }
 
     let sessionDownload = NextcloudKit.shared.nkCommonInstance.identifierSessionDownload
     let sessionDownloadBackground = NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground
@@ -256,7 +255,11 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     // Capabilities
     var capabilities = ThreadSafeDictionary<String, NKCapabilities.Capabilities>()
 
+    // Actors
     let transferDispatcher = NCTransferDelegateDispatcher()
+    let networkingTasks = NetworkingTasks()
+    let progressQuantizer = ProgressQuantizer()
+    let metadataTranfersSuccess = NCMetadataTranfersSuccess()
 
     // OPERATIONQUEUE
     let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
@@ -283,6 +286,7 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
             lastReachability = false
         }
         networkReachability = typeReachability
+        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterNetworkReachability, userInfo: nil)
     }
 
     func retrieveIdentityFromKeychain(label: String) -> SecIdentity? {
@@ -350,7 +354,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
             return
         }
 
-        // Salvataggio asincrono → nessun rischio per il main thread
         DispatchQueue.global(qos: .utility).async {
             self.saveX509Certificate(certificate, host: host, directoryCertificate: directoryCertificate)
 
@@ -422,4 +425,54 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 
         BIO_free(mem)
     }
+
+    // MARK: - Helper
+
+    func helperMetadataSuccess(metadata: tableMetadata) async -> (localFile: tableMetadata?, livePhoto: tableMetadata?, autoUpload: tableAutoUploadTransfer?) {
+        var localFile: tableMetadata?
+        var livePhoto: tableMetadata?
+        var autoUpload: tableAutoUploadTransfer?
+
+        // File System Local file
+        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer, userId: metadata.userId, urlBase: metadata.urlBase)
+
+        if metadata.sessionSelector == NCGlobal.shared.selectorUploadFileNODelete {
+            let fineManeToPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase)
+            await utilityFileSystem.moveFileAsync(atPath: fileNamePath, toPath: fineManeToPath)
+            localFile = tableMetadata(value: metadata)
+        } else {
+            utilityFileSystem.removeFile(atPath: fileNamePath)
+        }
+
+        // Live Photo
+        let capabilities = await NKCapabilities.shared.getCapabilities(for: metadata.account)
+        if capabilities.isLivePhotoServerAvailable,
+           metadata.isLivePhoto {
+            livePhoto = tableMetadata(value: metadata)
+        }
+
+        // Auto Upload
+        if metadata.sessionSelector == self.global.selectorUploadAutoUpload,
+           let serverUrlBase = metadata.autoUploadServerUrlBase {
+            autoUpload = tableAutoUploadTransfer(account: metadata.account,
+                                                 serverUrlBase: serverUrlBase,
+                                                 fileName: metadata.fileNameView,
+                                                 assetLocalIdentifier: metadata.assetLocalIdentifier,
+                                                 date: metadata.creationDate as Date)
+        }
+
+        return (localFile: localFile, livePhoto: livePhoto, autoUpload: autoUpload)
+    }
+
+    #if !EXTENSION
+    @inline(__always)
+    func isInBackground() -> Bool {
+       return isAppInBackground
+    }
+    #else
+    @inline(__always)
+    func isInBackground() -> Bool {
+        return false
+    }
+    #endif
 }

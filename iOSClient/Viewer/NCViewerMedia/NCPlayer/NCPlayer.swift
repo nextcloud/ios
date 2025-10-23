@@ -307,7 +307,7 @@ extension NCPlayer: VLCCustomDialogRendererProtocol {
 
         alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
             self.playerToolBar?.removeFromSuperview()
-            self.viewerMediaPage?.viewUnload()
+            self.viewerMediaPage?.navigationController?.popViewController(animated: true)
         }))
 
         self.viewerMediaPage?.present(alert, animated: true)

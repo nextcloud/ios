@@ -26,6 +26,7 @@ import PhotosUI
 
 final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
     let fileManager = FileManager()
+    private let fileIO = DispatchQueue(label: "FileManager.Delete", qos: .utility)
 
     var directoryGroup: String {
         return fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)?.path ?? ""
@@ -382,10 +383,10 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         }
     }
 
-    func removeFile(atPath: String) {
-        DispatchQueue.global(qos: .utility).async {
+    func removeFile(atPath path: String) {
+        fileIO.async {
             do {
-                try FileManager.default.removeItem(atPath: atPath)
+                try FileManager.default.removeItem(atPath: path)
             } catch {
                 print(error)
             }
@@ -409,7 +410,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
                     }
                     try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
                 } catch {
-                    print("Error moving \(atPath) → \(toPath): \(error)")
+                    print("Error moving \(atPath) -> \(toPath): \(error)")
                 }
                 continuation.resume()
             }
@@ -776,7 +777,7 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
                         try manager.removeItem(atPath: fileURL.path)
                     } catch { }
                     manager.createFile(atPath: fileURL.path, contents: nil, attributes: nil)
-                    await NCManageDatabase.shared.deleteLocalFileOcIdAsync(ocId)
+                    await NCManageDatabase.shared.deleteLocalFileAsync(id: ocId)
                 }
             }
         }

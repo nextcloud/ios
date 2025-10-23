@@ -164,7 +164,7 @@ class FileProviderData: NSObject {
 
         if error == .success {
             if let metadata = await self.database.getMetadataFromOcIdAsync(ocId) {
-                await self.database.addLocalFileAsync(metadata: metadata)
+                await self.database.addLocalFilesAsync(metadatas: [metadata])
             }
         }
 
@@ -188,7 +188,7 @@ class FileProviderData: NSObject {
                         size: Int64,
                         task: URLSessionTask,
                         error: NKError) async {
-        guard let metadata = await self.database.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) else {
+        guard let metadata = await self.database.getMetadataAsync(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@ AND sessionTaskIdentifier == %d", serverUrl, fileName, task.taskIdentifier)) else {
             let predicate = NSPredicate(format: "fileName == %@ AND serverUrl == %@", fileName, serverUrl)
             await self.database.deleteMetadataAsync(predicate: predicate)
 
@@ -205,7 +205,7 @@ class FileProviderData: NSObject {
             await signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
 
             if !metadata.ocIdTransfer.isEmpty, ocId != metadata.ocIdTransfer {
-                await self.database.deleteMetadataOcIdAsync(metadata.ocIdTransfer)
+                await self.database.deleteMetadataAsync(id: metadata.ocIdTransfer)
             }
 
             metadata.fileName = fileName
@@ -224,17 +224,16 @@ class FileProviderData: NSObject {
             metadata.sessionSelector = ""
             metadata.sessionDate = nil
             metadata.sessionTaskIdentifier = 0
-            metadata.progress = 0
             metadata.status = NCGlobal.shared.metadataStatusNormal
 
             await self.database.addMetadataAsync(metadata)
-            await self.database.addLocalFileAsync(metadata: metadata)
+            await self.database.addLocalFilesAsync(metadatas: [metadata])
 
             await signalEnumerator(ocId: ocId, type: .update)
 
         } else {
 
-            await self.database.deleteMetadataOcIdAsync(metadata.ocIdTransfer)
+            await self.database.deleteMetadataAsync(id: metadata.ocIdTransfer)
 
             await signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
         }

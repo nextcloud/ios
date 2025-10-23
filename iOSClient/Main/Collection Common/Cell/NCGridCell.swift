@@ -34,6 +34,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var labelSubinfo: UILabel!
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
+    @IBOutlet weak var iconsStackView: UIStackView!
 
     var ocId = ""
     var ocIdTransfer = ""
@@ -113,6 +114,10 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         imageVisualEffect.layer.cornerRadius = 6
         imageVisualEffect.clipsToBounds = true
         imageVisualEffect.alpha = 0.5
+
+        iconsStackView.addBlurBackground(style: .systemMaterial)
+        iconsStackView.layer.cornerRadius = 8
+        iconsStackView.clipsToBounds = true
 
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
         longPressedGesture.minimumPressDuration = 0.5
@@ -212,13 +217,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         accessibilityValue = value
     }
 
-    func setIconOutlines() {
-        if imageStatus.image != nil {
-            imageStatus.makeCircularBackground(withColor: .systemBackground)
-        } else {
-            imageStatus.backgroundColor = .clear
-        }
-    }
+    func setIconOutlines() {}
 }
 
 protocol NCGridCellDelegate: AnyObject {

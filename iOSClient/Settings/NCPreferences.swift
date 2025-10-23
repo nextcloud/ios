@@ -557,6 +557,28 @@ final class NCPreferences: NSObject {
         return arrayValue
     }
 
+    // MARK: - Upload Asset (autoupload folder)
+
+    func setUploadUseAutoUploadFolder(account: String, value: Bool) {
+        let userDefaultsKey = "UploadUseAutoUploadFolder" + "_\(account)"
+        setUserDefaults(value, forKey: userDefaultsKey)
+    }
+
+    func getUploadUseAutoUploadFolder(account: String) -> Bool {
+        return getBoolPreference(key: "UploadUseAutoUploadFolder", account: account, defaultValue: false)
+
+    }
+
+    func setUploadUseAutoUploadSubFolder(account: String, value: Bool) {
+        let userDefaultsKey = "UploadUseAutoUploadSubFolder" + "_\(account)"
+        setUserDefaults(value, forKey: userDefaultsKey)
+    }
+
+    func getUploadUseAutoUploadSubFolder(account: String) -> Bool {
+        return getBoolPreference(key: "UploadUseAutoUploadSubFolder", account: account, defaultValue: false)
+
+    }
+
     // MARK: -
 
     private func migrate(key: String) {

@@ -18,11 +18,19 @@ class NCNetworkingE2EEUpload: NSObject {
 
     @discardableResult
     @MainActor
-    func upload(metadata: tableMetadata, controller: UIViewController? = nil) async -> NKError {
+    func upload(metadata: tableMetadata, session: NCSession.Session? = nil, controller: UIViewController? = nil) async -> NKError {
         var finalError: NKError = .success
-        let session = NCSession.shared.getSession(account: metadata.account)
+        var session = session
         let hud = NCHud(controller?.view)
         let ocId = metadata.ocIdTransfer
+
+        if session == nil {
+            session = NCSession.shared.getSession(account: metadata.account)
+        }
+        guard let session,
+              !session.account.isEmpty else {
+            return NKError(errorCode: NCGlobal.shared.errorNCSessionNotFound, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
+        }
 
         // HUD ENCRYPTION
         //
@@ -31,7 +39,7 @@ class NCNetworkingE2EEUpload: NSObject {
         defer {
             if finalError != .success {
                 Task {
-                    await self.database.deleteMetadataOcIdAsync(ocId)
+                    await self.database.deleteMetadataAsync(id: ocId)
                 }
             }
             hud.dismiss()
@@ -162,7 +170,7 @@ class NCNetworkingE2EEUpload: NSObject {
         if resultsSendFile.error == .success, let ocId = resultsSendFile.ocId {
             let metadata = metadata.detachedCopy()
 
-            await self.database.deleteMetadataOcIdAsync(metadata.ocId)
+            await self.database.deleteMetadataAsync(id: metadata.ocId)
             await utilityFileSystem.moveFileAsync(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase),
                                                   toPath: utilityFileSystem.getDirectoryProviderStorageOcId(ocId, userId: metadata.userId, urlBase: metadata.urlBase))
 
@@ -180,12 +188,13 @@ class NCNetworkingE2EEUpload: NSObject {
             metadata.status = NCGlobal.shared.metadataStatusNormal
 
             await self.database.addMetadataAsync(metadata)
-            await self.database.addLocalFileAsync(metadata: metadata)
+            await self.database.addLocalFilesAsync(metadatas: [metadata])
             utility.createImageFileFrom(metadata: metadata)
 
             await NCNetworking.shared.transferDispatcher.notifyAllDelegates { delegate in
                 delegate.transferChange(status: global.networkingStatusUploaded,
                                         metadata: metadata,
+                                        destination: nil,
                                         error: .success)
             }
         }
@@ -199,22 +208,8 @@ class NCNetworkingE2EEUpload: NSObject {
     private func sendFile(metadata: tableMetadata, e2eToken: String, hud: NCHud, controller: UIViewController?) async -> (ocId: String?, etag: String?, date: Date?, error: NKError) {
 
         if metadata.chunk > 0 {
-            var counterUpload: Int = 0
-            let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata, withUploadComplete: false) { num in
-                self.numChunks = num
-            } counterChunk: { counter in
-                hud.progress(num: Float(counter), total: Float(self.numChunks))
-            } startFilesChunk: { _ in
-                hud.setText(NSLocalizedString("_keep_active_for_upload_", comment: ""))
-            } requestHandler: { _ in
-                hud.progress(num: Float(counterUpload), total: Float(self.numChunks))
-                counterUpload += 1
-            } assembling: {
-                hud.setText(NSLocalizedString("_wait_", comment: ""))
-            }
-
+            let results = await NCNetworking.shared.uploadChunk(metadata: metadata, hud: hud)
             return (results.file?.ocId, results.file?.etag, results.file?.date, results.error)
-
         } else {
             let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
                                                                                       fileName: metadata.fileName,
@@ -227,7 +222,7 @@ class NCNetworkingE2EEUpload: NSObject {
                                                                dateModificationFile: metadata.date as Date,
                                                                account: metadata.account,
                                                                metadata: metadata,
-                                                               withUploadComplete: false,
+                                                               performPostProcessing: false,
                                                                customHeaders: ["e2e-token": e2eToken]) { _ in
                 hud.setText(NSLocalizedString("_keep_active_for_upload_", comment: ""))
             } progressHandler: { _, _, fractionCompleted in

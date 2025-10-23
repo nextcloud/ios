@@ -96,14 +96,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
         }
 
-        // Status
-        //
-        if metadata.isLivePhoto {
-            cell.fileStatusImage?.image = utility.loadImage(named: "livephoto", colors: isLayoutPhoto ? [.white] : [NCBrandColor.shared.iconImageColor2])
-        } else if metadata.isVideo {
-            cell.fileStatusImage?.image = utility.loadImage(named: "play.circle", colors: NCBrandColor.shared.iconImageMultiColors)
-        }
-
         // Edit mode
         //
         if fileSelect.contains(metadata.ocId) {
@@ -192,8 +184,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         cell.fileUser = metadata.ownerId
 
         if isSearchingMode {
-            cell.fileTitleLabel?.text = metadata.fileName
-            cell.fileTitleLabel?.lineBreakMode = .byTruncatingTail
             if metadata.name == global.appName {
                 cell.fileInfoLabel?.text = NSLocalizedString("_in_", comment: "") + " " + utilityFileSystem.getPath(path: metadata.path, user: metadata.user)
             } else {
@@ -201,15 +191,22 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
             cell.fileSubinfoLabel?.isHidden = true
         } else if !metadata.sessionError.isEmpty, metadata.status != global.metadataStatusNormal {
-            cell.fileTitleLabel?.text = metadata.fileNameView
             cell.fileSubinfoLabel?.isHidden = false
             cell.fileInfoLabel?.text = metadata.sessionError
         } else {
             cell.fileSubinfoLabel?.isHidden = false
-            cell.fileTitleLabel?.text = metadata.fileNameView
-            cell.fileTitleLabel?.lineBreakMode = .byTruncatingMiddle
+
             cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
         }
+
+//        if cell is NCListCell && cell.fileTitleLabel is BidiFilenameLabel {
+//            (cell.fileTitleLabel as? BidiFilenameLabel)?.fullFilename = metadata.fileNameView
+//            (cell.fileTitleLabel as? BidiFilenameLabel)?.isFolder = metadata.directory
+//            (cell.fileTitleLabel as? BidiFilenameLabel)?.numberOfLines = 1
+//
+//        } else {
+            cell.fileTitleLabel?.text = metadata.fileNameView
+//        }
 
         // Accessibility [shared] if metadata.ownerId != appDelegate.userId, appDelegate.account == metadata.account {
         if metadata.ownerId != metadata.userId {
@@ -241,7 +238,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             // Local image: offline
             if let tblDirectory, tblDirectory.offline {
-                cell.fileLocalImage?.image = imageCache.getImageOfflineFlag()
+                cell.fileLocalImage?.image = imageCache.getImageOfflineFlag(colors: [.systemBackground, .systemGreen])
             }
 
             // color folder
@@ -294,16 +291,21 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 if !metadata.iconUrl.isEmpty {
                     if let ownerId = getAvatarFromIconUrl(metadata: metadata) {
                         let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: ownerId)
-                        self.database.getImageAvatarLoaded(fileName: fileName) { image, tblAvatar in
-                            if let image {
-                                cell.filePreviewImageView?.image = image
-                            } else {
-                                cell.filePreviewImageView?.image = self.utility.loadUserImage(for: ownerId, displayName: nil, urlBase: metadata.urlBase)
-                            }
+                        if let image = NCImageCache.shared.getImageCache(key: fileName) {
+                            cell.filePreviewImageView?.image = image
+                        } else {
+                            self.database.getImageAvatarLoaded(fileName: fileName) { image, tblAvatar in
+                                if let image {
+                                    cell.filePreviewImageView?.image = image
+                                    NCImageCache.shared.addImageCache(image: image, key: fileName)
+                                } else {
+                                    cell.filePreviewImageView?.image = self.utility.loadUserImage(for: ownerId, displayName: nil, urlBase: metadata.urlBase)
+                                }
 
-                            if !(tblAvatar?.loaded ?? false),
-                               self.networking.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
-                                self.networking.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: ownerId, fileName: fileName, account: metadata.account, view: collectionView, isPreviewImageView: true))
+                                if !(tblAvatar?.loaded ?? false),
+                                   self.networking.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
+                                    self.networking.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: ownerId, fileName: fileName, account: metadata.account, view: collectionView, isPreviewImageView: true))
+                                }
                             }
                         }
                     }
@@ -312,9 +314,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             if let tableLocalFile, tableLocalFile.offline {
                 a11yValues.append(NSLocalizedString("_offline_", comment: ""))
-                cell.fileLocalImage?.image = imageCache.getImageOfflineFlag()
+                cell.fileLocalImage?.image = imageCache.getImageOfflineFlag(colors: [.systemBackground, .systemGreen])
             } else if utilityFileSystem.fileProviderStorageExists(metadata) {
-                cell.fileLocalImage?.image = imageCache.getImageLocal()
+                cell.fileLocalImage?.image = imageCache.getImageLocal(colors: [.systemBackground, .systemGreen])
             }
         }
 
@@ -343,13 +345,14 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.setButtonMore(image: imageCache.getImageButtonMore())
         }
 
-        // Staus
+        // Status
         if metadata.isLivePhoto {
-            cell.fileStatusImage?.image = utility.loadImage(named: "livephoto", colors: isLayoutPhoto ? [.white] : [NCBrandColor.shared.iconImageColor2])
+            cell.fileStatusImage?.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
             a11yValues.append(NSLocalizedString("_upload_mov_livephoto_", comment: ""))
         } else if metadata.isVideo {
-            cell.fileStatusImage?.image = utility.loadImage(named: "play.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.fileStatusImage?.image = utility.loadImage(named: "play.circle.fill", colors: [.systemBackgroundInverted, .systemGray5])
         }
+
         switch metadata.status {
         case global.metadataStatusWaitCreateFolder:
             cell.fileStatusImage?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
@@ -378,19 +381,25 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         // AVATAR
         if !metadata.ownerId.isEmpty, metadata.ownerId != metadata.userId {
-            cell.fileAvatarImageView?.contentMode = .scaleAspectFill
-
             let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: metadata.ownerId)
-            self.database.getImageAvatarLoaded(fileName: fileName) { image, tblAvatar in
-                if let image {
-                    cell.fileAvatarImageView?.image = image
-                } else {
-                    cell.fileAvatarImageView?.image = self.utility.loadUserImage(for: metadata.ownerId, displayName: metadata.ownerDisplayName, urlBase: metadata.urlBase)
-                }
+            if let image = NCImageCache.shared.getImageCache(key: fileName) {
+                cell.fileAvatarImageView?.contentMode = .scaleAspectFill
+                cell.fileAvatarImageView?.image = image
+            } else {
+                self.database.getImageAvatarLoaded(fileName: fileName) { image, tblAvatar in
+                    if let image {
+                        cell.fileAvatarImageView?.contentMode = .scaleAspectFill
+                        cell.fileAvatarImageView?.image = image
+                        NCImageCache.shared.addImageCache(image: image, key: fileName)
+                    } else {
+                        cell.fileAvatarImageView?.contentMode = .scaleAspectFill
+                        cell.fileAvatarImageView?.image = self.utility.loadUserImage(for: metadata.ownerId, displayName: metadata.ownerDisplayName, urlBase: metadata.urlBase)
+                    }
 
-                if !(tblAvatar?.loaded ?? false),
-                   self.networking.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
-                    self.networking.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: metadata.ownerId, fileName: fileName, account: metadata.account, view: collectionView))
+                    if !(tblAvatar?.loaded ?? false),
+                       self.networking.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
+                        self.networking.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: metadata.ownerId, fileName: fileName, account: metadata.account, view: collectionView))
+                    }
                 }
             }
         }
@@ -470,6 +479,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.hideButtonShare(true)
             cell.hideButtonMore(true)
         }
+
+        cell.setIconOutlines()
 
         return cell
     }

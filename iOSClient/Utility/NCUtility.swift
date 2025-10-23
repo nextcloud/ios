@@ -119,6 +119,28 @@ final class NCUtility: NSObject, Sendable {
         return String(intFileId)
     }
 
+    func splitOcId(_ ocId: String) -> (fileId: String?, instanceId: String?) {
+        let parts = ocId.components(separatedBy: "oc")
+        guard parts.count == 2 else {
+            return (nil, nil)
+        }
+        return (parts[0], "oc" + parts[1])
+    }
+
+    /// Pads a numeric fileId with leading zeros to reach 8 characters.
+    func paddedFileId(_ fileId: String) -> String {
+        if fileId.count >= 8 { return fileId }
+        let zeros = String(repeating: "0", count: 8 - fileId.count)
+        return zeros + fileId
+    }
+
+    func getLivePhotoOcId(metadata: tableMetadata) -> String? {
+        if let instanceId = splitOcId(metadata.ocId).instanceId {
+            return paddedFileId(metadata.livePhotoFile) + instanceId
+        }
+        return nil
+    }
+
     func getVersionBuild() -> String {
         if let dictionary = Bundle.main.infoDictionary,
            let version = dictionary["CFBundleShortVersionString"],
@@ -277,5 +299,13 @@ final class NCUtility: NSObject, Sendable {
             height = (view.frame.height / 2) + landscapeOffset
         }
         return height
+    }
+
+    func formatBadgeCount(_ count: Int) -> String {
+        if count <= 9999 {
+            return "\(count)"
+        } else {
+            return count.formatted(.number.notation(.compactName).locale(Locale(identifier: "en_US")))
+        }
     }
 }

@@ -35,8 +35,7 @@ extension NCManageDatabase {
                                  selector: String? = nil,
                                  status: Int? = nil,
                                  etag: String? = nil,
-                                 errorCode: Int? = nil,
-                                 progress: Double? = nil) async -> tableMetadata? {
+                                 errorCode: Int? = nil) async -> tableMetadata? {
         var query: NSPredicate = NSPredicate()
         if let ocId {
             query = NSPredicate(format: "ocId == %@", ocId)
@@ -52,6 +51,8 @@ extension NCManageDatabase {
                 .first else {
                     return
             }
+
+            metadata.sessionDate = Date()
 
             if let name = newFileName {
                 metadata.fileName = name
@@ -96,10 +97,6 @@ extension NCManageDatabase {
             if let errorCode {
                 metadata.errorCode = errorCode
             }
-
-            if let progress {
-                metadata.progress = progress
-            }
         }
 
         return await performRealmReadAsync { realm in
@@ -107,40 +104,6 @@ extension NCManageDatabase {
                 .filter(query)
                 .first?
                 .detachedCopy()
-        }
-    }
-
-    func setMetadataProgress(fileName: String,
-                             serverUrl: String,
-                             taskIdentifier: Int,
-                             progress: Double) async {
-        await performRealmWriteAsync { realm in
-            guard let metadata = realm.objects(tableMetadata.self)
-                .filter("fileName == %@ AND serverUrl == %@ and sessionTaskIdentifier == %d", fileName, serverUrl, taskIdentifier)
-                .first else {
-                return
-            }
-
-            if abs(metadata.progress - progress) > 0.001 {
-                metadata.progress = progress
-                print(progress)
-            }
-        }
-    }
-
-    func setMetadataProgress(ocId: String,
-                             progress: Double) async {
-        await performRealmWriteAsync { realm in
-            guard let metadata = realm.objects(tableMetadata.self)
-                .filter("ocId == %@", ocId)
-                .first else {
-                return
-            }
-
-            if abs(metadata.progress - progress) > 0.001 {
-                metadata.progress = progress
-                print(progress)
-            }
         }
     }
 
@@ -163,14 +126,13 @@ extension NCManageDatabase {
                 return
             }
 
+            metadata.sessionDate = Date()
             metadata.sceneIdentifier = sceneIdentifier
             metadata.session = session
             metadata.sessionTaskIdentifier = 0
             metadata.sessionError = ""
             metadata.sessionSelector = selector
             metadata.status = NCGlobal.shared.metadataStatusWaitDownload
-            metadata.sessionDate = Date()
-            metadata.progress = 0
         }
 
         return await performRealmReadAsync { realm in
@@ -193,14 +155,13 @@ extension NCManageDatabase {
 
         // Apply modifications
         detachedMetadatas = detachedMetadatas.map { metadata in
+            metadata.sessionDate = nil
             metadata.sceneIdentifier = nil
             metadata.session = ""
             metadata.sessionTaskIdentifier = 0
             metadata.sessionError = ""
             metadata.sessionSelector = ""
-            metadata.sessionDate = nil
             metadata.status = NCGlobal.shared.metadataStatusNormal
-            metadata.progress = 0
             return metadata
         }
 
@@ -210,24 +171,5 @@ extension NCManageDatabase {
                 realm.add(metadata, update: .all)
             }
         }
-    }
-
-    // MARK: - Realm Read
-
-    func updateBadge() async {
-        #if !EXTENSION
-        let num = await performRealmReadAsync { realm in
-            realm.objects(tableMetadata.self)
-                .filter(NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal))
-                .count
-        } ?? 0
-        DispatchQueue.main.async {
-            UNUserNotificationCenter.current().setBadgeCount(num) { error in
-                if let error {
-                    print("Failed to set badge count: \(error)")
-                }
-            }
-        }
-        #endif
     }
 }

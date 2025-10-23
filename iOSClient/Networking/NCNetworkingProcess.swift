@@ -11,12 +11,14 @@ actor NCNetworkingProcess {
     static let shared = NCNetworkingProcess()
 
     private let utilityFileSystem = NCUtilityFileSystem()
+    private let utility = NCUtility()
     private let global = NCGlobal.shared
     private let networking = NCNetworking.shared
 
     private var currentTask: Task<Void, Never>?
     private var enableControllingScreenAwake = true
     private var currentAccount = ""
+    private var inWaitingCount: Int = 0
 
     private var timer: DispatchSourceTimer?
     private let timerQueue = DispatchQueue(label: "com.nextcloud.timerProcess", qos: .utility)
@@ -24,11 +26,15 @@ actor NCNetworkingProcess {
     private let maxInterval: TimeInterval = 3
     private let minInterval: TimeInterval = 1.5
 
+    private let sessionForUpload = [NextcloudKit.shared.nkCommonInstance.identifierSessionUpload,
+                                    NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground,
+                                    NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundWWan]
+
     private init() {
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayerIsPlaying), object: nil, queue: nil) { [weak self] _ in
             guard let self else { return }
 
-            Task {
+            Task { @MainActor in
                 await self.setScreenAwake(false)
             }
         }
@@ -36,7 +42,7 @@ actor NCNetworkingProcess {
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayerStoppedPlaying), object: nil, queue: nil) { [weak self] _ in
             guard let self else { return }
 
-            Task {
+            Task { @MainActor in
                 await self.setScreenAwake(true)
             }
         }
@@ -58,12 +64,54 @@ actor NCNetworkingProcess {
         }
     }
 
+    @MainActor
+    private func getRootController() -> NCMainTabBarController? {
+        UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+    }
+
+    @MainActor
+    private func getController(account: String, sceneIdentifier: String?) async -> NCMainTabBarController? {
+        /// find controller
+        var controller: NCMainTabBarController?
+        if let sceneIdentifier = sceneIdentifier,
+           !sceneIdentifier.isEmpty {
+            controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier)
+        }
+
+        if controller == nil {
+            for ctlr in SceneManager.shared.getControllers() {
+                let account = ctlr.account
+                if account == account {
+                    controller = ctlr
+                }
+            }
+        }
+
+        if controller == nil {
+            controller = getRootController()
+        }
+
+        return controller
+    }
+
     private func setScreenAwake(_ enabled: Bool) {
         enableControllingScreenAwake = enabled
     }
 
     func setCurrentAccount(_ account: String) {
         currentAccount = account
+    }
+
+    private func inWaitingCount() async -> Int {
+        let countTransferSuccess = await NCNetworking.shared.metadataTranfersSuccess.count()
+        let totalNonNormal = await NCManageDatabase.shared.getMetadatasInWaitingCountAsync()
+        let count = max(0, totalNonNormal - countTransferSuccess)
+
+        return count
+    }
+
+    func getInWaitingCount() async -> Int {
+        return inWaitingCount
     }
 
     func startTimer(interval: TimeInterval) async {
@@ -91,7 +139,7 @@ actor NCNetworkingProcess {
         newTimer.resume()
     }
 
-    func stopTimer() async {
+    private func stopTimer() async {
         timer?.cancel()
         timer = nil
     }
@@ -114,7 +162,33 @@ actor NCNetworkingProcess {
                 return
             }
 
-            let metadatas = await NCManageDatabase.shared.getMetadatasAsync(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal))
+            // UPDATE INWAIT & BADGE
+            //
+            let count = await inWaitingCount()
+            if count != inWaitingCount {
+                inWaitingCount = count
+                Task { @MainActor in
+                    UNUserNotificationCenter.current().setBadgeCount(count)
+
+                    if let controller = getRootController(),
+                        let files = controller.tabBar.items?.first {
+                        files.badgeValue = count == 0 ? nil : self.utility.formatBadgeCount(count)
+                    }
+                }
+            }
+
+            // METADATAS
+            //
+            let metadatas = await NCManageDatabase.shared.getMetadataProcess()
+
+            // TRANSFERS SUCCESS
+            //
+            let countWaitUpload = metadatas.filter { $0.status == self.global.metadataStatusWaitUpload }.count
+            let countTransferSuccess = await NCNetworking.shared.metadataTranfersSuccess.count()
+            if (countWaitUpload == 0 && countTransferSuccess > 0) || countTransferSuccess >= NCBrandOptions.shared.numMaximumProcess {
+                await NCNetworking.shared.metadataTranfersSuccess.flush()
+            }
+
             if !metadatas.isEmpty {
                 let tasks = await networking.getAllDataTask()
                 let hasSyncTask = tasks.contains { $0.taskDescription == global.taskDescriptionSynchronization }
@@ -124,7 +198,7 @@ actor NCNetworkingProcess {
                     ScreenAwakeManager.shared.mode = resultsScreenAwake.isEmpty && !hasSyncTask ? .off : NCPreferences().screenAwakeMode
                 }
 
-                await runMetadataPipelineAsync()
+                await runMetadataPipelineAsync(metadatas: metadatas)
 
                 // TODO: Check temperature
 
@@ -132,7 +206,9 @@ actor NCNetworkingProcess {
                     await startTimer(interval: minInterval)
                 }
             } else {
+                // Remove upload asset
                 await removeUploadedAssetsIfNeeded()
+
                 if lastUsedInterval != maxInterval {
                     await startTimer(interval: maxInterval)
                 }
@@ -160,447 +236,177 @@ actor NCNetworkingProcess {
         await NCManageDatabase.shared.clearAssetLocalIdentifiersAsync(localIdentifiers)
     }
 
-    private func runMetadataPipelineAsync() async {
+    private func runMetadataPipelineAsync(metadatas: [tableMetadata]) async {
         let database = NCManageDatabase.shared
-        let metadatas = await database.getMetadatasAsync(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal))
-        guard !metadatas.isEmpty else {
-            return
-        }
+        let countTransferSuccess = await NCNetworking.shared.metadataTranfersSuccess.count()
+        let countDownloading = metadatas.filter { $0.status == self.global.metadataStatusDownloading }.count
+        let countUploading = metadatas.filter { $0.status == self.global.metadataStatusUploading }.count - countTransferSuccess
+        var availableProcess = NCBrandOptions.shared.numMaximumProcess - (countDownloading + countUploading)
+        let isWiFi = self.networking.networkReachability == NKTypeReachability.reachableEthernetOrWiFi
 
-        /// ------------------------ WEBDAV
+        // WEBDAV
+        //
         let waitWebDav = metadatas.filter { self.global.metadataStatusWaitWebDav.contains($0.status) }
         if !waitWebDav.isEmpty {
-            let (_, error) = await metadataStatusWaitWebDav(metadatas: Array(waitWebDav))
-            if error != .success {
+            let error = await hubProcessWebDav(metadatas: Array(waitWebDav))
+            guard error == .success else {
                 return
             }
         }
 
-        /// ------------------------ DOWNLOAD
-        let httpMaximumConnectionsPerHostInDownload = NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload
-        var counterDownloading = metadatas.filter { $0.status == self.global.metadataStatusDownloading }.count
-        let limitDownload = max(0, httpMaximumConnectionsPerHostInDownload - counterDownloading)
+        // TEST AVAILABLE PROCESS
+        guard availableProcess > 0, timer != nil else { return }
 
+        // DOWNLOAD
+        //
         let filteredDownload = metadatas
             .filter { $0.session == self.networking.sessionDownloadBackground && $0.status == NCGlobal.shared.metadataStatusWaitDownload }
             .sorted { ($0.sessionDate ?? Date.distantFuture) < ($1.sessionDate ?? Date.distantFuture) }
-            .prefix(limitDownload)
+            .prefix(availableProcess)
         let metadatasWaitDownload = Array(filteredDownload)
 
-        for metadata in metadatasWaitDownload where counterDownloading < httpMaximumConnectionsPerHostInDownload {
-            counterDownloading += 1
-            await networking.downloadFileInBackground(metadata: metadata)
-        }
-
-        /// ------------------------ UPLOAD
-
-        /// CHUNK or  E2EE - only one for time
-        let hasUploadingMetadataWithChunksOrE2EE = metadatas.filter { $0.status == NCGlobal.shared.metadataStatusUploading && ($0.chunk > 0 || $0.e2eEncrypted == true) }
-        if !hasUploadingMetadataWithChunksOrE2EE.isEmpty {
-            return
-        }
-
-        var httpMaximumConnectionsPerHostInUpload = NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload
-        let isWiFi = self.networking.networkReachability == NKTypeReachability.reachableEthernetOrWiFi
-        let sessionUploadSelectors = [self.global.selectorUploadFileNODelete, self.global.selectorUploadFile, self.global.selectorUploadAutoUpload]
-        var counterUploading = metadatas.filter { $0.status == self.global.metadataStatusUploading }.count
-        for sessionSelector in sessionUploadSelectors {
-            guard counterUploading < httpMaximumConnectionsPerHostInUpload else { return }
-
-            let limitUpload = max(0, httpMaximumConnectionsPerHostInUpload - counterUploading)
-            let filteredUpload = metadatas
-                .filter { $0.sessionSelector == sessionSelector && $0.status == NCGlobal.shared.metadataStatusWaitUpload }
-                .sorted { ($0.sessionDate ?? Date.distantFuture) < ($1.sessionDate ?? Date.distantFuture) }
-                .prefix(limitUpload)
-            let metadatasWaitUpload = Array(filteredUpload)
-
-            if !metadatasWaitUpload.isEmpty {
-                nkLog(debug: "PROCESS (UPLOAD) find \(metadatasWaitUpload.count) items")
+        for metadata in metadatasWaitDownload {
+            availableProcess -= 1
+            if !isAppInBackground {
+                await networking.downloadFileInBackground(metadata: metadata)
             }
+        }
 
-            for metadata in metadatasWaitUpload {
-                guard counterUploading < httpMaximumConnectionsPerHostInUpload else { return }
-                let metadatas = await NCCameraRoll().extractCameraRoll(from: metadata)
+        // TEST AVAILABLE PROCESS
+        guard availableProcess > 0, timer != nil else { return }
 
-                // no extract photo
-                if metadatas.isEmpty {
-                    await database.deleteMetadataOcIdAsync(metadata.ocId)
+        // UPLOAD IN ERROR (check > 5 minute ago)
+        //
+        for metadata in metadatas where metadata.status == self.global.metadataStatusUploadError && (metadata.sessionDate ?? .distantFuture) < Date().addingTimeInterval(-300) {
+            await NCManageDatabase.shared.setMetadataSessionAsync(ocId: metadata.ocId,
+                                                                  session: self.networking.sessionUploadBackground,
+                                                                  sessionError: "",
+                                                                  status: global.metadataStatusWaitUpload)
+        }
+
+        // UPLOAD
+        //
+        let metadatasWaitUpload = Array(metadatas
+            .filter {
+                sessionForUpload.contains($0.session) &&
+                $0.status == NCGlobal.shared.metadataStatusWaitUpload
+            }
+            .sorted { // Earlier dates first; nils go to the end
+                ($0.sessionDate ?? .distantFuture) < ($1.sessionDate ?? .distantFuture)
+            }
+            .prefix(availableProcess))
+
+        for metadata in metadatasWaitUpload {
+            guard availableProcess > 0, timer != nil else { return }
+            // WiFi check
+            if !isWiFi && metadata.session == networking.sessionUploadBackgroundWWan {
+                continue
+            }
+            // File exists for Auto Upload? skip it
+            if metadata.sessionSelector == global.selectorUploadAutoUpload {
+                let error = await networking.fileExists(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
+                if error == .success {
+                    await database.deleteMetadataAsync(id: metadata.ocId)
+                    continue
                 }
-
-                for metadata in metadatas {
-                    guard counterUploading < httpMaximumConnectionsPerHostInUpload,
-                          timer != nil else { return }
-
-                    /// NO WiFi
-                    if !isWiFi && metadata.session == networking.sessionUploadBackgroundWWan { continue }
-
-                    await database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                                status: global.metadataStatusUploading)
-
-                    /// find controller
-                    var controller: NCMainTabBarController?
-                    if let sceneIdentifier = metadata.sceneIdentifier, !sceneIdentifier.isEmpty {
-                        controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier)
-                    } else {
-                        for ctlr in SceneManager.shared.getControllers() {
-                            let account = await ctlr.account
-                            if account == metadata.account {
-                                controller = ctlr
-                            }
-                        }
-
-                        if controller == nil {
-                            controller = await UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
-                        }
-                    }
-
-                    if metadata.isDirectoryE2EE {
-                        await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: controller)
-
-                        httpMaximumConnectionsPerHostInUpload = 1
-                    } else if metadata.chunk > 0 {
-                        let controller = controller
-
-                        Task { @MainActor in
-                            var numChunks = 0
-                            var counterUpload: Int = 0
-                            let hud = NCHud(controller?.view)
-                            hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""))
-
-                            await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
-                                numChunks = num
-                            } counterChunk: { counter in
-                                hud.progress(num: Float(counter), total: Float(numChunks))
-                            } startFilesChunk: { _ in
-                                hud.setText(NSLocalizedString("_keep_active_for_upload_", comment: ""))
-                            } requestHandler: { _ in
-                                hud.progress(num: Float(counterUpload), total: Float(numChunks))
-                                counterUpload += 1
-                            } assembling: {
-                                hud.setText(NSLocalizedString("_wait_", comment: ""))
-                            }
-
-                            hud.dismiss()
-                        }
-
-                        httpMaximumConnectionsPerHostInUpload = 1
-                    } else {
+            }
+            // extract image/video
+            let extractMetadatas = await NCCameraRoll().extractCameraRoll(from: metadata)
+            guard timer != nil else { return }
+            // no extract photo
+            if extractMetadatas.isEmpty {
+                await database.deleteMetadataAsync(id: metadata.ocId)
+            }
+            // upload file(s)
+            for metadata in extractMetadatas {
+                guard timer != nil else { return }
+                // UPLOAD E2EE
+                //
+                if metadata.isDirectoryE2EE {
+                    let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
+                    await NCNetworkingE2EEUpload().upload(metadata: metadata, controller: controller)
+                // UPLOAD CHUNK
+                //
+                } else if metadata.chunk > 0 {
+                    let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
+                    let hud = await NCHud(controller?.view)
+                    await networking.uploadChunk(metadata: metadata, hud: hud)
+                // UPLOAD IN BACKGROUND
+                //
+                } else {
+                    if !isAppInBackground {
                         await networking.uploadFileInBackground(metadata: metadata)
                     }
-                    counterUploading += 1
                 }
+                availableProcess -= 1
             }
         }
-
-        /// No upload available ? --> Retry Upload in Error
-        ///
-        let uploadError = metadatas.filter { $0.status == self.global.metadataStatusUploadError }
-        if counterUploading == 0 {
-            for metadata in uploadError {
-                /// Check QUOTA
-                if metadata.sessionError.contains("\(global.errorQuota)") {
-                    let results = await NextcloudKit.shared.getUserMetadataAsync(account: metadata.account, userId: metadata.userId) { task in
-                        Task {
-                            let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                        path: metadata.userId,
-                                                                                                        name: "getUserMetadata")
-                            await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                        }
-                    }
-                    if results.error == .success, let userProfile = results.userProfile, userProfile.quotaFree > 0, userProfile.quotaFree > metadata.size {
-                        await database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                               session: self.networking.sessionUploadBackground,
-                                                               sessionError: "",
-                                                               status: self.global.metadataStatusWaitUpload)
-                    }
-                } else {
-                    await database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                           session: self.networking.sessionUploadBackground,
-                                                           sessionError: "",
-                                                           status: global.metadataStatusWaitUpload)
-                }
-            }
-        }
-
-        return
     }
 
-    private func metadataStatusWaitWebDav(metadatas: [tableMetadata]) async -> (status: Int?, error: NKError) {
-        let networking = NCNetworking.shared
-        let database = NCManageDatabase.shared
+    // MARK: - Helper
 
-        /// ------------------------ CREATE FOLDER
-        ///
-        let metadatasWaitCreateFolder = metadatas.filter { $0.status == global.metadataStatusWaitCreateFolder }.sorted { $0.serverUrl < $1.serverUrl }
-        for metadata in metadatasWaitCreateFolder {
-            guard timer != nil else {
-                return (global.metadataStatusWaitCreateFolder, .cancelled)
-            }
-            var error: NKError = .success
+    private func hubProcessWebDav(metadatas: [tableMetadata]) async -> NKError {
+        var results: [tableMetadata] = []
 
-            if metadata.sessionSelector == self.global.selectorUploadAutoUpload {
-                error = await networking.createFolderForAutoUpload(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account)
-                if error != .success {
-                    return (global.metadataStatusWaitCreateFolder, error)
-                }
-            } else {
-                error = await networking.createFolder(fileName: metadata.fileName,
-                                                      serverUrl: metadata.serverUrl,
-                                                      overwrite: true,
-                                                      session: NCSession.shared.getSession(account: metadata.account),
-                                                      selector: metadata.sessionSelector)
-            }
-
-            if let sceneIdentifier = metadata.sceneIdentifier {
-                await networking.transferDispatcher.notifyDelegates(forScene: sceneIdentifier) { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusCreateFolder,
-                                            metadata: metadata,
-                                            error: error)
-                } others: { delegate in
-                    delegate.transferReloadData(serverUrl: metadata.serverUrl, status: nil)
-                }
-            } else {
-                await networking.transferDispatcher.notifyAllDelegates { delegate in
-                    delegate.transferChange(status: self.global.networkingStatusCreateFolder,
-                                            metadata: metadata,
-                                            error: error)
-                }
-            }
-
-            if error != .success {
-                return (global.metadataStatusWaitCreateFolder, error)
+        // CREATE FOLDER
+        //
+        results = metadatas.filter { $0.status == global.metadataStatusWaitCreateFolder }.sorted { $0.serverUrl < $1.serverUrl }
+        for metadata in results {
+            let error = await networking.createFolder(metadata: metadata)
+            guard error == .success, timer != nil else {
+                return .cancelled
             }
         }
 
-        /// ------------------------ COPY
-        ///
-        let metadatasWaitCopy = metadatas.filter { $0.status == global.metadataStatusWaitCopy }.sorted { $0.serverUrl < $1.serverUrl }
-        for metadata in metadatasWaitCopy {
-            guard timer != nil else {
-                return (global.metadataStatusWaitCopy, .cancelled)
-            }
-
-            let destination = metadata.destination
-            var serverUrlFileNameDestination = utilityFileSystem.createServerUrl(serverUrl: destination, fileName: metadata.fileName)
-            let overwrite = (metadata.storeFlag as? NSString)?.boolValue ?? false
-
-            /// Within same folder
-            if metadata.serverUrl == destination {
-                let fileNameCopy = await NCNetworking.shared.createFileName(fileNameBase: metadata.fileName, account: metadata.account, serverUrl: metadata.serverUrl)
-                serverUrlFileNameDestination = utilityFileSystem.createServerUrl(serverUrl: destination, fileName: fileNameCopy)
-            }
-
-            let resultCopy = await NextcloudKit.shared.copyFileOrFolderAsync(serverUrlFileNameSource: metadata.serverUrlFileName, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                path: serverUrlFileNameDestination,
-                                                                                                name: "copyFileOrFolder")
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                }
-            }
-
-            await database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                   status: global.metadataStatusNormal)
-
-            if resultCopy.error == .success {
-                let result = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrlFileNameDestination, account: metadata.account)
-                if result.error == .success, let metadata = result.metadata {
-                    await database.addMetadataAsync(metadata)
-                }
-            }
-
-            await networking.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferCopy(metadata: metadata, destination: destination, error: resultCopy.error)
-            }
-
-            if resultCopy.error != .success {
-                return (global.metadataStatusWaitCopy, resultCopy.error)
+        // COPY
+        //
+        results = metadatas.filter { $0.status == global.metadataStatusWaitCopy }.sorted { $0.serverUrl < $1.serverUrl }
+        for metadata in results {
+            let error = await networking.copyFileOrFolder(metadata: metadata)
+            guard error == .success, timer != nil else {
+                return .cancelled
             }
         }
 
-        /// ------------------------ MOVE
-        ///
-        let metadatasWaitMove = metadatas.filter { $0.status == global.metadataStatusWaitMove }.sorted { $0.serverUrl < $1.serverUrl }
-        for metadata in metadatasWaitMove {
-            guard timer != nil else {
-                return (global.metadataStatusWaitMove, .cancelled)
-            }
-
-            let destination = metadata.destination
-            let serverUrlFileNameDestination = utilityFileSystem.createServerUrl(serverUrl: destination, fileName: metadata.fileName)
-            let overwrite = (metadata.storeFlag as? NSString)?.boolValue ?? false
-
-            let resultMove = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: metadata.serverUrlFileName, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                path: serverUrlFileNameDestination,
-                                                                                                name: "moveFileOrFolder")
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                }
-            }
-
-            await database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                   status: global.metadataStatusNormal)
-
-            if resultMove.error == .success {
-                let result = await NCNetworking.shared.readFileAsync(serverUrlFileName: serverUrlFileNameDestination, account: metadata.account)
-                if result.error == .success, let metadata = result.metadata {
-                    // Remove directory
-                    if metadata.directory {
-                        let serverUrl = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
-                        await database.deleteDirectoryAndSubDirectoryAsync(serverUrl: serverUrl,
-                                                                           account: result.account)
-                    }
-                    await database.addMetadataAsync(metadata)
-                }
-            }
-
-            await networking.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferMove(metadata: metadata, destination: destination, error: resultMove.error)
-            }
-
-            if resultMove.error != .success {
-                return (global.metadataStatusWaitMove, resultMove.error)
+        // MOVE
+        //
+        results = metadatas.filter { $0.status == global.metadataStatusWaitMove }.sorted { $0.serverUrl < $1.serverUrl }
+        for metadata in results {
+            let error = await networking.moveFileOrFolder(metadata: metadata)
+            guard error == .success, timer != nil else {
+                return .cancelled
             }
         }
 
-        /// ------------------------ FAVORITE
-        ///
-        let metadatasWaitFavorite = metadatas.filter { $0.status == global.metadataStatusWaitFavorite }.sorted { $0.serverUrl < $1.serverUrl }
-        for metadata in metadatasWaitFavorite {
-            guard timer != nil else {
-                return (global.metadataStatusWaitFavorite, .cancelled)
-            }
-
-            let session = NCSession.Session(account: metadata.account, urlBase: metadata.urlBase, user: metadata.user, userId: metadata.userId)
-            let fileName = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
-            let resultsFavorite = await NextcloudKit.shared.setFavoriteAsync(fileName: fileName, favorite: metadata.favorite, account: metadata.account) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                path: fileName,
-                                                                                                name: "setFavorite")
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                }
-            }
-
-            if resultsFavorite.error == .success {
-                await database.setMetadataFavoriteAsync(ocId: metadata.ocId,
-                                                        favorite: nil,
-                                                        saveOldFavorite: nil,
-                                                        status: global.metadataStatusNormal)
-            } else {
-                let favorite = (metadata.storeFlag as? NSString)?.boolValue ?? false
-                await database.setMetadataFavoriteAsync(ocId: metadata.ocId,
-                                                        favorite: favorite,
-                                                        saveOldFavorite: nil,
-                                                        status: global.metadataStatusNormal)
-            }
-
-            await networking.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferChange(status: self.global.networkingStatusFavorite,
-                                        metadata: metadata,
-                                        error: resultsFavorite.error)
-            }
-
-            if resultsFavorite.error != .success {
-                return (global.metadataStatusWaitFavorite, resultsFavorite.error)
+        // FAVORITE
+        //
+        results = metadatas.filter { $0.status == global.metadataStatusWaitFavorite }.sorted { $0.serverUrl < $1.serverUrl }
+        for metadata in results {
+            let error = await networking.setFavorite(metadata: metadata)
+            guard error == .success, timer != nil else {
+                return .cancelled
             }
         }
 
-        /// ------------------------ RENAME
-        ///
-        let metadatasWaitRename = metadatas.filter { $0.status == global.metadataStatusWaitRename }.sorted { $0.serverUrl < $1.serverUrl }
-        for metadata in metadatasWaitRename {
-            guard timer != nil else {
-                return (global.metadataStatusWaitRename, .cancelled)
-            }
+        // RENAME
+        //
+        results = metadatas.filter { $0.status == global.metadataStatusWaitRename }.sorted { $0.serverUrl < $1.serverUrl }
+        for metadata in results {
+            let error = await networking.renameFileOrFolder(metadata: metadata)
+            guard error == .success else { return error }
+        }
 
-            let serverUrlFileNameSource = metadata.serverUrlFileName
-            let serverUrlFileNameDestination = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
-            let resultRename = await NextcloudKit.shared.moveFileOrFolderAsync(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: false, account: metadata.account) { task in
-                Task {
-                    let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                path: serverUrlFileNameSource,
-                                                                                                name: "moveFileOrFolder")
-                    await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                }
-            }
-
-            if resultRename.error == .success {
-                await database.setMetadataServerUrlFileNameStatusNormalAsync(ocId: metadata.ocId)
-            } else {
-                await database.restoreMetadataFileNameAsync(ocId: metadata.ocId)
-            }
-
-            await networking.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferChange(status: NCGlobal.shared.networkingStatusRename,
-                                        metadata: metadata,
-                                        error: resultRename.error)
-            }
-
-            if resultRename.error != .success {
-                return (global.metadataStatusWaitRename, resultRename.error)
+        // DELETE
+        //
+        results = metadatas.filter { $0.status == global.metadataStatusWaitDelete }.sorted { $0.serverUrl < $1.serverUrl }
+        for metadata in results {
+            let error = await networking.deleteFileOrFolder(metadata: metadata)
+            guard error == .success, timer != nil else {
+                return .cancelled
             }
         }
 
-        /// ------------------------ DELETE
-        ///
-        let metadatasWaitDelete = metadatas.filter { $0.status == global.metadataStatusWaitDelete }.sorted { $0.serverUrl < $1.serverUrl }
-        if !metadatasWaitDelete.isEmpty {
-            var metadatasError: [tableMetadata: NKError] = [:]
-            var returnError = NKError()
-
-            for metadata in metadatasWaitDelete {
-                guard timer != nil else {
-                    return (global.metadataStatusWaitDelete, .cancelled)
-                }
-
-                let resultDelete = await NextcloudKit.shared.deleteFileOrFolderAsync(serverUrlFileName: metadata.serverUrlFileName, account: metadata.account) { task in
-                    Task {
-                        let identifier = await NCNetworking.shared.networkingTasks.createIdentifier(account: metadata.account,
-                                                                                                    path: metadata.serverUrlFileName,
-                                                                                                    name: "deleteFileOrFolder")
-                        await NCNetworking.shared.networkingTasks.track(identifier: identifier, task: task)
-                    }
-                }
-
-                await database.setMetadataSessionAsync(ocId: metadata.ocId,
-                                                       status: global.metadataStatusNormal)
-
-                if resultDelete.error == .success || resultDelete.error.errorCode == NCGlobal.shared.errorResourceNotFound {
-                    do {
-                        try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, userId: metadata.userId, urlBase: metadata.urlBase))
-                    } catch { }
-
-                    NCImageCache.shared.removeImageCache(ocIdPlusEtag: metadata.ocId + metadata.etag)
-
-                    await database.deleteVideoAsync(metadata.ocId)
-                    await database.deleteMetadataOcIdAsync(metadata.ocId)
-                    await database.deleteLocalFileOcIdAsync(metadata.ocId)
-
-                    if metadata.directory {
-                        let serverUrl = utilityFileSystem.createServerUrl(serverUrl: metadata.serverUrl, fileName: metadata.fileName)
-                        await database.deleteDirectoryAndSubDirectoryAsync(serverUrl: serverUrl,
-                                                                           account: metadata.account)
-                    }
-
-                    metadatasError[metadata] = .success
-                } else {
-                    metadatasError[metadata] = resultDelete.error
-                    returnError = resultDelete.error
-                }
-            }
-
-            await networking.transferDispatcher.notifyAllDelegates { delegate in
-                delegate.transferChange(status: self.global.networkingStatusDelete,
-                                        metadatasError: metadatasError)
-            }
-
-            if returnError != .success {
-                return (global.metadataStatusWaitDelete, returnError)
-            }
-        }
-
-        return (nil, .success)
+        return .success
     }
+
 }

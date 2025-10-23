@@ -191,7 +191,7 @@ open class NCAudioRecorder: NSObject {
     open func prepare() throws {
 
         let settings: [String: AnyObject] = [
-            AVFormatIDKey: NSNumber(value: Int32(kAudioFormatAppleLossless) as Int32),
+            AVFormatIDKey: NSNumber(value: Int32(kAudioFormatMPEG4AAC) as Int32),
             AVEncoderAudioQualityKey: AVAudioQuality.max.rawValue as AnyObject,
             AVEncoderBitRateKey: bitRate as AnyObject,
             AVNumberOfChannelsKey: channels as AnyObject,

@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="FkP-Lh-8zt">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24127" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="FkP-Lh-8zt">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24063"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -39,7 +38,7 @@
                     <tabBarItem key="tabBarItem" title="File" id="Zxv-aS-HGF"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="cj6-rT-wnB">
-                        <rect key="frame" x="0.0" y="96" width="414" height="96"/>
+                        <rect key="frame" x="0.0" y="96" width="414" height="106"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -68,7 +67,7 @@
                     <tabBarItem key="tabBarItem" title="Favorites" id="o09-67-hwf"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="MJw-Bn-5le">
-                        <rect key="frame" x="0.0" y="96" width="414" height="96"/>
+                        <rect key="frame" x="0.0" y="96" width="414" height="106"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -93,11 +92,11 @@
         <!--Media-->
         <scene sceneID="IuY-Iu-oAm">
             <objects>
-                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="Npr-vu-PSD" sceneMemberID="viewController">
+                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="Npr-vu-PSD" customClass="NCMediaNavigationController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Media" id="5cw-bP-7It"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="ixg-Pw-TNO">
-                        <rect key="frame" x="0.0" y="96" width="414" height="96"/>
+                        <rect key="frame" x="0.0" y="96" width="414" height="106"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -125,7 +124,7 @@
                 <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="cJk-3t-NeM" customClass="NCActivityNavigationController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Activity" id="tc3-kx-Dca" userLabel="Activity"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="Qkh-XJ-mse">
-                        <rect key="frame" x="0.0" y="96" width="414" height="96"/>
+                        <rect key="frame" x="0.0" y="96" width="414" height="106"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -153,15 +152,13 @@
                     <tabBarItem key="tabBarItem" title="More" id="U4f-qS-cgh"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="yVo-p8-ApS">
-                        <rect key="frame" x="0.0" y="96" width="414" height="96"/>
+                        <rect key="frame" x="0.0" y="96" width="414" height="106"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
                         <segue destination="WTp-0D-Gpe" kind="show" identifier="segueTrash" id="bPq-YD-SUy"/>
                         <segue destination="biz-Qc-WHi" kind="show" identifier="segueOffline" id="Pdi-HO-f4O"/>
-                        <segue destination="2JP-H5-EI3" kind="show" identifier="segueActivity" id="aVb-Aj-gSf"/>
-                        <segue destination="2L6-L3-iRl" kind="show" identifier="segueTransfers" id="oIQ-Yx-Gmt"/>
                         <segue destination="zzk-gS-FKl" kind="show" identifier="segueRecent" id="Snj-Bw-Ce2"/>
                         <segue destination="z7i-Sl-6Di" kind="show" identifier="segueShares" id="c59-fC-R3W"/>
                         <segue destination="3YH-o1-17m" kind="relationship" relationship="rootViewController" id="les-zO-92u"/>
@@ -201,26 +198,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="d9n-lT-FK4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="10182" y="125"/>
-        </scene>
-        <!--NCActivity.storyboard-->
-        <scene sceneID="NqQ-oK-JeC">
-            <objects>
-                <viewControllerPlaceholder storyboardName="NCActivity" referencedIdentifier="NCActivity.storyboard" id="2JP-H5-EI3" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="2tm-Tj-UzB"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="rXq-Ww-4Zx" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="10185" y="168"/>
-        </scene>
-        <!--NCTransfers.storyboard-->
-        <scene sceneID="IDy-4E-Qqv">
-            <objects>
-                <viewControllerPlaceholder storyboardName="NCTransfers" referencedIdentifier="NCTransfers.storyboard" id="2L6-L3-iRl" sceneMemberID="viewController">
-                    <navigationItem key="navigationItem" id="rgn-gS-Fb2"/>
-                </viewControllerPlaceholder>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="X5c-xg-peQ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="10193" y="217"/>
         </scene>
         <!--NCRecent.storyboard-->
         <scene sceneID="nO2-dy-n7J">

@@ -19,6 +19,8 @@ final class NCImageCache: @unchecked Sendable {
     private let allowExtensions = [NCGlobal.shared.previewExt256]
     private var brandElementColor: UIColor?
 
+    private var observerToken: NSObjectProtocol?
+
     public var countLimit: Int = 2000
     lazy var cache: LRUCache<String, UIImage> = {
         return LRUCache<String, UIImage>(countLimit: countLimit)
@@ -28,7 +30,7 @@ final class NCImageCache: @unchecked Sendable {
     public var controller: UITabBarController?
 
     init() {
-        NotificationCenter.default.addObserver(forName: LRUCacheMemoryWarningNotification, object: nil, queue: nil) { _ in
+        observerToken = NotificationCenter.default.addObserver(forName: LRUCacheMemoryWarningNotification, object: nil, queue: nil) { _ in
             self.cache.removeAll()
             self.cache = LRUCache<String, UIImage>(countLimit: self.countLimit)
         }
@@ -52,14 +54,16 @@ final class NCImageCache: @unchecked Sendable {
                 if let tblAccount = await self.database.getTableAccountAsync(predicate: NSPredicate(format: "account == %@", controller.account)),
                    NCImageCache.shared.cache.count == 0 {
 
-                    self.isLoadingCache = true
-
                     // MEDIA
-                    let predicate = self.getMediaPredicateAsync(filterLivePhotoFile: true, session: session, mediaPath: tblAccount.mediaPath, showOnlyImages: false, showOnlyVideos: false)
-                    if let metadatas = await self.database.getMetadatasAsync(predicate: predicate, sortedByKeyPath: "datePhotosOriginal", limit: self.countLimit) {
+                    let predicate = self.getMediaPredicate(session: session, mediaPath: tblAccount.mediaPath, showOnlyImages: false, showOnlyVideos: false)
+                    guard let metadatas = await self.database.getMetadatasAsync(predicate: predicate, sortedByKeyPath: "datePhotosOriginal", limit: self.countLimit) else {
+                        return
+                    }
+
+                    self.isLoadingCache = true
+                    self.database.filterAndNormalizeLivePhotos(from: metadatas) { metadatas in
                         autoreleasepool {
                             self.cache.removeAll()
-
                             for metadata in metadatas {
                                 guard !isAppInBackground else {
                                     self.cache.removeAll()
@@ -74,10 +78,9 @@ final class NCImageCache: @unchecked Sendable {
                                     cost += 1
                                 }
                             }
+                            self.isLoadingCache = false
                         }
                     }
-
-                    self.isLoadingCache = false
                 }
             }
 #endif
@@ -85,7 +88,9 @@ final class NCImageCache: @unchecked Sendable {
     }
 
     deinit {
-        NotificationCenter.default.removeObserver(self, name: LRUCacheMemoryWarningNotification, object: nil)
+        if let token = observerToken {
+            NotificationCenter.default.removeObserver(token)
+        }
     }
 
     func allowExtensions(ext: String) -> Bool {
@@ -105,8 +110,16 @@ final class NCImageCache: @unchecked Sendable {
         cache.setValue(image, forKey: ocId + etag + ext, cost: cost)
     }
 
+    func addImageCache(image: UIImage, key: String) {
+        cache.setValue(image, forKey: key)
+    }
+
     func getImageCache(ocId: String, etag: String, ext: String) -> UIImage? {
         return cache.value(forKey: ocId + etag + ext)
+    }
+
+    func getImageCache(key: String) -> UIImage? {
+        return cache.value(forKey: key)
     }
 
     func removeImageCache(ocIdPlusEtag: String) {
@@ -121,29 +134,25 @@ final class NCImageCache: @unchecked Sendable {
 
     // MARK: - MEDIA -
 
-    func getMediaPredicateAsync(filterLivePhotoFile: Bool, session: NCSession.Session, mediaPath: String, showOnlyImages: Bool, showOnlyVideos: Bool) -> NSPredicate {
+    func getMediaPredicate(session: NCSession.Session,
+                           mediaPath: String,
+                           showOnlyImages: Bool,
+                           showOnlyVideos: Bool) -> NSPredicate {
         var predicate = NSPredicate()
         let startServerUrl = self.utilityFileSystem.getHomeServer(session: session) + mediaPath
+        let showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND mediaSearch == true AND hasPreview == true AND (classFile == '\(NKTypeClassFile.image.rawValue)' OR classFile == '\(NKTypeClassFile.video.rawValue)') AND NOT (status IN %@)"
+        let showOnlyPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND mediaSearch == true AND hasPreview == true AND classFile == %@ AND NOT (status IN %@)"
 
-            var showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND mediaSearch == true AND hasPreview == true AND (classFile == '\(NKTypeClassFile.image.rawValue)' OR classFile == '\(NKTypeClassFile.video.rawValue)') AND NOT (status IN %@)"
-
-            var showOnlyPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND mediaSearch == true AND hasPreview == true AND classFile == %@ AND NOT (status IN %@)"
-
-            if filterLivePhotoFile {
-                showBothPredicateMediaString = showBothPredicateMediaString + " AND NOT (livePhotoFile != '' AND classFile == '\(NKTypeClassFile.video.rawValue)')"
-                showOnlyPredicateMediaString = showOnlyPredicateMediaString + " AND NOT (livePhotoFile != '' AND classFile == '\(NKTypeClassFile.video.rawValue)')"
-            }
-
-            if showOnlyImages {
-                predicate = NSPredicate(format: showOnlyPredicateMediaString, session.account, startServerUrl, NKTypeClassFile.image.rawValue, global.metadataStatusHideInView)
-            } else if showOnlyVideos {
-                predicate = NSPredicate(format: showOnlyPredicateMediaString, session.account, startServerUrl, NKTypeClassFile.video.rawValue, global.metadataStatusHideInView)
-            } else {
-                predicate = NSPredicate(format: showBothPredicateMediaString, session.account, startServerUrl, global.metadataStatusHideInView)
-            }
-
-            return predicate
+        if showOnlyImages {
+            predicate = NSPredicate(format: showOnlyPredicateMediaString, session.account, startServerUrl, NKTypeClassFile.image.rawValue, global.metadataStatusHideInView)
+        } else if showOnlyVideos {
+            predicate = NSPredicate(format: showOnlyPredicateMediaString, session.account, startServerUrl, NKTypeClassFile.video.rawValue, global.metadataStatusHideInView)
+        } else {
+            predicate = NSPredicate(format: showBothPredicateMediaString, session.account, startServerUrl, global.metadataStatusHideInView)
         }
+
+        return predicate
+    }
 
     // MARK: -
 

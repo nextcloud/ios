@@ -67,6 +67,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     private func startNextcloud(scene: UIScene, withActivateSceneForAccount activateSceneForAccount: Bool) {
+        // App not in background
+        isAppInBackground = false
         // Open Realm
         NCManageDatabase.shared.openRealm()
         // Table account
@@ -217,8 +219,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         }
 
-        WidgetCenter.shared.reloadAllTimelines()
-
         if NCPreferences().privacyScreenEnabled {
             if SwiftEntryKit.isCurrentlyDisplaying {
                 SwiftEntryKit.dismiss {
@@ -231,36 +231,64 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
-        // Must be outside the Task otherwise isSuspendingDatabaseOperation suspends it
+        let app = UIApplication.shared
+        var bgID: UIBackgroundTaskIdentifier = .invalid
+        let isBackgroundRefreshStatus = (UIApplication.shared.backgroundRefreshStatus == .available)
         let session = SceneManager.shared.getSession(scene: scene)
         guard let tblAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
             return
         }
-        Task { @MainActor in
-            await NCManageDatabase.shared.backupTableAccountToFileAsync()
+        bgID = app.beginBackgroundTask(withName: "FlushBeforeSuspend") {
+            app.endBackgroundTask(bgID); bgID = .invalid
+        }
 
-            nkLog(info: "Auto upload in background: \(tblAccount.autoUploadStart)")
-            nkLog(info: "Update in background: \(UIApplication.shared.backgroundRefreshStatus == .available)")
+        Task {
+            Task { @MainActor in
+                if NCPreferences().presentPasscode {
+                    showPrivacyProtectionWindow()
+                }
+            }
+            defer {
+                app.endBackgroundTask(bgID); bgID = .invalid
+            }
+            // Timeout auto
+            let didFinish = await withTaskGroup(of: Bool.self) { group -> Bool in
+                group.addTask {
+                    // BACKUP
+                    await NCManageDatabase.shared.backupTableAccountToFileAsync()
+                    // QUEUE
+                    NCNetworking.shared.cancelAllQueue()
+                    // LOG
+                    nkLog(info: "Auto upload in background: \(tblAccount.autoUploadStart)")
+                    nkLog(info: "Update in background: \(isBackgroundRefreshStatus)")
+                    // LOCATION MANAGER
+                    if CLLocationManager().authorizationStatus == .authorizedAlways && NCPreferences().location && tblAccount.autoUploadStart {
+                        NCBackgroundLocationUploadManager.shared.start()
+                    } else {
+                        NCBackgroundLocationUploadManager.shared.stop()
+                    }
+                    // UPDATE SHARE GROUP ACCOUNTS
+                    if let error = await NCAccount().updateAppsShareAccounts() {
+                        nkLog(error: "Create Apps share accounts \(error.localizedDescription)")
+                    }
+                    // CLEAR OLDER FILES
+                    await NCManageDatabase.shared.cleanTablesOcIds(account: tblAccount.account, userId: tblAccount.userId, urlBase: tblAccount.urlBase)
+                    await NCUtilityFileSystem().cleanUpAsync()
+                    // TRANSFERS SUCCESS
+                    await NCNetworking.shared.metadataTranfersSuccess.flush()
 
-            if CLLocationManager().authorizationStatus == .authorizedAlways && NCPreferences().location && tblAccount.autoUploadStart {
-                NCBackgroundLocationUploadManager.shared.start()
-            } else {
-                NCBackgroundLocationUploadManager.shared.stop()
+                    return true
+                }
+                group.addTask {
+                    try? await Task.sleep(nanoseconds: 25 * 1_000_000_000) // ~25s
+                    return false
+                }
+                return await group.next() ?? false
             }
 
-            if let error = await NCAccount().updateAppsShareAccounts() {
-                nkLog(error: "Create Apps share accounts \(error.localizedDescription)")
+            if !didFinish {
+                nkLog(debug: "Flush timed out, will continue next launch")
             }
-
-            NCNetworking.shared.cancelAllQueue()
-
-            if NCPreferences().presentPasscode {
-                showPrivacyProtectionWindow()
-            }
-
-            // Clear older files
-            await NCManageDatabase.shared.cleanTablesOcIds(account: tblAccount.account, userId: tblAccount.userId, urlBase: tblAccount.urlBase)
-            await NCUtilityFileSystem().cleanUpAsync()
         }
     }
 
@@ -462,10 +490,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         Task {
             try? await Task.sleep(nanoseconds: 1_000_000_000)
-            if let tblAccount = await NCManageDatabase.shared.getTableAccountAsync(account: account) {
-                let num = await NCAutoUpload.shared.initAutoUpload(tblAccount: tblAccount)
-                nkLog(start: "Auto upload with \(num) photo")
-            }
+
+            let num = await NCAutoUpload.shared.initAutoUpload()
+            nkLog(start: "Auto upload with \(num) photo")
 
             try? await Task.sleep(nanoseconds: 1_500_000_000)
             await NCService().startRequestServicesServer(account: account, controller: controller)
