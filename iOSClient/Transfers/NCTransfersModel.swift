@@ -93,14 +93,6 @@ final class TransfersViewModel: ObservableObject {
         await NCNetworking.shared.cancelTask(metadata: metadata)
     }
 
-    func readablePath(for item: tableMetadata) -> String {
-        let url = item.serverUrl
-        let home = utilityFileSystem.getHomeServer(session: session)
-        var path = url.replacingOccurrences(of: home, with: "")
-        if path.isEmpty { path = "/" }
-        return item.account + " " + path
-    }
-
     func progress(for item: tableMetadata) -> Float {
         let serverUrl = item.serverUrl
         let fileName = item.fileName

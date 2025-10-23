@@ -172,11 +172,6 @@ struct TransferRowView: View {
                     Text(item.fileName)
                         .font(.headline)
 
-                    Text(model.readablePath(for: item))
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .padding(.top, 2)
-
                     if !status.status.isEmpty {
                         Text(status.status)
                             .font(.footnote)
@@ -261,5 +256,6 @@ extension tableMetadata {
         self.status = status
         self.errorCode = errorCode
         self.sessionError = sessionError
+        self.user = "xxxx"
     }
 }
