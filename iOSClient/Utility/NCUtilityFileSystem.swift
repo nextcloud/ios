@@ -698,43 +698,6 @@ final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
         }
     }
 
-    /// Helper that calculates app
-    func getAppSize() -> Int64 {
-        let fm = FileManager.default
-        var total: Int64 = 0
-
-        func folderSize(_ url: URL) -> Int64 {
-            var t: Int64 = 0
-            let keys: [URLResourceKey] = [.isRegularFileKey, .fileAllocatedSizeKey, .totalFileAllocatedSizeKey]
-            if let e = fm.enumerator(at: url, includingPropertiesForKeys: keys, options: [.skipsHiddenFiles, .skipsPackageDescendants]) {
-                for case let f as URL in e {
-                    if let v = try? f.resourceValues(forKeys: Set(keys)),
-                       v.isRegularFile == true {
-                        t += Int64(v.totalFileAllocatedSize ?? v.fileAllocatedSize ?? 0)
-                    }
-                }
-            }
-            return t
-        }
-
-        // App sandbox
-        if let docs = fm.urls(for: .documentDirectory, in: .userDomainMask).first {
-            total += folderSize(docs)
-        }
-        if let lib = fm.urls(for: .libraryDirectory, in: .userDomainMask).first {
-            total += folderSize(lib)
-        }
-        let tmp = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
-        total += folderSize(tmp)
-
-        // App Group
-        if let group = fm.containerURL(forSecurityApplicationGroupIdentifier: "group.com.yourcompany.yourapp") {
-            total += folderSize(group)
-        }
-
-        return total
-    }
-
     func transformedSize(_ bytes: Int64) -> String {
         let formatter: ByteCountFormatter = ByteCountFormatter()
         formatter.countStyle = .binary
