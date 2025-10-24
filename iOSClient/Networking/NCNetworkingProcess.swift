@@ -6,7 +6,6 @@ import UIKit
 import NextcloudKit
 import Photos
 import RealmSwift
-import JDStatusBarNotification
 
 actor NCNetworkingProcess {
     static let shared = NCNetworkingProcess()
@@ -320,7 +319,7 @@ actor NCNetworkingProcess {
             }
             // upload file(s)
             for metadata in extractMetadatas {
-                guard timer != nil else { return }
+                guard timer != nil, !isAppInBackground else { return }
 
                 // UPLOAD E2EE
                 //
@@ -331,55 +330,11 @@ actor NCNetworkingProcess {
                 // UPLOAD CHUNK
                 //
                 } else if metadata.chunk > 0 {
-                    var numChunks = 0
-                    var countUpload: Int = 0
-
-                    NotificationPresenter.shared.updateDefaultStyle { style in
-                        style.backgroundStyle.backgroundColor = NCBrandColor.shared.customer
-                        style.textStyle.textColor = .white
-                        style.animationType = .move
-                        style.progressBarStyle.barColor = .white
-                        return style
-                    }
-
-                    Task { @MainActor in
-                        NotificationPresenter.shared.present(NSLocalizedString("_wait_file_preparation_", comment: ""))
-                    }
-                    await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
-                        numChunks = num
-                    } counterChunk: { counter in
-                        Task { @MainActor in
-                            let progress = Double(counter) / Double(numChunks)
-                            NotificationPresenter.shared.displayProgressBar(at: progress)
-                        }
-                    } startFilesChunk: { _ in
-                        Task { @MainActor in
-                            NotificationPresenter.shared.updateTitle(NSLocalizedString("_keep_active_for_upload_", comment: ""))
-                            NotificationPresenter.shared.displayProgressBar(at: 0.0)
-                        }
-                    } requestHandler: { _ in
-                        Task { @MainActor in
-                            let progress = Double(countUpload) / Double(numChunks)
-                            NotificationPresenter.shared.displayProgressBar(at: progress)
-                            countUpload += 1
-                        }
-                    } assembling: {
-                        Task { @MainActor in
-                            NotificationPresenter.shared.updateTitle(NSLocalizedString("_wait_", comment: ""))
-                            NotificationPresenter.shared.displayProgressBar(at: 0.0)
-                        }
-                    }
-
-                    Task { @MainActor in
-                        NotificationPresenter.shared.dismiss()
-                    }
-
+                    await NCNetworking.shared.uploadChunkWithPresented(metadata: metadata)
                 // UPLOAD IN BACKGROUND
                 //
                 } else {
-                    if !isAppInBackground {
-                        await networking.uploadFileInBackground(metadata: metadata)
-                    }
+                    await networking.uploadFileInBackground(metadata: metadata)
                 }
 
                 availableProcess -= 1

@@ -411,7 +411,7 @@ extension NCShareExtension {
         if metadata.isDirectoryE2EE {
             error = await NCNetworkingE2EEUpload().upload(metadata: metadata, session: session, controller: self)
         } else if metadata.chunk > 0 {
-            let results = await NCNetworking.shared.uploadChunk(metadata: metadata, hud: hud)
+            let results = await NCNetworking.shared.uploadChunkWithHud(metadata: metadata, hud: hud)
             error = results.error
         } else {
             let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,

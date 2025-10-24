@@ -208,7 +208,7 @@ class NCNetworkingE2EEUpload: NSObject {
     private func sendFile(metadata: tableMetadata, e2eToken: String, hud: NCHud, controller: UIViewController?) async -> (ocId: String?, etag: String?, date: Date?, error: NKError) {
 
         if metadata.chunk > 0 {
-            let results = await NCNetworking.shared.uploadChunk(metadata: metadata, hud: hud)
+            let results = await NCNetworking.shared.uploadChunkWithHud(metadata: metadata, hud: hud)
             return (results.file?.ocId, results.file?.etag, results.file?.date, results.error)
         } else {
             let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId,
