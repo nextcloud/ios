@@ -128,10 +128,18 @@ extension NCNetworking {
 
         NotificationPresenter.shared.updateDefaultStyle { style in
             style.backgroundStyle.backgroundColor = NCBrandColor.shared.customer
+            style.backgroundStyle.pillStyle.height = 55
+
             style.textStyle.textColor = .white
+
             style.subtitleStyle.textColor = .white
             style.animationType = .move
+
             style.progressBarStyle.barColor = .white
+            style.progressBarStyle.barHeight = 2
+            style.progressBarStyle.horizontalInsets = 30
+            style.progressBarStyle.offsetY = -4
+
             return style
         }
 
