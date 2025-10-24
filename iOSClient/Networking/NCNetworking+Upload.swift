@@ -129,13 +129,15 @@ extension NCNetworking {
         NotificationPresenter.shared.updateDefaultStyle { style in
             style.backgroundStyle.backgroundColor = NCBrandColor.shared.customer
             style.textStyle.textColor = .white
+            style.subtitleStyle.textColor = .white
             style.animationType = .move
             style.progressBarStyle.barColor = .white
             return style
         }
 
         Task { @MainActor in
-            NotificationPresenter.shared.present(NSLocalizedString("_wait_file_preparation_", comment: ""))
+            NotificationPresenter.shared.present(NSLocalizedString("_wait_file_preparation_", comment: ""),
+                                                 subtitle: NSLocalizedString("_large_upload_tip_", comment: ""))
             let image = UIImage(systemName: "gearshape.arrow.triangle.2.circlepath")?.withTintColor(.white, renderingMode: .alwaysOriginal)
             NotificationPresenter.shared.displayLeftView(UIImageView(image: image))
         }
