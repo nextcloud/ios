@@ -343,7 +343,7 @@ actor NCNetworkingProcess {
         }
     }
 
-    //
+    // MARK: - Upload in chunk mode
 
     func uploadChunk(metadata: tableMetadata) async {
         var numChunks = 0

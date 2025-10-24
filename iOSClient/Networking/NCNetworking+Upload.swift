@@ -87,40 +87,6 @@ extension NCNetworking {
 
     // MARK: - Upload chunk file in foreground
 
-    func uploadChunkWithHud(metadata: tableMetadata, hud: NCHud) async -> (account: String,
-                                                                           remainingChunks: [(fileName: String, size: Int64)]?,
-                                                                           file: NKFile?,
-                                                                           error: NKError) {
-        var numChunks = 0
-        var countUpload: Int = 0
-        var taskHandler: URLSessionTask?
-
-        hud.pieProgress(text: NSLocalizedString("_wait_file_preparation_", comment: ""), tapToCancelDetailText: true) {
-            NotificationCenter.default.postOnMainThread(name: NextcloudKit.shared.nkCommonInstance.notificationCenterChunkedFileStop.rawValue)
-        }
-
-        let results = await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
-            numChunks = num
-        } counterChunk: { counter in
-            hud.progress(num: Float(counter), total: Float(numChunks))
-        } startFilesChunk: { _ in
-            hud.pieProgress(text: NSLocalizedString("_keep_active_for_upload_", comment: ""), tapToCancelDetailText: true) {
-                taskHandler?.cancel()
-            }
-        } requestHandler: { _ in
-            hud.progress(num: Float(countUpload), total: Float(numChunks))
-            countUpload += 1
-        } taskHandler: { task in
-            taskHandler = task
-        } assembling: {
-            hud.setText(NSLocalizedString("_wait_", comment: ""))
-        }
-
-        hud.dismiss()
-
-        return results
-    }
-
     @discardableResult
     func uploadChunkFile(metadata: tableMetadata,
                          performPostProcessing: Bool = true,
