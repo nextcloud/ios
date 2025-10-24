@@ -1012,6 +1012,7 @@
 		F7EF2AEC2E43157B0081B2C9 /* NCNotification.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7EF2AE82E43157B0081B2C9 /* NCNotification.storyboard */; };
 		F7EFA47825ADBA500083159A /* NCViewerProviderContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7EFA47725ADBA500083159A /* NCViewerProviderContextMenu.swift */; };
 		F7EFC0CD256BF8DD00461AAD /* NCUserStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7EFC0CC256BF8DD00461AAD /* NCUserStatus.swift */; };
+		F7F0691D2EAB9DA300B3B13B /* NotificationPresenterUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F0691C2EAB9DA200B3B13B /* NotificationPresenterUI.swift */; };
 		F7F1FB9D2E27CE7200C79E20 /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
 		F7F1FB9E2E27CE7200C79E20 /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
 		F7F1FB9F2E27CE7200C79E20 /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
@@ -1914,6 +1915,7 @@
 		F7EF2AE92E43157B0081B2C9 /* NCNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNotification.swift; sourceTree = "<group>"; };
 		F7EFA47725ADBA500083159A /* NCViewerProviderContextMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerProviderContextMenu.swift; sourceTree = "<group>"; };
 		F7EFC0CC256BF8DD00461AAD /* NCUserStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCUserStatus.swift; sourceTree = "<group>"; };
+		F7F0691C2EAB9DA200B3B13B /* NotificationPresenterUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPresenterUI.swift; sourceTree = "<group>"; };
 		F7F3E58A2D3BB65000A32B14 /* NCNetworking+Recommendations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCNetworking+Recommendations.swift"; sourceTree = "<group>"; };
 		F7F4F0FD27ECDBDB008676F9 /* Inconsolata-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inconsolata-SemiBold.ttf"; sourceTree = "<group>"; };
 		F7F4F0FE27ECDBDB008676F9 /* Inconsolata-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inconsolata-Medium.ttf"; sourceTree = "<group>"; };
@@ -2752,6 +2754,7 @@
 			children = (
 				F769CA182966EA3C00039397 /* ComponentView.swift */,
 				F768823D2C0DD304001CF441 /* LazyView.swift */,
+				F7F0691C2EAB9DA200B3B13B /* NotificationPresenterUI.swift */,
 				F768823F2C0DD30B001CF441 /* ViewOnAppear.swift */,
 				F7BFFD272C8846020029A201 /* NCHud.swift */,
 				F75CA1462962F13700B01130 /* NCHUDView.swift */,
@@ -4934,6 +4937,7 @@
 				F7CF06802E0FF3990063AD04 /* NCAppStateManager.swift in Sources */,
 				F7BAADCB1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */,
 				F768822A2C0DD1E7001CF441 /* NCSettingsModel.swift in Sources */,
+				F7F0691D2EAB9DA300B3B13B /* NotificationPresenterUI.swift in Sources */,
 				F737DA9D2B7B893C0063BAFC /* NCPasscode.swift in Sources */,
 				F77C97392953131000FDDD09 /* NCCameraRoll.swift in Sources */,
 				F7CADEFD2EA159210057849E /* NCMetadataTranfersSuccess.swift in Sources */,

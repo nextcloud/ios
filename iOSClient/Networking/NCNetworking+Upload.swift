@@ -5,7 +5,6 @@
 import UIKit
 import NextcloudKit
 import Alamofire
-import JDStatusBarNotification
 
 extension NCNetworking {
 
@@ -120,68 +119,6 @@ extension NCNetworking {
         hud.dismiss()
 
         return results
-    }
-
-    func uploadChunkWithPresented(metadata: tableMetadata) async {
-        var numChunks = 0
-        var countUpload: Int = 0
-
-        NotificationPresenter.shared.updateDefaultStyle { style in
-            style.backgroundStyle.backgroundColor = NCBrandColor.shared.customer
-            style.backgroundStyle.pillStyle.height = 55
-
-            style.textStyle.textColor = .white
-
-            style.subtitleStyle.textColor = .white
-            style.animationType = .move
-
-            style.progressBarStyle.barColor = .white
-            style.progressBarStyle.barHeight = 2
-            style.progressBarStyle.horizontalInsets = 30
-            style.progressBarStyle.offsetY = -4
-
-            return style
-        }
-
-        Task { @MainActor in
-            NotificationPresenter.shared.present(NSLocalizedString("_wait_file_preparation_", comment: ""),
-                                                 subtitle: NSLocalizedString("_large_upload_tip_", comment: ""))
-            let image = UIImage(systemName: "gearshape.arrow.triangle.2.circlepath")?.withTintColor(.white, renderingMode: .alwaysOriginal)
-            NotificationPresenter.shared.displayLeftView(UIImageView(image: image))
-        }
-        await uploadChunkFile(metadata: metadata) { num in
-            numChunks = num
-        } counterChunk: { counter in
-            Task { @MainActor in
-                let progress = Double(counter) / Double(numChunks)
-                NotificationPresenter.shared.displayProgressBar(at: progress)
-            }
-        } startFilesChunk: { _ in
-            Task { @MainActor in
-                NotificationPresenter.shared.updateTitle(NSLocalizedString("_keep_active_for_upload_", comment: ""))
-                let image = UIImage(systemName: "arrowshape.up.circle")?.withTintColor(.white, renderingMode: .alwaysOriginal)
-                NotificationPresenter.shared.displayLeftView(UIImageView(image: image))
-                NotificationPresenter.shared.displayProgressBar(at: 0.0)
-            }
-        } requestHandler: { _ in
-            Task { @MainActor in
-                let progress = Double(countUpload) / Double(numChunks)
-                NotificationPresenter.shared.displayProgressBar(at: progress)
-                countUpload += 1
-            }
-        } assembling: {
-            Task { @MainActor in
-                NotificationPresenter.shared.updateTitle(NSLocalizedString("_wait_", comment: ""))
-                let image = UIImage(systemName: "tray.and.arrow.down")?.withTintColor(.white, renderingMode: .alwaysOriginal)
-                NotificationPresenter.shared.displayLeftView(UIImageView(image: image))
-                NotificationPresenter.shared.displayProgressBar(at: 0.0)
-            }
-        }
-
-        Task { @MainActor in
-            NotificationPresenter.shared.dismiss()
-        }
-
     }
 
     @discardableResult
