@@ -49,8 +49,11 @@ class NCAutoUpload: NSObject {
             return
         }
 
-        let image = UIImage(systemName: "photo.on.rectangle.angled")?.image(color: .white, size: 20)
-        NCContentPresenter().noteTop(text: NSLocalizedString("_creating_db_photo_progress_", comment: ""), image: image, color: .lightGray, delay: .infinity, priority: .max)
+        NCContentPresenter().noteTop(text: NSLocalizedString("_creating_db_photo_progress_", comment: ""),
+                                     image: UIImage(systemName: "photo.on.rectangle.angled")?.image(color: .white, size: 20),
+                                     color: .lightGray,
+                                     delay: .infinity,
+                                     priority: .max)
 
         let result = await getCameraRollAssets(controller: controller, assetCollections: assetCollections, tblAccount: tblAccount)
 

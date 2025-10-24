@@ -330,16 +330,14 @@ actor NCNetworkingProcess {
                 // UPLOAD CHUNK
                 //
                 } else if metadata.chunk > 0 {
-                    Task { @MainActor in
-                        let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
-                        var hud = NCHud(controller?.view)
+                    let controller = await getController(account: metadata.account, sceneIdentifier: metadata.sceneIdentifier)
+                    var hud = await NCHud(controller?.view)
 
-                        if let viewController = controller?.currentViewController() as? NCCollectionViewCommon {
-                            hud = NCHud(viewController.view)
-                        }
-
-                        await networking.uploadChunk(metadata: metadata, hud: hud)
+                    if let viewController = await controller?.currentViewController() as? NCCollectionViewCommon {
+                        hud = await NCHud(viewController.view)
                     }
+
+                    await networking.uploadChunk(metadata: metadata, hud: hud)
 
                 // UPLOAD IN BACKGROUND
                 //
