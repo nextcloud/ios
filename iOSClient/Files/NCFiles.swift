@@ -125,11 +125,22 @@ class NCFiles: NCCollectionViewCommon {
             }
 
             GlassHUDWindow.shared.show(
-                title: "Uploading file.zip",
-                subtitle: "Keep the app active Keep the app active Keep the app active",
-                progress: 0.0,
-                autoDismissAfter: 3
-            )
+                initialTitle: "Preparing…",
+                initialSubtitle: "Keep app active, Keep app active, Keep app active, Keep app active,Keep app active",
+                initialProgress: 0.0,
+                autoDismissAfter: 0
+            ) { state in
+                GlassBannerView(state: state)
+            }
+
+            // UPDATE a piacere:
+            for i in 0...100 {
+                try? await Task.sleep(nanoseconds: 40_000_000)
+                GlassHUDWindow.shared.update(progress: Double(i) / 100)
+            }
+            GlassHUDWindow.shared.update(title: "Done", subtitle: nil, progress: nil)
+            try? await Task.sleep(nanoseconds: 700_000_000)
+            GlassHUDWindow.shared.dismiss()
         }
     }
 
