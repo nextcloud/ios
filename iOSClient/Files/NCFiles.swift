@@ -123,6 +123,8 @@ class NCFiles: NCCollectionViewCommon {
             if !isSearchingMode {
                 await getServerData()
             }
+
+            GlassHUDWindow.shared.show(title: "Uploading file.zip", subtitle: "Keep app active", progress: 0.0)
         }
     }
 
