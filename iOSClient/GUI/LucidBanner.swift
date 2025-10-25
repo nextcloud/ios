@@ -5,21 +5,6 @@
 import SwiftUI
 import UIKit
 
-// MARK: - Stato osservabile condiviso
-@MainActor
-final class LucidBannerState: ObservableObject {
-    @Published var title: String
-    @Published var subtitle: String?
-    @Published var progress: Double?
-    @Published var flags: [String: Any] = [:]
-
-    init(title: String, subtitle: String? = nil, progress: Double? = nil) {
-        self.title = title
-        self.subtitle = (subtitle?.isEmpty == true) ? nil : subtitle
-        self.progress = progress
-    }
-}
-
 @MainActor
 final class LucidBanner {
     static let shared = LucidBanner()
@@ -142,18 +127,17 @@ final class LucidBanner {
             }
         }
 
-        // Nuova sessione: bump del token
+        // new: bump del token
         generation &+= 1
         activeToken = generation
 
-        // Nessun conflitto: parti subito
+        // start now
         startShow(with: anyViewUI)
 
         return activeToken
     }
 
     private func startShow(with viewUI: @escaping (LucidBannerState) -> AnyView) {
-        // Lock durante l’entrata
         lockWidthUntilSettled = true
         isAnimatingIn = true
         pendingRelayout = false
@@ -170,9 +154,8 @@ final class LucidBanner {
         scheduleAutoDismiss()
     }
 
-    // MARK: - UPDATE (accetta opzionalmente un token)
+    // MARK: - UPDATE
 
-    /// `token`: se passato e diverso da quello attivo, l’update viene ignorato.
     func update(title: String? = nil, subtitle: String? = nil, progress: Double? = nil, for token: Int? = nil) {
         // token non valido o window assente → ignora
         if let token, token != activeToken {
@@ -301,7 +284,7 @@ final class LucidBanner {
         dismiss(completion: completion) // chiama il tuo dismiss esistente
     }
 
-    // MARK: - Interni
+    // MARK: - Private (internal)
 
     private func dequeueAndStartIfNeeded() {
         guard window == nil,
@@ -506,13 +489,28 @@ final class LucidBanner {
 
 // MARK: - UIWindow pass-through
 
-final class LucidBannerPassthroughWindow: UIWindow {
+internal final class LucidBannerPassthroughWindow: UIWindow {
     weak var hitTargetView: UIView?
 
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         guard let target = hitTargetView else { return nil }
         let p = target.convert(point, from: self)
         return target.bounds.contains(p) ? super.hitTest(point, with: event) : nil
+    }
+}
+
+// MARK: - Stato osservabile condiviso
+@MainActor
+internal final class LucidBannerState: ObservableObject {
+    @Published var title: String
+    @Published var subtitle: String?
+    @Published var progress: Double?
+    @Published var flags: [String: Any] = [:]
+
+    init(title: String, subtitle: String? = nil, progress: Double? = nil) {
+        self.title = title
+        self.subtitle = (subtitle?.isEmpty == true) ? nil : subtitle
+        self.progress = progress
     }
 }
 
@@ -580,7 +578,7 @@ struct ToastBannerView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
                 .blendMode(.screen)
             }
-            .compositingGroup() // Isola i blend dentro al rettangolo
+            .compositingGroup()
         )
         .overlay(
             RoundedRectangle(cornerRadius: 22, style: .continuous)
