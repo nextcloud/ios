@@ -126,8 +126,9 @@ class NCFiles: NCCollectionViewCommon {
 
             GlassHUDWindow.shared.show(
                 title: "Uploading file.zip",
-                subtitle: "Keep the app active",
-                progress: 0.0
+                subtitle: "Keep the app active Keep the app active Keep the app active",
+                progress: 0.0,
+                autoDismissAfter: 3
             )
         }
     }

@@ -148,22 +148,34 @@ struct GlassBannerView: View {
     }
 }
 
+import SwiftUI
+import UIKit
+
 @MainActor
 final class GlassHUDWindow {
     static let shared = GlassHUDWindow()
 
-    var isSwipeToDismissEnabled = true // <— FLAG
-
     private var window: PassthroughWindow?
     private var hostController: UIHostingController<GlassBannerView>?
     private var topConstraint: NSLayoutConstraint?
+    private var dismissTimer: Task<Void, Never>?
 
     private var title: String = ""
     private var subtitle: String?
-    private var progress: Double = 0
+    private var progress: Double?
+    private var autoDismissAfter: TimeInterval = 0
 
-    func show(title: String, subtitle: String? = nil, progress: Double = 0) {
-        self.title = title; self.subtitle = subtitle; self.progress = progress
+    var isSwipeToDismissEnabled = true
+
+    // MARK: - Show
+    func show(title: String,
+              subtitle: String? = nil,
+              progress: Double? = nil,
+              autoDismissAfter: TimeInterval = 0) {
+        self.title = title
+        self.subtitle = subtitle?.isEmpty == true ? nil : subtitle
+        self.progress = progress
+        self.autoDismissAfter = autoDismissAfter
 
         if window == nil {
             guard let scene = UIApplication.shared.connectedScenes
@@ -177,8 +189,12 @@ final class GlassHUDWindow {
         } else {
             update(title: title, subtitle: subtitle, progress: progress)
         }
+
+        // schedule auto-dismiss if requested
+        scheduleAutoDismiss()
     }
 
+    // MARK: - Attach UIWindow
     private func attachWindow(to scene: UIWindowScene) {
         let win = PassthroughWindow(windowScene: scene)
         win.frame = scene.screen.bounds
@@ -202,13 +218,11 @@ final class GlassHUDWindow {
             host.view.leadingAnchor.constraint(greaterThanOrEqualTo: win.leadingAnchor, constant: 12)
         ])
 
-        // Allow touches only inside the banner view
         win.hitTargetView = host.view
 
-        // Enable swipe-to-dismiss if requested
         if isSwipeToDismissEnabled {
             let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
-            pan.cancelsTouchesInView = false // keep interactions inside SwiftUI view
+            pan.cancelsTouchesInView = false
             host.view.addGestureRecognizer(pan)
         }
 
@@ -216,7 +230,7 @@ final class GlassHUDWindow {
         self.hostController = host
         self.topConstraint = top
 
-        // Initial layout + slide-in
+        // Slide-in animation
         win.layoutIfNeeded()
         host.view.alpha = 0
         let targetTop: CGFloat = 10
@@ -231,20 +245,42 @@ final class GlassHUDWindow {
         }
     }
 
-    // Pan handler: drag up to dismiss, drag down small -> snap back
+    // MARK: - Update content
+    func update(title: String? = nil, subtitle: String? = nil, progress: Double? = nil) {
+        if let t = title { self.title = t }
+        if let s = subtitle { self.subtitle = s.isEmpty ? nil : s }
+        if let p = progress { self.progress = (p > 0) ? p : nil }
+
+        hostController?.rootView = GlassBannerView(
+            title: self.title,
+            subtitle: self.subtitle,
+            progress: self.progress
+        )
+    }
+
+    // MARK: - Auto dismiss logic
+    private func scheduleAutoDismiss() {
+        dismissTimer?.cancel()
+        guard autoDismissAfter > 0 else { return } // 0 → stays forever
+        dismissTimer = Task {
+            try? await Task.sleep(nanoseconds: UInt64(autoDismissAfter * 1_000_000_000))
+            await dismiss()
+        }
+    }
+
+    // MARK: - Pan gesture (swipe up)
     @objc private func handlePan(_ g: UIPanGestureRecognizer) {
         guard let win = window,
               let host = hostController?.view,
               let top = topConstraint else { return }
 
         let translation = g.translation(in: host).y
-        let baseTop: CGFloat = 10 // resting position
+        let baseTop: CGFloat = 10
+
         switch g.state {
         case .changed:
-            // Only allow moving upward (negative y); tiny forgiveness downward
-            let limited = min(0, translation) // <= 0
+            let limited = min(0, translation)
             top.constant = baseTop + limited
-            // Optional: fade a bit while dragging
             host.alpha = max(0.4, 1.0 + limited / 120.0)
             win.layoutIfNeeded()
 
@@ -252,18 +288,8 @@ final class GlassHUDWindow {
             let velocityY = g.velocity(in: host).y
             let shouldDismiss = (translation < -30) || (velocityY < -500)
             if shouldDismiss {
-                // Slide out upwards and dismiss
-                top.constant = -(host.bounds.height + 40)
-                UIView.animate(withDuration: 0.22,
-                               delay: 0,
-                               options: [.curveEaseIn, .beginFromCurrentState]) {
-                    host.alpha = 0
-                    win.layoutIfNeeded()
-                } completion: { _ in
-                    self.dismiss()
-                }
+                dismiss()
             } else {
-                // Snap back to baseTop
                 top.constant = baseTop
                 UIView.animate(withDuration: 0.25,
                                delay: 0,
@@ -279,22 +305,31 @@ final class GlassHUDWindow {
         }
     }
 
-    func update(title: String? = nil, subtitle: String? = nil, progress: Double? = nil) {
-        if let title { self.title = title }
-        if let subtitle { self.subtitle = subtitle }
-        if let progress { self.progress = max(0, min(progress, 1)) }
-
-        hostController?.rootView = GlassBannerView(
-            title: self.title,
-            subtitle: self.subtitle,
-            progress: self.progress
-        )
-    }
-
+    // MARK: - Dismiss
     func dismiss() {
-        hostController = nil
-        window?.isHidden = true
-        window = nil
-        topConstraint = nil
+        dismissTimer?.cancel()
+        dismissTimer = nil
+
+        guard let win = window,
+              let host = hostController,
+              let top = topConstraint else {
+            hostController = nil
+            window?.isHidden = true
+            window = nil
+            return
+        }
+
+        top.constant = -(host.view.bounds.height + 40)
+        UIView.animate(withDuration: 0.25,
+                       delay: 0,
+                       options: [.curveEaseIn, .beginFromCurrentState]) {
+            host.view.alpha = 0
+            win.layoutIfNeeded()
+        } completion: { _ in
+            self.hostController = nil
+            self.window?.isHidden = true
+            self.window = nil
+            self.topConstraint = nil
+        }
     }
 }
