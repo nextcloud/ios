@@ -132,15 +132,15 @@ class NCFiles: NCCollectionViewCommon {
     func demoHUD() async {
         try? await Task.sleep(nanoseconds: 800_000_000)
 
-        GlassHUDWindow.shared.isSwipeToDismissEnabled = true
+        NCNotificationPresenter.shared.isSwipeToDismissEnabled = true
 
-        GlassHUDWindow.shared.show(
+        NCNotificationPresenter.shared.show(
             initialTitle: "Preparing…",
             initialSubtitle: "",
-            initialProgress: 0.0,          // 0 => barra nascosta
+            initialProgress: 0.0,
             autoDismissAfter: 0,
             policy: .enqueue,
-            fixedWidth: nil,                // auto
+            fixedWidth: nil,
         ) { state in
             BannerView(state: state)
         }
@@ -150,12 +150,12 @@ class NCFiles: NCCollectionViewCommon {
             for i in 0...100 {
                 if Task.isCancelled { break }
                 try? await Task.sleep(nanoseconds: 40_000_000)
-                GlassHUDWindow.shared.update(progress: Double(i) / 100.0)
+                NCNotificationPresenter.shared.update(progress: Double(i) / 100.0)
             }
             if Task.isCancelled { return }
-            GlassHUDWindow.shared.update(title: "Done", subtitle: "Keep app active, Keep app active, Keep app active Keep app active Keep app active Keep app active", progress: 0)
+            NCNotificationPresenter.shared.update(title: "Done", subtitle: "Keep app active, Keep app active, Keep app active Keep app active Keep app active Keep app active", progress: 0)
             try? await Task.sleep(nanoseconds: 7_000_000_000)
-            GlassHUDWindow.shared.dismiss()
+            NCNotificationPresenter.shared.dismiss()
         }
     }
 
