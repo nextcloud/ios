@@ -7,7 +7,7 @@ import UIKit
 
 // MARK: - Stato osservabile condiviso
 @MainActor
-final class HUDState: ObservableObject {
+final class NCNotificationPresenterState: ObservableObject {
     @Published var title: String
     @Published var subtitle: String?
     @Published var progress: Double?          // nil o 0 => barra nascosta
@@ -43,11 +43,11 @@ final class GlassHUDWindow {
         let progress: Double?
         let autoDismissAfter: TimeInterval
         let fixedWidth: CGFloat?
-        let builder: (HUDState) -> AnyView
+        let builder: (NCNotificationPresenterState) -> AnyView
     }
 
     // Builder del contenuto (type-erased)
-    private var contentBuilder: ((HUDState) -> AnyView)?
+    private var contentBuilder: ((NCNotificationPresenterState) -> AnyView)?
 
     // UI
     var window: PassthroughWindow?
@@ -74,7 +74,7 @@ final class GlassHUDWindow {
     private var queue: [PendingShow] = []
 
     // Stato per SwiftUI
-    let state = HUDState(title: "", subtitle: nil, progress: nil)
+    let state = NCNotificationPresenterState(title: "", subtitle: nil, progress: nil)
 
     // Config
     var isSwipeToDismissEnabled = true
@@ -98,7 +98,7 @@ final class GlassHUDWindow {
         autoDismissAfter: TimeInterval = 0,
         policy: ShowPolicy = .replace,
         fixedWidth: CGFloat? = nil,
-        @ViewBuilder content: @escaping (HUDState) -> Content
+        @ViewBuilder content: @escaping (NCNotificationPresenterState) -> Content
     ) -> Int {
         // Normalizza: ""/nil/0 => non mostrare quella sezione
         let t = initialTitle.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -125,7 +125,7 @@ final class GlassHUDWindow {
 
         // Builder type-erased
         let currentState = self.state
-        let anyBuilder: (HUDState) -> AnyView = { _ in AnyView(content(currentState)) }
+        let anyBuilder: (NCNotificationPresenterState) -> AnyView = { _ in AnyView(content(currentState)) }
 
         // Concorrenza
         if window != nil || isAnimatingIn || isDismissing {
@@ -167,7 +167,7 @@ final class GlassHUDWindow {
         return activeToken
     }
 
-    private func startShow(with builder: @escaping (HUDState) -> AnyView) {
+    private func startShow(with builder: @escaping (NCNotificationPresenterState) -> AnyView) {
         // Lock durante l’entrata
         lockWidthUntilSettled = true
         isAnimatingIn = true
@@ -248,16 +248,18 @@ final class GlassHUDWindow {
             heightConstraint = nil
         }
 
-        if animated { UIView.animate(withDuration: 0.2) { win.layoutIfNeeded() } }
-        else { win.layoutIfNeeded() }
+        if animated { UIView.animate(withDuration: 0.2) {win.layoutIfNeeded() }
+        } else {
+            win.layoutIfNeeded()
+        }
     }
 
     // MARK: - REPLACE CONTENT (swap mantenendo lo stato)
     func replaceContent<Content: View>(
-        @ViewBuilder _ builder: @escaping (HUDState) -> Content
+        @ViewBuilder _ builder: @escaping (NCNotificationPresenterState) -> Content
     ) {
         let currentState = self.state
-        self.contentBuilder = { (_: HUDState) -> AnyView in AnyView(builder(currentState)) }
+        self.contentBuilder = { (_: NCNotificationPresenterState) -> AnyView in AnyView(builder(currentState)) }
         replaceContentInternal(remeasureWidth: false)
         remeasureAndSetWidthConstraint(animated: false, force: true)
     }
@@ -499,8 +501,8 @@ final class GlassHUDWindow {
 }
 
 // MARK: - Contenuto di default (vetroso, multilinea, progress opzionale)
-struct GlassBannerView: View {
-    @ObservedObject var state: HUDState
+struct BannerView: View {
+    @ObservedObject var state: NCNotificationPresenterState
 
     var body: some View {
         let showTitle = !state.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -513,6 +515,7 @@ struct GlassBannerView: View {
                 if #available(iOS 18, *) {
                     Image(systemName: "gearshape.arrow.triangle.2.circlepath")
                         .symbolEffect(.rotate, options: .repeat(.continuous))
+                        .foregroundStyle(Color(uiColor: NCBrandColor.shared.customer))
                 } else {
                     Image(systemName: "gearshape.arrow.triangle.2.circlepath")
                 }
@@ -527,6 +530,7 @@ struct GlassBannerView: View {
                                 .truncationMode(.tail)
                                 .minimumScaleFactor(0.9)
                                 .fixedSize(horizontal: false, vertical: true)
+                                .foregroundStyle(Color(uiColor: NCBrandColor.shared.customer))
                         }
                         if showSubtitle, let s = state.subtitle {
                             Text(s)
@@ -535,6 +539,7 @@ struct GlassBannerView: View {
                                 .lineLimit(3)
                                 .truncationMode(.tail)
                                 .fixedSize(horizontal: false, vertical: true)
+                                .foregroundStyle(Color(uiColor: NCBrandColor.shared.customer))
                         }
                     }
                 }
@@ -543,23 +548,51 @@ struct GlassBannerView: View {
             if showProgress && !measuring {
                 ProgressView(value: min(state.progress ?? 0, 1))
                     .progressViewStyle(.linear)
-                    .tint(.white)
+                    .tint(Color(uiColor: NCBrandColor.shared.customer))
                     .scaleEffect(x: 1, y: 0.8, anchor: .center)
                     .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
-        .foregroundStyle(.white)
         .background(
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(.ultraThinMaterial)
+            ZStack {
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    .fill(.ultraThinMaterial)
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    .fill(Color.white.opacity(0.1))
+                    .blendMode(.plusLighter)
+                .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+                .blendMode(.screen)
+            }
+            .compositingGroup() // Isola i blend dentro al rettangolo
         )
         .overlay(
             RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .stroke(.white.opacity(0.25), lineWidth: 0.5)
+                .stroke(.white.opacity(0.25), lineWidth: 0.6)
         )
-        .shadow(radius: 8)
+        .shadow(color: .black.opacity(0.04), radius: 10, x: 0, y: 4)
         .frame(minHeight: 44, alignment: .leading)
+    }
+}
+
+// MARK: - Preview
+#Preview {
+    ZStack {
+        LinearGradient(
+            colors: [.white, .gray],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        .ignoresSafeArea()
+
+        BannerView(
+            state: NCNotificationPresenterState(
+                title: "Uploading large file…",
+                subtitle: "Please keep the app active until the process completes.",
+                progress: 0.45
+            )
+        )
+        .padding()
     }
 }

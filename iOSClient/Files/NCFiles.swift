@@ -142,7 +142,7 @@ class NCFiles: NCCollectionViewCommon {
             policy: .enqueue,
             fixedWidth: nil,                // auto
         ) { state in
-            GlassBannerView(state: state)
+            BannerView(state: state)
         }
 
         // loop di progresso "safe"
@@ -154,7 +154,7 @@ class NCFiles: NCCollectionViewCommon {
             }
             if Task.isCancelled { return }
             GlassHUDWindow.shared.update(title: "Done", subtitle: "Keep app active, Keep app active, Keep app active Keep app active Keep app active Keep app active", progress: 0)
-            try? await Task.sleep(nanoseconds: 800_000_000)
+            try? await Task.sleep(nanoseconds: 7_000_000_000)
             GlassHUDWindow.shared.dismiss()
         }
     }
