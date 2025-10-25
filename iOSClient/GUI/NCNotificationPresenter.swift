@@ -10,23 +10,13 @@ import UIKit
 final class NCNotificationPresenterState: ObservableObject {
     @Published var title: String
     @Published var subtitle: String?
-    @Published var progress: Double?          // nil o 0 => barra nascosta
-    @Published var extra: [String: Any] = [:] // es. "measuring": Bool
+    @Published var progress: Double?
+    @Published var extra: [String: Any] = [:]
 
     init(title: String, subtitle: String? = nil, progress: Double? = nil) {
         self.title = title
         self.subtitle = (subtitle?.isEmpty == true) ? nil : subtitle
         self.progress = progress
-    }
-}
-
-// MARK: - UIWindow pass-through (tocchi solo dentro al banner)
-final class PassthroughWindow: UIWindow {
-    weak var hitTargetView: UIView?
-    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        guard let target = hitTargetView else { return nil }
-        let p = target.convert(point, from: self)
-        return target.bounds.contains(p) ? super.hitTest(point, with: event) : nil
     }
 }
 
@@ -49,7 +39,7 @@ final class NCNotificationPresenter {
     private var contentBuilder: ((NCNotificationPresenterState) -> AnyView)?
 
     // UI
-    var window: PassthroughWindow?
+    var window: NCNotificationPresenterPassthroughWindow?
     private var hostController: UIHostingController<AnyView>?
 
     // Timers/flags
@@ -305,17 +295,20 @@ final class NCNotificationPresenter {
     // MARK: - Interni
 
     private func dequeueAndStartIfNeeded() {
-        guard window == nil, !isAnimatingIn, !isDismissing else { return }
-        guard !queue.isEmpty else { return }
+        guard window == nil,
+              !isAnimatingIn,
+              !isDismissing,
+        !queue.isEmpty else {
+            return
+        }
         let next = queue.removeFirst()
-        // prepara stato
+
         state.title = next.title
         state.subtitle = next.subtitle
         state.progress = next.progress
         autoDismissAfter = next.autoDismissAfter
         fixedWidth = next.fixedWidth
 
-        // nuova sessione/token per l’elemento in coda
         generation &+= 1
         activeToken = generation
 
@@ -327,62 +320,56 @@ final class NCNotificationPresenter {
             .compactMap({ $0 as? UIWindowScene })
             .first(where: { $0.activationState != .background }) else { return }
 
-        // Finestra trasparente pass-through
-        let win = PassthroughWindow(windowScene: scene)
-        win.frame = scene.screen.bounds
-        win.windowLevel = .statusBar + 1
-        win.backgroundColor = .clear
+        let windows = NCNotificationPresenterPassthroughWindow(windowScene: scene)
+        windows.frame = scene.screen.bounds
+        windows.windowLevel = .statusBar + 1
+        windows.backgroundColor = .clear
 
         // Hosting SwiftUI
         let content = contentBuilder?(state) ?? AnyView(EmptyView())
         let host = UIHostingController(rootView: content)
         host.view.backgroundColor = .clear
-        win.rootViewController = host
-        win.makeKeyAndVisible()
+        windows.rootViewController = host
+        windows.makeKeyAndVisible()
 
         let view = host.view!
         view.translatesAutoresizingMaskIntoConstraints = false
 
-        // Vincoli base (centro + minHeight)
         NSLayoutConstraint.activate([
-            view.topAnchor.constraint(equalTo: win.safeAreaLayoutGuide.topAnchor, constant: 10),
-            view.centerXAnchor.constraint(equalTo: win.centerXAnchor),
+            view.topAnchor.constraint(equalTo: windows.safeAreaLayoutGuide.topAnchor, constant: 10),
+            view.centerXAnchor.constraint(equalTo: windows.centerXAnchor),
             view.heightAnchor.constraint(greaterThanOrEqualToConstant: minHeight)
         ])
 
-        // Policy “compatto”
         view.setContentHuggingPriority(.required, for: .vertical)
         view.setContentCompressionResistancePriority(.required, for: .vertical)
         view.setContentHuggingPriority(.required, for: .horizontal)
         view.setContentCompressionResistancePriority(.required, for: .horizontal)
 
         // Swipe-to-dismiss
-        win.hitTargetView = view
+        windows.hitTargetView = view
         if isSwipeToDismissEnabled {
             let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
             pan.cancelsTouchesInView = false
             view.addGestureRecognizer(pan)
         }
 
-        // Salva referenze
-        self.window = win
+        self.window = windows
         self.hostController = host
 
         // Se width fissa: applica; altrimenti misura iniziale
-        if let w = fixedWidth {
-            let wc = view.widthAnchor.constraint(equalToConstant: w)
-            wc.isActive = true
-            widthConstraint = wc
+        if let width = fixedWidth {
+            let constraint = view.widthAnchor.constraint(equalToConstant: width)
+            constraint.isActive = true
+            widthConstraint = constraint
         } else {
             remeasureAndSetWidthConstraint(animated: false, force: true)
         }
 
-        // Stato visuale iniziale (sopra lo schermo)
-        win.layoutIfNeeded()
+        windows.layoutIfNeeded()
         view.alpha = 0
         view.transform = CGAffineTransform(translationX: 0, y: -view.bounds.height - 60)
 
-        // Entrata: SOLO transform+alpha (no layout animato ⇒ niente drift laterale)
         UIView.animate(withDuration: 0.45,
                        delay: 0,
                        usingSpringWithDamping: 0.85,
@@ -402,15 +389,23 @@ final class NCNotificationPresenter {
     }
 
     private func replaceContentInternal(remeasureWidth: Bool) {
-        guard let host = hostController else { return }
+        guard let host = hostController else {
+            return
+        }
         let newView = contentBuilder?(state) ?? AnyView(EmptyView())
+
         host.rootView = newView
-        if remeasureWidth { remeasureAndSetWidthConstraint(animated: false, force: false) }
+        if remeasureWidth {
+            remeasureAndSetWidthConstraint(animated: false, force: false)
+        }
         window?.layoutIfNeeded()
     }
 
     private func remeasureAndSetWidthConstraint(animated: Bool, force: Bool) {
-        guard let win = window, let host = hostController else { return }
+        guard let window,
+              let host = hostController else {
+            return
+        }
 
         // Durante l’entrata, non toccare i vincoli (evita allargamenti mentre scende)
         if isAnimatingIn && lockWidthUntilSettled && !force {
@@ -421,12 +416,11 @@ final class NCNotificationPresenter {
         // Se la larghezza è fissa, non misurare
         if fixedWidth != nil { return }
 
-        // 👉 attiva "measuring": la view nasconde la ProgressView
         state.extra["measuring"] = true
         host.view.setNeedsLayout()
         host.view.layoutIfNeeded()
 
-        let cap = min(win.bounds.width - 24, maxWidthCapDefault)
+        let cap = min(window.bounds.width - 24, maxWidthCapDefault)
         let fitting = host.sizeThatFits(
             in: CGSize(width: cap, height: UIView.layoutFittingCompressedSize.height)
         )
@@ -447,17 +441,19 @@ final class NCNotificationPresenter {
 
         if animated {
             UIView.animate(withDuration: 0.20) {
-                win.layoutIfNeeded()
+                window.layoutIfNeeded()
             }
         } else {
-            win.layoutIfNeeded()
+            window.layoutIfNeeded()
         }
     }
 
     private func scheduleAutoDismiss() {
         dismissTimer?.cancel()
         let seconds = self.autoDismissAfter
-        guard seconds > 0 else { return } // 0 => resta visibile
+        guard seconds > 0 else {
+            return
+        }
         dismissTimer = Task { [weak self] in
             try? await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
             self?.dismiss()
@@ -492,6 +488,18 @@ final class NCNotificationPresenter {
         default:
             break
         }
+    }
+}
+
+// MARK: - UIWindow pass-through
+
+final class NCNotificationPresenterPassthroughWindow: UIWindow {
+    weak var hitTargetView: UIView?
+
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        guard let target = hitTargetView else { return nil }
+        let p = target.convert(point, from: self)
+        return target.bounds.contains(p) ? super.hitTest(point, with: event) : nil
     }
 }
 
