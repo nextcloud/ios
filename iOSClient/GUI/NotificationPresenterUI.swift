@@ -70,27 +70,39 @@ struct NotificationPresenterArrowShapeSymbol: View {
     }
 }
 
-import SwiftUI
-import UIKit
 
-// MARK: - Passthrough window (doesn't block touches outside the banner)
+// MARK: - Passthrough window that only captures touches inside a target view
 final class PassthroughWindow: UIWindow {
+    weak var hitTargetView: UIView? // the banner view
+
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        // Pass touches through (no blocking). If you want the banner tappable,
-        // you can return super.hitTest(point, with: event) only when inside a subview.
-        return nil
+        guard let target = hitTargetView else { return nil }
+        let p = target.convert(point, from: self)
+        // Touches inside the banner -> handled; outside -> pass-through
+        return target.bounds.contains(p) ? super.hitTest(point, with: event) : nil
     }
 }
 
 // MARK: - SwiftUI banner with a progress bar
+import SwiftUI
+
+/// Glass banner content.
+/// Hides subtitle if empty; hides progress bar when progress ≤ 0 or nil.
 struct GlassBannerView: View {
     let title: String
     let subtitle: String?
-    let progress: Double
+    let progress: Double?
+
+    init(title: String, subtitle: String? = nil, progress: Double? = nil) {
+        self.title = title
+        self.subtitle = subtitle?.isEmpty == true ? nil : subtitle
+        self.progress = progress
+    }
 
     var body: some View {
         VStack(spacing: 6) {
             HStack(spacing: 10) {
+                // Example animated icon
                 if #available(iOS 18.0, *) {
                     Image(systemName: "arrowshape.up.circle")
                         .symbolEffect(.breathe, options: .repeat(.continuous))
@@ -100,22 +112,26 @@ struct GlassBannerView: View {
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
-                        .font(.subheadline).bold()
-                        .lineLimit(2).fixedSize(horizontal: false, vertical: true)
+                        .font(.subheadline.weight(.bold))
+                        .lineLimit(2)
 
-                    if let subtitle {
-                        Text(subtitle)
+                    if let s = subtitle {
+                        Text(s)
                             .font(.caption)
-                            .lineLimit(2).fixedSize(horizontal: false, vertical: true)
+                            .lineLimit(2)
                     }
                 }
+
                 Spacer(minLength: 0)
             }
 
-            ProgressView(value: max(0, min(progress, 1)))
-                .progressViewStyle(.linear)
-                .tint(.white)
-                .scaleEffect(x: 1, y: 0.8, anchor: .center)
+            if let p = progress, p > 0 {
+                ProgressView(value: min(p, 1)) // clamps naturally by min()
+                    .progressViewStyle(.linear)
+                    .tint(.white)
+                    .scaleEffect(x: 1, y: 0.8, anchor: .center)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+            }
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 8)
@@ -128,20 +144,18 @@ struct GlassBannerView: View {
             RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .stroke(.white.opacity(0.25), lineWidth: 0.5)
         )
-        .compositingGroup()
         .shadow(radius: 8)
     }
 }
 
-// MARK: - HUD Window Manager (attaches to foregroundActive scene)
 @MainActor
 final class GlassHUDWindow {
     static let shared = GlassHUDWindow()
 
+    var isSwipeToDismissEnabled = true // <— FLAG
+
     private var window: PassthroughWindow?
     private var hostController: UIHostingController<GlassBannerView>?
-
-    // NEW: keep a reference to the top constraint to animate slide-in/out
     private var topConstraint: NSLayoutConstraint?
 
     private var title: String = ""
@@ -149,9 +163,7 @@ final class GlassHUDWindow {
     private var progress: Double = 0
 
     func show(title: String, subtitle: String? = nil, progress: Double = 0) {
-        self.title = title
-        self.subtitle = subtitle
-        self.progress = progress
+        self.title = title; self.subtitle = subtitle; self.progress = progress
 
         if window == nil {
             guard let scene = UIApplication.shared.connectedScenes
@@ -164,7 +176,6 @@ final class GlassHUDWindow {
             attachWindow(to: scene)
         } else {
             update(title: title, subtitle: subtitle, progress: progress)
-            // Se già visibile non serve ri-animare
         }
     }
 
@@ -182,7 +193,6 @@ final class GlassHUDWindow {
         win.makeKeyAndVisible()
 
         host.view.translatesAutoresizingMaskIntoConstraints = false
-        // Partenza fuori dallo schermo (sopra la safe area)
         let startOffset: CGFloat = -80
         let top = host.view.topAnchor.constraint(equalTo: win.safeAreaLayoutGuide.topAnchor,
                                                  constant: startOffset)
@@ -192,34 +202,87 @@ final class GlassHUDWindow {
             host.view.leadingAnchor.constraint(greaterThanOrEqualTo: win.leadingAnchor, constant: 12)
         ])
 
+        // Allow touches only inside the banner view
+        win.hitTargetView = host.view
+
+        // Enable swipe-to-dismiss if requested
+        if isSwipeToDismissEnabled {
+            let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
+            pan.cancelsTouchesInView = false // keep interactions inside SwiftUI view
+            host.view.addGestureRecognizer(pan)
+        }
+
         self.window = win
         self.hostController = host
         self.topConstraint = top
 
-        // Layout iniziale
+        // Initial layout + slide-in
         win.layoutIfNeeded()
         host.view.alpha = 0
-
-        // Calcola una destinazione “pulita”
         let targetTop: CGFloat = 10
-
-        // ANIMAZIONE: slide-in + fade-in
         top.constant = targetTop
-        UIView.animate(withDuration: 1,
+        UIView.animate(withDuration: 0.32,
                        delay: 0,
                        usingSpringWithDamping: 0.9,
                        initialSpringVelocity: 0.6,
-                       options: [.curveEaseOut, .beginFromCurrentState],
-                       animations: {
+                       options: [.curveEaseOut, .beginFromCurrentState]) {
             host.view.alpha = 1
             win.layoutIfNeeded()
-        }, completion: nil)
+        }
+    }
+
+    // Pan handler: drag up to dismiss, drag down small -> snap back
+    @objc private func handlePan(_ g: UIPanGestureRecognizer) {
+        guard let win = window,
+              let host = hostController?.view,
+              let top = topConstraint else { return }
+
+        let translation = g.translation(in: host).y
+        let baseTop: CGFloat = 10 // resting position
+        switch g.state {
+        case .changed:
+            // Only allow moving upward (negative y); tiny forgiveness downward
+            let limited = min(0, translation) // <= 0
+            top.constant = baseTop + limited
+            // Optional: fade a bit while dragging
+            host.alpha = max(0.4, 1.0 + limited / 120.0)
+            win.layoutIfNeeded()
+
+        case .ended, .cancelled:
+            let velocityY = g.velocity(in: host).y
+            let shouldDismiss = (translation < -30) || (velocityY < -500)
+            if shouldDismiss {
+                // Slide out upwards and dismiss
+                top.constant = -(host.bounds.height + 40)
+                UIView.animate(withDuration: 0.22,
+                               delay: 0,
+                               options: [.curveEaseIn, .beginFromCurrentState]) {
+                    host.alpha = 0
+                    win.layoutIfNeeded()
+                } completion: { _ in
+                    self.dismiss()
+                }
+            } else {
+                // Snap back to baseTop
+                top.constant = baseTop
+                UIView.animate(withDuration: 0.25,
+                               delay: 0,
+                               usingSpringWithDamping: 0.85,
+                               initialSpringVelocity: 0.5,
+                               options: [.curveEaseOut, .beginFromCurrentState]) {
+                    host.alpha = 1
+                    win.layoutIfNeeded()
+                }
+            }
+        default:
+            break
+        }
     }
 
     func update(title: String? = nil, subtitle: String? = nil, progress: Double? = nil) {
         if let title { self.title = title }
         if let subtitle { self.subtitle = subtitle }
-        if let progress { self.progress = progress }
+        if let progress { self.progress = max(0, min(progress, 1)) }
 
         hostController?.rootView = GlassBannerView(
             title: self.title,
@@ -229,25 +292,9 @@ final class GlassHUDWindow {
     }
 
     func dismiss() {
-        guard let win = window, let host = hostController, let top = topConstraint else {
-            hostController = nil; window?.isHidden = true; window = nil; return
-        }
-
-        // Porta di nuovo la pill fuori dallo schermo (in alto) e sfuma
-        let outOffset = -(host.view.bounds.height + 40)
-        top.constant = outOffset
-
-        UIView.animate(withDuration: 0.25,
-                       delay: 0,
-                       options: [.curveEaseIn, .beginFromCurrentState],
-                       animations: {
-            host.view.alpha = 0
-            win.layoutIfNeeded()
-        }, completion: { _ in
-            self.hostController = nil
-            self.window?.isHidden = true
-            self.window = nil
-            self.topConstraint = nil
-        })
+        hostController = nil
+        window?.isHidden = true
+        window = nil
+        topConstraint = nil
     }
 }
