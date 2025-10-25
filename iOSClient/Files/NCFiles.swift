@@ -128,16 +128,9 @@ class NCFiles: NCCollectionViewCommon {
         }
     }
 
-    // MARK: - Esempio d’uso
-    private var demoProgressTask: Task<Void, Never>?
-
     @MainActor
     func demoHUD() async {
         try? await Task.sleep(nanoseconds: 800_000_000)
-
-        // cancella eventuale loop precedente
-        demoProgressTask?.cancel()
-        demoProgressTask = nil
 
         GlassHUDWindow.shared.isSwipeToDismissEnabled = true
 
@@ -146,25 +139,23 @@ class NCFiles: NCCollectionViewCommon {
             initialSubtitle: "",
             initialProgress: 0.0,          // 0 => barra nascosta
             autoDismissAfter: 0,
-            policy: .replace,
+            policy: .enqueue,
             fixedWidth: nil,                // auto
         ) { state in
             GlassBannerView(state: state)
         }
 
         // loop di progresso "safe"
-        demoProgressTask = Task { [weak winRef = GlassHUDWindow.shared] in
+        Task {
             for i in 0...100 {
                 if Task.isCancelled { break }
-                if winRef?.window == nil { break }
                 try? await Task.sleep(nanoseconds: 40_000_000)
-                winRef?.update(progress: Double(i) / 100.0)
+                GlassHUDWindow.shared.update(progress: Double(i) / 100.0)
             }
             if Task.isCancelled { return }
-            winRef?.update(title: "Done", subtitle: "Keep app active, Keep app active, Keep app active Keep app active Keep app active Keep app active", progress: 0)
+            GlassHUDWindow.shared.update(title: "Done", subtitle: "Keep app active, Keep app active, Keep app active Keep app active Keep app active Keep app active", progress: 0)
             try? await Task.sleep(nanoseconds: 800_000_000)
-            winRef?.dismiss()
-            demoProgressTask = nil
+            GlassHUDWindow.shared.dismiss()
         }
     }
 

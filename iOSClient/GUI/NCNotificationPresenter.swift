@@ -80,7 +80,17 @@ final class GlassHUDWindow {
     var isSwipeToDismissEnabled = true
     private var autoDismissAfter: TimeInterval = 0
 
-    // MARK: - SHOW
+    // MARK: - Token di sessione
+    private var generation: Int = 0        // cresce a ogni show/dismiss
+    private var activeToken: Int = 0       // token corrente valido
+
+    /// Ritorna `true` se il token è quello attivo e la window esiste.
+    func isAlive(_ token: Int) -> Bool {
+        return token == activeToken && window != nil
+    }
+
+    // MARK: - SHOW (ritorna il token della sessione)
+    @discardableResult
     func show<Content: View>(
         initialTitle: String,
         initialSubtitle: String? = nil,
@@ -89,7 +99,7 @@ final class GlassHUDWindow {
         policy: ShowPolicy = .replace,
         fixedWidth: CGFloat? = nil,
         @ViewBuilder content: @escaping (HUDState) -> Content
-    ) {
+    ) -> Int {
         // Normalizza: ""/nil/0 => non mostrare quella sezione
         let t = initialTitle.trimmingCharacters(in: .whitespacesAndNewlines)
         state.title = t.isEmpty ? "" : t
@@ -109,7 +119,9 @@ final class GlassHUDWindow {
         let hasTitle = !state.title.isEmpty
         let hasSubtitle = !(state.subtitle?.isEmpty ?? true)
         let hasProgress = (state.progress ?? 0) > 0
-        guard hasTitle || hasSubtitle || hasProgress else { return }
+        if !(hasTitle || hasSubtitle || hasProgress) {
+            return activeToken // non cambia token
+        }
 
         // Builder type-erased
         let currentState = self.state
@@ -119,7 +131,7 @@ final class GlassHUDWindow {
         if window != nil || isAnimatingIn || isDismissing {
             switch policy {
             case .drop:
-                return
+                return activeToken // ignora e lascia il token attuale
             case .enqueue:
                 queue.append(PendingShow(title: state.title,
                                          subtitle: state.subtitle,
@@ -127,7 +139,7 @@ final class GlassHUDWindow {
                                          autoDismissAfter: autoDismissAfter,
                                          fixedWidth: fixedWidth,
                                          builder: anyBuilder))
-                return
+                return activeToken
             case .replace:
                 let next = PendingShow(title: state.title,
                                        subtitle: state.subtitle,
@@ -137,13 +149,22 @@ final class GlassHUDWindow {
                                        builder: anyBuilder)
                 queue.removeAll()
                 queue.append(next)
+                // invalidiamo subito il token corrente: il prossimo show creerà un token nuovo
+                generation &+= 1
+                activeToken = generation
                 dismiss { [weak self] in self?.dequeueAndStartIfNeeded() }
-                return
+                return activeToken
             }
         }
 
+        // Nuova sessione: bump del token
+        generation &+= 1
+        activeToken = generation
+
         // Nessun conflitto: parti subito
         startShow(with: anyBuilder)
+
+        return activeToken
     }
 
     private func startShow(with builder: @escaping (HUDState) -> AnyView) {
@@ -164,8 +185,13 @@ final class GlassHUDWindow {
         scheduleAutoDismiss()
     }
 
-    // MARK: - UPDATE (nil = non toccare; "" = nascondi; 0 = nascondi progress)
-    func update(title: String? = nil, subtitle: String? = nil, progress: Double? = nil) {
+    // MARK: - UPDATE (accetta opzionalmente un token)
+    /// `token`: se passato e diverso da quello attivo, l’update viene ignorato.
+    func update(title: String? = nil, subtitle: String? = nil, progress: Double? = nil, for token: Int? = nil) {
+        // token non valido o window assente → ignora
+        if let t = token, t != activeToken { return }
+        guard window != nil else { return }
+
         let oldTitle = state.title
         let oldSub = state.subtitle
 
@@ -196,8 +222,9 @@ final class GlassHUDWindow {
 
         // width
         if let w = width {
-            if let wc = widthConstraint { wc.constant = w }
-            else {
+            if let wc = widthConstraint {
+                wc.constant = w
+            } else {
                 let wc = view.widthAnchor.constraint(equalToConstant: w)
                 wc.isActive = true
                 widthConstraint = wc
@@ -209,8 +236,9 @@ final class GlassHUDWindow {
 
         // height (di solito meglio lasciarla libera)
         if let h = height {
-            if let hc = heightConstraint { hc.constant = h }
-            else {
+            if let hc = heightConstraint {
+                hc.constant = h
+            } else {
                 let hc = view.heightAnchor.constraint(equalToConstant: h)
                 hc.isActive = true
                 heightConstraint = hc
@@ -237,6 +265,10 @@ final class GlassHUDWindow {
     // MARK: - DISMISS (verticale puro) + completion
     func dismiss(completion: (() -> Void)? = nil) {
         dismissTimer?.cancel(); dismissTimer = nil
+
+        // invalida SUBITO il token attuale (update esterni vengono ignorati)
+        generation &+= 1
+        activeToken = generation
 
         guard let window, let hostView = hostController?.view else {
             hostController = nil; self.window?.isHidden = true; self.window = nil
@@ -280,6 +312,11 @@ final class GlassHUDWindow {
         state.progress = next.progress
         autoDismissAfter = next.autoDismissAfter
         fixedWidth = next.fixedWidth
+
+        // nuova sessione/token per l’elemento in coda
+        generation &+= 1
+        activeToken = generation
+
         startShow(with: next.builder)
     }
 
@@ -331,7 +368,7 @@ final class GlassHUDWindow {
         self.window = win
         self.hostController = host
 
-        // Se width/height fisse: applica; altrimenti misura iniziale
+        // Se width fissa: applica; altrimenti misura iniziale
         if let w = fixedWidth {
             let wc = view.widthAnchor.constraint(equalToConstant: w)
             wc.isActive = true
@@ -400,7 +437,7 @@ final class GlassHUDWindow {
         state.extra["measuring"] = false
 
         if let wc = widthConstraint {
-            // Auto-mode: crescita sì; shrink solo se autoGrowOnly == false
+            // Auto-mode: consenti SOLO crescita (niente shrink live)
             let newWidth = max(target, wc.constant)
             guard abs(wc.constant - newWidth) > 0.5 else { return }
             wc.constant = newWidth
@@ -410,8 +447,13 @@ final class GlassHUDWindow {
             widthConstraint = wc
         }
 
-        if animated { UIView.animate(withDuration: 0.20) { win.layoutIfNeeded() } }
-        else { win.layoutIfNeeded() }
+        if animated {
+            UIView.animate(withDuration: 0.20) {
+                win.layoutIfNeeded()
+            }
+        } else {
+            win.layoutIfNeeded()
+        }
     }
 
     // Auto dismiss
