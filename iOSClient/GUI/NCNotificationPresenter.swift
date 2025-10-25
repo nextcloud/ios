@@ -24,7 +24,9 @@ final class NCNotificationPresenterState: ObservableObject {
 final class NCNotificationPresenter {
     static let shared = NCNotificationPresenter()
 
-    enum ShowPolicy { case replace, enqueue, drop }
+    enum ShowPolicy {
+        case replace, enqueue, drop
+    }
 
     private struct PendingShow {
         let title: String
@@ -53,11 +55,11 @@ final class NCNotificationPresenter {
     private var widthConstraint: NSLayoutConstraint?
     private var heightConstraint: NSLayoutConstraint?
     private let minWidth: CGFloat = 220
-    private let maxWidthCapDefault: CGFloat = 420   // alza su iPad se vuoi
+    private let maxWidthCapDefault: CGFloat = 420   // iPad ?
     private let minHeight: CGFloat = 44
 
     // Modalità dimensionamento
-    private var fixedWidth: CGFloat?    // se impostata, larghezza fissa
+    private var fixedWidth: CGFloat?
 
     // Coda e policy
     private var queue: [PendingShow] = []
@@ -69,16 +71,14 @@ final class NCNotificationPresenter {
     var isSwipeToDismissEnabled = true
     private var autoDismissAfter: TimeInterval = 0
 
-    // MARK: - Token di sessione
     private var generation: Int = 0        // cresce a ogni show/dismiss
     private var activeToken: Int = 0       // token corrente valido
 
-    /// Ritorna `true` se il token è quello attivo e la window esiste.
+    // Ritorna `true` se il token è quello attivo e la window esiste.
     func isAlive(_ token: Int) -> Bool {
         return token == activeToken && window != nil
     }
 
-    // MARK: - SHOW (ritorna il token della sessione)
     @discardableResult
     func show<Content: View>(
         initialTitle: String,
@@ -175,26 +175,32 @@ final class NCNotificationPresenter {
     }
 
     // MARK: - UPDATE (accetta opzionalmente un token)
+
     /// `token`: se passato e diverso da quello attivo, l’update viene ignorato.
     func update(title: String? = nil, subtitle: String? = nil, progress: Double? = nil, for token: Int? = nil) {
         // token non valido o window assente → ignora
-        if let t = token, t != activeToken { return }
-        guard window != nil else { return }
+        if let token, token != activeToken {
+            return
+        }
+        guard window != nil else {
+            return
+        }
 
         let oldTitle = state.title
         let oldSub = state.subtitle
 
-        if let t = title {
-            let tt = t.trimmingCharacters(in: .whitespacesAndNewlines)
-            state.title = tt.isEmpty ? "" : tt
+        if let title {
+            let title = title.trimmingCharacters(in: .whitespacesAndNewlines)
+            state.title = title.isEmpty ? "" : title
         }
-        if let s = subtitle {
-            let ss = s.trimmingCharacters(in: .whitespacesAndNewlines)
-            state.subtitle = ss.isEmpty ? nil : ss
+        if let subtitle {
+            let subtitle = subtitle.trimmingCharacters(in: .whitespacesAndNewlines)
+            state.subtitle = subtitle.isEmpty ? nil : subtitle
         }
-        if let p = progress { state.progress = (p > 0) ? p : nil }
+        if let progress {
+            state.progress = (progress > 0) ? progress : nil
+        }
 
-        // invalida altezza; larghezza solo quando i testi cambiano
         hostController?.view.invalidateIntrinsicContentSize()
 
         let textChanged = (oldTitle != state.title) || (oldSub != state.subtitle)
@@ -203,52 +209,51 @@ final class NCNotificationPresenter {
         }
     }
 
-    // MARK: - Cambia dimensioni a runtime
     func setSize(width: CGFloat?, height: CGFloat?, animated: Bool = true) {
         self.fixedWidth = width
 
-        guard let win = window, let view = hostController?.view else { return }
+        guard let window,
+              let view = hostController?.view else {
+            return
+        }
 
-        // width
-        if let w = width {
-            if let wc = widthConstraint {
-                wc.constant = w
+        if let width {
+            if let constraint = widthConstraint {
+                constraint.constant = width
             } else {
-                let wc = view.widthAnchor.constraint(equalToConstant: w)
-                wc.isActive = true
-                widthConstraint = wc
+                let constraint = view.widthAnchor.constraint(equalToConstant: width)
+                constraint.isActive = true
+                widthConstraint = constraint
             }
         } else {
-            // torna in auto: misuriamo subito
             remeasureAndSetWidthConstraint(animated: animated, force: true)
         }
 
-        // height (di solito meglio lasciarla libera)
-        if let h = height {
-            if let hc = heightConstraint {
-                hc.constant = h
+        if let height {
+            if let constraint = heightConstraint {
+                constraint.constant = height
             } else {
-                let hc = view.heightAnchor.constraint(equalToConstant: h)
-                hc.isActive = true
-                heightConstraint = hc
+                let constraint = view.heightAnchor.constraint(equalToConstant: height)
+                constraint.isActive = true
+                heightConstraint = constraint
             }
         } else {
             heightConstraint?.isActive = false
             heightConstraint = nil
         }
 
-        if animated { UIView.animate(withDuration: 0.2) {win.layoutIfNeeded() }
+        if animated { UIView.animate(withDuration: 0.2) {window.layoutIfNeeded() }
         } else {
-            win.layoutIfNeeded()
+            window.layoutIfNeeded()
         }
     }
 
     // MARK: - REPLACE CONTENT (swap mantenendo lo stato)
 
     func replaceContent<Content: View>(
-        @ViewBuilder _ builder: @escaping (NCNotificationPresenterState) -> Content
-    ) {
+        @ViewBuilder _ builder: @escaping (NCNotificationPresenterState) -> Content) {
         let currentState = self.state
+
         self.contentBuilder = { (_: NCNotificationPresenterState) -> AnyView in AnyView(builder(currentState)) }
         replaceContentInternal(remeasureWidth: false)
         remeasureAndSetWidthConstraint(animated: false, force: true)
@@ -258,7 +263,6 @@ final class NCNotificationPresenter {
     func dismiss(completion: (() -> Void)? = nil) {
         dismissTimer?.cancel(); dismissTimer = nil
 
-        // invalida SUBITO il token attuale (update esterni vengono ignorati)
         generation &+= 1
         activeToken = generation
 
@@ -451,9 +455,11 @@ final class NCNotificationPresenter {
     private func scheduleAutoDismiss() {
         dismissTimer?.cancel()
         let seconds = self.autoDismissAfter
+
         guard seconds > 0 else {
             return
         }
+
         dismissTimer = Task { [weak self] in
             try? await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
             self?.dismiss()
@@ -461,17 +467,19 @@ final class NCNotificationPresenter {
     }
 
     // Swipe-up (transform-based)
-    @objc private func handlePan(_ g: UIPanGestureRecognizer) {
-        guard let view = hostController?.view else { return }
-        let translationY = g.translation(in: view).y
+    @objc private func handlePan(_ gesture: UIPanGestureRecognizer) {
+        guard let view = hostController?.view else {
+            return
+        }
+        let translationY = gesture.translation(in: view).y
 
-        switch g.state {
+        switch gesture.state {
         case .changed:
             let y = min(0, translationY) // solo verso l'alto
             view.transform = CGAffineTransform(translationX: 0, y: y)
             view.alpha = max(0.4, 1.0 + y / 120.0)
         case .ended, .cancelled:
-            let velocityY = g.velocity(in: view).y
+            let velocityY = gesture.velocity(in: view).y
             let shouldDismiss = (translationY < -30) || (velocityY < -500)
             if shouldDismiss {
                 dismiss()
