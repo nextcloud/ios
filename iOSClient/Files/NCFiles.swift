@@ -132,20 +132,20 @@ class NCFiles: NCCollectionViewCommon {
     func demoHUD() async {
         try? await Task.sleep(nanoseconds: 800_000_000)
 
-        NCNotificationPresenter.shared.isSwipeToDismissEnabled = true
+        LucidBanner.shared.isSwipeToDismissEnabled = true
 
-        let token = NCNotificationPresenter.shared.show(title: "Preparing…", subtitle: "and starttt") { state in
-            NCToastBannerView(state: state)
+        let token = LucidBanner.shared.show(title: "Preparing…", subtitle: "and starttt") { state in
+            ToastBannerView(state: state)
         }
 
         Task {
             for i in 0...100 {
                 try? await Task.sleep(nanoseconds: 40_000_000)
-                NCNotificationPresenter.shared.update(progress: Double(i) / 100.0, for: token)
+                LucidBanner.shared.update(progress: Double(i) / 100.0, for: token)
             }
-            NCNotificationPresenter.shared.update(title: "Done", subtitle: "Keep app active, Keep app active, Keep app active Keep app active Keep app active Keep app active", progress: 0, for: token)
+            LucidBanner.shared.update(title: "Done", subtitle: "Keep app active, Keep app active, Keep app active Keep app active Keep app active Keep app active", progress: 0, for: token)
             try? await Task.sleep(nanoseconds: 7_000_000_000)
-            NCNotificationPresenter.shared.dismiss(for: token)
+            LucidBanner.shared.dismiss(for: token)
         }
     }
 
