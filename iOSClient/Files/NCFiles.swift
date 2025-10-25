@@ -134,7 +134,7 @@ class NCFiles: NCCollectionViewCommon {
 
         NCNotificationPresenter.shared.isSwipeToDismissEnabled = true
 
-        NCNotificationPresenter.shared.show(
+        let token = NCNotificationPresenter.shared.show(
             initialTitle: "Preparing…",
             initialSubtitle: "",
             initialProgress: 0.0,
@@ -145,15 +145,12 @@ class NCFiles: NCCollectionViewCommon {
             BannerView(state: state)
         }
 
-        // loop di progresso "safe"
         Task {
             for i in 0...100 {
-                if Task.isCancelled { break }
                 try? await Task.sleep(nanoseconds: 40_000_000)
-                NCNotificationPresenter.shared.update(progress: Double(i) / 100.0)
+                NCNotificationPresenter.shared.update(progress: Double(i) / 100.0, for: token)
             }
-            if Task.isCancelled { return }
-            NCNotificationPresenter.shared.update(title: "Done", subtitle: "Keep app active, Keep app active, Keep app active Keep app active Keep app active Keep app active", progress: 0)
+            NCNotificationPresenter.shared.update(title: "Done", subtitle: "Keep app active, Keep app active, Keep app active Keep app active Keep app active Keep app active", progress: 0, for: token)
             try? await Task.sleep(nanoseconds: 7_000_000_000)
             NCNotificationPresenter.shared.dismiss()
         }
