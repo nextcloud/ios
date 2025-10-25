@@ -11,7 +11,7 @@ final class NCNotificationPresenterState: ObservableObject {
     @Published var title: String
     @Published var subtitle: String?
     @Published var progress: Double?
-    @Published var extra: [String: Any] = [:]
+    @Published var flags: [String: Any] = [:]
 
     init(title: String, subtitle: String? = nil, progress: Double? = nil) {
         self.title = title
@@ -76,47 +76,47 @@ final class NCNotificationPresenter {
     }
 
     @discardableResult
-    func show<Content: View>(
-        initialTitle: String,
-        initialSubtitle: String? = nil,
-        initialProgress: Double? = nil,
-        autoDismissAfter: TimeInterval = 0,
-        policy: ShowPolicy = .replace,
-        fixedWidth: CGFloat? = nil,
-        @ViewBuilder content: @escaping (NCNotificationPresenterState) -> Content
-    ) -> Int {
-        // Normalizza: ""/nil/0 => non mostrare quella sezione
-        let t = initialTitle.trimmingCharacters(in: .whitespacesAndNewlines)
-        state.title = t.isEmpty ? "" : t
+    func show<Content: View>(title: String,
+                             subtitle: String? = nil,
+                             progress: Double? = nil,
+                             autoDismissAfter: TimeInterval = 0,
+                             policy: ShowPolicy = .enqueue,
+                             fixedWidth: CGFloat? = nil,
+                             @ViewBuilder content: @escaping (NCNotificationPresenterState) -> Content) -> Int {
+        let title = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        state.title = title.isEmpty ? "" : title
 
-        if let s = initialSubtitle?.trimmingCharacters(in: .whitespacesAndNewlines), !s.isEmpty {
-            state.subtitle = s
+        if let subtitle = subtitle?.trimmingCharacters(in: .whitespacesAndNewlines), !subtitle.isEmpty {
+            state.subtitle = subtitle
         } else {
             state.subtitle = nil
         }
 
-        if let p = initialProgress, p > 0 { state.progress = p } else { state.progress = nil }
+        if let progress = progress, progress > 0 {
+            state.progress = progress
+        } else {
+            state.progress = nil
+        }
 
         self.autoDismissAfter = autoDismissAfter
         self.fixedWidth = fixedWidth
 
-        // Se non c’è nulla da mostrare (icona-only non gestita qui), esci
         let hasTitle = !state.title.isEmpty
         let hasSubtitle = !(state.subtitle?.isEmpty ?? true)
         let hasProgress = (state.progress ?? 0) > 0
         if !(hasTitle || hasSubtitle || hasProgress) {
-            return activeToken // non cambia token
+            return activeToken
         }
 
         // Builder type-erased
         let currentState = self.state
         let anyViewUI: (NCNotificationPresenterState) -> AnyView = { _ in AnyView(content(currentState)) }
 
-        // Concorrenza
+        // Concurrent
         if window != nil || isAnimatingIn || isDismissing {
             switch policy {
             case .drop:
-                return activeToken // ignora e lascia il token attuale
+                return activeToken
             case .enqueue:
                 queue.append(PendingShow(title: state.title,
                                          subtitle: state.subtitle,
@@ -134,7 +134,7 @@ final class NCNotificationPresenter {
                                        viewUI: anyViewUI)
                 queue.removeAll()
                 queue.append(next)
-                // invalidiamo subito il token corrente: il prossimo show creerà un token nuovo
+
                 generation &+= 1
                 activeToken = generation
                 dismiss { [weak self] in self?.dequeueAndStartIfNeeded() }
@@ -255,7 +255,8 @@ final class NCNotificationPresenter {
         remeasureAndSetWidthConstraint(animated: false, force: true)
     }
 
-    // MARK: - DISMISS (verticale puro) + completion
+    // MARK: - DISMISS
+
     func dismiss(completion: (() -> Void)? = nil) {
         dismissTimer?.cancel(); dismissTimer = nil
 
@@ -290,6 +291,14 @@ final class NCNotificationPresenter {
             completion?()
             self.dequeueAndStartIfNeeded()
         }
+    }
+
+    func dismiss(for token: Int, completion: (() -> Void)? = nil) {
+        guard token == activeToken else {
+            return
+        }
+
+        dismiss(completion: completion) // chiama il tuo dismiss esistente
     }
 
     // MARK: - Interni
@@ -416,7 +425,7 @@ final class NCNotificationPresenter {
         // Se la larghezza è fissa, non misurare
         if fixedWidth != nil { return }
 
-        state.extra["measuring"] = true
+        state.flags["measuring"] = true
         host.view.setNeedsLayout()
         host.view.layoutIfNeeded()
 
@@ -426,7 +435,7 @@ final class NCNotificationPresenter {
         )
         let target = min(max(fitting.width, minWidth), cap)
 
-        state.extra["measuring"] = false
+        state.flags["measuring"] = false
 
         if let wc = widthConstraint {
             // Auto-mode: consenti SOLO crescita (niente shrink live)
@@ -507,14 +516,14 @@ final class NCNotificationPresenterPassthroughWindow: UIWindow {
     }
 }
 
-struct BannerView: View {
+struct NCToastBannerView: View {
     @ObservedObject var state: NCNotificationPresenterState
 
     var body: some View {
         let showTitle = !state.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         let showSubtitle = !(state.subtitle?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
         let showProgress = (state.progress ?? 0) > 0
-        let measuring = (state.extra["measuring"] as? Bool) ?? false
+        let measuring = (state.flags["measuring"] as? Bool) ?? false
 
         VStack(spacing: 6) {
             HStack(alignment: .top, spacing: 10) {
@@ -592,7 +601,7 @@ struct BannerView: View {
         )
         .ignoresSafeArea()
 
-        BannerView(
+        NCToastBannerView(
             state: NCNotificationPresenterState(
                 title: "Uploading large file…",
                 subtitle: "Please keep the app active until the process completes.",

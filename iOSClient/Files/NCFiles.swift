@@ -134,15 +134,8 @@ class NCFiles: NCCollectionViewCommon {
 
         NCNotificationPresenter.shared.isSwipeToDismissEnabled = true
 
-        let token = NCNotificationPresenter.shared.show(
-            initialTitle: "Preparing…",
-            initialSubtitle: "",
-            initialProgress: 0.0,
-            autoDismissAfter: 0,
-            policy: .enqueue,
-            fixedWidth: nil,
-        ) { state in
-            BannerView(state: state)
+        let token = NCNotificationPresenter.shared.show(title: "Preparing…", subtitle: "and starttt") { state in
+            NCToastBannerView(state: state)
         }
 
         Task {
@@ -152,7 +145,7 @@ class NCFiles: NCCollectionViewCommon {
             }
             NCNotificationPresenter.shared.update(title: "Done", subtitle: "Keep app active, Keep app active, Keep app active Keep app active Keep app active Keep app active", progress: 0, for: token)
             try? await Task.sleep(nanoseconds: 7_000_000_000)
-            NCNotificationPresenter.shared.dismiss()
+            NCNotificationPresenter.shared.dismiss(for: token)
         }
     }
 
