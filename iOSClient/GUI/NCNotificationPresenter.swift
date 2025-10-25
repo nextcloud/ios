@@ -30,10 +30,9 @@ final class PassthroughWindow: UIWindow {
     }
 }
 
-// MARK: - Manager (contenitore UIKit + contenuto SwiftUI)
 @MainActor
-final class GlassHUDWindow {
-    static let shared = GlassHUDWindow()
+final class NCNotificationPresenter {
+    static let shared = NCNotificationPresenter()
 
     enum ShowPolicy { case replace, enqueue, drop }
 
@@ -255,6 +254,7 @@ final class GlassHUDWindow {
     }
 
     // MARK: - REPLACE CONTENT (swap mantenendo lo stato)
+
     func replaceContent<Content: View>(
         @ViewBuilder _ builder: @escaping (NCNotificationPresenterState) -> Content
     ) {
@@ -322,9 +322,7 @@ final class GlassHUDWindow {
         startShow(with: next.builder)
     }
 
-    /// Crea la finestra, attacca il contenuto e presenta con animazione verticale pura.
     private func attachWindowAndPresent() {
-        // Scena attiva
         guard let scene = UIApplication.shared.connectedScenes
             .compactMap({ $0 as? UIWindowScene })
             .first(where: { $0.activationState != .background }) else { return }
@@ -403,7 +401,6 @@ final class GlassHUDWindow {
         }
     }
 
-    /// Sostituisce il rootView mantenendo lo stato.
     private func replaceContentInternal(remeasureWidth: Bool) {
         guard let host = hostController else { return }
         let newView = contentBuilder?(state) ?? AnyView(EmptyView())
@@ -412,7 +409,6 @@ final class GlassHUDWindow {
         window?.layoutIfNeeded()
     }
 
-    /// Misura la larghezza ideale (ignorando la ProgressView) e aggiorna il vincolo sticky.
     private func remeasureAndSetWidthConstraint(animated: Bool, force: Bool) {
         guard let win = window, let host = hostController else { return }
 
@@ -458,7 +454,6 @@ final class GlassHUDWindow {
         }
     }
 
-    // Auto dismiss
     private func scheduleAutoDismiss() {
         dismissTimer?.cancel()
         let seconds = self.autoDismissAfter
@@ -500,7 +495,6 @@ final class GlassHUDWindow {
     }
 }
 
-// MARK: - Contenuto di default (vetroso, multilinea, progress opzionale)
 struct BannerView: View {
     @ObservedObject var state: NCNotificationPresenterState
 
