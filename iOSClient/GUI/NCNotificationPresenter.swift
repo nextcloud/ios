@@ -34,11 +34,11 @@ final class NCNotificationPresenter {
         let progress: Double?
         let autoDismissAfter: TimeInterval
         let fixedWidth: CGFloat?
-        let builder: (NCNotificationPresenterState) -> AnyView
+        let viewUI: (NCNotificationPresenterState) -> AnyView
     }
 
-    // Builder del contenuto (type-erased)
-    private var contentBuilder: ((NCNotificationPresenterState) -> AnyView)?
+    // View (type-erased)
+    private var contentView: ((NCNotificationPresenterState) -> AnyView)?
 
     // UI
     var window: NCNotificationPresenterPassthroughWindow?
@@ -51,20 +51,17 @@ final class NCNotificationPresenter {
     private var pendingRelayout = false
     private var lockWidthUntilSettled = true
 
-    // Dimensioni
+    // Size
     private var widthConstraint: NSLayoutConstraint?
     private var heightConstraint: NSLayoutConstraint?
     private let minWidth: CGFloat = 220
     private let maxWidthCapDefault: CGFloat = 420   // iPad ?
     private let minHeight: CGFloat = 44
-
-    // Modalità dimensionamento
     private var fixedWidth: CGFloat?
 
-    // Coda e policy
+    // Queue & policy
     private var queue: [PendingShow] = []
 
-    // Stato per SwiftUI
     let state = NCNotificationPresenterState(title: "", subtitle: nil, progress: nil)
 
     // Config
@@ -74,7 +71,6 @@ final class NCNotificationPresenter {
     private var generation: Int = 0        // cresce a ogni show/dismiss
     private var activeToken: Int = 0       // token corrente valido
 
-    // Ritorna `true` se il token è quello attivo e la window esiste.
     func isAlive(_ token: Int) -> Bool {
         return token == activeToken && window != nil
     }
@@ -114,7 +110,7 @@ final class NCNotificationPresenter {
 
         // Builder type-erased
         let currentState = self.state
-        let anyBuilder: (NCNotificationPresenterState) -> AnyView = { _ in AnyView(content(currentState)) }
+        let anyViewUI: (NCNotificationPresenterState) -> AnyView = { _ in AnyView(content(currentState)) }
 
         // Concorrenza
         if window != nil || isAnimatingIn || isDismissing {
@@ -127,7 +123,7 @@ final class NCNotificationPresenter {
                                          progress: state.progress,
                                          autoDismissAfter: autoDismissAfter,
                                          fixedWidth: fixedWidth,
-                                         builder: anyBuilder))
+                                         viewUI: anyViewUI))
                 return activeToken
             case .replace:
                 let next = PendingShow(title: state.title,
@@ -135,7 +131,7 @@ final class NCNotificationPresenter {
                                        progress: state.progress,
                                        autoDismissAfter: autoDismissAfter,
                                        fixedWidth: fixedWidth,
-                                       builder: anyBuilder)
+                                       viewUI: anyViewUI)
                 queue.removeAll()
                 queue.append(next)
                 // invalidiamo subito il token corrente: il prossimo show creerà un token nuovo
@@ -151,18 +147,18 @@ final class NCNotificationPresenter {
         activeToken = generation
 
         // Nessun conflitto: parti subito
-        startShow(with: anyBuilder)
+        startShow(with: anyViewUI)
 
         return activeToken
     }
 
-    private func startShow(with builder: @escaping (NCNotificationPresenterState) -> AnyView) {
+    private func startShow(with viewUI: @escaping (NCNotificationPresenterState) -> AnyView) {
         // Lock durante l’entrata
         lockWidthUntilSettled = true
         isAnimatingIn = true
         pendingRelayout = false
 
-        self.contentBuilder = builder
+        self.contentView = viewUI
 
         if window == nil {
             attachWindowAndPresent()
@@ -251,10 +247,10 @@ final class NCNotificationPresenter {
     // MARK: - REPLACE CONTENT (swap mantenendo lo stato)
 
     func replaceContent<Content: View>(
-        @ViewBuilder _ builder: @escaping (NCNotificationPresenterState) -> Content) {
-        let currentState = self.state
+        @ViewBuilder _ viewUI: @escaping (NCNotificationPresenterState) -> Content) {
 
-        self.contentBuilder = { (_: NCNotificationPresenterState) -> AnyView in AnyView(builder(currentState)) }
+        self.contentView = { (_: NCNotificationPresenterState) -> AnyView in AnyView(viewUI(self.state)) }
+
         replaceContentInternal(remeasureWidth: false)
         remeasureAndSetWidthConstraint(animated: false, force: true)
     }
@@ -316,7 +312,7 @@ final class NCNotificationPresenter {
         generation &+= 1
         activeToken = generation
 
-        startShow(with: next.builder)
+        startShow(with: next.viewUI)
     }
 
     private func attachWindowAndPresent() {
@@ -330,7 +326,7 @@ final class NCNotificationPresenter {
         windows.backgroundColor = .clear
 
         // Hosting SwiftUI
-        let content = contentBuilder?(state) ?? AnyView(EmptyView())
+        let content = contentView?(state) ?? AnyView(EmptyView())
         let host = UIHostingController(rootView: content)
         host.view.backgroundColor = .clear
         windows.rootViewController = host
@@ -396,7 +392,7 @@ final class NCNotificationPresenter {
         guard let host = hostController else {
             return
         }
-        let newView = contentBuilder?(state) ?? AnyView(EmptyView())
+        let newView = contentView?(state) ?? AnyView(EmptyView())
 
         host.rootView = newView
         if remeasureWidth {
