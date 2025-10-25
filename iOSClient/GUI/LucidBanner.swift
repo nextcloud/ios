@@ -7,7 +7,7 @@ import UIKit
 
 // MARK: - Stato osservabile condiviso
 @MainActor
-final class NCNotificationPresenterState: ObservableObject {
+final class LucidBannerState: ObservableObject {
     @Published var title: String
     @Published var subtitle: String?
     @Published var progress: Double?
@@ -21,8 +21,8 @@ final class NCNotificationPresenterState: ObservableObject {
 }
 
 @MainActor
-final class NCNotificationPresenter {
-    static let shared = NCNotificationPresenter()
+final class LucidBanner {
+    static let shared = LucidBanner()
 
     enum ShowPolicy {
         case replace, enqueue, drop
@@ -34,14 +34,14 @@ final class NCNotificationPresenter {
         let progress: Double?
         let autoDismissAfter: TimeInterval
         let fixedWidth: CGFloat?
-        let viewUI: (NCNotificationPresenterState) -> AnyView
+        let viewUI: (LucidBannerState) -> AnyView
     }
 
     // View (type-erased)
-    private var contentView: ((NCNotificationPresenterState) -> AnyView)?
+    private var contentView: ((LucidBannerState) -> AnyView)?
 
     // UI
-    var window: NCNotificationPresenterPassthroughWindow?
+    var window: LucidBannerPassthroughWindow?
     private var hostController: UIHostingController<AnyView>?
 
     // Timers/flags
@@ -62,7 +62,7 @@ final class NCNotificationPresenter {
     // Queue & policy
     private var queue: [PendingShow] = []
 
-    let state = NCNotificationPresenterState(title: "", subtitle: nil, progress: nil)
+    let state = LucidBannerState(title: "", subtitle: nil, progress: nil)
 
     // Config
     var isSwipeToDismissEnabled = true
@@ -82,7 +82,7 @@ final class NCNotificationPresenter {
                              autoDismissAfter: TimeInterval = 0,
                              policy: ShowPolicy = .enqueue,
                              fixedWidth: CGFloat? = nil,
-                             @ViewBuilder content: @escaping (NCNotificationPresenterState) -> Content) -> Int {
+                             @ViewBuilder content: @escaping (LucidBannerState) -> Content) -> Int {
         let title = title.trimmingCharacters(in: .whitespacesAndNewlines)
         state.title = title.isEmpty ? "" : title
 
@@ -110,7 +110,7 @@ final class NCNotificationPresenter {
 
         // Builder type-erased
         let currentState = self.state
-        let anyViewUI: (NCNotificationPresenterState) -> AnyView = { _ in AnyView(content(currentState)) }
+        let anyViewUI: (LucidBannerState) -> AnyView = { _ in AnyView(content(currentState)) }
 
         // Concurrent
         if window != nil || isAnimatingIn || isDismissing {
@@ -152,7 +152,7 @@ final class NCNotificationPresenter {
         return activeToken
     }
 
-    private func startShow(with viewUI: @escaping (NCNotificationPresenterState) -> AnyView) {
+    private func startShow(with viewUI: @escaping (LucidBannerState) -> AnyView) {
         // Lock durante l’entrata
         lockWidthUntilSettled = true
         isAnimatingIn = true
@@ -247,9 +247,9 @@ final class NCNotificationPresenter {
     // MARK: - REPLACE CONTENT (swap mantenendo lo stato)
 
     func replaceContent<Content: View>(
-        @ViewBuilder _ viewUI: @escaping (NCNotificationPresenterState) -> Content) {
+        @ViewBuilder _ viewUI: @escaping (LucidBannerState) -> Content) {
 
-        self.contentView = { (_: NCNotificationPresenterState) -> AnyView in AnyView(viewUI(self.state)) }
+        self.contentView = { (_: LucidBannerState) -> AnyView in AnyView(viewUI(self.state)) }
 
         replaceContentInternal(remeasureWidth: false)
         remeasureAndSetWidthConstraint(animated: false, force: true)
@@ -329,7 +329,7 @@ final class NCNotificationPresenter {
             .compactMap({ $0 as? UIWindowScene })
             .first(where: { $0.activationState != .background }) else { return }
 
-        let windows = NCNotificationPresenterPassthroughWindow(windowScene: scene)
+        let windows = LucidBannerPassthroughWindow(windowScene: scene)
         windows.frame = scene.screen.bounds
         windows.windowLevel = .statusBar + 1
         windows.backgroundColor = .clear
@@ -506,7 +506,7 @@ final class NCNotificationPresenter {
 
 // MARK: - UIWindow pass-through
 
-final class NCNotificationPresenterPassthroughWindow: UIWindow {
+final class LucidBannerPassthroughWindow: UIWindow {
     weak var hitTargetView: UIView?
 
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
@@ -516,8 +516,8 @@ final class NCNotificationPresenterPassthroughWindow: UIWindow {
     }
 }
 
-struct NCToastBannerView: View {
-    @ObservedObject var state: NCNotificationPresenterState
+struct ToastBannerView: View {
+    @ObservedObject var state: LucidBannerState
 
     var body: some View {
         let showTitle = !state.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -601,8 +601,8 @@ struct NCToastBannerView: View {
         )
         .ignoresSafeArea()
 
-        NCToastBannerView(
-            state: NCNotificationPresenterState(
+        ToastBannerView(
+            state: LucidBannerState(
                 title: "Uploading large file…",
                 subtitle: "Please keep the app active until the process completes.",
                 progress: 0.45
