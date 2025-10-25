@@ -124,7 +124,11 @@ class NCFiles: NCCollectionViewCommon {
                 await getServerData()
             }
 
-            GlassHUDWindow.shared.show(title: "Uploading file.zip", subtitle: "Keep app active", progress: 0.0)
+            GlassHUDWindow.shared.show(
+                title: "Uploading file.zip",
+                subtitle: "Keep the app active",
+                progress: 0.0
+            )
         }
     }
 
