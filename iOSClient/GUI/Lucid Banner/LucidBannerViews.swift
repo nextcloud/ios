@@ -13,18 +13,17 @@ struct ToastBannerView: View {
         let showProgress = (state.progress ?? 0) > 0
         let measuring = (state.flags["measuring"] as? Bool) ?? false
 
-        VStack(spacing: 10) {
-            HStack(alignment: .top, spacing:10) {
+        VStack(spacing: 15) {
+            HStack(alignment: .top, spacing: 10) {
                 if let systemImage = state.systemImage {
                     Image(systemName: systemImage)
                         .symbolRenderingMode(.monochrome)
                         .applyBannerAnimation(state.imageAnimation)
                         .font(.system(size: 20, weight: .regular))
-                        .frame(width: 22, height: 22, alignment: .topLeading)
                         .foregroundStyle(Color(uiColor: state.imageColor))
                 }
 
-                VStack(alignment: .leading, spacing: 5) {
+                VStack(alignment: .leading, spacing: 7) {
                     if showTitle {
                         Text(state.title)
                             .font(.subheadline.weight(.bold))
@@ -56,19 +55,7 @@ struct ToastBannerView: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 12)
-        .background(
-            ZStack {
-                RoundedRectangle(cornerRadius: 22, style: .continuous)
-                    .fill(.ultraThinMaterial)
-                    .blendMode(.plusLighter)
-                RoundedRectangle(cornerRadius: 22, style: .continuous)
-                    .fill(Color.white.opacity(0.2))
-                    .blendMode(.plusLighter)
-                .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
-                .blendMode(.screen)
-            }
-            .compositingGroup()
-        )
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 22.0))
         .overlay(
             RoundedRectangle(cornerRadius: 22, style: .continuous)
                 .stroke(.white.opacity(0.9), lineWidth: 0.6)
@@ -87,6 +74,10 @@ private extension View {
                 self.symbolEffect(.rotate, options: .repeat(.continuous))
             case .pulse:
                 self.symbolEffect(.pulse, options: .repeat(.continuous))
+            case .pulsebyLayer:
+                self.symbolEffect(.pulse.byLayer, options: .repeat(.continuous))
+            case .breathe:
+                self.symbolEffect(.breathe, options: .repeat(.continuous))
             case .bounce:
                 self.symbolEffect(.bounce, options: .repeat(.continuous))
             case .wiggle:
@@ -107,7 +98,7 @@ private extension View {
 #Preview {
     ZStack {
         LinearGradient(
-            colors: [.white, .gray],
+            colors: [.white, .red],
             startPoint: .top,
             endPoint: .bottom
         )
@@ -115,13 +106,13 @@ private extension View {
 
         ToastBannerView(
             state: LucidBannerState(
-                title: "Downloading ...",
+                title: "Downloading …",
                 subtitle: "Keep application active until the transfers are completed …",
                 textColor: .label,
                 systemImage: "gearshape.arrow.triangle.2.circlepath",
                 imageColor: .red,
                 imageAnimation: .rotate,
-                progress: 0.12,
+                progress: 0.42,
                 progressColor: .systemBlue)
         )
         .padding()
