@@ -38,6 +38,7 @@ final class LucidBanner {
         let minWidth: CGFloat
         let maxWidth: CGFloat
         let topAnchor: CGFloat
+        let swipeToDismiss: Bool
         let viewUI: (LucidBannerState) -> AnyView
     }
 
@@ -77,7 +78,7 @@ final class LucidBanner {
                                  progressColor: .label)
 
     // Config
-    var isSwipeToDismissEnabled = true
+    private var swipeToDismiss = true
     private var autoDismissAfter: TimeInterval = 0
 
     private var generation: Int = 0        // cresce a ogni show/dismiss
@@ -102,6 +103,7 @@ final class LucidBanner {
                              minWidth: CGFloat = 220,
                              maxWidth: CGFloat = 420,
                              topAnchor: CGFloat = 10,
+                             swipeToDismiss: Bool = true,
                              @ViewBuilder content: @escaping (LucidBannerState) -> Content) -> Int {
         let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
         state.title = trimmed.isEmpty ? "" : trimmed
@@ -129,6 +131,7 @@ final class LucidBanner {
         self.minWidth = minWidth
         self.maxWidth = maxWidth
         self.topAnchor = topAnchor
+        self.swipeToDismiss = swipeToDismiss
 
         let hasTitle = !state.title.isEmpty
         let hasSubtitle = !(state.subtitle?.isEmpty ?? true)
@@ -160,6 +163,7 @@ final class LucidBanner {
                                          minWidth: minWidth,
                                          maxWidth: maxWidth,
                                          topAnchor: topAnchor,
+                                         swipeToDismiss: swipeToDismiss,
                                          viewUI: anyViewUI))
                 return activeToken
             case .replace:
@@ -176,6 +180,7 @@ final class LucidBanner {
                                        minWidth: minWidth,
                                        maxWidth: maxWidth,
                                        topAnchor: topAnchor,
+                                       swipeToDismiss: swipeToDismiss,
                                        viewUI: anyViewUI)
                 queue.removeAll()
                 queue.append(next)
@@ -216,6 +221,9 @@ final class LucidBanner {
 
     func update(title: String? = nil,
                 subtitle: String? = nil,
+                systemImage: String? = nil,
+                imageColor: UIColor? = nil,
+                imageAnimation: LucidBannerAnimationStyle? = nil,
                 progress: Double? = nil,
                 for token: Int? = nil) {
         if let token,
@@ -228,6 +236,7 @@ final class LucidBanner {
 
         let oldTitle = state.title
         let oldSub = state.subtitle
+        let oldImage = state.systemImage
 
         if let title {
             let title = title.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -240,11 +249,22 @@ final class LucidBanner {
         if let progress {
             state.progress = (progress > 0) ? progress : nil
         }
+        if let systemImage {
+            state.systemImage = systemImage
+        }
+        if let imageColor {
+            state.imageColor = imageColor
+        }
+        if let imageAnimation {
+            state.imageAnimation = imageAnimation
+        }
 
         hostController?.view.invalidateIntrinsicContentSize()
 
         let textChanged = (oldTitle != state.title) || (oldSub != state.subtitle)
-        if textChanged {
+        let imageChanged = (oldImage != state.systemImage)
+
+        if textChanged || imageChanged {
             remeasureAndSetWidthConstraint(animated: true, force: false)
         }
     }
@@ -373,6 +393,7 @@ final class LucidBanner {
         minWidth = next.minWidth
         maxWidth = next.maxWidth
         topAnchor = next.topAnchor
+        swipeToDismiss = next.swipeToDismiss
 
         generation &+= 1
         activeToken = generation
@@ -413,7 +434,7 @@ final class LucidBanner {
 
         // Swipe-to-dismiss
         windows.hitTargetView = view
-        if isSwipeToDismissEnabled {
+        if self.swipeToDismiss {
             let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture(_:)))
             panGesture.cancelsTouchesInView = false
             view.addGestureRecognizer(panGesture)

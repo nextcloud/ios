@@ -345,65 +345,78 @@ actor NCNetworkingProcess {
 
     // MARK: - Upload in chunk mode
 
+    /*
+     @MainActor
+     func demoHUD() async {
+         try? await Task.sleep(nanoseconds: 800_000_000)
+
+         LucidBanner.shared.isSwipeToDismissEnabled = true
+
+         let token = LucidBanner.shared.show(title: "Preparing…",
+                                             subtitle: "and starttt",
+                                             textColor: .label,
+                                             systemImage: "gearshape.arrow.triangle.2.circlepath",
+                                             imageColor: .red,
+                                             imageAnimation: .rotate,
+                                             progressColor: NCBrandColor.shared.customer) { state in
+             ToastBannerView(state: state)
+         }
+
+         Task {
+             for i in 0...100 {
+                 try? await Task.sleep(nanoseconds: 40_000_000)
+                 LucidBanner.shared.update(progress: Double(i) / 100.0, for: token)
+             }
+             LucidBanner.shared.update(title: "Done", subtitle: "Keep app active, Keep app active, Keep app active Keep app active Keep app active Keep app active", progress: 0, for: token)
+             try? await Task.sleep(nanoseconds: 3_000_000_000)
+             LucidBanner.shared.dismiss(for: token)
+         }
+     }
+
+     */
+    @MainActor
     func uploadChunk(metadata: tableMetadata) async {
         var numChunks = 0
         var countUpload: Int = 0
 
-        NotificationPresenter.shared.updateDefaultStyle { style in
-            style.backgroundStyle.backgroundColor = NCBrandColor.shared.customer
-            style.backgroundStyle.pillStyle.height = 55
-
-            style.textStyle.textColor = .white
-
-            style.subtitleStyle.textColor = .white
-            style.animationType = .move
-
-            style.progressBarStyle.barColor = .white
-            style.progressBarStyle.barHeight = 2
-            style.progressBarStyle.horizontalInsets = 30
-            style.progressBarStyle.offsetY = -4
-
-            return style
+        let token = LucidBanner.shared.show(title: NSLocalizedString("_wait_file_preparation_", comment: ""),
+                                            subtitle: NSLocalizedString("_large_upload_tip_", comment: ""),
+                                            textColor: NCBrandColor.shared.customer,
+                                            systemImage: "gearshape.arrow.triangle.2.circlepath",
+                                            imageColor: NCBrandColor.shared.customer,
+                                            imageAnimation: .rotate,
+                                            progressColor: NCBrandColor.shared.customer) { state in
+            ToastBannerView(state: state)
         }
 
-        Task { @MainActor in
-            NotificationPresenter.shared.present(NSLocalizedString("_wait_file_preparation_", comment: ""),
-                                                 subtitle: NSLocalizedString("_large_upload_tip_", comment: ""))
-
-            let view = makeHostingNotificationPresenterView(NotificationPresenterGearSymbol(),
-                                                            size: .init(width: 28, height: 28))
-            NotificationPresenter.shared.displayLeftView(view)
-        }
         await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
             numChunks = num
         } counterChunk: { counter in
             Task { @MainActor in
                 let progress = Double(counter) / Double(numChunks)
-                NotificationPresenter.shared.displayProgressBar(at: progress)
+                LucidBanner.shared.update(progress: progress, for: token)
             }
         } startFilesChunk: { _ in
             Task { @MainActor in
-                NotificationPresenter.shared.updateTitle(NSLocalizedString("_keep_active_for_upload_", comment: ""))
-
-                let view = makeHostingNotificationPresenterView(NotificationPresenterArrowShapeSymbol(),
-                                                                size: .init(width: 28, height: 28))
-                NotificationPresenter.shared.displayLeftView(view)
-                NotificationPresenter.shared.displayProgressBar(at: 0.0)
+                LucidBanner.shared.update(title: NSLocalizedString("_keep_active_for_upload_", comment: ""),
+                                          systemImage: "arrowshape.up.circle",
+                                          imageAnimation: .breathe,
+                                          progress: 0,
+                                          for: token)
             }
         } requestHandler: { _ in
             Task { @MainActor in
                 let progress = Double(countUpload) / Double(numChunks)
-                NotificationPresenter.shared.displayProgressBar(at: progress)
+                LucidBanner.shared.update(progress: progress, for: token)
                 countUpload += 1
             }
         } assembling: {
             Task { @MainActor in
-                NotificationPresenter.shared.updateTitle(NSLocalizedString("_wait_", comment: ""))
-
-                let view = makeHostingNotificationPresenterView(NotificationPresenterTryArrowSymbol(),
-                                                                size: .init(width: 28, height: 28))
-                NotificationPresenter.shared.displayLeftView(view)
-                NotificationPresenter.shared.displayProgressBar(at: 0.0)
+                LucidBanner.shared.update(title: NSLocalizedString("_wait_", comment: ""),
+                                          systemImage: "tray.and.arrow.down",
+                                          imageAnimation: .pulsebyLayer,
+                                          progress: 0,
+                                          for: token)
             }
         }
 
