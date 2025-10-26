@@ -5,23 +5,71 @@
 import SwiftUI
 import UIKit
 
+// MARK: - Stato osservabile condiviso (usato dalle view SwiftUI)
+@MainActor
+internal final class LucidBannerState: ObservableObject {
+    @Published var title: String
+    @Published var subtitle: String?
+    @Published var textColor: UIColor
+
+    @Published var systemImage: String?
+    @Published var imageColor: UIColor
+    @Published var imageAnimation: LucidBanner.LucidBannerAnimationStyle
+
+    @Published var progress: Double?
+    @Published var progressColor: UIColor
+
+    // 👉 Stage corrente (es. "uploading", "processing", "done", "error", …)
+    @Published var stage: String?
+
+    // flag interni (es. "measuring")
+    @Published var flags: [String: Any] = [:]
+
+    init(title: String,
+         subtitle: String? = nil,
+         textColor: UIColor,
+         systemImage: String? = nil,
+         imageColor: UIColor,
+         imageAnimation: LucidBanner.LucidBannerAnimationStyle,
+         progress: Double? = nil,
+         progressColor: UIColor,
+         stage: String? = nil) {
+        self.title = title
+        self.subtitle = (subtitle?.isEmpty == true) ? nil : subtitle
+        self.textColor = textColor
+        self.systemImage = systemImage
+        self.imageColor = imageColor
+        self.imageAnimation = imageAnimation
+        self.progress = progress
+        self.progressColor = progressColor
+        self.stage = stage
+    }
+}
+
+// MARK: - Finestra (toggle: passthrough / blocco tocchi)
+internal final class LucidBannerWindow: UIWindow {
+    var isPassthrough: Bool = true
+    weak var hitTargetView: UIView?
+
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        guard isPassthrough else {
+            return super.hitTest(point, with: event)
+        }
+        guard let target = hitTargetView else { return nil }
+        let p = target.convert(point, from: self)
+        return target.bounds.contains(p) ? super.hitTest(point, with: event) : nil
+    }
+}
+
+// MARK: - Manager
 @MainActor
 final class LucidBanner {
     static let shared = LucidBanner()
 
-    enum ShowPolicy {
-        case replace, enqueue, drop
-    }
+    enum ShowPolicy { case replace, enqueue, drop }
 
     enum LucidBannerAnimationStyle {
-        case none
-        case rotate
-        case pulse
-        case pulsebyLayer
-        case breathe
-        case bounce
-        case wiggle
-        case scale
+        case none, rotate, pulse, pulsebyLayer, breathe, bounce, wiggle, scale
     }
 
     private struct PendingShow {
@@ -33,6 +81,7 @@ final class LucidBanner {
         let imageAnimation: LucidBannerAnimationStyle
         let progress: Double?
         let progressColor: UIColor
+        let stage: String?
         let autoDismissAfter: TimeInterval
         let fixedWidth: CGFloat?
         let minWidth: CGFloat
@@ -40,16 +89,15 @@ final class LucidBanner {
         let topAnchor: CGFloat
         let swipeToDismiss: Bool
         let blocksTouches: Bool
-        let onTap: (() -> Void)?
+        let onTapWithContext: ((_ token: Int, _ revision: Int, _ stage: String?) -> Void)?
         let viewUI: (LucidBannerState) -> AnyView
     }
 
-    //
-    private var onTap: (() -> Void)?   // 👈 handler attivo
+    // View factory type-erased
     private var contentView: ((LucidBannerState) -> AnyView)?
 
     // UI
-    private var blocksTouches: Bool = false
+    private var blocksTouches = false
     private var window: LucidBannerWindow?
     private weak var scrimView: UIControl?
     private var hostController: UIHostingController<AnyView>?
@@ -70,9 +118,10 @@ final class LucidBanner {
     private var fixedWidth: CGFloat?
     private var topAnchor: CGFloat = 10
 
-    // Queue & policy
+    // Queue
     private var queue: [PendingShow] = []
 
+    // Stato condiviso
     let state = LucidBannerState(title: "",
                                  subtitle: nil,
                                  textColor: .label,
@@ -80,19 +129,22 @@ final class LucidBanner {
                                  imageColor: .label,
                                  imageAnimation: .none,
                                  progress: nil,
-                                 progressColor: .label)
+                                 progressColor: .label,
+                                 stage: nil)
 
-    // Config
+    // Config dinamica
     private var swipeToDismiss = true
     private var autoDismissAfter: TimeInterval = 0
 
-    private var generation: Int = 0        // cresce a ogni show/dismiss
-    private var activeToken: Int = 0       // token corrente valido
+    // Token/revision per tap contestualizzati
+    private var generation: Int = 0
+    private var activeToken: Int = 0
+    private var revisionForVisible: Int = 0
+    private var onTapWithContext: ((_ token: Int, _ revision: Int, _ stage: String?) -> Void)?
 
-    func isAlive(_ token: Int) -> Bool {
-        return token == activeToken && window != nil
-    }
+    func isAlive(_ token: Int) -> Bool { token == activeToken && window != nil }
 
+    // MARK: - SHOW
     @discardableResult
     func show<Content: View>(title: String,
                              subtitle: String? = nil,
@@ -102,6 +154,7 @@ final class LucidBanner {
                              imageAnimation: LucidBannerAnimationStyle = .none,
                              progress: Double? = nil,
                              progressColor: UIColor = .label,
+                             stage: String? = nil,
                              autoDismissAfter: TimeInterval = 0,
                              policy: ShowPolicy = .enqueue,
                              fixedWidth: CGFloat? = nil,
@@ -110,14 +163,16 @@ final class LucidBanner {
                              topAnchor: CGFloat = 10,
                              swipeToDismiss: Bool = true,
                              blocksTouches: Bool = false,
-                             onTap: (() -> Void)? = nil,
+                             onTapWithContext: ((_ token: Int, _ revision: Int, _ stage: String?) -> Void)? = nil,
                              @ViewBuilder content: @escaping (LucidBannerState) -> Content) -> Int {
+
+        // Normalizzazione stato iniziale
         let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
         state.title = trimmed.isEmpty ? "" : trimmed
         state.textColor = textColor
 
-        if let subtitle = subtitle?.trimmingCharacters(in: .whitespacesAndNewlines), !subtitle.isEmpty {
-            state.subtitle = subtitle
+        if let s = subtitle?.trimmingCharacters(in: .whitespacesAndNewlines), !s.isEmpty {
+            state.subtitle = s
         } else {
             state.subtitle = nil
         }
@@ -125,30 +180,26 @@ final class LucidBanner {
         state.systemImage = systemImage
         state.imageColor = imageColor
         state.imageAnimation = imageAnimation
+        state.stage = stage
 
-        if let progress = progress, progress > 0 {
-            state.progress = progress
-        } else {
-            state.progress = nil
-        }
+        if let p = progress, p > 0 { state.progress = p } else { state.progress = nil }
         state.progressColor = progressColor
 
+        // Presentazione
         self.autoDismissAfter = autoDismissAfter
         self.fixedWidth = fixedWidth
         self.minWidth = minWidth
         self.maxWidth = maxWidth
         self.topAnchor = topAnchor
-        self.swipeToDismiss = swipeToDismiss
         self.blocksTouches = blocksTouches
-        if blocksTouches {
-            self.swipeToDismiss = false
-        }
-        self.onTap = onTap
+        self.swipeToDismiss = blocksTouches ? false : swipeToDismiss
+        self.onTapWithContext = onTapWithContext
+        self.revisionForVisible = 0
 
         let hasTitle = !state.title.isEmpty
         let hasSubtitle = !(state.subtitle?.isEmpty ?? true)
         let hasProgress = (state.progress ?? 0) > 0
-        if !(hasTitle || hasSubtitle || hasProgress) {
+        guard hasTitle || hasSubtitle || hasProgress else {
             return activeToken
         }
 
@@ -156,7 +207,7 @@ final class LucidBanner {
         let currentState = self.state
         let anyViewUI: (LucidBannerState) -> AnyView = { _ in AnyView(content(currentState)) }
 
-        // Concurrent
+        // Concorrenza
         if window != nil || isAnimatingIn || isDismissing {
             switch policy {
             case .drop:
@@ -170,14 +221,15 @@ final class LucidBanner {
                                          imageAnimation: imageAnimation,
                                          progress: state.progress,
                                          progressColor: progressColor,
+                                         stage: stage,
                                          autoDismissAfter: autoDismissAfter,
                                          fixedWidth: fixedWidth,
                                          minWidth: minWidth,
                                          maxWidth: maxWidth,
                                          topAnchor: topAnchor,
-                                         swipeToDismiss: swipeToDismiss,
+                                         swipeToDismiss: self.swipeToDismiss,
                                          blocksTouches: blocksTouches,
-                                         onTap: onTap,
+                                         onTapWithContext: onTapWithContext,
                                          viewUI: anyViewUI))
                 return activeToken
             case .replace:
@@ -189,28 +241,26 @@ final class LucidBanner {
                                        imageAnimation: imageAnimation,
                                        progress: state.progress,
                                        progressColor: progressColor,
+                                       stage: stage,
                                        autoDismissAfter: autoDismissAfter,
                                        fixedWidth: fixedWidth,
                                        minWidth: minWidth,
                                        maxWidth: maxWidth,
                                        topAnchor: topAnchor,
-                                       swipeToDismiss: swipeToDismiss,
+                                       swipeToDismiss: self.swipeToDismiss,
                                        blocksTouches: blocksTouches,
-                                       onTap: onTap,
+                                       onTapWithContext: onTapWithContext,
                                        viewUI: anyViewUI)
                 queue.removeAll()
                 queue.append(next)
-
                 dismiss { [weak self] in self?.dequeueAndStartIfNeeded() }
                 return activeToken
             }
         }
 
-        // new: bump del token
+        // Nuovo token (sessione)
         generation &+= 1
         activeToken = generation
-
-        // start now
         startShow(with: anyViewUI)
 
         return activeToken
@@ -220,8 +270,7 @@ final class LucidBanner {
         lockWidthUntilSettled = true
         isAnimatingIn = true
         pendingRelayout = false
-
-        self.contentView = viewUI
+        contentView = viewUI
 
         if window == nil {
             attachWindowAndPresent()
@@ -234,110 +283,86 @@ final class LucidBanner {
     }
 
     // MARK: - UPDATE
-
     func update(title: String? = nil,
                 subtitle: String? = nil,
                 systemImage: String? = nil,
                 imageColor: UIColor? = nil,
                 imageAnimation: LucidBannerAnimationStyle? = nil,
                 progress: Double? = nil,
+                stage: String? = nil,
+                onTapWithContext: ((_ token: Int, _ revision: Int, _ stage: String?) -> Void)? = nil,
                 for token: Int? = nil) {
-        if let token,
-           token != activeToken {
-            return
-        }
-        guard window != nil else {
-            return
-        }
+
+        // token non valido → ignora
+        if let token, token != activeToken { return }
+        guard window != nil else { return }
 
         let oldTitle = state.title
         let oldSub = state.subtitle
         let oldImage = state.systemImage
+        let oldStage = state.stage
 
-        if let title {
-            let title = title.trimmingCharacters(in: .whitespacesAndNewlines)
-            state.title = title.isEmpty ? "" : title
+        if let t = title {
+            let tt = t.trimmingCharacters(in: .whitespacesAndNewlines)
+            state.title = tt.isEmpty ? "" : tt
         }
-        if let subtitle {
-            let subtitle = subtitle.trimmingCharacters(in: .whitespacesAndNewlines)
-            state.subtitle = subtitle.isEmpty ? nil : subtitle
+        if let s = subtitle {
+            let ss = s.trimmingCharacters(in: .whitespacesAndNewlines)
+            state.subtitle = ss.isEmpty ? nil : ss
         }
-        if let progress {
-            state.progress = (progress > 0) ? progress : nil
-        }
-        if let systemImage {
-            state.systemImage = systemImage
-        }
-        if let imageColor {
-            state.imageColor = imageColor
-        }
-        if let imageAnimation {
-            state.imageAnimation = imageAnimation
-        }
+        if let p = progress { state.progress = (p > 0) ? p : nil }
+        if let img = systemImage { state.systemImage = img }
+        if let ic = imageColor { state.imageColor = ic }
+        if let anim = imageAnimation { state.imageAnimation = anim }
+        if let st = stage { state.stage = st }
+        if let handler = onTapWithContext { self.onTapWithContext = handler }
 
         hostController?.view.invalidateIntrinsicContentSize()
 
+        // Se cambiano testo/immagine/stage, bump della revisione e rimeasure
         let textChanged = (oldTitle != state.title) || (oldSub != state.subtitle)
         let imageChanged = (oldImage != state.systemImage)
+        let stageChanged = (oldStage != state.stage)
 
-        if textChanged || imageChanged {
+        if textChanged || imageChanged || stageChanged {
+            revisionForVisible &+= 1
             remeasureAndSetWidthConstraint(animated: true, force: false)
         }
     }
 
+    // MARK: - SIZE
     func setSize(width: CGFloat?, height: CGFloat?, animated: Bool = true) {
         self.fixedWidth = width
-
-        guard let window,
-              let view = hostController?.view else {
-            return
-        }
+        guard let window, let view = hostController?.view else { return }
 
         if let width {
-            if let constraint = widthConstraint {
-                constraint.constant = width
-            } else {
-                let constraint = view.widthAnchor.constraint(equalToConstant: width)
-                constraint.isActive = true
-                widthConstraint = constraint
+            if let c = widthConstraint { c.constant = width }
+            else {
+                let c = view.widthAnchor.constraint(equalToConstant: width)
+                c.isActive = true
+                widthConstraint = c
             }
         } else {
             remeasureAndSetWidthConstraint(animated: animated, force: true)
         }
 
         if let height {
-            if let constraint = heightConstraint {
-                constraint.constant = height
-            } else {
-                let constraint = view.heightAnchor.constraint(equalToConstant: height)
-                constraint.isActive = true
-                heightConstraint = constraint
+            if let c = heightConstraint { c.constant = height }
+            else {
+                let c = view.heightAnchor.constraint(equalToConstant: height)
+                c.isActive = true
+                heightConstraint = c
             }
         } else {
             heightConstraint?.isActive = false
             heightConstraint = nil
         }
 
-        if animated {
-            UIView.animate(withDuration: 0.2) {window.layoutIfNeeded() }
-        } else {
-            window.layoutIfNeeded()
-        }
-    }
-
-    // MARK: - REPLACE CONTENT
-
-    func replaceContent<Content: View>(
-        @ViewBuilder _ viewUI: @escaping (LucidBannerState) -> Content) {
-
-        self.contentView = { (_: LucidBannerState) -> AnyView in AnyView(viewUI(self.state)) }
-
-        replaceContentInternal(remeasureWidth: false)
-        remeasureAndSetWidthConstraint(animated: false, force: true)
+        if animated { UIView.animate(withDuration: 0.2) { window.layoutIfNeeded() } }
+        else { window.layoutIfNeeded() }
     }
 
     // MARK: - DISMISS
-
     func dismiss(completion: (() -> Void)? = nil) {
         dismissTimer?.cancel(); dismissTimer = nil
 
@@ -375,25 +400,16 @@ final class LucidBanner {
     }
 
     func dismiss(for token: Int, completion: (() -> Void)? = nil) {
-        guard token == activeToken else {
-            return
-        }
-
-        dismiss(completion: completion) // chiama il tuo dismiss esistente
+        guard token == activeToken else { return }
+        dismiss(completion: completion)
     }
 
-    // MARK: - Private (internal)
-
+    // MARK: - Interni
     private func dequeueAndStartIfNeeded() {
-        guard window == nil,
-              !isAnimatingIn,
-              !isDismissing,
-        !queue.isEmpty else {
-            return
-        }
+        guard window == nil, !isAnimatingIn, !isDismissing, !queue.isEmpty else { return }
         let next = queue.removeFirst()
 
-        // State
+        // Stato
         state.title = next.title
         state.subtitle = next.subtitle
         state.progress = next.progress
@@ -402,20 +418,21 @@ final class LucidBanner {
         state.imageColor = next.imageColor
         state.imageAnimation = next.imageAnimation
         state.progressColor = next.progressColor
+        state.stage = next.stage
 
-        // Presentation
+        // Presentazione
         autoDismissAfter = next.autoDismissAfter
         fixedWidth = next.fixedWidth
         minWidth = next.minWidth
         maxWidth = next.maxWidth
         topAnchor = next.topAnchor
-        swipeToDismiss = next.swipeToDismiss
         blocksTouches = next.blocksTouches
-        onTap = next.onTap
+        swipeToDismiss = next.blocksTouches ? false : next.swipeToDismiss
+        onTapWithContext = next.onTapWithContext
+        revisionForVisible = 0
 
         generation &+= 1
         activeToken = generation
-
         startShow(with: next.viewUI)
     }
 
@@ -424,7 +441,6 @@ final class LucidBanner {
             .compactMap({ $0 as? UIWindowScene })
             .first(where: { $0.activationState != .background }) else { return }
 
-        // Nuova window switchabile
         let window = LucidBannerWindow(windowScene: scene)
         window.frame = scene.screen.bounds
         window.windowLevel = .statusBar + 1
@@ -437,82 +453,70 @@ final class LucidBanner {
         let host = UIHostingController(rootView: content)
         host.view.backgroundColor = .clear
 
-        // Root view che contiene scrim (sotto) + banner (sopra)
+        // Root (scrim + banner)
         let root = UIView()
         root.backgroundColor = .clear
         root.translatesAutoresizingMaskIntoConstraints = false
 
-        // Scrim: trasparente ma interattivo se blocchiamo i tocchi
         let scrim = UIControl()
         scrim.translatesAutoresizingMaskIntoConstraints = false
         scrim.backgroundColor = UIColor.black.withAlphaComponent(blocksTouches ? 0.08 : 0.0)
         scrim.isUserInteractionEnabled = blocksTouches
-        // scrim.addTarget(self, action: #selector(didTapScrim), for: .touchUpInside) // opzionale
 
-        // Mount gerarchia
         window.rootViewController = UIViewController()
         window.rootViewController?.view = root
 
         root.addSubview(scrim)
         root.addSubview(host.view)
 
-        // Auto Layout
         host.view.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            // Scrim full-screen
             scrim.topAnchor.constraint(equalTo: root.topAnchor),
             scrim.leadingAnchor.constraint(equalTo: root.leadingAnchor),
             scrim.trailingAnchor.constraint(equalTo: root.trailingAnchor),
             scrim.bottomAnchor.constraint(equalTo: root.bottomAnchor),
 
-            // Banner
             host.view.topAnchor.constraint(equalTo: root.safeAreaLayoutGuide.topAnchor, constant: self.topAnchor),
             host.view.centerXAnchor.constraint(equalTo: root.centerXAnchor),
             host.view.heightAnchor.constraint(greaterThanOrEqualToConstant: minHeight)
         ])
 
-        // Hugging/Compression per layout compatto
         host.view.setContentHuggingPriority(.required, for: .vertical)
         host.view.setContentCompressionResistancePriority(.required, for: .vertical)
         host.view.setContentHuggingPriority(.required, for: .horizontal)
         host.view.setContentCompressionResistancePriority(.required, for: .horizontal)
 
-        // Swipe-to-dismiss sul solo banner
+        // Gestures
         window.hitTargetView = host.view
         var panGesture: UIPanGestureRecognizer?
-        if self.swipeToDismiss {
+        if swipeToDismiss {
             let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture(_:)))
             pan.cancelsTouchesInView = false
             host.view.addGestureRecognizer(pan)
             panGesture = pan
         }
 
-        // TAP sul banner (sempre attivo, indipendente da blocksTouches)
         let tap = UITapGestureRecognizer(target: self, action: #selector(handleBannerTap))
         tap.cancelsTouchesInView = false
-        if let panGesture { tap.require(toFail: panGesture) } // il pan ha priorità se parte uno swipe
+        if let panGesture { tap.require(toFail: panGesture) }
         host.view.addGestureRecognizer(tap)
 
-        // Accessibilità: il banner è “toccabile”
         host.view.isAccessibilityElement = true
         host.view.accessibilityTraits.insert(.button)
         host.view.accessibilityLabel = state.title.isEmpty ? "Banner" : state.title
 
-        // Salva riferimenti
         self.window = window
         self.hostController = host
         self.scrimView = scrim
 
-        // Larghezza: fissa o misurata
         if let width = fixedWidth {
-            let constraint = host.view.widthAnchor.constraint(equalToConstant: width)
-            constraint.isActive = true
-            widthConstraint = constraint
+            let c = host.view.widthAnchor.constraint(equalToConstant: width)
+            c.isActive = true
+            widthConstraint = c
         } else {
             remeasureAndSetWidthConstraint(animated: false, force: true)
         }
 
-        // Animazione di entrata (verticale pura)
         window.makeKeyAndVisible()
         window.layoutIfNeeded()
         host.view.alpha = 0
@@ -537,15 +541,10 @@ final class LucidBanner {
     }
 
     private func replaceContentInternal(remeasureWidth: Bool) {
-        guard let host = hostController else {
-            return
-        }
+        guard let host = hostController else { return }
         let newView = contentView?(state) ?? AnyView(EmptyView())
-
         host.rootView = newView
-        if remeasureWidth {
-            remeasureAndSetWidthConstraint(animated: false, force: false)
-        }
+        if remeasureWidth { remeasureAndSetWidthConstraint(animated: false, force: false) }
         window?.layoutIfNeeded()
     }
 
@@ -556,19 +555,11 @@ final class LucidBanner {
             pendingRelayout = true
             return
         }
+        if fixedWidth != nil { return }
 
-        // Se la larghezza è fissa, non misurare
-        if fixedWidth != nil {
-            return
-        }
-
-        // Segnala "misura" alla view (nasconde progress ecc.)
         state.flags["measuring"] = true
-        defer {
-            state.flags["measuring"] = false
-        }
+        defer { state.flags["measuring"] = false }
 
-        // Allinea layout prima di misurare
         host.view.setNeedsLayout()
         host.view.layoutIfNeeded()
 
@@ -576,40 +567,28 @@ final class LucidBanner {
         let fitting = host.sizeThatFits(in: CGSize(width: widthCap, height: UIView.layoutFittingCompressedSize.height))
         let target = min(max(fitting.width, minWidth), widthCap)
 
-        if let constraint = widthConstraint {
-            let current = constraint.constant
+        if let c = widthConstraint {
+            let current = c.constant
             let newWidth = (force ? target : max(target, current))
-
-            guard abs(newWidth - current) > 0.5 else {
-                return
-            }
-
-            constraint.constant = newWidth
+            guard abs(newWidth - current) > 0.5 else { return }
+            c.constant = newWidth
         } else {
-            let constraint = host.view.widthAnchor.constraint(equalToConstant: target)
-            constraint.isActive = true
-            widthConstraint = constraint
+            let c = host.view.widthAnchor.constraint(equalToConstant: target)
+            c.isActive = true
+            widthConstraint = c
         }
 
         if animated {
-            UIView.animate(withDuration: 0.20) {
-                window.layoutIfNeeded()
-            }
+            UIView.animate(withDuration: 0.20) { window.layoutIfNeeded() }
         } else {
-            UIView.performWithoutAnimation {
-                window.layoutIfNeeded()
-            }
+            UIView.performWithoutAnimation { window.layoutIfNeeded() }
         }
     }
 
     private func scheduleAutoDismiss() {
         dismissTimer?.cancel()
         let seconds = self.autoDismissAfter
-
-        guard seconds > 0 else {
-            return
-        }
-
+        guard seconds > 0 else { return }
         let tokenAtSchedule = activeToken
         dismissTimer = Task { [weak self] in
             try? await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
@@ -617,21 +596,18 @@ final class LucidBanner {
         }
     }
 
-    // Swipe-up (transform-based)
-    @objc private func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
-        guard let view = hostController?.view else {
-            return
-        }
-        let translationY = gesture.translation(in: view).y
-
-        switch gesture.state {
+    // Gestures
+    @objc private func handlePanGesture(_ g: UIPanGestureRecognizer) {
+        guard let view = hostController?.view else { return }
+        let dy = g.translation(in: view).y
+        switch g.state {
         case .changed:
-            let y = min(0, translationY) // solo verso l'alto
+            let y = min(0, dy)
             view.transform = CGAffineTransform(translationX: 0, y: y)
             view.alpha = max(0.4, 1.0 + y / 120.0)
         case .ended, .cancelled:
-            let velocityY = gesture.velocity(in: view).y
-            let shouldDismiss = (translationY < -30) || (velocityY < -500)
+            let vy = g.velocity(in: view).y
+            let shouldDismiss = (dy < -30) || (vy < -500)
             if shouldDismiss {
                 dismiss(for: activeToken)
             } else {
@@ -650,59 +626,126 @@ final class LucidBanner {
     }
 
     @objc private func handleBannerTap() {
-        onTap?()
+        onTapWithContext?(activeToken, revisionForVisible, state.stage)
     }
 }
 
-// MARK: - UIWindow pass-through
+/*
+// MARK: - View di esempio: legge `state.stage` per personalizzare UI
+struct ToastBannerView: View {
+    @ObservedObject var state: LucidBannerState
 
-internal final class LucidBannerWindow: UIWindow {
-    var isPassthrough: Bool = true
-    weak var hitTargetView: UIView?
+    var body: some View {
+        let showTitle = !state.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        let showSubtitle = !(state.subtitle?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
+        let showProgress = (state.progress ?? 0) > 0
+        let measuring = (state.flags["measuring"] as? Bool) ?? false
 
-    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        guard isPassthrough else {
-            return super.hitTest(point, with: event)
+        // Esempio: reagisci allo stage
+        let accent = color(for: state.stage) // dipende dallo stage
+
+        VStack(spacing: 6) {
+            HStack(alignment: .top, spacing: 8) {
+                if let systemImage = state.systemImage {
+                    if #available(iOS 18, *) {
+                        Image(systemName: systemImage)
+                            .symbolRenderingMode(.monochrome)
+                            .applyBannerAnimation(state.imageAnimation)
+                            .font(.system(size: 20, weight: .regular))
+                            .frame(width: 22, height: 22, alignment: .topLeading)
+                            .foregroundStyle(Color(uiColor: state.imageColor))
+                    } else {
+                        Image(systemName: systemImage)
+                            .font(.system(size: 20, weight: .regular))
+                            .frame(width: 22, height: 22, alignment: .topLeading)
+                            .foregroundStyle(Color(uiColor: state.imageColor))
+                    }
+                }
+
+                if showTitle || showSubtitle {
+                    VStack(alignment: .leading, spacing: 4) {
+                        if showTitle {
+                            Text(state.title)
+                                .font(.subheadline.weight(.bold))
+                                .multilineTextAlignment(.leading)
+                                .lineLimit(2)
+                                .truncationMode(.tail)
+                                .minimumScaleFactor(0.9)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .foregroundStyle(Color(uiColor: state.textColor))
+                        }
+                        if showSubtitle, let s = state.subtitle {
+                            Text(s)
+                                .font(.caption)
+                                .multilineTextAlignment(.leading)
+                                .lineLimit(3)
+                                .truncationMode(.tail)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .foregroundStyle(Color(uiColor: state.textColor))
+                        }
+                    }
+                }
+            }
+
+            if showProgress && !measuring {
+                ProgressView(value: min(state.progress ?? 0, 1))
+                    .progressViewStyle(.linear)
+                    .tint(Color(uiColor: state.progressColor))
+                    .scaleEffect(x: 1, y: 0.8, anchor: .center)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+            }
         }
-        // Passthrough
-        guard let target = hitTargetView else { return nil }
-        let p = target.convert(point, from: self)
-        return target.bounds.contains(p) ? super.hitTest(point, with: event) : nil
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(
+            ZStack {
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    .fill(.ultraThinMaterial)
+                    .blendMode(.plusLighter)
+                // bordo luminoso che varia con lo stage (accent)
+                RoundedRectangle(cornerRadius: 22, style: .continuous)
+                    .stroke(accent.opacity(0.9), lineWidth: 0.7)
+            }
+            .compositingGroup()
+        )
+        .shadow(color: .black.opacity(0.25), radius: 10, x: 0, y: 4)
+        .frame(minHeight: 44, alignment: .leading)
+    }
+
+    private func color(for stage: String?) -> Color {
+        switch stage {
+        case "uploading":  return .blue
+        case "processing": return .orange
+        case "done":       return .green
+        case "error":      return .red
+        default:           return .white
+        }
     }
 }
 
-// MARK: - Stato osservabile condiviso
-
-@MainActor
-internal final class LucidBannerState: ObservableObject {
-    @Published var title: String
-    @Published var subtitle: String?
-    @Published var textColor: UIColor
-
-    @Published var systemImage: String?
-    @Published var imageColor: UIColor
-    @Published var imageAnimation: LucidBanner.LucidBannerAnimationStyle
-
-    @Published var progress: Double?
-    @Published var progressColor: UIColor
-
-    @Published var flags: [String: Any] = [:]
-
-    init(title: String,
-         subtitle: String? = nil,
-         textColor: UIColor,
-         systemImage: String? = nil,
-         imageColor: UIColor,
-         imageAnimation: LucidBanner.LucidBannerAnimationStyle,
-         progress: Double? = nil,
-         progressColor: UIColor) {
-        self.title = title
-        self.subtitle = (subtitle?.isEmpty == true) ? nil : subtitle
-        self.textColor = textColor
-        self.systemImage = systemImage
-        self.imageColor = imageColor
-        self.imageAnimation = imageAnimation
-        self.progress = progress
-        self.progressColor = progressColor
+// MARK: - Helper animazioni simboli (iOS 18+)
+@available(iOS 18.0, *)
+private extension View {
+    @ViewBuilder
+    func applyBannerAnimation(_ style: LucidBanner.LucidBannerAnimationStyle) -> some View {
+        switch style {
+        case .none:
+            self
+        case .rotate:
+            self.symbolEffect(.rotate, options: .repeat(.continuous))
+        case .pulse:
+            self.symbolEffect(.pulse, options: .repeat(.continuous))
+        case .pulsebyLayer:
+            self.symbolEffect(.pulse.byLayer, options: .repeat(.continuous))
+        case .breathe:
+            self.symbolEffect(.breathe, options: .repeat(.continuous))
+        case .bounce:
+            self.symbolEffect(.bounce, options: .repeat(.continuous))
+        case .wiggle:
+            self.symbolEffect(.wiggle, options: .repeat(.continuous))
+        case .scale:
+            self.symbolEffect(.scale, options: .repeat(.continuous))
+        }
     }
 }
+*/

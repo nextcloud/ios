@@ -358,7 +358,7 @@ actor NCNetworkingProcess {
             imageAnimation: .rotate,
             progressColor: NCBrandColor.shared.customer,
             blocksTouches: false,
-            onTap: {
+            onTapWithContext: { token, revision, stage in
                 print("tap on banner")
             }) { state in
                 ToastBannerView(state: state)
@@ -369,20 +369,31 @@ actor NCNetworkingProcess {
         } counterChunk: { counter in
             Task { @MainActor in
                 let progress = Double(counter) / Double(numChunks)
-                LucidBanner.shared.update(progress: progress, for: token)
+                LucidBanner.shared.update(
+                    progress: progress,
+                    onTapWithContext: { token, revision, stage in
+
+                }, for: token)
             }
         } startFilesChunk: { _ in
             Task {
-                LucidBanner.shared.update(title: NSLocalizedString("_keep_active_for_upload_", comment: ""),
-                                          systemImage: "arrowshape.up.circle",
-                                          imageAnimation: .breathe,
-                                          progress: 0,
-                                          for: token)
+                LucidBanner.shared.update(
+                    title: NSLocalizedString("_keep_active_for_upload_", comment: ""),
+                    systemImage: "arrowshape.up.circle",
+                    imageAnimation: .breathe,
+                    progress: 0,
+                    onTapWithContext: { token, revision, stage in
+
+                }, for: token)
             }
         } requestHandler: { _ in
             Task {
                 let progress = Double(countUpload) / Double(numChunks)
-                LucidBanner.shared.update(progress: progress, for: token)
+                LucidBanner.shared.update(
+                    progress: progress,
+                    onTapWithContext: { token, revision, stage in
+
+                }, for: token)
                 countUpload += 1
             }
         } assembling: {
