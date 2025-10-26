@@ -33,7 +33,7 @@ struct ToastBannerView: View {
                                 .truncationMode(.tail)
                                 .minimumScaleFactor(0.9)
                                 .fixedSize(horizontal: false, vertical: true)
-                                .foregroundStyle(Color(uiColor: NCBrandColor.shared.customer))
+                                .foregroundStyle(Color(uiColor: state.textColor))
                         }
                         if showSubtitle, let s = state.subtitle {
                             Text(s)
@@ -42,7 +42,7 @@ struct ToastBannerView: View {
                                 .lineLimit(3)
                                 .truncationMode(.tail)
                                 .fixedSize(horizontal: false, vertical: true)
-                                .foregroundStyle(Color(uiColor: NCBrandColor.shared.customer))
+                                .foregroundStyle(Color(uiColor: state.textColor))
                         }
                     }
                 }
