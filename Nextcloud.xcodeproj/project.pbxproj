@@ -843,10 +843,6 @@
 		F7B769AD2B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B769A72B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift */; };
 		F7B769AE2B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B769A72B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift */; };
 		F7B8B83025681C3400967775 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F7B8B82F25681C3400967775 /* GoogleService-Info.plist */; };
-		F7B8F6142EAB64AD006A70D6 /* JDStatusBarNotification in Frameworks */ = {isa = PBXBuildFile; productRef = F7B8F6132EAB64AD006A70D6 /* JDStatusBarNotification */; };
-		F7B8F6162EAB7503006A70D6 /* JDStatusBarNotification in Frameworks */ = {isa = PBXBuildFile; productRef = F7B8F6152EAB7503006A70D6 /* JDStatusBarNotification */; };
-		F7B8F6182EAB7516006A70D6 /* JDStatusBarNotification in Frameworks */ = {isa = PBXBuildFile; productRef = F7B8F6172EAB7516006A70D6 /* JDStatusBarNotification */; };
-		F7B8F61A2EAB7521006A70D6 /* JDStatusBarNotification in Frameworks */ = {isa = PBXBuildFile; productRef = F7B8F6192EAB7521006A70D6 /* JDStatusBarNotification */; };
 		F7B934FE2BDCFE1E002B2FC9 /* NCDragDrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B934FD2BDCFE1E002B2FC9 /* NCDragDrop.swift */; };
 		F7BAADCB1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		F7BAADCC1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
@@ -1014,7 +1010,6 @@
 		F7EF2AEC2E43157B0081B2C9 /* NCNotification.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7EF2AE82E43157B0081B2C9 /* NCNotification.storyboard */; };
 		F7EFA47825ADBA500083159A /* NCViewerProviderContextMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7EFA47725ADBA500083159A /* NCViewerProviderContextMenu.swift */; };
 		F7EFC0CD256BF8DD00461AAD /* NCUserStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7EFC0CC256BF8DD00461AAD /* NCUserStatus.swift */; };
-		F7F0691D2EAB9DA300B3B13B /* NotificationPresenterUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F0691C2EAB9DA200B3B13B /* NotificationPresenterUI.swift */; };
 		F7F1FB9D2E27CE7200C79E20 /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
 		F7F1FB9E2E27CE7200C79E20 /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
 		F7F1FB9F2E27CE7200C79E20 /* NCNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75A9EE523796C6F0044CFCE /* NCNetworking.swift */; };
@@ -1919,7 +1914,6 @@
 		F7EF2AE92E43157B0081B2C9 /* NCNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNotification.swift; sourceTree = "<group>"; };
 		F7EFA47725ADBA500083159A /* NCViewerProviderContextMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCViewerProviderContextMenu.swift; sourceTree = "<group>"; };
 		F7EFC0CC256BF8DD00461AAD /* NCUserStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCUserStatus.swift; sourceTree = "<group>"; };
-		F7F0691C2EAB9DA200B3B13B /* NotificationPresenterUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPresenterUI.swift; sourceTree = "<group>"; };
 		F7F3E58A2D3BB65000A32B14 /* NCNetworking+Recommendations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCNetworking+Recommendations.swift"; sourceTree = "<group>"; };
 		F7F4F0FD27ECDBDB008676F9 /* Inconsolata-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inconsolata-SemiBold.ttf"; sourceTree = "<group>"; };
 		F7F4F0FE27ECDBDB008676F9 /* Inconsolata-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inconsolata-Medium.ttf"; sourceTree = "<group>"; };
@@ -2035,7 +2029,6 @@
 				F711A4EF2AF932B900095DD8 /* SVGKitSwift in Frameworks */,
 				F710FC80277B7D2700AA9FBF /* RealmSwift in Frameworks */,
 				F74C863D2AEFBFD9009A1D4A /* LRUCache in Frameworks */,
-				F7B8F6182EAB7516006A70D6 /* JDStatusBarNotification in Frameworks */,
 				F72AD70F28C24BA1006CB92D /* NextcloudKit in Frameworks */,
 				F33EE6E72BF4C02600CA1A51 /* NIOSSL in Frameworks */,
 				F72CD01227A7E92400E59476 /* JGProgressHUD in Frameworks */,
@@ -2059,7 +2052,6 @@
 				F7160A7D2BE931DE0034DCB3 /* RealmSwift in Frameworks */,
 				F760DE052AE66EBE0027D78A /* KeychainAccess in Frameworks */,
 				F7A560462AE15D3D00BE8FD6 /* Queuer in Frameworks */,
-				F7B8F6162EAB7503006A70D6 /* JDStatusBarNotification in Frameworks */,
 				F783030D28B4C59A00B84583 /* SwiftEntryKit in Frameworks */,
 				F75379222AE2ADA100C0250E /* JGProgressHUD in Frameworks */,
 			);
@@ -2074,7 +2066,6 @@
 				F73ADD2426554FE20069EA0D /* SwiftEntryKit in Frameworks */,
 				F710FC84277B7D3500AA9FBF /* RealmSwift in Frameworks */,
 				F75379202AE2AD9400C0250E /* JGProgressHUD in Frameworks */,
-				F7B8F61A2EAB7521006A70D6 /* JDStatusBarNotification in Frameworks */,
 				F33EE6E92BF4C02D00CA1A51 /* NIOSSL in Frameworks */,
 				F72AD71328C24BCC006CB92D /* NextcloudKit in Frameworks */,
 			);
@@ -2090,7 +2081,6 @@
 				F788ECC7263AAAFA00ADC67F /* MarkdownKit in Frameworks */,
 				F3374AF02D78B01B002A38F9 /* BitCollections in Frameworks */,
 				F77BC3EB293E5268005F2B08 /* Swifter in Frameworks */,
-				F7B8F6142EAB64AD006A70D6 /* JDStatusBarNotification in Frameworks */,
 				F7BB7E4727A18C56009B9F29 /* Parchment in Frameworks */,
 				F33EE6E12BF4BDA500CA1A51 /* NIOSSL in Frameworks */,
 				F734B06628E75C0100E180D5 /* TLPhotoPicker in Frameworks */,
@@ -2768,7 +2758,6 @@
 				F70846CE2EADE293006D3F33 /* Lucid Banner */,
 				F769CA182966EA3C00039397 /* ComponentView.swift */,
 				F768823D2C0DD304001CF441 /* LazyView.swift */,
-				F7F0691C2EAB9DA200B3B13B /* NotificationPresenterUI.swift */,
 				F768823F2C0DD30B001CF441 /* ViewOnAppear.swift */,
 				F7BFFD272C8846020029A201 /* NCHud.swift */,
 				F75CA1462962F13700B01130 /* NCHUDView.swift */,
@@ -3665,7 +3654,6 @@
 				F74C863C2AEFBFD9009A1D4A /* LRUCache */,
 				F711A4EE2AF932B900095DD8 /* SVGKitSwift */,
 				F33EE6E62BF4C02600CA1A51 /* NIOSSL */,
-				F7B8F6172EAB7516006A70D6 /* JDStatusBarNotification */,
 			);
 			productName = "Share Ext";
 			productReference = F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */;
@@ -3694,7 +3682,6 @@
 				F760DE042AE66EBE0027D78A /* KeychainAccess */,
 				F7160A7C2BE931DE0034DCB3 /* RealmSwift */,
 				F33EE6E22BF4C00700CA1A51 /* NIOSSL */,
-				F7B8F6152EAB7503006A70D6 /* JDStatusBarNotification */,
 			);
 			productName = DashboardWidgetExtension;
 			productReference = F7346E1028B0EF5B006CE2D2 /* Widget.appex */;
@@ -3722,7 +3709,6 @@
 				F753791F2AE2AD9400C0250E /* JGProgressHUD */,
 				F760DE0A2AE66ED80027D78A /* KeychainAccess */,
 				F33EE6E82BF4C02D00CA1A51 /* NIOSSL */,
-				F7B8F6192EAB7521006A70D6 /* JDStatusBarNotification */,
 			);
 			productName = "File Provider Extension";
 			productReference = F771E3D020E2392D00AFB62D /* File Provider Extension.appex */;
@@ -3783,7 +3769,6 @@
 				F3374AF32D78B01B002A38F9 /* DequeModule */,
 				F3374AF52D78B01B002A38F9 /* HashTreeCollections */,
 				F3374AF72D78B01B002A38F9 /* HeapModule */,
-				F7B8F6132EAB64AD006A70D6 /* JDStatusBarNotification */,
 			);
 			productName = "Crypto Cloud";
 			productReference = F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */;
@@ -3967,7 +3952,6 @@
 				F33EE6EE2BF4C0FF00CA1A51 /* XCRemoteSwiftPackageReference "swift-nio" */,
 				F7D4BF4E2CA2ECCB00A5E746 /* XCRemoteSwiftPackageReference "vlckit-spm" */,
 				F3374AEE2D78B01B002A38F9 /* XCRemoteSwiftPackageReference "swift-collections" */,
-				F7B8F6122EAB64AD006A70D6 /* XCRemoteSwiftPackageReference "JDStatusBarNotification" */,
 			);
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
 			projectDirPath = "";
@@ -4951,7 +4935,6 @@
 				F7CF06802E0FF3990063AD04 /* NCAppStateManager.swift in Sources */,
 				F7BAADCB1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */,
 				F768822A2C0DD1E7001CF441 /* NCSettingsModel.swift in Sources */,
-				F7F0691D2EAB9DA300B3B13B /* NotificationPresenterUI.swift in Sources */,
 				F737DA9D2B7B893C0063BAFC /* NCPasscode.swift in Sources */,
 				F77C97392953131000FDDD09 /* NCCameraRoll.swift in Sources */,
 				F7CADEFD2EA159210057849E /* NCMetadataTranfersSuccess.swift in Sources */,
@@ -6428,14 +6411,6 @@
 				minimumVersion = 1.0.0;
 			};
 		};
-		F7B8F6122EAB64AD006A70D6 /* XCRemoteSwiftPackageReference "JDStatusBarNotification" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/calimarkus/JDStatusBarNotification";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.2.4;
-			};
-		};
 		F7BB7E4527A18C56009B9F29 /* XCRemoteSwiftPackageReference "Parchment" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/rechsteiner/Parchment";
@@ -6953,26 +6928,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F710FC78277B7CFF00AA9FBF /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
-		};
-		F7B8F6132EAB64AD006A70D6 /* JDStatusBarNotification */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F7B8F6122EAB64AD006A70D6 /* XCRemoteSwiftPackageReference "JDStatusBarNotification" */;
-			productName = JDStatusBarNotification;
-		};
-		F7B8F6152EAB7503006A70D6 /* JDStatusBarNotification */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F7B8F6122EAB64AD006A70D6 /* XCRemoteSwiftPackageReference "JDStatusBarNotification" */;
-			productName = JDStatusBarNotification;
-		};
-		F7B8F6172EAB7516006A70D6 /* JDStatusBarNotification */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F7B8F6122EAB64AD006A70D6 /* XCRemoteSwiftPackageReference "JDStatusBarNotification" */;
-			productName = JDStatusBarNotification;
-		};
-		F7B8F6192EAB7521006A70D6 /* JDStatusBarNotification */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F7B8F6122EAB64AD006A70D6 /* XCRemoteSwiftPackageReference "JDStatusBarNotification" */;
-			productName = JDStatusBarNotification;
 		};
 		F7BB7E4627A18C56009B9F29 /* Parchment */ = {
 			isa = XCSwiftPackageProductDependency;
