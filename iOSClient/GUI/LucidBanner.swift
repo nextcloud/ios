@@ -572,8 +572,9 @@ struct ToastBannerView: View {
             ZStack {
                 RoundedRectangle(cornerRadius: 22, style: .continuous)
                     .fill(.ultraThinMaterial)
+                    .blendMode(.plusLighter)
                 RoundedRectangle(cornerRadius: 22, style: .continuous)
-                    .fill(Color.white.opacity(0.1))
+                    .fill(Color.white.opacity(0.2))
                     .blendMode(.plusLighter)
                 .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
                 .blendMode(.screen)
@@ -582,9 +583,9 @@ struct ToastBannerView: View {
         )
         .overlay(
             RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .stroke(.white.opacity(0.25), lineWidth: 0.6)
+                .stroke(.white.opacity(0.9), lineWidth: 0.6)
         )
-        .shadow(color: .black.opacity(0.04), radius: 10, x: 0, y: 4)
+        .shadow(color: .black.opacity(0.4), radius: 10, x: 0, y: 4)
         .frame(minHeight: 44, alignment: .leading)
     }
 }
