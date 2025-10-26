@@ -139,6 +139,7 @@ class NCFiles: NCCollectionViewCommon {
                                             textColor: .label,
                                             systemImage: "gearshape.arrow.triangle.2.circlepath",
                                             imageColor: .red,
+                                            imageAnimation: .rotate,
                                             progressColor: NCBrandColor.shared.customer) { state in
             ToastBannerView(state: state)
         }
