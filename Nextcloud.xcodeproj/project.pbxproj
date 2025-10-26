@@ -257,6 +257,7 @@
 		F707C26521A2DC5200F6181E /* NCStoreReview.swift in Sources */ = {isa = PBXBuildFile; fileRef = F707C26421A2DC5200F6181E /* NCStoreReview.swift */; };
 		F70821D829E59E6D001CA2D7 /* TagListView in Frameworks */ = {isa = PBXBuildFile; productRef = F70821D729E59E6D001CA2D7 /* TagListView */; };
 		F70846CA2EACC425006D3F33 /* LucidBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70846C92EACC424006D3F33 /* LucidBanner.swift */; };
+		F70846CC2EADE246006D3F33 /* LucidBannerViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70846CB2EADE23B006D3F33 /* LucidBannerViews.swift */; };
 		F70968A424212C4E00ED60E5 /* NCLivePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70968A324212C4E00ED60E5 /* NCLivePhoto.swift */; };
 		F70B86752642CE3B00ED5349 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = F70B86742642CE3B00ED5349 /* FirebaseCrashlytics */; };
 		F70BFC7420E0FA7D00C67599 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
@@ -1441,6 +1442,7 @@
 		F70753F62542A9C000972D44 /* NCViewerMediaPage.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewerMediaPage.storyboard; sourceTree = "<group>"; };
 		F707C26421A2DC5200F6181E /* NCStoreReview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCStoreReview.swift; sourceTree = "<group>"; };
 		F70846C92EACC424006D3F33 /* LucidBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LucidBanner.swift; sourceTree = "<group>"; };
+		F70846CB2EADE23B006D3F33 /* LucidBannerViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LucidBannerViews.swift; sourceTree = "<group>"; };
 		F70968A324212C4E00ED60E5 /* NCLivePhoto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCLivePhoto.swift; sourceTree = "<group>"; };
 		F70A07C8205285FB00DC1231 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F70BFC7320E0FA7C00C67599 /* NCUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCUtility.swift; sourceTree = "<group>"; };
@@ -2377,6 +2379,15 @@
 			path = "File Provider Extension UI";
 			sourceTree = "<group>";
 		};
+		F70846CE2EADE293006D3F33 /* Lucid Banner */ = {
+			isa = PBXGroup;
+			children = (
+				F70846C92EACC424006D3F33 /* LucidBanner.swift */,
+				F70846CB2EADE23B006D3F33 /* LucidBannerViews.swift */,
+			);
+			path = "Lucid Banner";
+			sourceTree = "<group>";
+		};
 		F70B866A2642A21300ED5349 /* Color */ = {
 			isa = PBXGroup;
 			children = (
@@ -2754,10 +2765,10 @@
 		F769CA1B2966EF4F00039397 /* GUI */ = {
 			isa = PBXGroup;
 			children = (
+				F70846CE2EADE293006D3F33 /* Lucid Banner */,
 				F769CA182966EA3C00039397 /* ComponentView.swift */,
 				F768823D2C0DD304001CF441 /* LazyView.swift */,
 				F7F0691C2EAB9DA200B3B13B /* NotificationPresenterUI.swift */,
-				F70846C92EACC424006D3F33 /* LucidBanner.swift */,
 				F768823F2C0DD30B001CF441 /* ViewOnAppear.swift */,
 				F7BFFD272C8846020029A201 /* NCHud.swift */,
 				F75CA1462962F13700B01130 /* NCHUDView.swift */,
@@ -4965,6 +4976,7 @@
 				F704B5E52430AA8000632F5F /* NCCreateFormUploadConflict.swift in Sources */,
 				F765608F23BF813600765969 /* NCContentPresenter.swift in Sources */,
 				F7327E352B73AEDE00A462C7 /* NCNetworking+LivePhoto.swift in Sources */,
+				F70846CC2EADE246006D3F33 /* LucidBannerViews.swift in Sources */,
 				F76687072B7D067400779E3F /* NCAudioRecorderViewController.swift in Sources */,
 				AA8E03DA2D2ED83300E7E89C /* TransientShare.swift in Sources */,
 				F7A03E2F2D425A14007AA677 /* NCFavoriteNavigationController.swift in Sources */,
