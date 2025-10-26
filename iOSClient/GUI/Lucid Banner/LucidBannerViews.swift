@@ -18,7 +18,10 @@ struct ToastBannerView: View {
                 if let systemImage = state.systemImage {
                     if #available(iOS 18, *) {
                         Image(systemName: systemImage)
+                            .symbolRenderingMode(.monochrome)
                             .symbolEffect(.rotate, options: .repeat(.continuous))
+                            .font(.system(size: 20, weight: .regular))
+                            .frame(width: 22, height: 22)
                             .foregroundStyle(Color(uiColor: state.imageColor))
                     } else {
                         Image(systemName: systemImage)

@@ -89,8 +89,8 @@ final class LucidBanner {
                              maxWidth: CGFloat = 420,
                              topAnchor: CGFloat = 10,
                              @ViewBuilder content: @escaping (LucidBannerState) -> Content) -> Int {
-        let title = title.trimmingCharacters(in: .whitespacesAndNewlines)
-        state.title = title.isEmpty ? "" : title
+        let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        state.title = trimmed.isEmpty ? "" : trimmed
         state.textColor = textColor
 
         if let subtitle = subtitle?.trimmingCharacters(in: .whitespacesAndNewlines), !subtitle.isEmpty {
@@ -163,8 +163,6 @@ final class LucidBanner {
                 queue.removeAll()
                 queue.append(next)
 
-                generation &+= 1
-                activeToken = generation
                 dismiss { [weak self] in self?.dequeueAndStartIfNeeded() }
                 return activeToken
             }
@@ -342,11 +340,21 @@ final class LucidBanner {
         }
         let next = queue.removeFirst()
 
-        state.title = next.title
-        state.subtitle = next.subtitle
-        state.progress = next.progress
+        // State
+        state.title        = next.title
+        state.subtitle     = next.subtitle
+        state.progress     = next.progress
+        state.textColor    = next.textColor
+        state.systemImage  = next.systemImage
+        state.imageColor   = next.imageColor
+        state.progressColor = next.progressColor
+
+        // Presentation
         autoDismissAfter = next.autoDismissAfter
-        fixedWidth = next.fixedWidth
+        fixedWidth       = next.fixedWidth
+        minWidth         = next.minWidth
+        maxWidth         = next.maxWidth
+        topAnchor        = next.topAnchor
 
         generation &+= 1
         activeToken = generation
@@ -441,43 +449,45 @@ final class LucidBanner {
     }
 
     private func remeasureAndSetWidthConstraint(animated: Bool, force: Bool) {
-        guard let window,
-              let host = hostController else {
-            return
-        }
+        guard let window, let host = hostController else { return }
 
-        // Durante l’entrata, non toccare i vincoli (evita allargamenti mentre scende)
         if isAnimatingIn && lockWidthUntilSettled && !force {
             pendingRelayout = true
             return
         }
 
         // Se la larghezza è fissa, non misurare
-        if fixedWidth != nil { return }
+        if fixedWidth != nil {
+            return
+        }
 
+        // Segnala "misura" alla view (nasconde progress ecc.)
         state.flags["measuring"] = true
+        defer {
+            state.flags["measuring"] = false
+        }
+
+        // Allinea layout prima di misurare
         host.view.setNeedsLayout()
         host.view.layoutIfNeeded()
 
-        let width = min(window.bounds.width - 24, maxWidth)
-        let fitting = host.sizeThatFits(
-            in: CGSize(width: width, height: UIView.layoutFittingCompressedSize.height)
-        )
-        let target = min(max(fitting.width, minWidth), width)
+        let widthCap = min(max(0, window.bounds.width - 24), maxWidth)
+        let fitting = host.sizeThatFits(in: CGSize(width: widthCap, height: UIView.layoutFittingCompressedSize.height))
+        let target = min(max(fitting.width, minWidth), widthCap)
 
-        state.flags["measuring"] = false
+        if let constraint = widthConstraint {
+            let current = constraint.constant
+            let newWidth = (force ? target : max(target, current))
 
-        if let widthConstraint {
-            // Auto-mode
-            let newWidth = max(target, widthConstraint.constant)
-            guard abs(widthConstraint.constant - newWidth) > 0.5 else {
+            guard abs(newWidth - current) > 0.5 else {
                 return
             }
-            widthConstraint.constant = newWidth
+
+            constraint.constant = newWidth
         } else {
-            let widthConstraint = host.view.widthAnchor.constraint(equalToConstant: target)
-            widthConstraint.isActive = true
-            self.widthConstraint = widthConstraint
+            let constraint = host.view.widthAnchor.constraint(equalToConstant: target)
+            constraint.isActive = true
+            widthConstraint = constraint
         }
 
         if animated {
@@ -485,7 +495,9 @@ final class LucidBanner {
                 window.layoutIfNeeded()
             }
         } else {
-            window.layoutIfNeeded()
+            UIView.performWithoutAnimation {
+                window.layoutIfNeeded()
+            }
         }
     }
 
@@ -497,9 +509,10 @@ final class LucidBanner {
             return
         }
 
+        let tokenAtSchedule = activeToken
         dismissTimer = Task { [weak self] in
             try? await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
-            self?.dismiss()
+            self?.dismiss(for: tokenAtSchedule)
         }
     }
 
@@ -519,7 +532,7 @@ final class LucidBanner {
             let velocityY = gesture.velocity(in: view).y
             let shouldDismiss = (translationY < -30) || (velocityY < -500)
             if shouldDismiss {
-                dismiss()
+                dismiss(for: activeToken)
             } else {
                 UIView.animate(withDuration: 0.25,
                                delay: 0,
