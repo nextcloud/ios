@@ -136,7 +136,8 @@ class NCFiles: NCCollectionViewCommon {
 
         let token = LucidBanner.shared.show(title: "Preparing…",
                                             subtitle: "and starttt",
-                                            textColor: NCBrandColor.shared.customer) { state in
+                                            textColor: .label,
+                                            progressColor: NCBrandColor.shared.customer) { state in
             ToastBannerView(state: state)
         }
 

@@ -18,6 +18,7 @@ final class LucidBanner {
         let subtitle: String?
         let textColor: UIColor
         let progress: Double?
+        let progressColor: UIColor
         let autoDismissAfter: TimeInterval
         let fixedWidth: CGFloat?
         let minWidth: CGFloat
@@ -52,7 +53,7 @@ final class LucidBanner {
     // Queue & policy
     private var queue: [PendingShow] = []
 
-    let state = LucidBannerState(title: "", subtitle: nil, progress: nil)
+    let state = LucidBannerState(title: "", subtitle: nil, textColor: .label, progress: nil, progressColor: .label)
 
     // Config
     var isSwipeToDismissEnabled = true
@@ -70,6 +71,7 @@ final class LucidBanner {
                              subtitle: String? = nil,
                              textColor: UIColor = .label,
                              progress: Double? = nil,
+                             progressColor: UIColor = .label,
                              autoDismissAfter: TimeInterval = 0,
                              policy: ShowPolicy = .enqueue,
                              fixedWidth: CGFloat? = nil,
@@ -92,6 +94,7 @@ final class LucidBanner {
         } else {
             state.progress = nil
         }
+        state.progressColor = progressColor
 
         self.autoDismissAfter = autoDismissAfter
         self.fixedWidth = fixedWidth
@@ -120,6 +123,7 @@ final class LucidBanner {
                                          subtitle: state.subtitle,
                                          textColor: textColor,
                                          progress: state.progress,
+                                         progressColor: progressColor,
                                          autoDismissAfter: autoDismissAfter,
                                          fixedWidth: fixedWidth,
                                          minWidth: minWidth,
@@ -132,6 +136,7 @@ final class LucidBanner {
                                        subtitle: state.subtitle,
                                        textColor: textColor,
                                        progress: state.progress,
+                                       progressColor: progressColor,
                                        autoDismissAfter: autoDismissAfter,
                                        fixedWidth: fixedWidth,
                                        minWidth: minWidth,
@@ -529,14 +534,16 @@ internal final class LucidBannerPassthroughWindow: UIWindow {
 internal final class LucidBannerState: ObservableObject {
     @Published var title: String
     @Published var subtitle: String?
-    @Published var progress: Double?
-    @Published var flags: [String: Any] = [:]
     @Published var textColor: UIColor
+    @Published var progress: Double?
+    @Published var progressColor: UIColor
+    @Published var flags: [String: Any] = [:]
 
-    init(title: String, subtitle: String? = nil, textColor: UIColor = .label ,progress: Double? = nil) {
+    init(title: String, subtitle: String? = nil, textColor: UIColor, progress: Double? = nil, progressColor: UIColor) {
         self.title = title
         self.subtitle = (subtitle?.isEmpty == true) ? nil : subtitle
         self.textColor = textColor
         self.progress = progress
+        self.progressColor = progressColor
     }
 }

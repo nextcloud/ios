@@ -51,7 +51,7 @@ struct ToastBannerView: View {
             if showProgress && !measuring {
                 ProgressView(value: min(state.progress ?? 0, 1))
                     .progressViewStyle(.linear)
-                    .tint(Color(uiColor: NCBrandColor.shared.customer))
+                    .tint(Color(uiColor: state.progressColor))
                     .scaleEffect(x: 1, y: 0.8, anchor: .center)
                     .transition(.opacity.combined(with: .move(edge: .top)))
             }
@@ -94,7 +94,9 @@ struct ToastBannerView: View {
             state: LucidBannerState(
                 title: "Uploading large file…",
                 subtitle: "Please keep the app active until the process completes.",
-                progress: 0.45
+                textColor: .label,
+                progress: 0.45,
+                progressColor: .label
             )
         )
         .padding()
