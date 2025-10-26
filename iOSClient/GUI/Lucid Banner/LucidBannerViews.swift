@@ -15,12 +15,16 @@ struct ToastBannerView: View {
 
         VStack(spacing: 6) {
             HStack(alignment: .top, spacing: 10) {
-                if #available(iOS 18, *) {
-                    Image(systemName: "gearshape.arrow.triangle.2.circlepath")
-                        .symbolEffect(.rotate, options: .repeat(.continuous))
-                        .foregroundStyle(Color(uiColor: NCBrandColor.shared.customer))
-                } else {
-                    Image(systemName: "gearshape.arrow.triangle.2.circlepath")
+                if let image = state.image {
+                    if #available(iOS 18, *) {
+                        Image(uiImage: image)
+                            .symbolEffect(.rotate, options: .repeat(.continuous))
+                            .foregroundStyle(Color(uiColor: state.imageColor))
+                    } else {
+                        Image(uiImage: image)
+                            .foregroundStyle(Color(uiColor: state.imageColor))
+
+                    }
                 }
 
                 if showTitle || showSubtitle {
@@ -95,6 +99,8 @@ struct ToastBannerView: View {
                 title: "Uploading large file…",
                 subtitle: "Please keep the app active until the process completes.",
                 textColor: .label,
+                image: UIImage(systemName: "gearshape.arrow.triangle.2.circlepath"),
+                imageColor: .label,
                 progress: 0.45,
                 progressColor: .label
             )
