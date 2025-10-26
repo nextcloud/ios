@@ -17,7 +17,7 @@ final class LucidBanner {
         let title: String
         let subtitle: String?
         let textColor: UIColor
-        let image: UIImage?
+        let systemImage: String?
         let imageColor: UIColor
         let progress: Double?
         let progressColor: UIColor
@@ -58,7 +58,7 @@ final class LucidBanner {
     let state = LucidBannerState(title: "",
                                  subtitle: nil,
                                  textColor: .label,
-                                 image: nil,
+                                 systemImage: nil,
                                  imageColor: .label,
                                  progress: nil,
                                  progressColor: .label)
@@ -78,7 +78,7 @@ final class LucidBanner {
     func show<Content: View>(title: String,
                              subtitle: String? = nil,
                              textColor: UIColor = .label,
-                             image: UIImage? = nil,
+                             systemImage: String? = nil,
                              imageColor: UIColor = .label,
                              progress: Double? = nil,
                              progressColor: UIColor = .label,
@@ -99,7 +99,7 @@ final class LucidBanner {
             state.subtitle = nil
         }
 
-        state.image = image
+        state.systemImage = systemImage
         state.imageColor = imageColor
 
         if let progress = progress, progress > 0 {
@@ -135,7 +135,7 @@ final class LucidBanner {
                 queue.append(PendingShow(title: state.title,
                                          subtitle: state.subtitle,
                                          textColor: textColor,
-                                         image: image,
+                                         systemImage: systemImage,
                                          imageColor: imageColor,
                                          progress: state.progress,
                                          progressColor: progressColor,
@@ -150,7 +150,7 @@ final class LucidBanner {
                 let next = PendingShow(title: state.title,
                                        subtitle: state.subtitle,
                                        textColor: textColor,
-                                       image: image,
+                                       systemImage: systemImage,
                                        imageColor: imageColor,
                                        progress: state.progress,
                                        progressColor: progressColor,
@@ -199,7 +199,10 @@ final class LucidBanner {
 
     // MARK: - UPDATE
 
-    func update(title: String? = nil, subtitle: String? = nil, progress: Double? = nil, for token: Int? = nil) {
+    func update(title: String? = nil,
+                subtitle: String? = nil,
+                progress: Double? = nil,
+                for token: Int? = nil) {
         if let token,
            token != activeToken {
             return
@@ -552,7 +555,7 @@ internal final class LucidBannerState: ObservableObject {
     @Published var title: String
     @Published var subtitle: String?
     @Published var textColor: UIColor
-    @Published var image: UIImage?
+    @Published var systemImage: String?
     @Published var imageColor: UIColor
     @Published var progress: Double?
     @Published var progressColor: UIColor
@@ -561,14 +564,14 @@ internal final class LucidBannerState: ObservableObject {
     init(title: String,
          subtitle: String? = nil,
          textColor: UIColor,
-         image: UIImage? = nil,
+         systemImage: String? = nil,
          imageColor: UIColor,
          progress: Double? = nil,
          progressColor: UIColor) {
         self.title = title
         self.subtitle = (subtitle?.isEmpty == true) ? nil : subtitle
         self.textColor = textColor
-        self.image = image
+        self.systemImage = systemImage
         self.imageColor = imageColor
         self.progress = progress
         self.progressColor = progressColor

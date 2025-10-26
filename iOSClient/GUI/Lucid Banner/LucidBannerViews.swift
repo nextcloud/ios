@@ -15,15 +15,14 @@ struct ToastBannerView: View {
 
         VStack(spacing: 6) {
             HStack(alignment: .top, spacing: 10) {
-                if let image = state.image {
+                if let systemImage = state.systemImage {
                     if #available(iOS 18, *) {
-                        Image(uiImage: image)
+                        Image(systemName: systemImage)
                             .symbolEffect(.rotate, options: .repeat(.continuous))
                             .foregroundStyle(Color(uiColor: state.imageColor))
                     } else {
-                        Image(uiImage: image)
+                        Image(systemName: systemImage)
                             .foregroundStyle(Color(uiColor: state.imageColor))
-
                     }
                 }
 
@@ -96,14 +95,13 @@ struct ToastBannerView: View {
 
         ToastBannerView(
             state: LucidBannerState(
-                title: "Uploading large file…",
-                subtitle: "Please keep the app active until the process completes.",
+                title: "Downloading ...",
+                subtitle: "Keep application active until the transfers are completed …",
                 textColor: .label,
-                image: UIImage(systemName: "gearshape.arrow.triangle.2.circlepath"),
-                imageColor: .label,
-                progress: 0.45,
-                progressColor: .label
-            )
+                systemImage: "gearshape.arrow.triangle.2.circlepath",
+                imageColor: .red,
+                progress: 0.12,
+                progressColor: .systemBlue)
         )
         .padding()
     }
