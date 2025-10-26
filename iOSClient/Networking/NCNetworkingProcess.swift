@@ -6,7 +6,6 @@ import UIKit
 import NextcloudKit
 import Photos
 import RealmSwift
-import JDStatusBarNotification
 
 actor NCNetworkingProcess {
     static let shared = NCNetworkingProcess()
@@ -345,35 +344,6 @@ actor NCNetworkingProcess {
 
     // MARK: - Upload in chunk mode
 
-    /*
-     @MainActor
-     func demoHUD() async {
-         try? await Task.sleep(nanoseconds: 800_000_000)
-
-         LucidBanner.shared.isSwipeToDismissEnabled = true
-
-         let token = LucidBanner.shared.show(title: "Preparing…",
-                                             subtitle: "and starttt",
-                                             textColor: .label,
-                                             systemImage: "gearshape.arrow.triangle.2.circlepath",
-                                             imageColor: .red,
-                                             imageAnimation: .rotate,
-                                             progressColor: NCBrandColor.shared.customer) { state in
-             ToastBannerView(state: state)
-         }
-
-         Task {
-             for i in 0...100 {
-                 try? await Task.sleep(nanoseconds: 40_000_000)
-                 LucidBanner.shared.update(progress: Double(i) / 100.0, for: token)
-             }
-             LucidBanner.shared.update(title: "Done", subtitle: "Keep app active, Keep app active, Keep app active Keep app active Keep app active Keep app active", progress: 0, for: token)
-             try? await Task.sleep(nanoseconds: 3_000_000_000)
-             LucidBanner.shared.dismiss(for: token)
-         }
-     }
-
-     */
     @MainActor
     func uploadChunk(metadata: tableMetadata) async {
         var numChunks = 0
@@ -385,7 +355,8 @@ actor NCNetworkingProcess {
                                             systemImage: "gearshape.arrow.triangle.2.circlepath",
                                             imageColor: NCBrandColor.shared.customer,
                                             imageAnimation: .rotate,
-                                            progressColor: NCBrandColor.shared.customer) { state in
+                                            progressColor: NCBrandColor.shared.customer,
+                                            blocksTouches: true) { state in
             ToastBannerView(state: state)
         }
 

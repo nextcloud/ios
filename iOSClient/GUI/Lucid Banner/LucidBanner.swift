@@ -39,6 +39,7 @@ final class LucidBanner {
         let maxWidth: CGFloat
         let topAnchor: CGFloat
         let swipeToDismiss: Bool
+        let blocksTouches: Bool
         let viewUI: (LucidBannerState) -> AnyView
     }
 
@@ -46,7 +47,9 @@ final class LucidBanner {
     private var contentView: ((LucidBannerState) -> AnyView)?
 
     // UI
-    var window: LucidBannerPassthroughWindow?
+    private var blocksTouches: Bool = false
+    private var window: LucidBannerWindow?
+    private weak var scrimView: UIControl?
     private var hostController: UIHostingController<AnyView>?
 
     // Timers/flags
@@ -104,6 +107,7 @@ final class LucidBanner {
                              maxWidth: CGFloat = 420,
                              topAnchor: CGFloat = 10,
                              swipeToDismiss: Bool = true,
+                             blocksTouches: Bool = false,
                              @ViewBuilder content: @escaping (LucidBannerState) -> Content) -> Int {
         let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
         state.title = trimmed.isEmpty ? "" : trimmed
@@ -132,6 +136,10 @@ final class LucidBanner {
         self.maxWidth = maxWidth
         self.topAnchor = topAnchor
         self.swipeToDismiss = swipeToDismiss
+        self.blocksTouches = blocksTouches
+        if blocksTouches {
+            self.swipeToDismiss = false
+        }
 
         let hasTitle = !state.title.isEmpty
         let hasSubtitle = !(state.subtitle?.isEmpty ?? true)
@@ -164,6 +172,7 @@ final class LucidBanner {
                                          maxWidth: maxWidth,
                                          topAnchor: topAnchor,
                                          swipeToDismiss: swipeToDismiss,
+                                         blocksTouches: blocksTouches,
                                          viewUI: anyViewUI))
                 return activeToken
             case .replace:
@@ -181,6 +190,7 @@ final class LucidBanner {
                                        maxWidth: maxWidth,
                                        topAnchor: topAnchor,
                                        swipeToDismiss: swipeToDismiss,
+                                       blocksTouches: blocksTouches,
                                        viewUI: anyViewUI)
                 queue.removeAll()
                 queue.append(next)
@@ -406,63 +416,95 @@ final class LucidBanner {
             .compactMap({ $0 as? UIWindowScene })
             .first(where: { $0.activationState != .background }) else { return }
 
-        let windows = LucidBannerPassthroughWindow(windowScene: scene)
-        windows.frame = scene.screen.bounds
-        windows.windowLevel = .statusBar + 1
-        windows.backgroundColor = .clear
+        // Nuova window switchabile
+        let window = LucidBannerWindow(windowScene: scene)
+        window.frame = scene.screen.bounds
+        window.windowLevel = .statusBar + 1
+        window.backgroundColor = .clear
+        window.isPassthrough = !blocksTouches
+        window.accessibilityViewIsModal = blocksTouches
 
         // Hosting SwiftUI
         let content = contentView?(state) ?? AnyView(EmptyView())
         let host = UIHostingController(rootView: content)
         host.view.backgroundColor = .clear
-        windows.rootViewController = host
-        windows.makeKeyAndVisible()
 
-        let view = host.view!
-        view.translatesAutoresizingMaskIntoConstraints = false
+        // Root view che contiene scrim (sotto) + banner (sopra)
+        let root = UIView()
+        root.backgroundColor = .clear
+        root.translatesAutoresizingMaskIntoConstraints = false
 
+        // Scrim: trasparente ma interattivo se blocchiamo i tocchi
+        let scrim = UIControl()
+        scrim.translatesAutoresizingMaskIntoConstraints = false
+        scrim.backgroundColor = UIColor.black.withAlphaComponent(blocksTouches ? 0.08 : 0.0)
+        scrim.isUserInteractionEnabled = blocksTouches
+        // Se vuoi chiudere al tap sullo sfondo, scommenta la riga seguente:
+        // scrim.addTarget(self, action: #selector(didTapScrim), for: .touchUpInside)
+
+        // Mount gerarchia
+        window.rootViewController = UIViewController()
+        window.rootViewController?.view = root
+
+        root.addSubview(scrim)
+        root.addSubview(host.view)
+
+        // Auto Layout
+        host.view.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            view.topAnchor.constraint(equalTo: windows.safeAreaLayoutGuide.topAnchor, constant: self.topAnchor),
-            view.centerXAnchor.constraint(equalTo: windows.centerXAnchor),
-            view.heightAnchor.constraint(greaterThanOrEqualToConstant: minHeight)
+            // Scrim full-screen
+            scrim.topAnchor.constraint(equalTo: root.topAnchor),
+            scrim.leadingAnchor.constraint(equalTo: root.leadingAnchor),
+            scrim.trailingAnchor.constraint(equalTo: root.trailingAnchor),
+            scrim.bottomAnchor.constraint(equalTo: root.bottomAnchor),
+
+            // Banner
+            host.view.topAnchor.constraint(equalTo: root.safeAreaLayoutGuide.topAnchor, constant: self.topAnchor),
+            host.view.centerXAnchor.constraint(equalTo: root.centerXAnchor),
+            host.view.heightAnchor.constraint(greaterThanOrEqualToConstant: minHeight)
         ])
 
-        view.setContentHuggingPriority(.required, for: .vertical)
-        view.setContentCompressionResistancePriority(.required, for: .vertical)
-        view.setContentHuggingPriority(.required, for: .horizontal)
-        view.setContentCompressionResistancePriority(.required, for: .horizontal)
+        // Hugging/Compression per layout compatto
+        host.view.setContentHuggingPriority(.required, for: .vertical)
+        host.view.setContentCompressionResistancePriority(.required, for: .vertical)
+        host.view.setContentHuggingPriority(.required, for: .horizontal)
+        host.view.setContentCompressionResistancePriority(.required, for: .horizontal)
 
-        // Swipe-to-dismiss
-        windows.hitTargetView = view
+        // Swipe-to-dismiss sul solo banner
+        window.hitTargetView = host.view
         if self.swipeToDismiss {
             let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture(_:)))
             panGesture.cancelsTouchesInView = false
-            view.addGestureRecognizer(panGesture)
+            host.view.addGestureRecognizer(panGesture)
         }
 
-        self.window = windows
+        // Salva riferimenti
+        self.window = window
         self.hostController = host
+        self.scrimView = scrim
 
-        // Se width fissa: applica; altrimenti misura iniziale
+        // Larghezza: fissa o misurata
         if let width = fixedWidth {
-            let constraint = view.widthAnchor.constraint(equalToConstant: width)
+            let constraint = host.view.widthAnchor.constraint(equalToConstant: width)
             constraint.isActive = true
             widthConstraint = constraint
         } else {
             remeasureAndSetWidthConstraint(animated: false, force: true)
         }
 
-        windows.layoutIfNeeded()
-        view.alpha = 0
-        view.transform = CGAffineTransform(translationX: 0, y: -view.bounds.height - 60)
+        // Animazione di entrata (verticale pura)
+        window.makeKeyAndVisible()
+        window.layoutIfNeeded()
+        host.view.alpha = 0
+        host.view.transform = CGAffineTransform(translationX: 0, y: -host.view.bounds.height - 60)
 
         UIView.animate(withDuration: 0.5,
                        delay: 0,
                        usingSpringWithDamping: 0.85,
                        initialSpringVelocity: 0.5,
                        options: [.curveEaseOut, .beginFromCurrentState]) {
-            view.alpha = 1
-            view.transform = .identity
+            host.view.alpha = 1
+            host.view.transform = .identity
         } completion: { [weak self] _ in
             guard let self else { return }
             self.isAnimatingIn = false
@@ -590,10 +632,15 @@ final class LucidBanner {
 
 // MARK: - UIWindow pass-through
 
-internal final class LucidBannerPassthroughWindow: UIWindow {
+internal final class LucidBannerWindow: UIWindow {
+    var isPassthrough: Bool = true
     weak var hitTargetView: UIView?
 
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        guard isPassthrough else {
+            return super.hitTest(point, with: event)
+        }
+        // Passthrough
         guard let target = hitTargetView else { return nil }
         let p = target.convert(point, from: self)
         return target.bounds.contains(p) ? super.hitTest(point, with: event) : nil
