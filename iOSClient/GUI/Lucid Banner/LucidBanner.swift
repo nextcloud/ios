@@ -40,10 +40,12 @@ final class LucidBanner {
         let topAnchor: CGFloat
         let swipeToDismiss: Bool
         let blocksTouches: Bool
+        let onTap: (() -> Void)?
         let viewUI: (LucidBannerState) -> AnyView
     }
 
-    // View (type-erased)
+    //
+    private var onTap: (() -> Void)?   // 👈 handler attivo
     private var contentView: ((LucidBannerState) -> AnyView)?
 
     // UI
@@ -108,6 +110,7 @@ final class LucidBanner {
                              topAnchor: CGFloat = 10,
                              swipeToDismiss: Bool = true,
                              blocksTouches: Bool = false,
+                             onTap: (() -> Void)? = nil,
                              @ViewBuilder content: @escaping (LucidBannerState) -> Content) -> Int {
         let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
         state.title = trimmed.isEmpty ? "" : trimmed
@@ -140,6 +143,7 @@ final class LucidBanner {
         if blocksTouches {
             self.swipeToDismiss = false
         }
+        self.onTap = onTap
 
         let hasTitle = !state.title.isEmpty
         let hasSubtitle = !(state.subtitle?.isEmpty ?? true)
@@ -173,6 +177,7 @@ final class LucidBanner {
                                          topAnchor: topAnchor,
                                          swipeToDismiss: swipeToDismiss,
                                          blocksTouches: blocksTouches,
+                                         onTap: onTap,
                                          viewUI: anyViewUI))
                 return activeToken
             case .replace:
@@ -191,6 +196,7 @@ final class LucidBanner {
                                        topAnchor: topAnchor,
                                        swipeToDismiss: swipeToDismiss,
                                        blocksTouches: blocksTouches,
+                                       onTap: onTap,
                                        viewUI: anyViewUI)
                 queue.removeAll()
                 queue.append(next)
@@ -404,6 +410,8 @@ final class LucidBanner {
         maxWidth = next.maxWidth
         topAnchor = next.topAnchor
         swipeToDismiss = next.swipeToDismiss
+        blocksTouches = next.blocksTouches
+        onTap = next.onTap
 
         generation &+= 1
         activeToken = generation
@@ -439,8 +447,7 @@ final class LucidBanner {
         scrim.translatesAutoresizingMaskIntoConstraints = false
         scrim.backgroundColor = UIColor.black.withAlphaComponent(blocksTouches ? 0.08 : 0.0)
         scrim.isUserInteractionEnabled = blocksTouches
-        // Se vuoi chiudere al tap sullo sfondo, scommenta la riga seguente:
-        // scrim.addTarget(self, action: #selector(didTapScrim), for: .touchUpInside)
+        // scrim.addTarget(self, action: #selector(didTapScrim), for: .touchUpInside) // opzionale
 
         // Mount gerarchia
         window.rootViewController = UIViewController()
@@ -472,11 +479,24 @@ final class LucidBanner {
 
         // Swipe-to-dismiss sul solo banner
         window.hitTargetView = host.view
+        var panGesture: UIPanGestureRecognizer?
         if self.swipeToDismiss {
-            let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture(_:)))
-            panGesture.cancelsTouchesInView = false
-            host.view.addGestureRecognizer(panGesture)
+            let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture(_:)))
+            pan.cancelsTouchesInView = false
+            host.view.addGestureRecognizer(pan)
+            panGesture = pan
         }
+
+        // TAP sul banner (sempre attivo, indipendente da blocksTouches)
+        let tap = UITapGestureRecognizer(target: self, action: #selector(handleBannerTap))
+        tap.cancelsTouchesInView = false
+        if let panGesture { tap.require(toFail: panGesture) } // il pan ha priorità se parte uno swipe
+        host.view.addGestureRecognizer(tap)
+
+        // Accessibilità: il banner è “toccabile”
+        host.view.isAccessibilityElement = true
+        host.view.accessibilityTraits.insert(.button)
+        host.view.accessibilityLabel = state.title.isEmpty ? "Banner" : state.title
 
         // Salva riferimenti
         self.window = window
@@ -627,6 +647,10 @@ final class LucidBanner {
         default:
             break
         }
+    }
+
+    @objc private func handleBannerTap() {
+        onTap?()
     }
 }
 
