@@ -19,10 +19,11 @@ struct ToastBannerView: View {
                     if #available(iOS 18, *) {
                         Image(systemName: systemImage)
                             .symbolRenderingMode(.monochrome)
-                            .symbolEffect(.rotate, options: .repeat(.continuous))
+                            .applyBannerAnimation(state.imageAnimation)
                             .font(.system(size: 20, weight: .regular))
                             .frame(width: 22, height: 22)
                             .foregroundStyle(Color(uiColor: state.imageColor))
+
                     } else {
                         Image(systemName: systemImage)
                             .foregroundStyle(Color(uiColor: state.imageColor))
@@ -86,7 +87,32 @@ struct ToastBannerView: View {
     }
 }
 
+private extension View {
+    @ViewBuilder
+    func applyBannerAnimation(_ style: LucidBanner.LucidBannerAnimationStyle) -> some View {
+        if #available(iOS 18, *) {
+            switch style {
+            case .rotate:
+                self.symbolEffect(.rotate, options: .repeat(.continuous))
+            case .pulse:
+                self.symbolEffect(.pulse, options: .repeat(.continuous))
+            case .bounce:
+                self.symbolEffect(.bounce, options: .repeat(.continuous))
+            case .wiggle:
+                self.symbolEffect(.wiggle, options: .repeat(.continuous))
+            case .scale:
+                self.symbolEffect(.scale, options: .repeat(.continuous))
+            case .none:
+                self
+            }
+        } else {
+            self
+        }
+    }
+}
+
 // MARK: - Preview
+
 #Preview {
     ZStack {
         LinearGradient(
@@ -103,6 +129,7 @@ struct ToastBannerView: View {
                 textColor: .label,
                 systemImage: "gearshape.arrow.triangle.2.circlepath",
                 imageColor: .red,
+                imageAnimation: .wiggle,
                 progress: 0.12,
                 progressColor: .systemBlue)
         )

@@ -13,12 +13,22 @@ final class LucidBanner {
         case replace, enqueue, drop
     }
 
+    enum LucidBannerAnimationStyle {
+        case none
+        case rotate
+        case pulse
+        case bounce
+        case wiggle
+        case scale
+    }
+
     private struct PendingShow {
         let title: String
         let subtitle: String?
         let textColor: UIColor
         let systemImage: String?
         let imageColor: UIColor
+        let imageAnimation: LucidBannerAnimationStyle
         let progress: Double?
         let progressColor: UIColor
         let autoDismissAfter: TimeInterval
@@ -60,6 +70,7 @@ final class LucidBanner {
                                  textColor: .label,
                                  systemImage: nil,
                                  imageColor: .label,
+                                 imageAnimation: .none,
                                  progress: nil,
                                  progressColor: .label)
 
@@ -80,6 +91,7 @@ final class LucidBanner {
                              textColor: UIColor = .label,
                              systemImage: String? = nil,
                              imageColor: UIColor = .label,
+                             imageAnimation: LucidBannerAnimationStyle = .none,
                              progress: Double? = nil,
                              progressColor: UIColor = .label,
                              autoDismissAfter: TimeInterval = 0,
@@ -101,6 +113,7 @@ final class LucidBanner {
 
         state.systemImage = systemImage
         state.imageColor = imageColor
+        state.imageAnimation = imageAnimation
 
         if let progress = progress, progress > 0 {
             state.progress = progress
@@ -137,6 +150,7 @@ final class LucidBanner {
                                          textColor: textColor,
                                          systemImage: systemImage,
                                          imageColor: imageColor,
+                                         imageAnimation: imageAnimation,
                                          progress: state.progress,
                                          progressColor: progressColor,
                                          autoDismissAfter: autoDismissAfter,
@@ -152,6 +166,7 @@ final class LucidBanner {
                                        textColor: textColor,
                                        systemImage: systemImage,
                                        imageColor: imageColor,
+                                       imageAnimation: imageAnimation,
                                        progress: state.progress,
                                        progressColor: progressColor,
                                        autoDismissAfter: autoDismissAfter,
@@ -341,20 +356,21 @@ final class LucidBanner {
         let next = queue.removeFirst()
 
         // State
-        state.title        = next.title
-        state.subtitle     = next.subtitle
-        state.progress     = next.progress
-        state.textColor    = next.textColor
-        state.systemImage  = next.systemImage
-        state.imageColor   = next.imageColor
+        state.title = next.title
+        state.subtitle = next.subtitle
+        state.progress = next.progress
+        state.textColor = next.textColor
+        state.systemImage = next.systemImage
+        state.imageColor = next.imageColor
+        state.imageAnimation = next.imageAnimation
         state.progressColor = next.progressColor
 
         // Presentation
         autoDismissAfter = next.autoDismissAfter
-        fixedWidth       = next.fixedWidth
-        minWidth         = next.minWidth
-        maxWidth         = next.maxWidth
-        topAnchor        = next.topAnchor
+        fixedWidth = next.fixedWidth
+        minWidth = next.minWidth
+        maxWidth = next.maxWidth
+        topAnchor = next.topAnchor
 
         generation &+= 1
         activeToken = generation
@@ -568,10 +584,14 @@ internal final class LucidBannerState: ObservableObject {
     @Published var title: String
     @Published var subtitle: String?
     @Published var textColor: UIColor
+
     @Published var systemImage: String?
     @Published var imageColor: UIColor
+    @Published var imageAnimation: LucidBanner.LucidBannerAnimationStyle
+
     @Published var progress: Double?
     @Published var progressColor: UIColor
+
     @Published var flags: [String: Any] = [:]
 
     init(title: String,
@@ -579,6 +599,7 @@ internal final class LucidBannerState: ObservableObject {
          textColor: UIColor,
          systemImage: String? = nil,
          imageColor: UIColor,
+         imageAnimation: LucidBanner.LucidBannerAnimationStyle,
          progress: Double? = nil,
          progressColor: UIColor) {
         self.title = title
@@ -586,6 +607,7 @@ internal final class LucidBannerState: ObservableObject {
         self.textColor = textColor
         self.systemImage = systemImage
         self.imageColor = imageColor
+        self.imageAnimation = imageAnimation
         self.progress = progress
         self.progressColor = progressColor
     }
