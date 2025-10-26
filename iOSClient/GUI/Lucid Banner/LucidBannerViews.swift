@@ -13,47 +13,38 @@ struct ToastBannerView: View {
         let showProgress = (state.progress ?? 0) > 0
         let measuring = (state.flags["measuring"] as? Bool) ?? false
 
-        VStack(spacing: 6) {
-            HStack(alignment: .top, spacing: 10) {
+        VStack(spacing: 10) {
+            HStack(alignment: .top, spacing:10) {
                 if let systemImage = state.systemImage {
-                    if #available(iOS 18, *) {
-                        Image(systemName: systemImage)
-                            .symbolRenderingMode(.monochrome)
-                            .applyBannerAnimation(state.imageAnimation)
-                            .font(.system(size: 20, weight: .regular))
-                            .frame(width: 22, height: 22)
-                            .foregroundStyle(Color(uiColor: state.imageColor))
-
-                    } else {
-                        Image(systemName: systemImage)
-                            .foregroundStyle(Color(uiColor: state.imageColor))
-                    }
+                    Image(systemName: systemImage)
+                        .symbolRenderingMode(.monochrome)
+                        .applyBannerAnimation(state.imageAnimation)
+                        .font(.system(size: 20, weight: .regular))
+                        .frame(width: 22, height: 22, alignment: .topLeading)
+                        .foregroundStyle(Color(uiColor: state.imageColor))
                 }
 
-                if showTitle || showSubtitle {
-                    VStack(alignment: .leading, spacing: 4) {
-                        if showTitle {
-                            Text(state.title)
-                                .font(.subheadline.weight(.bold))
-                                .multilineTextAlignment(.leading)
-                                .lineLimit(2)
-                                .truncationMode(.tail)
-                                .minimumScaleFactor(0.9)
-                                .fixedSize(horizontal: false, vertical: true)
-                                .foregroundStyle(Color(uiColor: state.textColor))
-                        }
-                        if showSubtitle, let s = state.subtitle {
-                            Text(s)
-                                .font(.caption)
-                                .multilineTextAlignment(.leading)
-                                .lineLimit(3)
-                                .truncationMode(.tail)
-                                .fixedSize(horizontal: false, vertical: true)
-                                .foregroundStyle(Color(uiColor: state.textColor))
-                        }
+                VStack(alignment: .leading, spacing: 5) {
+                    if showTitle {
+                        Text(state.title)
+                            .font(.subheadline.weight(.bold))
+                            .multilineTextAlignment(.leading)
+                            .lineLimit(2)
+                            .truncationMode(.tail)
+                            .minimumScaleFactor(0.9)
+                            .foregroundStyle(Color(uiColor: state.textColor))
+                    }
+                    if showSubtitle, let s = state.subtitle {
+                        Text(s)
+                            .font(.caption)
+                            .multilineTextAlignment(.leading)
+                            .lineLimit(3)
+                            .truncationMode(.tail)
+                            .foregroundStyle(Color(uiColor: state.textColor))
                     }
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .topLeading)
 
             if showProgress && !measuring {
                 ProgressView(value: min(state.progress ?? 0, 1))
@@ -63,8 +54,8 @@ struct ToastBannerView: View {
                     .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 12)
         .background(
             ZStack {
                 RoundedRectangle(cornerRadius: 22, style: .continuous)
@@ -82,7 +73,7 @@ struct ToastBannerView: View {
             RoundedRectangle(cornerRadius: 22, style: .continuous)
                 .stroke(.white.opacity(0.9), lineWidth: 0.6)
         )
-        .shadow(color: .black.opacity(0.4), radius: 10, x: 0, y: 4)
+        .shadow(color: .black.opacity(0.5), radius: 10, x: 0, y: 4)
         .frame(minHeight: 44, alignment: .leading)
     }
 }
@@ -129,7 +120,7 @@ private extension View {
                 textColor: .label,
                 systemImage: "gearshape.arrow.triangle.2.circlepath",
                 imageColor: .red,
-                imageAnimation: .wiggle,
+                imageAnimation: .rotate,
                 progress: 0.12,
                 progressColor: .systemBlue)
         )
