@@ -19,6 +19,9 @@ final class LucidBanner {
         let progress: Double?
         let autoDismissAfter: TimeInterval
         let fixedWidth: CGFloat?
+        let minWidth: CGFloat
+        let maxWidth: CGFloat
+        let topAnchor: CGFloat
         let viewUI: (LucidBannerState) -> AnyView
     }
 
@@ -39,10 +42,11 @@ final class LucidBanner {
     // Size
     private var widthConstraint: NSLayoutConstraint?
     private var heightConstraint: NSLayoutConstraint?
-    private let minWidth: CGFloat = 220
-    private let maxWidthCapDefault: CGFloat = 420   // iPad ?
+    private var minWidth: CGFloat = 220
+    private var maxWidth: CGFloat = 420
     private let minHeight: CGFloat = 44
     private var fixedWidth: CGFloat?
+    private var topAnchor: CGFloat = 10
 
     // Queue & policy
     private var queue: [PendingShow] = []
@@ -67,6 +71,9 @@ final class LucidBanner {
                              autoDismissAfter: TimeInterval = 0,
                              policy: ShowPolicy = .enqueue,
                              fixedWidth: CGFloat? = nil,
+                             minWidth: CGFloat = 220,
+                             maxWidth: CGFloat = 420,
+                             topAnchor: CGFloat = 10,
                              @ViewBuilder content: @escaping (LucidBannerState) -> Content) -> Int {
         let title = title.trimmingCharacters(in: .whitespacesAndNewlines)
         state.title = title.isEmpty ? "" : title
@@ -85,6 +92,9 @@ final class LucidBanner {
 
         self.autoDismissAfter = autoDismissAfter
         self.fixedWidth = fixedWidth
+        self.minWidth = minWidth
+        self.maxWidth = maxWidth
+        self.topAnchor = topAnchor
 
         let hasTitle = !state.title.isEmpty
         let hasSubtitle = !(state.subtitle?.isEmpty ?? true)
@@ -108,6 +118,9 @@ final class LucidBanner {
                                          progress: state.progress,
                                          autoDismissAfter: autoDismissAfter,
                                          fixedWidth: fixedWidth,
+                                         minWidth: minWidth,
+                                         maxWidth: maxWidth,
+                                         topAnchor: topAnchor,
                                          viewUI: anyViewUI))
                 return activeToken
             case .replace:
@@ -116,6 +129,9 @@ final class LucidBanner {
                                        progress: state.progress,
                                        autoDismissAfter: autoDismissAfter,
                                        fixedWidth: fixedWidth,
+                                       minWidth: minWidth,
+                                       maxWidth: maxWidth,
+                                       topAnchor: topAnchor,
                                        viewUI: anyViewUI)
                 queue.removeAll()
                 queue.append(next)
@@ -157,8 +173,8 @@ final class LucidBanner {
     // MARK: - UPDATE
 
     func update(title: String? = nil, subtitle: String? = nil, progress: Double? = nil, for token: Int? = nil) {
-        // token non valido o window assente → ignora
-        if let token, token != activeToken {
+        if let token,
+           token != activeToken {
             return
         }
         guard window != nil else {
@@ -227,7 +243,7 @@ final class LucidBanner {
         }
     }
 
-    // MARK: - REPLACE CONTENT (swap mantenendo lo stato)
+    // MARK: - REPLACE CONTENT
 
     func replaceContent<Content: View>(
         @ViewBuilder _ viewUI: @escaping (LucidBannerState) -> Content) {
@@ -328,7 +344,7 @@ final class LucidBanner {
         view.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            view.topAnchor.constraint(equalTo: windows.safeAreaLayoutGuide.topAnchor, constant: 10),
+            view.topAnchor.constraint(equalTo: windows.safeAreaLayoutGuide.topAnchor, constant: self.topAnchor),
             view.centerXAnchor.constraint(equalTo: windows.centerXAnchor),
             view.heightAnchor.constraint(greaterThanOrEqualToConstant: minHeight)
         ])
@@ -341,9 +357,9 @@ final class LucidBanner {
         // Swipe-to-dismiss
         windows.hitTargetView = view
         if isSwipeToDismissEnabled {
-            let pan = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
-            pan.cancelsTouchesInView = false
-            view.addGestureRecognizer(pan)
+            let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture(_:)))
+            panGesture.cancelsTouchesInView = false
+            view.addGestureRecognizer(panGesture)
         }
 
         self.window = windows
@@ -412,23 +428,25 @@ final class LucidBanner {
         host.view.setNeedsLayout()
         host.view.layoutIfNeeded()
 
-        let cap = min(window.bounds.width - 24, maxWidthCapDefault)
+        let width = min(window.bounds.width - 24, maxWidth)
         let fitting = host.sizeThatFits(
-            in: CGSize(width: cap, height: UIView.layoutFittingCompressedSize.height)
+            in: CGSize(width: width, height: UIView.layoutFittingCompressedSize.height)
         )
-        let target = min(max(fitting.width, minWidth), cap)
+        let target = min(max(fitting.width, minWidth), width)
 
         state.flags["measuring"] = false
 
-        if let wc = widthConstraint {
-            // Auto-mode: consenti SOLO crescita (niente shrink live)
-            let newWidth = max(target, wc.constant)
-            guard abs(wc.constant - newWidth) > 0.5 else { return }
-            wc.constant = newWidth
+        if let widthConstraint {
+            // Auto-mode
+            let newWidth = max(target, widthConstraint.constant)
+            guard abs(widthConstraint.constant - newWidth) > 0.5 else {
+                return
+            }
+            widthConstraint.constant = newWidth
         } else {
-            let wc = host.view.widthAnchor.constraint(equalToConstant: target)
-            wc.isActive = true
-            widthConstraint = wc
+            let widthConstraint = host.view.widthAnchor.constraint(equalToConstant: target)
+            widthConstraint.isActive = true
+            self.widthConstraint = widthConstraint
         }
 
         if animated {
@@ -455,7 +473,7 @@ final class LucidBanner {
     }
 
     // Swipe-up (transform-based)
-    @objc private func handlePan(_ gesture: UIPanGestureRecognizer) {
+    @objc private func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
         guard let view = hostController?.view else {
             return
         }
@@ -500,6 +518,7 @@ internal final class LucidBannerPassthroughWindow: UIWindow {
 }
 
 // MARK: - Stato osservabile condiviso
+
 @MainActor
 internal final class LucidBannerState: ObservableObject {
     @Published var title: String
