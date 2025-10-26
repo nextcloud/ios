@@ -19,10 +19,9 @@ internal final class LucidBannerState: ObservableObject {
     @Published var progress: Double?
     @Published var progressColor: UIColor
 
-    // 👉 Stage corrente (es. "uploading", "processing", "done", "error", …)
     @Published var stage: String?
 
-    // flag interni (es. "measuring")
+    // flag internal (ex. "measuring")
     @Published var flags: [String: Any] = [:]
 
     init(title: String,
@@ -47,6 +46,7 @@ internal final class LucidBannerState: ObservableObject {
 }
 
 // MARK: - Finestra (toggle: passthrough / blocco tocchi)
+@MainActor
 internal final class LucidBannerWindow: UIWindow {
     var isPassthrough: Bool = true
     weak var hitTargetView: UIView?
@@ -366,9 +366,6 @@ final class LucidBanner {
     func dismiss(completion: (() -> Void)? = nil) {
         dismissTimer?.cancel(); dismissTimer = nil
 
-        generation &+= 1
-        activeToken = generation
-
         guard let window, let hostView = hostController?.view else {
             hostController = nil; self.window?.isHidden = true; self.window = nil
             widthConstraint = nil; heightConstraint = nil
@@ -629,123 +626,3 @@ final class LucidBanner {
         onTapWithContext?(activeToken, revisionForVisible, state.stage)
     }
 }
-
-/*
-// MARK: - View di esempio: legge `state.stage` per personalizzare UI
-struct ToastBannerView: View {
-    @ObservedObject var state: LucidBannerState
-
-    var body: some View {
-        let showTitle = !state.title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        let showSubtitle = !(state.subtitle?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
-        let showProgress = (state.progress ?? 0) > 0
-        let measuring = (state.flags["measuring"] as? Bool) ?? false
-
-        // Esempio: reagisci allo stage
-        let accent = color(for: state.stage) // dipende dallo stage
-
-        VStack(spacing: 6) {
-            HStack(alignment: .top, spacing: 8) {
-                if let systemImage = state.systemImage {
-                    if #available(iOS 18, *) {
-                        Image(systemName: systemImage)
-                            .symbolRenderingMode(.monochrome)
-                            .applyBannerAnimation(state.imageAnimation)
-                            .font(.system(size: 20, weight: .regular))
-                            .frame(width: 22, height: 22, alignment: .topLeading)
-                            .foregroundStyle(Color(uiColor: state.imageColor))
-                    } else {
-                        Image(systemName: systemImage)
-                            .font(.system(size: 20, weight: .regular))
-                            .frame(width: 22, height: 22, alignment: .topLeading)
-                            .foregroundStyle(Color(uiColor: state.imageColor))
-                    }
-                }
-
-                if showTitle || showSubtitle {
-                    VStack(alignment: .leading, spacing: 4) {
-                        if showTitle {
-                            Text(state.title)
-                                .font(.subheadline.weight(.bold))
-                                .multilineTextAlignment(.leading)
-                                .lineLimit(2)
-                                .truncationMode(.tail)
-                                .minimumScaleFactor(0.9)
-                                .fixedSize(horizontal: false, vertical: true)
-                                .foregroundStyle(Color(uiColor: state.textColor))
-                        }
-                        if showSubtitle, let s = state.subtitle {
-                            Text(s)
-                                .font(.caption)
-                                .multilineTextAlignment(.leading)
-                                .lineLimit(3)
-                                .truncationMode(.tail)
-                                .fixedSize(horizontal: false, vertical: true)
-                                .foregroundStyle(Color(uiColor: state.textColor))
-                        }
-                    }
-                }
-            }
-
-            if showProgress && !measuring {
-                ProgressView(value: min(state.progress ?? 0, 1))
-                    .progressViewStyle(.linear)
-                    .tint(Color(uiColor: state.progressColor))
-                    .scaleEffect(x: 1, y: 0.8, anchor: .center)
-                    .transition(.opacity.combined(with: .move(edge: .top)))
-            }
-        }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
-        .background(
-            ZStack {
-                RoundedRectangle(cornerRadius: 22, style: .continuous)
-                    .fill(.ultraThinMaterial)
-                    .blendMode(.plusLighter)
-                // bordo luminoso che varia con lo stage (accent)
-                RoundedRectangle(cornerRadius: 22, style: .continuous)
-                    .stroke(accent.opacity(0.9), lineWidth: 0.7)
-            }
-            .compositingGroup()
-        )
-        .shadow(color: .black.opacity(0.25), radius: 10, x: 0, y: 4)
-        .frame(minHeight: 44, alignment: .leading)
-    }
-
-    private func color(for stage: String?) -> Color {
-        switch stage {
-        case "uploading":  return .blue
-        case "processing": return .orange
-        case "done":       return .green
-        case "error":      return .red
-        default:           return .white
-        }
-    }
-}
-
-// MARK: - Helper animazioni simboli (iOS 18+)
-@available(iOS 18.0, *)
-private extension View {
-    @ViewBuilder
-    func applyBannerAnimation(_ style: LucidBanner.LucidBannerAnimationStyle) -> some View {
-        switch style {
-        case .none:
-            self
-        case .rotate:
-            self.symbolEffect(.rotate, options: .repeat(.continuous))
-        case .pulse:
-            self.symbolEffect(.pulse, options: .repeat(.continuous))
-        case .pulsebyLayer:
-            self.symbolEffect(.pulse.byLayer, options: .repeat(.continuous))
-        case .breathe:
-            self.symbolEffect(.breathe, options: .repeat(.continuous))
-        case .bounce:
-            self.symbolEffect(.bounce, options: .repeat(.continuous))
-        case .wiggle:
-            self.symbolEffect(.wiggle, options: .repeat(.continuous))
-        case .scale:
-            self.symbolEffect(.scale, options: .repeat(.continuous))
-        }
-    }
-}
-*/

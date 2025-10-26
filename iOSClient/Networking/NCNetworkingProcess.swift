@@ -6,6 +6,7 @@ import UIKit
 import NextcloudKit
 import Photos
 import RealmSwift
+import Alamofire
 
 actor NCNetworkingProcess {
     static let shared = NCNetworkingProcess()
@@ -348,6 +349,8 @@ actor NCNetworkingProcess {
     func uploadChunk(metadata: tableMetadata) async {
         var numChunks = 0
         var countUpload: Int = 0
+        var urlRequest: UploadRequest?
+        var sessionTask: URLSessionTask?
 
         let token = LucidBanner.shared.show(
             title: NSLocalizedString("_wait_file_preparation_", comment: ""),
@@ -359,7 +362,7 @@ actor NCNetworkingProcess {
             progressColor: NCBrandColor.shared.customer,
             blocksTouches: false,
             onTapWithContext: { token, revision, stage in
-                print("tap on banner")
+                print("AAA  \(token), \(revision) \(stage)")
             }) { state in
                 ToastBannerView(state: state)
             }
@@ -367,46 +370,51 @@ actor NCNetworkingProcess {
         await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
             numChunks = num
         } counterChunk: { counter in
-            Task { @MainActor in
+            Task {@MainActor in
                 let progress = Double(counter) / Double(numChunks)
                 LucidBanner.shared.update(
                     progress: progress,
-                    onTapWithContext: { token, revision, stage in
-
-                }, for: token)
+                    stage: "counterChunk",
+                    for: token)
             }
         } startFilesChunk: { _ in
-            Task {
+            Task {@MainActor in
                 LucidBanner.shared.update(
                     title: NSLocalizedString("_keep_active_for_upload_", comment: ""),
                     systemImage: "arrowshape.up.circle",
                     imageAnimation: .breathe,
                     progress: 0,
-                    onTapWithContext: { token, revision, stage in
-
-                }, for: token)
+                    stage: "startFilesChunk",
+                    for: token)
             }
-        } requestHandler: { _ in
-            Task {
+        } requestHandler: { request in
+            Task {@MainActor in
                 let progress = Double(countUpload) / Double(numChunks)
-                LucidBanner.shared.update(
-                    progress: progress,
-                    onTapWithContext: { token, revision, stage in
-
-                }, for: token)
+                LucidBanner.shared.update(progress: progress,
+                                          stage: "requestHandler",
+                                          for: token)
+                urlRequest = request
                 countUpload += 1
             }
-        } assembling: {
-            Task {
-                LucidBanner.shared.update(title: NSLocalizedString("_wait_", comment: ""),
-                                          systemImage: "tray.and.arrow.down",
-                                          imageAnimation: .pulsebyLayer,
-                                          progress: 0,
+        } taskHandler: { task in
+            Task {@MainActor in
+                LucidBanner.shared.update(stage: "requestHandler",
                                           for: token)
+                sessionTask = task
+            }
+        } assembling: {
+            Task {@MainActor in
+                LucidBanner.shared.update(
+                    title: NSLocalizedString("_wait_", comment: ""),
+                    systemImage: "tray.and.arrow.down",
+                    imageAnimation: .pulsebyLayer,
+                    progress: 0,
+                    stage: "assembling",
+                    for: token)
             }
         }
 
-        Task {
+        Task {@MainActor in
             LucidBanner.shared.dismiss(for: token)
         }
 
