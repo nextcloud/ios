@@ -237,7 +237,8 @@ final class LucidBanner {
             heightConstraint = nil
         }
 
-        if animated { UIView.animate(withDuration: 0.2) {window.layoutIfNeeded() }
+        if animated {
+            UIView.animate(withDuration: 0.2) {window.layoutIfNeeded() }
         } else {
             window.layoutIfNeeded()
         }
@@ -378,7 +379,7 @@ final class LucidBanner {
         view.alpha = 0
         view.transform = CGAffineTransform(translationX: 0, y: -view.bounds.height - 60)
 
-        UIView.animate(withDuration: 0.45,
+        UIView.animate(withDuration: 0.5,
                        delay: 0,
                        usingSpringWithDamping: 0.85,
                        initialSpringVelocity: 0.5,

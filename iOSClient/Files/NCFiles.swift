@@ -144,7 +144,7 @@ class NCFiles: NCCollectionViewCommon {
                 LucidBanner.shared.update(progress: Double(i) / 100.0, for: token)
             }
             LucidBanner.shared.update(title: "Done", subtitle: "Keep app active, Keep app active, Keep app active Keep app active Keep app active Keep app active", progress: 0, for: token)
-            try? await Task.sleep(nanoseconds: 7_000_000_000)
+            try? await Task.sleep(nanoseconds: 3_000_000_000)
             LucidBanner.shared.dismiss(for: token)
         }
     }
