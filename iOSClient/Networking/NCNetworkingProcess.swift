@@ -381,7 +381,7 @@ actor NCNetworkingProcess {
 
         let token = LucidBanner.shared.show(title: NSLocalizedString("_wait_file_preparation_", comment: ""),
                                             subtitle: NSLocalizedString("_large_upload_tip_", comment: ""),
-                                            textColor: NCBrandColor.shared.customer,
+                                            textColor: .label,
                                             systemImage: "gearshape.arrow.triangle.2.circlepath",
                                             imageColor: NCBrandColor.shared.customer,
                                             imageAnimation: .rotate,
@@ -397,7 +397,7 @@ actor NCNetworkingProcess {
                 LucidBanner.shared.update(progress: progress, for: token)
             }
         } startFilesChunk: { _ in
-            Task { @MainActor in
+            Task {
                 LucidBanner.shared.update(title: NSLocalizedString("_keep_active_for_upload_", comment: ""),
                                           systemImage: "arrowshape.up.circle",
                                           imageAnimation: .breathe,
@@ -405,13 +405,13 @@ actor NCNetworkingProcess {
                                           for: token)
             }
         } requestHandler: { _ in
-            Task { @MainActor in
+            Task {
                 let progress = Double(countUpload) / Double(numChunks)
                 LucidBanner.shared.update(progress: progress, for: token)
                 countUpload += 1
             }
         } assembling: {
-            Task { @MainActor in
+            Task {
                 LucidBanner.shared.update(title: NSLocalizedString("_wait_", comment: ""),
                                           systemImage: "tray.and.arrow.down",
                                           imageAnimation: .pulsebyLayer,
@@ -420,8 +420,8 @@ actor NCNetworkingProcess {
             }
         }
 
-        Task { @MainActor in
-            NotificationPresenter.shared.dismiss()
+        Task {
+            LucidBanner.shared.dismiss(for: token)
         }
 
     }
