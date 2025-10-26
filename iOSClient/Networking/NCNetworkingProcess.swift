@@ -349,16 +349,20 @@ actor NCNetworkingProcess {
         var numChunks = 0
         var countUpload: Int = 0
 
-        let token = LucidBanner.shared.show(title: NSLocalizedString("_wait_file_preparation_", comment: ""),
-                                            subtitle: NSLocalizedString("_large_upload_tip_", comment: ""),
-                                            textColor: .label,
-                                            systemImage: "gearshape.arrow.triangle.2.circlepath",
-                                            imageColor: NCBrandColor.shared.customer,
-                                            imageAnimation: .rotate,
-                                            progressColor: NCBrandColor.shared.customer,
-                                            blocksTouches: true) { state in
-            ToastBannerView(state: state)
-        }
+        let token = LucidBanner.shared.show(
+            title: NSLocalizedString("_wait_file_preparation_", comment: ""),
+            subtitle: NSLocalizedString("_large_upload_tip_", comment: ""),
+            textColor: .label,
+            systemImage: "gearshape.arrow.triangle.2.circlepath",
+            imageColor: NCBrandColor.shared.customer,
+            imageAnimation: .rotate,
+            progressColor: NCBrandColor.shared.customer,
+            blocksTouches: false,
+            onTap: {
+                print("tap on banner")
+            }) { state in
+                ToastBannerView(state: state)
+            }
 
         await NCNetworking.shared.uploadChunkFile(metadata: metadata) { num in
             numChunks = num
