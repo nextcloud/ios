@@ -362,7 +362,7 @@ actor NCNetworkingProcess {
             progressColor: NCBrandColor.shared.customer,
             blocksTouches: false,
             onTapWithContext: { token, revision, stage in
-                print("AAA  \(token), \(revision) \(stage)")
+                print("AAA  token \(token), revision \(revision) stage \(stage)")
             }) { state in
                 ToastBannerView(state: state)
             }
