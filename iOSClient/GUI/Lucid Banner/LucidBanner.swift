@@ -17,6 +17,8 @@ final class LucidBanner {
         case none
         case rotate
         case pulse
+        case pulsebyLayer
+        case breathe
         case bounce
         case wiggle
         case scale
