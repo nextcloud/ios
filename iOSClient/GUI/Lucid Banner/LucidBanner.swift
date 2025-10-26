@@ -16,6 +16,7 @@ final class LucidBanner {
     private struct PendingShow {
         let title: String
         let subtitle: String?
+        let textColor: UIColor
         let progress: Double?
         let autoDismissAfter: TimeInterval
         let fixedWidth: CGFloat?
@@ -67,6 +68,7 @@ final class LucidBanner {
     @discardableResult
     func show<Content: View>(title: String,
                              subtitle: String? = nil,
+                             textColor: UIColor = .label,
                              progress: Double? = nil,
                              autoDismissAfter: TimeInterval = 0,
                              policy: ShowPolicy = .enqueue,
@@ -77,6 +79,7 @@ final class LucidBanner {
                              @ViewBuilder content: @escaping (LucidBannerState) -> Content) -> Int {
         let title = title.trimmingCharacters(in: .whitespacesAndNewlines)
         state.title = title.isEmpty ? "" : title
+        state.textColor = textColor
 
         if let subtitle = subtitle?.trimmingCharacters(in: .whitespacesAndNewlines), !subtitle.isEmpty {
             state.subtitle = subtitle
@@ -115,6 +118,7 @@ final class LucidBanner {
             case .enqueue:
                 queue.append(PendingShow(title: state.title,
                                          subtitle: state.subtitle,
+                                         textColor: textColor,
                                          progress: state.progress,
                                          autoDismissAfter: autoDismissAfter,
                                          fixedWidth: fixedWidth,
@@ -126,6 +130,7 @@ final class LucidBanner {
             case .replace:
                 let next = PendingShow(title: state.title,
                                        subtitle: state.subtitle,
+                                       textColor: textColor,
                                        progress: state.progress,
                                        autoDismissAfter: autoDismissAfter,
                                        fixedWidth: fixedWidth,
@@ -526,10 +531,12 @@ internal final class LucidBannerState: ObservableObject {
     @Published var subtitle: String?
     @Published var progress: Double?
     @Published var flags: [String: Any] = [:]
+    @Published var textColor: UIColor
 
-    init(title: String, subtitle: String? = nil, progress: Double? = nil) {
+    init(title: String, subtitle: String? = nil, textColor: UIColor = .label ,progress: Double? = nil) {
         self.title = title
         self.subtitle = (subtitle?.isEmpty == true) ? nil : subtitle
+        self.textColor = textColor
         self.progress = progress
     }
 }

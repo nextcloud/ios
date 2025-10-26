@@ -134,7 +134,9 @@ class NCFiles: NCCollectionViewCommon {
 
         LucidBanner.shared.isSwipeToDismissEnabled = true
 
-        let token = LucidBanner.shared.show(title: "Preparing…", subtitle: "and starttt") { state in
+        let token = LucidBanner.shared.show(title: "Preparing…",
+                                            subtitle: "and starttt",
+                                            textColor: NCBrandColor.shared.customer) { state in
             ToastBannerView(state: state)
         }
 
