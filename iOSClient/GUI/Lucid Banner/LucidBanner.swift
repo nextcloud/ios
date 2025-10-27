@@ -5,7 +5,6 @@
 import SwiftUI
 import UIKit
 
-// MARK: - Stato osservabile condiviso (usato dalle view SwiftUI)
 @MainActor
 internal final class LucidBannerState: ObservableObject {
     @Published var title: String
@@ -45,7 +44,7 @@ internal final class LucidBannerState: ObservableObject {
     }
 }
 
-// MARK: - Finestra (toggle: passthrough / blocco tocchi)
+// MARK: - Window
 @MainActor
 internal final class LucidBannerWindow: UIWindow {
     var isPassthrough: Bool = true
@@ -93,10 +92,9 @@ final class LucidBanner {
         let viewUI: (LucidBannerState) -> AnyView
     }
 
-    // View factory type-erased
+    // View factory
     private var contentView: ((LucidBannerState) -> AnyView)?
 
-    // UI
     private var blocksTouches = false
     private var window: LucidBannerWindow?
     private weak var scrimView: UIControl?
@@ -121,7 +119,7 @@ final class LucidBanner {
     // Queue
     private var queue: [PendingShow] = []
 
-    // Stato condiviso
+    // Shared state
     let state = LucidBannerState(title: "",
                                  subtitle: nil,
                                  textColor: .label,
@@ -132,11 +130,11 @@ final class LucidBanner {
                                  progressColor: .label,
                                  stage: nil)
 
-    // Config dinamica
+    // Config
     private var swipeToDismiss = true
     private var autoDismissAfter: TimeInterval = 0
 
-    // Token/revision per tap contestualizzati
+    // Token/revision
     private var generation: Int = 0
     private var activeToken: Int = 0
     private var revisionForVisible: Int = 0
@@ -165,8 +163,6 @@ final class LucidBanner {
                              blocksTouches: Bool = false,
                              onTapWithContext: ((_ token: Int, _ revision: Int, _ stage: String?) -> Void)? = nil,
                              @ViewBuilder content: @escaping (LucidBannerState) -> Content) -> Int {
-
-        // Normalizzazione stato iniziale
         let trimmed = title.trimmingCharacters(in: .whitespacesAndNewlines)
         state.title = trimmed.isEmpty ? "" : trimmed
         state.textColor = textColor
@@ -185,7 +181,6 @@ final class LucidBanner {
         if let p = progress, p > 0 { state.progress = p } else { state.progress = nil }
         state.progressColor = progressColor
 
-        // Presentazione
         self.autoDismissAfter = autoDismissAfter
         self.fixedWidth = fixedWidth
         self.minWidth = minWidth
@@ -203,11 +198,9 @@ final class LucidBanner {
             return activeToken
         }
 
-        // Builder type-erased
         let currentState = self.state
         let anyViewUI: (LucidBannerState) -> AnyView = { _ in AnyView(content(currentState)) }
 
-        // Concorrenza
         if window != nil || isAnimatingIn || isDismissing {
             switch policy {
             case .drop:
@@ -253,12 +246,13 @@ final class LucidBanner {
                                        viewUI: anyViewUI)
                 queue.removeAll()
                 queue.append(next)
-                dismiss { [weak self] in self?.dequeueAndStartIfNeeded() }
+                dismiss { [weak self] in
+                    self?.dequeueAndStartIfNeeded()
+                }
                 return activeToken
             }
         }
 
-        // Nuovo token (sessione)
         generation &+= 1
         activeToken = generation
         startShow(with: anyViewUI)
@@ -283,6 +277,7 @@ final class LucidBanner {
     }
 
     // MARK: - UPDATE
+
     func update(title: String? = nil,
                 subtitle: String? = nil,
                 systemImage: String? = nil,
@@ -293,33 +288,33 @@ final class LucidBanner {
                 onTapWithContext: ((_ token: Int, _ revision: Int, _ stage: String?) -> Void)? = nil,
                 for token: Int? = nil) {
 
-        // token non valido → ignora
-        if let token, token != activeToken { return }
-        guard window != nil else { return }
-
+        if let token,
+            token != activeToken,
+            window == nil {
+            return
+        }
         let oldTitle = state.title
         let oldSub = state.subtitle
         let oldImage = state.systemImage
         let oldStage = state.stage
 
-        if let t = title {
-            let tt = t.trimmingCharacters(in: .whitespacesAndNewlines)
-            state.title = tt.isEmpty ? "" : tt
+        if let title {
+            let trim = title.trimmingCharacters(in: .whitespacesAndNewlines)
+            state.title = trim.isEmpty ? "" : trim
         }
-        if let s = subtitle {
-            let ss = s.trimmingCharacters(in: .whitespacesAndNewlines)
-            state.subtitle = ss.isEmpty ? nil : ss
+        if let subtitle {
+            let trim = subtitle.trimmingCharacters(in: .whitespacesAndNewlines)
+            state.subtitle = trim.isEmpty ? nil : trim
         }
-        if let p = progress { state.progress = (p > 0) ? p : nil }
-        if let img = systemImage { state.systemImage = img }
-        if let ic = imageColor { state.imageColor = ic }
-        if let anim = imageAnimation { state.imageAnimation = anim }
-        if let st = stage { state.stage = st }
-        if let handler = onTapWithContext { self.onTapWithContext = handler }
+        if let progress { state.progress = (progress > 0) ? progress : nil }
+        if let systemImage { state.systemImage = systemImage }
+        if let imageColor = imageColor { state.imageColor = imageColor }
+        if let imageAnimation { state.imageAnimation = imageAnimation }
+        if let stage { state.stage = stage }
+        if let onTapWithContext { self.onTapWithContext = onTapWithContext }
 
         hostController?.view.invalidateIntrinsicContentSize()
 
-        // Se cambiano testo/immagine/stage, bump della revisione e rimeasure
         let textChanged = (oldTitle != state.title) || (oldSub != state.subtitle)
         let imageChanged = (oldImage != state.systemImage)
         let stageChanged = (oldStage != state.stage)
@@ -331,47 +326,63 @@ final class LucidBanner {
     }
 
     // MARK: - SIZE
+
     func setSize(width: CGFloat?, height: CGFloat?, animated: Bool = true) {
         self.fixedWidth = width
-        guard let window, let view = hostController?.view else { return }
+        guard let window,
+              let view = hostController?.view else {
+            return
+        }
 
         if let width {
-            if let c = widthConstraint { c.constant = width }
+            if let widthConstraint {
+                widthConstraint.constant = width
+            }
             else {
-                let c = view.widthAnchor.constraint(equalToConstant: width)
-                c.isActive = true
-                widthConstraint = c
+                let constraint = view.widthAnchor.constraint(equalToConstant: width)
+                constraint.isActive = true
+                widthConstraint = constraint
             }
         } else {
             remeasureAndSetWidthConstraint(animated: animated, force: true)
         }
 
         if let height {
-            if let c = heightConstraint { c.constant = height }
-            else {
-                let c = view.heightAnchor.constraint(equalToConstant: height)
-                c.isActive = true
-                heightConstraint = c
+            if let heightConstraint {
+                heightConstraint.constant = height
+            } else {
+                let constraint = view.heightAnchor.constraint(equalToConstant: height)
+                constraint.isActive = true
+                heightConstraint = constraint
             }
         } else {
             heightConstraint?.isActive = false
             heightConstraint = nil
         }
 
-        if animated { UIView.animate(withDuration: 0.2) { window.layoutIfNeeded() } }
-        else { window.layoutIfNeeded() }
+        if animated {
+            UIView.animate(withDuration: 0.2) { window.layoutIfNeeded() }
+        } else {
+            window.layoutIfNeeded()
+        }
     }
 
     // MARK: - DISMISS
+
     func dismiss(completion: (() -> Void)? = nil) {
-        dismissTimer?.cancel(); dismissTimer = nil
+        dismissTimer?.cancel()
+        dismissTimer = nil
 
-        guard let window, let hostView = hostController?.view else {
-            hostController = nil; self.window?.isHidden = true; self.window = nil
-            widthConstraint = nil; heightConstraint = nil
-            completion?(); return
+        guard let window,
+              let hostView = hostController?.view else {
+            hostController = nil
+            self.window?.isHidden = true
+            self.window = nil
+            widthConstraint = nil
+            heightConstraint = nil
+            completion?()
+            return
         }
-
         isDismissing = true
         hostView.isUserInteractionEnabled = false
         let offsetY = -hostView.bounds.height - 60
@@ -385,6 +396,7 @@ final class LucidBanner {
             self?.window?.layoutIfNeeded()
         } completion: { [weak self] _ in
             guard let self else { return }
+
             self.hostController = nil
             window.isHidden = true
             self.window = nil
@@ -397,16 +409,24 @@ final class LucidBanner {
     }
 
     func dismiss(for token: Int, completion: (() -> Void)? = nil) {
-        guard token == activeToken else { return }
+        guard token == activeToken else {
+            return
+        }
         dismiss(completion: completion)
     }
 
-    // MARK: - Interni
+    // MARK: - Private
+
     private func dequeueAndStartIfNeeded() {
-        guard window == nil, !isAnimatingIn, !isDismissing, !queue.isEmpty else { return }
+        guard window == nil,
+              !isAnimatingIn,
+              !isDismissing,
+              !queue.isEmpty else {
+            return
+        }
         let next = queue.removeFirst()
 
-        // Stato
+        // State
         state.title = next.title
         state.subtitle = next.subtitle
         state.progress = next.progress
@@ -417,7 +437,7 @@ final class LucidBanner {
         state.progressColor = next.progressColor
         state.stage = next.stage
 
-        // Presentazione
+        // Present
         autoDismissAfter = next.autoDismissAfter
         fixedWidth = next.fixedWidth
         minWidth = next.minWidth
@@ -436,7 +456,9 @@ final class LucidBanner {
     private func attachWindowAndPresent() {
         guard let scene = UIApplication.shared.connectedScenes
             .compactMap({ $0 as? UIWindowScene })
-            .first(where: { $0.activationState != .background }) else { return }
+            .first(where: { $0.activationState != .background }) else {
+            return
+        }
 
         let window = LucidBannerWindow(windowScene: scene)
         window.frame = scene.screen.bounds
@@ -538,21 +560,32 @@ final class LucidBanner {
     }
 
     private func replaceContentInternal(remeasureWidth: Bool) {
-        guard let host = hostController else { return }
+        guard let host = hostController else {
+            return
+        }
         let newView = contentView?(state) ?? AnyView(EmptyView())
+
         host.rootView = newView
-        if remeasureWidth { remeasureAndSetWidthConstraint(animated: false, force: false) }
+        if remeasureWidth {
+            remeasureAndSetWidthConstraint(animated: false, force: false)
+        }
         window?.layoutIfNeeded()
     }
 
     private func remeasureAndSetWidthConstraint(animated: Bool, force: Bool) {
-        guard let window, let host = hostController else { return }
+        guard let window,
+              let host = hostController else {
+            return
+        }
 
         if isAnimatingIn && lockWidthUntilSettled && !force {
             pendingRelayout = true
             return
         }
-        if fixedWidth != nil { return }
+
+        if fixedWidth != nil {
+            return
+        }
 
         state.flags["measuring"] = true
         defer { state.flags["measuring"] = false }
@@ -564,15 +597,15 @@ final class LucidBanner {
         let fitting = host.sizeThatFits(in: CGSize(width: widthCap, height: UIView.layoutFittingCompressedSize.height))
         let target = min(max(fitting.width, minWidth), widthCap)
 
-        if let c = widthConstraint {
-            let current = c.constant
+        if let widthConstraint {
+            let current = widthConstraint.constant
             let newWidth = (force ? target : max(target, current))
             guard abs(newWidth - current) > 0.5 else { return }
-            c.constant = newWidth
+            widthConstraint.constant = newWidth
         } else {
-            let c = host.view.widthAnchor.constraint(equalToConstant: target)
-            c.isActive = true
-            widthConstraint = c
+            let constraint = host.view.widthAnchor.constraint(equalToConstant: target)
+            constraint.isActive = true
+            widthConstraint = constraint
         }
 
         if animated {
@@ -585,18 +618,24 @@ final class LucidBanner {
     private func scheduleAutoDismiss() {
         dismissTimer?.cancel()
         let seconds = self.autoDismissAfter
-        guard seconds > 0 else { return }
+        guard seconds > 0 else {
+            return
+        }
         let tokenAtSchedule = activeToken
+
         dismissTimer = Task { [weak self] in
             try? await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
             self?.dismiss(for: tokenAtSchedule)
         }
     }
 
-    // Gestures
+    // Gesture
     @objc private func handlePanGesture(_ g: UIPanGestureRecognizer) {
-        guard let view = hostController?.view else { return }
+        guard let view = hostController?.view else {
+            return
+        }
         let dy = g.translation(in: view).y
+
         switch g.state {
         case .changed:
             let y = min(0, dy)
