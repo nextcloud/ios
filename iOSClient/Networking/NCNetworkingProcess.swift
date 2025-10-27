@@ -408,7 +408,7 @@ actor NCNetworkingProcess {
         } assembling: {
             Task {@MainActor in
                 LucidBanner.shared.update(
-                    title: NSLocalizedString("_wait_", comment: ""),
+                    title: NSLocalizedString("_finalizing_wait_", comment: ""),
                     systemImage: "tray.and.arrow.down",
                     imageAnimation: .pulsebyLayer,
                     progress: 0,

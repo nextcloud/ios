@@ -166,6 +166,7 @@
 "_seconds_"               = "seconds";
 "_change_lock_passcode_"  = "Change passcode";
 "_lock_cannot_disable_mdm_" = "Disabling the passcode lock is not permitted by your configuration profile.";
+"_finalizing_wait_" = "Finalizing. Please wait …";
 
 // MARK: User Status
 

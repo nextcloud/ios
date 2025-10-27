@@ -5,6 +5,14 @@
 import SwiftUI
 import UIKit
 
+/// - Each banner is displayed in its own UIWindow above the status bar.
+/// - Only one banner is visible at a time; others are queued if `enqueue` policy is used.
+/// - Tap events trigger the `onTapWithContext` closure with contextual info.
+/// - Supports swipe-to-dismiss and automatic timed dismissal.
+/// - Resizes dynamically when content or orientation changes.
+
+/// LucidBannerState holds all observable data shared with the SwiftUI view.
+/// It is updated whenever the banner’s appearance or content changes.
 @MainActor
 internal final class LucidBannerState: ObservableObject {
     @Published var title: String
@@ -20,7 +28,7 @@ internal final class LucidBannerState: ObservableObject {
 
     @Published var stage: String?
 
-    // flag internal (ex. "measuring")
+    /// Internal flags (e.g. “measuring” during layout updates).
     @Published var flags: [String: Any] = [:]
 
     init(title: String,
@@ -46,6 +54,8 @@ internal final class LucidBannerState: ObservableObject {
 
 // MARK: - Window
 
+/// Custom UIWindow subclass that allows optional passthrough touches.
+/// When `isPassthrough` is true, only the banner view intercepts touch events.
 @MainActor
 internal final class LucidBannerWindow: UIWindow {
     var isPassthrough: Bool = true
@@ -66,18 +76,29 @@ internal final class LucidBannerWindow: UIWindow {
 
 // MARK: - Manager
 
+/// LucidBanner is a singleton manager for showing animated, SwiftUI-based banners.
+/// Each banner is rendered in a transparent UIWindow above the status bar.
 @MainActor
 final class LucidBanner {
+    /// Shared instance used to show and update banners.
     static let shared = LucidBanner()
 
+    /// Determines what happens if a banner is already showing.
     enum ShowPolicy {
-        case replace, enqueue, drop
+        /// Replaces the current banner immediately.
+        case replace
+        /// Queues the new banner to be shown after the current one.
+        case enqueue
+        /// Drops the new banner entirely.
+        case drop
     }
 
+    /// Supported image animation styles.
     enum LucidBannerAnimationStyle {
         case none, rotate, pulse, pulsebyLayer, breathe, bounce, wiggle, scale
     }
 
+    /// Internal structure for queued banners.
     private struct PendingShow {
         let title: String
         let subtitle: String?
@@ -152,6 +173,27 @@ final class LucidBanner {
 
     // MARK: - PUBLIC
 
+    /// Displays a new banner.
+    ///
+    /// - Parameters:
+    ///   - title: Main text shown on the banner.
+    ///   - subtitle: Optional smaller text below the title.
+    ///   - textColor: Color for textual elements.
+    ///   - systemImage: Optional SF Symbol displayed to the left of text.
+    ///   - imageColor: Tint color for the symbol.
+    ///   - imageAnimation: Animation style for the icon.
+    ///   - progress: Progress value (0…1).
+    ///   - progressColor: Tint color for the progress bar.
+    ///   - stage: Arbitrary string used to identify logical steps (e.g. “uploading”).
+    ///   - autoDismissAfter: Automatically dismiss after N seconds.
+    ///   - policy: Behavior when another banner is visible.
+    ///   - fixedWidth: Optional fixed width constraint.
+    ///   - swipeToDismiss: Enables swipe-up gesture to dismiss.
+    ///   - blocksTouches: Prevents touch events from reaching underlying views.
+    ///   - scene: Target UIScene when running on iPad with multiple windows.
+    ///   - onTapWithContext: Called when the banner is tapped, providing token/revision/stage.
+    ///   - content: SwiftUI view builder bound to a shared `LucidBannerState`.
+    /// - Returns: A unique token identifying this banner instance.
     @discardableResult
     func show<Content: View>(title: String,
                              subtitle: String? = nil,
@@ -276,6 +318,21 @@ final class LucidBanner {
         return activeToken
     }
 
+    /// Updates the current banner’s content and appearance.
+    ///
+    /// Only applies if the banner with the given token is still active.
+    /// Use this to change progress, image, or stage without dismissing.
+    ///
+    /// - Parameters:
+    ///   - title: Optional new title.
+    ///   - subtitle: Optional new subtitle.
+    ///   - systemImage: Optional new icon.
+    ///   - imageColor: Optional new tint color.
+    ///   - imageAnimation: Optional new animation style.
+    ///   - progress: Optional progress (0…1).
+    ///   - stage: Optional new logical stage.
+    ///   - onTapWithContext: Updated tap handler.
+    ///   - token: Token of the banner to update.
     func update(title: String? = nil,
                 subtitle: String? = nil,
                 systemImage: String? = nil,
@@ -335,6 +392,9 @@ final class LucidBanner {
         }
     }
 
+    /// Dismisses the current banner, optionally calling a completion handler.
+    ///
+    /// - Parameter completion: Executed after the animation completes.
     func dismiss(completion: (() -> Void)? = nil) {
         dismissTimer?.cancel()
         dismissTimer = nil
@@ -374,6 +434,11 @@ final class LucidBanner {
         }
     }
 
+    /// Dismisses a banner by token, if it is still active.
+    ///
+    /// - Parameters:
+    ///   - token: The token returned from `show`.
+    ///   - completion: Executed after the animation completes.
     func dismiss(for token: Int, completion: (() -> Void)? = nil) {
         guard token == activeToken else {
             return
