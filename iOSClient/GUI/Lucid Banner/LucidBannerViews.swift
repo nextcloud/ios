@@ -44,9 +44,9 @@ struct ToastBannerView: View {
                     }
                     if showFootnote, let footnote = state.footnote {
                         Text(footnote)
-                            .font(.caption)
+                            .font(.caption2)
                             .multilineTextAlignment(.leading)
-                            .lineLimit(3)
+                            .lineLimit(1)
                             .truncationMode(.tail)
                             .foregroundStyle(Color(uiColor: state.textColor))
                     }
