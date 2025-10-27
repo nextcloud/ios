@@ -704,10 +704,12 @@ You can stop it at any time, adjust the settings, and enable it again.";
 "_no_types_subtitle_"            = "AI Providers need to be installed to use the Assistant.";
 
 // MARK: Client certificate
-"_no_client_cert_found_"         = "The server is requesting a client certificate.";
-"_no_client_cert_found_desc_"    = "Do you want to install a TLS client certificate? \n Note that the .p12 certificate must be installed on your device first by clicking on it and installing it as an Identitity Certificate Profile in Settings. The certificate MUST also have a password as that is a requirement by iOS.";
-"_client_cert_enter_password_"   = "Enter the password for the chosen certificate";
-"_client_cert_wrong_password_"   = "Sorry, you entered an invalid password.";
+"_cert_navigation_title_"                 = "Client Certificate";
+"_cert_title_"                            = ".p12 Certificate";
+"_no_client_cert_found_"                  = "The server '%@' is requesting a client certificate.";
+"_no_client_cert_found_desc_"             = "Note that the .p12 certificate must be installed on your device first by clicking on it and installing it as an Identitity Certificate Profile in Settings.";
+"_no_client_cert_found_desc_password_"    = "Please enter the password for the chosen certificate. The certificate **must** have a password set as that is a requirement by iOS.";
+"_client_cert_wrong_password_"            = "The password entered for the chosen certificate is wrong.";
 
 // MARK: Login poll
 "_poll_desc_"                    = "Please complete the log in process in your browser.";

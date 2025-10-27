@@ -10,7 +10,6 @@ import Queuer
 import SwiftUI
 
 @objc protocol ClientCertificateDelegate {
-    func onIncorrectPassword()
     func didAskForClientCertificate()
 }
 
@@ -307,9 +306,11 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     func authenticationChallenge(_ session: URLSession,
                                  didReceive challenge: URLAuthenticationChallenge,
                                  completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        nkLog(debug: "Auth challenge method: \(challenge.protectionSpace.authenticationMethod), host: \(challenge.protectionSpace.host):\(challenge.protectionSpace.port)")
+
         if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodClientCertificate {
             let label = "client_identity_\(challenge.protectionSpace.host):\(challenge.protectionSpace.port)"
-            print(label)
+
             if let identity = retrieveIdentityFromKeychain(label: label) {
                     let credential = URLCredential(identity: identity, certificates: nil, persistence: .forSession)
 
